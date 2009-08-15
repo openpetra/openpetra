@@ -93,9 +93,7 @@ namespace Ict.Petra.Server.MFinance
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             String TableName;
-            ABudgetTypeTable TmpABudgetTypeDT;
-            ACostCentreTypesTable TmpACostCentreTypesDT;
-            DataTable TmpALedgerNameDT;
+            DataTable TmpTable;
 
             TableName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
 #if DEBUGMODE
@@ -117,18 +115,18 @@ namespace Ict.Petra.Server.MFinance
                     switch (ACacheableTable)
                     {
                         case TCacheableFinanceTablesEnum.BudgetTypeList:
-                            ABudgetTypeAccess.LoadAll(out TmpABudgetTypeDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpABudgetTypeDT, DomainManager.GClientID);
+                            TmpTable = ABudgetTypeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheableFinanceTablesEnum.CostCentreTypeList:
-                            ACostCentreTypesAccess.LoadAll(out TmpACostCentreTypesDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpACostCentreTypesDT, DomainManager.GClientID);
+                            TmpTable = ACostCentreTypesAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheableFinanceTablesEnum.LedgerNameList:
-                            TmpALedgerNameDT = TALedgerNameAggregate.GetData(TableName, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpALedgerNameDT, DomainManager.GClientID);
+                            TmpTable = TALedgerNameAggregate.GetData(TableName, ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         default:
@@ -259,7 +257,7 @@ namespace Ict.Petra.Server.MFinance
                             FieldList.Add(AAccountTable.GetAccountCodeShortDescDBName());
                             FieldList.Add(AAccountTable.GetAccountActiveFlagDBName());
                             FieldList.Add(AAccountTable.GetPostingStatusDBName());
-                            AAccountAccess.LoadViaALedger(out TmpAAccountDT, ALedgerNumber, FieldList, ReadTransaction);
+                            TmpAAccountDT = AAccountAccess.LoadViaALedger(ALedgerNumber, FieldList, ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName,
                             TmpAAccountDT,
                             DomainManager.GClientID,
@@ -270,7 +268,7 @@ namespace Ict.Petra.Server.MFinance
                             FieldList = new StringCollection();
                             FieldList.Add(AAccountHierarchyTable.GetLedgerNumberDBName());
                             FieldList.Add(AAccountHierarchyTable.GetAccountHierarchyCodeDBName());
-                            AAccountHierarchyAccess.LoadViaALedger(out TmpAccountHierarchyDT, ALedgerNumber, FieldList, ReadTransaction);
+                            TmpAccountHierarchyDT = AAccountHierarchyAccess.LoadViaALedger(ALedgerNumber, FieldList, ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpAccountHierarchyDT, DomainManager.GClientID,
                             (object)ALedgerNumber);
                             break;
@@ -282,7 +280,7 @@ namespace Ict.Petra.Server.MFinance
                             FieldList.Add(AAccountingPeriodTable.GetAccountingPeriodDescDBName());
                             FieldList.Add(AAccountingPeriodTable.GetPeriodStartDateDBName());
                             FieldList.Add(AAccountingPeriodTable.GetPeriodEndDateDBName());
-                            AAccountingPeriodAccess.LoadViaALedger(out TmpAAccountingPeriodDT, ALedgerNumber, FieldList, ReadTransaction);
+                            TmpAAccountingPeriodDT = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, FieldList, ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpAAccountingPeriodDT, DomainManager.GClientID,
                             (object)ALedgerNumber);
                             break;
@@ -296,7 +294,7 @@ namespace Ict.Petra.Server.MFinance
                             FieldList.Add(ACostCentreTable.GetPostingCostCentreFlagDBName());
                             FieldList.Add(ACostCentreTable.GetCostCentreActiveFlagDBName());
                             FieldList.Add(ACostCentreTable.GetCostCentreTypeDBName());
-                            ACostCentreAccess.LoadViaALedger(out TmpACostCentreDT, ALedgerNumber, FieldList, ReadTransaction);
+                            TmpACostCentreDT = ACostCentreAccess.LoadViaALedger(ALedgerNumber, FieldList, ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName,
                             TmpACostCentreDT,
                             DomainManager.GClientID,
@@ -311,7 +309,7 @@ namespace Ict.Petra.Server.MFinance
                             FieldList.Add(ALedgerTable.GetCurrentPeriodDBName());
                             FieldList.Add(ALedgerTable.GetCurrentFinancialYearDBName());
                             FieldList.Add(ALedgerTable.GetBranchProcessingDBName());
-                            ALedgerAccess.LoadByPrimaryKey(out TmpALedgerDT, ALedgerNumber, FieldList, ReadTransaction);
+                            TmpALedgerDT = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, FieldList, ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName,
                             TmpALedgerDT,
                             DomainManager.GClientID,
@@ -324,7 +322,7 @@ namespace Ict.Petra.Server.MFinance
                             FieldList.Add(AMotivationDetailTable.GetMotivationGroupCodeDBName());
                             FieldList.Add(AMotivationDetailTable.GetMotivationDetailCodeDBName());
                             FieldList.Add(AMotivationDetailTable.GetMotivationStatusDBName());
-                            AMotivationDetailAccess.LoadViaALedger(out TmpAMotivationDetailDT, ALedgerNumber, FieldList, ReadTransaction);
+                            TmpAMotivationDetailDT = AMotivationDetailAccess.LoadViaALedger(ALedgerNumber, FieldList, ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpAMotivationDetailDT, DomainManager.GClientID,
                             (object)ALedgerNumber);
 

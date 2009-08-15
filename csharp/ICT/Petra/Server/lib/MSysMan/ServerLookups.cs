@@ -98,7 +98,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
                 out NewTransaction);
 
             // Load data
-            SSystemDefaultsAccess.LoadByPrimaryKey(out SystemDefaultsDT, "CurrentDatabaseVersion", ReadTransaction);
+            SystemDefaultsDT = SSystemDefaultsAccess.LoadByPrimaryKey("CurrentDatabaseVersion", ReadTransaction);
 
             if (NewTransaction)
             {
@@ -157,7 +157,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
             try
             {
                 // Load data
-                SPatchLogAccess.LoadAll(out TmpTable, ReadTransaction);
+                TmpTable = SPatchLogAccess.LoadAll(ReadTransaction);
             }
             finally
             {

@@ -99,14 +99,14 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 {
                     if (SLogonMessageAccess.Exists(ALanguageCode, ReadTransaction))
                     {
-                        SLogonMessageAccess.LoadByPrimaryKey(out LogonMessageTable, ALanguageCode, ReadTransaction);
+                        LogonMessageTable = SLogonMessageAccess.LoadByPrimaryKey(ALanguageCode, ReadTransaction);
                         ReturnValue = LogonMessageTable[0].LogonMessage;
                     }
                     else
                     {
                         if (AReturnEnglishIfNotFound)
                         {
-                            SLogonMessageAccess.LoadByPrimaryKey(out LogonMessageTable, "EN", ReadTransaction);
+                            LogonMessageTable = SLogonMessageAccess.LoadByPrimaryKey("EN", ReadTransaction);
                             ReturnValue = LogonMessageTable[0].LogonMessage;
                         }
                         else

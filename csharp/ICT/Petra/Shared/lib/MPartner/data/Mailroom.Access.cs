@@ -72,22 +72,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out MExtractMasterTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractMasterTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractMasterTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, MExtractMasterTable.TableId) + " FROM PUB_m_extract_master" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            MExtractMasterTable Data = new MExtractMasterTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, MExtractMasterTable.TableId) + " FROM PUB_m_extract_master" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out MExtractMasterTable AData, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out MExtractMasterTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -109,22 +110,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out MExtractMasterTable AData, Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractMasterTable LoadByPrimaryKey(Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractMasterTable();
-            LoadByPrimaryKey(MExtractMasterTable.TableId, AData, new System.Object[1]{AExtractId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            MExtractMasterTable Data = new MExtractMasterTable();
+            LoadByPrimaryKey(MExtractMasterTable.TableId, Data, new System.Object[1]{AExtractId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out MExtractMasterTable AData, Int32 AExtractId, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadByPrimaryKey(Int32 AExtractId, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AExtractId, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AExtractId, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out MExtractMasterTable AData, Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadByPrimaryKey(Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AExtractId, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AExtractId, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -146,28 +148,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractMasterTable AData, MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractMasterTable LoadUsingTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractMasterTable();
-            LoadUsingTemplate(MExtractMasterTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            MExtractMasterTable Data = new MExtractMasterTable();
+            LoadUsingTemplate(MExtractMasterTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractMasterTable AData, MExtractMasterRow ATemplateRow, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadUsingTemplate(MExtractMasterRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractMasterTable AData, MExtractMasterRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadUsingTemplate(MExtractMasterRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractMasterTable AData, MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadUsingTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -189,22 +192,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractMasterTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractMasterTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractMasterTable();
-            LoadUsingTemplate(MExtractMasterTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            MExtractMasterTable Data = new MExtractMasterTable();
+            LoadUsingTemplate(MExtractMasterTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractMasterTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractMasterTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -253,23 +257,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSUser(out MExtractMasterTable AData, String AUserId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractMasterTable LoadViaSUser(String AUserId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractMasterTable();
-            LoadViaForeignKey(MExtractMasterTable.TableId, SUserTable.TableId, AData, new string[1]{"m_manual_mod_by_c"},
+            MExtractMasterTable Data = new MExtractMasterTable();
+            LoadViaForeignKey(MExtractMasterTable.TableId, SUserTable.TableId, Data, new string[1]{"m_manual_mod_by_c"},
                 new System.Object[1]{AUserId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSUser(out MExtractMasterTable AData, String AUserId, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSUser(String AUserId, TDBTransaction ATransaction)
         {
-            LoadViaSUser(out AData, AUserId, null, ATransaction, null, 0, 0);
+            return LoadViaSUser(AUserId, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUser(out MExtractMasterTable AData, String AUserId, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSUser(String AUserId, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUser(out AData, AUserId, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUser(AUserId, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -292,29 +297,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out MExtractMasterTable AData, SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractMasterTable LoadViaSUserTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractMasterTable();
-            LoadViaForeignKey(MExtractMasterTable.TableId, SUserTable.TableId, AData, new string[1]{"m_manual_mod_by_c"},
+            MExtractMasterTable Data = new MExtractMasterTable();
+            LoadViaForeignKey(MExtractMasterTable.TableId, SUserTable.TableId, Data, new string[1]{"m_manual_mod_by_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out MExtractMasterTable AData, SUserRow ATemplateRow, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSUserTemplate(SUserRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out MExtractMasterTable AData, SUserRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSUserTemplate(SUserRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out MExtractMasterTable AData, SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSUserTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -337,23 +343,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out MExtractMasterTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractMasterTable LoadViaSUserTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractMasterTable();
-            LoadViaForeignKey(MExtractMasterTable.TableId, SUserTable.TableId, AData, new string[1]{"m_manual_mod_by_c"},
+            MExtractMasterTable Data = new MExtractMasterTable();
+            LoadViaForeignKey(MExtractMasterTable.TableId, SUserTable.TableId, Data, new string[1]{"m_manual_mod_by_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out MExtractMasterTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out MExtractMasterTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSUserTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -397,23 +404,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaMExtractType(out MExtractMasterTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractMasterTable LoadViaMExtractType(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractMasterTable();
-            LoadViaForeignKey(MExtractMasterTable.TableId, MExtractTypeTable.TableId, AData, new string[1]{"m_extract_type_code_c"},
+            MExtractMasterTable Data = new MExtractMasterTable();
+            LoadViaForeignKey(MExtractMasterTable.TableId, MExtractTypeTable.TableId, Data, new string[1]{"m_extract_type_code_c"},
                 new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaMExtractType(out MExtractMasterTable AData, String ACode, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaMExtractType(String ACode, TDBTransaction ATransaction)
         {
-            LoadViaMExtractType(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadViaMExtractType(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractType(out MExtractMasterTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaMExtractType(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractType(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractType(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -436,29 +444,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaMExtractTypeTemplate(out MExtractMasterTable AData, MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractMasterTable LoadViaMExtractTypeTemplate(MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractMasterTable();
-            LoadViaForeignKey(MExtractMasterTable.TableId, MExtractTypeTable.TableId, AData, new string[1]{"m_extract_type_code_c"},
+            MExtractMasterTable Data = new MExtractMasterTable();
+            LoadViaForeignKey(MExtractMasterTable.TableId, MExtractTypeTable.TableId, Data, new string[1]{"m_extract_type_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaMExtractTypeTemplate(out MExtractMasterTable AData, MExtractTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaMExtractTypeTemplate(MExtractTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaMExtractTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaMExtractTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractTypeTemplate(out MExtractMasterTable AData, MExtractTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaMExtractTypeTemplate(MExtractTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractTypeTemplate(out MExtractMasterTable AData, MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaMExtractTypeTemplate(MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -481,23 +490,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaMExtractTypeTemplate(out MExtractMasterTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractMasterTable LoadViaMExtractTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractMasterTable();
-            LoadViaForeignKey(MExtractMasterTable.TableId, MExtractTypeTable.TableId, AData, new string[1]{"m_extract_type_code_c"},
+            MExtractMasterTable Data = new MExtractMasterTable();
+            LoadViaForeignKey(MExtractMasterTable.TableId, MExtractTypeTable.TableId, Data, new string[1]{"m_extract_type_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaMExtractTypeTemplate(out MExtractMasterTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaMExtractTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaMExtractTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaMExtractTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractTypeTemplate(out MExtractMasterTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaMExtractTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -548,25 +558,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out MExtractMasterTable AData, String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractMasterTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new MExtractMasterTable();
-            FillDataSet.Tables.Add(AData);
+            MExtractMasterTable Data = new MExtractMasterTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroup(FillDataSet, AGroupId, AUnitKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out MExtractMasterTable AData, String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
-            LoadViaSGroup(out AData, AGroupId, AUnitKey, null, ATransaction, null, 0, 0);
+            return LoadViaSGroup(AGroupId, AUnitKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out MExtractMasterTable AData, String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroup(out AData, AGroupId, AUnitKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroup(AGroupId, AUnitKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -593,31 +604,32 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out MExtractMasterTable AData, SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractMasterTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new MExtractMasterTable();
-            FillDataSet.Tables.Add(AData);
+            MExtractMasterTable Data = new MExtractMasterTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroupTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out MExtractMasterTable AData, SGroupRow ATemplateRow, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out MExtractMasterTable AData, SGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out MExtractMasterTable AData, SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -644,25 +656,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out MExtractMasterTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractMasterTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new MExtractMasterTable();
-            FillDataSet.Tables.Add(AData);
+            MExtractMasterTable Data = new MExtractMasterTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out MExtractMasterTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out MExtractMasterTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractMasterTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -751,22 +764,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out MExtractTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, MExtractTable.TableId) + " FROM PUB_m_extract" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            MExtractTable Data = new MExtractTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, MExtractTable.TableId) + " FROM PUB_m_extract" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out MExtractTable AData, TDBTransaction ATransaction)
+        public static MExtractTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out MExtractTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -788,22 +802,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out MExtractTable AData, Int32 AExtractId, Int64 APartnerKey, Int64 ASiteKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTable LoadByPrimaryKey(Int32 AExtractId, Int64 APartnerKey, Int64 ASiteKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTable();
-            LoadByPrimaryKey(MExtractTable.TableId, AData, new System.Object[3]{AExtractId, APartnerKey, ASiteKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            MExtractTable Data = new MExtractTable();
+            LoadByPrimaryKey(MExtractTable.TableId, Data, new System.Object[3]{AExtractId, APartnerKey, ASiteKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out MExtractTable AData, Int32 AExtractId, Int64 APartnerKey, Int64 ASiteKey, TDBTransaction ATransaction)
+        public static MExtractTable LoadByPrimaryKey(Int32 AExtractId, Int64 APartnerKey, Int64 ASiteKey, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AExtractId, APartnerKey, ASiteKey, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AExtractId, APartnerKey, ASiteKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out MExtractTable AData, Int32 AExtractId, Int64 APartnerKey, Int64 ASiteKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadByPrimaryKey(Int32 AExtractId, Int64 APartnerKey, Int64 ASiteKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AExtractId, APartnerKey, ASiteKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AExtractId, APartnerKey, ASiteKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -825,28 +840,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTable AData, MExtractRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTable LoadUsingTemplate(MExtractRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTable();
-            LoadUsingTemplate(MExtractTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            MExtractTable Data = new MExtractTable();
+            LoadUsingTemplate(MExtractTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTable AData, MExtractRow ATemplateRow, TDBTransaction ATransaction)
+        public static MExtractTable LoadUsingTemplate(MExtractRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTable AData, MExtractRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadUsingTemplate(MExtractRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTable AData, MExtractRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadUsingTemplate(MExtractRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -868,22 +884,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTable();
-            LoadUsingTemplate(MExtractTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            MExtractTable Data = new MExtractTable();
+            LoadUsingTemplate(MExtractTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static MExtractTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -932,23 +949,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaMExtractMaster(out MExtractTable AData, Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTable LoadViaMExtractMaster(Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTable();
-            LoadViaForeignKey(MExtractTable.TableId, MExtractMasterTable.TableId, AData, new string[1]{"m_extract_id_i"},
+            MExtractTable Data = new MExtractTable();
+            LoadViaForeignKey(MExtractTable.TableId, MExtractMasterTable.TableId, Data, new string[1]{"m_extract_id_i"},
                 new System.Object[1]{AExtractId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaMExtractMaster(out MExtractTable AData, Int32 AExtractId, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaMExtractMaster(Int32 AExtractId, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMaster(out AData, AExtractId, null, ATransaction, null, 0, 0);
+            return LoadViaMExtractMaster(AExtractId, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractMaster(out MExtractTable AData, Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaMExtractMaster(Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMaster(out AData, AExtractId, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractMaster(AExtractId, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -971,29 +989,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractTable AData, MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTable LoadViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTable();
-            LoadViaForeignKey(MExtractTable.TableId, MExtractMasterTable.TableId, AData, new string[1]{"m_extract_id_i"},
+            MExtractTable Data = new MExtractTable();
+            LoadViaForeignKey(MExtractTable.TableId, MExtractMasterTable.TableId, Data, new string[1]{"m_extract_id_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractTable AData, MExtractMasterRow ATemplateRow, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractTable AData, MExtractMasterRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractTable AData, MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1016,23 +1035,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTable LoadViaMExtractMasterTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTable();
-            LoadViaForeignKey(MExtractTable.TableId, MExtractMasterTable.TableId, AData, new string[1]{"m_extract_id_i"},
+            MExtractTable Data = new MExtractTable();
+            LoadViaForeignKey(MExtractTable.TableId, MExtractMasterTable.TableId, Data, new string[1]{"m_extract_id_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaMExtractMasterTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaMExtractMasterTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1076,23 +1096,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out MExtractTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTable();
-            LoadViaForeignKey(MExtractTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            MExtractTable Data = new MExtractTable();
+            LoadViaForeignKey(MExtractTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out MExtractTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out MExtractTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1115,29 +1136,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out MExtractTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTable();
-            LoadViaForeignKey(MExtractTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            MExtractTable Data = new MExtractTable();
+            LoadViaForeignKey(MExtractTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out MExtractTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out MExtractTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out MExtractTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1160,23 +1182,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out MExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTable();
-            LoadViaForeignKey(MExtractTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            MExtractTable Data = new MExtractTable();
+            LoadViaForeignKey(MExtractTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out MExtractTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out MExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1220,23 +1243,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLocation(out MExtractTable AData, Int64 ASiteKey, Int32 ALocationKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTable LoadViaPLocation(Int64 ASiteKey, Int32 ALocationKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTable();
-            LoadViaForeignKey(MExtractTable.TableId, PLocationTable.TableId, AData, new string[2]{"p_site_key_n", "p_location_key_i"},
+            MExtractTable Data = new MExtractTable();
+            LoadViaForeignKey(MExtractTable.TableId, PLocationTable.TableId, Data, new string[2]{"p_site_key_n", "p_location_key_i"},
                 new System.Object[2]{ASiteKey, ALocationKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLocation(out MExtractTable AData, Int64 ASiteKey, Int32 ALocationKey, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPLocation(Int64 ASiteKey, Int32 ALocationKey, TDBTransaction ATransaction)
         {
-            LoadViaPLocation(out AData, ASiteKey, ALocationKey, null, ATransaction, null, 0, 0);
+            return LoadViaPLocation(ASiteKey, ALocationKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLocation(out MExtractTable AData, Int64 ASiteKey, Int32 ALocationKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPLocation(Int64 ASiteKey, Int32 ALocationKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLocation(out AData, ASiteKey, ALocationKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLocation(ASiteKey, ALocationKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1259,29 +1283,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLocationTemplate(out MExtractTable AData, PLocationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTable LoadViaPLocationTemplate(PLocationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTable();
-            LoadViaForeignKey(MExtractTable.TableId, PLocationTable.TableId, AData, new string[2]{"p_site_key_n", "p_location_key_i"},
+            MExtractTable Data = new MExtractTable();
+            LoadViaForeignKey(MExtractTable.TableId, PLocationTable.TableId, Data, new string[2]{"p_site_key_n", "p_location_key_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLocationTemplate(out MExtractTable AData, PLocationRow ATemplateRow, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPLocationTemplate(PLocationRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPLocationTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPLocationTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLocationTemplate(out MExtractTable AData, PLocationRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPLocationTemplate(PLocationRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLocationTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLocationTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLocationTemplate(out MExtractTable AData, PLocationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPLocationTemplate(PLocationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLocationTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLocationTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1304,23 +1329,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLocationTemplate(out MExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTable LoadViaPLocationTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTable();
-            LoadViaForeignKey(MExtractTable.TableId, PLocationTable.TableId, AData, new string[2]{"p_site_key_n", "p_location_key_i"},
+            MExtractTable Data = new MExtractTable();
+            LoadViaForeignKey(MExtractTable.TableId, PLocationTable.TableId, Data, new string[2]{"p_site_key_n", "p_location_key_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLocationTemplate(out MExtractTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPLocationTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPLocationTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPLocationTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLocationTemplate(out MExtractTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTable LoadViaPLocationTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLocationTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLocationTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1399,22 +1425,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out MExtractTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTypeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, MExtractTypeTable.TableId) + " FROM PUB_m_extract_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            MExtractTypeTable Data = new MExtractTypeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, MExtractTypeTable.TableId) + " FROM PUB_m_extract_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out MExtractTypeTable AData, TDBTransaction ATransaction)
+        public static MExtractTypeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out MExtractTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1436,22 +1463,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out MExtractTypeTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTypeTable LoadByPrimaryKey(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTypeTable();
-            LoadByPrimaryKey(MExtractTypeTable.TableId, AData, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            MExtractTypeTable Data = new MExtractTypeTable();
+            LoadByPrimaryKey(MExtractTypeTable.TableId, Data, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out MExtractTypeTable AData, String ACode, TDBTransaction ATransaction)
+        public static MExtractTypeTable LoadByPrimaryKey(String ACode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out MExtractTypeTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTypeTable LoadByPrimaryKey(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1473,28 +1501,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTypeTable AData, MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTypeTable LoadUsingTemplate(MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTypeTable();
-            LoadUsingTemplate(MExtractTypeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            MExtractTypeTable Data = new MExtractTypeTable();
+            LoadUsingTemplate(MExtractTypeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTypeTable AData, MExtractTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static MExtractTypeTable LoadUsingTemplate(MExtractTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTypeTable AData, MExtractTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTypeTable LoadUsingTemplate(MExtractTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTypeTable AData, MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTypeTable LoadUsingTemplate(MExtractTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1516,22 +1545,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractTypeTable();
-            LoadUsingTemplate(MExtractTypeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            MExtractTypeTable Data = new MExtractTypeTable();
+            LoadUsingTemplate(MExtractTypeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTypeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static MExtractTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1615,22 +1645,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out MExtractParameterTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractParameterTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractParameterTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, MExtractParameterTable.TableId) + " FROM PUB_m_extract_parameter" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            MExtractParameterTable Data = new MExtractParameterTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, MExtractParameterTable.TableId) + " FROM PUB_m_extract_parameter" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out MExtractParameterTable AData, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out MExtractParameterTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1652,22 +1683,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out MExtractParameterTable AData, Int32 AExtractId, String AParameterCode, Int32 AValueIndex, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractParameterTable LoadByPrimaryKey(Int32 AExtractId, String AParameterCode, Int32 AValueIndex, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractParameterTable();
-            LoadByPrimaryKey(MExtractParameterTable.TableId, AData, new System.Object[3]{AExtractId, AParameterCode, AValueIndex}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            MExtractParameterTable Data = new MExtractParameterTable();
+            LoadByPrimaryKey(MExtractParameterTable.TableId, Data, new System.Object[3]{AExtractId, AParameterCode, AValueIndex}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out MExtractParameterTable AData, Int32 AExtractId, String AParameterCode, Int32 AValueIndex, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadByPrimaryKey(Int32 AExtractId, String AParameterCode, Int32 AValueIndex, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AExtractId, AParameterCode, AValueIndex, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AExtractId, AParameterCode, AValueIndex, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out MExtractParameterTable AData, Int32 AExtractId, String AParameterCode, Int32 AValueIndex, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadByPrimaryKey(Int32 AExtractId, String AParameterCode, Int32 AValueIndex, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AExtractId, AParameterCode, AValueIndex, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AExtractId, AParameterCode, AValueIndex, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1689,28 +1721,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractParameterTable AData, MExtractParameterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractParameterTable LoadUsingTemplate(MExtractParameterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractParameterTable();
-            LoadUsingTemplate(MExtractParameterTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            MExtractParameterTable Data = new MExtractParameterTable();
+            LoadUsingTemplate(MExtractParameterTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractParameterTable AData, MExtractParameterRow ATemplateRow, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadUsingTemplate(MExtractParameterRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractParameterTable AData, MExtractParameterRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadUsingTemplate(MExtractParameterRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractParameterTable AData, MExtractParameterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadUsingTemplate(MExtractParameterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1732,22 +1765,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractParameterTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractParameterTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractParameterTable();
-            LoadUsingTemplate(MExtractParameterTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            MExtractParameterTable Data = new MExtractParameterTable();
+            LoadUsingTemplate(MExtractParameterTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractParameterTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out MExtractParameterTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1796,23 +1830,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaMExtractMaster(out MExtractParameterTable AData, Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractParameterTable LoadViaMExtractMaster(Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractParameterTable();
-            LoadViaForeignKey(MExtractParameterTable.TableId, MExtractMasterTable.TableId, AData, new string[1]{"m_extract_id_i"},
+            MExtractParameterTable Data = new MExtractParameterTable();
+            LoadViaForeignKey(MExtractParameterTable.TableId, MExtractMasterTable.TableId, Data, new string[1]{"m_extract_id_i"},
                 new System.Object[1]{AExtractId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaMExtractMaster(out MExtractParameterTable AData, Int32 AExtractId, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadViaMExtractMaster(Int32 AExtractId, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMaster(out AData, AExtractId, null, ATransaction, null, 0, 0);
+            return LoadViaMExtractMaster(AExtractId, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractMaster(out MExtractParameterTable AData, Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadViaMExtractMaster(Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMaster(out AData, AExtractId, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractMaster(AExtractId, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1835,29 +1870,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractParameterTable AData, MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractParameterTable LoadViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractParameterTable();
-            LoadViaForeignKey(MExtractParameterTable.TableId, MExtractMasterTable.TableId, AData, new string[1]{"m_extract_id_i"},
+            MExtractParameterTable Data = new MExtractParameterTable();
+            LoadViaForeignKey(MExtractParameterTable.TableId, MExtractMasterTable.TableId, Data, new string[1]{"m_extract_id_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractParameterTable AData, MExtractMasterRow ATemplateRow, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractParameterTable AData, MExtractMasterRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractParameterTable AData, MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1880,23 +1916,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractParameterTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static MExtractParameterTable LoadViaMExtractMasterTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new MExtractParameterTable();
-            LoadViaForeignKey(MExtractParameterTable.TableId, MExtractMasterTable.TableId, AData, new string[1]{"m_extract_id_i"},
+            MExtractParameterTable Data = new MExtractParameterTable();
+            LoadViaForeignKey(MExtractParameterTable.TableId, MExtractMasterTable.TableId, Data, new string[1]{"m_extract_id_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractParameterTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadViaMExtractMasterTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out MExtractParameterTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static MExtractParameterTable LoadViaMExtractMasterTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1975,22 +2012,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PMailingTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMailingTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMailingTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PMailingTable.TableId) + " FROM PUB_p_mailing" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PMailingTable Data = new PMailingTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PMailingTable.TableId) + " FROM PUB_p_mailing" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PMailingTable AData, TDBTransaction ATransaction)
+        public static PMailingTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PMailingTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMailingTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2012,22 +2050,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PMailingTable AData, String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMailingTable LoadByPrimaryKey(String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMailingTable();
-            LoadByPrimaryKey(PMailingTable.TableId, AData, new System.Object[1]{AMailingCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PMailingTable Data = new PMailingTable();
+            LoadByPrimaryKey(PMailingTable.TableId, Data, new System.Object[1]{AMailingCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PMailingTable AData, String AMailingCode, TDBTransaction ATransaction)
+        public static PMailingTable LoadByPrimaryKey(String AMailingCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AMailingCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AMailingCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PMailingTable AData, String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMailingTable LoadByPrimaryKey(String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AMailingCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AMailingCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2049,28 +2088,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMailingTable AData, PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMailingTable LoadUsingTemplate(PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMailingTable();
-            LoadUsingTemplate(PMailingTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PMailingTable Data = new PMailingTable();
+            LoadUsingTemplate(PMailingTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMailingTable AData, PMailingRow ATemplateRow, TDBTransaction ATransaction)
+        public static PMailingTable LoadUsingTemplate(PMailingRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMailingTable AData, PMailingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMailingTable LoadUsingTemplate(PMailingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMailingTable AData, PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMailingTable LoadUsingTemplate(PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2092,22 +2132,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMailingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMailingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMailingTable();
-            LoadUsingTemplate(PMailingTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PMailingTable Data = new PMailingTable();
+            LoadUsingTemplate(PMailingTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMailingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PMailingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMailingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMailingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2191,22 +2232,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PAddressLayoutCodeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutCodeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutCodeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PAddressLayoutCodeTable.TableId) + " FROM PUB_p_address_layout_code" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PAddressLayoutCodeTable Data = new PAddressLayoutCodeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PAddressLayoutCodeTable.TableId) + " FROM PUB_p_address_layout_code" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PAddressLayoutCodeTable AData, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PAddressLayoutCodeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2228,22 +2270,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddressLayoutCodeTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutCodeTable LoadByPrimaryKey(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutCodeTable();
-            LoadByPrimaryKey(PAddressLayoutCodeTable.TableId, AData, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddressLayoutCodeTable Data = new PAddressLayoutCodeTable();
+            LoadByPrimaryKey(PAddressLayoutCodeTable.TableId, Data, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddressLayoutCodeTable AData, String ACode, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadByPrimaryKey(String ACode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddressLayoutCodeTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadByPrimaryKey(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2265,28 +2308,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutCodeTable AData, PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutCodeTable LoadUsingTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutCodeTable();
-            LoadUsingTemplate(PAddressLayoutCodeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddressLayoutCodeTable Data = new PAddressLayoutCodeTable();
+            LoadUsingTemplate(PAddressLayoutCodeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutCodeTable AData, PAddressLayoutCodeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadUsingTemplate(PAddressLayoutCodeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutCodeTable AData, PAddressLayoutCodeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadUsingTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutCodeTable AData, PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadUsingTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2308,22 +2352,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutCodeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutCodeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutCodeTable();
-            LoadUsingTemplate(PAddressLayoutCodeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddressLayoutCodeTable Data = new PAddressLayoutCodeTable();
+            LoadUsingTemplate(PAddressLayoutCodeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutCodeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutCodeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2377,25 +2422,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPCountry(out PAddressLayoutCodeTable AData, String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutCodeTable LoadViaPCountry(String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PAddressLayoutCodeTable();
-            FillDataSet.Tables.Add(AData);
+            PAddressLayoutCodeTable Data = new PAddressLayoutCodeTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPCountry(FillDataSet, ACountryCode, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPCountry(out PAddressLayoutCodeTable AData, String ACountryCode, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadViaPCountry(String ACountryCode, TDBTransaction ATransaction)
         {
-            LoadViaPCountry(out AData, ACountryCode, null, ATransaction, null, 0, 0);
+            return LoadViaPCountry(ACountryCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountry(out PAddressLayoutCodeTable AData, String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadViaPCountry(String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountry(out AData, ACountryCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountry(ACountryCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2422,31 +2468,32 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutCodeTable AData, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutCodeTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PAddressLayoutCodeTable();
-            FillDataSet.Tables.Add(AData);
+            PAddressLayoutCodeTable Data = new PAddressLayoutCodeTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPCountryTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutCodeTable AData, PCountryRow ATemplateRow, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutCodeTable AData, PCountryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutCodeTable AData, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2473,25 +2520,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutCodeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutCodeTable LoadViaPCountryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PAddressLayoutCodeTable();
-            FillDataSet.Tables.Add(AData);
+            PAddressLayoutCodeTable Data = new PAddressLayoutCodeTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPCountryTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutCodeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadViaPCountryTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutCodeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutCodeTable LoadViaPCountryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -2578,22 +2626,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PAddressLayoutTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PAddressLayoutTable.TableId) + " FROM PUB_p_address_layout" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PAddressLayoutTable Data = new PAddressLayoutTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PAddressLayoutTable.TableId) + " FROM PUB_p_address_layout" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PAddressLayoutTable AData, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PAddressLayoutTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2615,22 +2664,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddressLayoutTable AData, String ACountryCode, String AAddressLayoutCode, Int32 AAddressLineNumber, String AAddressLineCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutTable LoadByPrimaryKey(String ACountryCode, String AAddressLayoutCode, Int32 AAddressLineNumber, String AAddressLineCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutTable();
-            LoadByPrimaryKey(PAddressLayoutTable.TableId, AData, new System.Object[4]{ACountryCode, AAddressLayoutCode, AAddressLineNumber, AAddressLineCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddressLayoutTable Data = new PAddressLayoutTable();
+            LoadByPrimaryKey(PAddressLayoutTable.TableId, Data, new System.Object[4]{ACountryCode, AAddressLayoutCode, AAddressLineNumber, AAddressLineCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddressLayoutTable AData, String ACountryCode, String AAddressLayoutCode, Int32 AAddressLineNumber, String AAddressLineCode, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadByPrimaryKey(String ACountryCode, String AAddressLayoutCode, Int32 AAddressLineNumber, String AAddressLineCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACountryCode, AAddressLayoutCode, AAddressLineNumber, AAddressLineCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACountryCode, AAddressLayoutCode, AAddressLineNumber, AAddressLineCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddressLayoutTable AData, String ACountryCode, String AAddressLayoutCode, Int32 AAddressLineNumber, String AAddressLineCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadByPrimaryKey(String ACountryCode, String AAddressLayoutCode, Int32 AAddressLineNumber, String AAddressLineCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACountryCode, AAddressLayoutCode, AAddressLineNumber, AAddressLineCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACountryCode, AAddressLayoutCode, AAddressLineNumber, AAddressLineCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2652,28 +2702,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutTable AData, PAddressLayoutRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutTable LoadUsingTemplate(PAddressLayoutRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutTable();
-            LoadUsingTemplate(PAddressLayoutTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddressLayoutTable Data = new PAddressLayoutTable();
+            LoadUsingTemplate(PAddressLayoutTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutTable AData, PAddressLayoutRow ATemplateRow, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadUsingTemplate(PAddressLayoutRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutTable AData, PAddressLayoutRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadUsingTemplate(PAddressLayoutRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutTable AData, PAddressLayoutRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadUsingTemplate(PAddressLayoutRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2695,22 +2746,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutTable();
-            LoadUsingTemplate(PAddressLayoutTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddressLayoutTable Data = new PAddressLayoutTable();
+            LoadUsingTemplate(PAddressLayoutTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLayoutTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2759,23 +2811,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPCountry(out PAddressLayoutTable AData, String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutTable LoadViaPCountry(String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutTable();
-            LoadViaForeignKey(PAddressLayoutTable.TableId, PCountryTable.TableId, AData, new string[1]{"p_country_code_c"},
+            PAddressLayoutTable Data = new PAddressLayoutTable();
+            LoadViaForeignKey(PAddressLayoutTable.TableId, PCountryTable.TableId, Data, new string[1]{"p_country_code_c"},
                 new System.Object[1]{ACountryCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPCountry(out PAddressLayoutTable AData, String ACountryCode, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPCountry(String ACountryCode, TDBTransaction ATransaction)
         {
-            LoadViaPCountry(out AData, ACountryCode, null, ATransaction, null, 0, 0);
+            return LoadViaPCountry(ACountryCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountry(out PAddressLayoutTable AData, String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPCountry(String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountry(out AData, ACountryCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountry(ACountryCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2798,29 +2851,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutTable AData, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutTable();
-            LoadViaForeignKey(PAddressLayoutTable.TableId, PCountryTable.TableId, AData, new string[1]{"p_country_code_c"},
+            PAddressLayoutTable Data = new PAddressLayoutTable();
+            LoadViaForeignKey(PAddressLayoutTable.TableId, PCountryTable.TableId, Data, new string[1]{"p_country_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutTable AData, PCountryRow ATemplateRow, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutTable AData, PCountryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutTable AData, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2843,23 +2897,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutTable LoadViaPCountryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutTable();
-            LoadViaForeignKey(PAddressLayoutTable.TableId, PCountryTable.TableId, AData, new string[1]{"p_country_code_c"},
+            PAddressLayoutTable Data = new PAddressLayoutTable();
+            LoadViaForeignKey(PAddressLayoutTable.TableId, PCountryTable.TableId, Data, new string[1]{"p_country_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPCountryTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PAddressLayoutTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPCountryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2903,23 +2958,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCode(out PAddressLayoutTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutTable LoadViaPAddressLayoutCode(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutTable();
-            LoadViaForeignKey(PAddressLayoutTable.TableId, PAddressLayoutCodeTable.TableId, AData, new string[1]{"p_address_layout_code_c"},
+            PAddressLayoutTable Data = new PAddressLayoutTable();
+            LoadViaForeignKey(PAddressLayoutTable.TableId, PAddressLayoutCodeTable.TableId, Data, new string[1]{"p_address_layout_code_c"},
                 new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCode(out PAddressLayoutTable AData, String ACode, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPAddressLayoutCode(String ACode, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCode(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCode(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCode(out PAddressLayoutTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPAddressLayoutCode(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCode(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCode(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2942,29 +2998,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PAddressLayoutTable AData, PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutTable LoadViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutTable();
-            LoadViaForeignKey(PAddressLayoutTable.TableId, PAddressLayoutCodeTable.TableId, AData, new string[1]{"p_address_layout_code_c"},
+            PAddressLayoutTable Data = new PAddressLayoutTable();
+            LoadViaForeignKey(PAddressLayoutTable.TableId, PAddressLayoutCodeTable.TableId, Data, new string[1]{"p_address_layout_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PAddressLayoutTable AData, PAddressLayoutCodeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PAddressLayoutTable AData, PAddressLayoutCodeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PAddressLayoutTable AData, PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2987,23 +3044,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PAddressLayoutTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLayoutTable LoadViaPAddressLayoutCodeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLayoutTable();
-            LoadViaForeignKey(PAddressLayoutTable.TableId, PAddressLayoutCodeTable.TableId, AData, new string[1]{"p_address_layout_code_c"},
+            PAddressLayoutTable Data = new PAddressLayoutTable();
+            LoadViaForeignKey(PAddressLayoutTable.TableId, PAddressLayoutCodeTable.TableId, Data, new string[1]{"p_address_layout_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PAddressLayoutTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPAddressLayoutCodeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PAddressLayoutTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLayoutTable LoadViaPAddressLayoutCodeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3082,22 +3140,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PAddressElementTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressElementTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressElementTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PAddressElementTable.TableId) + " FROM PUB_p_address_element" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PAddressElementTable Data = new PAddressElementTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PAddressElementTable.TableId) + " FROM PUB_p_address_element" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PAddressElementTable AData, TDBTransaction ATransaction)
+        public static PAddressElementTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PAddressElementTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressElementTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3119,22 +3178,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddressElementTable AData, String AAddressElementCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressElementTable LoadByPrimaryKey(String AAddressElementCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressElementTable();
-            LoadByPrimaryKey(PAddressElementTable.TableId, AData, new System.Object[1]{AAddressElementCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddressElementTable Data = new PAddressElementTable();
+            LoadByPrimaryKey(PAddressElementTable.TableId, Data, new System.Object[1]{AAddressElementCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddressElementTable AData, String AAddressElementCode, TDBTransaction ATransaction)
+        public static PAddressElementTable LoadByPrimaryKey(String AAddressElementCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AAddressElementCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AAddressElementCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddressElementTable AData, String AAddressElementCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressElementTable LoadByPrimaryKey(String AAddressElementCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AAddressElementCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AAddressElementCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3156,28 +3216,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressElementTable AData, PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressElementTable LoadUsingTemplate(PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressElementTable();
-            LoadUsingTemplate(PAddressElementTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddressElementTable Data = new PAddressElementTable();
+            LoadUsingTemplate(PAddressElementTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressElementTable AData, PAddressElementRow ATemplateRow, TDBTransaction ATransaction)
+        public static PAddressElementTable LoadUsingTemplate(PAddressElementRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressElementTable AData, PAddressElementRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressElementTable LoadUsingTemplate(PAddressElementRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressElementTable AData, PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressElementTable LoadUsingTemplate(PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3199,22 +3260,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressElementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressElementTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressElementTable();
-            LoadUsingTemplate(PAddressElementTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddressElementTable Data = new PAddressElementTable();
+            LoadUsingTemplate(PAddressElementTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressElementTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PAddressElementTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressElementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressElementTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3298,22 +3360,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PAddressLineTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLineTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLineTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PAddressLineTable.TableId) + " FROM PUB_p_address_line" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PAddressLineTable Data = new PAddressLineTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PAddressLineTable.TableId) + " FROM PUB_p_address_line" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PAddressLineTable AData, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PAddressLineTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3335,22 +3398,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddressLineTable AData, String AAddressLineCode, Int32 AAddressElementPosition, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLineTable LoadByPrimaryKey(String AAddressLineCode, Int32 AAddressElementPosition, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLineTable();
-            LoadByPrimaryKey(PAddressLineTable.TableId, AData, new System.Object[2]{AAddressLineCode, AAddressElementPosition}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddressLineTable Data = new PAddressLineTable();
+            LoadByPrimaryKey(PAddressLineTable.TableId, Data, new System.Object[2]{AAddressLineCode, AAddressElementPosition}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddressLineTable AData, String AAddressLineCode, Int32 AAddressElementPosition, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadByPrimaryKey(String AAddressLineCode, Int32 AAddressElementPosition, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AAddressLineCode, AAddressElementPosition, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AAddressLineCode, AAddressElementPosition, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddressLineTable AData, String AAddressLineCode, Int32 AAddressElementPosition, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadByPrimaryKey(String AAddressLineCode, Int32 AAddressElementPosition, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AAddressLineCode, AAddressElementPosition, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AAddressLineCode, AAddressElementPosition, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3372,28 +3436,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLineTable AData, PAddressLineRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLineTable LoadUsingTemplate(PAddressLineRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLineTable();
-            LoadUsingTemplate(PAddressLineTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddressLineTable Data = new PAddressLineTable();
+            LoadUsingTemplate(PAddressLineTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLineTable AData, PAddressLineRow ATemplateRow, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadUsingTemplate(PAddressLineRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLineTable AData, PAddressLineRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadUsingTemplate(PAddressLineRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLineTable AData, PAddressLineRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadUsingTemplate(PAddressLineRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3415,22 +3480,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLineTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLineTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLineTable();
-            LoadUsingTemplate(PAddressLineTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddressLineTable Data = new PAddressLineTable();
+            LoadUsingTemplate(PAddressLineTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLineTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddressLineTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3479,23 +3545,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddressElement(out PAddressLineTable AData, String AAddressElementCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLineTable LoadViaPAddressElement(String AAddressElementCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLineTable();
-            LoadViaForeignKey(PAddressLineTable.TableId, PAddressElementTable.TableId, AData, new string[1]{"p_address_element_code_c"},
+            PAddressLineTable Data = new PAddressLineTable();
+            LoadViaForeignKey(PAddressLineTable.TableId, PAddressElementTable.TableId, Data, new string[1]{"p_address_element_code_c"},
                 new System.Object[1]{AAddressElementCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddressElement(out PAddressLineTable AData, String AAddressElementCode, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadViaPAddressElement(String AAddressElementCode, TDBTransaction ATransaction)
         {
-            LoadViaPAddressElement(out AData, AAddressElementCode, null, ATransaction, null, 0, 0);
+            return LoadViaPAddressElement(AAddressElementCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressElement(out PAddressLineTable AData, String AAddressElementCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadViaPAddressElement(String AAddressElementCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressElement(out AData, AAddressElementCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressElement(AAddressElementCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3518,29 +3585,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddressElementTemplate(out PAddressLineTable AData, PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLineTable LoadViaPAddressElementTemplate(PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLineTable();
-            LoadViaForeignKey(PAddressLineTable.TableId, PAddressElementTable.TableId, AData, new string[1]{"p_address_element_code_c"},
+            PAddressLineTable Data = new PAddressLineTable();
+            LoadViaForeignKey(PAddressLineTable.TableId, PAddressElementTable.TableId, Data, new string[1]{"p_address_element_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddressElementTemplate(out PAddressLineTable AData, PAddressElementRow ATemplateRow, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadViaPAddressElementTemplate(PAddressElementRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPAddressElementTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPAddressElementTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressElementTemplate(out PAddressLineTable AData, PAddressElementRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadViaPAddressElementTemplate(PAddressElementRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressElementTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressElementTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressElementTemplate(out PAddressLineTable AData, PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadViaPAddressElementTemplate(PAddressElementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressElementTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressElementTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3563,23 +3631,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddressElementTemplate(out PAddressLineTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddressLineTable LoadViaPAddressElementTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddressLineTable();
-            LoadViaForeignKey(PAddressLineTable.TableId, PAddressElementTable.TableId, AData, new string[1]{"p_address_element_code_c"},
+            PAddressLineTable Data = new PAddressLineTable();
+            LoadViaForeignKey(PAddressLineTable.TableId, PAddressElementTable.TableId, Data, new string[1]{"p_address_element_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddressElementTemplate(out PAddressLineTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadViaPAddressElementTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPAddressElementTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPAddressElementTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressElementTemplate(out PAddressLineTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddressLineTable LoadViaPAddressElementTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressElementTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressElementTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3660,22 +3729,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PAddresseeTitleOverrideTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddresseeTitleOverrideTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddresseeTitleOverrideTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PAddresseeTitleOverrideTable.TableId) + " FROM PUB_p_addressee_title_override" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PAddresseeTitleOverrideTable Data = new PAddresseeTitleOverrideTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PAddresseeTitleOverrideTable.TableId) + " FROM PUB_p_addressee_title_override" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PAddresseeTitleOverrideTable AData, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PAddresseeTitleOverrideTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3697,22 +3767,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddresseeTitleOverrideTable AData, String ALanguageCode, String ATitle, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddresseeTitleOverrideTable LoadByPrimaryKey(String ALanguageCode, String ATitle, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddresseeTitleOverrideTable();
-            LoadByPrimaryKey(PAddresseeTitleOverrideTable.TableId, AData, new System.Object[2]{ALanguageCode, ATitle}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddresseeTitleOverrideTable Data = new PAddresseeTitleOverrideTable();
+            LoadByPrimaryKey(PAddresseeTitleOverrideTable.TableId, Data, new System.Object[2]{ALanguageCode, ATitle}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddresseeTitleOverrideTable AData, String ALanguageCode, String ATitle, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadByPrimaryKey(String ALanguageCode, String ATitle, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALanguageCode, ATitle, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALanguageCode, ATitle, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PAddresseeTitleOverrideTable AData, String ALanguageCode, String ATitle, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadByPrimaryKey(String ALanguageCode, String ATitle, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALanguageCode, ATitle, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALanguageCode, ATitle, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3734,28 +3805,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddresseeTitleOverrideTable AData, PAddresseeTitleOverrideRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddresseeTitleOverrideTable LoadUsingTemplate(PAddresseeTitleOverrideRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddresseeTitleOverrideTable();
-            LoadUsingTemplate(PAddresseeTitleOverrideTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddresseeTitleOverrideTable Data = new PAddresseeTitleOverrideTable();
+            LoadUsingTemplate(PAddresseeTitleOverrideTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddresseeTitleOverrideTable AData, PAddresseeTitleOverrideRow ATemplateRow, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadUsingTemplate(PAddresseeTitleOverrideRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddresseeTitleOverrideTable AData, PAddresseeTitleOverrideRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadUsingTemplate(PAddresseeTitleOverrideRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddresseeTitleOverrideTable AData, PAddresseeTitleOverrideRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadUsingTemplate(PAddresseeTitleOverrideRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3777,22 +3849,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddresseeTitleOverrideTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddresseeTitleOverrideTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddresseeTitleOverrideTable();
-            LoadUsingTemplate(PAddresseeTitleOverrideTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PAddresseeTitleOverrideTable Data = new PAddresseeTitleOverrideTable();
+            LoadUsingTemplate(PAddresseeTitleOverrideTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddresseeTitleOverrideTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PAddresseeTitleOverrideTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3841,23 +3914,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out PAddresseeTitleOverrideTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddresseeTitleOverrideTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddresseeTitleOverrideTable();
-            LoadViaForeignKey(PAddresseeTitleOverrideTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_language_code_c"},
+            PAddresseeTitleOverrideTable Data = new PAddresseeTitleOverrideTable();
+            LoadViaForeignKey(PAddresseeTitleOverrideTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_language_code_c"},
                 new System.Object[1]{ALanguageCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out PAddresseeTitleOverrideTable AData, String ALanguageCode, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadViaPLanguage(String ALanguageCode, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out PAddresseeTitleOverrideTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3880,29 +3954,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PAddresseeTitleOverrideTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddresseeTitleOverrideTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddresseeTitleOverrideTable();
-            LoadViaForeignKey(PAddresseeTitleOverrideTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_language_code_c"},
+            PAddresseeTitleOverrideTable Data = new PAddresseeTitleOverrideTable();
+            LoadViaForeignKey(PAddresseeTitleOverrideTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_language_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PAddresseeTitleOverrideTable AData, PLanguageRow ATemplateRow, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PAddresseeTitleOverrideTable AData, PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PAddresseeTitleOverrideTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3925,23 +4000,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PAddresseeTitleOverrideTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PAddresseeTitleOverrideTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PAddresseeTitleOverrideTable();
-            LoadViaForeignKey(PAddresseeTitleOverrideTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_language_code_c"},
+            PAddresseeTitleOverrideTable Data = new PAddresseeTitleOverrideTable();
+            LoadViaForeignKey(PAddresseeTitleOverrideTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_language_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PAddresseeTitleOverrideTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PAddresseeTitleOverrideTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PAddresseeTitleOverrideTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4020,22 +4096,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PCustomisedGreetingTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCustomisedGreetingTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCustomisedGreetingTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PCustomisedGreetingTable.TableId) + " FROM PUB_p_customised_greeting" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PCustomisedGreetingTable Data = new PCustomisedGreetingTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PCustomisedGreetingTable.TableId) + " FROM PUB_p_customised_greeting" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PCustomisedGreetingTable AData, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PCustomisedGreetingTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4057,22 +4134,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PCustomisedGreetingTable AData, Int64 APartnerKey, String AUserId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCustomisedGreetingTable LoadByPrimaryKey(Int64 APartnerKey, String AUserId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCustomisedGreetingTable();
-            LoadByPrimaryKey(PCustomisedGreetingTable.TableId, AData, new System.Object[2]{APartnerKey, AUserId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PCustomisedGreetingTable Data = new PCustomisedGreetingTable();
+            LoadByPrimaryKey(PCustomisedGreetingTable.TableId, Data, new System.Object[2]{APartnerKey, AUserId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PCustomisedGreetingTable AData, Int64 APartnerKey, String AUserId, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadByPrimaryKey(Int64 APartnerKey, String AUserId, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APartnerKey, AUserId, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APartnerKey, AUserId, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PCustomisedGreetingTable AData, Int64 APartnerKey, String AUserId, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadByPrimaryKey(Int64 APartnerKey, String AUserId, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APartnerKey, AUserId, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APartnerKey, AUserId, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4094,28 +4172,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCustomisedGreetingTable AData, PCustomisedGreetingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCustomisedGreetingTable LoadUsingTemplate(PCustomisedGreetingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCustomisedGreetingTable();
-            LoadUsingTemplate(PCustomisedGreetingTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PCustomisedGreetingTable Data = new PCustomisedGreetingTable();
+            LoadUsingTemplate(PCustomisedGreetingTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCustomisedGreetingTable AData, PCustomisedGreetingRow ATemplateRow, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadUsingTemplate(PCustomisedGreetingRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCustomisedGreetingTable AData, PCustomisedGreetingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadUsingTemplate(PCustomisedGreetingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCustomisedGreetingTable AData, PCustomisedGreetingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadUsingTemplate(PCustomisedGreetingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4137,22 +4216,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCustomisedGreetingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCustomisedGreetingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCustomisedGreetingTable();
-            LoadUsingTemplate(PCustomisedGreetingTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PCustomisedGreetingTable Data = new PCustomisedGreetingTable();
+            LoadUsingTemplate(PCustomisedGreetingTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCustomisedGreetingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCustomisedGreetingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4201,23 +4281,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PCustomisedGreetingTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCustomisedGreetingTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCustomisedGreetingTable();
-            LoadViaForeignKey(PCustomisedGreetingTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PCustomisedGreetingTable Data = new PCustomisedGreetingTable();
+            LoadViaForeignKey(PCustomisedGreetingTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PCustomisedGreetingTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PCustomisedGreetingTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4240,29 +4321,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PCustomisedGreetingTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCustomisedGreetingTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCustomisedGreetingTable();
-            LoadViaForeignKey(PCustomisedGreetingTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PCustomisedGreetingTable Data = new PCustomisedGreetingTable();
+            LoadViaForeignKey(PCustomisedGreetingTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PCustomisedGreetingTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PCustomisedGreetingTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PCustomisedGreetingTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4285,23 +4367,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PCustomisedGreetingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCustomisedGreetingTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCustomisedGreetingTable();
-            LoadViaForeignKey(PCustomisedGreetingTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PCustomisedGreetingTable Data = new PCustomisedGreetingTable();
+            LoadViaForeignKey(PCustomisedGreetingTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PCustomisedGreetingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PCustomisedGreetingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4345,23 +4428,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSUser(out PCustomisedGreetingTable AData, String AUserId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCustomisedGreetingTable LoadViaSUser(String AUserId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCustomisedGreetingTable();
-            LoadViaForeignKey(PCustomisedGreetingTable.TableId, SUserTable.TableId, AData, new string[1]{"s_user_id_c"},
+            PCustomisedGreetingTable Data = new PCustomisedGreetingTable();
+            LoadViaForeignKey(PCustomisedGreetingTable.TableId, SUserTable.TableId, Data, new string[1]{"s_user_id_c"},
                 new System.Object[1]{AUserId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSUser(out PCustomisedGreetingTable AData, String AUserId, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaSUser(String AUserId, TDBTransaction ATransaction)
         {
-            LoadViaSUser(out AData, AUserId, null, ATransaction, null, 0, 0);
+            return LoadViaSUser(AUserId, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUser(out PCustomisedGreetingTable AData, String AUserId, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaSUser(String AUserId, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUser(out AData, AUserId, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUser(AUserId, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4384,29 +4468,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PCustomisedGreetingTable AData, SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCustomisedGreetingTable LoadViaSUserTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCustomisedGreetingTable();
-            LoadViaForeignKey(PCustomisedGreetingTable.TableId, SUserTable.TableId, AData, new string[1]{"s_user_id_c"},
+            PCustomisedGreetingTable Data = new PCustomisedGreetingTable();
+            LoadViaForeignKey(PCustomisedGreetingTable.TableId, SUserTable.TableId, Data, new string[1]{"s_user_id_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PCustomisedGreetingTable AData, SUserRow ATemplateRow, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaSUserTemplate(SUserRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PCustomisedGreetingTable AData, SUserRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaSUserTemplate(SUserRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PCustomisedGreetingTable AData, SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaSUserTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4429,23 +4514,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PCustomisedGreetingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCustomisedGreetingTable LoadViaSUserTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCustomisedGreetingTable();
-            LoadViaForeignKey(PCustomisedGreetingTable.TableId, SUserTable.TableId, AData, new string[1]{"s_user_id_c"},
+            PCustomisedGreetingTable Data = new PCustomisedGreetingTable();
+            LoadViaForeignKey(PCustomisedGreetingTable.TableId, SUserTable.TableId, Data, new string[1]{"s_user_id_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PCustomisedGreetingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PCustomisedGreetingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCustomisedGreetingTable LoadViaSUserTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4524,22 +4610,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PFormalityTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormalityTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormalityTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PFormalityTable.TableId) + " FROM PUB_p_formality" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PFormalityTable Data = new PFormalityTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PFormalityTable.TableId) + " FROM PUB_p_formality" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PFormalityTable AData, TDBTransaction ATransaction)
+        public static PFormalityTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PFormalityTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4561,22 +4648,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PFormalityTable AData, String ALanguageCode, String ACountryCode, String AAddresseeTypeCode, Int32 AFormalityLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormalityTable LoadByPrimaryKey(String ALanguageCode, String ACountryCode, String AAddresseeTypeCode, Int32 AFormalityLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormalityTable();
-            LoadByPrimaryKey(PFormalityTable.TableId, AData, new System.Object[4]{ALanguageCode, ACountryCode, AAddresseeTypeCode, AFormalityLevel}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PFormalityTable Data = new PFormalityTable();
+            LoadByPrimaryKey(PFormalityTable.TableId, Data, new System.Object[4]{ALanguageCode, ACountryCode, AAddresseeTypeCode, AFormalityLevel}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PFormalityTable AData, String ALanguageCode, String ACountryCode, String AAddresseeTypeCode, Int32 AFormalityLevel, TDBTransaction ATransaction)
+        public static PFormalityTable LoadByPrimaryKey(String ALanguageCode, String ACountryCode, String AAddresseeTypeCode, Int32 AFormalityLevel, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALanguageCode, ACountryCode, AAddresseeTypeCode, AFormalityLevel, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALanguageCode, ACountryCode, AAddresseeTypeCode, AFormalityLevel, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PFormalityTable AData, String ALanguageCode, String ACountryCode, String AAddresseeTypeCode, Int32 AFormalityLevel, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadByPrimaryKey(String ALanguageCode, String ACountryCode, String AAddresseeTypeCode, Int32 AFormalityLevel, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALanguageCode, ACountryCode, AAddresseeTypeCode, AFormalityLevel, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALanguageCode, ACountryCode, AAddresseeTypeCode, AFormalityLevel, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4598,28 +4686,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormalityTable AData, PFormalityRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormalityTable LoadUsingTemplate(PFormalityRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormalityTable();
-            LoadUsingTemplate(PFormalityTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PFormalityTable Data = new PFormalityTable();
+            LoadUsingTemplate(PFormalityTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormalityTable AData, PFormalityRow ATemplateRow, TDBTransaction ATransaction)
+        public static PFormalityTable LoadUsingTemplate(PFormalityRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormalityTable AData, PFormalityRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadUsingTemplate(PFormalityRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormalityTable AData, PFormalityRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadUsingTemplate(PFormalityRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4641,22 +4730,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormalityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormalityTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormalityTable();
-            LoadUsingTemplate(PFormalityTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PFormalityTable Data = new PFormalityTable();
+            LoadUsingTemplate(PFormalityTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormalityTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PFormalityTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormalityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4705,23 +4795,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out PFormalityTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormalityTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormalityTable();
-            LoadViaForeignKey(PFormalityTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_language_code_c"},
+            PFormalityTable Data = new PFormalityTable();
+            LoadViaForeignKey(PFormalityTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_language_code_c"},
                 new System.Object[1]{ALanguageCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out PFormalityTable AData, String ALanguageCode, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPLanguage(String ALanguageCode, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out PFormalityTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4744,29 +4835,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PFormalityTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormalityTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormalityTable();
-            LoadViaForeignKey(PFormalityTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_language_code_c"},
+            PFormalityTable Data = new PFormalityTable();
+            LoadViaForeignKey(PFormalityTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_language_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PFormalityTable AData, PLanguageRow ATemplateRow, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PFormalityTable AData, PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PFormalityTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4789,23 +4881,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PFormalityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormalityTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormalityTable();
-            LoadViaForeignKey(PFormalityTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_language_code_c"},
+            PFormalityTable Data = new PFormalityTable();
+            LoadViaForeignKey(PFormalityTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_language_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PFormalityTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PFormalityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4849,23 +4942,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPCountry(out PFormalityTable AData, String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormalityTable LoadViaPCountry(String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormalityTable();
-            LoadViaForeignKey(PFormalityTable.TableId, PCountryTable.TableId, AData, new string[1]{"p_country_code_c"},
+            PFormalityTable Data = new PFormalityTable();
+            LoadViaForeignKey(PFormalityTable.TableId, PCountryTable.TableId, Data, new string[1]{"p_country_code_c"},
                 new System.Object[1]{ACountryCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPCountry(out PFormalityTable AData, String ACountryCode, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPCountry(String ACountryCode, TDBTransaction ATransaction)
         {
-            LoadViaPCountry(out AData, ACountryCode, null, ATransaction, null, 0, 0);
+            return LoadViaPCountry(ACountryCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountry(out PFormalityTable AData, String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPCountry(String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountry(out AData, ACountryCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountry(ACountryCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4888,29 +4982,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PFormalityTable AData, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormalityTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormalityTable();
-            LoadViaForeignKey(PFormalityTable.TableId, PCountryTable.TableId, AData, new string[1]{"p_country_code_c"},
+            PFormalityTable Data = new PFormalityTable();
+            LoadViaForeignKey(PFormalityTable.TableId, PCountryTable.TableId, Data, new string[1]{"p_country_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PFormalityTable AData, PCountryRow ATemplateRow, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PFormalityTable AData, PCountryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PFormalityTable AData, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4933,23 +5028,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PFormalityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormalityTable LoadViaPCountryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormalityTable();
-            LoadViaForeignKey(PFormalityTable.TableId, PCountryTable.TableId, AData, new string[1]{"p_country_code_c"},
+            PFormalityTable Data = new PFormalityTable();
+            LoadViaForeignKey(PFormalityTable.TableId, PCountryTable.TableId, Data, new string[1]{"p_country_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PFormalityTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPCountryTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out PFormalityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPCountryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4993,23 +5089,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddresseeType(out PFormalityTable AData, String AAddresseeTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormalityTable LoadViaPAddresseeType(String AAddresseeTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormalityTable();
-            LoadViaForeignKey(PFormalityTable.TableId, PAddresseeTypeTable.TableId, AData, new string[1]{"p_addressee_type_code_c"},
+            PFormalityTable Data = new PFormalityTable();
+            LoadViaForeignKey(PFormalityTable.TableId, PAddresseeTypeTable.TableId, Data, new string[1]{"p_addressee_type_code_c"},
                 new System.Object[1]{AAddresseeTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddresseeType(out PFormalityTable AData, String AAddresseeTypeCode, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPAddresseeType(String AAddresseeTypeCode, TDBTransaction ATransaction)
         {
-            LoadViaPAddresseeType(out AData, AAddresseeTypeCode, null, ATransaction, null, 0, 0);
+            return LoadViaPAddresseeType(AAddresseeTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddresseeType(out PFormalityTable AData, String AAddresseeTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPAddresseeType(String AAddresseeTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddresseeType(out AData, AAddresseeTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddresseeType(AAddresseeTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5032,29 +5129,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddresseeTypeTemplate(out PFormalityTable AData, PAddresseeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormalityTable LoadViaPAddresseeTypeTemplate(PAddresseeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormalityTable();
-            LoadViaForeignKey(PFormalityTable.TableId, PAddresseeTypeTable.TableId, AData, new string[1]{"p_addressee_type_code_c"},
+            PFormalityTable Data = new PFormalityTable();
+            LoadViaForeignKey(PFormalityTable.TableId, PAddresseeTypeTable.TableId, Data, new string[1]{"p_addressee_type_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddresseeTypeTemplate(out PFormalityTable AData, PAddresseeTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPAddresseeTypeTemplate(PAddresseeTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPAddresseeTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPAddresseeTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddresseeTypeTemplate(out PFormalityTable AData, PAddresseeTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPAddresseeTypeTemplate(PAddresseeTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddresseeTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddresseeTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddresseeTypeTemplate(out PFormalityTable AData, PAddresseeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPAddresseeTypeTemplate(PAddresseeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddresseeTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddresseeTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5077,23 +5175,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddresseeTypeTemplate(out PFormalityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormalityTable LoadViaPAddresseeTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormalityTable();
-            LoadViaForeignKey(PFormalityTable.TableId, PAddresseeTypeTable.TableId, AData, new string[1]{"p_addressee_type_code_c"},
+            PFormalityTable Data = new PFormalityTable();
+            LoadViaForeignKey(PFormalityTable.TableId, PAddresseeTypeTable.TableId, Data, new string[1]{"p_addressee_type_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddresseeTypeTemplate(out PFormalityTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPAddresseeTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPAddresseeTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPAddresseeTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddresseeTypeTemplate(out PFormalityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormalityTable LoadViaPAddresseeTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddresseeTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddresseeTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5172,22 +5271,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PFormLetterBodyTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterBodyTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterBodyTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PFormLetterBodyTable.TableId) + " FROM PUB_p_form_letter_body" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PFormLetterBodyTable Data = new PFormLetterBodyTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PFormLetterBodyTable.TableId) + " FROM PUB_p_form_letter_body" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PFormLetterBodyTable AData, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PFormLetterBodyTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5209,22 +5309,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PFormLetterBodyTable AData, String ABodyName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterBodyTable LoadByPrimaryKey(String ABodyName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterBodyTable();
-            LoadByPrimaryKey(PFormLetterBodyTable.TableId, AData, new System.Object[1]{ABodyName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PFormLetterBodyTable Data = new PFormLetterBodyTable();
+            LoadByPrimaryKey(PFormLetterBodyTable.TableId, Data, new System.Object[1]{ABodyName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PFormLetterBodyTable AData, String ABodyName, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadByPrimaryKey(String ABodyName, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ABodyName, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ABodyName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PFormLetterBodyTable AData, String ABodyName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadByPrimaryKey(String ABodyName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ABodyName, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ABodyName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5246,28 +5347,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterBodyTable AData, PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterBodyTable LoadUsingTemplate(PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterBodyTable();
-            LoadUsingTemplate(PFormLetterBodyTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PFormLetterBodyTable Data = new PFormLetterBodyTable();
+            LoadUsingTemplate(PFormLetterBodyTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterBodyTable AData, PFormLetterBodyRow ATemplateRow, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadUsingTemplate(PFormLetterBodyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterBodyTable AData, PFormLetterBodyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadUsingTemplate(PFormLetterBodyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterBodyTable AData, PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadUsingTemplate(PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5289,22 +5391,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterBodyTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterBodyTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterBodyTable();
-            LoadUsingTemplate(PFormLetterBodyTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PFormLetterBodyTable Data = new PFormLetterBodyTable();
+            LoadUsingTemplate(PFormLetterBodyTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterBodyTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterBodyTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5353,23 +5456,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSUser(out PFormLetterBodyTable AData, String AUserId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterBodyTable LoadViaSUser(String AUserId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterBodyTable();
-            LoadViaForeignKey(PFormLetterBodyTable.TableId, SUserTable.TableId, AData, new string[1]{"p_owner_c"},
+            PFormLetterBodyTable Data = new PFormLetterBodyTable();
+            LoadViaForeignKey(PFormLetterBodyTable.TableId, SUserTable.TableId, Data, new string[1]{"p_owner_c"},
                 new System.Object[1]{AUserId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSUser(out PFormLetterBodyTable AData, String AUserId, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadViaSUser(String AUserId, TDBTransaction ATransaction)
         {
-            LoadViaSUser(out AData, AUserId, null, ATransaction, null, 0, 0);
+            return LoadViaSUser(AUserId, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUser(out PFormLetterBodyTable AData, String AUserId, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadViaSUser(String AUserId, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUser(out AData, AUserId, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUser(AUserId, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5392,29 +5496,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PFormLetterBodyTable AData, SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterBodyTable LoadViaSUserTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterBodyTable();
-            LoadViaForeignKey(PFormLetterBodyTable.TableId, SUserTable.TableId, AData, new string[1]{"p_owner_c"},
+            PFormLetterBodyTable Data = new PFormLetterBodyTable();
+            LoadViaForeignKey(PFormLetterBodyTable.TableId, SUserTable.TableId, Data, new string[1]{"p_owner_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PFormLetterBodyTable AData, SUserRow ATemplateRow, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadViaSUserTemplate(SUserRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PFormLetterBodyTable AData, SUserRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadViaSUserTemplate(SUserRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PFormLetterBodyTable AData, SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadViaSUserTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5437,23 +5542,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PFormLetterBodyTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterBodyTable LoadViaSUserTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterBodyTable();
-            LoadViaForeignKey(PFormLetterBodyTable.TableId, SUserTable.TableId, AData, new string[1]{"p_owner_c"},
+            PFormLetterBodyTable Data = new PFormLetterBodyTable();
+            LoadViaForeignKey(PFormLetterBodyTable.TableId, SUserTable.TableId, Data, new string[1]{"p_owner_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PFormLetterBodyTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PFormLetterBodyTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterBodyTable LoadViaSUserTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5532,22 +5638,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PFormLetterDesignTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterDesignTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterDesignTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PFormLetterDesignTable.TableId) + " FROM PUB_p_form_letter_design" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PFormLetterDesignTable Data = new PFormLetterDesignTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PFormLetterDesignTable.TableId) + " FROM PUB_p_form_letter_design" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PFormLetterDesignTable AData, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PFormLetterDesignTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5569,22 +5676,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PFormLetterDesignTable AData, String ADesignName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterDesignTable LoadByPrimaryKey(String ADesignName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterDesignTable();
-            LoadByPrimaryKey(PFormLetterDesignTable.TableId, AData, new System.Object[1]{ADesignName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PFormLetterDesignTable Data = new PFormLetterDesignTable();
+            LoadByPrimaryKey(PFormLetterDesignTable.TableId, Data, new System.Object[1]{ADesignName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PFormLetterDesignTable AData, String ADesignName, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadByPrimaryKey(String ADesignName, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ADesignName, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ADesignName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PFormLetterDesignTable AData, String ADesignName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadByPrimaryKey(String ADesignName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ADesignName, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ADesignName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5606,28 +5714,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterDesignTable AData, PFormLetterDesignRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterDesignTable LoadUsingTemplate(PFormLetterDesignRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterDesignTable();
-            LoadUsingTemplate(PFormLetterDesignTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PFormLetterDesignTable Data = new PFormLetterDesignTable();
+            LoadUsingTemplate(PFormLetterDesignTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterDesignTable AData, PFormLetterDesignRow ATemplateRow, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadUsingTemplate(PFormLetterDesignRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterDesignTable AData, PFormLetterDesignRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadUsingTemplate(PFormLetterDesignRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterDesignTable AData, PFormLetterDesignRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadUsingTemplate(PFormLetterDesignRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5649,22 +5758,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterDesignTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterDesignTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterDesignTable();
-            LoadUsingTemplate(PFormLetterDesignTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PFormLetterDesignTable Data = new PFormLetterDesignTable();
+            LoadUsingTemplate(PFormLetterDesignTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterDesignTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterDesignTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5713,23 +5823,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBody(out PFormLetterDesignTable AData, String ABodyName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterDesignTable LoadViaPFormLetterBody(String ABodyName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterDesignTable();
-            LoadViaForeignKey(PFormLetterDesignTable.TableId, PFormLetterBodyTable.TableId, AData, new string[1]{"p_body_name_c"},
+            PFormLetterDesignTable Data = new PFormLetterDesignTable();
+            LoadViaForeignKey(PFormLetterDesignTable.TableId, PFormLetterBodyTable.TableId, Data, new string[1]{"p_body_name_c"},
                 new System.Object[1]{ABodyName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBody(out PFormLetterDesignTable AData, String ABodyName, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPFormLetterBody(String ABodyName, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBody(out AData, ABodyName, null, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBody(ABodyName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBody(out PFormLetterDesignTable AData, String ABodyName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPFormLetterBody(String ABodyName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBody(out AData, ABodyName, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBody(ABodyName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5752,29 +5863,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterDesignTable AData, PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterDesignTable LoadViaPFormLetterBodyTemplate(PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterDesignTable();
-            LoadViaForeignKey(PFormLetterDesignTable.TableId, PFormLetterBodyTable.TableId, AData, new string[1]{"p_body_name_c"},
+            PFormLetterDesignTable Data = new PFormLetterDesignTable();
+            LoadViaForeignKey(PFormLetterDesignTable.TableId, PFormLetterBodyTable.TableId, Data, new string[1]{"p_body_name_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterDesignTable AData, PFormLetterBodyRow ATemplateRow, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPFormLetterBodyTemplate(PFormLetterBodyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBodyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBodyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterDesignTable AData, PFormLetterBodyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPFormLetterBodyTemplate(PFormLetterBodyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBodyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBodyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterDesignTable AData, PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPFormLetterBodyTemplate(PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBodyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBodyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5797,23 +5909,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterDesignTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterDesignTable LoadViaPFormLetterBodyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterDesignTable();
-            LoadViaForeignKey(PFormLetterDesignTable.TableId, PFormLetterBodyTable.TableId, AData, new string[1]{"p_body_name_c"},
+            PFormLetterDesignTable Data = new PFormLetterDesignTable();
+            LoadViaForeignKey(PFormLetterDesignTable.TableId, PFormLetterBodyTable.TableId, Data, new string[1]{"p_body_name_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterDesignTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPFormLetterBodyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBodyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBodyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterDesignTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPFormLetterBodyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBodyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBodyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5857,23 +5970,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCode(out PFormLetterDesignTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterDesignTable LoadViaPAddressLayoutCode(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterDesignTable();
-            LoadViaForeignKey(PFormLetterDesignTable.TableId, PAddressLayoutCodeTable.TableId, AData, new string[1]{"p_address_layout_code_c"},
+            PFormLetterDesignTable Data = new PFormLetterDesignTable();
+            LoadViaForeignKey(PFormLetterDesignTable.TableId, PAddressLayoutCodeTable.TableId, Data, new string[1]{"p_address_layout_code_c"},
                 new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCode(out PFormLetterDesignTable AData, String ACode, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPAddressLayoutCode(String ACode, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCode(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCode(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCode(out PFormLetterDesignTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPAddressLayoutCode(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCode(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCode(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5896,29 +6010,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PFormLetterDesignTable AData, PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterDesignTable LoadViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterDesignTable();
-            LoadViaForeignKey(PFormLetterDesignTable.TableId, PAddressLayoutCodeTable.TableId, AData, new string[1]{"p_address_layout_code_c"},
+            PFormLetterDesignTable Data = new PFormLetterDesignTable();
+            LoadViaForeignKey(PFormLetterDesignTable.TableId, PAddressLayoutCodeTable.TableId, Data, new string[1]{"p_address_layout_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PFormLetterDesignTable AData, PAddressLayoutCodeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PFormLetterDesignTable AData, PAddressLayoutCodeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PFormLetterDesignTable AData, PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5941,23 +6056,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PFormLetterDesignTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterDesignTable LoadViaPAddressLayoutCodeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterDesignTable();
-            LoadViaForeignKey(PFormLetterDesignTable.TableId, PAddressLayoutCodeTable.TableId, AData, new string[1]{"p_address_layout_code_c"},
+            PFormLetterDesignTable Data = new PFormLetterDesignTable();
+            LoadViaForeignKey(PFormLetterDesignTable.TableId, PAddressLayoutCodeTable.TableId, Data, new string[1]{"p_address_layout_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PFormLetterDesignTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPAddressLayoutCodeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PFormLetterDesignTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterDesignTable LoadViaPAddressLayoutCodeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6036,22 +6152,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PFormLetterInsertTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterInsertTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterInsertTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PFormLetterInsertTable.TableId) + " FROM PUB_p_form_letter_insert" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PFormLetterInsertTable Data = new PFormLetterInsertTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PFormLetterInsertTable.TableId) + " FROM PUB_p_form_letter_insert" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PFormLetterInsertTable AData, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PFormLetterInsertTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6073,22 +6190,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PFormLetterInsertTable AData, Int32 ASequence, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterInsertTable LoadByPrimaryKey(Int32 ASequence, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterInsertTable();
-            LoadByPrimaryKey(PFormLetterInsertTable.TableId, AData, new System.Object[1]{ASequence}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PFormLetterInsertTable Data = new PFormLetterInsertTable();
+            LoadByPrimaryKey(PFormLetterInsertTable.TableId, Data, new System.Object[1]{ASequence}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PFormLetterInsertTable AData, Int32 ASequence, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadByPrimaryKey(Int32 ASequence, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ASequence, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ASequence, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PFormLetterInsertTable AData, Int32 ASequence, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadByPrimaryKey(Int32 ASequence, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ASequence, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ASequence, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6110,28 +6228,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterInsertTable AData, PFormLetterInsertRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterInsertTable LoadUsingTemplate(PFormLetterInsertRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterInsertTable();
-            LoadUsingTemplate(PFormLetterInsertTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PFormLetterInsertTable Data = new PFormLetterInsertTable();
+            LoadUsingTemplate(PFormLetterInsertTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterInsertTable AData, PFormLetterInsertRow ATemplateRow, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadUsingTemplate(PFormLetterInsertRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterInsertTable AData, PFormLetterInsertRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadUsingTemplate(PFormLetterInsertRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterInsertTable AData, PFormLetterInsertRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadUsingTemplate(PFormLetterInsertRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6153,22 +6272,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterInsertTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterInsertTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterInsertTable();
-            LoadUsingTemplate(PFormLetterInsertTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PFormLetterInsertTable Data = new PFormLetterInsertTable();
+            LoadUsingTemplate(PFormLetterInsertTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterInsertTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PFormLetterInsertTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6217,23 +6337,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBody(out PFormLetterInsertTable AData, String ABodyName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterInsertTable LoadViaPFormLetterBody(String ABodyName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterInsertTable();
-            LoadViaForeignKey(PFormLetterInsertTable.TableId, PFormLetterBodyTable.TableId, AData, new string[1]{"p_body_name_c"},
+            PFormLetterInsertTable Data = new PFormLetterInsertTable();
+            LoadViaForeignKey(PFormLetterInsertTable.TableId, PFormLetterBodyTable.TableId, Data, new string[1]{"p_body_name_c"},
                 new System.Object[1]{ABodyName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBody(out PFormLetterInsertTable AData, String ABodyName, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPFormLetterBody(String ABodyName, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBody(out AData, ABodyName, null, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBody(ABodyName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBody(out PFormLetterInsertTable AData, String ABodyName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPFormLetterBody(String ABodyName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBody(out AData, ABodyName, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBody(ABodyName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6256,29 +6377,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterInsertTable AData, PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterInsertTable LoadViaPFormLetterBodyTemplate(PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterInsertTable();
-            LoadViaForeignKey(PFormLetterInsertTable.TableId, PFormLetterBodyTable.TableId, AData, new string[1]{"p_body_name_c"},
+            PFormLetterInsertTable Data = new PFormLetterInsertTable();
+            LoadViaForeignKey(PFormLetterInsertTable.TableId, PFormLetterBodyTable.TableId, Data, new string[1]{"p_body_name_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterInsertTable AData, PFormLetterBodyRow ATemplateRow, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPFormLetterBodyTemplate(PFormLetterBodyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBodyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBodyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterInsertTable AData, PFormLetterBodyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPFormLetterBodyTemplate(PFormLetterBodyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBodyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBodyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterInsertTable AData, PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPFormLetterBodyTemplate(PFormLetterBodyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBodyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBodyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6301,23 +6423,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterInsertTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterInsertTable LoadViaPFormLetterBodyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterInsertTable();
-            LoadViaForeignKey(PFormLetterInsertTable.TableId, PFormLetterBodyTable.TableId, AData, new string[1]{"p_body_name_c"},
+            PFormLetterInsertTable Data = new PFormLetterInsertTable();
+            LoadViaForeignKey(PFormLetterInsertTable.TableId, PFormLetterBodyTable.TableId, Data, new string[1]{"p_body_name_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterInsertTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPFormLetterBodyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBodyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBodyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPFormLetterBodyTemplate(out PFormLetterInsertTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPFormLetterBodyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPFormLetterBodyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPFormLetterBodyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6361,23 +6484,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PFormLetterInsertTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterInsertTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterInsertTable();
-            LoadViaForeignKey(PFormLetterInsertTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PFormLetterInsertTable Data = new PFormLetterInsertTable();
+            LoadViaForeignKey(PFormLetterInsertTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PFormLetterInsertTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PFormLetterInsertTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6400,29 +6524,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PFormLetterInsertTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterInsertTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterInsertTable();
-            LoadViaForeignKey(PFormLetterInsertTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PFormLetterInsertTable Data = new PFormLetterInsertTable();
+            LoadViaForeignKey(PFormLetterInsertTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PFormLetterInsertTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PFormLetterInsertTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PFormLetterInsertTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6445,23 +6570,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PFormLetterInsertTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterInsertTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterInsertTable();
-            LoadViaForeignKey(PFormLetterInsertTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PFormLetterInsertTable Data = new PFormLetterInsertTable();
+            LoadViaForeignKey(PFormLetterInsertTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PFormLetterInsertTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PFormLetterInsertTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6505,23 +6631,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaMExtractMaster(out PFormLetterInsertTable AData, Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterInsertTable LoadViaMExtractMaster(Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterInsertTable();
-            LoadViaForeignKey(PFormLetterInsertTable.TableId, MExtractMasterTable.TableId, AData, new string[1]{"m_extract_id_i"},
+            PFormLetterInsertTable Data = new PFormLetterInsertTable();
+            LoadViaForeignKey(PFormLetterInsertTable.TableId, MExtractMasterTable.TableId, Data, new string[1]{"m_extract_id_i"},
                 new System.Object[1]{AExtractId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaMExtractMaster(out PFormLetterInsertTable AData, Int32 AExtractId, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaMExtractMaster(Int32 AExtractId, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMaster(out AData, AExtractId, null, ATransaction, null, 0, 0);
+            return LoadViaMExtractMaster(AExtractId, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractMaster(out PFormLetterInsertTable AData, Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaMExtractMaster(Int32 AExtractId, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMaster(out AData, AExtractId, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractMaster(AExtractId, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6544,29 +6671,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out PFormLetterInsertTable AData, MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterInsertTable LoadViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterInsertTable();
-            LoadViaForeignKey(PFormLetterInsertTable.TableId, MExtractMasterTable.TableId, AData, new string[1]{"m_extract_id_i"},
+            PFormLetterInsertTable Data = new PFormLetterInsertTable();
+            LoadViaForeignKey(PFormLetterInsertTable.TableId, MExtractMasterTable.TableId, Data, new string[1]{"m_extract_id_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out PFormLetterInsertTable AData, MExtractMasterRow ATemplateRow, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out PFormLetterInsertTable AData, MExtractMasterRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out PFormLetterInsertTable AData, MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaMExtractMasterTemplate(MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6589,23 +6717,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out PFormLetterInsertTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PFormLetterInsertTable LoadViaMExtractMasterTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PFormLetterInsertTable();
-            LoadViaForeignKey(PFormLetterInsertTable.TableId, MExtractMasterTable.TableId, AData, new string[1]{"m_extract_id_i"},
+            PFormLetterInsertTable Data = new PFormLetterInsertTable();
+            LoadViaForeignKey(PFormLetterInsertTable.TableId, MExtractMasterTable.TableId, Data, new string[1]{"m_extract_id_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out PFormLetterInsertTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaMExtractMasterTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaMExtractMasterTemplate(out PFormLetterInsertTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PFormLetterInsertTable LoadViaMExtractMasterTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaMExtractMasterTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaMExtractMasterTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6684,22 +6813,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PLabelTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLabelTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PLabelTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PLabelTable.TableId) + " FROM PUB_p_label" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PLabelTable Data = new PLabelTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PLabelTable.TableId) + " FROM PUB_p_label" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PLabelTable AData, TDBTransaction ATransaction)
+        public static PLabelTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PLabelTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLabelTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6721,22 +6851,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PLabelTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLabelTable LoadByPrimaryKey(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PLabelTable();
-            LoadByPrimaryKey(PLabelTable.TableId, AData, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PLabelTable Data = new PLabelTable();
+            LoadByPrimaryKey(PLabelTable.TableId, Data, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PLabelTable AData, String ACode, TDBTransaction ATransaction)
+        public static PLabelTable LoadByPrimaryKey(String ACode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PLabelTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLabelTable LoadByPrimaryKey(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6758,28 +6889,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLabelTable AData, PLabelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLabelTable LoadUsingTemplate(PLabelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PLabelTable();
-            LoadUsingTemplate(PLabelTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PLabelTable Data = new PLabelTable();
+            LoadUsingTemplate(PLabelTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLabelTable AData, PLabelRow ATemplateRow, TDBTransaction ATransaction)
+        public static PLabelTable LoadUsingTemplate(PLabelRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLabelTable AData, PLabelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLabelTable LoadUsingTemplate(PLabelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLabelTable AData, PLabelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLabelTable LoadUsingTemplate(PLabelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6801,22 +6933,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLabelTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PLabelTable();
-            LoadUsingTemplate(PLabelTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PLabelTable Data = new PLabelTable();
+            LoadUsingTemplate(PLabelTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLabelTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PLabelTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLabelTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6865,23 +6998,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSForm(out PLabelTable AData, String AFormName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLabelTable LoadViaSForm(String AFormName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PLabelTable();
-            LoadViaForeignKey(PLabelTable.TableId, SFormTable.TableId, AData, new string[1]{"s_form_name_c"},
+            PLabelTable Data = new PLabelTable();
+            LoadViaForeignKey(PLabelTable.TableId, SFormTable.TableId, Data, new string[1]{"s_form_name_c"},
                 new System.Object[1]{AFormName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSForm(out PLabelTable AData, String AFormName, TDBTransaction ATransaction)
+        public static PLabelTable LoadViaSForm(String AFormName, TDBTransaction ATransaction)
         {
-            LoadViaSForm(out AData, AFormName, null, ATransaction, null, 0, 0);
+            return LoadViaSForm(AFormName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSForm(out PLabelTable AData, String AFormName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLabelTable LoadViaSForm(String AFormName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSForm(out AData, AFormName, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSForm(AFormName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6904,29 +7038,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSFormTemplate(out PLabelTable AData, SFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLabelTable LoadViaSFormTemplate(SFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PLabelTable();
-            LoadViaForeignKey(PLabelTable.TableId, SFormTable.TableId, AData, new string[1]{"s_form_name_c"},
+            PLabelTable Data = new PLabelTable();
+            LoadViaForeignKey(PLabelTable.TableId, SFormTable.TableId, Data, new string[1]{"s_form_name_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSFormTemplate(out PLabelTable AData, SFormRow ATemplateRow, TDBTransaction ATransaction)
+        public static PLabelTable LoadViaSFormTemplate(SFormRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaSFormTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaSFormTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSFormTemplate(out PLabelTable AData, SFormRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLabelTable LoadViaSFormTemplate(SFormRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSFormTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSFormTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSFormTemplate(out PLabelTable AData, SFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLabelTable LoadViaSFormTemplate(SFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSFormTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSFormTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6949,23 +7084,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSFormTemplate(out PLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLabelTable LoadViaSFormTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PLabelTable();
-            LoadViaForeignKey(PLabelTable.TableId, SFormTable.TableId, AData, new string[1]{"s_form_name_c"},
+            PLabelTable Data = new PLabelTable();
+            LoadViaForeignKey(PLabelTable.TableId, SFormTable.TableId, Data, new string[1]{"s_form_name_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSFormTemplate(out PLabelTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PLabelTable LoadViaSFormTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaSFormTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaSFormTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSFormTemplate(out PLabelTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLabelTable LoadViaSFormTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSFormTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSFormTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7044,22 +7180,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PMergeFormTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMergeFormTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMergeFormTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PMergeFormTable.TableId) + " FROM PUB_p_merge_form" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PMergeFormTable Data = new PMergeFormTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PMergeFormTable.TableId) + " FROM PUB_p_merge_form" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PMergeFormTable AData, TDBTransaction ATransaction)
+        public static PMergeFormTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PMergeFormTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFormTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7081,22 +7218,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PMergeFormTable AData, String AMergeFormName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMergeFormTable LoadByPrimaryKey(String AMergeFormName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMergeFormTable();
-            LoadByPrimaryKey(PMergeFormTable.TableId, AData, new System.Object[1]{AMergeFormName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PMergeFormTable Data = new PMergeFormTable();
+            LoadByPrimaryKey(PMergeFormTable.TableId, Data, new System.Object[1]{AMergeFormName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PMergeFormTable AData, String AMergeFormName, TDBTransaction ATransaction)
+        public static PMergeFormTable LoadByPrimaryKey(String AMergeFormName, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AMergeFormName, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AMergeFormName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PMergeFormTable AData, String AMergeFormName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFormTable LoadByPrimaryKey(String AMergeFormName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AMergeFormName, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AMergeFormName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7118,28 +7256,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFormTable AData, PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMergeFormTable LoadUsingTemplate(PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMergeFormTable();
-            LoadUsingTemplate(PMergeFormTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PMergeFormTable Data = new PMergeFormTable();
+            LoadUsingTemplate(PMergeFormTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFormTable AData, PMergeFormRow ATemplateRow, TDBTransaction ATransaction)
+        public static PMergeFormTable LoadUsingTemplate(PMergeFormRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFormTable AData, PMergeFormRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFormTable LoadUsingTemplate(PMergeFormRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFormTable AData, PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFormTable LoadUsingTemplate(PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7161,22 +7300,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFormTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMergeFormTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMergeFormTable();
-            LoadUsingTemplate(PMergeFormTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PMergeFormTable Data = new PMergeFormTable();
+            LoadUsingTemplate(PMergeFormTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFormTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PMergeFormTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFormTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFormTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7260,22 +7400,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PMergeFieldTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMergeFieldTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMergeFieldTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PMergeFieldTable.TableId) + " FROM PUB_p_merge_field" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PMergeFieldTable Data = new PMergeFieldTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PMergeFieldTable.TableId) + " FROM PUB_p_merge_field" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PMergeFieldTable AData, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PMergeFieldTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7297,22 +7438,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PMergeFieldTable AData, String AMergeFormName, String AMergeFieldName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMergeFieldTable LoadByPrimaryKey(String AMergeFormName, String AMergeFieldName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMergeFieldTable();
-            LoadByPrimaryKey(PMergeFieldTable.TableId, AData, new System.Object[2]{AMergeFormName, AMergeFieldName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PMergeFieldTable Data = new PMergeFieldTable();
+            LoadByPrimaryKey(PMergeFieldTable.TableId, Data, new System.Object[2]{AMergeFormName, AMergeFieldName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PMergeFieldTable AData, String AMergeFormName, String AMergeFieldName, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadByPrimaryKey(String AMergeFormName, String AMergeFieldName, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AMergeFormName, AMergeFieldName, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AMergeFormName, AMergeFieldName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PMergeFieldTable AData, String AMergeFormName, String AMergeFieldName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadByPrimaryKey(String AMergeFormName, String AMergeFieldName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AMergeFormName, AMergeFieldName, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AMergeFormName, AMergeFieldName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7334,28 +7476,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFieldTable AData, PMergeFieldRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMergeFieldTable LoadUsingTemplate(PMergeFieldRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMergeFieldTable();
-            LoadUsingTemplate(PMergeFieldTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PMergeFieldTable Data = new PMergeFieldTable();
+            LoadUsingTemplate(PMergeFieldTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFieldTable AData, PMergeFieldRow ATemplateRow, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadUsingTemplate(PMergeFieldRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFieldTable AData, PMergeFieldRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadUsingTemplate(PMergeFieldRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFieldTable AData, PMergeFieldRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadUsingTemplate(PMergeFieldRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7377,22 +7520,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFieldTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMergeFieldTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMergeFieldTable();
-            LoadUsingTemplate(PMergeFieldTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PMergeFieldTable Data = new PMergeFieldTable();
+            LoadUsingTemplate(PMergeFieldTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFieldTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMergeFieldTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7441,23 +7585,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMergeForm(out PMergeFieldTable AData, String AMergeFormName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMergeFieldTable LoadViaPMergeForm(String AMergeFormName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMergeFieldTable();
-            LoadViaForeignKey(PMergeFieldTable.TableId, PMergeFormTable.TableId, AData, new string[1]{"p_merge_form_name_c"},
+            PMergeFieldTable Data = new PMergeFieldTable();
+            LoadViaForeignKey(PMergeFieldTable.TableId, PMergeFormTable.TableId, Data, new string[1]{"p_merge_form_name_c"},
                 new System.Object[1]{AMergeFormName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMergeForm(out PMergeFieldTable AData, String AMergeFormName, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadViaPMergeForm(String AMergeFormName, TDBTransaction ATransaction)
         {
-            LoadViaPMergeForm(out AData, AMergeFormName, null, ATransaction, null, 0, 0);
+            return LoadViaPMergeForm(AMergeFormName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMergeForm(out PMergeFieldTable AData, String AMergeFormName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadViaPMergeForm(String AMergeFormName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMergeForm(out AData, AMergeFormName, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMergeForm(AMergeFormName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7480,29 +7625,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMergeFormTemplate(out PMergeFieldTable AData, PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMergeFieldTable LoadViaPMergeFormTemplate(PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMergeFieldTable();
-            LoadViaForeignKey(PMergeFieldTable.TableId, PMergeFormTable.TableId, AData, new string[1]{"p_merge_form_name_c"},
+            PMergeFieldTable Data = new PMergeFieldTable();
+            LoadViaForeignKey(PMergeFieldTable.TableId, PMergeFormTable.TableId, Data, new string[1]{"p_merge_form_name_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMergeFormTemplate(out PMergeFieldTable AData, PMergeFormRow ATemplateRow, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadViaPMergeFormTemplate(PMergeFormRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPMergeFormTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPMergeFormTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMergeFormTemplate(out PMergeFieldTable AData, PMergeFormRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadViaPMergeFormTemplate(PMergeFormRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMergeFormTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMergeFormTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMergeFormTemplate(out PMergeFieldTable AData, PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadViaPMergeFormTemplate(PMergeFormRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMergeFormTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMergeFormTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7525,23 +7671,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMergeFormTemplate(out PMergeFieldTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMergeFieldTable LoadViaPMergeFormTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMergeFieldTable();
-            LoadViaForeignKey(PMergeFieldTable.TableId, PMergeFormTable.TableId, AData, new string[1]{"p_merge_form_name_c"},
+            PMergeFieldTable Data = new PMergeFieldTable();
+            LoadViaForeignKey(PMergeFieldTable.TableId, PMergeFormTable.TableId, Data, new string[1]{"p_merge_form_name_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMergeFormTemplate(out PMergeFieldTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadViaPMergeFormTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPMergeFormTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPMergeFormTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMergeFormTemplate(out PMergeFieldTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMergeFieldTable LoadViaPMergeFormTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMergeFormTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMergeFormTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7620,22 +7767,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PPostcodeRangeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPostcodeRangeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPostcodeRangeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PPostcodeRangeTable.TableId) + " FROM PUB_p_postcode_range" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PPostcodeRangeTable Data = new PPostcodeRangeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PPostcodeRangeTable.TableId) + " FROM PUB_p_postcode_range" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PPostcodeRangeTable AData, TDBTransaction ATransaction)
+        public static PPostcodeRangeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PPostcodeRangeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRangeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7657,22 +7805,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPostcodeRangeTable AData, String ARange, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPostcodeRangeTable LoadByPrimaryKey(String ARange, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPostcodeRangeTable();
-            LoadByPrimaryKey(PPostcodeRangeTable.TableId, AData, new System.Object[1]{ARange}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPostcodeRangeTable Data = new PPostcodeRangeTable();
+            LoadByPrimaryKey(PPostcodeRangeTable.TableId, Data, new System.Object[1]{ARange}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPostcodeRangeTable AData, String ARange, TDBTransaction ATransaction)
+        public static PPostcodeRangeTable LoadByPrimaryKey(String ARange, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ARange, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ARange, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPostcodeRangeTable AData, String ARange, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRangeTable LoadByPrimaryKey(String ARange, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ARange, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ARange, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7694,28 +7843,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRangeTable AData, PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPostcodeRangeTable LoadUsingTemplate(PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPostcodeRangeTable();
-            LoadUsingTemplate(PPostcodeRangeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPostcodeRangeTable Data = new PPostcodeRangeTable();
+            LoadUsingTemplate(PPostcodeRangeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRangeTable AData, PPostcodeRangeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPostcodeRangeTable LoadUsingTemplate(PPostcodeRangeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRangeTable AData, PPostcodeRangeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRangeTable LoadUsingTemplate(PPostcodeRangeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRangeTable AData, PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRangeTable LoadUsingTemplate(PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7737,22 +7887,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRangeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPostcodeRangeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPostcodeRangeTable();
-            LoadUsingTemplate(PPostcodeRangeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPostcodeRangeTable Data = new PPostcodeRangeTable();
+            LoadUsingTemplate(PPostcodeRangeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRangeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPostcodeRangeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRangeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRangeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7836,22 +7987,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PPostcodeRegionTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPostcodeRegionTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPostcodeRegionTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PPostcodeRegionTable.TableId) + " FROM PUB_p_postcode_region" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PPostcodeRegionTable Data = new PPostcodeRegionTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PPostcodeRegionTable.TableId) + " FROM PUB_p_postcode_region" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PPostcodeRegionTable AData, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PPostcodeRegionTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7873,22 +8025,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPostcodeRegionTable AData, String ARegion, String ARange, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPostcodeRegionTable LoadByPrimaryKey(String ARegion, String ARange, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPostcodeRegionTable();
-            LoadByPrimaryKey(PPostcodeRegionTable.TableId, AData, new System.Object[2]{ARegion, ARange}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPostcodeRegionTable Data = new PPostcodeRegionTable();
+            LoadByPrimaryKey(PPostcodeRegionTable.TableId, Data, new System.Object[2]{ARegion, ARange}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPostcodeRegionTable AData, String ARegion, String ARange, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadByPrimaryKey(String ARegion, String ARange, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ARegion, ARange, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ARegion, ARange, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPostcodeRegionTable AData, String ARegion, String ARange, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadByPrimaryKey(String ARegion, String ARange, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ARegion, ARange, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ARegion, ARange, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7910,28 +8063,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRegionTable AData, PPostcodeRegionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPostcodeRegionTable LoadUsingTemplate(PPostcodeRegionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPostcodeRegionTable();
-            LoadUsingTemplate(PPostcodeRegionTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPostcodeRegionTable Data = new PPostcodeRegionTable();
+            LoadUsingTemplate(PPostcodeRegionTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRegionTable AData, PPostcodeRegionRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadUsingTemplate(PPostcodeRegionRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRegionTable AData, PPostcodeRegionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadUsingTemplate(PPostcodeRegionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRegionTable AData, PPostcodeRegionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadUsingTemplate(PPostcodeRegionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7953,22 +8107,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRegionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPostcodeRegionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPostcodeRegionTable();
-            LoadUsingTemplate(PPostcodeRegionTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPostcodeRegionTable Data = new PPostcodeRegionTable();
+            LoadUsingTemplate(PPostcodeRegionTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRegionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPostcodeRegionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -8017,23 +8172,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPostcodeRange(out PPostcodeRegionTable AData, String ARange, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPostcodeRegionTable LoadViaPPostcodeRange(String ARange, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPostcodeRegionTable();
-            LoadViaForeignKey(PPostcodeRegionTable.TableId, PPostcodeRangeTable.TableId, AData, new string[1]{"p_range_c"},
+            PPostcodeRegionTable Data = new PPostcodeRegionTable();
+            LoadViaForeignKey(PPostcodeRegionTable.TableId, PPostcodeRangeTable.TableId, Data, new string[1]{"p_range_c"},
                 new System.Object[1]{ARange}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPostcodeRange(out PPostcodeRegionTable AData, String ARange, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadViaPPostcodeRange(String ARange, TDBTransaction ATransaction)
         {
-            LoadViaPPostcodeRange(out AData, ARange, null, ATransaction, null, 0, 0);
+            return LoadViaPPostcodeRange(ARange, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPostcodeRange(out PPostcodeRegionTable AData, String ARange, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadViaPPostcodeRange(String ARange, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPostcodeRange(out AData, ARange, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPostcodeRange(ARange, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8056,29 +8212,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPostcodeRangeTemplate(out PPostcodeRegionTable AData, PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPostcodeRegionTable LoadViaPPostcodeRangeTemplate(PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPostcodeRegionTable();
-            LoadViaForeignKey(PPostcodeRegionTable.TableId, PPostcodeRangeTable.TableId, AData, new string[1]{"p_range_c"},
+            PPostcodeRegionTable Data = new PPostcodeRegionTable();
+            LoadViaForeignKey(PPostcodeRegionTable.TableId, PPostcodeRangeTable.TableId, Data, new string[1]{"p_range_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPostcodeRangeTemplate(out PPostcodeRegionTable AData, PPostcodeRangeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadViaPPostcodeRangeTemplate(PPostcodeRangeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPostcodeRangeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPostcodeRangeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPostcodeRangeTemplate(out PPostcodeRegionTable AData, PPostcodeRangeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadViaPPostcodeRangeTemplate(PPostcodeRangeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPostcodeRangeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPostcodeRangeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPostcodeRangeTemplate(out PPostcodeRegionTable AData, PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadViaPPostcodeRangeTemplate(PPostcodeRangeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPostcodeRangeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPostcodeRangeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8101,23 +8258,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPostcodeRangeTemplate(out PPostcodeRegionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPostcodeRegionTable LoadViaPPostcodeRangeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPostcodeRegionTable();
-            LoadViaForeignKey(PPostcodeRegionTable.TableId, PPostcodeRangeTable.TableId, AData, new string[1]{"p_range_c"},
+            PPostcodeRegionTable Data = new PPostcodeRegionTable();
+            LoadViaForeignKey(PPostcodeRegionTable.TableId, PPostcodeRangeTable.TableId, Data, new string[1]{"p_range_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPostcodeRangeTemplate(out PPostcodeRegionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadViaPPostcodeRangeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPostcodeRangeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPostcodeRangeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPostcodeRangeTemplate(out PPostcodeRegionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPostcodeRegionTable LoadViaPPostcodeRangeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPostcodeRangeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPostcodeRangeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8196,22 +8354,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PPublicationTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PPublicationTable.TableId) + " FROM PUB_p_publication" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PPublicationTable Data = new PPublicationTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PPublicationTable.TableId) + " FROM PUB_p_publication" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PPublicationTable AData, TDBTransaction ATransaction)
+        public static PPublicationTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PPublicationTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -8233,22 +8392,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPublicationTable AData, String APublicationCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationTable LoadByPrimaryKey(String APublicationCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationTable();
-            LoadByPrimaryKey(PPublicationTable.TableId, AData, new System.Object[1]{APublicationCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPublicationTable Data = new PPublicationTable();
+            LoadByPrimaryKey(PPublicationTable.TableId, Data, new System.Object[1]{APublicationCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPublicationTable AData, String APublicationCode, TDBTransaction ATransaction)
+        public static PPublicationTable LoadByPrimaryKey(String APublicationCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APublicationCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APublicationCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPublicationTable AData, String APublicationCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadByPrimaryKey(String APublicationCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APublicationCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APublicationCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -8270,28 +8430,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationTable AData, PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationTable LoadUsingTemplate(PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationTable();
-            LoadUsingTemplate(PPublicationTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPublicationTable Data = new PPublicationTable();
+            LoadUsingTemplate(PPublicationTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationTable AData, PPublicationRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPublicationTable LoadUsingTemplate(PPublicationRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationTable AData, PPublicationRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadUsingTemplate(PPublicationRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationTable AData, PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadUsingTemplate(PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -8313,22 +8474,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationTable();
-            LoadUsingTemplate(PPublicationTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPublicationTable Data = new PPublicationTable();
+            LoadUsingTemplate(PPublicationTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPublicationTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -8377,23 +8539,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAFrequency(out PPublicationTable AData, String AFrequencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationTable LoadViaAFrequency(String AFrequencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationTable();
-            LoadViaForeignKey(PPublicationTable.TableId, AFrequencyTable.TableId, AData, new string[1]{"a_frequency_code_c"},
+            PPublicationTable Data = new PPublicationTable();
+            LoadViaForeignKey(PPublicationTable.TableId, AFrequencyTable.TableId, Data, new string[1]{"a_frequency_code_c"},
                 new System.Object[1]{AFrequencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAFrequency(out PPublicationTable AData, String AFrequencyCode, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaAFrequency(String AFrequencyCode, TDBTransaction ATransaction)
         {
-            LoadViaAFrequency(out AData, AFrequencyCode, null, ATransaction, null, 0, 0);
+            return LoadViaAFrequency(AFrequencyCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAFrequency(out PPublicationTable AData, String AFrequencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaAFrequency(String AFrequencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAFrequency(out AData, AFrequencyCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAFrequency(AFrequencyCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8416,29 +8579,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAFrequencyTemplate(out PPublicationTable AData, AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationTable LoadViaAFrequencyTemplate(AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationTable();
-            LoadViaForeignKey(PPublicationTable.TableId, AFrequencyTable.TableId, AData, new string[1]{"a_frequency_code_c"},
+            PPublicationTable Data = new PPublicationTable();
+            LoadViaForeignKey(PPublicationTable.TableId, AFrequencyTable.TableId, Data, new string[1]{"a_frequency_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAFrequencyTemplate(out PPublicationTable AData, AFrequencyRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaAFrequencyTemplate(AFrequencyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAFrequencyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAFrequencyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAFrequencyTemplate(out PPublicationTable AData, AFrequencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaAFrequencyTemplate(AFrequencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAFrequencyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAFrequencyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAFrequencyTemplate(out PPublicationTable AData, AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaAFrequencyTemplate(AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAFrequencyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAFrequencyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8461,23 +8625,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAFrequencyTemplate(out PPublicationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationTable LoadViaAFrequencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationTable();
-            LoadViaForeignKey(PPublicationTable.TableId, AFrequencyTable.TableId, AData, new string[1]{"a_frequency_code_c"},
+            PPublicationTable Data = new PPublicationTable();
+            LoadViaForeignKey(PPublicationTable.TableId, AFrequencyTable.TableId, Data, new string[1]{"a_frequency_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAFrequencyTemplate(out PPublicationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaAFrequencyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAFrequencyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAFrequencyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAFrequencyTemplate(out PPublicationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaAFrequencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAFrequencyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAFrequencyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8521,23 +8686,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out PPublicationTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationTable();
-            LoadViaForeignKey(PPublicationTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_publication_language_c"},
+            PPublicationTable Data = new PPublicationTable();
+            LoadViaForeignKey(PPublicationTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_publication_language_c"},
                 new System.Object[1]{ALanguageCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out PPublicationTable AData, String ALanguageCode, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPLanguage(String ALanguageCode, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out PPublicationTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8560,29 +8726,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PPublicationTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationTable();
-            LoadViaForeignKey(PPublicationTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_publication_language_c"},
+            PPublicationTable Data = new PPublicationTable();
+            LoadViaForeignKey(PPublicationTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_publication_language_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PPublicationTable AData, PLanguageRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PPublicationTable AData, PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PPublicationTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8605,23 +8772,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PPublicationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationTable();
-            LoadViaForeignKey(PPublicationTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_publication_language_c"},
+            PPublicationTable Data = new PPublicationTable();
+            LoadViaForeignKey(PPublicationTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_publication_language_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PPublicationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out PPublicationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8670,25 +8838,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PPublicationTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PPublicationTable();
-            FillDataSet.Tables.Add(AData);
+            PPublicationTable Data = new PPublicationTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPartner(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PPublicationTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PPublicationTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8715,31 +8884,32 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPublicationTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PPublicationTable();
-            FillDataSet.Tables.Add(AData);
+            PPublicationTable Data = new PPublicationTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPartnerTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPublicationTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPublicationTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPublicationTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8766,25 +8936,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPublicationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PPublicationTable();
-            FillDataSet.Tables.Add(AData);
+            PPublicationTable Data = new PPublicationTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPartnerTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPublicationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPublicationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -8871,22 +9042,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PPublicationCostTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationCostTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationCostTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PPublicationCostTable.TableId) + " FROM PUB_p_publication_cost" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PPublicationCostTable Data = new PPublicationCostTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PPublicationCostTable.TableId) + " FROM PUB_p_publication_cost" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PPublicationCostTable AData, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PPublicationCostTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -8908,22 +9080,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPublicationCostTable AData, String APublicationCode, System.DateTime ADateEffective, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationCostTable LoadByPrimaryKey(String APublicationCode, System.DateTime ADateEffective, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationCostTable();
-            LoadByPrimaryKey(PPublicationCostTable.TableId, AData, new System.Object[2]{APublicationCode, ADateEffective}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPublicationCostTable Data = new PPublicationCostTable();
+            LoadByPrimaryKey(PPublicationCostTable.TableId, Data, new System.Object[2]{APublicationCode, ADateEffective}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPublicationCostTable AData, String APublicationCode, System.DateTime ADateEffective, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadByPrimaryKey(String APublicationCode, System.DateTime ADateEffective, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APublicationCode, ADateEffective, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APublicationCode, ADateEffective, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPublicationCostTable AData, String APublicationCode, System.DateTime ADateEffective, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadByPrimaryKey(String APublicationCode, System.DateTime ADateEffective, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APublicationCode, ADateEffective, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APublicationCode, ADateEffective, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -8945,28 +9118,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationCostTable AData, PPublicationCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationCostTable LoadUsingTemplate(PPublicationCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationCostTable();
-            LoadUsingTemplate(PPublicationCostTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPublicationCostTable Data = new PPublicationCostTable();
+            LoadUsingTemplate(PPublicationCostTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationCostTable AData, PPublicationCostRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadUsingTemplate(PPublicationCostRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationCostTable AData, PPublicationCostRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadUsingTemplate(PPublicationCostRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationCostTable AData, PPublicationCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadUsingTemplate(PPublicationCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -8988,22 +9162,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationCostTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationCostTable();
-            LoadUsingTemplate(PPublicationCostTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPublicationCostTable Data = new PPublicationCostTable();
+            LoadUsingTemplate(PPublicationCostTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPublicationCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -9052,23 +9227,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPublication(out PPublicationCostTable AData, String APublicationCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationCostTable LoadViaPPublication(String APublicationCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationCostTable();
-            LoadViaForeignKey(PPublicationCostTable.TableId, PPublicationTable.TableId, AData, new string[1]{"p_publication_code_c"},
+            PPublicationCostTable Data = new PPublicationCostTable();
+            LoadViaForeignKey(PPublicationCostTable.TableId, PPublicationTable.TableId, Data, new string[1]{"p_publication_code_c"},
                 new System.Object[1]{APublicationCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPublication(out PPublicationCostTable AData, String APublicationCode, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaPPublication(String APublicationCode, TDBTransaction ATransaction)
         {
-            LoadViaPPublication(out AData, APublicationCode, null, ATransaction, null, 0, 0);
+            return LoadViaPPublication(APublicationCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPublication(out PPublicationCostTable AData, String APublicationCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaPPublication(String APublicationCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPublication(out AData, APublicationCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPublication(APublicationCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -9091,29 +9267,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PPublicationCostTable AData, PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationCostTable LoadViaPPublicationTemplate(PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationCostTable();
-            LoadViaForeignKey(PPublicationCostTable.TableId, PPublicationTable.TableId, AData, new string[1]{"p_publication_code_c"},
+            PPublicationCostTable Data = new PPublicationCostTable();
+            LoadViaForeignKey(PPublicationCostTable.TableId, PPublicationTable.TableId, Data, new string[1]{"p_publication_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PPublicationCostTable AData, PPublicationRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaPPublicationTemplate(PPublicationRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPublicationTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPublicationTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PPublicationCostTable AData, PPublicationRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaPPublicationTemplate(PPublicationRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPublicationTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPublicationTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PPublicationCostTable AData, PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaPPublicationTemplate(PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPublicationTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPublicationTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -9136,23 +9313,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PPublicationCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationCostTable LoadViaPPublicationTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationCostTable();
-            LoadViaForeignKey(PPublicationCostTable.TableId, PPublicationTable.TableId, AData, new string[1]{"p_publication_code_c"},
+            PPublicationCostTable Data = new PPublicationCostTable();
+            LoadViaForeignKey(PPublicationCostTable.TableId, PPublicationTable.TableId, Data, new string[1]{"p_publication_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PPublicationCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaPPublicationTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPublicationTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPublicationTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PPublicationCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaPPublicationTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPublicationTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPublicationTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -9196,23 +9374,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out PPublicationCostTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationCostTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationCostTable();
-            LoadViaForeignKey(PPublicationCostTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"p_currency_code_c"},
+            PPublicationCostTable Data = new PPublicationCostTable();
+            LoadViaForeignKey(PPublicationCostTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"p_currency_code_c"},
                 new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out PPublicationCostTable AData, String ACurrencyCode, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaACurrency(String ACurrencyCode, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, null, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out PPublicationCostTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -9235,29 +9414,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PPublicationCostTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationCostTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationCostTable();
-            LoadViaForeignKey(PPublicationCostTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"p_currency_code_c"},
+            PPublicationCostTable Data = new PPublicationCostTable();
+            LoadViaForeignKey(PPublicationCostTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"p_currency_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PPublicationCostTable AData, ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PPublicationCostTable AData, ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PPublicationCostTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -9280,23 +9460,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PPublicationCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPublicationCostTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPublicationCostTable();
-            LoadViaForeignKey(PPublicationCostTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"p_currency_code_c"},
+            PPublicationCostTable Data = new PPublicationCostTable();
+            LoadViaForeignKey(PPublicationCostTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"p_currency_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PPublicationCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PPublicationCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPublicationCostTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -9375,22 +9556,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PReasonSubscriptionGivenTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PReasonSubscriptionGivenTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PReasonSubscriptionGivenTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PReasonSubscriptionGivenTable.TableId) + " FROM PUB_p_reason_subscription_given" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PReasonSubscriptionGivenTable Data = new PReasonSubscriptionGivenTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PReasonSubscriptionGivenTable.TableId) + " FROM PUB_p_reason_subscription_given" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PReasonSubscriptionGivenTable AData, TDBTransaction ATransaction)
+        public static PReasonSubscriptionGivenTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PReasonSubscriptionGivenTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PReasonSubscriptionGivenTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -9412,22 +9594,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PReasonSubscriptionGivenTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PReasonSubscriptionGivenTable LoadByPrimaryKey(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PReasonSubscriptionGivenTable();
-            LoadByPrimaryKey(PReasonSubscriptionGivenTable.TableId, AData, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PReasonSubscriptionGivenTable Data = new PReasonSubscriptionGivenTable();
+            LoadByPrimaryKey(PReasonSubscriptionGivenTable.TableId, Data, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PReasonSubscriptionGivenTable AData, String ACode, TDBTransaction ATransaction)
+        public static PReasonSubscriptionGivenTable LoadByPrimaryKey(String ACode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PReasonSubscriptionGivenTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PReasonSubscriptionGivenTable LoadByPrimaryKey(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -9449,28 +9632,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionGivenTable AData, PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PReasonSubscriptionGivenTable LoadUsingTemplate(PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PReasonSubscriptionGivenTable();
-            LoadUsingTemplate(PReasonSubscriptionGivenTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PReasonSubscriptionGivenTable Data = new PReasonSubscriptionGivenTable();
+            LoadUsingTemplate(PReasonSubscriptionGivenTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionGivenTable AData, PReasonSubscriptionGivenRow ATemplateRow, TDBTransaction ATransaction)
+        public static PReasonSubscriptionGivenTable LoadUsingTemplate(PReasonSubscriptionGivenRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionGivenTable AData, PReasonSubscriptionGivenRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PReasonSubscriptionGivenTable LoadUsingTemplate(PReasonSubscriptionGivenRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionGivenTable AData, PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PReasonSubscriptionGivenTable LoadUsingTemplate(PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -9492,22 +9676,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionGivenTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PReasonSubscriptionGivenTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PReasonSubscriptionGivenTable();
-            LoadUsingTemplate(PReasonSubscriptionGivenTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PReasonSubscriptionGivenTable Data = new PReasonSubscriptionGivenTable();
+            LoadUsingTemplate(PReasonSubscriptionGivenTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionGivenTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PReasonSubscriptionGivenTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionGivenTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PReasonSubscriptionGivenTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -9591,22 +9776,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PReasonSubscriptionCancelledTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PReasonSubscriptionCancelledTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PReasonSubscriptionCancelledTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PReasonSubscriptionCancelledTable.TableId) + " FROM PUB_p_reason_subscription_cancelled" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PReasonSubscriptionCancelledTable Data = new PReasonSubscriptionCancelledTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PReasonSubscriptionCancelledTable.TableId) + " FROM PUB_p_reason_subscription_cancelled" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PReasonSubscriptionCancelledTable AData, TDBTransaction ATransaction)
+        public static PReasonSubscriptionCancelledTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PReasonSubscriptionCancelledTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PReasonSubscriptionCancelledTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -9628,22 +9814,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PReasonSubscriptionCancelledTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PReasonSubscriptionCancelledTable LoadByPrimaryKey(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PReasonSubscriptionCancelledTable();
-            LoadByPrimaryKey(PReasonSubscriptionCancelledTable.TableId, AData, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PReasonSubscriptionCancelledTable Data = new PReasonSubscriptionCancelledTable();
+            LoadByPrimaryKey(PReasonSubscriptionCancelledTable.TableId, Data, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PReasonSubscriptionCancelledTable AData, String ACode, TDBTransaction ATransaction)
+        public static PReasonSubscriptionCancelledTable LoadByPrimaryKey(String ACode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PReasonSubscriptionCancelledTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PReasonSubscriptionCancelledTable LoadByPrimaryKey(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -9665,28 +9852,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionCancelledTable AData, PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PReasonSubscriptionCancelledTable LoadUsingTemplate(PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PReasonSubscriptionCancelledTable();
-            LoadUsingTemplate(PReasonSubscriptionCancelledTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PReasonSubscriptionCancelledTable Data = new PReasonSubscriptionCancelledTable();
+            LoadUsingTemplate(PReasonSubscriptionCancelledTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionCancelledTable AData, PReasonSubscriptionCancelledRow ATemplateRow, TDBTransaction ATransaction)
+        public static PReasonSubscriptionCancelledTable LoadUsingTemplate(PReasonSubscriptionCancelledRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionCancelledTable AData, PReasonSubscriptionCancelledRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PReasonSubscriptionCancelledTable LoadUsingTemplate(PReasonSubscriptionCancelledRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionCancelledTable AData, PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PReasonSubscriptionCancelledTable LoadUsingTemplate(PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -9708,22 +9896,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionCancelledTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PReasonSubscriptionCancelledTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PReasonSubscriptionCancelledTable();
-            LoadUsingTemplate(PReasonSubscriptionCancelledTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PReasonSubscriptionCancelledTable Data = new PReasonSubscriptionCancelledTable();
+            LoadUsingTemplate(PReasonSubscriptionCancelledTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionCancelledTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PReasonSubscriptionCancelledTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PReasonSubscriptionCancelledTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PReasonSubscriptionCancelledTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -9807,22 +9996,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PSubscriptionTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PSubscriptionTable.TableId) + " FROM PUB_p_subscription" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PSubscriptionTable Data = new PSubscriptionTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PSubscriptionTable.TableId) + " FROM PUB_p_subscription" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PSubscriptionTable AData, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PSubscriptionTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -9844,22 +10034,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PSubscriptionTable AData, String APublicationCode, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadByPrimaryKey(String APublicationCode, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadByPrimaryKey(PSubscriptionTable.TableId, AData, new System.Object[2]{APublicationCode, APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadByPrimaryKey(PSubscriptionTable.TableId, Data, new System.Object[2]{APublicationCode, APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PSubscriptionTable AData, String APublicationCode, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadByPrimaryKey(String APublicationCode, Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APublicationCode, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APublicationCode, APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PSubscriptionTable AData, String APublicationCode, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadByPrimaryKey(String APublicationCode, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APublicationCode, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APublicationCode, APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -9881,28 +10072,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PSubscriptionTable AData, PSubscriptionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadUsingTemplate(PSubscriptionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadUsingTemplate(PSubscriptionTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadUsingTemplate(PSubscriptionTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PSubscriptionTable AData, PSubscriptionRow ATemplateRow, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadUsingTemplate(PSubscriptionRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PSubscriptionTable AData, PSubscriptionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadUsingTemplate(PSubscriptionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PSubscriptionTable AData, PSubscriptionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadUsingTemplate(PSubscriptionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -9924,22 +10116,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadUsingTemplate(PSubscriptionTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadUsingTemplate(PSubscriptionTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -9988,23 +10181,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPublication(out PSubscriptionTable AData, String APublicationCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPPublication(String APublicationCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PPublicationTable.TableId, AData, new string[1]{"p_publication_code_c"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PPublicationTable.TableId, Data, new string[1]{"p_publication_code_c"},
                 new System.Object[1]{APublicationCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPublication(out PSubscriptionTable AData, String APublicationCode, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPublication(String APublicationCode, TDBTransaction ATransaction)
         {
-            LoadViaPPublication(out AData, APublicationCode, null, ATransaction, null, 0, 0);
+            return LoadViaPPublication(APublicationCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPublication(out PSubscriptionTable AData, String APublicationCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPublication(String APublicationCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPublication(out AData, APublicationCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPublication(APublicationCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10027,29 +10221,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PSubscriptionTable AData, PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPPublicationTemplate(PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PPublicationTable.TableId, AData, new string[1]{"p_publication_code_c"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PPublicationTable.TableId, Data, new string[1]{"p_publication_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PSubscriptionTable AData, PPublicationRow ATemplateRow, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPublicationTemplate(PPublicationRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPublicationTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPublicationTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PSubscriptionTable AData, PPublicationRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPublicationTemplate(PPublicationRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPublicationTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPublicationTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PSubscriptionTable AData, PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPublicationTemplate(PPublicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPublicationTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPublicationTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10072,23 +10267,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPPublicationTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PPublicationTable.TableId, AData, new string[1]{"p_publication_code_c"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PPublicationTable.TableId, Data, new string[1]{"p_publication_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPublicationTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPublicationTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPublicationTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPublicationTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPublicationTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPublicationTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPublicationTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10132,23 +10328,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPartnerKey(out PSubscriptionTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPPartnerPartnerKey(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPartnerKey(out PSubscriptionTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerPartnerKey(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPartnerKey(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPartnerKey(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPartnerKey(out PSubscriptionTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerPartnerKey(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPartnerKey(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPartnerKey(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10171,29 +10368,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPartnerKeyTemplate(out PSubscriptionTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPPartnerPartnerKeyTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPartnerKeyTemplate(out PSubscriptionTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerPartnerKeyTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPartnerKeyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPartnerKeyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPartnerKeyTemplate(out PSubscriptionTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerPartnerKeyTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPartnerKeyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPartnerKeyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPartnerKeyTemplate(out PSubscriptionTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerPartnerKeyTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPartnerKeyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPartnerKeyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10216,23 +10414,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPartnerKeyTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPPartnerPartnerKeyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPartnerKeyTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerPartnerKeyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPartnerKeyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPartnerKeyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPartnerKeyTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerPartnerKeyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPartnerKeyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPartnerKeyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10276,23 +10475,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerGiftFromKey(out PSubscriptionTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPPartnerGiftFromKey(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_gift_from_key_n"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_gift_from_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerGiftFromKey(out PSubscriptionTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerGiftFromKey(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerGiftFromKey(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerGiftFromKey(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerGiftFromKey(out PSubscriptionTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerGiftFromKey(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerGiftFromKey(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerGiftFromKey(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10315,29 +10515,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPPartnerGiftFromKeyTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_gift_from_key_n"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_gift_from_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerGiftFromKeyTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerGiftFromKeyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerGiftFromKeyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerGiftFromKeyTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerGiftFromKeyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerGiftFromKeyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerGiftFromKeyTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerGiftFromKeyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerGiftFromKeyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10360,23 +10561,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPPartnerGiftFromKeyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_gift_from_key_n"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_gift_from_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerGiftFromKeyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerGiftFromKeyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerGiftFromKeyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerGiftFromKeyTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPPartnerGiftFromKeyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerGiftFromKeyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerGiftFromKeyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10420,23 +10622,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionGiven(out PSubscriptionTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionGiven(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PReasonSubscriptionGivenTable.TableId, AData, new string[1]{"p_reason_subs_given_code_c"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PReasonSubscriptionGivenTable.TableId, Data, new string[1]{"p_reason_subs_given_code_c"},
                 new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionGiven(out PSubscriptionTable AData, String ACode, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionGiven(String ACode, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionGiven(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionGiven(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionGiven(out PSubscriptionTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionGiven(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionGiven(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionGiven(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10459,29 +10662,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionGivenTemplate(out PSubscriptionTable AData, PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionGivenTemplate(PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PReasonSubscriptionGivenTable.TableId, AData, new string[1]{"p_reason_subs_given_code_c"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PReasonSubscriptionGivenTable.TableId, Data, new string[1]{"p_reason_subs_given_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionGivenTemplate(out PSubscriptionTable AData, PReasonSubscriptionGivenRow ATemplateRow, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionGivenTemplate(PReasonSubscriptionGivenRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionGivenTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionGivenTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionGivenTemplate(out PSubscriptionTable AData, PReasonSubscriptionGivenRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionGivenTemplate(PReasonSubscriptionGivenRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionGivenTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionGivenTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionGivenTemplate(out PSubscriptionTable AData, PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionGivenTemplate(PReasonSubscriptionGivenRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionGivenTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionGivenTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10504,23 +10708,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionGivenTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionGivenTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PReasonSubscriptionGivenTable.TableId, AData, new string[1]{"p_reason_subs_given_code_c"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PReasonSubscriptionGivenTable.TableId, Data, new string[1]{"p_reason_subs_given_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionGivenTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionGivenTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionGivenTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionGivenTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionGivenTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionGivenTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionGivenTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionGivenTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10564,23 +10769,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionCancelled(out PSubscriptionTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionCancelled(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PReasonSubscriptionCancelledTable.TableId, AData, new string[1]{"p_reason_subs_cancelled_code_c"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PReasonSubscriptionCancelledTable.TableId, Data, new string[1]{"p_reason_subs_cancelled_code_c"},
                 new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionCancelled(out PSubscriptionTable AData, String ACode, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionCancelled(String ACode, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionCancelled(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionCancelled(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionCancelled(out PSubscriptionTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionCancelled(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionCancelled(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionCancelled(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10603,29 +10809,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionCancelledTemplate(out PSubscriptionTable AData, PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionCancelledTemplate(PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PReasonSubscriptionCancelledTable.TableId, AData, new string[1]{"p_reason_subs_cancelled_code_c"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PReasonSubscriptionCancelledTable.TableId, Data, new string[1]{"p_reason_subs_cancelled_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionCancelledTemplate(out PSubscriptionTable AData, PReasonSubscriptionCancelledRow ATemplateRow, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionCancelledTemplate(PReasonSubscriptionCancelledRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionCancelledTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionCancelledTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionCancelledTemplate(out PSubscriptionTable AData, PReasonSubscriptionCancelledRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionCancelledTemplate(PReasonSubscriptionCancelledRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionCancelledTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionCancelledTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionCancelledTemplate(out PSubscriptionTable AData, PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionCancelledTemplate(PReasonSubscriptionCancelledRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionCancelledTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionCancelledTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10648,23 +10855,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionCancelledTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionCancelledTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PSubscriptionTable();
-            LoadViaForeignKey(PSubscriptionTable.TableId, PReasonSubscriptionCancelledTable.TableId, AData, new string[1]{"p_reason_subs_cancelled_code_c"},
+            PSubscriptionTable Data = new PSubscriptionTable();
+            LoadViaForeignKey(PSubscriptionTable.TableId, PReasonSubscriptionCancelledTable.TableId, Data, new string[1]{"p_reason_subs_cancelled_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionCancelledTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionCancelledTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionCancelledTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionCancelledTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPReasonSubscriptionCancelledTemplate(out PSubscriptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PSubscriptionTable LoadViaPReasonSubscriptionCancelledTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPReasonSubscriptionCancelledTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPReasonSubscriptionCancelledTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -10743,22 +10951,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PContactAttributeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PContactAttributeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PContactAttributeTable.TableId) + " FROM PUB_p_contact_attribute" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PContactAttributeTable Data = new PContactAttributeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PContactAttributeTable.TableId) + " FROM PUB_p_contact_attribute" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PContactAttributeTable AData, TDBTransaction ATransaction)
+        public static PContactAttributeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PContactAttributeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -10780,22 +10989,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PContactAttributeTable AData, String AContactAttributeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeTable LoadByPrimaryKey(String AContactAttributeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PContactAttributeTable();
-            LoadByPrimaryKey(PContactAttributeTable.TableId, AData, new System.Object[1]{AContactAttributeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PContactAttributeTable Data = new PContactAttributeTable();
+            LoadByPrimaryKey(PContactAttributeTable.TableId, Data, new System.Object[1]{AContactAttributeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PContactAttributeTable AData, String AContactAttributeCode, TDBTransaction ATransaction)
+        public static PContactAttributeTable LoadByPrimaryKey(String AContactAttributeCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AContactAttributeCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AContactAttributeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PContactAttributeTable AData, String AContactAttributeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeTable LoadByPrimaryKey(String AContactAttributeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AContactAttributeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AContactAttributeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -10817,28 +11027,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeTable AData, PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeTable LoadUsingTemplate(PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PContactAttributeTable();
-            LoadUsingTemplate(PContactAttributeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PContactAttributeTable Data = new PContactAttributeTable();
+            LoadUsingTemplate(PContactAttributeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeTable AData, PContactAttributeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PContactAttributeTable LoadUsingTemplate(PContactAttributeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeTable AData, PContactAttributeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeTable LoadUsingTemplate(PContactAttributeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeTable AData, PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeTable LoadUsingTemplate(PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -10860,22 +11071,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PContactAttributeTable();
-            LoadUsingTemplate(PContactAttributeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PContactAttributeTable Data = new PContactAttributeTable();
+            LoadUsingTemplate(PContactAttributeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PContactAttributeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -10959,22 +11171,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PContactAttributeDetailTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeDetailTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PContactAttributeDetailTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PContactAttributeDetailTable.TableId) + " FROM PUB_p_contact_attribute_detail" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PContactAttributeDetailTable Data = new PContactAttributeDetailTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PContactAttributeDetailTable.TableId) + " FROM PUB_p_contact_attribute_detail" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PContactAttributeDetailTable AData, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PContactAttributeDetailTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -10996,22 +11209,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PContactAttributeDetailTable AData, String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeDetailTable LoadByPrimaryKey(String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PContactAttributeDetailTable();
-            LoadByPrimaryKey(PContactAttributeDetailTable.TableId, AData, new System.Object[2]{AContactAttributeCode, AContactAttrDetailCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PContactAttributeDetailTable Data = new PContactAttributeDetailTable();
+            LoadByPrimaryKey(PContactAttributeDetailTable.TableId, Data, new System.Object[2]{AContactAttributeCode, AContactAttrDetailCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PContactAttributeDetailTable AData, String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadByPrimaryKey(String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AContactAttributeCode, AContactAttrDetailCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AContactAttributeCode, AContactAttrDetailCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PContactAttributeDetailTable AData, String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadByPrimaryKey(String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AContactAttributeCode, AContactAttrDetailCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AContactAttributeCode, AContactAttrDetailCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -11033,28 +11247,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeDetailTable AData, PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeDetailTable LoadUsingTemplate(PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PContactAttributeDetailTable();
-            LoadUsingTemplate(PContactAttributeDetailTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PContactAttributeDetailTable Data = new PContactAttributeDetailTable();
+            LoadUsingTemplate(PContactAttributeDetailTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeDetailTable AData, PContactAttributeDetailRow ATemplateRow, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadUsingTemplate(PContactAttributeDetailRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeDetailTable AData, PContactAttributeDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadUsingTemplate(PContactAttributeDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeDetailTable AData, PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadUsingTemplate(PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -11076,22 +11291,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PContactAttributeDetailTable();
-            LoadUsingTemplate(PContactAttributeDetailTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PContactAttributeDetailTable Data = new PContactAttributeDetailTable();
+            LoadUsingTemplate(PContactAttributeDetailTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PContactAttributeDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -11140,23 +11356,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPContactAttribute(out PContactAttributeDetailTable AData, String AContactAttributeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeDetailTable LoadViaPContactAttribute(String AContactAttributeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PContactAttributeDetailTable();
-            LoadViaForeignKey(PContactAttributeDetailTable.TableId, PContactAttributeTable.TableId, AData, new string[1]{"p_contact_attribute_code_c"},
+            PContactAttributeDetailTable Data = new PContactAttributeDetailTable();
+            LoadViaForeignKey(PContactAttributeDetailTable.TableId, PContactAttributeTable.TableId, Data, new string[1]{"p_contact_attribute_code_c"},
                 new System.Object[1]{AContactAttributeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPContactAttribute(out PContactAttributeDetailTable AData, String AContactAttributeCode, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPContactAttribute(String AContactAttributeCode, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttribute(out AData, AContactAttributeCode, null, ATransaction, null, 0, 0);
+            return LoadViaPContactAttribute(AContactAttributeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttribute(out PContactAttributeDetailTable AData, String AContactAttributeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPContactAttribute(String AContactAttributeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttribute(out AData, AContactAttributeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttribute(AContactAttributeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -11179,29 +11396,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PContactAttributeDetailTable AData, PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeDetailTable LoadViaPContactAttributeTemplate(PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PContactAttributeDetailTable();
-            LoadViaForeignKey(PContactAttributeDetailTable.TableId, PContactAttributeTable.TableId, AData, new string[1]{"p_contact_attribute_code_c"},
+            PContactAttributeDetailTable Data = new PContactAttributeDetailTable();
+            LoadViaForeignKey(PContactAttributeDetailTable.TableId, PContactAttributeTable.TableId, Data, new string[1]{"p_contact_attribute_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PContactAttributeDetailTable AData, PContactAttributeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPContactAttributeTemplate(PContactAttributeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PContactAttributeDetailTable AData, PContactAttributeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPContactAttributeTemplate(PContactAttributeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PContactAttributeDetailTable AData, PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPContactAttributeTemplate(PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -11224,23 +11442,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PContactAttributeDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeDetailTable LoadViaPContactAttributeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PContactAttributeDetailTable();
-            LoadViaForeignKey(PContactAttributeDetailTable.TableId, PContactAttributeTable.TableId, AData, new string[1]{"p_contact_attribute_code_c"},
+            PContactAttributeDetailTable Data = new PContactAttributeDetailTable();
+            LoadViaForeignKey(PContactAttributeDetailTable.TableId, PContactAttributeTable.TableId, Data, new string[1]{"p_contact_attribute_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PContactAttributeDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPContactAttributeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PContactAttributeDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPContactAttributeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -11289,25 +11508,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContact(out PContactAttributeDetailTable AData, Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeDetailTable LoadViaPPartnerContact(Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PContactAttributeDetailTable();
-            FillDataSet.Tables.Add(AData);
+            PContactAttributeDetailTable Data = new PContactAttributeDetailTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPartnerContact(FillDataSet, AContactId, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContact(out PContactAttributeDetailTable AData, Int32 AContactId, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPPartnerContact(Int32 AContactId, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContact(out AData, AContactId, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContact(AContactId, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContact(out PContactAttributeDetailTable AData, Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPPartnerContact(Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContact(out AData, AContactId, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContact(AContactId, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -11334,31 +11554,32 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PContactAttributeDetailTable AData, PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeDetailTable LoadViaPPartnerContactTemplate(PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PContactAttributeDetailTable();
-            FillDataSet.Tables.Add(AData);
+            PContactAttributeDetailTable Data = new PContactAttributeDetailTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPartnerContactTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PContactAttributeDetailTable AData, PPartnerContactRow ATemplateRow, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPPartnerContactTemplate(PPartnerContactRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContactTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContactTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PContactAttributeDetailTable AData, PPartnerContactRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPPartnerContactTemplate(PPartnerContactRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContactTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContactTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PContactAttributeDetailTable AData, PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPPartnerContactTemplate(PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContactTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContactTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -11385,25 +11606,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PContactAttributeDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PContactAttributeDetailTable LoadViaPPartnerContactTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PContactAttributeDetailTable();
-            FillDataSet.Tables.Add(AData);
+            PContactAttributeDetailTable Data = new PContactAttributeDetailTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPartnerContactTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PContactAttributeDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPPartnerContactTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContactTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContactTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PContactAttributeDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PContactAttributeDetailTable LoadViaPPartnerContactTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContactTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContactTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -11490,22 +11712,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PMethodOfContactTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMethodOfContactTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMethodOfContactTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PMethodOfContactTable.TableId) + " FROM PUB_p_method_of_contact" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PMethodOfContactTable Data = new PMethodOfContactTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PMethodOfContactTable.TableId) + " FROM PUB_p_method_of_contact" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PMethodOfContactTable AData, TDBTransaction ATransaction)
+        public static PMethodOfContactTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PMethodOfContactTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMethodOfContactTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -11527,22 +11750,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PMethodOfContactTable AData, String AMethodOfContactCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMethodOfContactTable LoadByPrimaryKey(String AMethodOfContactCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMethodOfContactTable();
-            LoadByPrimaryKey(PMethodOfContactTable.TableId, AData, new System.Object[1]{AMethodOfContactCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PMethodOfContactTable Data = new PMethodOfContactTable();
+            LoadByPrimaryKey(PMethodOfContactTable.TableId, Data, new System.Object[1]{AMethodOfContactCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PMethodOfContactTable AData, String AMethodOfContactCode, TDBTransaction ATransaction)
+        public static PMethodOfContactTable LoadByPrimaryKey(String AMethodOfContactCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AMethodOfContactCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AMethodOfContactCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PMethodOfContactTable AData, String AMethodOfContactCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMethodOfContactTable LoadByPrimaryKey(String AMethodOfContactCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AMethodOfContactCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AMethodOfContactCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -11564,28 +11788,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMethodOfContactTable AData, PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMethodOfContactTable LoadUsingTemplate(PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMethodOfContactTable();
-            LoadUsingTemplate(PMethodOfContactTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PMethodOfContactTable Data = new PMethodOfContactTable();
+            LoadUsingTemplate(PMethodOfContactTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMethodOfContactTable AData, PMethodOfContactRow ATemplateRow, TDBTransaction ATransaction)
+        public static PMethodOfContactTable LoadUsingTemplate(PMethodOfContactRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMethodOfContactTable AData, PMethodOfContactRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMethodOfContactTable LoadUsingTemplate(PMethodOfContactRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMethodOfContactTable AData, PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMethodOfContactTable LoadUsingTemplate(PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -11607,22 +11832,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMethodOfContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PMethodOfContactTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PMethodOfContactTable();
-            LoadUsingTemplate(PMethodOfContactTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PMethodOfContactTable Data = new PMethodOfContactTable();
+            LoadUsingTemplate(PMethodOfContactTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMethodOfContactTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PMethodOfContactTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PMethodOfContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PMethodOfContactTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -11706,22 +11932,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PPartnerContactTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PPartnerContactTable.TableId) + " FROM PUB_p_partner_contact" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PPartnerContactTable Data = new PPartnerContactTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PPartnerContactTable.TableId) + " FROM PUB_p_partner_contact" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PPartnerContactTable AData, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PPartnerContactTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -11743,22 +11970,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPartnerContactTable AData, Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadByPrimaryKey(Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadByPrimaryKey(PPartnerContactTable.TableId, AData, new System.Object[1]{AContactId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadByPrimaryKey(PPartnerContactTable.TableId, Data, new System.Object[1]{AContactId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPartnerContactTable AData, Int32 AContactId, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadByPrimaryKey(Int32 AContactId, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AContactId, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AContactId, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPartnerContactTable AData, Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadByPrimaryKey(Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AContactId, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AContactId, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -11780,28 +12008,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactTable AData, PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadUsingTemplate(PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadUsingTemplate(PPartnerContactTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadUsingTemplate(PPartnerContactTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactTable AData, PPartnerContactRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadUsingTemplate(PPartnerContactRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactTable AData, PPartnerContactRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadUsingTemplate(PPartnerContactRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactTable AData, PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadUsingTemplate(PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -11823,22 +12052,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadUsingTemplate(PPartnerContactTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadUsingTemplate(PPartnerContactTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -11887,23 +12117,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PPartnerContactTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PPartnerContactTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PPartnerContactTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -11926,29 +12157,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPartnerContactTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPartnerContactTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPartnerContactTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPartnerContactTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -11971,23 +12203,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12031,23 +12264,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMailing(out PPartnerContactTable AData, String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPMailing(String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, PMailingTable.TableId, AData, new string[1]{"p_mailing_code_c"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, PMailingTable.TableId, Data, new string[1]{"p_mailing_code_c"},
                 new System.Object[1]{AMailingCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMailing(out PPartnerContactTable AData, String AMailingCode, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMailing(String AMailingCode, TDBTransaction ATransaction)
         {
-            LoadViaPMailing(out AData, AMailingCode, null, ATransaction, null, 0, 0);
+            return LoadViaPMailing(AMailingCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMailing(out PPartnerContactTable AData, String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMailing(String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMailing(out AData, AMailingCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMailing(AMailingCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12070,29 +12304,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out PPartnerContactTable AData, PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPMailingTemplate(PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, PMailingTable.TableId, AData, new string[1]{"p_mailing_code_c"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, PMailingTable.TableId, Data, new string[1]{"p_mailing_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out PPartnerContactTable AData, PMailingRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMailingTemplate(PMailingRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out PPartnerContactTable AData, PMailingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMailingTemplate(PMailingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out PPartnerContactTable AData, PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMailingTemplate(PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12115,23 +12350,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPMailingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, PMailingTable.TableId, AData, new string[1]{"p_mailing_code_c"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, PMailingTable.TableId, Data, new string[1]{"p_mailing_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMailingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMailingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12175,23 +12411,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMethodOfContact(out PPartnerContactTable AData, String AMethodOfContactCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPMethodOfContact(String AMethodOfContactCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, PMethodOfContactTable.TableId, AData, new string[1]{"p_contact_code_c"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, PMethodOfContactTable.TableId, Data, new string[1]{"p_contact_code_c"},
                 new System.Object[1]{AMethodOfContactCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMethodOfContact(out PPartnerContactTable AData, String AMethodOfContactCode, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMethodOfContact(String AMethodOfContactCode, TDBTransaction ATransaction)
         {
-            LoadViaPMethodOfContact(out AData, AMethodOfContactCode, null, ATransaction, null, 0, 0);
+            return LoadViaPMethodOfContact(AMethodOfContactCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMethodOfContact(out PPartnerContactTable AData, String AMethodOfContactCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMethodOfContact(String AMethodOfContactCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMethodOfContact(out AData, AMethodOfContactCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMethodOfContact(AMethodOfContactCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12214,29 +12451,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMethodOfContactTemplate(out PPartnerContactTable AData, PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPMethodOfContactTemplate(PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, PMethodOfContactTable.TableId, AData, new string[1]{"p_contact_code_c"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, PMethodOfContactTable.TableId, Data, new string[1]{"p_contact_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMethodOfContactTemplate(out PPartnerContactTable AData, PMethodOfContactRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMethodOfContactTemplate(PMethodOfContactRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPMethodOfContactTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPMethodOfContactTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMethodOfContactTemplate(out PPartnerContactTable AData, PMethodOfContactRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMethodOfContactTemplate(PMethodOfContactRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMethodOfContactTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMethodOfContactTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMethodOfContactTemplate(out PPartnerContactTable AData, PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMethodOfContactTemplate(PMethodOfContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMethodOfContactTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMethodOfContactTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12259,23 +12497,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMethodOfContactTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPMethodOfContactTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, PMethodOfContactTable.TableId, AData, new string[1]{"p_contact_code_c"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, PMethodOfContactTable.TableId, Data, new string[1]{"p_contact_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMethodOfContactTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMethodOfContactTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPMethodOfContactTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPMethodOfContactTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMethodOfContactTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPMethodOfContactTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMethodOfContactTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMethodOfContactTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12319,23 +12558,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSModule(out PPartnerContactTable AData, String AModuleId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaSModule(String AModuleId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, SModuleTable.TableId, AData, new string[1]{"s_module_id_c"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, SModuleTable.TableId, Data, new string[1]{"s_module_id_c"},
                 new System.Object[1]{AModuleId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSModule(out PPartnerContactTable AData, String AModuleId, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSModule(String AModuleId, TDBTransaction ATransaction)
         {
-            LoadViaSModule(out AData, AModuleId, null, ATransaction, null, 0, 0);
+            return LoadViaSModule(AModuleId, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSModule(out PPartnerContactTable AData, String AModuleId, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSModule(String AModuleId, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSModule(out AData, AModuleId, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSModule(AModuleId, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12358,29 +12598,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSModuleTemplate(out PPartnerContactTable AData, SModuleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaSModuleTemplate(SModuleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, SModuleTable.TableId, AData, new string[1]{"s_module_id_c"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, SModuleTable.TableId, Data, new string[1]{"s_module_id_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSModuleTemplate(out PPartnerContactTable AData, SModuleRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSModuleTemplate(SModuleRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaSModuleTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaSModuleTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSModuleTemplate(out PPartnerContactTable AData, SModuleRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSModuleTemplate(SModuleRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSModuleTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSModuleTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSModuleTemplate(out PPartnerContactTable AData, SModuleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSModuleTemplate(SModuleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSModuleTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSModuleTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12403,23 +12644,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSModuleTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaSModuleTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, SModuleTable.TableId, AData, new string[1]{"s_module_id_c"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, SModuleTable.TableId, Data, new string[1]{"s_module_id_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSModuleTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSModuleTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaSModuleTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaSModuleTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSModuleTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSModuleTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSModuleTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSModuleTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12463,23 +12705,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSUser(out PPartnerContactTable AData, String AUserId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaSUser(String AUserId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, SUserTable.TableId, AData, new string[1]{"s_user_id_c"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, SUserTable.TableId, Data, new string[1]{"s_user_id_c"},
                 new System.Object[1]{AUserId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSUser(out PPartnerContactTable AData, String AUserId, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSUser(String AUserId, TDBTransaction ATransaction)
         {
-            LoadViaSUser(out AData, AUserId, null, ATransaction, null, 0, 0);
+            return LoadViaSUser(AUserId, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUser(out PPartnerContactTable AData, String AUserId, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSUser(String AUserId, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUser(out AData, AUserId, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUser(AUserId, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12502,29 +12745,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PPartnerContactTable AData, SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaSUserTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, SUserTable.TableId, AData, new string[1]{"s_user_id_c"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, SUserTable.TableId, Data, new string[1]{"s_user_id_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PPartnerContactTable AData, SUserRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSUserTemplate(SUserRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PPartnerContactTable AData, SUserRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSUserTemplate(SUserRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PPartnerContactTable AData, SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSUserTemplate(SUserRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12547,23 +12791,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaSUserTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactTable();
-            LoadViaForeignKey(PPartnerContactTable.TableId, SUserTable.TableId, AData, new string[1]{"s_user_id_c"},
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadViaForeignKey(PPartnerContactTable.TableId, SUserTable.TableId, Data, new string[1]{"s_user_id_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSUserTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSUserTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSUserTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSUserTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSUserTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12614,25 +12859,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetail(out PPartnerContactTable AData, String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPContactAttributeDetail(String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PPartnerContactTable();
-            FillDataSet.Tables.Add(AData);
+            PPartnerContactTable Data = new PPartnerContactTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPContactAttributeDetail(FillDataSet, AContactAttributeCode, AContactAttrDetailCode, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetail(out PPartnerContactTable AData, String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPContactAttributeDetail(String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetail(out AData, AContactAttributeCode, AContactAttrDetailCode, null, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetail(AContactAttributeCode, AContactAttrDetailCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetail(out PPartnerContactTable AData, String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPContactAttributeDetail(String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetail(out AData, AContactAttributeCode, AContactAttrDetailCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetail(AContactAttributeCode, AContactAttrDetailCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12659,31 +12905,32 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactTable AData, PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPContactAttributeDetailTemplate(PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PPartnerContactTable();
-            FillDataSet.Tables.Add(AData);
+            PPartnerContactTable Data = new PPartnerContactTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPContactAttributeDetailTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactTable AData, PContactAttributeDetailRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPContactAttributeDetailTemplate(PContactAttributeDetailRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetailTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetailTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactTable AData, PContactAttributeDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPContactAttributeDetailTemplate(PContactAttributeDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetailTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetailTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactTable AData, PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPContactAttributeDetailTemplate(PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetailTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetailTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12710,25 +12957,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPContactAttributeDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PPartnerContactTable();
-            FillDataSet.Tables.Add(AData);
+            PPartnerContactTable Data = new PPartnerContactTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPContactAttributeDetailTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPContactAttributeDetailTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetailTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetailTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPContactAttributeDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetailTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetailTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -12787,25 +13035,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPPartnerReminder(out PPartnerContactTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPPartnerPPartnerReminder(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PPartnerContactTable();
-            FillDataSet.Tables.Add(AData);
+            PPartnerContactTable Data = new PPartnerContactTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPartnerPPartnerReminder(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPPartnerReminder(out PPartnerContactTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartnerPPartnerReminder(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPPartnerReminder(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPPartnerReminder(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPPartnerReminder(out PPartnerContactTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartnerPPartnerReminder(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPPartnerReminder(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPPartnerReminder(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12832,31 +13081,32 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPPartnerReminderTemplate(out PPartnerContactTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPPartnerPPartnerReminderTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PPartnerContactTable();
-            FillDataSet.Tables.Add(AData);
+            PPartnerContactTable Data = new PPartnerContactTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPartnerPPartnerReminderTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPPartnerReminderTemplate(out PPartnerContactTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartnerPPartnerReminderTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPPartnerReminderTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPPartnerReminderTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPPartnerReminderTemplate(out PPartnerContactTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartnerPPartnerReminderTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPPartnerReminderTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPPartnerReminderTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPPartnerReminderTemplate(out PPartnerContactTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartnerPPartnerReminderTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPPartnerReminderTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPPartnerReminderTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -12883,25 +13133,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPPartnerReminderTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaPPartnerPPartnerReminderTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PPartnerContactTable();
-            FillDataSet.Tables.Add(AData);
+            PPartnerContactTable Data = new PPartnerContactTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPartnerPPartnerReminderTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPPartnerReminderTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartnerPPartnerReminderTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPPartnerReminderTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPPartnerReminderTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerPPartnerReminderTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaPPartnerPPartnerReminderTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerPPartnerReminderTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerPPartnerReminderTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -12960,25 +13211,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out PPartnerContactTable AData, String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PPartnerContactTable();
-            FillDataSet.Tables.Add(AData);
+            PPartnerContactTable Data = new PPartnerContactTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroup(FillDataSet, AGroupId, AUnitKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out PPartnerContactTable AData, String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
-            LoadViaSGroup(out AData, AGroupId, AUnitKey, null, ATransaction, null, 0, 0);
+            return LoadViaSGroup(AGroupId, AUnitKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out PPartnerContactTable AData, String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroup(out AData, AGroupId, AUnitKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroup(AGroupId, AUnitKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -13005,31 +13257,32 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out PPartnerContactTable AData, SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PPartnerContactTable();
-            FillDataSet.Tables.Add(AData);
+            PPartnerContactTable Data = new PPartnerContactTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroupTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out PPartnerContactTable AData, SGroupRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out PPartnerContactTable AData, SGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out PPartnerContactTable AData, SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -13056,25 +13309,26 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PPartnerContactTable();
-            FillDataSet.Tables.Add(AData);
+            PPartnerContactTable Data = new PPartnerContactTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out PPartnerContactTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -13163,22 +13417,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PPartnerContactAttributeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactAttributeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactAttributeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PPartnerContactAttributeTable.TableId) + " FROM PUB_p_partner_contact_attribute" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PPartnerContactAttributeTable Data = new PPartnerContactAttributeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PPartnerContactAttributeTable.TableId) + " FROM PUB_p_partner_contact_attribute" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PPartnerContactAttributeTable AData, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PPartnerContactAttributeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -13200,22 +13455,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPartnerContactAttributeTable AData, Int32 AContactId, String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactAttributeTable LoadByPrimaryKey(Int32 AContactId, String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactAttributeTable();
-            LoadByPrimaryKey(PPartnerContactAttributeTable.TableId, AData, new System.Object[3]{AContactId, AContactAttributeCode, AContactAttrDetailCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPartnerContactAttributeTable Data = new PPartnerContactAttributeTable();
+            LoadByPrimaryKey(PPartnerContactAttributeTable.TableId, Data, new System.Object[3]{AContactId, AContactAttributeCode, AContactAttrDetailCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPartnerContactAttributeTable AData, Int32 AContactId, String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadByPrimaryKey(Int32 AContactId, String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AContactId, AContactAttributeCode, AContactAttrDetailCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AContactId, AContactAttributeCode, AContactAttrDetailCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PPartnerContactAttributeTable AData, Int32 AContactId, String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadByPrimaryKey(Int32 AContactId, String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AContactId, AContactAttributeCode, AContactAttrDetailCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AContactId, AContactAttributeCode, AContactAttrDetailCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -13237,28 +13493,29 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactAttributeTable AData, PPartnerContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactAttributeTable LoadUsingTemplate(PPartnerContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactAttributeTable();
-            LoadUsingTemplate(PPartnerContactAttributeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPartnerContactAttributeTable Data = new PPartnerContactAttributeTable();
+            LoadUsingTemplate(PPartnerContactAttributeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactAttributeTable AData, PPartnerContactAttributeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadUsingTemplate(PPartnerContactAttributeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactAttributeTable AData, PPartnerContactAttributeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadUsingTemplate(PPartnerContactAttributeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactAttributeTable AData, PPartnerContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadUsingTemplate(PPartnerContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -13280,22 +13537,23 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactAttributeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactAttributeTable();
-            LoadUsingTemplate(PPartnerContactAttributeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PPartnerContactAttributeTable Data = new PPartnerContactAttributeTable();
+            LoadUsingTemplate(PPartnerContactAttributeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PPartnerContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -13344,23 +13602,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetail(out PPartnerContactAttributeTable AData, String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeDetail(String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactAttributeTable();
-            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PContactAttributeDetailTable.TableId, AData, new string[2]{"p_contact_attribute_code_c", "p_contact_attr_detail_code_c"},
+            PPartnerContactAttributeTable Data = new PPartnerContactAttributeTable();
+            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PContactAttributeDetailTable.TableId, Data, new string[2]{"p_contact_attribute_code_c", "p_contact_attr_detail_code_c"},
                 new System.Object[2]{AContactAttributeCode, AContactAttrDetailCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetail(out PPartnerContactAttributeTable AData, String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeDetail(String AContactAttributeCode, String AContactAttrDetailCode, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetail(out AData, AContactAttributeCode, AContactAttrDetailCode, null, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetail(AContactAttributeCode, AContactAttrDetailCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetail(out PPartnerContactAttributeTable AData, String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeDetail(String AContactAttributeCode, String AContactAttrDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetail(out AData, AContactAttributeCode, AContactAttrDetailCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetail(AContactAttributeCode, AContactAttrDetailCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -13383,29 +13642,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactAttributeTable AData, PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeDetailTemplate(PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactAttributeTable();
-            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PContactAttributeDetailTable.TableId, AData, new string[2]{"p_contact_attribute_code_c", "p_contact_attr_detail_code_c"},
+            PPartnerContactAttributeTable Data = new PPartnerContactAttributeTable();
+            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PContactAttributeDetailTable.TableId, Data, new string[2]{"p_contact_attribute_code_c", "p_contact_attr_detail_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactAttributeTable AData, PContactAttributeDetailRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeDetailTemplate(PContactAttributeDetailRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetailTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetailTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactAttributeTable AData, PContactAttributeDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeDetailTemplate(PContactAttributeDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetailTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetailTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactAttributeTable AData, PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeDetailTemplate(PContactAttributeDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetailTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetailTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -13428,23 +13688,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactAttributeTable();
-            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PContactAttributeDetailTable.TableId, AData, new string[2]{"p_contact_attribute_code_c", "p_contact_attr_detail_code_c"},
+            PPartnerContactAttributeTable Data = new PPartnerContactAttributeTable();
+            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PContactAttributeDetailTable.TableId, Data, new string[2]{"p_contact_attribute_code_c", "p_contact_attr_detail_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeDetailTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetailTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetailTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeDetailTemplate(out PPartnerContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeDetailTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeDetailTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -13488,23 +13749,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPContactAttribute(out PPartnerContactAttributeTable AData, String AContactAttributeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactAttributeTable LoadViaPContactAttribute(String AContactAttributeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactAttributeTable();
-            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PContactAttributeTable.TableId, AData, new string[1]{"p_contact_attribute_code_c"},
+            PPartnerContactAttributeTable Data = new PPartnerContactAttributeTable();
+            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PContactAttributeTable.TableId, Data, new string[1]{"p_contact_attribute_code_c"},
                 new System.Object[1]{AContactAttributeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPContactAttribute(out PPartnerContactAttributeTable AData, String AContactAttributeCode, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttribute(String AContactAttributeCode, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttribute(out AData, AContactAttributeCode, null, ATransaction, null, 0, 0);
+            return LoadViaPContactAttribute(AContactAttributeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttribute(out PPartnerContactAttributeTable AData, String AContactAttributeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttribute(String AContactAttributeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttribute(out AData, AContactAttributeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttribute(AContactAttributeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -13527,29 +13789,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PPartnerContactAttributeTable AData, PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeTemplate(PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactAttributeTable();
-            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PContactAttributeTable.TableId, AData, new string[1]{"p_contact_attribute_code_c"},
+            PPartnerContactAttributeTable Data = new PPartnerContactAttributeTable();
+            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PContactAttributeTable.TableId, Data, new string[1]{"p_contact_attribute_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PPartnerContactAttributeTable AData, PContactAttributeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeTemplate(PContactAttributeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PPartnerContactAttributeTable AData, PContactAttributeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeTemplate(PContactAttributeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PPartnerContactAttributeTable AData, PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeTemplate(PContactAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -13572,23 +13835,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PPartnerContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactAttributeTable();
-            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PContactAttributeTable.TableId, AData, new string[1]{"p_contact_attribute_code_c"},
+            PPartnerContactAttributeTable Data = new PPartnerContactAttributeTable();
+            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PContactAttributeTable.TableId, Data, new string[1]{"p_contact_attribute_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PPartnerContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPContactAttributeTemplate(out PPartnerContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPContactAttributeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPContactAttributeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPContactAttributeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -13632,23 +13896,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContact(out PPartnerContactAttributeTable AData, Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactAttributeTable LoadViaPPartnerContact(Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactAttributeTable();
-            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PPartnerContactTable.TableId, AData, new string[1]{"p_contact_id_i"},
+            PPartnerContactAttributeTable Data = new PPartnerContactAttributeTable();
+            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PPartnerContactTable.TableId, Data, new string[1]{"p_contact_id_i"},
                 new System.Object[1]{AContactId}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContact(out PPartnerContactAttributeTable AData, Int32 AContactId, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPPartnerContact(Int32 AContactId, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContact(out AData, AContactId, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContact(AContactId, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContact(out PPartnerContactAttributeTable AData, Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPPartnerContact(Int32 AContactId, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContact(out AData, AContactId, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContact(AContactId, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -13671,29 +13936,30 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PPartnerContactAttributeTable AData, PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactAttributeTable LoadViaPPartnerContactTemplate(PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactAttributeTable();
-            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PPartnerContactTable.TableId, AData, new string[1]{"p_contact_id_i"},
+            PPartnerContactAttributeTable Data = new PPartnerContactAttributeTable();
+            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PPartnerContactTable.TableId, Data, new string[1]{"p_contact_id_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PPartnerContactAttributeTable AData, PPartnerContactRow ATemplateRow, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPPartnerContactTemplate(PPartnerContactRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContactTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContactTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PPartnerContactAttributeTable AData, PPartnerContactRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPPartnerContactTemplate(PPartnerContactRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContactTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContactTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PPartnerContactAttributeTable AData, PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPPartnerContactTemplate(PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContactTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContactTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -13716,23 +13982,24 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PPartnerContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PPartnerContactAttributeTable LoadViaPPartnerContactTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PPartnerContactAttributeTable();
-            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PPartnerContactTable.TableId, AData, new string[1]{"p_contact_id_i"},
+            PPartnerContactAttributeTable Data = new PPartnerContactAttributeTable();
+            LoadViaForeignKey(PPartnerContactAttributeTable.TableId, PPartnerContactTable.TableId, Data, new string[1]{"p_contact_id_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PPartnerContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPPartnerContactTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContactTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContactTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerContactTemplate(out PPartnerContactAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PPartnerContactAttributeTable LoadViaPPartnerContactTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerContactTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerContactTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated

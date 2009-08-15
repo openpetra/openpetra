@@ -72,22 +72,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PLanguageTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLanguageTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PLanguageTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PLanguageTable.TableId) + " FROM PUB_p_language" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PLanguageTable Data = new PLanguageTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PLanguageTable.TableId) + " FROM PUB_p_language" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PLanguageTable AData, TDBTransaction ATransaction)
+        public static PLanguageTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PLanguageTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -109,22 +110,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PLanguageTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLanguageTable LoadByPrimaryKey(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PLanguageTable();
-            LoadByPrimaryKey(PLanguageTable.TableId, AData, new System.Object[1]{ALanguageCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PLanguageTable Data = new PLanguageTable();
+            LoadByPrimaryKey(PLanguageTable.TableId, Data, new System.Object[1]{ALanguageCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PLanguageTable AData, String ALanguageCode, TDBTransaction ATransaction)
+        public static PLanguageTable LoadByPrimaryKey(String ALanguageCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALanguageCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALanguageCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PLanguageTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadByPrimaryKey(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALanguageCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALanguageCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -146,28 +148,29 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLanguageTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLanguageTable LoadUsingTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PLanguageTable();
-            LoadUsingTemplate(PLanguageTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PLanguageTable Data = new PLanguageTable();
+            LoadUsingTemplate(PLanguageTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLanguageTable AData, PLanguageRow ATemplateRow, TDBTransaction ATransaction)
+        public static PLanguageTable LoadUsingTemplate(PLanguageRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLanguageTable AData, PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadUsingTemplate(PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLanguageTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadUsingTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -189,22 +192,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLanguageTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PLanguageTable();
-            LoadUsingTemplate(PLanguageTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PLanguageTable Data = new PLanguageTable();
+            LoadUsingTemplate(PLanguageTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLanguageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PLanguageTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -258,25 +262,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out PLanguageTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLanguageTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PLanguageTable();
-            FillDataSet.Tables.Add(AData);
+            PLanguageTable Data = new PLanguageTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaACurrency(FillDataSet, ACurrencyCode, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out PLanguageTable AData, String ACurrencyCode, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaACurrency(String ACurrencyCode, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, null, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out PLanguageTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -303,31 +308,32 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PLanguageTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLanguageTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PLanguageTable();
-            FillDataSet.Tables.Add(AData);
+            PLanguageTable Data = new PLanguageTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaACurrencyTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PLanguageTable AData, ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PLanguageTable AData, ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PLanguageTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -354,25 +360,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLanguageTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PLanguageTable();
-            FillDataSet.Tables.Add(AData);
+            PLanguageTable Data = new PLanguageTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaACurrencyTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PLanguageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -429,25 +436,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PLanguageTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLanguageTable LoadViaPPerson(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PLanguageTable();
-            FillDataSet.Tables.Add(AData);
+            PLanguageTable Data = new PLanguageTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPerson(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PLanguageTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaPPerson(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPerson(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPerson(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PLanguageTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaPPerson(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPerson(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPerson(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -474,31 +482,32 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PLanguageTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLanguageTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PLanguageTable();
-            FillDataSet.Tables.Add(AData);
+            PLanguageTable Data = new PLanguageTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPersonTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PLanguageTable AData, PPersonRow ATemplateRow, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PLanguageTable AData, PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PLanguageTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -525,25 +534,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLanguageTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PLanguageTable();
-            FillDataSet.Tables.Add(AData);
+            PLanguageTable Data = new PLanguageTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPersonTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PLanguageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -606,25 +616,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out PLanguageTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLanguageTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PLanguageTable();
-            FillDataSet.Tables.Add(AData);
+            PLanguageTable Data = new PLanguageTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaUmJob(FillDataSet, AUnitKey, APositionName, APositionScope, AJobKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out PLanguageTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
         {
-            LoadViaUmJob(out AData, AUnitKey, APositionName, APositionScope, AJobKey, null, ATransaction, null, 0, 0);
+            return LoadViaUmJob(AUnitKey, APositionName, APositionScope, AJobKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out PLanguageTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJob(out AData, AUnitKey, APositionName, APositionScope, AJobKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJob(AUnitKey, APositionName, APositionScope, AJobKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -651,31 +662,32 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out PLanguageTable AData, UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLanguageTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PLanguageTable();
-            FillDataSet.Tables.Add(AData);
+            PLanguageTable Data = new PLanguageTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaUmJobTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out PLanguageTable AData, UmJobRow ATemplateRow, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out PLanguageTable AData, UmJobRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out PLanguageTable AData, UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -702,25 +714,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out PLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PLanguageTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PLanguageTable();
-            FillDataSet.Tables.Add(AData);
+            PLanguageTable Data = new PLanguageTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaUmJobTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out PLanguageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out PLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PLanguageTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -813,22 +826,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AFrequencyTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AFrequencyTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AFrequencyTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AFrequencyTable.TableId) + " FROM PUB_a_frequency" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AFrequencyTable Data = new AFrequencyTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AFrequencyTable.TableId) + " FROM PUB_a_frequency" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AFrequencyTable AData, TDBTransaction ATransaction)
+        public static AFrequencyTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AFrequencyTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AFrequencyTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -850,22 +864,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AFrequencyTable AData, String AFrequencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AFrequencyTable LoadByPrimaryKey(String AFrequencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AFrequencyTable();
-            LoadByPrimaryKey(AFrequencyTable.TableId, AData, new System.Object[1]{AFrequencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AFrequencyTable Data = new AFrequencyTable();
+            LoadByPrimaryKey(AFrequencyTable.TableId, Data, new System.Object[1]{AFrequencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AFrequencyTable AData, String AFrequencyCode, TDBTransaction ATransaction)
+        public static AFrequencyTable LoadByPrimaryKey(String AFrequencyCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AFrequencyCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AFrequencyCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AFrequencyTable AData, String AFrequencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AFrequencyTable LoadByPrimaryKey(String AFrequencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AFrequencyCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AFrequencyCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -887,28 +902,29 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AFrequencyTable AData, AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AFrequencyTable LoadUsingTemplate(AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AFrequencyTable();
-            LoadUsingTemplate(AFrequencyTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AFrequencyTable Data = new AFrequencyTable();
+            LoadUsingTemplate(AFrequencyTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AFrequencyTable AData, AFrequencyRow ATemplateRow, TDBTransaction ATransaction)
+        public static AFrequencyTable LoadUsingTemplate(AFrequencyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AFrequencyTable AData, AFrequencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AFrequencyTable LoadUsingTemplate(AFrequencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AFrequencyTable AData, AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AFrequencyTable LoadUsingTemplate(AFrequencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -930,22 +946,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AFrequencyTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AFrequencyTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AFrequencyTable();
-            LoadUsingTemplate(AFrequencyTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AFrequencyTable Data = new AFrequencyTable();
+            LoadUsingTemplate(AFrequencyTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AFrequencyTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AFrequencyTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AFrequencyTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AFrequencyTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1029,22 +1046,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PInternationalPostalTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PInternationalPostalTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PInternationalPostalTypeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PInternationalPostalTypeTable.TableId) + " FROM PUB_p_international_postal_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PInternationalPostalTypeTable Data = new PInternationalPostalTypeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PInternationalPostalTypeTable.TableId) + " FROM PUB_p_international_postal_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PInternationalPostalTypeTable AData, TDBTransaction ATransaction)
+        public static PInternationalPostalTypeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PInternationalPostalTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PInternationalPostalTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1066,22 +1084,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PInternationalPostalTypeTable AData, String AInternatPostalTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PInternationalPostalTypeTable LoadByPrimaryKey(String AInternatPostalTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PInternationalPostalTypeTable();
-            LoadByPrimaryKey(PInternationalPostalTypeTable.TableId, AData, new System.Object[1]{AInternatPostalTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PInternationalPostalTypeTable Data = new PInternationalPostalTypeTable();
+            LoadByPrimaryKey(PInternationalPostalTypeTable.TableId, Data, new System.Object[1]{AInternatPostalTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PInternationalPostalTypeTable AData, String AInternatPostalTypeCode, TDBTransaction ATransaction)
+        public static PInternationalPostalTypeTable LoadByPrimaryKey(String AInternatPostalTypeCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AInternatPostalTypeCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AInternatPostalTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PInternationalPostalTypeTable AData, String AInternatPostalTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PInternationalPostalTypeTable LoadByPrimaryKey(String AInternatPostalTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AInternatPostalTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AInternatPostalTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1103,28 +1122,29 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PInternationalPostalTypeTable AData, PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PInternationalPostalTypeTable LoadUsingTemplate(PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PInternationalPostalTypeTable();
-            LoadUsingTemplate(PInternationalPostalTypeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PInternationalPostalTypeTable Data = new PInternationalPostalTypeTable();
+            LoadUsingTemplate(PInternationalPostalTypeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PInternationalPostalTypeTable AData, PInternationalPostalTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PInternationalPostalTypeTable LoadUsingTemplate(PInternationalPostalTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PInternationalPostalTypeTable AData, PInternationalPostalTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PInternationalPostalTypeTable LoadUsingTemplate(PInternationalPostalTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PInternationalPostalTypeTable AData, PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PInternationalPostalTypeTable LoadUsingTemplate(PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1146,22 +1166,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PInternationalPostalTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PInternationalPostalTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PInternationalPostalTypeTable();
-            LoadUsingTemplate(PInternationalPostalTypeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PInternationalPostalTypeTable Data = new PInternationalPostalTypeTable();
+            LoadUsingTemplate(PInternationalPostalTypeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PInternationalPostalTypeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PInternationalPostalTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PInternationalPostalTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PInternationalPostalTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1245,22 +1266,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PCountryTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCountryTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCountryTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PCountryTable.TableId) + " FROM PUB_p_country" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PCountryTable Data = new PCountryTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PCountryTable.TableId) + " FROM PUB_p_country" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PCountryTable AData, TDBTransaction ATransaction)
+        public static PCountryTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PCountryTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCountryTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1282,22 +1304,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PCountryTable AData, String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCountryTable LoadByPrimaryKey(String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCountryTable();
-            LoadByPrimaryKey(PCountryTable.TableId, AData, new System.Object[1]{ACountryCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PCountryTable Data = new PCountryTable();
+            LoadByPrimaryKey(PCountryTable.TableId, Data, new System.Object[1]{ACountryCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PCountryTable AData, String ACountryCode, TDBTransaction ATransaction)
+        public static PCountryTable LoadByPrimaryKey(String ACountryCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACountryCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACountryCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PCountryTable AData, String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCountryTable LoadByPrimaryKey(String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACountryCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACountryCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1319,28 +1342,29 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCountryTable AData, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCountryTable LoadUsingTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCountryTable();
-            LoadUsingTemplate(PCountryTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PCountryTable Data = new PCountryTable();
+            LoadUsingTemplate(PCountryTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCountryTable AData, PCountryRow ATemplateRow, TDBTransaction ATransaction)
+        public static PCountryTable LoadUsingTemplate(PCountryRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCountryTable AData, PCountryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCountryTable LoadUsingTemplate(PCountryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCountryTable AData, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCountryTable LoadUsingTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1362,22 +1386,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCountryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCountryTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCountryTable();
-            LoadUsingTemplate(PCountryTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PCountryTable Data = new PCountryTable();
+            LoadUsingTemplate(PCountryTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCountryTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PCountryTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PCountryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCountryTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1426,23 +1451,24 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPInternationalPostalType(out PCountryTable AData, String AInternatPostalTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCountryTable LoadViaPInternationalPostalType(String AInternatPostalTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCountryTable();
-            LoadViaForeignKey(PCountryTable.TableId, PInternationalPostalTypeTable.TableId, AData, new string[1]{"p_internat_postal_type_code_c"},
+            PCountryTable Data = new PCountryTable();
+            LoadViaForeignKey(PCountryTable.TableId, PInternationalPostalTypeTable.TableId, Data, new string[1]{"p_internat_postal_type_code_c"},
                 new System.Object[1]{AInternatPostalTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPInternationalPostalType(out PCountryTable AData, String AInternatPostalTypeCode, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPInternationalPostalType(String AInternatPostalTypeCode, TDBTransaction ATransaction)
         {
-            LoadViaPInternationalPostalType(out AData, AInternatPostalTypeCode, null, ATransaction, null, 0, 0);
+            return LoadViaPInternationalPostalType(AInternatPostalTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPInternationalPostalType(out PCountryTable AData, String AInternatPostalTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPInternationalPostalType(String AInternatPostalTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPInternationalPostalType(out AData, AInternatPostalTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPInternationalPostalType(AInternatPostalTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1465,29 +1491,30 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPInternationalPostalTypeTemplate(out PCountryTable AData, PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCountryTable LoadViaPInternationalPostalTypeTemplate(PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCountryTable();
-            LoadViaForeignKey(PCountryTable.TableId, PInternationalPostalTypeTable.TableId, AData, new string[1]{"p_internat_postal_type_code_c"},
+            PCountryTable Data = new PCountryTable();
+            LoadViaForeignKey(PCountryTable.TableId, PInternationalPostalTypeTable.TableId, Data, new string[1]{"p_internat_postal_type_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPInternationalPostalTypeTemplate(out PCountryTable AData, PInternationalPostalTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPInternationalPostalTypeTemplate(PInternationalPostalTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPInternationalPostalTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPInternationalPostalTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPInternationalPostalTypeTemplate(out PCountryTable AData, PInternationalPostalTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPInternationalPostalTypeTemplate(PInternationalPostalTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPInternationalPostalTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPInternationalPostalTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPInternationalPostalTypeTemplate(out PCountryTable AData, PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPInternationalPostalTypeTemplate(PInternationalPostalTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPInternationalPostalTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPInternationalPostalTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1510,23 +1537,24 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPInternationalPostalTypeTemplate(out PCountryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCountryTable LoadViaPInternationalPostalTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PCountryTable();
-            LoadViaForeignKey(PCountryTable.TableId, PInternationalPostalTypeTable.TableId, AData, new string[1]{"p_internat_postal_type_code_c"},
+            PCountryTable Data = new PCountryTable();
+            LoadViaForeignKey(PCountryTable.TableId, PInternationalPostalTypeTable.TableId, Data, new string[1]{"p_internat_postal_type_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPInternationalPostalTypeTemplate(out PCountryTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPInternationalPostalTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPInternationalPostalTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPInternationalPostalTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPInternationalPostalTypeTemplate(out PCountryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPInternationalPostalTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPInternationalPostalTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPInternationalPostalTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1575,25 +1603,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCode(out PCountryTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCountryTable LoadViaPAddressLayoutCode(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PCountryTable();
-            FillDataSet.Tables.Add(AData);
+            PCountryTable Data = new PCountryTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPAddressLayoutCode(FillDataSet, ACode, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCode(out PCountryTable AData, String ACode, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPAddressLayoutCode(String ACode, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCode(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCode(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCode(out PCountryTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPAddressLayoutCode(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCode(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCode(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1620,31 +1649,32 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PCountryTable AData, PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCountryTable LoadViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PCountryTable();
-            FillDataSet.Tables.Add(AData);
+            PCountryTable Data = new PCountryTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPAddressLayoutCodeTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PCountryTable AData, PAddressLayoutCodeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PCountryTable AData, PAddressLayoutCodeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PCountryTable AData, PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPAddressLayoutCodeTemplate(PAddressLayoutCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1671,25 +1701,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PCountryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PCountryTable LoadViaPAddressLayoutCodeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PCountryTable();
-            FillDataSet.Tables.Add(AData);
+            PCountryTable Data = new PCountryTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPAddressLayoutCodeTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PCountryTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPAddressLayoutCodeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPAddressLayoutCodeTemplate(out PCountryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PCountryTable LoadViaPAddressLayoutCodeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPAddressLayoutCodeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPAddressLayoutCodeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -1776,22 +1807,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out ACurrencyTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ACurrencyTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ACurrencyTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, ACurrencyTable.TableId) + " FROM PUB_a_currency" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            ACurrencyTable Data = new ACurrencyTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, ACurrencyTable.TableId) + " FROM PUB_a_currency" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out ACurrencyTable AData, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out ACurrencyTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1813,22 +1845,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ACurrencyTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ACurrencyTable LoadByPrimaryKey(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ACurrencyTable();
-            LoadByPrimaryKey(ACurrencyTable.TableId, AData, new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ACurrencyTable Data = new ACurrencyTable();
+            LoadByPrimaryKey(ACurrencyTable.TableId, Data, new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ACurrencyTable AData, String ACurrencyCode, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadByPrimaryKey(String ACurrencyCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACurrencyCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACurrencyCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ACurrencyTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadByPrimaryKey(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1850,28 +1883,29 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ACurrencyTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ACurrencyTable LoadUsingTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ACurrencyTable();
-            LoadUsingTemplate(ACurrencyTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ACurrencyTable Data = new ACurrencyTable();
+            LoadUsingTemplate(ACurrencyTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ACurrencyTable AData, ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadUsingTemplate(ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ACurrencyTable AData, ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadUsingTemplate(ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ACurrencyTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadUsingTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1893,22 +1927,23 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ACurrencyTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ACurrencyTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ACurrencyTable();
-            LoadUsingTemplate(ACurrencyTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ACurrencyTable Data = new ACurrencyTable();
+            LoadUsingTemplate(ACurrencyTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ACurrencyTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ACurrencyTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1957,23 +1992,24 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPCountry(out ACurrencyTable AData, String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ACurrencyTable LoadViaPCountry(String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ACurrencyTable();
-            LoadViaForeignKey(ACurrencyTable.TableId, PCountryTable.TableId, AData, new string[1]{"p_country_code_c"},
+            ACurrencyTable Data = new ACurrencyTable();
+            LoadViaForeignKey(ACurrencyTable.TableId, PCountryTable.TableId, Data, new string[1]{"p_country_code_c"},
                 new System.Object[1]{ACountryCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPCountry(out ACurrencyTable AData, String ACountryCode, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPCountry(String ACountryCode, TDBTransaction ATransaction)
         {
-            LoadViaPCountry(out AData, ACountryCode, null, ATransaction, null, 0, 0);
+            return LoadViaPCountry(ACountryCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountry(out ACurrencyTable AData, String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPCountry(String ACountryCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountry(out AData, ACountryCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountry(ACountryCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1996,29 +2032,30 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out ACurrencyTable AData, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ACurrencyTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ACurrencyTable();
-            LoadViaForeignKey(ACurrencyTable.TableId, PCountryTable.TableId, AData, new string[1]{"p_country_code_c"},
+            ACurrencyTable Data = new ACurrencyTable();
+            LoadViaForeignKey(ACurrencyTable.TableId, PCountryTable.TableId, Data, new string[1]{"p_country_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out ACurrencyTable AData, PCountryRow ATemplateRow, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out ACurrencyTable AData, PCountryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out ACurrencyTable AData, PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPCountryTemplate(PCountryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2041,23 +2078,24 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out ACurrencyTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ACurrencyTable LoadViaPCountryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ACurrencyTable();
-            LoadViaForeignKey(ACurrencyTable.TableId, PCountryTable.TableId, AData, new string[1]{"p_country_code_c"},
+            ACurrencyTable Data = new ACurrencyTable();
+            LoadViaForeignKey(ACurrencyTable.TableId, PCountryTable.TableId, Data, new string[1]{"p_country_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out ACurrencyTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPCountryTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPCountryTemplate(out ACurrencyTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPCountryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPCountryTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPCountryTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2106,25 +2144,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out ACurrencyTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ACurrencyTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new ACurrencyTable();
-            FillDataSet.Tables.Add(AData);
+            ACurrencyTable Data = new ACurrencyTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPLanguage(FillDataSet, ALanguageCode, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out ACurrencyTable AData, String ALanguageCode, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPLanguage(String ALanguageCode, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out ACurrencyTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2151,31 +2190,32 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out ACurrencyTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ACurrencyTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new ACurrencyTable();
-            FillDataSet.Tables.Add(AData);
+            ACurrencyTable Data = new ACurrencyTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPLanguageTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out ACurrencyTable AData, PLanguageRow ATemplateRow, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out ACurrencyTable AData, PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out ACurrencyTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2202,25 +2242,26 @@ namespace Ict.Petra.Shared.MCommon.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out ACurrencyTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ACurrencyTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new ACurrencyTable();
-            FillDataSet.Tables.Add(AData);
+            ACurrencyTable Data = new ACurrencyTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPLanguageTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out ACurrencyTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out ACurrencyTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ACurrencyTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable

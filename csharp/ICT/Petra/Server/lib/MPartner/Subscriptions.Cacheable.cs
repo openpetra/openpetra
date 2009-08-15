@@ -120,10 +120,7 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             String TableName;
-            PPublicationCostTable TmpPublicationCostDT;
-            PPublicationTable TmpPublicationDT;
-            PReasonSubscriptionGivenTable TmpReasonSubscriptionGivenDT;
-            PReasonSubscriptionCancelledTable TmpReasonSubscriptionCancelledDT;
+            DataTable TmpTable;
 
             TableName = Enum.GetName(typeof(TCacheableSubscriptionsTablesEnum), ACacheableTable);
 #if DEBUGMODE
@@ -145,29 +142,29 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                     switch (ACacheableTable)
                     {
                         case TCacheableSubscriptionsTablesEnum.PublicationCost:
-                            PPublicationCostAccess.LoadAll(out TmpPublicationCostDT, ReadTransaction);
+                            TmpTable = PPublicationCostAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                            TmpPublicationCostDT,
-                            DomainManager.GClientID);
+                                TmpTable,
+                                DomainManager.GClientID);
                             break;
 
                         case TCacheableSubscriptionsTablesEnum.PublicationList:
-                            PPublicationAccess.LoadAll(out TmpPublicationDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpPublicationDT, DomainManager.GClientID);
+                            TmpTable = PPublicationAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList:
-                            PReasonSubscriptionGivenAccess.LoadAll(out TmpReasonSubscriptionGivenDT, ReadTransaction);
+                            TmpTable = PReasonSubscriptionGivenAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                            TmpReasonSubscriptionGivenDT,
-                            DomainManager.GClientID);
+                                TmpTable,
+                                DomainManager.GClientID);
                             break;
 
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList:
-                            PReasonSubscriptionCancelledAccess.LoadAll(out TmpReasonSubscriptionCancelledDT, ReadTransaction);
+                            TmpTable = PReasonSubscriptionCancelledAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                            TmpReasonSubscriptionCancelledDT,
-                            DomainManager.GClientID);
+                                TmpTable,
+                                DomainManager.GClientID);
 
                             // Unknown Standard Cacheable DataTable
                             break;

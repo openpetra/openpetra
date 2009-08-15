@@ -74,7 +74,7 @@ namespace Ict.Petra.Server.MPartner.Common
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            PPartnerLedgerAccess.LoadByPrimaryKey(out PartnerLedgerTable, AFieldPartnerKey, ReadTransaction);
+            PartnerLedgerTable = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadTransaction);
 
             if (NewTransaction)
             {
@@ -120,7 +120,7 @@ namespace Ict.Petra.Server.MPartner.Common
                     ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                         TEnforceIsolationLevel.eilMinimum,
                         out NewTransaction);
-                    PPartnerLedgerAccess.LoadByPrimaryKey(out PartnerLedgerDT, AFieldPartnerKey, ReadTransaction);
+                    PartnerLedgerDT = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadTransaction);
                     CurrentDefaultPartnerKey = PartnerLedgerDT[0].PartnerKey + PartnerLedgerDT[0].LastPartnerId + 1;
 
                     if (ANewPartnerKey != CurrentDefaultPartnerKey)

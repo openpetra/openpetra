@@ -89,7 +89,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
 
             // get the supplier defaults
             AApSupplierTable tempTable;
-            AApSupplierAccess.LoadByPrimaryKey(out tempTable, APartnerKey, null);
+            tempTable = AApSupplierAccess.LoadByPrimaryKey(APartnerKey, null);
 
             if (tempTable.Rows.Count == 1)
             {
@@ -160,7 +160,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                         StringCollection fieldlist = new StringCollection();
                         ALedgerTable myLedgerTable;
                         fieldlist.Add(ALedgerTable.GetLastApInvNumberDBName());
-                        ALedgerAccess.LoadByPrimaryKey(out myLedgerTable,
+                        myLedgerTable = ALedgerAccess.LoadByPrimaryKey(
                             AInspectDS.AApDocument[0].LedgerNumber,
                             fieldlist,
                             SubmitChangesTransaction);

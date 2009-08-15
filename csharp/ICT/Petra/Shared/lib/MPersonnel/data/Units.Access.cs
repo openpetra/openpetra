@@ -73,22 +73,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PtPositionTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtPositionTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtPositionTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PtPositionTable.TableId) + " FROM PUB_pt_position" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PtPositionTable Data = new PtPositionTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PtPositionTable.TableId) + " FROM PUB_pt_position" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PtPositionTable AData, TDBTransaction ATransaction)
+        public static PtPositionTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PtPositionTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtPositionTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -110,22 +111,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PtPositionTable AData, String APositionName, String APositionScope, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtPositionTable LoadByPrimaryKey(String APositionName, String APositionScope, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtPositionTable();
-            LoadByPrimaryKey(PtPositionTable.TableId, AData, new System.Object[2]{APositionName, APositionScope}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PtPositionTable Data = new PtPositionTable();
+            LoadByPrimaryKey(PtPositionTable.TableId, Data, new System.Object[2]{APositionName, APositionScope}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PtPositionTable AData, String APositionName, String APositionScope, TDBTransaction ATransaction)
+        public static PtPositionTable LoadByPrimaryKey(String APositionName, String APositionScope, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APositionName, APositionScope, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APositionName, APositionScope, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PtPositionTable AData, String APositionName, String APositionScope, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtPositionTable LoadByPrimaryKey(String APositionName, String APositionScope, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APositionName, APositionScope, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APositionName, APositionScope, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -147,28 +149,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtPositionTable AData, PtPositionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtPositionTable LoadUsingTemplate(PtPositionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtPositionTable();
-            LoadUsingTemplate(PtPositionTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PtPositionTable Data = new PtPositionTable();
+            LoadUsingTemplate(PtPositionTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtPositionTable AData, PtPositionRow ATemplateRow, TDBTransaction ATransaction)
+        public static PtPositionTable LoadUsingTemplate(PtPositionRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtPositionTable AData, PtPositionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtPositionTable LoadUsingTemplate(PtPositionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtPositionTable AData, PtPositionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtPositionTable LoadUsingTemplate(PtPositionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -190,22 +193,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtPositionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtPositionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtPositionTable();
-            LoadUsingTemplate(PtPositionTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PtPositionTable Data = new PtPositionTable();
+            LoadUsingTemplate(PtPositionTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtPositionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PtPositionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtPositionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtPositionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -254,23 +258,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUUnitType(out PtPositionTable AData, String AUnitTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtPositionTable LoadViaUUnitType(String AUnitTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtPositionTable();
-            LoadViaForeignKey(PtPositionTable.TableId, UUnitTypeTable.TableId, AData, new string[1]{"pt_position_scope_c"},
+            PtPositionTable Data = new PtPositionTable();
+            LoadViaForeignKey(PtPositionTable.TableId, UUnitTypeTable.TableId, Data, new string[1]{"pt_position_scope_c"},
                 new System.Object[1]{AUnitTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUUnitType(out PtPositionTable AData, String AUnitTypeCode, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaUUnitType(String AUnitTypeCode, TDBTransaction ATransaction)
         {
-            LoadViaUUnitType(out AData, AUnitTypeCode, null, ATransaction, null, 0, 0);
+            return LoadViaUUnitType(AUnitTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUUnitType(out PtPositionTable AData, String AUnitTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaUUnitType(String AUnitTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUUnitType(out AData, AUnitTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUUnitType(AUnitTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -293,29 +298,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out PtPositionTable AData, UUnitTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtPositionTable LoadViaUUnitTypeTemplate(UUnitTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtPositionTable();
-            LoadViaForeignKey(PtPositionTable.TableId, UUnitTypeTable.TableId, AData, new string[1]{"pt_position_scope_c"},
+            PtPositionTable Data = new PtPositionTable();
+            LoadViaForeignKey(PtPositionTable.TableId, UUnitTypeTable.TableId, Data, new string[1]{"pt_position_scope_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out PtPositionTable AData, UUnitTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaUUnitTypeTemplate(UUnitTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaUUnitTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaUUnitTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out PtPositionTable AData, UUnitTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaUUnitTypeTemplate(UUnitTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUUnitTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUUnitTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out PtPositionTable AData, UUnitTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaUUnitTypeTemplate(UUnitTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUUnitTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUUnitTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -338,23 +344,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out PtPositionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtPositionTable LoadViaUUnitTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtPositionTable();
-            LoadViaForeignKey(PtPositionTable.TableId, UUnitTypeTable.TableId, AData, new string[1]{"pt_position_scope_c"},
+            PtPositionTable Data = new PtPositionTable();
+            LoadViaForeignKey(PtPositionTable.TableId, UUnitTypeTable.TableId, Data, new string[1]{"pt_position_scope_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out PtPositionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaUUnitTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaUUnitTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaUUnitTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out PtPositionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaUUnitTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUUnitTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUUnitTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -403,25 +410,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out PtPositionTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtPositionTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PtPositionTable();
-            FillDataSet.Tables.Add(AData);
+            PtPositionTable Data = new PtPositionTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPUnit(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out PtPositionTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out PtPositionTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -448,31 +456,32 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PtPositionTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtPositionTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PtPositionTable();
-            FillDataSet.Tables.Add(AData);
+            PtPositionTable Data = new PtPositionTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPUnitTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PtPositionTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PtPositionTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PtPositionTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -499,25 +508,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PtPositionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtPositionTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PtPositionTable();
-            FillDataSet.Tables.Add(AData);
+            PtPositionTable Data = new PtPositionTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPUnitTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PtPositionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PtPositionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtPositionTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -604,22 +614,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, UmJobTable.TableId) + " FROM PUB_um_job" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            UmJobTable Data = new UmJobTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, UmJobTable.TableId) + " FROM PUB_um_job" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobTable AData, TDBTransaction ATransaction)
+        public static UmJobTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -641,22 +652,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobTable();
-            LoadByPrimaryKey(UmJobTable.TableId, AData, new System.Object[4]{AUnitKey, APositionName, APositionScope, AJobKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobTable Data = new UmJobTable();
+            LoadByPrimaryKey(UmJobTable.TableId, Data, new System.Object[4]{AUnitKey, APositionName, APositionScope, AJobKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
+        public static UmJobTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AUnitKey, APositionName, APositionScope, AJobKey, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AUnitKey, APositionName, APositionScope, AJobKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -678,28 +690,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobTable AData, UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadUsingTemplate(UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobTable();
-            LoadUsingTemplate(UmJobTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobTable Data = new UmJobTable();
+            LoadUsingTemplate(UmJobTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobTable AData, UmJobRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobTable LoadUsingTemplate(UmJobRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobTable AData, UmJobRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadUsingTemplate(UmJobRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobTable AData, UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadUsingTemplate(UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -721,22 +734,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobTable();
-            LoadUsingTemplate(UmJobTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobTable Data = new UmJobTable();
+            LoadUsingTemplate(UmJobTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -785,23 +799,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobTable();
-            LoadViaForeignKey(UmJobTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobTable Data = new UmJobTable();
+            LoadViaForeignKey(UmJobTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -824,29 +839,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobTable();
-            LoadViaForeignKey(UmJobTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobTable Data = new UmJobTable();
+            LoadViaForeignKey(UmJobTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -869,23 +885,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobTable();
-            LoadViaForeignKey(UmJobTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobTable Data = new UmJobTable();
+            LoadViaForeignKey(UmJobTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -929,23 +946,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtPosition(out UmJobTable AData, String APositionName, String APositionScope, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPtPosition(String APositionName, String APositionScope, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobTable();
-            LoadViaForeignKey(UmJobTable.TableId, PtPositionTable.TableId, AData, new string[2]{"pt_position_name_c", "pt_position_scope_c"},
+            UmJobTable Data = new UmJobTable();
+            LoadViaForeignKey(UmJobTable.TableId, PtPositionTable.TableId, Data, new string[2]{"pt_position_name_c", "pt_position_scope_c"},
                 new System.Object[2]{APositionName, APositionScope}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtPosition(out UmJobTable AData, String APositionName, String APositionScope, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtPosition(String APositionName, String APositionScope, TDBTransaction ATransaction)
         {
-            LoadViaPtPosition(out AData, APositionName, APositionScope, null, ATransaction, null, 0, 0);
+            return LoadViaPtPosition(APositionName, APositionScope, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtPosition(out UmJobTable AData, String APositionName, String APositionScope, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtPosition(String APositionName, String APositionScope, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtPosition(out AData, APositionName, APositionScope, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtPosition(APositionName, APositionScope, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -968,29 +986,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtPositionTemplate(out UmJobTable AData, PtPositionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPtPositionTemplate(PtPositionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobTable();
-            LoadViaForeignKey(UmJobTable.TableId, PtPositionTable.TableId, AData, new string[2]{"pt_position_name_c", "pt_position_scope_c"},
+            UmJobTable Data = new UmJobTable();
+            LoadViaForeignKey(UmJobTable.TableId, PtPositionTable.TableId, Data, new string[2]{"pt_position_name_c", "pt_position_scope_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtPositionTemplate(out UmJobTable AData, PtPositionRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtPositionTemplate(PtPositionRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtPositionTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtPositionTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtPositionTemplate(out UmJobTable AData, PtPositionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtPositionTemplate(PtPositionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtPositionTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtPositionTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtPositionTemplate(out UmJobTable AData, PtPositionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtPositionTemplate(PtPositionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtPositionTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtPositionTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1013,23 +1032,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtPositionTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPtPositionTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobTable();
-            LoadViaForeignKey(UmJobTable.TableId, PtPositionTable.TableId, AData, new string[2]{"pt_position_name_c", "pt_position_scope_c"},
+            UmJobTable Data = new UmJobTable();
+            LoadViaForeignKey(UmJobTable.TableId, PtPositionTable.TableId, Data, new string[2]{"pt_position_name_c", "pt_position_scope_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtPositionTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtPositionTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtPositionTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtPositionTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtPositionTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtPositionTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtPositionTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtPositionTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1073,23 +1093,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUUnitType(out UmJobTable AData, String AUnitTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaUUnitType(String AUnitTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobTable();
-            LoadViaForeignKey(UmJobTable.TableId, UUnitTypeTable.TableId, AData, new string[1]{"pt_position_scope_c"},
+            UmJobTable Data = new UmJobTable();
+            LoadViaForeignKey(UmJobTable.TableId, UUnitTypeTable.TableId, Data, new string[1]{"pt_position_scope_c"},
                 new System.Object[1]{AUnitTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUUnitType(out UmJobTable AData, String AUnitTypeCode, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaUUnitType(String AUnitTypeCode, TDBTransaction ATransaction)
         {
-            LoadViaUUnitType(out AData, AUnitTypeCode, null, ATransaction, null, 0, 0);
+            return LoadViaUUnitType(AUnitTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUUnitType(out UmJobTable AData, String AUnitTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaUUnitType(String AUnitTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUUnitType(out AData, AUnitTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUUnitType(AUnitTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1112,29 +1133,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out UmJobTable AData, UUnitTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaUUnitTypeTemplate(UUnitTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobTable();
-            LoadViaForeignKey(UmJobTable.TableId, UUnitTypeTable.TableId, AData, new string[1]{"pt_position_scope_c"},
+            UmJobTable Data = new UmJobTable();
+            LoadViaForeignKey(UmJobTable.TableId, UUnitTypeTable.TableId, Data, new string[1]{"pt_position_scope_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out UmJobTable AData, UUnitTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaUUnitTypeTemplate(UUnitTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaUUnitTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaUUnitTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out UmJobTable AData, UUnitTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaUUnitTypeTemplate(UUnitTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUUnitTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUUnitTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out UmJobTable AData, UUnitTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaUUnitTypeTemplate(UUnitTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUUnitTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUUnitTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1157,23 +1179,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaUUnitTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobTable();
-            LoadViaForeignKey(UmJobTable.TableId, UUnitTypeTable.TableId, AData, new string[1]{"pt_position_scope_c"},
+            UmJobTable Data = new UmJobTable();
+            LoadViaForeignKey(UmJobTable.TableId, UUnitTypeTable.TableId, Data, new string[1]{"pt_position_scope_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaUUnitTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaUUnitTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaUUnitTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUUnitTypeTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaUUnitTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUUnitTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUUnitTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1222,25 +1245,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityArea(out UmJobTable AData, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPtAbilityArea(String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPtAbilityArea(FillDataSet, AAbilityAreaName, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityArea(out UmJobTable AData, String AAbilityAreaName, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtAbilityArea(String AAbilityAreaName, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityArea(out AData, AAbilityAreaName, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityArea(AAbilityAreaName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityArea(out UmJobTable AData, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtAbilityArea(String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityArea(out AData, AAbilityAreaName, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityArea(AAbilityAreaName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1267,31 +1291,32 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobTable AData, PtAbilityAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPtAbilityAreaTemplate(PtAbilityAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPtAbilityAreaTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobTable AData, PtAbilityAreaRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtAbilityAreaTemplate(PtAbilityAreaRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobTable AData, PtAbilityAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtAbilityAreaTemplate(PtAbilityAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobTable AData, PtAbilityAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtAbilityAreaTemplate(PtAbilityAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1318,25 +1343,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPtAbilityAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPtAbilityAreaTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtAbilityAreaTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtAbilityAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -1393,25 +1419,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out UmJobTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPLanguage(FillDataSet, ALanguageCode, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out UmJobTable AData, String ALanguageCode, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPLanguage(String ALanguageCode, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out UmJobTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1438,31 +1465,32 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPLanguageTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobTable AData, PLanguageRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobTable AData, PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1489,25 +1517,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPLanguageTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -1564,25 +1593,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationArea(out UmJobTable AData, String AQualificationAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPtQualificationArea(String AQualificationAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPtQualificationArea(FillDataSet, AQualificationAreaName, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationArea(out UmJobTable AData, String AQualificationAreaName, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtQualificationArea(String AQualificationAreaName, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationArea(out AData, AQualificationAreaName, null, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationArea(AQualificationAreaName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationArea(out UmJobTable AData, String AQualificationAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtQualificationArea(String AQualificationAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationArea(out AData, AQualificationAreaName, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationArea(AQualificationAreaName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1609,31 +1639,32 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobTable AData, PtQualificationAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPtQualificationAreaTemplate(PtQualificationAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPtQualificationAreaTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobTable AData, PtQualificationAreaRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtQualificationAreaTemplate(PtQualificationAreaRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationAreaTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationAreaTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobTable AData, PtQualificationAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtQualificationAreaTemplate(PtQualificationAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationAreaTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationAreaTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobTable AData, PtQualificationAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtQualificationAreaTemplate(PtQualificationAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationAreaTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationAreaTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1660,25 +1691,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPtQualificationAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPtQualificationAreaTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtQualificationAreaTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationAreaTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationAreaTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtQualificationAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationAreaTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationAreaTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -1735,25 +1767,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionArea(out UmJobTable AData, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPtVisionArea(String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPtVisionArea(FillDataSet, AVisionAreaName, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionArea(out UmJobTable AData, String AVisionAreaName, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtVisionArea(String AVisionAreaName, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionArea(out AData, AVisionAreaName, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionArea(AVisionAreaName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionArea(out UmJobTable AData, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtVisionArea(String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionArea(out AData, AVisionAreaName, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionArea(AVisionAreaName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1780,31 +1813,32 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobTable AData, PtVisionAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPtVisionAreaTemplate(PtVisionAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPtVisionAreaTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobTable AData, PtVisionAreaRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtVisionAreaTemplate(PtVisionAreaRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobTable AData, PtVisionAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtVisionAreaTemplate(PtVisionAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobTable AData, PtVisionAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtVisionAreaTemplate(PtVisionAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1831,25 +1865,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPtVisionAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPtVisionAreaTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtVisionAreaTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPtVisionAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -1906,25 +1941,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out UmJobTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPartner(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out UmJobTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out UmJobTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1951,31 +1987,32 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out UmJobTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPartnerTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out UmJobTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out UmJobTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out UmJobTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2002,25 +2039,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPartnerTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -2079,25 +2117,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out UmJobTable AData, String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroup(FillDataSet, AGroupId, AUnitKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out UmJobTable AData, String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
-            LoadViaSGroup(out AData, AGroupId, AUnitKey, null, ATransaction, null, 0, 0);
+            return LoadViaSGroup(AGroupId, AUnitKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out UmJobTable AData, String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroup(out AData, AGroupId, AUnitKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroup(AGroupId, AUnitKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2124,31 +2163,32 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out UmJobTable AData, SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroupTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out UmJobTable AData, SGroupRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out UmJobTable AData, SGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out UmJobTable AData, SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2175,25 +2215,26 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new UmJobTable();
-            FillDataSet.Tables.Add(AData);
+            UmJobTable Data = new UmJobTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out UmJobTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -2282,22 +2323,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobRequirementTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, UmJobRequirementTable.TableId) + " FROM PUB_um_job_requirement" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, UmJobRequirementTable.TableId) + " FROM PUB_um_job_requirement" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobRequirementTable AData, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobRequirementTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2319,22 +2361,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobRequirementTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadByPrimaryKey(UmJobRequirementTable.TableId, AData, new System.Object[5]{AUnitKey, APositionName, APositionScope, AJobKey, AAbilityAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadByPrimaryKey(UmJobRequirementTable.TableId, Data, new System.Object[5]{AUnitKey, APositionName, APositionScope, AJobKey, AAbilityAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobRequirementTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AAbilityAreaName, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AAbilityAreaName, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AUnitKey, APositionName, APositionScope, AJobKey, AAbilityAreaName, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, AAbilityAreaName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobRequirementTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AUnitKey, APositionName, APositionScope, AJobKey, AAbilityAreaName, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, AAbilityAreaName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2356,28 +2399,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobRequirementTable AData, UmJobRequirementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadUsingTemplate(UmJobRequirementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadUsingTemplate(UmJobRequirementTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadUsingTemplate(UmJobRequirementTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobRequirementTable AData, UmJobRequirementRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadUsingTemplate(UmJobRequirementRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobRequirementTable AData, UmJobRequirementRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadUsingTemplate(UmJobRequirementRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobRequirementTable AData, UmJobRequirementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadUsingTemplate(UmJobRequirementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2399,22 +2443,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadUsingTemplate(UmJobRequirementTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadUsingTemplate(UmJobRequirementTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2463,23 +2508,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out UmJobRequirementTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadViaForeignKey(UmJobRequirementTable.TableId, UmJobTable.TableId, AData, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadViaForeignKey(UmJobRequirementTable.TableId, UmJobTable.TableId, Data, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
                 new System.Object[4]{AUnitKey, APositionName, APositionScope, AJobKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out UmJobRequirementTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
         {
-            LoadViaUmJob(out AData, AUnitKey, APositionName, APositionScope, AJobKey, null, ATransaction, null, 0, 0);
+            return LoadViaUmJob(AUnitKey, APositionName, APositionScope, AJobKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out UmJobRequirementTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJob(out AData, AUnitKey, APositionName, APositionScope, AJobKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJob(AUnitKey, APositionName, APositionScope, AJobKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2502,29 +2548,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobRequirementTable AData, UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadViaForeignKey(UmJobRequirementTable.TableId, UmJobTable.TableId, AData, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadViaForeignKey(UmJobRequirementTable.TableId, UmJobTable.TableId, Data, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobRequirementTable AData, UmJobRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobRequirementTable AData, UmJobRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobRequirementTable AData, UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2547,23 +2594,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadViaForeignKey(UmJobRequirementTable.TableId, UmJobTable.TableId, AData, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadViaForeignKey(UmJobRequirementTable.TableId, UmJobTable.TableId, Data, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2607,23 +2655,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobRequirementTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadViaForeignKey(UmJobRequirementTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadViaForeignKey(UmJobRequirementTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobRequirementTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobRequirementTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2646,29 +2695,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobRequirementTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadViaForeignKey(UmJobRequirementTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadViaForeignKey(UmJobRequirementTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobRequirementTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobRequirementTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobRequirementTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2691,23 +2741,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadViaForeignKey(UmJobRequirementTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadViaForeignKey(UmJobRequirementTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2751,23 +2802,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityArea(out UmJobRequirementTable AData, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadViaPtAbilityArea(String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadViaForeignKey(UmJobRequirementTable.TableId, PtAbilityAreaTable.TableId, AData, new string[1]{"pt_ability_area_name_c"},
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadViaForeignKey(UmJobRequirementTable.TableId, PtAbilityAreaTable.TableId, Data, new string[1]{"pt_ability_area_name_c"},
                 new System.Object[1]{AAbilityAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityArea(out UmJobRequirementTable AData, String AAbilityAreaName, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityArea(String AAbilityAreaName, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityArea(out AData, AAbilityAreaName, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityArea(AAbilityAreaName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityArea(out UmJobRequirementTable AData, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityArea(String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityArea(out AData, AAbilityAreaName, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityArea(AAbilityAreaName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2790,29 +2842,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobRequirementTable AData, PtAbilityAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadViaPtAbilityAreaTemplate(PtAbilityAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadViaForeignKey(UmJobRequirementTable.TableId, PtAbilityAreaTable.TableId, AData, new string[1]{"pt_ability_area_name_c"},
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadViaForeignKey(UmJobRequirementTable.TableId, PtAbilityAreaTable.TableId, Data, new string[1]{"pt_ability_area_name_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobRequirementTable AData, PtAbilityAreaRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityAreaTemplate(PtAbilityAreaRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobRequirementTable AData, PtAbilityAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityAreaTemplate(PtAbilityAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobRequirementTable AData, PtAbilityAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityAreaTemplate(PtAbilityAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2835,23 +2888,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadViaPtAbilityAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadViaForeignKey(UmJobRequirementTable.TableId, PtAbilityAreaTable.TableId, AData, new string[1]{"pt_ability_area_name_c"},
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadViaForeignKey(UmJobRequirementTable.TableId, PtAbilityAreaTable.TableId, Data, new string[1]{"pt_ability_area_name_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityAreaTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2895,23 +2949,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevel(out UmJobRequirementTable AData, Int32 AAbilityLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadViaPtAbilityLevel(Int32 AAbilityLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadViaForeignKey(UmJobRequirementTable.TableId, PtAbilityLevelTable.TableId, AData, new string[1]{"pt_ability_level_i"},
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadViaForeignKey(UmJobRequirementTable.TableId, PtAbilityLevelTable.TableId, Data, new string[1]{"pt_ability_level_i"},
                 new System.Object[1]{AAbilityLevel}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevel(out UmJobRequirementTable AData, Int32 AAbilityLevel, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityLevel(Int32 AAbilityLevel, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevel(out AData, AAbilityLevel, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevel(AAbilityLevel, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevel(out UmJobRequirementTable AData, Int32 AAbilityLevel, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityLevel(Int32 AAbilityLevel, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevel(out AData, AAbilityLevel, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevel(AAbilityLevel, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2934,29 +2989,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmJobRequirementTable AData, PtAbilityLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadViaPtAbilityLevelTemplate(PtAbilityLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadViaForeignKey(UmJobRequirementTable.TableId, PtAbilityLevelTable.TableId, AData, new string[1]{"pt_ability_level_i"},
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadViaForeignKey(UmJobRequirementTable.TableId, PtAbilityLevelTable.TableId, Data, new string[1]{"pt_ability_level_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmJobRequirementTable AData, PtAbilityLevelRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityLevelTemplate(PtAbilityLevelRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevelTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevelTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmJobRequirementTable AData, PtAbilityLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityLevelTemplate(PtAbilityLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevelTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevelTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmJobRequirementTable AData, PtAbilityLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityLevelTemplate(PtAbilityLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevelTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevelTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2979,23 +3035,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobRequirementTable LoadViaPtAbilityLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobRequirementTable();
-            LoadViaForeignKey(UmJobRequirementTable.TableId, PtAbilityLevelTable.TableId, AData, new string[1]{"pt_ability_level_i"},
+            UmJobRequirementTable Data = new UmJobRequirementTable();
+            LoadViaForeignKey(UmJobRequirementTable.TableId, PtAbilityLevelTable.TableId, Data, new string[1]{"pt_ability_level_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityLevelTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevelTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevelTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmJobRequirementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobRequirementTable LoadViaPtAbilityLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevelTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevelTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3074,22 +3131,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobLanguageTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, UmJobLanguageTable.TableId) + " FROM PUB_um_job_language" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, UmJobLanguageTable.TableId) + " FROM PUB_um_job_language" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobLanguageTable AData, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobLanguageTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3111,22 +3169,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobLanguageTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadByPrimaryKey(UmJobLanguageTable.TableId, AData, new System.Object[5]{AUnitKey, APositionName, APositionScope, AJobKey, ALanguageCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadByPrimaryKey(UmJobLanguageTable.TableId, Data, new System.Object[5]{AUnitKey, APositionName, APositionScope, AJobKey, ALanguageCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobLanguageTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String ALanguageCode, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String ALanguageCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AUnitKey, APositionName, APositionScope, AJobKey, ALanguageCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, ALanguageCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobLanguageTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AUnitKey, APositionName, APositionScope, AJobKey, ALanguageCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, ALanguageCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3148,28 +3207,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobLanguageTable AData, UmJobLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadUsingTemplate(UmJobLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadUsingTemplate(UmJobLanguageTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadUsingTemplate(UmJobLanguageTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobLanguageTable AData, UmJobLanguageRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadUsingTemplate(UmJobLanguageRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobLanguageTable AData, UmJobLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadUsingTemplate(UmJobLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobLanguageTable AData, UmJobLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadUsingTemplate(UmJobLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3191,22 +3251,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadUsingTemplate(UmJobLanguageTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadUsingTemplate(UmJobLanguageTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3255,23 +3316,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out UmJobLanguageTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadViaForeignKey(UmJobLanguageTable.TableId, UmJobTable.TableId, AData, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadViaForeignKey(UmJobLanguageTable.TableId, UmJobTable.TableId, Data, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
                 new System.Object[4]{AUnitKey, APositionName, APositionScope, AJobKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out UmJobLanguageTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
         {
-            LoadViaUmJob(out AData, AUnitKey, APositionName, APositionScope, AJobKey, null, ATransaction, null, 0, 0);
+            return LoadViaUmJob(AUnitKey, APositionName, APositionScope, AJobKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out UmJobLanguageTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJob(out AData, AUnitKey, APositionName, APositionScope, AJobKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJob(AUnitKey, APositionName, APositionScope, AJobKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3294,29 +3356,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobLanguageTable AData, UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadViaForeignKey(UmJobLanguageTable.TableId, UmJobTable.TableId, AData, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadViaForeignKey(UmJobLanguageTable.TableId, UmJobTable.TableId, Data, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobLanguageTable AData, UmJobRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobLanguageTable AData, UmJobRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobLanguageTable AData, UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3339,23 +3402,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadViaForeignKey(UmJobLanguageTable.TableId, UmJobTable.TableId, AData, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadViaForeignKey(UmJobLanguageTable.TableId, UmJobTable.TableId, Data, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3399,23 +3463,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobLanguageTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadViaForeignKey(UmJobLanguageTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadViaForeignKey(UmJobLanguageTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobLanguageTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobLanguageTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3438,29 +3503,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobLanguageTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadViaForeignKey(UmJobLanguageTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadViaForeignKey(UmJobLanguageTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobLanguageTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobLanguageTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobLanguageTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3483,23 +3549,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadViaForeignKey(UmJobLanguageTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadViaForeignKey(UmJobLanguageTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3543,23 +3610,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out UmJobLanguageTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadViaForeignKey(UmJobLanguageTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_language_code_c"},
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadViaForeignKey(UmJobLanguageTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_language_code_c"},
                 new System.Object[1]{ALanguageCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out UmJobLanguageTable AData, String ALanguageCode, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPLanguage(String ALanguageCode, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out UmJobLanguageTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3582,29 +3650,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobLanguageTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadViaForeignKey(UmJobLanguageTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_language_code_c"},
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadViaForeignKey(UmJobLanguageTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_language_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobLanguageTable AData, PLanguageRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobLanguageTable AData, PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobLanguageTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3627,23 +3696,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadViaForeignKey(UmJobLanguageTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_language_code_c"},
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadViaForeignKey(UmJobLanguageTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_language_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3687,23 +3757,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevel(out UmJobLanguageTable AData, Int32 ALanguageLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadViaPtLanguageLevel(Int32 ALanguageLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadViaForeignKey(UmJobLanguageTable.TableId, PtLanguageLevelTable.TableId, AData, new string[1]{"pt_language_level_i"},
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadViaForeignKey(UmJobLanguageTable.TableId, PtLanguageLevelTable.TableId, Data, new string[1]{"pt_language_level_i"},
                 new System.Object[1]{ALanguageLevel}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevel(out UmJobLanguageTable AData, Int32 ALanguageLevel, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPtLanguageLevel(Int32 ALanguageLevel, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevel(out AData, ALanguageLevel, null, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevel(ALanguageLevel, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevel(out UmJobLanguageTable AData, Int32 ALanguageLevel, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPtLanguageLevel(Int32 ALanguageLevel, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevel(out AData, ALanguageLevel, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevel(ALanguageLevel, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3726,29 +3797,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmJobLanguageTable AData, PtLanguageLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadViaPtLanguageLevelTemplate(PtLanguageLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadViaForeignKey(UmJobLanguageTable.TableId, PtLanguageLevelTable.TableId, AData, new string[1]{"pt_language_level_i"},
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadViaForeignKey(UmJobLanguageTable.TableId, PtLanguageLevelTable.TableId, Data, new string[1]{"pt_language_level_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmJobLanguageTable AData, PtLanguageLevelRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPtLanguageLevelTemplate(PtLanguageLevelRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevelTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevelTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmJobLanguageTable AData, PtLanguageLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPtLanguageLevelTemplate(PtLanguageLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevelTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevelTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmJobLanguageTable AData, PtLanguageLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPtLanguageLevelTemplate(PtLanguageLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevelTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevelTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3771,23 +3843,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobLanguageTable LoadViaPtLanguageLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobLanguageTable();
-            LoadViaForeignKey(UmJobLanguageTable.TableId, PtLanguageLevelTable.TableId, AData, new string[1]{"pt_language_level_i"},
+            UmJobLanguageTable Data = new UmJobLanguageTable();
+            LoadViaForeignKey(UmJobLanguageTable.TableId, PtLanguageLevelTable.TableId, Data, new string[1]{"pt_language_level_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPtLanguageLevelTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevelTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevelTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmJobLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobLanguageTable LoadViaPtLanguageLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevelTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevelTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3866,22 +3939,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobQualificationTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, UmJobQualificationTable.TableId) + " FROM PUB_um_job_qualification" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, UmJobQualificationTable.TableId) + " FROM PUB_um_job_qualification" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobQualificationTable AData, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobQualificationTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3903,22 +3977,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobQualificationTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AQualificationAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AQualificationAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadByPrimaryKey(UmJobQualificationTable.TableId, AData, new System.Object[5]{AUnitKey, APositionName, APositionScope, AJobKey, AQualificationAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadByPrimaryKey(UmJobQualificationTable.TableId, Data, new System.Object[5]{AUnitKey, APositionName, APositionScope, AJobKey, AQualificationAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobQualificationTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AQualificationAreaName, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AQualificationAreaName, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AUnitKey, APositionName, APositionScope, AJobKey, AQualificationAreaName, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, AQualificationAreaName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobQualificationTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AQualificationAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AQualificationAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AUnitKey, APositionName, APositionScope, AJobKey, AQualificationAreaName, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, AQualificationAreaName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3940,28 +4015,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobQualificationTable AData, UmJobQualificationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadUsingTemplate(UmJobQualificationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadUsingTemplate(UmJobQualificationTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadUsingTemplate(UmJobQualificationTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobQualificationTable AData, UmJobQualificationRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadUsingTemplate(UmJobQualificationRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobQualificationTable AData, UmJobQualificationRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadUsingTemplate(UmJobQualificationRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobQualificationTable AData, UmJobQualificationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadUsingTemplate(UmJobQualificationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3983,22 +4059,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadUsingTemplate(UmJobQualificationTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadUsingTemplate(UmJobQualificationTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4047,23 +4124,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out UmJobQualificationTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadViaForeignKey(UmJobQualificationTable.TableId, UmJobTable.TableId, AData, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadViaForeignKey(UmJobQualificationTable.TableId, UmJobTable.TableId, Data, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
                 new System.Object[4]{AUnitKey, APositionName, APositionScope, AJobKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out UmJobQualificationTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
         {
-            LoadViaUmJob(out AData, AUnitKey, APositionName, APositionScope, AJobKey, null, ATransaction, null, 0, 0);
+            return LoadViaUmJob(AUnitKey, APositionName, APositionScope, AJobKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out UmJobQualificationTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJob(out AData, AUnitKey, APositionName, APositionScope, AJobKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJob(AUnitKey, APositionName, APositionScope, AJobKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4086,29 +4164,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobQualificationTable AData, UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadViaForeignKey(UmJobQualificationTable.TableId, UmJobTable.TableId, AData, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadViaForeignKey(UmJobQualificationTable.TableId, UmJobTable.TableId, Data, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobQualificationTable AData, UmJobRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobQualificationTable AData, UmJobRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobQualificationTable AData, UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4131,23 +4210,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadViaForeignKey(UmJobQualificationTable.TableId, UmJobTable.TableId, AData, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadViaForeignKey(UmJobQualificationTable.TableId, UmJobTable.TableId, Data, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4191,23 +4271,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobQualificationTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadViaForeignKey(UmJobQualificationTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadViaForeignKey(UmJobQualificationTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobQualificationTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobQualificationTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4230,29 +4311,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobQualificationTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadViaForeignKey(UmJobQualificationTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadViaForeignKey(UmJobQualificationTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobQualificationTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobQualificationTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobQualificationTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4275,23 +4357,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadViaForeignKey(UmJobQualificationTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadViaForeignKey(UmJobQualificationTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4335,23 +4418,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationArea(out UmJobQualificationTable AData, String AQualificationAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadViaPtQualificationArea(String AQualificationAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadViaForeignKey(UmJobQualificationTable.TableId, PtQualificationAreaTable.TableId, AData, new string[1]{"pt_qualification_area_name_c"},
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadViaForeignKey(UmJobQualificationTable.TableId, PtQualificationAreaTable.TableId, Data, new string[1]{"pt_qualification_area_name_c"},
                 new System.Object[1]{AQualificationAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationArea(out UmJobQualificationTable AData, String AQualificationAreaName, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationArea(String AQualificationAreaName, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationArea(out AData, AQualificationAreaName, null, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationArea(AQualificationAreaName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationArea(out UmJobQualificationTable AData, String AQualificationAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationArea(String AQualificationAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationArea(out AData, AQualificationAreaName, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationArea(AQualificationAreaName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4374,29 +4458,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobQualificationTable AData, PtQualificationAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadViaPtQualificationAreaTemplate(PtQualificationAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadViaForeignKey(UmJobQualificationTable.TableId, PtQualificationAreaTable.TableId, AData, new string[1]{"pt_qualification_area_name_c"},
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadViaForeignKey(UmJobQualificationTable.TableId, PtQualificationAreaTable.TableId, Data, new string[1]{"pt_qualification_area_name_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobQualificationTable AData, PtQualificationAreaRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationAreaTemplate(PtQualificationAreaRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationAreaTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationAreaTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobQualificationTable AData, PtQualificationAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationAreaTemplate(PtQualificationAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationAreaTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationAreaTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobQualificationTable AData, PtQualificationAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationAreaTemplate(PtQualificationAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationAreaTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationAreaTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4419,23 +4504,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadViaPtQualificationAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadViaForeignKey(UmJobQualificationTable.TableId, PtQualificationAreaTable.TableId, AData, new string[1]{"pt_qualification_area_name_c"},
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadViaForeignKey(UmJobQualificationTable.TableId, PtQualificationAreaTable.TableId, Data, new string[1]{"pt_qualification_area_name_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationAreaTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationAreaTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationAreaTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationAreaTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationAreaTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationAreaTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4479,23 +4565,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationLevel(out UmJobQualificationTable AData, Int32 AQualificationLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadViaPtQualificationLevel(Int32 AQualificationLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadViaForeignKey(UmJobQualificationTable.TableId, PtQualificationLevelTable.TableId, AData, new string[1]{"pt_qualification_level_i"},
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadViaForeignKey(UmJobQualificationTable.TableId, PtQualificationLevelTable.TableId, Data, new string[1]{"pt_qualification_level_i"},
                 new System.Object[1]{AQualificationLevel}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationLevel(out UmJobQualificationTable AData, Int32 AQualificationLevel, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationLevel(Int32 AQualificationLevel, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationLevel(out AData, AQualificationLevel, null, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationLevel(AQualificationLevel, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationLevel(out UmJobQualificationTable AData, Int32 AQualificationLevel, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationLevel(Int32 AQualificationLevel, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationLevel(out AData, AQualificationLevel, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationLevel(AQualificationLevel, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4518,29 +4605,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationLevelTemplate(out UmJobQualificationTable AData, PtQualificationLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadViaPtQualificationLevelTemplate(PtQualificationLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadViaForeignKey(UmJobQualificationTable.TableId, PtQualificationLevelTable.TableId, AData, new string[1]{"pt_qualification_level_i"},
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadViaForeignKey(UmJobQualificationTable.TableId, PtQualificationLevelTable.TableId, Data, new string[1]{"pt_qualification_level_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationLevelTemplate(out UmJobQualificationTable AData, PtQualificationLevelRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationLevelTemplate(PtQualificationLevelRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationLevelTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationLevelTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationLevelTemplate(out UmJobQualificationTable AData, PtQualificationLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationLevelTemplate(PtQualificationLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationLevelTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationLevelTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationLevelTemplate(out UmJobQualificationTable AData, PtQualificationLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationLevelTemplate(PtQualificationLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationLevelTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationLevelTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4563,23 +4651,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationLevelTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobQualificationTable LoadViaPtQualificationLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobQualificationTable();
-            LoadViaForeignKey(UmJobQualificationTable.TableId, PtQualificationLevelTable.TableId, AData, new string[1]{"pt_qualification_level_i"},
+            UmJobQualificationTable Data = new UmJobQualificationTable();
+            LoadViaForeignKey(UmJobQualificationTable.TableId, PtQualificationLevelTable.TableId, Data, new string[1]{"pt_qualification_level_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationLevelTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationLevelTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationLevelTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationLevelTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtQualificationLevelTemplate(out UmJobQualificationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobQualificationTable LoadViaPtQualificationLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtQualificationLevelTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtQualificationLevelTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4658,22 +4747,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobVisionTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, UmJobVisionTable.TableId) + " FROM PUB_um_job_vision" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            UmJobVisionTable Data = new UmJobVisionTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, UmJobVisionTable.TableId) + " FROM PUB_um_job_vision" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobVisionTable AData, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out UmJobVisionTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4695,22 +4785,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobVisionTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadByPrimaryKey(UmJobVisionTable.TableId, AData, new System.Object[5]{AUnitKey, APositionName, APositionScope, AJobKey, AVisionAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadByPrimaryKey(UmJobVisionTable.TableId, Data, new System.Object[5]{AUnitKey, APositionName, APositionScope, AJobKey, AVisionAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobVisionTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AVisionAreaName, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AVisionAreaName, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AUnitKey, APositionName, APositionScope, AJobKey, AVisionAreaName, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, AVisionAreaName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmJobVisionTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadByPrimaryKey(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AUnitKey, APositionName, APositionScope, AJobKey, AVisionAreaName, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AUnitKey, APositionName, APositionScope, AJobKey, AVisionAreaName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4732,28 +4823,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobVisionTable AData, UmJobVisionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadUsingTemplate(UmJobVisionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadUsingTemplate(UmJobVisionTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadUsingTemplate(UmJobVisionTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobVisionTable AData, UmJobVisionRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadUsingTemplate(UmJobVisionRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobVisionTable AData, UmJobVisionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadUsingTemplate(UmJobVisionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobVisionTable AData, UmJobVisionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadUsingTemplate(UmJobVisionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4775,22 +4867,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadUsingTemplate(UmJobVisionTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadUsingTemplate(UmJobVisionTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4839,23 +4932,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out UmJobVisionTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadViaForeignKey(UmJobVisionTable.TableId, UmJobTable.TableId, AData, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadViaForeignKey(UmJobVisionTable.TableId, UmJobTable.TableId, Data, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
                 new System.Object[4]{AUnitKey, APositionName, APositionScope, AJobKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out UmJobVisionTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, TDBTransaction ATransaction)
         {
-            LoadViaUmJob(out AData, AUnitKey, APositionName, APositionScope, AJobKey, null, ATransaction, null, 0, 0);
+            return LoadViaUmJob(AUnitKey, APositionName, APositionScope, AJobKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJob(out UmJobVisionTable AData, Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaUmJob(Int64 AUnitKey, String APositionName, String APositionScope, Int32 AJobKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJob(out AData, AUnitKey, APositionName, APositionScope, AJobKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJob(AUnitKey, APositionName, APositionScope, AJobKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4878,29 +4972,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobVisionTable AData, UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadViaForeignKey(UmJobVisionTable.TableId, UmJobTable.TableId, AData, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadViaForeignKey(UmJobVisionTable.TableId, UmJobTable.TableId, Data, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobVisionTable AData, UmJobRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobVisionTable AData, UmJobRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobVisionTable AData, UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaUmJobTemplate(UmJobRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4923,23 +5018,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadViaForeignKey(UmJobVisionTable.TableId, UmJobTable.TableId, AData, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadViaForeignKey(UmJobVisionTable.TableId, UmJobTable.TableId, Data, new string[4]{"pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaUmJobTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaUmJobTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaUmJobTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaUmJobTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4983,23 +5079,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobVisionTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadViaForeignKey(UmJobVisionTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadViaForeignKey(UmJobVisionTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobVisionTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmJobVisionTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5022,29 +5119,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobVisionTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadViaForeignKey(UmJobVisionTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadViaForeignKey(UmJobVisionTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobVisionTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobVisionTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobVisionTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5067,23 +5165,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadViaForeignKey(UmJobVisionTable.TableId, PUnitTable.TableId, AData, new string[1]{"pm_unit_key_n"},
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadViaForeignKey(UmJobVisionTable.TableId, PUnitTable.TableId, Data, new string[1]{"pm_unit_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5127,23 +5226,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionArea(out UmJobVisionTable AData, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadViaPtVisionArea(String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadViaForeignKey(UmJobVisionTable.TableId, PtVisionAreaTable.TableId, AData, new string[1]{"pt_vision_area_name_c"},
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadViaForeignKey(UmJobVisionTable.TableId, PtVisionAreaTable.TableId, Data, new string[1]{"pt_vision_area_name_c"},
                 new System.Object[1]{AVisionAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionArea(out UmJobVisionTable AData, String AVisionAreaName, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionArea(String AVisionAreaName, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionArea(out AData, AVisionAreaName, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionArea(AVisionAreaName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionArea(out UmJobVisionTable AData, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionArea(String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionArea(out AData, AVisionAreaName, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionArea(AVisionAreaName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5166,29 +5266,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobVisionTable AData, PtVisionAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadViaPtVisionAreaTemplate(PtVisionAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadViaForeignKey(UmJobVisionTable.TableId, PtVisionAreaTable.TableId, AData, new string[1]{"pt_vision_area_name_c"},
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadViaForeignKey(UmJobVisionTable.TableId, PtVisionAreaTable.TableId, Data, new string[1]{"pt_vision_area_name_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobVisionTable AData, PtVisionAreaRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionAreaTemplate(PtVisionAreaRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobVisionTable AData, PtVisionAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionAreaTemplate(PtVisionAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobVisionTable AData, PtVisionAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionAreaTemplate(PtVisionAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5211,23 +5312,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadViaPtVisionAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadViaForeignKey(UmJobVisionTable.TableId, PtVisionAreaTable.TableId, AData, new string[1]{"pt_vision_area_name_c"},
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadViaForeignKey(UmJobVisionTable.TableId, PtVisionAreaTable.TableId, Data, new string[1]{"pt_vision_area_name_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionAreaTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5271,23 +5373,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevel(out UmJobVisionTable AData, Int32 AVisionLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadViaPtVisionLevel(Int32 AVisionLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadViaForeignKey(UmJobVisionTable.TableId, PtVisionLevelTable.TableId, AData, new string[1]{"pt_vision_level_i"},
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadViaForeignKey(UmJobVisionTable.TableId, PtVisionLevelTable.TableId, Data, new string[1]{"pt_vision_level_i"},
                 new System.Object[1]{AVisionLevel}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevel(out UmJobVisionTable AData, Int32 AVisionLevel, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionLevel(Int32 AVisionLevel, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevel(out AData, AVisionLevel, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevel(AVisionLevel, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevel(out UmJobVisionTable AData, Int32 AVisionLevel, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionLevel(Int32 AVisionLevel, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevel(out AData, AVisionLevel, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevel(AVisionLevel, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5310,29 +5413,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmJobVisionTable AData, PtVisionLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadViaPtVisionLevelTemplate(PtVisionLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadViaForeignKey(UmJobVisionTable.TableId, PtVisionLevelTable.TableId, AData, new string[1]{"pt_vision_level_i"},
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadViaForeignKey(UmJobVisionTable.TableId, PtVisionLevelTable.TableId, Data, new string[1]{"pt_vision_level_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmJobVisionTable AData, PtVisionLevelRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionLevelTemplate(PtVisionLevelRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevelTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevelTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmJobVisionTable AData, PtVisionLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionLevelTemplate(PtVisionLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevelTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevelTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmJobVisionTable AData, PtVisionLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionLevelTemplate(PtVisionLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevelTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevelTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5355,23 +5459,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmJobVisionTable LoadViaPtVisionLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmJobVisionTable();
-            LoadViaForeignKey(UmJobVisionTable.TableId, PtVisionLevelTable.TableId, AData, new string[1]{"pt_vision_level_i"},
+            UmJobVisionTable Data = new UmJobVisionTable();
+            LoadViaForeignKey(UmJobVisionTable.TableId, PtVisionLevelTable.TableId, Data, new string[1]{"pt_vision_level_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionLevelTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevelTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevelTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmJobVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmJobVisionTable LoadViaPtVisionLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevelTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevelTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5450,22 +5555,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PtAssignmentTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtAssignmentTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtAssignmentTypeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PtAssignmentTypeTable.TableId) + " FROM PUB_pt_assignment_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PtAssignmentTypeTable Data = new PtAssignmentTypeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PtAssignmentTypeTable.TableId) + " FROM PUB_pt_assignment_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PtAssignmentTypeTable AData, TDBTransaction ATransaction)
+        public static PtAssignmentTypeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PtAssignmentTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtAssignmentTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5487,22 +5593,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PtAssignmentTypeTable AData, String AAssignmentTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtAssignmentTypeTable LoadByPrimaryKey(String AAssignmentTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtAssignmentTypeTable();
-            LoadByPrimaryKey(PtAssignmentTypeTable.TableId, AData, new System.Object[1]{AAssignmentTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PtAssignmentTypeTable Data = new PtAssignmentTypeTable();
+            LoadByPrimaryKey(PtAssignmentTypeTable.TableId, Data, new System.Object[1]{AAssignmentTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PtAssignmentTypeTable AData, String AAssignmentTypeCode, TDBTransaction ATransaction)
+        public static PtAssignmentTypeTable LoadByPrimaryKey(String AAssignmentTypeCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AAssignmentTypeCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AAssignmentTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PtAssignmentTypeTable AData, String AAssignmentTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtAssignmentTypeTable LoadByPrimaryKey(String AAssignmentTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AAssignmentTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AAssignmentTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5524,28 +5631,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtAssignmentTypeTable AData, PtAssignmentTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtAssignmentTypeTable LoadUsingTemplate(PtAssignmentTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtAssignmentTypeTable();
-            LoadUsingTemplate(PtAssignmentTypeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PtAssignmentTypeTable Data = new PtAssignmentTypeTable();
+            LoadUsingTemplate(PtAssignmentTypeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtAssignmentTypeTable AData, PtAssignmentTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PtAssignmentTypeTable LoadUsingTemplate(PtAssignmentTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtAssignmentTypeTable AData, PtAssignmentTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtAssignmentTypeTable LoadUsingTemplate(PtAssignmentTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtAssignmentTypeTable AData, PtAssignmentTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtAssignmentTypeTable LoadUsingTemplate(PtAssignmentTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5567,22 +5675,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtAssignmentTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtAssignmentTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtAssignmentTypeTable();
-            LoadUsingTemplate(PtAssignmentTypeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PtAssignmentTypeTable Data = new PtAssignmentTypeTable();
+            LoadUsingTemplate(PtAssignmentTypeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtAssignmentTypeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PtAssignmentTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtAssignmentTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtAssignmentTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5666,22 +5775,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PtLeavingCodeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtLeavingCodeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtLeavingCodeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PtLeavingCodeTable.TableId) + " FROM PUB_pt_leaving_code" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PtLeavingCodeTable Data = new PtLeavingCodeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PtLeavingCodeTable.TableId) + " FROM PUB_pt_leaving_code" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PtLeavingCodeTable AData, TDBTransaction ATransaction)
+        public static PtLeavingCodeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PtLeavingCodeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtLeavingCodeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5703,22 +5813,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PtLeavingCodeTable AData, String ALeavingCodeInd, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtLeavingCodeTable LoadByPrimaryKey(String ALeavingCodeInd, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtLeavingCodeTable();
-            LoadByPrimaryKey(PtLeavingCodeTable.TableId, AData, new System.Object[1]{ALeavingCodeInd}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PtLeavingCodeTable Data = new PtLeavingCodeTable();
+            LoadByPrimaryKey(PtLeavingCodeTable.TableId, Data, new System.Object[1]{ALeavingCodeInd}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PtLeavingCodeTable AData, String ALeavingCodeInd, TDBTransaction ATransaction)
+        public static PtLeavingCodeTable LoadByPrimaryKey(String ALeavingCodeInd, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALeavingCodeInd, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALeavingCodeInd, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PtLeavingCodeTable AData, String ALeavingCodeInd, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtLeavingCodeTable LoadByPrimaryKey(String ALeavingCodeInd, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALeavingCodeInd, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALeavingCodeInd, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5740,28 +5851,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtLeavingCodeTable AData, PtLeavingCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtLeavingCodeTable LoadUsingTemplate(PtLeavingCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtLeavingCodeTable();
-            LoadUsingTemplate(PtLeavingCodeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PtLeavingCodeTable Data = new PtLeavingCodeTable();
+            LoadUsingTemplate(PtLeavingCodeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtLeavingCodeTable AData, PtLeavingCodeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PtLeavingCodeTable LoadUsingTemplate(PtLeavingCodeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtLeavingCodeTable AData, PtLeavingCodeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtLeavingCodeTable LoadUsingTemplate(PtLeavingCodeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtLeavingCodeTable AData, PtLeavingCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtLeavingCodeTable LoadUsingTemplate(PtLeavingCodeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5783,22 +5895,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtLeavingCodeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PtLeavingCodeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PtLeavingCodeTable();
-            LoadUsingTemplate(PtLeavingCodeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PtLeavingCodeTable Data = new PtLeavingCodeTable();
+            LoadUsingTemplate(PtLeavingCodeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtLeavingCodeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PtLeavingCodeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PtLeavingCodeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PtLeavingCodeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5882,22 +5995,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitAbilityTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitAbilityTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitAbilityTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, UmUnitAbilityTable.TableId) + " FROM PUB_um_unit_ability" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            UmUnitAbilityTable Data = new UmUnitAbilityTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, UmUnitAbilityTable.TableId) + " FROM PUB_um_unit_ability" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitAbilityTable AData, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitAbilityTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5919,22 +6033,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitAbilityTable AData, Int64 APartnerKey, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitAbilityTable LoadByPrimaryKey(Int64 APartnerKey, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitAbilityTable();
-            LoadByPrimaryKey(UmUnitAbilityTable.TableId, AData, new System.Object[2]{APartnerKey, AAbilityAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitAbilityTable Data = new UmUnitAbilityTable();
+            LoadByPrimaryKey(UmUnitAbilityTable.TableId, Data, new System.Object[2]{APartnerKey, AAbilityAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitAbilityTable AData, Int64 APartnerKey, String AAbilityAreaName, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadByPrimaryKey(Int64 APartnerKey, String AAbilityAreaName, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APartnerKey, AAbilityAreaName, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APartnerKey, AAbilityAreaName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitAbilityTable AData, Int64 APartnerKey, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadByPrimaryKey(Int64 APartnerKey, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APartnerKey, AAbilityAreaName, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APartnerKey, AAbilityAreaName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5956,28 +6071,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitAbilityTable AData, UmUnitAbilityRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitAbilityTable LoadUsingTemplate(UmUnitAbilityRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitAbilityTable();
-            LoadUsingTemplate(UmUnitAbilityTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitAbilityTable Data = new UmUnitAbilityTable();
+            LoadUsingTemplate(UmUnitAbilityTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitAbilityTable AData, UmUnitAbilityRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadUsingTemplate(UmUnitAbilityRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitAbilityTable AData, UmUnitAbilityRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadUsingTemplate(UmUnitAbilityRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitAbilityTable AData, UmUnitAbilityRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadUsingTemplate(UmUnitAbilityRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5999,22 +6115,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitAbilityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitAbilityTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitAbilityTable();
-            LoadUsingTemplate(UmUnitAbilityTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitAbilityTable Data = new UmUnitAbilityTable();
+            LoadUsingTemplate(UmUnitAbilityTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitAbilityTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitAbilityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6063,23 +6180,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitAbilityTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitAbilityTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitAbilityTable();
-            LoadViaForeignKey(UmUnitAbilityTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitAbilityTable Data = new UmUnitAbilityTable();
+            LoadViaForeignKey(UmUnitAbilityTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitAbilityTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitAbilityTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6102,29 +6220,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitAbilityTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitAbilityTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitAbilityTable();
-            LoadViaForeignKey(UmUnitAbilityTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitAbilityTable Data = new UmUnitAbilityTable();
+            LoadViaForeignKey(UmUnitAbilityTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitAbilityTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitAbilityTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitAbilityTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6147,23 +6266,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitAbilityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitAbilityTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitAbilityTable();
-            LoadViaForeignKey(UmUnitAbilityTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitAbilityTable Data = new UmUnitAbilityTable();
+            LoadViaForeignKey(UmUnitAbilityTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitAbilityTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitAbilityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6207,23 +6327,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityArea(out UmUnitAbilityTable AData, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitAbilityTable LoadViaPtAbilityArea(String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitAbilityTable();
-            LoadViaForeignKey(UmUnitAbilityTable.TableId, PtAbilityAreaTable.TableId, AData, new string[1]{"pt_ability_area_name_c"},
+            UmUnitAbilityTable Data = new UmUnitAbilityTable();
+            LoadViaForeignKey(UmUnitAbilityTable.TableId, PtAbilityAreaTable.TableId, Data, new string[1]{"pt_ability_area_name_c"},
                 new System.Object[1]{AAbilityAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityArea(out UmUnitAbilityTable AData, String AAbilityAreaName, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityArea(String AAbilityAreaName, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityArea(out AData, AAbilityAreaName, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityArea(AAbilityAreaName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityArea(out UmUnitAbilityTable AData, String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityArea(String AAbilityAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityArea(out AData, AAbilityAreaName, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityArea(AAbilityAreaName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6246,29 +6367,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmUnitAbilityTable AData, PtAbilityAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitAbilityTable LoadViaPtAbilityAreaTemplate(PtAbilityAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitAbilityTable();
-            LoadViaForeignKey(UmUnitAbilityTable.TableId, PtAbilityAreaTable.TableId, AData, new string[1]{"pt_ability_area_name_c"},
+            UmUnitAbilityTable Data = new UmUnitAbilityTable();
+            LoadViaForeignKey(UmUnitAbilityTable.TableId, PtAbilityAreaTable.TableId, Data, new string[1]{"pt_ability_area_name_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmUnitAbilityTable AData, PtAbilityAreaRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityAreaTemplate(PtAbilityAreaRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmUnitAbilityTable AData, PtAbilityAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityAreaTemplate(PtAbilityAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmUnitAbilityTable AData, PtAbilityAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityAreaTemplate(PtAbilityAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6291,23 +6413,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmUnitAbilityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitAbilityTable LoadViaPtAbilityAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitAbilityTable();
-            LoadViaForeignKey(UmUnitAbilityTable.TableId, PtAbilityAreaTable.TableId, AData, new string[1]{"pt_ability_area_name_c"},
+            UmUnitAbilityTable Data = new UmUnitAbilityTable();
+            LoadViaForeignKey(UmUnitAbilityTable.TableId, PtAbilityAreaTable.TableId, Data, new string[1]{"pt_ability_area_name_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmUnitAbilityTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityAreaTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityAreaTemplate(out UmUnitAbilityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityAreaTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityAreaTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6351,23 +6474,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevel(out UmUnitAbilityTable AData, Int32 AAbilityLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitAbilityTable LoadViaPtAbilityLevel(Int32 AAbilityLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitAbilityTable();
-            LoadViaForeignKey(UmUnitAbilityTable.TableId, PtAbilityLevelTable.TableId, AData, new string[1]{"pt_ability_level_i"},
+            UmUnitAbilityTable Data = new UmUnitAbilityTable();
+            LoadViaForeignKey(UmUnitAbilityTable.TableId, PtAbilityLevelTable.TableId, Data, new string[1]{"pt_ability_level_i"},
                 new System.Object[1]{AAbilityLevel}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevel(out UmUnitAbilityTable AData, Int32 AAbilityLevel, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityLevel(Int32 AAbilityLevel, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevel(out AData, AAbilityLevel, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevel(AAbilityLevel, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevel(out UmUnitAbilityTable AData, Int32 AAbilityLevel, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityLevel(Int32 AAbilityLevel, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevel(out AData, AAbilityLevel, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevel(AAbilityLevel, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6390,29 +6514,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmUnitAbilityTable AData, PtAbilityLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitAbilityTable LoadViaPtAbilityLevelTemplate(PtAbilityLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitAbilityTable();
-            LoadViaForeignKey(UmUnitAbilityTable.TableId, PtAbilityLevelTable.TableId, AData, new string[1]{"pt_ability_level_i"},
+            UmUnitAbilityTable Data = new UmUnitAbilityTable();
+            LoadViaForeignKey(UmUnitAbilityTable.TableId, PtAbilityLevelTable.TableId, Data, new string[1]{"pt_ability_level_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmUnitAbilityTable AData, PtAbilityLevelRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityLevelTemplate(PtAbilityLevelRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevelTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevelTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmUnitAbilityTable AData, PtAbilityLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityLevelTemplate(PtAbilityLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevelTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevelTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmUnitAbilityTable AData, PtAbilityLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityLevelTemplate(PtAbilityLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevelTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevelTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6435,23 +6560,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmUnitAbilityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitAbilityTable LoadViaPtAbilityLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitAbilityTable();
-            LoadViaForeignKey(UmUnitAbilityTable.TableId, PtAbilityLevelTable.TableId, AData, new string[1]{"pt_ability_level_i"},
+            UmUnitAbilityTable Data = new UmUnitAbilityTable();
+            LoadViaForeignKey(UmUnitAbilityTable.TableId, PtAbilityLevelTable.TableId, Data, new string[1]{"pt_ability_level_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmUnitAbilityTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityLevelTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevelTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevelTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtAbilityLevelTemplate(out UmUnitAbilityTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitAbilityTable LoadViaPtAbilityLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtAbilityLevelTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtAbilityLevelTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6530,22 +6656,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitLanguageTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitLanguageTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitLanguageTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, UmUnitLanguageTable.TableId) + " FROM PUB_um_unit_language" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            UmUnitLanguageTable Data = new UmUnitLanguageTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, UmUnitLanguageTable.TableId) + " FROM PUB_um_unit_language" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitLanguageTable AData, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitLanguageTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6567,22 +6694,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitLanguageTable AData, Int64 APartnerKey, String ALanguageCode, Int32 ALanguageLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitLanguageTable LoadByPrimaryKey(Int64 APartnerKey, String ALanguageCode, Int32 ALanguageLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitLanguageTable();
-            LoadByPrimaryKey(UmUnitLanguageTable.TableId, AData, new System.Object[3]{APartnerKey, ALanguageCode, ALanguageLevel}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitLanguageTable Data = new UmUnitLanguageTable();
+            LoadByPrimaryKey(UmUnitLanguageTable.TableId, Data, new System.Object[3]{APartnerKey, ALanguageCode, ALanguageLevel}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitLanguageTable AData, Int64 APartnerKey, String ALanguageCode, Int32 ALanguageLevel, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadByPrimaryKey(Int64 APartnerKey, String ALanguageCode, Int32 ALanguageLevel, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APartnerKey, ALanguageCode, ALanguageLevel, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APartnerKey, ALanguageCode, ALanguageLevel, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitLanguageTable AData, Int64 APartnerKey, String ALanguageCode, Int32 ALanguageLevel, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadByPrimaryKey(Int64 APartnerKey, String ALanguageCode, Int32 ALanguageLevel, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APartnerKey, ALanguageCode, ALanguageLevel, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APartnerKey, ALanguageCode, ALanguageLevel, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6604,28 +6732,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitLanguageTable AData, UmUnitLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitLanguageTable LoadUsingTemplate(UmUnitLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitLanguageTable();
-            LoadUsingTemplate(UmUnitLanguageTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitLanguageTable Data = new UmUnitLanguageTable();
+            LoadUsingTemplate(UmUnitLanguageTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitLanguageTable AData, UmUnitLanguageRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadUsingTemplate(UmUnitLanguageRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitLanguageTable AData, UmUnitLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadUsingTemplate(UmUnitLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitLanguageTable AData, UmUnitLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadUsingTemplate(UmUnitLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6647,22 +6776,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitLanguageTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitLanguageTable();
-            LoadUsingTemplate(UmUnitLanguageTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitLanguageTable Data = new UmUnitLanguageTable();
+            LoadUsingTemplate(UmUnitLanguageTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitLanguageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6711,23 +6841,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitLanguageTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitLanguageTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitLanguageTable();
-            LoadViaForeignKey(UmUnitLanguageTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitLanguageTable Data = new UmUnitLanguageTable();
+            LoadViaForeignKey(UmUnitLanguageTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitLanguageTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitLanguageTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6750,29 +6881,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitLanguageTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitLanguageTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitLanguageTable();
-            LoadViaForeignKey(UmUnitLanguageTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitLanguageTable Data = new UmUnitLanguageTable();
+            LoadViaForeignKey(UmUnitLanguageTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitLanguageTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitLanguageTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitLanguageTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6795,23 +6927,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitLanguageTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitLanguageTable();
-            LoadViaForeignKey(UmUnitLanguageTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitLanguageTable Data = new UmUnitLanguageTable();
+            LoadViaForeignKey(UmUnitLanguageTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitLanguageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6855,23 +6988,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out UmUnitLanguageTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitLanguageTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitLanguageTable();
-            LoadViaForeignKey(UmUnitLanguageTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_language_code_c"},
+            UmUnitLanguageTable Data = new UmUnitLanguageTable();
+            LoadViaForeignKey(UmUnitLanguageTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_language_code_c"},
                 new System.Object[1]{ALanguageCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out UmUnitLanguageTable AData, String ALanguageCode, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPLanguage(String ALanguageCode, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguage(out UmUnitLanguageTable AData, String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPLanguage(String ALanguageCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguage(out AData, ALanguageCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguage(ALanguageCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6894,29 +7028,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmUnitLanguageTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitLanguageTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitLanguageTable();
-            LoadViaForeignKey(UmUnitLanguageTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_language_code_c"},
+            UmUnitLanguageTable Data = new UmUnitLanguageTable();
+            LoadViaForeignKey(UmUnitLanguageTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_language_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmUnitLanguageTable AData, PLanguageRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmUnitLanguageTable AData, PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmUnitLanguageTable AData, PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPLanguageTemplate(PLanguageRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6939,23 +7074,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmUnitLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitLanguageTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitLanguageTable();
-            LoadViaForeignKey(UmUnitLanguageTable.TableId, PLanguageTable.TableId, AData, new string[1]{"p_language_code_c"},
+            UmUnitLanguageTable Data = new UmUnitLanguageTable();
+            LoadViaForeignKey(UmUnitLanguageTable.TableId, PLanguageTable.TableId, Data, new string[1]{"p_language_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmUnitLanguageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPLanguageTemplate(out UmUnitLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPLanguageTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPLanguageTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPLanguageTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6999,23 +7135,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevel(out UmUnitLanguageTable AData, Int32 ALanguageLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitLanguageTable LoadViaPtLanguageLevel(Int32 ALanguageLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitLanguageTable();
-            LoadViaForeignKey(UmUnitLanguageTable.TableId, PtLanguageLevelTable.TableId, AData, new string[1]{"pt_language_level_i"},
+            UmUnitLanguageTable Data = new UmUnitLanguageTable();
+            LoadViaForeignKey(UmUnitLanguageTable.TableId, PtLanguageLevelTable.TableId, Data, new string[1]{"pt_language_level_i"},
                 new System.Object[1]{ALanguageLevel}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevel(out UmUnitLanguageTable AData, Int32 ALanguageLevel, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPtLanguageLevel(Int32 ALanguageLevel, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevel(out AData, ALanguageLevel, null, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevel(ALanguageLevel, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevel(out UmUnitLanguageTable AData, Int32 ALanguageLevel, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPtLanguageLevel(Int32 ALanguageLevel, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevel(out AData, ALanguageLevel, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevel(ALanguageLevel, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7038,29 +7175,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmUnitLanguageTable AData, PtLanguageLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitLanguageTable LoadViaPtLanguageLevelTemplate(PtLanguageLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitLanguageTable();
-            LoadViaForeignKey(UmUnitLanguageTable.TableId, PtLanguageLevelTable.TableId, AData, new string[1]{"pt_language_level_i"},
+            UmUnitLanguageTable Data = new UmUnitLanguageTable();
+            LoadViaForeignKey(UmUnitLanguageTable.TableId, PtLanguageLevelTable.TableId, Data, new string[1]{"pt_language_level_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmUnitLanguageTable AData, PtLanguageLevelRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPtLanguageLevelTemplate(PtLanguageLevelRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevelTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevelTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmUnitLanguageTable AData, PtLanguageLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPtLanguageLevelTemplate(PtLanguageLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevelTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevelTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmUnitLanguageTable AData, PtLanguageLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPtLanguageLevelTemplate(PtLanguageLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevelTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevelTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7083,23 +7221,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmUnitLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitLanguageTable LoadViaPtLanguageLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitLanguageTable();
-            LoadViaForeignKey(UmUnitLanguageTable.TableId, PtLanguageLevelTable.TableId, AData, new string[1]{"pt_language_level_i"},
+            UmUnitLanguageTable Data = new UmUnitLanguageTable();
+            LoadViaForeignKey(UmUnitLanguageTable.TableId, PtLanguageLevelTable.TableId, Data, new string[1]{"pt_language_level_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmUnitLanguageTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPtLanguageLevelTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevelTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevelTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtLanguageLevelTemplate(out UmUnitLanguageTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitLanguageTable LoadViaPtLanguageLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtLanguageLevelTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtLanguageLevelTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7178,22 +7317,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitVisionTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitVisionTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitVisionTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, UmUnitVisionTable.TableId) + " FROM PUB_um_unit_vision" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            UmUnitVisionTable Data = new UmUnitVisionTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, UmUnitVisionTable.TableId) + " FROM PUB_um_unit_vision" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitVisionTable AData, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitVisionTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7215,22 +7355,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitVisionTable AData, Int64 APartnerKey, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitVisionTable LoadByPrimaryKey(Int64 APartnerKey, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitVisionTable();
-            LoadByPrimaryKey(UmUnitVisionTable.TableId, AData, new System.Object[2]{APartnerKey, AVisionAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitVisionTable Data = new UmUnitVisionTable();
+            LoadByPrimaryKey(UmUnitVisionTable.TableId, Data, new System.Object[2]{APartnerKey, AVisionAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitVisionTable AData, Int64 APartnerKey, String AVisionAreaName, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadByPrimaryKey(Int64 APartnerKey, String AVisionAreaName, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APartnerKey, AVisionAreaName, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APartnerKey, AVisionAreaName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitVisionTable AData, Int64 APartnerKey, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadByPrimaryKey(Int64 APartnerKey, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APartnerKey, AVisionAreaName, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APartnerKey, AVisionAreaName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7252,28 +7393,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitVisionTable AData, UmUnitVisionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitVisionTable LoadUsingTemplate(UmUnitVisionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitVisionTable();
-            LoadUsingTemplate(UmUnitVisionTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitVisionTable Data = new UmUnitVisionTable();
+            LoadUsingTemplate(UmUnitVisionTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitVisionTable AData, UmUnitVisionRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadUsingTemplate(UmUnitVisionRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitVisionTable AData, UmUnitVisionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadUsingTemplate(UmUnitVisionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitVisionTable AData, UmUnitVisionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadUsingTemplate(UmUnitVisionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7295,22 +7437,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitVisionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitVisionTable();
-            LoadUsingTemplate(UmUnitVisionTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitVisionTable Data = new UmUnitVisionTable();
+            LoadUsingTemplate(UmUnitVisionTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitVisionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7359,23 +7502,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitVisionTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitVisionTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitVisionTable();
-            LoadViaForeignKey(UmUnitVisionTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitVisionTable Data = new UmUnitVisionTable();
+            LoadViaForeignKey(UmUnitVisionTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitVisionTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitVisionTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7398,29 +7542,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitVisionTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitVisionTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitVisionTable();
-            LoadViaForeignKey(UmUnitVisionTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitVisionTable Data = new UmUnitVisionTable();
+            LoadViaForeignKey(UmUnitVisionTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitVisionTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitVisionTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitVisionTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7443,23 +7588,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitVisionTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitVisionTable();
-            LoadViaForeignKey(UmUnitVisionTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitVisionTable Data = new UmUnitVisionTable();
+            LoadViaForeignKey(UmUnitVisionTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitVisionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7503,23 +7649,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionArea(out UmUnitVisionTable AData, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitVisionTable LoadViaPtVisionArea(String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitVisionTable();
-            LoadViaForeignKey(UmUnitVisionTable.TableId, PtVisionAreaTable.TableId, AData, new string[1]{"pt_vision_area_name_c"},
+            UmUnitVisionTable Data = new UmUnitVisionTable();
+            LoadViaForeignKey(UmUnitVisionTable.TableId, PtVisionAreaTable.TableId, Data, new string[1]{"pt_vision_area_name_c"},
                 new System.Object[1]{AVisionAreaName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionArea(out UmUnitVisionTable AData, String AVisionAreaName, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionArea(String AVisionAreaName, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionArea(out AData, AVisionAreaName, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionArea(AVisionAreaName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionArea(out UmUnitVisionTable AData, String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionArea(String AVisionAreaName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionArea(out AData, AVisionAreaName, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionArea(AVisionAreaName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7542,29 +7689,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmUnitVisionTable AData, PtVisionAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitVisionTable LoadViaPtVisionAreaTemplate(PtVisionAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitVisionTable();
-            LoadViaForeignKey(UmUnitVisionTable.TableId, PtVisionAreaTable.TableId, AData, new string[1]{"pt_vision_area_name_c"},
+            UmUnitVisionTable Data = new UmUnitVisionTable();
+            LoadViaForeignKey(UmUnitVisionTable.TableId, PtVisionAreaTable.TableId, Data, new string[1]{"pt_vision_area_name_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmUnitVisionTable AData, PtVisionAreaRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionAreaTemplate(PtVisionAreaRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmUnitVisionTable AData, PtVisionAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionAreaTemplate(PtVisionAreaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmUnitVisionTable AData, PtVisionAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionAreaTemplate(PtVisionAreaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7587,23 +7735,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmUnitVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitVisionTable LoadViaPtVisionAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitVisionTable();
-            LoadViaForeignKey(UmUnitVisionTable.TableId, PtVisionAreaTable.TableId, AData, new string[1]{"pt_vision_area_name_c"},
+            UmUnitVisionTable Data = new UmUnitVisionTable();
+            LoadViaForeignKey(UmUnitVisionTable.TableId, PtVisionAreaTable.TableId, Data, new string[1]{"pt_vision_area_name_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmUnitVisionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionAreaTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionAreaTemplate(out UmUnitVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionAreaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionAreaTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionAreaTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7647,23 +7796,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevel(out UmUnitVisionTable AData, Int32 AVisionLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitVisionTable LoadViaPtVisionLevel(Int32 AVisionLevel, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitVisionTable();
-            LoadViaForeignKey(UmUnitVisionTable.TableId, PtVisionLevelTable.TableId, AData, new string[1]{"pt_vision_level_i"},
+            UmUnitVisionTable Data = new UmUnitVisionTable();
+            LoadViaForeignKey(UmUnitVisionTable.TableId, PtVisionLevelTable.TableId, Data, new string[1]{"pt_vision_level_i"},
                 new System.Object[1]{AVisionLevel}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevel(out UmUnitVisionTable AData, Int32 AVisionLevel, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionLevel(Int32 AVisionLevel, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevel(out AData, AVisionLevel, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevel(AVisionLevel, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevel(out UmUnitVisionTable AData, Int32 AVisionLevel, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionLevel(Int32 AVisionLevel, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevel(out AData, AVisionLevel, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevel(AVisionLevel, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7686,29 +7836,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmUnitVisionTable AData, PtVisionLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitVisionTable LoadViaPtVisionLevelTemplate(PtVisionLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitVisionTable();
-            LoadViaForeignKey(UmUnitVisionTable.TableId, PtVisionLevelTable.TableId, AData, new string[1]{"pt_vision_level_i"},
+            UmUnitVisionTable Data = new UmUnitVisionTable();
+            LoadViaForeignKey(UmUnitVisionTable.TableId, PtVisionLevelTable.TableId, Data, new string[1]{"pt_vision_level_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmUnitVisionTable AData, PtVisionLevelRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionLevelTemplate(PtVisionLevelRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevelTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevelTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmUnitVisionTable AData, PtVisionLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionLevelTemplate(PtVisionLevelRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevelTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevelTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmUnitVisionTable AData, PtVisionLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionLevelTemplate(PtVisionLevelRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevelTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevelTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7731,23 +7882,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmUnitVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitVisionTable LoadViaPtVisionLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitVisionTable();
-            LoadViaForeignKey(UmUnitVisionTable.TableId, PtVisionLevelTable.TableId, AData, new string[1]{"pt_vision_level_i"},
+            UmUnitVisionTable Data = new UmUnitVisionTable();
+            LoadViaForeignKey(UmUnitVisionTable.TableId, PtVisionLevelTable.TableId, Data, new string[1]{"pt_vision_level_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmUnitVisionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionLevelTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevelTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevelTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPtVisionLevelTemplate(out UmUnitVisionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitVisionTable LoadViaPtVisionLevelTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPtVisionLevelTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPtVisionLevelTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7826,22 +7978,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitCostTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitCostTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitCostTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, UmUnitCostTable.TableId) + " FROM PUB_um_unit_cost" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            UmUnitCostTable Data = new UmUnitCostTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, UmUnitCostTable.TableId) + " FROM PUB_um_unit_cost" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitCostTable AData, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitCostTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7863,22 +8016,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitCostTable AData, Int64 APartnerKey, System.DateTime AValidFromDate, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitCostTable LoadByPrimaryKey(Int64 APartnerKey, System.DateTime AValidFromDate, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitCostTable();
-            LoadByPrimaryKey(UmUnitCostTable.TableId, AData, new System.Object[2]{APartnerKey, AValidFromDate}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitCostTable Data = new UmUnitCostTable();
+            LoadByPrimaryKey(UmUnitCostTable.TableId, Data, new System.Object[2]{APartnerKey, AValidFromDate}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitCostTable AData, Int64 APartnerKey, System.DateTime AValidFromDate, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadByPrimaryKey(Int64 APartnerKey, System.DateTime AValidFromDate, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APartnerKey, AValidFromDate, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APartnerKey, AValidFromDate, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitCostTable AData, Int64 APartnerKey, System.DateTime AValidFromDate, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadByPrimaryKey(Int64 APartnerKey, System.DateTime AValidFromDate, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APartnerKey, AValidFromDate, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APartnerKey, AValidFromDate, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7900,28 +8054,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitCostTable AData, UmUnitCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitCostTable LoadUsingTemplate(UmUnitCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitCostTable();
-            LoadUsingTemplate(UmUnitCostTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitCostTable Data = new UmUnitCostTable();
+            LoadUsingTemplate(UmUnitCostTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitCostTable AData, UmUnitCostRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadUsingTemplate(UmUnitCostRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitCostTable AData, UmUnitCostRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadUsingTemplate(UmUnitCostRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitCostTable AData, UmUnitCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadUsingTemplate(UmUnitCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7943,22 +8098,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitCostTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitCostTable();
-            LoadUsingTemplate(UmUnitCostTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitCostTable Data = new UmUnitCostTable();
+            LoadUsingTemplate(UmUnitCostTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -8007,23 +8163,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitCostTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitCostTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitCostTable();
-            LoadViaForeignKey(UmUnitCostTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitCostTable Data = new UmUnitCostTable();
+            LoadViaForeignKey(UmUnitCostTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitCostTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitCostTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8046,29 +8203,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitCostTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitCostTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitCostTable();
-            LoadViaForeignKey(UmUnitCostTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitCostTable Data = new UmUnitCostTable();
+            LoadViaForeignKey(UmUnitCostTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitCostTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitCostTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitCostTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8091,23 +8249,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitCostTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitCostTable();
-            LoadViaForeignKey(UmUnitCostTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitCostTable Data = new UmUnitCostTable();
+            LoadViaForeignKey(UmUnitCostTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8151,23 +8310,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out UmUnitCostTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitCostTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitCostTable();
-            LoadViaForeignKey(UmUnitCostTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_local_currency_code_c"},
+            UmUnitCostTable Data = new UmUnitCostTable();
+            LoadViaForeignKey(UmUnitCostTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_local_currency_code_c"},
                 new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out UmUnitCostTable AData, String ACurrencyCode, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaACurrency(String ACurrencyCode, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, null, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out UmUnitCostTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8190,29 +8350,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out UmUnitCostTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitCostTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitCostTable();
-            LoadViaForeignKey(UmUnitCostTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_local_currency_code_c"},
+            UmUnitCostTable Data = new UmUnitCostTable();
+            LoadViaForeignKey(UmUnitCostTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_local_currency_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out UmUnitCostTable AData, ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out UmUnitCostTable AData, ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out UmUnitCostTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8235,23 +8396,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out UmUnitCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitCostTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitCostTable();
-            LoadViaForeignKey(UmUnitCostTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_local_currency_code_c"},
+            UmUnitCostTable Data = new UmUnitCostTable();
+            LoadViaForeignKey(UmUnitCostTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_local_currency_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out UmUnitCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out UmUnitCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitCostTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8330,22 +8492,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitEvaluationTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitEvaluationTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitEvaluationTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, UmUnitEvaluationTable.TableId) + " FROM PUB_um_unit_evaluation" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            UmUnitEvaluationTable Data = new UmUnitEvaluationTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, UmUnitEvaluationTable.TableId) + " FROM PUB_um_unit_evaluation" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitEvaluationTable AData, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out UmUnitEvaluationTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -8367,22 +8530,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitEvaluationTable AData, Int64 APartnerKey, System.DateTime ADateOfEvaluation, Decimal AEvaluationNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitEvaluationTable LoadByPrimaryKey(Int64 APartnerKey, System.DateTime ADateOfEvaluation, Decimal AEvaluationNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitEvaluationTable();
-            LoadByPrimaryKey(UmUnitEvaluationTable.TableId, AData, new System.Object[3]{APartnerKey, ADateOfEvaluation, AEvaluationNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitEvaluationTable Data = new UmUnitEvaluationTable();
+            LoadByPrimaryKey(UmUnitEvaluationTable.TableId, Data, new System.Object[3]{APartnerKey, ADateOfEvaluation, AEvaluationNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitEvaluationTable AData, Int64 APartnerKey, System.DateTime ADateOfEvaluation, Decimal AEvaluationNumber, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadByPrimaryKey(Int64 APartnerKey, System.DateTime ADateOfEvaluation, Decimal AEvaluationNumber, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APartnerKey, ADateOfEvaluation, AEvaluationNumber, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APartnerKey, ADateOfEvaluation, AEvaluationNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out UmUnitEvaluationTable AData, Int64 APartnerKey, System.DateTime ADateOfEvaluation, Decimal AEvaluationNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadByPrimaryKey(Int64 APartnerKey, System.DateTime ADateOfEvaluation, Decimal AEvaluationNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, APartnerKey, ADateOfEvaluation, AEvaluationNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(APartnerKey, ADateOfEvaluation, AEvaluationNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -8404,28 +8568,29 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitEvaluationTable AData, UmUnitEvaluationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitEvaluationTable LoadUsingTemplate(UmUnitEvaluationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitEvaluationTable();
-            LoadUsingTemplate(UmUnitEvaluationTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitEvaluationTable Data = new UmUnitEvaluationTable();
+            LoadUsingTemplate(UmUnitEvaluationTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitEvaluationTable AData, UmUnitEvaluationRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadUsingTemplate(UmUnitEvaluationRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitEvaluationTable AData, UmUnitEvaluationRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadUsingTemplate(UmUnitEvaluationRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitEvaluationTable AData, UmUnitEvaluationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadUsingTemplate(UmUnitEvaluationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -8447,22 +8612,23 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitEvaluationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitEvaluationTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitEvaluationTable();
-            LoadUsingTemplate(UmUnitEvaluationTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            UmUnitEvaluationTable Data = new UmUnitEvaluationTable();
+            LoadUsingTemplate(UmUnitEvaluationTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitEvaluationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out UmUnitEvaluationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -8511,23 +8677,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitEvaluationTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitEvaluationTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitEvaluationTable();
-            LoadViaForeignKey(UmUnitEvaluationTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitEvaluationTable Data = new UmUnitEvaluationTable();
+            LoadViaForeignKey(UmUnitEvaluationTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitEvaluationTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out UmUnitEvaluationTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8550,29 +8717,30 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitEvaluationTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitEvaluationTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitEvaluationTable();
-            LoadViaForeignKey(UmUnitEvaluationTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitEvaluationTable Data = new UmUnitEvaluationTable();
+            LoadViaForeignKey(UmUnitEvaluationTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitEvaluationTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitEvaluationTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitEvaluationTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -8595,23 +8763,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitEvaluationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static UmUnitEvaluationTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new UmUnitEvaluationTable();
-            LoadViaForeignKey(UmUnitEvaluationTable.TableId, PUnitTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            UmUnitEvaluationTable Data = new UmUnitEvaluationTable();
+            LoadViaForeignKey(UmUnitEvaluationTable.TableId, PUnitTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitEvaluationTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out UmUnitEvaluationTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static UmUnitEvaluationTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated

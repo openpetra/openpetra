@@ -71,22 +71,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcConferenceTable.TableId) + " FROM PUB_pc_conference" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcConferenceTable Data = new PcConferenceTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcConferenceTable.TableId) + " FROM PUB_pc_conference" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceTable AData, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -108,22 +109,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadByPrimaryKey(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceTable();
-            LoadByPrimaryKey(PcConferenceTable.TableId, AData, new System.Object[1]{AConferenceKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceTable Data = new PcConferenceTable();
+            LoadByPrimaryKey(PcConferenceTable.TableId, Data, new System.Object[1]{AConferenceKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceTable AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadByPrimaryKey(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadByPrimaryKey(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -145,28 +147,29 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadUsingTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceTable();
-            LoadUsingTemplate(PcConferenceTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceTable Data = new PcConferenceTable();
+            LoadUsingTemplate(PcConferenceTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceTable AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadUsingTemplate(PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceTable AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadUsingTemplate(PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadUsingTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -188,22 +191,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceTable();
-            LoadUsingTemplate(PcConferenceTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceTable Data = new PcConferenceTable();
+            LoadUsingTemplate(PcConferenceTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -252,23 +256,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out PcConferenceTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceTable();
-            LoadViaForeignKey(PcConferenceTable.TableId, PUnitTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcConferenceTable Data = new PcConferenceTable();
+            LoadViaForeignKey(PcConferenceTable.TableId, PUnitTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out PcConferenceTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out PcConferenceTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -291,29 +296,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcConferenceTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceTable();
-            LoadViaForeignKey(PcConferenceTable.TableId, PUnitTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcConferenceTable Data = new PcConferenceTable();
+            LoadViaForeignKey(PcConferenceTable.TableId, PUnitTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcConferenceTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcConferenceTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcConferenceTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -336,23 +342,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceTable();
-            LoadViaForeignKey(PcConferenceTable.TableId, PUnitTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcConferenceTable Data = new PcConferenceTable();
+            LoadViaForeignKey(PcConferenceTable.TableId, PUnitTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -396,23 +403,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out PcConferenceTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceTable();
-            LoadViaForeignKey(PcConferenceTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            PcConferenceTable Data = new PcConferenceTable();
+            LoadViaForeignKey(PcConferenceTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out PcConferenceTable AData, String ACurrencyCode, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaACurrency(String ACurrencyCode, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, null, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out PcConferenceTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -435,29 +443,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PcConferenceTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceTable();
-            LoadViaForeignKey(PcConferenceTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            PcConferenceTable Data = new PcConferenceTable();
+            LoadViaForeignKey(PcConferenceTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PcConferenceTable AData, ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PcConferenceTable AData, ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PcConferenceTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -480,23 +489,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceTable();
-            LoadViaForeignKey(PcConferenceTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            PcConferenceTable Data = new PcConferenceTable();
+            LoadViaForeignKey(PcConferenceTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -545,25 +555,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionType(out PcConferenceTable AData, String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaPcConferenceOptionType(String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcConferenceTable();
-            FillDataSet.Tables.Add(AData);
+            PcConferenceTable Data = new PcConferenceTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcConferenceOptionType(FillDataSet, AOptionTypeCode, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionType(out PcConferenceTable AData, String AOptionTypeCode, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPcConferenceOptionType(String AOptionTypeCode, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionType(out AData, AOptionTypeCode, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionType(AOptionTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionType(out PcConferenceTable AData, String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPcConferenceOptionType(String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionType(out AData, AOptionTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionType(AOptionTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -590,31 +601,32 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceTable AData, PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaPcConferenceOptionTypeTemplate(PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcConferenceTable();
-            FillDataSet.Tables.Add(AData);
+            PcConferenceTable Data = new PcConferenceTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcConferenceOptionTypeTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceTable AData, PcConferenceOptionTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPcConferenceOptionTypeTemplate(PcConferenceOptionTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceTable AData, PcConferenceOptionTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPcConferenceOptionTypeTemplate(PcConferenceOptionTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceTable AData, PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPcConferenceOptionTypeTemplate(PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -641,25 +653,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaPcConferenceOptionTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcConferenceTable();
-            FillDataSet.Tables.Add(AData);
+            PcConferenceTable Data = new PcConferenceTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcConferenceOptionTypeTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPcConferenceOptionTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPcConferenceOptionTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -716,25 +729,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcConferenceTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaPPerson(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcConferenceTable();
-            FillDataSet.Tables.Add(AData);
+            PcConferenceTable Data = new PcConferenceTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPerson(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcConferenceTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPPerson(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPerson(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPerson(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcConferenceTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPPerson(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPerson(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPerson(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -761,31 +775,32 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcConferenceTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcConferenceTable();
-            FillDataSet.Tables.Add(AData);
+            PcConferenceTable Data = new PcConferenceTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPersonTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcConferenceTable AData, PPersonRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcConferenceTable AData, PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcConferenceTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -812,25 +827,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcConferenceTable();
-            FillDataSet.Tables.Add(AData);
+            PcConferenceTable Data = new PcConferenceTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPPersonTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -887,25 +903,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPVenue(out PcConferenceTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaPVenue(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcConferenceTable();
-            FillDataSet.Tables.Add(AData);
+            PcConferenceTable Data = new PcConferenceTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPVenue(FillDataSet, APartnerKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPVenue(out PcConferenceTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPVenue(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPVenue(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPVenue(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenue(out PcConferenceTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPVenue(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenue(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenue(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -932,31 +949,32 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceTable AData, PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcConferenceTable();
-            FillDataSet.Tables.Add(AData);
+            PcConferenceTable Data = new PcConferenceTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPVenueTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceTable AData, PVenueRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceTable AData, PVenueRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceTable AData, PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -983,25 +1001,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceTable LoadViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcConferenceTable();
-            FillDataSet.Tables.Add(AData);
+            PcConferenceTable Data = new PcConferenceTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPVenueTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceTable LoadViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -1088,22 +1107,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcCostTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcCostTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcCostTypeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcCostTypeTable.TableId) + " FROM PUB_pc_cost_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcCostTypeTable Data = new PcCostTypeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcCostTypeTable.TableId) + " FROM PUB_pc_cost_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcCostTypeTable AData, TDBTransaction ATransaction)
+        public static PcCostTypeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcCostTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcCostTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1125,22 +1145,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcCostTypeTable AData, String ACostTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcCostTypeTable LoadByPrimaryKey(String ACostTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcCostTypeTable();
-            LoadByPrimaryKey(PcCostTypeTable.TableId, AData, new System.Object[1]{ACostTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcCostTypeTable Data = new PcCostTypeTable();
+            LoadByPrimaryKey(PcCostTypeTable.TableId, Data, new System.Object[1]{ACostTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcCostTypeTable AData, String ACostTypeCode, TDBTransaction ATransaction)
+        public static PcCostTypeTable LoadByPrimaryKey(String ACostTypeCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACostTypeCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACostTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcCostTypeTable AData, String ACostTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcCostTypeTable LoadByPrimaryKey(String ACostTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACostTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACostTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1162,28 +1183,29 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcCostTypeTable AData, PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcCostTypeTable LoadUsingTemplate(PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcCostTypeTable();
-            LoadUsingTemplate(PcCostTypeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcCostTypeTable Data = new PcCostTypeTable();
+            LoadUsingTemplate(PcCostTypeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcCostTypeTable AData, PcCostTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcCostTypeTable LoadUsingTemplate(PcCostTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcCostTypeTable AData, PcCostTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcCostTypeTable LoadUsingTemplate(PcCostTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcCostTypeTable AData, PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcCostTypeTable LoadUsingTemplate(PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1205,22 +1227,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcCostTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcCostTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcCostTypeTable();
-            LoadUsingTemplate(PcCostTypeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcCostTypeTable Data = new PcCostTypeTable();
+            LoadUsingTemplate(PcCostTypeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcCostTypeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcCostTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcCostTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcCostTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1304,22 +1327,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceOptionTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTypeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcConferenceOptionTypeTable.TableId) + " FROM PUB_pc_conference_option_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcConferenceOptionTypeTable Data = new PcConferenceOptionTypeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcConferenceOptionTypeTable.TableId) + " FROM PUB_pc_conference_option_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceOptionTypeTable AData, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceOptionTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1341,22 +1365,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceOptionTypeTable AData, String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTypeTable LoadByPrimaryKey(String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTypeTable();
-            LoadByPrimaryKey(PcConferenceOptionTypeTable.TableId, AData, new System.Object[1]{AOptionTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceOptionTypeTable Data = new PcConferenceOptionTypeTable();
+            LoadByPrimaryKey(PcConferenceOptionTypeTable.TableId, Data, new System.Object[1]{AOptionTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceOptionTypeTable AData, String AOptionTypeCode, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadByPrimaryKey(String AOptionTypeCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AOptionTypeCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AOptionTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceOptionTypeTable AData, String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadByPrimaryKey(String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AOptionTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AOptionTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1378,28 +1403,29 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTypeTable AData, PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTypeTable LoadUsingTemplate(PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTypeTable();
-            LoadUsingTemplate(PcConferenceOptionTypeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceOptionTypeTable Data = new PcConferenceOptionTypeTable();
+            LoadUsingTemplate(PcConferenceOptionTypeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTypeTable AData, PcConferenceOptionTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadUsingTemplate(PcConferenceOptionTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTypeTable AData, PcConferenceOptionTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadUsingTemplate(PcConferenceOptionTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTypeTable AData, PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadUsingTemplate(PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1421,22 +1447,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTypeTable();
-            LoadUsingTemplate(PcConferenceOptionTypeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceOptionTypeTable Data = new PcConferenceOptionTypeTable();
+            LoadUsingTemplate(PcConferenceOptionTypeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTypeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1490,25 +1517,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcConferenceOptionTypeTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTypeTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcConferenceOptionTypeTable();
-            FillDataSet.Tables.Add(AData);
+            PcConferenceOptionTypeTable Data = new PcConferenceOptionTypeTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcConference(FillDataSet, AConferenceKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcConferenceOptionTypeTable AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadViaPcConference(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcConferenceOptionTypeTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1535,31 +1563,32 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTypeTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTypeTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcConferenceOptionTypeTable();
-            FillDataSet.Tables.Add(AData);
+            PcConferenceOptionTypeTable Data = new PcConferenceOptionTypeTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcConferenceTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTypeTable AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTypeTable AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTypeTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1586,25 +1615,26 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTypeTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcConferenceOptionTypeTable();
-            FillDataSet.Tables.Add(AData);
+            PcConferenceOptionTypeTable Data = new PcConferenceOptionTypeTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcConferenceTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTypeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTypeTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -1691,22 +1721,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceOptionTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcConferenceOptionTable.TableId) + " FROM PUB_pc_conference_option" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcConferenceOptionTable Data = new PcConferenceOptionTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcConferenceOptionTable.TableId) + " FROM PUB_pc_conference_option" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceOptionTable AData, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceOptionTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1728,22 +1759,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceOptionTable AData, Int64 AConferenceKey, String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTable LoadByPrimaryKey(Int64 AConferenceKey, String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTable();
-            LoadByPrimaryKey(PcConferenceOptionTable.TableId, AData, new System.Object[2]{AConferenceKey, AOptionTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceOptionTable Data = new PcConferenceOptionTable();
+            LoadByPrimaryKey(PcConferenceOptionTable.TableId, Data, new System.Object[2]{AConferenceKey, AOptionTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceOptionTable AData, Int64 AConferenceKey, String AOptionTypeCode, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadByPrimaryKey(Int64 AConferenceKey, String AOptionTypeCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, AOptionTypeCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, AOptionTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceOptionTable AData, Int64 AConferenceKey, String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadByPrimaryKey(Int64 AConferenceKey, String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, AOptionTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, AOptionTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1765,28 +1797,29 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTable AData, PcConferenceOptionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTable LoadUsingTemplate(PcConferenceOptionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTable();
-            LoadUsingTemplate(PcConferenceOptionTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceOptionTable Data = new PcConferenceOptionTable();
+            LoadUsingTemplate(PcConferenceOptionTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTable AData, PcConferenceOptionRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadUsingTemplate(PcConferenceOptionRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTable AData, PcConferenceOptionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadUsingTemplate(PcConferenceOptionRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTable AData, PcConferenceOptionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadUsingTemplate(PcConferenceOptionRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1808,22 +1841,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTable();
-            LoadUsingTemplate(PcConferenceOptionTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceOptionTable Data = new PcConferenceOptionTable();
+            LoadUsingTemplate(PcConferenceOptionTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceOptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1872,23 +1906,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcConferenceOptionTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTable();
-            LoadViaForeignKey(PcConferenceOptionTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcConferenceOptionTable Data = new PcConferenceOptionTable();
+            LoadViaForeignKey(PcConferenceOptionTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 new System.Object[1]{AConferenceKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcConferenceOptionTable AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConference(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcConferenceOptionTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1911,29 +1946,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTable();
-            LoadViaForeignKey(PcConferenceOptionTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcConferenceOptionTable Data = new PcConferenceOptionTable();
+            LoadViaForeignKey(PcConferenceOptionTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTable AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTable AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1956,23 +1992,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTable();
-            LoadViaForeignKey(PcConferenceOptionTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcConferenceOptionTable Data = new PcConferenceOptionTable();
+            LoadViaForeignKey(PcConferenceOptionTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceOptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2016,23 +2053,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionType(out PcConferenceOptionTable AData, String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTable LoadViaPcConferenceOptionType(String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTable();
-            LoadViaForeignKey(PcConferenceOptionTable.TableId, PcConferenceOptionTypeTable.TableId, AData, new string[1]{"pc_option_type_code_c"},
+            PcConferenceOptionTable Data = new PcConferenceOptionTable();
+            LoadViaForeignKey(PcConferenceOptionTable.TableId, PcConferenceOptionTypeTable.TableId, Data, new string[1]{"pc_option_type_code_c"},
                 new System.Object[1]{AOptionTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionType(out PcConferenceOptionTable AData, String AOptionTypeCode, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConferenceOptionType(String AOptionTypeCode, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionType(out AData, AOptionTypeCode, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionType(AOptionTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionType(out PcConferenceOptionTable AData, String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConferenceOptionType(String AOptionTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionType(out AData, AOptionTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionType(AOptionTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2055,29 +2093,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceOptionTable AData, PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTable LoadViaPcConferenceOptionTypeTemplate(PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTable();
-            LoadViaForeignKey(PcConferenceOptionTable.TableId, PcConferenceOptionTypeTable.TableId, AData, new string[1]{"pc_option_type_code_c"},
+            PcConferenceOptionTable Data = new PcConferenceOptionTable();
+            LoadViaForeignKey(PcConferenceOptionTable.TableId, PcConferenceOptionTypeTable.TableId, Data, new string[1]{"pc_option_type_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceOptionTable AData, PcConferenceOptionTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConferenceOptionTypeTemplate(PcConferenceOptionTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceOptionTable AData, PcConferenceOptionTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConferenceOptionTypeTemplate(PcConferenceOptionTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceOptionTable AData, PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConferenceOptionTypeTemplate(PcConferenceOptionTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2100,23 +2139,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceOptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceOptionTable LoadViaPcConferenceOptionTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceOptionTable();
-            LoadViaForeignKey(PcConferenceOptionTable.TableId, PcConferenceOptionTypeTable.TableId, AData, new string[1]{"pc_option_type_code_c"},
+            PcConferenceOptionTable Data = new PcConferenceOptionTable();
+            LoadViaForeignKey(PcConferenceOptionTable.TableId, PcConferenceOptionTypeTable.TableId, Data, new string[1]{"pc_option_type_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceOptionTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConferenceOptionTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceOptionTypeTemplate(out PcConferenceOptionTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceOptionTable LoadViaPcConferenceOptionTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceOptionTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceOptionTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2195,22 +2235,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcDiscountCriteriaTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountCriteriaTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountCriteriaTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcDiscountCriteriaTable.TableId) + " FROM PUB_pc_discount_criteria" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcDiscountCriteriaTable Data = new PcDiscountCriteriaTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcDiscountCriteriaTable.TableId) + " FROM PUB_pc_discount_criteria" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcDiscountCriteriaTable AData, TDBTransaction ATransaction)
+        public static PcDiscountCriteriaTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcDiscountCriteriaTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountCriteriaTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2232,22 +2273,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcDiscountCriteriaTable AData, String ADiscountCriteriaCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountCriteriaTable LoadByPrimaryKey(String ADiscountCriteriaCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountCriteriaTable();
-            LoadByPrimaryKey(PcDiscountCriteriaTable.TableId, AData, new System.Object[1]{ADiscountCriteriaCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcDiscountCriteriaTable Data = new PcDiscountCriteriaTable();
+            LoadByPrimaryKey(PcDiscountCriteriaTable.TableId, Data, new System.Object[1]{ADiscountCriteriaCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcDiscountCriteriaTable AData, String ADiscountCriteriaCode, TDBTransaction ATransaction)
+        public static PcDiscountCriteriaTable LoadByPrimaryKey(String ADiscountCriteriaCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ADiscountCriteriaCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ADiscountCriteriaCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcDiscountCriteriaTable AData, String ADiscountCriteriaCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountCriteriaTable LoadByPrimaryKey(String ADiscountCriteriaCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ADiscountCriteriaCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ADiscountCriteriaCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2269,28 +2311,29 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountCriteriaTable AData, PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountCriteriaTable LoadUsingTemplate(PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountCriteriaTable();
-            LoadUsingTemplate(PcDiscountCriteriaTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcDiscountCriteriaTable Data = new PcDiscountCriteriaTable();
+            LoadUsingTemplate(PcDiscountCriteriaTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountCriteriaTable AData, PcDiscountCriteriaRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcDiscountCriteriaTable LoadUsingTemplate(PcDiscountCriteriaRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountCriteriaTable AData, PcDiscountCriteriaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountCriteriaTable LoadUsingTemplate(PcDiscountCriteriaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountCriteriaTable AData, PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountCriteriaTable LoadUsingTemplate(PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2312,22 +2355,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountCriteriaTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountCriteriaTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountCriteriaTable();
-            LoadUsingTemplate(PcDiscountCriteriaTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcDiscountCriteriaTable Data = new PcDiscountCriteriaTable();
+            LoadUsingTemplate(PcDiscountCriteriaTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountCriteriaTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcDiscountCriteriaTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountCriteriaTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountCriteriaTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2411,22 +2455,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcDiscountTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcDiscountTable.TableId) + " FROM PUB_pc_discount" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcDiscountTable Data = new PcDiscountTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcDiscountTable.TableId) + " FROM PUB_pc_discount" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcDiscountTable AData, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcDiscountTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2448,22 +2493,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcDiscountTable AData, Int64 AConferenceKey, String ADiscountCriteriaCode, String ACostTypeCode, String AValidity, Int32 AUpToAge, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountTable LoadByPrimaryKey(Int64 AConferenceKey, String ADiscountCriteriaCode, String ACostTypeCode, String AValidity, Int32 AUpToAge, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountTable();
-            LoadByPrimaryKey(PcDiscountTable.TableId, AData, new System.Object[5]{AConferenceKey, ADiscountCriteriaCode, ACostTypeCode, AValidity, AUpToAge}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcDiscountTable Data = new PcDiscountTable();
+            LoadByPrimaryKey(PcDiscountTable.TableId, Data, new System.Object[5]{AConferenceKey, ADiscountCriteriaCode, ACostTypeCode, AValidity, AUpToAge}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcDiscountTable AData, Int64 AConferenceKey, String ADiscountCriteriaCode, String ACostTypeCode, String AValidity, Int32 AUpToAge, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadByPrimaryKey(Int64 AConferenceKey, String ADiscountCriteriaCode, String ACostTypeCode, String AValidity, Int32 AUpToAge, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, ADiscountCriteriaCode, ACostTypeCode, AValidity, AUpToAge, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, ADiscountCriteriaCode, ACostTypeCode, AValidity, AUpToAge, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcDiscountTable AData, Int64 AConferenceKey, String ADiscountCriteriaCode, String ACostTypeCode, String AValidity, Int32 AUpToAge, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadByPrimaryKey(Int64 AConferenceKey, String ADiscountCriteriaCode, String ACostTypeCode, String AValidity, Int32 AUpToAge, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, ADiscountCriteriaCode, ACostTypeCode, AValidity, AUpToAge, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, ADiscountCriteriaCode, ACostTypeCode, AValidity, AUpToAge, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2485,28 +2531,29 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountTable AData, PcDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountTable LoadUsingTemplate(PcDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountTable();
-            LoadUsingTemplate(PcDiscountTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcDiscountTable Data = new PcDiscountTable();
+            LoadUsingTemplate(PcDiscountTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountTable AData, PcDiscountRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadUsingTemplate(PcDiscountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountTable AData, PcDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadUsingTemplate(PcDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountTable AData, PcDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadUsingTemplate(PcDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2528,22 +2575,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountTable();
-            LoadUsingTemplate(PcDiscountTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcDiscountTable Data = new PcDiscountTable();
+            LoadUsingTemplate(PcDiscountTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2592,23 +2640,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcDiscountTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountTable();
-            LoadViaForeignKey(PcDiscountTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcDiscountTable Data = new PcDiscountTable();
+            LoadViaForeignKey(PcDiscountTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 new System.Object[1]{AConferenceKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcDiscountTable AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcConference(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcDiscountTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2631,29 +2680,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcDiscountTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountTable();
-            LoadViaForeignKey(PcDiscountTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcDiscountTable Data = new PcDiscountTable();
+            LoadViaForeignKey(PcDiscountTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcDiscountTable AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcDiscountTable AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcDiscountTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2676,23 +2726,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountTable();
-            LoadViaForeignKey(PcDiscountTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcDiscountTable Data = new PcDiscountTable();
+            LoadViaForeignKey(PcDiscountTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2736,23 +2787,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcDiscountCriteria(out PcDiscountTable AData, String ADiscountCriteriaCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountTable LoadViaPcDiscountCriteria(String ADiscountCriteriaCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountTable();
-            LoadViaForeignKey(PcDiscountTable.TableId, PcDiscountCriteriaTable.TableId, AData, new string[1]{"pc_discount_criteria_code_c"},
+            PcDiscountTable Data = new PcDiscountTable();
+            LoadViaForeignKey(PcDiscountTable.TableId, PcDiscountCriteriaTable.TableId, Data, new string[1]{"pc_discount_criteria_code_c"},
                 new System.Object[1]{ADiscountCriteriaCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcDiscountCriteria(out PcDiscountTable AData, String ADiscountCriteriaCode, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcDiscountCriteria(String ADiscountCriteriaCode, TDBTransaction ATransaction)
         {
-            LoadViaPcDiscountCriteria(out AData, ADiscountCriteriaCode, null, ATransaction, null, 0, 0);
+            return LoadViaPcDiscountCriteria(ADiscountCriteriaCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcDiscountCriteria(out PcDiscountTable AData, String ADiscountCriteriaCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcDiscountCriteria(String ADiscountCriteriaCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcDiscountCriteria(out AData, ADiscountCriteriaCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcDiscountCriteria(ADiscountCriteriaCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2775,29 +2827,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcDiscountCriteriaTemplate(out PcDiscountTable AData, PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountTable LoadViaPcDiscountCriteriaTemplate(PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountTable();
-            LoadViaForeignKey(PcDiscountTable.TableId, PcDiscountCriteriaTable.TableId, AData, new string[1]{"pc_discount_criteria_code_c"},
+            PcDiscountTable Data = new PcDiscountTable();
+            LoadViaForeignKey(PcDiscountTable.TableId, PcDiscountCriteriaTable.TableId, Data, new string[1]{"pc_discount_criteria_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcDiscountCriteriaTemplate(out PcDiscountTable AData, PcDiscountCriteriaRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcDiscountCriteriaTemplate(PcDiscountCriteriaRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcDiscountCriteriaTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcDiscountCriteriaTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcDiscountCriteriaTemplate(out PcDiscountTable AData, PcDiscountCriteriaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcDiscountCriteriaTemplate(PcDiscountCriteriaRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcDiscountCriteriaTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcDiscountCriteriaTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcDiscountCriteriaTemplate(out PcDiscountTable AData, PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcDiscountCriteriaTemplate(PcDiscountCriteriaRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcDiscountCriteriaTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcDiscountCriteriaTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2820,23 +2873,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcDiscountCriteriaTemplate(out PcDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountTable LoadViaPcDiscountCriteriaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountTable();
-            LoadViaForeignKey(PcDiscountTable.TableId, PcDiscountCriteriaTable.TableId, AData, new string[1]{"pc_discount_criteria_code_c"},
+            PcDiscountTable Data = new PcDiscountTable();
+            LoadViaForeignKey(PcDiscountTable.TableId, PcDiscountCriteriaTable.TableId, Data, new string[1]{"pc_discount_criteria_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcDiscountCriteriaTemplate(out PcDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcDiscountCriteriaTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcDiscountCriteriaTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcDiscountCriteriaTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcDiscountCriteriaTemplate(out PcDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcDiscountCriteriaTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcDiscountCriteriaTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcDiscountCriteriaTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2880,23 +2934,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcCostType(out PcDiscountTable AData, String ACostTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountTable LoadViaPcCostType(String ACostTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountTable();
-            LoadViaForeignKey(PcDiscountTable.TableId, PcCostTypeTable.TableId, AData, new string[1]{"pc_cost_type_code_c"},
+            PcDiscountTable Data = new PcDiscountTable();
+            LoadViaForeignKey(PcDiscountTable.TableId, PcCostTypeTable.TableId, Data, new string[1]{"pc_cost_type_code_c"},
                 new System.Object[1]{ACostTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcCostType(out PcDiscountTable AData, String ACostTypeCode, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcCostType(String ACostTypeCode, TDBTransaction ATransaction)
         {
-            LoadViaPcCostType(out AData, ACostTypeCode, null, ATransaction, null, 0, 0);
+            return LoadViaPcCostType(ACostTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcCostType(out PcDiscountTable AData, String ACostTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcCostType(String ACostTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcCostType(out AData, ACostTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcCostType(ACostTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2919,29 +2974,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcDiscountTable AData, PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountTable LoadViaPcCostTypeTemplate(PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountTable();
-            LoadViaForeignKey(PcDiscountTable.TableId, PcCostTypeTable.TableId, AData, new string[1]{"pc_cost_type_code_c"},
+            PcDiscountTable Data = new PcDiscountTable();
+            LoadViaForeignKey(PcDiscountTable.TableId, PcCostTypeTable.TableId, Data, new string[1]{"pc_cost_type_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcDiscountTable AData, PcCostTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcCostTypeTemplate(PcCostTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcCostTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcCostTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcDiscountTable AData, PcCostTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcCostTypeTemplate(PcCostTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcCostTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcCostTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcDiscountTable AData, PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcCostTypeTemplate(PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcCostTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcCostTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2964,23 +3020,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcDiscountTable LoadViaPcCostTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcDiscountTable();
-            LoadViaForeignKey(PcDiscountTable.TableId, PcCostTypeTable.TableId, AData, new string[1]{"pc_cost_type_code_c"},
+            PcDiscountTable Data = new PcDiscountTable();
+            LoadViaForeignKey(PcDiscountTable.TableId, PcCostTypeTable.TableId, Data, new string[1]{"pc_cost_type_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcCostTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcCostTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcCostTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcDiscountTable LoadViaPcCostTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcCostTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcCostTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3059,22 +3116,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcAttendeeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcAttendeeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcAttendeeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcAttendeeTable.TableId) + " FROM PUB_pc_attendee" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcAttendeeTable Data = new PcAttendeeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcAttendeeTable.TableId) + " FROM PUB_pc_attendee" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcAttendeeTable AData, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcAttendeeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3096,22 +3154,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcAttendeeTable AData, Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcAttendeeTable LoadByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcAttendeeTable();
-            LoadByPrimaryKey(PcAttendeeTable.TableId, AData, new System.Object[2]{AConferenceKey, APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcAttendeeTable Data = new PcAttendeeTable();
+            LoadByPrimaryKey(PcAttendeeTable.TableId, Data, new System.Object[2]{AConferenceKey, APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcAttendeeTable AData, Int64 AConferenceKey, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcAttendeeTable AData, Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3133,28 +3192,29 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcAttendeeTable AData, PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcAttendeeTable LoadUsingTemplate(PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcAttendeeTable();
-            LoadUsingTemplate(PcAttendeeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcAttendeeTable Data = new PcAttendeeTable();
+            LoadUsingTemplate(PcAttendeeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcAttendeeTable AData, PcAttendeeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadUsingTemplate(PcAttendeeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcAttendeeTable AData, PcAttendeeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadUsingTemplate(PcAttendeeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcAttendeeTable AData, PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadUsingTemplate(PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3176,22 +3236,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcAttendeeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcAttendeeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcAttendeeTable();
-            LoadUsingTemplate(PcAttendeeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcAttendeeTable Data = new PcAttendeeTable();
+            LoadUsingTemplate(PcAttendeeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcAttendeeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcAttendeeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3240,23 +3301,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcAttendeeTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcAttendeeTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcAttendeeTable();
-            LoadViaForeignKey(PcAttendeeTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcAttendeeTable Data = new PcAttendeeTable();
+            LoadViaForeignKey(PcAttendeeTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 new System.Object[1]{AConferenceKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcAttendeeTable AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPcConference(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcAttendeeTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3279,29 +3341,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcAttendeeTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcAttendeeTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcAttendeeTable();
-            LoadViaForeignKey(PcAttendeeTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcAttendeeTable Data = new PcAttendeeTable();
+            LoadViaForeignKey(PcAttendeeTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcAttendeeTable AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcAttendeeTable AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcAttendeeTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3324,23 +3387,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcAttendeeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcAttendeeTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcAttendeeTable();
-            LoadViaForeignKey(PcAttendeeTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcAttendeeTable Data = new PcAttendeeTable();
+            LoadViaForeignKey(PcAttendeeTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcAttendeeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcAttendeeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3384,23 +3448,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcAttendeeTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcAttendeeTable LoadViaPPerson(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcAttendeeTable();
-            LoadViaForeignKey(PcAttendeeTable.TableId, PPersonTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PcAttendeeTable Data = new PcAttendeeTable();
+            LoadViaForeignKey(PcAttendeeTable.TableId, PPersonTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcAttendeeTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPPerson(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPerson(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPerson(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcAttendeeTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPPerson(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPerson(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPerson(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3423,29 +3488,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcAttendeeTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcAttendeeTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcAttendeeTable();
-            LoadViaForeignKey(PcAttendeeTable.TableId, PPersonTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PcAttendeeTable Data = new PcAttendeeTable();
+            LoadViaForeignKey(PcAttendeeTable.TableId, PPersonTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcAttendeeTable AData, PPersonRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcAttendeeTable AData, PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcAttendeeTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3468,23 +3534,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcAttendeeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcAttendeeTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcAttendeeTable();
-            LoadViaForeignKey(PcAttendeeTable.TableId, PPersonTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PcAttendeeTable Data = new PcAttendeeTable();
+            LoadViaForeignKey(PcAttendeeTable.TableId, PPersonTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcAttendeeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcAttendeeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3528,23 +3595,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out PcAttendeeTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcAttendeeTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcAttendeeTable();
-            LoadViaForeignKey(PcAttendeeTable.TableId, PUnitTable.TableId, AData, new string[1]{"pc_home_office_key_n"},
+            PcAttendeeTable Data = new PcAttendeeTable();
+            LoadViaForeignKey(PcAttendeeTable.TableId, PUnitTable.TableId, Data, new string[1]{"pc_home_office_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out PcAttendeeTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out PcAttendeeTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3567,29 +3635,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcAttendeeTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcAttendeeTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcAttendeeTable();
-            LoadViaForeignKey(PcAttendeeTable.TableId, PUnitTable.TableId, AData, new string[1]{"pc_home_office_key_n"},
+            PcAttendeeTable Data = new PcAttendeeTable();
+            LoadViaForeignKey(PcAttendeeTable.TableId, PUnitTable.TableId, Data, new string[1]{"pc_home_office_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcAttendeeTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcAttendeeTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcAttendeeTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3612,23 +3681,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcAttendeeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcAttendeeTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcAttendeeTable();
-            LoadViaForeignKey(PcAttendeeTable.TableId, PUnitTable.TableId, AData, new string[1]{"pc_home_office_key_n"},
+            PcAttendeeTable Data = new PcAttendeeTable();
+            LoadViaForeignKey(PcAttendeeTable.TableId, PUnitTable.TableId, Data, new string[1]{"pc_home_office_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcAttendeeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcAttendeeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcAttendeeTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3707,22 +3777,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceCostTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceCostTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceCostTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcConferenceCostTable.TableId) + " FROM PUB_pc_conference_cost" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcConferenceCostTable Data = new PcConferenceCostTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcConferenceCostTable.TableId) + " FROM PUB_pc_conference_cost" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceCostTable AData, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceCostTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3744,22 +3815,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceCostTable AData, Int64 AConferenceKey, Int32 AOptionDays, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceCostTable LoadByPrimaryKey(Int64 AConferenceKey, Int32 AOptionDays, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceCostTable();
-            LoadByPrimaryKey(PcConferenceCostTable.TableId, AData, new System.Object[2]{AConferenceKey, AOptionDays}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceCostTable Data = new PcConferenceCostTable();
+            LoadByPrimaryKey(PcConferenceCostTable.TableId, Data, new System.Object[2]{AConferenceKey, AOptionDays}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceCostTable AData, Int64 AConferenceKey, Int32 AOptionDays, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadByPrimaryKey(Int64 AConferenceKey, Int32 AOptionDays, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, AOptionDays, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, AOptionDays, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceCostTable AData, Int64 AConferenceKey, Int32 AOptionDays, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadByPrimaryKey(Int64 AConferenceKey, Int32 AOptionDays, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, AOptionDays, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, AOptionDays, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3781,28 +3853,29 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceCostTable AData, PcConferenceCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceCostTable LoadUsingTemplate(PcConferenceCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceCostTable();
-            LoadUsingTemplate(PcConferenceCostTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceCostTable Data = new PcConferenceCostTable();
+            LoadUsingTemplate(PcConferenceCostTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceCostTable AData, PcConferenceCostRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadUsingTemplate(PcConferenceCostRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceCostTable AData, PcConferenceCostRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadUsingTemplate(PcConferenceCostRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceCostTable AData, PcConferenceCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadUsingTemplate(PcConferenceCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3824,22 +3897,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceCostTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceCostTable();
-            LoadUsingTemplate(PcConferenceCostTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceCostTable Data = new PcConferenceCostTable();
+            LoadUsingTemplate(PcConferenceCostTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3888,23 +3962,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcConferenceCostTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceCostTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceCostTable();
-            LoadViaForeignKey(PcConferenceCostTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcConferenceCostTable Data = new PcConferenceCostTable();
+            LoadViaForeignKey(PcConferenceCostTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 new System.Object[1]{AConferenceKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcConferenceCostTable AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadViaPcConference(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcConferenceCostTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3927,29 +4002,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceCostTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceCostTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceCostTable();
-            LoadViaForeignKey(PcConferenceCostTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcConferenceCostTable Data = new PcConferenceCostTable();
+            LoadViaForeignKey(PcConferenceCostTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceCostTable AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceCostTable AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceCostTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3972,23 +4048,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceCostTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceCostTable();
-            LoadViaForeignKey(PcConferenceCostTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcConferenceCostTable Data = new PcConferenceCostTable();
+            LoadViaForeignKey(PcConferenceCostTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceCostTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4067,22 +4144,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcExtraCostTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcExtraCostTable.TableId) + " FROM PUB_pc_extra_cost" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcExtraCostTable Data = new PcExtraCostTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcExtraCostTable.TableId) + " FROM PUB_pc_extra_cost" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcExtraCostTable AData, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcExtraCostTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4104,22 +4182,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcExtraCostTable AData, Int64 AConferenceKey, Int64 APartnerKey, Int32 AExtraCostKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, Int32 AExtraCostKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadByPrimaryKey(PcExtraCostTable.TableId, AData, new System.Object[3]{AConferenceKey, APartnerKey, AExtraCostKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadByPrimaryKey(PcExtraCostTable.TableId, Data, new System.Object[3]{AConferenceKey, APartnerKey, AExtraCostKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcExtraCostTable AData, Int64 AConferenceKey, Int64 APartnerKey, Int32 AExtraCostKey, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, Int32 AExtraCostKey, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, APartnerKey, AExtraCostKey, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, APartnerKey, AExtraCostKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcExtraCostTable AData, Int64 AConferenceKey, Int64 APartnerKey, Int32 AExtraCostKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, Int32 AExtraCostKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, APartnerKey, AExtraCostKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, APartnerKey, AExtraCostKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4141,28 +4220,29 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcExtraCostTable AData, PcExtraCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadUsingTemplate(PcExtraCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadUsingTemplate(PcExtraCostTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadUsingTemplate(PcExtraCostTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcExtraCostTable AData, PcExtraCostRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadUsingTemplate(PcExtraCostRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcExtraCostTable AData, PcExtraCostRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadUsingTemplate(PcExtraCostRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcExtraCostTable AData, PcExtraCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadUsingTemplate(PcExtraCostRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4184,22 +4264,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadUsingTemplate(PcExtraCostTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadUsingTemplate(PcExtraCostTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4248,23 +4329,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcAttendee(out PcExtraCostTable AData, Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPcAttendee(Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PcAttendeeTable.TableId, AData, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PcAttendeeTable.TableId, Data, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
                 new System.Object[2]{AConferenceKey, APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcAttendee(out PcExtraCostTable AData, Int64 AConferenceKey, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcAttendee(Int64 AConferenceKey, Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendee(out AData, AConferenceKey, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcAttendee(AConferenceKey, APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcAttendee(out PcExtraCostTable AData, Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcAttendee(Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendee(out AData, AConferenceKey, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcAttendee(AConferenceKey, APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4287,29 +4369,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcExtraCostTable AData, PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PcAttendeeTable.TableId, AData, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PcAttendeeTable.TableId, Data, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcExtraCostTable AData, PcAttendeeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcExtraCostTable AData, PcAttendeeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcExtraCostTable AData, PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4332,23 +4415,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPcAttendeeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PcAttendeeTable.TableId, AData, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PcAttendeeTable.TableId, Data, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcAttendeeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcAttendeeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4392,23 +4476,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcExtraCostTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 new System.Object[1]{AConferenceKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcExtraCostTable AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcConference(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcExtraCostTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4431,29 +4516,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcExtraCostTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcExtraCostTable AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcExtraCostTable AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcExtraCostTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4476,23 +4562,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4536,23 +4623,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcExtraCostTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPPerson(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PPersonTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PPersonTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcExtraCostTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPPerson(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPerson(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPerson(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcExtraCostTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPPerson(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPerson(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPerson(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4575,29 +4663,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcExtraCostTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PPersonTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PPersonTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcExtraCostTable AData, PPersonRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcExtraCostTable AData, PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcExtraCostTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4620,23 +4709,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PPersonTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PPersonTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4680,23 +4770,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcCostType(out PcExtraCostTable AData, String ACostTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPcCostType(String ACostTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PcCostTypeTable.TableId, AData, new string[1]{"pc_cost_type_code_c"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PcCostTypeTable.TableId, Data, new string[1]{"pc_cost_type_code_c"},
                 new System.Object[1]{ACostTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcCostType(out PcExtraCostTable AData, String ACostTypeCode, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcCostType(String ACostTypeCode, TDBTransaction ATransaction)
         {
-            LoadViaPcCostType(out AData, ACostTypeCode, null, ATransaction, null, 0, 0);
+            return LoadViaPcCostType(ACostTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcCostType(out PcExtraCostTable AData, String ACostTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcCostType(String ACostTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcCostType(out AData, ACostTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcCostType(ACostTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4719,29 +4810,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcExtraCostTable AData, PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPcCostTypeTemplate(PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PcCostTypeTable.TableId, AData, new string[1]{"pc_cost_type_code_c"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PcCostTypeTable.TableId, Data, new string[1]{"pc_cost_type_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcExtraCostTable AData, PcCostTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcCostTypeTemplate(PcCostTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcCostTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcCostTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcExtraCostTable AData, PcCostTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcCostTypeTemplate(PcCostTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcCostTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcCostTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcExtraCostTable AData, PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcCostTypeTemplate(PcCostTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcCostTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcCostTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4764,23 +4856,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPcCostTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PcCostTypeTable.TableId, AData, new string[1]{"pc_cost_type_code_c"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PcCostTypeTable.TableId, Data, new string[1]{"pc_cost_type_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcCostTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcCostTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcCostTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcCostTypeTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPcCostTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcCostTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcCostTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4824,23 +4917,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out PcExtraCostTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PUnitTable.TableId, AData, new string[1]{"pc_authorising_field_n"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PUnitTable.TableId, Data, new string[1]{"pc_authorising_field_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out PcExtraCostTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnit(out PcExtraCostTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnit(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4863,29 +4957,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcExtraCostTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PUnitTable.TableId, AData, new string[1]{"pc_authorising_field_n"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PUnitTable.TableId, Data, new string[1]{"pc_authorising_field_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcExtraCostTable AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcExtraCostTable AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcExtraCostTable AData, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4908,23 +5003,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcExtraCostTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcExtraCostTable();
-            LoadViaForeignKey(PcExtraCostTable.TableId, PUnitTable.TableId, AData, new string[1]{"pc_authorising_field_n"},
+            PcExtraCostTable Data = new PcExtraCostTable();
+            LoadViaForeignKey(PcExtraCostTable.TableId, PUnitTable.TableId, Data, new string[1]{"pc_authorising_field_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPUnitTemplate(out PcExtraCostTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcExtraCostTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPUnitTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5003,22 +5099,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcEarlyLateTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcEarlyLateTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcEarlyLateTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcEarlyLateTable.TableId) + " FROM PUB_pc_early_late" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcEarlyLateTable Data = new PcEarlyLateTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcEarlyLateTable.TableId) + " FROM PUB_pc_early_late" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcEarlyLateTable AData, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcEarlyLateTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5040,22 +5137,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcEarlyLateTable AData, Int64 AConferenceKey, System.DateTime AApplicable, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcEarlyLateTable LoadByPrimaryKey(Int64 AConferenceKey, System.DateTime AApplicable, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcEarlyLateTable();
-            LoadByPrimaryKey(PcEarlyLateTable.TableId, AData, new System.Object[2]{AConferenceKey, AApplicable}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcEarlyLateTable Data = new PcEarlyLateTable();
+            LoadByPrimaryKey(PcEarlyLateTable.TableId, Data, new System.Object[2]{AConferenceKey, AApplicable}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcEarlyLateTable AData, Int64 AConferenceKey, System.DateTime AApplicable, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadByPrimaryKey(Int64 AConferenceKey, System.DateTime AApplicable, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, AApplicable, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, AApplicable, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcEarlyLateTable AData, Int64 AConferenceKey, System.DateTime AApplicable, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadByPrimaryKey(Int64 AConferenceKey, System.DateTime AApplicable, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, AApplicable, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, AApplicable, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5077,28 +5175,29 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcEarlyLateTable AData, PcEarlyLateRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcEarlyLateTable LoadUsingTemplate(PcEarlyLateRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcEarlyLateTable();
-            LoadUsingTemplate(PcEarlyLateTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcEarlyLateTable Data = new PcEarlyLateTable();
+            LoadUsingTemplate(PcEarlyLateTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcEarlyLateTable AData, PcEarlyLateRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadUsingTemplate(PcEarlyLateRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcEarlyLateTable AData, PcEarlyLateRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadUsingTemplate(PcEarlyLateRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcEarlyLateTable AData, PcEarlyLateRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadUsingTemplate(PcEarlyLateRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5120,22 +5219,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcEarlyLateTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcEarlyLateTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcEarlyLateTable();
-            LoadUsingTemplate(PcEarlyLateTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcEarlyLateTable Data = new PcEarlyLateTable();
+            LoadUsingTemplate(PcEarlyLateTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcEarlyLateTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcEarlyLateTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5184,23 +5284,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcEarlyLateTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcEarlyLateTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcEarlyLateTable();
-            LoadViaForeignKey(PcEarlyLateTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcEarlyLateTable Data = new PcEarlyLateTable();
+            LoadViaForeignKey(PcEarlyLateTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 new System.Object[1]{AConferenceKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcEarlyLateTable AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadViaPcConference(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcEarlyLateTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5223,29 +5324,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcEarlyLateTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcEarlyLateTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcEarlyLateTable();
-            LoadViaForeignKey(PcEarlyLateTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcEarlyLateTable Data = new PcEarlyLateTable();
+            LoadViaForeignKey(PcEarlyLateTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcEarlyLateTable AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcEarlyLateTable AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcEarlyLateTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5268,23 +5370,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcEarlyLateTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcEarlyLateTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcEarlyLateTable();
-            LoadViaForeignKey(PcEarlyLateTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcEarlyLateTable Data = new PcEarlyLateTable();
+            LoadViaForeignKey(PcEarlyLateTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcEarlyLateTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcEarlyLateTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcEarlyLateTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5363,22 +5466,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcGroupTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcGroupTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcGroupTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcGroupTable.TableId) + " FROM PUB_pc_group" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcGroupTable Data = new PcGroupTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcGroupTable.TableId) + " FROM PUB_pc_group" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcGroupTable AData, TDBTransaction ATransaction)
+        public static PcGroupTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcGroupTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5400,22 +5504,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcGroupTable AData, Int64 AConferenceKey, Int64 APartnerKey, String AGroupType, String AGroupName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcGroupTable LoadByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, String AGroupType, String AGroupName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcGroupTable();
-            LoadByPrimaryKey(PcGroupTable.TableId, AData, new System.Object[4]{AConferenceKey, APartnerKey, AGroupType, AGroupName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcGroupTable Data = new PcGroupTable();
+            LoadByPrimaryKey(PcGroupTable.TableId, Data, new System.Object[4]{AConferenceKey, APartnerKey, AGroupType, AGroupName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcGroupTable AData, Int64 AConferenceKey, Int64 APartnerKey, String AGroupType, String AGroupName, TDBTransaction ATransaction)
+        public static PcGroupTable LoadByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, String AGroupType, String AGroupName, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, APartnerKey, AGroupType, AGroupName, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, APartnerKey, AGroupType, AGroupName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcGroupTable AData, Int64 AConferenceKey, Int64 APartnerKey, String AGroupType, String AGroupName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadByPrimaryKey(Int64 AConferenceKey, Int64 APartnerKey, String AGroupType, String AGroupName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, APartnerKey, AGroupType, AGroupName, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, APartnerKey, AGroupType, AGroupName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5437,28 +5542,29 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcGroupTable AData, PcGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcGroupTable LoadUsingTemplate(PcGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcGroupTable();
-            LoadUsingTemplate(PcGroupTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcGroupTable Data = new PcGroupTable();
+            LoadUsingTemplate(PcGroupTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcGroupTable AData, PcGroupRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcGroupTable LoadUsingTemplate(PcGroupRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcGroupTable AData, PcGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadUsingTemplate(PcGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcGroupTable AData, PcGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadUsingTemplate(PcGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5480,22 +5586,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcGroupTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcGroupTable();
-            LoadUsingTemplate(PcGroupTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcGroupTable Data = new PcGroupTable();
+            LoadUsingTemplate(PcGroupTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcGroupTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5544,23 +5651,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcAttendee(out PcGroupTable AData, Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcGroupTable LoadViaPcAttendee(Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcGroupTable();
-            LoadViaForeignKey(PcGroupTable.TableId, PcAttendeeTable.TableId, AData, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
+            PcGroupTable Data = new PcGroupTable();
+            LoadViaForeignKey(PcGroupTable.TableId, PcAttendeeTable.TableId, Data, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
                 new System.Object[2]{AConferenceKey, APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcAttendee(out PcGroupTable AData, Int64 AConferenceKey, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcAttendee(Int64 AConferenceKey, Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendee(out AData, AConferenceKey, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcAttendee(AConferenceKey, APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcAttendee(out PcGroupTable AData, Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcAttendee(Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendee(out AData, AConferenceKey, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcAttendee(AConferenceKey, APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5583,29 +5691,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcGroupTable AData, PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcGroupTable LoadViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcGroupTable();
-            LoadViaForeignKey(PcGroupTable.TableId, PcAttendeeTable.TableId, AData, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
+            PcGroupTable Data = new PcGroupTable();
+            LoadViaForeignKey(PcGroupTable.TableId, PcAttendeeTable.TableId, Data, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcGroupTable AData, PcAttendeeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcGroupTable AData, PcAttendeeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcGroupTable AData, PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5628,23 +5737,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcGroupTable LoadViaPcAttendeeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcGroupTable();
-            LoadViaForeignKey(PcGroupTable.TableId, PcAttendeeTable.TableId, AData, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
+            PcGroupTable Data = new PcGroupTable();
+            LoadViaForeignKey(PcGroupTable.TableId, PcAttendeeTable.TableId, Data, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcAttendeeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcAttendeeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5688,23 +5798,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcGroupTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcGroupTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcGroupTable();
-            LoadViaForeignKey(PcGroupTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcGroupTable Data = new PcGroupTable();
+            LoadViaForeignKey(PcGroupTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 new System.Object[1]{AConferenceKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcGroupTable AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcConference(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcGroupTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5727,29 +5838,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcGroupTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcGroupTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcGroupTable();
-            LoadViaForeignKey(PcGroupTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcGroupTable Data = new PcGroupTable();
+            LoadViaForeignKey(PcGroupTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcGroupTable AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcGroupTable AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcGroupTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5772,23 +5884,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcGroupTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcGroupTable();
-            LoadViaForeignKey(PcGroupTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcGroupTable Data = new PcGroupTable();
+            LoadViaForeignKey(PcGroupTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5832,23 +5945,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcGroupTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcGroupTable LoadViaPPerson(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcGroupTable();
-            LoadViaForeignKey(PcGroupTable.TableId, PPersonTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PcGroupTable Data = new PcGroupTable();
+            LoadViaForeignKey(PcGroupTable.TableId, PPersonTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcGroupTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPPerson(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPerson(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPerson(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcGroupTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPPerson(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPerson(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPerson(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5871,29 +5985,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcGroupTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcGroupTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcGroupTable();
-            LoadViaForeignKey(PcGroupTable.TableId, PPersonTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PcGroupTable Data = new PcGroupTable();
+            LoadViaForeignKey(PcGroupTable.TableId, PPersonTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcGroupTable AData, PPersonRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcGroupTable AData, PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcGroupTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5916,23 +6031,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcGroupTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcGroupTable();
-            LoadViaForeignKey(PcGroupTable.TableId, PPersonTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PcGroupTable Data = new PcGroupTable();
+            LoadViaForeignKey(PcGroupTable.TableId, PPersonTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcGroupTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6011,22 +6127,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcSupplementTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcSupplementTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcSupplementTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcSupplementTable.TableId) + " FROM PUB_pc_supplement" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcSupplementTable Data = new PcSupplementTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcSupplementTable.TableId) + " FROM PUB_pc_supplement" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcSupplementTable AData, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcSupplementTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6048,22 +6165,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcSupplementTable AData, Int64 AConferenceKey, String AXyzTbdType, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcSupplementTable LoadByPrimaryKey(Int64 AConferenceKey, String AXyzTbdType, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcSupplementTable();
-            LoadByPrimaryKey(PcSupplementTable.TableId, AData, new System.Object[2]{AConferenceKey, AXyzTbdType}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcSupplementTable Data = new PcSupplementTable();
+            LoadByPrimaryKey(PcSupplementTable.TableId, Data, new System.Object[2]{AConferenceKey, AXyzTbdType}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcSupplementTable AData, Int64 AConferenceKey, String AXyzTbdType, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadByPrimaryKey(Int64 AConferenceKey, String AXyzTbdType, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, AXyzTbdType, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, AXyzTbdType, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcSupplementTable AData, Int64 AConferenceKey, String AXyzTbdType, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadByPrimaryKey(Int64 AConferenceKey, String AXyzTbdType, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, AXyzTbdType, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, AXyzTbdType, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6085,28 +6203,29 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcSupplementTable AData, PcSupplementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcSupplementTable LoadUsingTemplate(PcSupplementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcSupplementTable();
-            LoadUsingTemplate(PcSupplementTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcSupplementTable Data = new PcSupplementTable();
+            LoadUsingTemplate(PcSupplementTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcSupplementTable AData, PcSupplementRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadUsingTemplate(PcSupplementRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcSupplementTable AData, PcSupplementRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadUsingTemplate(PcSupplementRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcSupplementTable AData, PcSupplementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadUsingTemplate(PcSupplementRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6128,22 +6247,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcSupplementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcSupplementTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcSupplementTable();
-            LoadUsingTemplate(PcSupplementTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcSupplementTable Data = new PcSupplementTable();
+            LoadUsingTemplate(PcSupplementTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcSupplementTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcSupplementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6192,23 +6312,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcSupplementTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcSupplementTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcSupplementTable();
-            LoadViaForeignKey(PcSupplementTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcSupplementTable Data = new PcSupplementTable();
+            LoadViaForeignKey(PcSupplementTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 new System.Object[1]{AConferenceKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcSupplementTable AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadViaPcConference(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcSupplementTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6231,29 +6352,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcSupplementTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcSupplementTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcSupplementTable();
-            LoadViaForeignKey(PcSupplementTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcSupplementTable Data = new PcSupplementTable();
+            LoadViaForeignKey(PcSupplementTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcSupplementTable AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcSupplementTable AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcSupplementTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6276,23 +6398,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcSupplementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcSupplementTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcSupplementTable();
-            LoadViaForeignKey(PcSupplementTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcSupplementTable Data = new PcSupplementTable();
+            LoadViaForeignKey(PcSupplementTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcSupplementTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcSupplementTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcSupplementTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6371,22 +6494,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceVenueTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceVenueTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceVenueTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcConferenceVenueTable.TableId) + " FROM PUB_pc_conference_venue" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcConferenceVenueTable Data = new PcConferenceVenueTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcConferenceVenueTable.TableId) + " FROM PUB_pc_conference_venue" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceVenueTable AData, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcConferenceVenueTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6408,22 +6532,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceVenueTable AData, Int64 AConferenceKey, Int64 AVenueKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceVenueTable LoadByPrimaryKey(Int64 AConferenceKey, Int64 AVenueKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceVenueTable();
-            LoadByPrimaryKey(PcConferenceVenueTable.TableId, AData, new System.Object[2]{AConferenceKey, AVenueKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceVenueTable Data = new PcConferenceVenueTable();
+            LoadByPrimaryKey(PcConferenceVenueTable.TableId, Data, new System.Object[2]{AConferenceKey, AVenueKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceVenueTable AData, Int64 AConferenceKey, Int64 AVenueKey, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadByPrimaryKey(Int64 AConferenceKey, Int64 AVenueKey, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, AVenueKey, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, AVenueKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcConferenceVenueTable AData, Int64 AConferenceKey, Int64 AVenueKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadByPrimaryKey(Int64 AConferenceKey, Int64 AVenueKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AConferenceKey, AVenueKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AConferenceKey, AVenueKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6445,28 +6570,29 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceVenueTable AData, PcConferenceVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceVenueTable LoadUsingTemplate(PcConferenceVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceVenueTable();
-            LoadUsingTemplate(PcConferenceVenueTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceVenueTable Data = new PcConferenceVenueTable();
+            LoadUsingTemplate(PcConferenceVenueTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceVenueTable AData, PcConferenceVenueRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadUsingTemplate(PcConferenceVenueRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceVenueTable AData, PcConferenceVenueRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadUsingTemplate(PcConferenceVenueRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceVenueTable AData, PcConferenceVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadUsingTemplate(PcConferenceVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6488,22 +6614,23 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceVenueTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceVenueTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceVenueTable();
-            LoadUsingTemplate(PcConferenceVenueTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcConferenceVenueTable Data = new PcConferenceVenueTable();
+            LoadUsingTemplate(PcConferenceVenueTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceVenueTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcConferenceVenueTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6552,23 +6679,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcConferenceVenueTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceVenueTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceVenueTable();
-            LoadViaForeignKey(PcConferenceVenueTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcConferenceVenueTable Data = new PcConferenceVenueTable();
+            LoadViaForeignKey(PcConferenceVenueTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 new System.Object[1]{AConferenceKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcConferenceVenueTable AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPcConference(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcConferenceVenueTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6591,29 +6719,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceVenueTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceVenueTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceVenueTable();
-            LoadViaForeignKey(PcConferenceVenueTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcConferenceVenueTable Data = new PcConferenceVenueTable();
+            LoadViaForeignKey(PcConferenceVenueTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceVenueTable AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceVenueTable AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceVenueTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6636,23 +6765,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceVenueTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceVenueTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceVenueTable();
-            LoadViaForeignKey(PcConferenceVenueTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcConferenceVenueTable Data = new PcConferenceVenueTable();
+            LoadViaForeignKey(PcConferenceVenueTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceVenueTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcConferenceVenueTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6696,23 +6826,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPVenue(out PcConferenceVenueTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceVenueTable LoadViaPVenue(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceVenueTable();
-            LoadViaForeignKey(PcConferenceVenueTable.TableId, PVenueTable.TableId, AData, new string[1]{"p_venue_key_n"},
+            PcConferenceVenueTable Data = new PcConferenceVenueTable();
+            LoadViaForeignKey(PcConferenceVenueTable.TableId, PVenueTable.TableId, Data, new string[1]{"p_venue_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPVenue(out PcConferenceVenueTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPVenue(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPVenue(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPVenue(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenue(out PcConferenceVenueTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPVenue(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenue(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenue(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6735,29 +6866,30 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceVenueTable AData, PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceVenueTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceVenueTable();
-            LoadViaForeignKey(PcConferenceVenueTable.TableId, PVenueTable.TableId, AData, new string[1]{"p_venue_key_n"},
+            PcConferenceVenueTable Data = new PcConferenceVenueTable();
+            LoadViaForeignKey(PcConferenceVenueTable.TableId, PVenueTable.TableId, Data, new string[1]{"p_venue_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceVenueTable AData, PVenueRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceVenueTable AData, PVenueRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceVenueTable AData, PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6780,23 +6912,24 @@ namespace Ict.Petra.Shared.MConference.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceVenueTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcConferenceVenueTable LoadViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcConferenceVenueTable();
-            LoadViaForeignKey(PcConferenceVenueTable.TableId, PVenueTable.TableId, AData, new string[1]{"p_venue_key_n"},
+            PcConferenceVenueTable Data = new PcConferenceVenueTable();
+            LoadViaForeignKey(PcConferenceVenueTable.TableId, PVenueTable.TableId, Data, new string[1]{"p_venue_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceVenueTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcConferenceVenueTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcConferenceVenueTable LoadViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated

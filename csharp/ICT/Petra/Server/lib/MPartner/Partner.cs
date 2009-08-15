@@ -114,7 +114,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                 // Determine APreferredFamilyID from a Person with a specified family key
                 if (APreferredFamilyID == -1)
                 {
-                    PPersonAccess.LoadByPrimaryKey(out PersonDT, APersonPartnerKey, AReadTransaction);
+                    PersonDT = PPersonAccess.LoadByPrimaryKey(APersonPartnerKey, AReadTransaction);
 
                     if ((PersonDT.Rows.Count != 0) && (PersonDT[0].FamilyKey == AFromFamilyPartnerKey))
                     {
@@ -134,7 +134,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                 }
             }
 
-            PFamilyAccess.LoadByPrimaryKey(out FamilyDT, AFamilyPartnerKey, AReadTransaction);
+            FamilyDT = PFamilyAccess.LoadByPrimaryKey(AFamilyPartnerKey, AReadTransaction);
 
             if (FamilyDT.Rows.Count != 0)
             {
@@ -160,7 +160,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                     {
                         if (APreferredFamilyID != -1)
                         {
-                            PPersonAccess.LoadViaPFamily(out PersonDT, AFamilyPartnerKey, AReadTransaction);
+                            PersonDT = PPersonAccess.LoadViaPFamily(AFamilyPartnerKey, AReadTransaction);
                             Counter = 0;
                             FamilyIDExists = false;
 
@@ -190,7 +190,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                 if (AListAvailableIDs || ((!BestFamilyIDFound)))
                 {
                     // Build list of used FamilyID's
-                    PPersonAccess.LoadViaPFamily(out PersonDT, AFamilyPartnerKey, AReadTransaction);
+                    PersonDT = PPersonAccess.LoadViaPFamily(AFamilyPartnerKey, AReadTransaction);
 
                     // sort found person records by old omss id, so we need to create a view
                     // TODO still needed? no omss anymore
@@ -428,7 +428,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                                       " Please report the follwing to your System Administrator:\r\n" + AProblemMessage + "\r\n";
 
                     // Find highest FamilyID
-                    PPersonAccess.LoadViaPFamily(out PersonDT, AFamilyPartnerKey, ReadTransaction);
+                    PersonDT = PPersonAccess.LoadViaPFamily(AFamilyPartnerKey, ReadTransaction);
 
                     if (PersonDT.Rows.Count == 0)
                     {
@@ -664,7 +664,7 @@ namespace Ict.Petra.Server.MPartner.Partner
 
                 if (!ANewPartner)
                 {
-                    PPartnerAccess.LoadByPrimaryKey(out PartnerDT, APartnerKey, ReadAndWriteTransaction);
+                    PartnerDT = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadAndWriteTransaction);
 
                     if (PartnerDT.Rows.Count == 0)
                     {
@@ -676,7 +676,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                 // At this point the partner is either new or it is not new but in existing in the db
                 // Now get the class of the recently used partner.
                 PartnerClassString = SharedTypes.PartnerClassEnumToString(APartnerClass);
-                PRecentPartnersAccess.LoadViaSUser(out RecentPartnersDT, UserInfo.GUserInfo.UserID, ReadAndWriteTransaction);
+                RecentPartnersDT = PRecentPartnersAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, ReadAndWriteTransaction);
 
                 // set the given partner key as the last used partner for the given module
                 switch (ALastPartnerUse)
@@ -726,7 +726,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                 FieldList = new StringCollection();
                 FieldList.Add(PPartnerTable.GetPartnerKeyDBName());
                 FieldList.Add(PPartnerTable.GetPartnerClassDBName());
-                PPartnerAccess.LoadViaSUserPRecentPartners(out PartnerDT, UserInfo.GUserInfo.UserID, FieldList, ReadAndWriteTransaction, null, 0, 0);
+                PartnerDT = PPartnerAccess.LoadViaSUserPRecentPartners(UserInfo.GUserInfo.UserID, FieldList, ReadAndWriteTransaction, null, 0, 0);
 
                 // Get the number of recent partners that the user has set, if not found
                 // take 10 as default value.

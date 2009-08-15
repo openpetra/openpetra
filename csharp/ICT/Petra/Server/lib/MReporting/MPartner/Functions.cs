@@ -173,7 +173,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 {
                     // retrieve the shortname of this partner
                     LabelValue = new TVariant(mRow["LabelValuePartnerKey"]);
-                    PPartnerAccess.LoadByPrimaryKey(out PartnerTable, LabelValue.ToInt64(),
+                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(LabelValue.ToInt64(),
                         StringHelper.StrSplit(PPartnerTable.GetPartnerShortNameDBName(), ","), situation.GetDatabaseConnection().Transaction);
 
                     if (PartnerTable.Rows.Count != 0)
@@ -264,7 +264,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 if (Convert.ToInt32(row["BestAddress"]) == 1)
                 {
                     // find the location record with that address
-                    PLocationAccess.LoadByPrimaryKey(out LocationTable, row.SiteKey, row.LocationKey, situation.GetDatabaseConnection().Transaction);
+                    LocationTable = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, situation.GetDatabaseConnection().Transaction);
 
                     // put the found values in the parameters
                     if (LocationTable.Rows.Count > 0)
@@ -288,7 +288,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                         NameColumnNames = new StringCollection();
                         NameColumnNames.Add(PPersonTable.GetFirstNameDBName());
                         NameColumnNames.Add(PPersonTable.GetFamilyNameDBName());
-                        PPersonAccess.LoadByPrimaryKey(out PersonTable, APartnerKey, NameColumnNames, situation.GetDatabaseConnection().Transaction);
+                        PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames, situation.GetDatabaseConnection().Transaction);
 
                         if (PersonTable.Rows.Count > 0)
                         {
@@ -301,7 +301,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                             NameColumnNames = new StringCollection();
                             NameColumnNames.Add(PFamilyTable.GetFirstNameDBName());
                             NameColumnNames.Add(PFamilyTable.GetFamilyNameDBName());
-                            PFamilyAccess.LoadByPrimaryKey(out FamilyTable, APartnerKey, NameColumnNames,
+                            FamilyTable = PFamilyAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames,
                                 situation.GetDatabaseConnection().Transaction);
 
                             if (FamilyTable.Rows.Count > 0)
@@ -316,7 +316,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                                 situation.GetParameters().RemoveVariable("FamilyName");
                                 NameColumnNames = new StringCollection();
                                 NameColumnNames.Add(PPartnerTable.GetPartnerShortNameDBName());
-                                PPartnerAccess.LoadByPrimaryKey(out PartnerTable, APartnerKey, NameColumnNames,
+                                PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames,
                                     situation.GetDatabaseConnection().Transaction);
 
                                 if (PartnerTable.Rows.Count > 0)
@@ -428,7 +428,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             ReturnValue = "N/A";
             fields = new StringCollection();
             fields.Add(PPartnerTable.GetPartnerShortNameDBName());
-            PPartnerAccess.LoadByPrimaryKey(out table, APartnerKey, fields, situation.GetDatabaseConnection().Transaction);
+            table = PPartnerAccess.LoadByPrimaryKey(APartnerKey, fields, situation.GetDatabaseConnection().Transaction);
 
             if (table.Rows.Count > 0)
             {

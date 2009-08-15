@@ -2170,7 +2170,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                  * Note: County and Address3 are not searched for - we are looking for a
                  * Location that is *similar*!
                  */
-                PLocationAccess.LoadUsingTemplate(out MatchingLocationsDT, LocationTemplateRow, AReadTransaction);
+                MatchingLocationsDT = PLocationAccess.LoadUsingTemplate(LocationTemplateRow, AReadTransaction);
                 MatchingLocationRow = null;  // to avoid compiler warning
 
                 if (MatchingLocationsDT.Rows.Count != 0)
@@ -2307,11 +2307,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// </returns>
         public static PLocationTable LoadByPrimaryKey(Int64 ASiteKey, Int32 ALocationKey, TDBTransaction AReadTransaction)
         {
-            PLocationTable ReturnValue;
-
-            PLocationAccess.LoadByPrimaryKey(out ReturnValue, ASiteKey, ALocationKey, AReadTransaction);
-
-            return ReturnValue;
+            return PLocationAccess.LoadByPrimaryKey(ASiteKey, ALocationKey, AReadTransaction);
         }
 
         /// <summary>
@@ -2326,10 +2322,9 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// </returns>
         public static PPartnerLocationTable LoadByPrimaryKey(Int64 APartnerKey, Int64 ASiteKey, Int32 ALocationKey, TDBTransaction AReadTransaction)
         {
-            PPartnerLocationTable PPartnerLocationDT;
-            PLocationTable Dummy = null;
+            PPartnerLocationTable PPartnerLocationDT = PPartnerLocationAccess.LoadByPrimaryKey(APartnerKey, ASiteKey, ALocationKey, AReadTransaction);
 
-            PPartnerLocationAccess.LoadByPrimaryKey(out PPartnerLocationDT, APartnerKey, ASiteKey, ALocationKey, AReadTransaction);
+            PLocationTable Dummy = null;
 
             ApplySecurity(ref PPartnerLocationDT, ref Dummy);
 
@@ -3846,7 +3841,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             PPersonTable TemplateDT;
             PPersonRow TemplateRow;
             StringCollection RequiredColumns;
-            PPersonTable ReturnValue;
 
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
@@ -3863,9 +3857,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             //
             RequiredColumns = new StringCollection();
             RequiredColumns.Add(PPersonTable.GetPartnerKeyDBName());
-            PPersonAccess.LoadUsingTemplate(out ReturnValue, TemplateRow, RequiredColumns, AReadTransaction);
-
-            return ReturnValue;
+            return PPersonAccess.LoadUsingTemplate(TemplateRow, RequiredColumns, AReadTransaction);
         }
 
         /// <summary>
@@ -4177,7 +4169,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     APerformPropagation = true;
 
                     // Load all Persons of the Family
-                    PPersonAccess.LoadViaPFamily(out FamilyPersonsDT, APartnerKey, ASubmitChangesTransaction);
+                    FamilyPersonsDT = PPersonAccess.LoadViaPFamily(APartnerKey, ASubmitChangesTransaction);
 
                     // Find PPartnerLocation row of the Family that we should process
                     FamilyPartnerLocationRow = (PPartnerLocationRow)APartnerLocationTable.Rows.Find(
@@ -4504,7 +4496,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         /*
                          * Copy all fields from the existing Location to the current Location
                          */
-                        PLocationAccess.LoadByPrimaryKey(out SimilarLocationDT, ExistingSiteKey, ExistingLocationKey, null, ASubmitChangesTransaction);
+                        SimilarLocationDT = PLocationAccess.LoadByPrimaryKey(ExistingSiteKey, ExistingLocationKey, null, ASubmitChangesTransaction);
 
                         // ExistingLocationParametersDV2 := new DataView(
                         // AExistingLocationParametersDT,
@@ -4929,7 +4921,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             {
                 // Load ModificationId for the PartnerLocation of each Person (otherwise we
                 // will run into optimistic locking problems!)
-                PPartnerLocationAccess.LoadByPrimaryKey(out PartnerLocationDT,
+                PartnerLocationDT = PPartnerLocationAccess.LoadByPrimaryKey(
                     FamilyPersonsDT[Counter].PartnerKey,
                     APartnerLocationDR.SiteKey,
                     APartnerLocationDR.LocationKey,
@@ -5038,7 +5030,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             RequiredColumns.Add(MExtractTable.GetPartnerKeyDBName());
             RequiredColumns.Add(MExtractTable.GetSiteKeyDBName());
             RequiredColumns.Add(MExtractTable.GetLocationKeyDBName());
-            MExtractAccess.LoadViaPLocation(out ExtractsDT, Convert.ToInt64(
+            ExtractsDT = MExtractAccess.LoadViaPLocation(Convert.ToInt64(
                     ALocationRow[MExtractTable.GetSiteKeyDBName(),
                                  DataRowVersion.Original]), Convert.ToInt32(
                     ALocationRow[MExtractTable.GetLocationKeyDBName(), DataRowVersion.Original]), RequiredColumns, ASubmitChangesTransaction);

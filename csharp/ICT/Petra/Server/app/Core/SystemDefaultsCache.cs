@@ -443,7 +443,7 @@ namespace Ict.Petra.Server.App.Core
                         ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                             TEnforceIsolationLevel.eilMinimum,
                             out NewTransaction);
-                        Ict.Petra.Shared.MSysMan.Data.Access.SSystemDefaultsAccess.LoadAll(out FSystemDefaultsDT, ReadTransaction);
+                        FSystemDefaultsDT = Ict.Petra.Shared.MSysMan.Data.Access.SSystemDefaultsAccess.LoadAll(ReadTransaction);
                     }
                     finally
                     {

@@ -74,22 +74,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AMethodOfPaymentTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMethodOfPaymentTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMethodOfPaymentTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AMethodOfPaymentTable.TableId) + " FROM PUB_a_method_of_payment" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AMethodOfPaymentTable Data = new AMethodOfPaymentTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AMethodOfPaymentTable.TableId) + " FROM PUB_a_method_of_payment" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AMethodOfPaymentTable AData, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AMethodOfPaymentTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -111,22 +112,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AMethodOfPaymentTable AData, String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMethodOfPaymentTable LoadByPrimaryKey(String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMethodOfPaymentTable();
-            LoadByPrimaryKey(AMethodOfPaymentTable.TableId, AData, new System.Object[1]{AMethodOfPaymentCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AMethodOfPaymentTable Data = new AMethodOfPaymentTable();
+            LoadByPrimaryKey(AMethodOfPaymentTable.TableId, Data, new System.Object[1]{AMethodOfPaymentCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AMethodOfPaymentTable AData, String AMethodOfPaymentCode, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadByPrimaryKey(String AMethodOfPaymentCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AMethodOfPaymentCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AMethodOfPaymentCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AMethodOfPaymentTable AData, String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadByPrimaryKey(String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AMethodOfPaymentCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AMethodOfPaymentCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -148,28 +150,29 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMethodOfPaymentTable AData, AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMethodOfPaymentTable LoadUsingTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMethodOfPaymentTable();
-            LoadUsingTemplate(AMethodOfPaymentTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AMethodOfPaymentTable Data = new AMethodOfPaymentTable();
+            LoadUsingTemplate(AMethodOfPaymentTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMethodOfPaymentTable AData, AMethodOfPaymentRow ATemplateRow, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadUsingTemplate(AMethodOfPaymentRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMethodOfPaymentTable AData, AMethodOfPaymentRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadUsingTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMethodOfPaymentTable AData, AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadUsingTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -191,22 +194,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMethodOfPaymentTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMethodOfPaymentTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMethodOfPaymentTable();
-            LoadUsingTemplate(AMethodOfPaymentTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AMethodOfPaymentTable Data = new AMethodOfPaymentTable();
+            LoadUsingTemplate(AMethodOfPaymentTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMethodOfPaymentTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMethodOfPaymentTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -255,23 +259,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSFile(out AMethodOfPaymentTable AData, String AFileName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMethodOfPaymentTable LoadViaSFile(String AFileName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMethodOfPaymentTable();
-            LoadViaForeignKey(AMethodOfPaymentTable.TableId, SFileTable.TableId, AData, new string[1]{"a_process_to_call_c"},
+            AMethodOfPaymentTable Data = new AMethodOfPaymentTable();
+            LoadViaForeignKey(AMethodOfPaymentTable.TableId, SFileTable.TableId, Data, new string[1]{"a_process_to_call_c"},
                 new System.Object[1]{AFileName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSFile(out AMethodOfPaymentTable AData, String AFileName, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadViaSFile(String AFileName, TDBTransaction ATransaction)
         {
-            LoadViaSFile(out AData, AFileName, null, ATransaction, null, 0, 0);
+            return LoadViaSFile(AFileName, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSFile(out AMethodOfPaymentTable AData, String AFileName, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadViaSFile(String AFileName, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSFile(out AData, AFileName, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSFile(AFileName, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -294,29 +299,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSFileTemplate(out AMethodOfPaymentTable AData, SFileRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMethodOfPaymentTable LoadViaSFileTemplate(SFileRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMethodOfPaymentTable();
-            LoadViaForeignKey(AMethodOfPaymentTable.TableId, SFileTable.TableId, AData, new string[1]{"a_process_to_call_c"},
+            AMethodOfPaymentTable Data = new AMethodOfPaymentTable();
+            LoadViaForeignKey(AMethodOfPaymentTable.TableId, SFileTable.TableId, Data, new string[1]{"a_process_to_call_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSFileTemplate(out AMethodOfPaymentTable AData, SFileRow ATemplateRow, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadViaSFileTemplate(SFileRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaSFileTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaSFileTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSFileTemplate(out AMethodOfPaymentTable AData, SFileRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadViaSFileTemplate(SFileRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSFileTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSFileTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSFileTemplate(out AMethodOfPaymentTable AData, SFileRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadViaSFileTemplate(SFileRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSFileTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSFileTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -339,23 +345,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSFileTemplate(out AMethodOfPaymentTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMethodOfPaymentTable LoadViaSFileTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMethodOfPaymentTable();
-            LoadViaForeignKey(AMethodOfPaymentTable.TableId, SFileTable.TableId, AData, new string[1]{"a_process_to_call_c"},
+            AMethodOfPaymentTable Data = new AMethodOfPaymentTable();
+            LoadViaForeignKey(AMethodOfPaymentTable.TableId, SFileTable.TableId, Data, new string[1]{"a_process_to_call_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSFileTemplate(out AMethodOfPaymentTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadViaSFileTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaSFileTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaSFileTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSFileTemplate(out AMethodOfPaymentTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMethodOfPaymentTable LoadViaSFileTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSFileTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSFileTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -434,22 +441,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AMotivationGroupTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationGroupTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationGroupTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AMotivationGroupTable.TableId) + " FROM PUB_a_motivation_group" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AMotivationGroupTable Data = new AMotivationGroupTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AMotivationGroupTable.TableId) + " FROM PUB_a_motivation_group" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AMotivationGroupTable AData, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AMotivationGroupTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -471,22 +479,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AMotivationGroupTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationGroupTable LoadByPrimaryKey(Int32 ALedgerNumber, String AMotivationGroupCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationGroupTable();
-            LoadByPrimaryKey(AMotivationGroupTable.TableId, AData, new System.Object[2]{ALedgerNumber, AMotivationGroupCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AMotivationGroupTable Data = new AMotivationGroupTable();
+            LoadByPrimaryKey(AMotivationGroupTable.TableId, Data, new System.Object[2]{ALedgerNumber, AMotivationGroupCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AMotivationGroupTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadByPrimaryKey(Int32 ALedgerNumber, String AMotivationGroupCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AMotivationGroupCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AMotivationGroupCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AMotivationGroupTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadByPrimaryKey(Int32 ALedgerNumber, String AMotivationGroupCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AMotivationGroupCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AMotivationGroupCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -508,28 +517,29 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationGroupTable AData, AMotivationGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationGroupTable LoadUsingTemplate(AMotivationGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationGroupTable();
-            LoadUsingTemplate(AMotivationGroupTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AMotivationGroupTable Data = new AMotivationGroupTable();
+            LoadUsingTemplate(AMotivationGroupTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationGroupTable AData, AMotivationGroupRow ATemplateRow, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadUsingTemplate(AMotivationGroupRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationGroupTable AData, AMotivationGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadUsingTemplate(AMotivationGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationGroupTable AData, AMotivationGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadUsingTemplate(AMotivationGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -551,22 +561,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationGroupTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationGroupTable();
-            LoadUsingTemplate(AMotivationGroupTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AMotivationGroupTable Data = new AMotivationGroupTable();
+            LoadUsingTemplate(AMotivationGroupTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -615,23 +626,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AMotivationGroupTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationGroupTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationGroupTable();
-            LoadViaForeignKey(AMotivationGroupTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AMotivationGroupTable Data = new AMotivationGroupTable();
+            LoadViaForeignKey(AMotivationGroupTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AMotivationGroupTable AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AMotivationGroupTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -654,29 +666,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationGroupTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationGroupTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationGroupTable();
-            LoadViaForeignKey(AMotivationGroupTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AMotivationGroupTable Data = new AMotivationGroupTable();
+            LoadViaForeignKey(AMotivationGroupTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationGroupTable AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationGroupTable AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationGroupTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -699,23 +712,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationGroupTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationGroupTable();
-            LoadViaForeignKey(AMotivationGroupTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AMotivationGroupTable Data = new AMotivationGroupTable();
+            LoadViaForeignKey(AMotivationGroupTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationGroupTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationGroupTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationGroupTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -794,22 +808,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AMotivationDetailTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AMotivationDetailTable.TableId) + " FROM PUB_a_motivation_detail" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AMotivationDetailTable.TableId) + " FROM PUB_a_motivation_detail" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AMotivationDetailTable AData, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AMotivationDetailTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -831,22 +846,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AMotivationDetailTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadByPrimaryKey(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadByPrimaryKey(AMotivationDetailTable.TableId, AData, new System.Object[3]{ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadByPrimaryKey(AMotivationDetailTable.TableId, Data, new System.Object[3]{ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AMotivationDetailTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadByPrimaryKey(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AMotivationDetailTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadByPrimaryKey(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -868,28 +884,29 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailTable AData, AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadUsingTemplate(AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadUsingTemplate(AMotivationDetailTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadUsingTemplate(AMotivationDetailTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailTable AData, AMotivationDetailRow ATemplateRow, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadUsingTemplate(AMotivationDetailRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailTable AData, AMotivationDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadUsingTemplate(AMotivationDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailTable AData, AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadUsingTemplate(AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -911,22 +928,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadUsingTemplate(AMotivationDetailTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadUsingTemplate(AMotivationDetailTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -975,23 +993,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMotivationGroup(out AMotivationDetailTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaAMotivationGroup(Int32 ALedgerNumber, String AMotivationGroupCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, AMotivationGroupTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_motivation_group_code_c"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, AMotivationGroupTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_motivation_group_code_c"},
                 new System.Object[2]{ALedgerNumber, AMotivationGroupCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMotivationGroup(out AMotivationDetailTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAMotivationGroup(Int32 ALedgerNumber, String AMotivationGroupCode, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationGroup(out AData, ALedgerNumber, AMotivationGroupCode, null, ATransaction, null, 0, 0);
+            return LoadViaAMotivationGroup(ALedgerNumber, AMotivationGroupCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationGroup(out AMotivationDetailTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAMotivationGroup(Int32 ALedgerNumber, String AMotivationGroupCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationGroup(out AData, ALedgerNumber, AMotivationGroupCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationGroup(ALedgerNumber, AMotivationGroupCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1014,29 +1033,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMotivationGroupTemplate(out AMotivationDetailTable AData, AMotivationGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaAMotivationGroupTemplate(AMotivationGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, AMotivationGroupTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_motivation_group_code_c"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, AMotivationGroupTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_motivation_group_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMotivationGroupTemplate(out AMotivationDetailTable AData, AMotivationGroupRow ATemplateRow, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAMotivationGroupTemplate(AMotivationGroupRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationGroupTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAMotivationGroupTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationGroupTemplate(out AMotivationDetailTable AData, AMotivationGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAMotivationGroupTemplate(AMotivationGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationGroupTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationGroupTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationGroupTemplate(out AMotivationDetailTable AData, AMotivationGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAMotivationGroupTemplate(AMotivationGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationGroupTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationGroupTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1059,23 +1079,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMotivationGroupTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaAMotivationGroupTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, AMotivationGroupTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_motivation_group_code_c"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, AMotivationGroupTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_motivation_group_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMotivationGroupTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAMotivationGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAMotivationGroupTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationGroupTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAMotivationGroupTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationGroupTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1119,23 +1140,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AMotivationDetailTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AMotivationDetailTable AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AMotivationDetailTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1158,29 +1180,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationDetailTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationDetailTable AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationDetailTable AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationDetailTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1203,23 +1226,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1263,23 +1287,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAAccount(out AMotivationDetailTable AData, Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, AAccountTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_account_code_c"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_account_code_c"},
                 new System.Object[2]{ALedgerNumber, AAccountCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAAccount(out AMotivationDetailTable AData, Int32 ALedgerNumber, String AAccountCode, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, TDBTransaction ATransaction)
         {
-            LoadViaAAccount(out AData, ALedgerNumber, AAccountCode, null, ATransaction, null, 0, 0);
+            return LoadViaAAccount(ALedgerNumber, AAccountCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAAccount(out AMotivationDetailTable AData, Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAAccount(out AData, ALedgerNumber, AAccountCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAAccount(ALedgerNumber, AAccountCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1302,29 +1327,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AMotivationDetailTable AData, AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, AAccountTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_account_code_c"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_account_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AMotivationDetailTable AData, AAccountRow ATemplateRow, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AMotivationDetailTable AData, AAccountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AMotivationDetailTable AData, AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1347,23 +1373,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, AAccountTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_account_code_c"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_account_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1407,23 +1434,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACostCentre(out AMotivationDetailTable AData, Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, ACostCentreTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
                 new System.Object[2]{ALedgerNumber, ACostCentreCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACostCentre(out AMotivationDetailTable AData, Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction)
         {
-            LoadViaACostCentre(out AData, ALedgerNumber, ACostCentreCode, null, ATransaction, null, 0, 0);
+            return LoadViaACostCentre(ALedgerNumber, ACostCentreCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentre(out AMotivationDetailTable AData, Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentre(out AData, ALedgerNumber, ACostCentreCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentre(ALedgerNumber, ACostCentreCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1446,29 +1474,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AMotivationDetailTable AData, ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, ACostCentreTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AMotivationDetailTable AData, ACostCentreRow ATemplateRow, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AMotivationDetailTable AData, ACostCentreRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AMotivationDetailTable AData, ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1491,23 +1520,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, ACostCentreTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1551,23 +1581,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out AMotivationDetailTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_recipient_key_n"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_recipient_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out AMotivationDetailTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out AMotivationDetailTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1590,29 +1621,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AMotivationDetailTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_recipient_key_n"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_recipient_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AMotivationDetailTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AMotivationDetailTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AMotivationDetailTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1635,23 +1667,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailTable();
-            LoadViaForeignKey(AMotivationDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_recipient_key_n"},
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            LoadViaForeignKey(AMotivationDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_recipient_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1702,25 +1735,26 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out AMotivationDetailTable AData, String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AMotivationDetailTable();
-            FillDataSet.Tables.Add(AData);
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroup(FillDataSet, AGroupId, AUnitKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out AMotivationDetailTable AData, String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
-            LoadViaSGroup(out AData, AGroupId, AUnitKey, null, ATransaction, null, 0, 0);
+            return LoadViaSGroup(AGroupId, AUnitKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out AMotivationDetailTable AData, String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroup(out AData, AGroupId, AUnitKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroup(AGroupId, AUnitKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1747,31 +1781,32 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AMotivationDetailTable AData, SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AMotivationDetailTable();
-            FillDataSet.Tables.Add(AData);
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroupTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AMotivationDetailTable AData, SGroupRow ATemplateRow, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AMotivationDetailTable AData, SGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AMotivationDetailTable AData, SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1798,25 +1833,26 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AMotivationDetailTable();
-            FillDataSet.Tables.Add(AData);
+            AMotivationDetailTable Data = new AMotivationDetailTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AMotivationDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -1905,22 +1941,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AMotivationDetailFeeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailFeeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailFeeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AMotivationDetailFeeTable.TableId) + " FROM PUB_a_motivation_detail_fee" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AMotivationDetailFeeTable Data = new AMotivationDetailFeeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AMotivationDetailFeeTable.TableId) + " FROM PUB_a_motivation_detail_fee" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AMotivationDetailFeeTable AData, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AMotivationDetailFeeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1942,22 +1979,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AMotivationDetailFeeTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, String AFeeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailFeeTable LoadByPrimaryKey(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, String AFeeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailFeeTable();
-            LoadByPrimaryKey(AMotivationDetailFeeTable.TableId, AData, new System.Object[4]{ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFeeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AMotivationDetailFeeTable Data = new AMotivationDetailFeeTable();
+            LoadByPrimaryKey(AMotivationDetailFeeTable.TableId, Data, new System.Object[4]{ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFeeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AMotivationDetailFeeTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, String AFeeCode, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadByPrimaryKey(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, String AFeeCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFeeCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFeeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AMotivationDetailFeeTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, String AFeeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadByPrimaryKey(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, String AFeeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFeeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFeeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1979,28 +2017,29 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailFeeTable AData, AMotivationDetailFeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailFeeTable LoadUsingTemplate(AMotivationDetailFeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailFeeTable();
-            LoadUsingTemplate(AMotivationDetailFeeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AMotivationDetailFeeTable Data = new AMotivationDetailFeeTable();
+            LoadUsingTemplate(AMotivationDetailFeeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailFeeTable AData, AMotivationDetailFeeRow ATemplateRow, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadUsingTemplate(AMotivationDetailFeeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailFeeTable AData, AMotivationDetailFeeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadUsingTemplate(AMotivationDetailFeeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailFeeTable AData, AMotivationDetailFeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadUsingTemplate(AMotivationDetailFeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2022,22 +2061,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailFeeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailFeeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailFeeTable();
-            LoadUsingTemplate(AMotivationDetailFeeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AMotivationDetailFeeTable Data = new AMotivationDetailFeeTable();
+            LoadUsingTemplate(AMotivationDetailFeeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailFeeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AMotivationDetailFeeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2086,23 +2126,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetail(out AMotivationDetailFeeTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailFeeTable LoadViaAMotivationDetail(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailFeeTable();
-            LoadViaForeignKey(AMotivationDetailFeeTable.TableId, AMotivationDetailTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
+            AMotivationDetailFeeTable Data = new AMotivationDetailFeeTable();
+            LoadViaForeignKey(AMotivationDetailFeeTable.TableId, AMotivationDetailTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
                 new System.Object[3]{ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetail(out AMotivationDetailFeeTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadViaAMotivationDetail(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetail(out AData, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, null, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetail(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetail(out AMotivationDetailFeeTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadViaAMotivationDetail(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetail(out AData, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetail(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2125,29 +2166,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AMotivationDetailFeeTable AData, AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailFeeTable LoadViaAMotivationDetailTemplate(AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailFeeTable();
-            LoadViaForeignKey(AMotivationDetailFeeTable.TableId, AMotivationDetailTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
+            AMotivationDetailFeeTable Data = new AMotivationDetailFeeTable();
+            LoadViaForeignKey(AMotivationDetailFeeTable.TableId, AMotivationDetailTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AMotivationDetailFeeTable AData, AMotivationDetailRow ATemplateRow, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadViaAMotivationDetailTemplate(AMotivationDetailRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AMotivationDetailFeeTable AData, AMotivationDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadViaAMotivationDetailTemplate(AMotivationDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AMotivationDetailFeeTable AData, AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadViaAMotivationDetailTemplate(AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2170,23 +2212,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AMotivationDetailFeeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AMotivationDetailFeeTable LoadViaAMotivationDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AMotivationDetailFeeTable();
-            LoadViaForeignKey(AMotivationDetailFeeTable.TableId, AMotivationDetailTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
+            AMotivationDetailFeeTable Data = new AMotivationDetailFeeTable();
+            LoadViaForeignKey(AMotivationDetailFeeTable.TableId, AMotivationDetailTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AMotivationDetailFeeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadViaAMotivationDetailTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AMotivationDetailFeeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AMotivationDetailFeeTable LoadViaAMotivationDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2265,22 +2308,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out ARecurringGiftBatchTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, ARecurringGiftBatchTable.TableId) + " FROM PUB_a_recurring_gift_batch" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, ARecurringGiftBatchTable.TableId) + " FROM PUB_a_recurring_gift_batch" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out ARecurringGiftBatchTable AData, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out ARecurringGiftBatchTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2302,22 +2346,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ARecurringGiftBatchTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadByPrimaryKey(ARecurringGiftBatchTable.TableId, AData, new System.Object[2]{ALedgerNumber, ABatchNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadByPrimaryKey(ARecurringGiftBatchTable.TableId, Data, new System.Object[2]{ALedgerNumber, ABatchNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ARecurringGiftBatchTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ABatchNumber, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ARecurringGiftBatchTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ABatchNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2339,28 +2384,29 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftBatchTable AData, ARecurringGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadUsingTemplate(ARecurringGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadUsingTemplate(ARecurringGiftBatchTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadUsingTemplate(ARecurringGiftBatchTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftBatchTable AData, ARecurringGiftBatchRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadUsingTemplate(ARecurringGiftBatchRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftBatchTable AData, ARecurringGiftBatchRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadUsingTemplate(ARecurringGiftBatchRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftBatchTable AData, ARecurringGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadUsingTemplate(ARecurringGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2382,22 +2428,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadUsingTemplate(ARecurringGiftBatchTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadUsingTemplate(ARecurringGiftBatchTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2446,23 +2493,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedger(out ARecurringGiftBatchTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedger(out ARecurringGiftBatchTable AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedger(out ARecurringGiftBatchTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2485,29 +2533,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftBatchTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftBatchTable AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftBatchTable AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftBatchTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2530,23 +2579,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2590,23 +2640,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAAccount(out ARecurringGiftBatchTable AData, Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, AAccountTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
                 new System.Object[2]{ALedgerNumber, AAccountCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAAccount(out ARecurringGiftBatchTable AData, Int32 ALedgerNumber, String AAccountCode, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, TDBTransaction ATransaction)
         {
-            LoadViaAAccount(out AData, ALedgerNumber, AAccountCode, null, ATransaction, null, 0, 0);
+            return LoadViaAAccount(ALedgerNumber, AAccountCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAAccount(out ARecurringGiftBatchTable AData, Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAAccount(out AData, ALedgerNumber, AAccountCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAAccount(ALedgerNumber, AAccountCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2629,29 +2680,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out ARecurringGiftBatchTable AData, AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, AAccountTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out ARecurringGiftBatchTable AData, AAccountRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out ARecurringGiftBatchTable AData, AAccountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out ARecurringGiftBatchTable AData, AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2674,23 +2726,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, AAccountTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2734,23 +2787,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACostCentre(out ARecurringGiftBatchTable AData, Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ACostCentreTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_bank_cost_centre_c"},
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_cost_centre_c"},
                 new System.Object[2]{ALedgerNumber, ACostCentreCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACostCentre(out ARecurringGiftBatchTable AData, Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction)
         {
-            LoadViaACostCentre(out AData, ALedgerNumber, ACostCentreCode, null, ATransaction, null, 0, 0);
+            return LoadViaACostCentre(ALedgerNumber, ACostCentreCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentre(out ARecurringGiftBatchTable AData, Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentre(out AData, ALedgerNumber, ACostCentreCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentre(ALedgerNumber, ACostCentreCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2773,29 +2827,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out ARecurringGiftBatchTable AData, ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ACostCentreTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_bank_cost_centre_c"},
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_cost_centre_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out ARecurringGiftBatchTable AData, ACostCentreRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out ARecurringGiftBatchTable AData, ACostCentreRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out ARecurringGiftBatchTable AData, ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2818,23 +2873,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ACostCentreTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_bank_cost_centre_c"},
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_cost_centre_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2878,23 +2934,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out ARecurringGiftBatchTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out ARecurringGiftBatchTable AData, String ACurrencyCode, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACurrency(String ACurrencyCode, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, null, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out ARecurringGiftBatchTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2917,29 +2974,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out ARecurringGiftBatchTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out ARecurringGiftBatchTable AData, ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out ARecurringGiftBatchTable AData, ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out ARecurringGiftBatchTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2962,23 +3020,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftBatchTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftBatchTable();
-            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            ARecurringGiftBatchTable Data = new ARecurringGiftBatchTable();
+            LoadViaForeignKey(ARecurringGiftBatchTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out ARecurringGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftBatchTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3057,22 +3116,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out ARecurringGiftTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, ARecurringGiftTable.TableId) + " FROM PUB_a_recurring_gift" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, ARecurringGiftTable.TableId) + " FROM PUB_a_recurring_gift" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out ARecurringGiftTable AData, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out ARecurringGiftTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3094,22 +3154,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ARecurringGiftTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadByPrimaryKey(ARecurringGiftTable.TableId, AData, new System.Object[3]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadByPrimaryKey(ARecurringGiftTable.TableId, Data, new System.Object[3]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ARecurringGiftTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ARecurringGiftTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3131,28 +3192,29 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftTable AData, ARecurringGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadUsingTemplate(ARecurringGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadUsingTemplate(ARecurringGiftTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadUsingTemplate(ARecurringGiftTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftTable AData, ARecurringGiftRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadUsingTemplate(ARecurringGiftRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftTable AData, ARecurringGiftRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadUsingTemplate(ARecurringGiftRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftTable AData, ARecurringGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadUsingTemplate(ARecurringGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3174,22 +3236,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadUsingTemplate(ARecurringGiftTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadUsingTemplate(ARecurringGiftTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3238,23 +3301,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftBatch(out ARecurringGiftTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaARecurringGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, ARecurringGiftBatchTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_batch_number_i"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, ARecurringGiftBatchTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_batch_number_i"},
                 new System.Object[2]{ALedgerNumber, ABatchNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftBatch(out ARecurringGiftTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaARecurringGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGiftBatch(out AData, ALedgerNumber, ABatchNumber, null, ATransaction, null, 0, 0);
+            return LoadViaARecurringGiftBatch(ALedgerNumber, ABatchNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftBatch(out ARecurringGiftTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaARecurringGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGiftBatch(out AData, ALedgerNumber, ABatchNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaARecurringGiftBatch(ALedgerNumber, ABatchNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3277,29 +3341,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftBatchTemplate(out ARecurringGiftTable AData, ARecurringGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaARecurringGiftBatchTemplate(ARecurringGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, ARecurringGiftBatchTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_batch_number_i"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, ARecurringGiftBatchTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_batch_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftBatchTemplate(out ARecurringGiftTable AData, ARecurringGiftBatchRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaARecurringGiftBatchTemplate(ARecurringGiftBatchRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGiftBatchTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaARecurringGiftBatchTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftBatchTemplate(out ARecurringGiftTable AData, ARecurringGiftBatchRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaARecurringGiftBatchTemplate(ARecurringGiftBatchRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGiftBatchTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaARecurringGiftBatchTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftBatchTemplate(out ARecurringGiftTable AData, ARecurringGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaARecurringGiftBatchTemplate(ARecurringGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGiftBatchTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaARecurringGiftBatchTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3322,23 +3387,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftBatchTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaARecurringGiftBatchTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, ARecurringGiftBatchTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_batch_number_i"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, ARecurringGiftBatchTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_batch_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftBatchTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaARecurringGiftBatchTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGiftBatchTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaARecurringGiftBatchTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftBatchTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaARecurringGiftBatchTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGiftBatchTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaARecurringGiftBatchTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3382,23 +3448,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedger(out ARecurringGiftTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedger(out ARecurringGiftTable AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedger(out ARecurringGiftTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3421,29 +3488,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftTable AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftTable AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3466,23 +3534,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3526,23 +3595,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGiving(out ARecurringGiftTable AData, String AMethodOfGivingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaAMethodOfGiving(String AMethodOfGivingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, AMethodOfGivingTable.TableId, AData, new string[1]{"a_method_of_giving_code_c"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, AMethodOfGivingTable.TableId, Data, new string[1]{"a_method_of_giving_code_c"},
                 new System.Object[1]{AMethodOfGivingCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGiving(out ARecurringGiftTable AData, String AMethodOfGivingCode, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfGiving(String AMethodOfGivingCode, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGiving(out AData, AMethodOfGivingCode, null, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGiving(AMethodOfGivingCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGiving(out ARecurringGiftTable AData, String AMethodOfGivingCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfGiving(String AMethodOfGivingCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGiving(out AData, AMethodOfGivingCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGiving(AMethodOfGivingCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3565,29 +3635,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out ARecurringGiftTable AData, AMethodOfGivingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaAMethodOfGivingTemplate(AMethodOfGivingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, AMethodOfGivingTable.TableId, AData, new string[1]{"a_method_of_giving_code_c"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, AMethodOfGivingTable.TableId, Data, new string[1]{"a_method_of_giving_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out ARecurringGiftTable AData, AMethodOfGivingRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfGivingTemplate(AMethodOfGivingRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGivingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGivingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out ARecurringGiftTable AData, AMethodOfGivingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfGivingTemplate(AMethodOfGivingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGivingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGivingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out ARecurringGiftTable AData, AMethodOfGivingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfGivingTemplate(AMethodOfGivingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGivingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGivingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3610,23 +3681,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaAMethodOfGivingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, AMethodOfGivingTable.TableId, AData, new string[1]{"a_method_of_giving_code_c"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, AMethodOfGivingTable.TableId, Data, new string[1]{"a_method_of_giving_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfGivingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGivingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGivingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfGivingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGivingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGivingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3670,23 +3742,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPayment(out ARecurringGiftTable AData, String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaAMethodOfPayment(String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, AMethodOfPaymentTable.TableId, AData, new string[1]{"a_method_of_payment_code_c"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, AMethodOfPaymentTable.TableId, Data, new string[1]{"a_method_of_payment_code_c"},
                 new System.Object[1]{AMethodOfPaymentCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPayment(out ARecurringGiftTable AData, String AMethodOfPaymentCode, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfPayment(String AMethodOfPaymentCode, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPayment(out AData, AMethodOfPaymentCode, null, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPayment(AMethodOfPaymentCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPayment(out ARecurringGiftTable AData, String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfPayment(String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPayment(out AData, AMethodOfPaymentCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPayment(AMethodOfPaymentCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3709,29 +3782,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out ARecurringGiftTable AData, AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaAMethodOfPaymentTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, AMethodOfPaymentTable.TableId, AData, new string[1]{"a_method_of_payment_code_c"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, AMethodOfPaymentTable.TableId, Data, new string[1]{"a_method_of_payment_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out ARecurringGiftTable AData, AMethodOfPaymentRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfPaymentTemplate(AMethodOfPaymentRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPaymentTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPaymentTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out ARecurringGiftTable AData, AMethodOfPaymentRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfPaymentTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPaymentTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPaymentTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out ARecurringGiftTable AData, AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfPaymentTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPaymentTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPaymentTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3754,23 +3828,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaAMethodOfPaymentTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, AMethodOfPaymentTable.TableId, AData, new string[1]{"a_method_of_payment_code_c"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, AMethodOfPaymentTable.TableId, Data, new string[1]{"a_method_of_payment_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfPaymentTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPaymentTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPaymentTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaAMethodOfPaymentTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPaymentTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPaymentTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3814,23 +3889,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out ARecurringGiftTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_donor_key_n"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_donor_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out ARecurringGiftTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out ARecurringGiftTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3853,29 +3929,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out ARecurringGiftTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_donor_key_n"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_donor_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out ARecurringGiftTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out ARecurringGiftTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out ARecurringGiftTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3898,23 +3975,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftTable();
-            LoadViaForeignKey(ARecurringGiftTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_donor_key_n"},
+            ARecurringGiftTable Data = new ARecurringGiftTable();
+            LoadViaForeignKey(ARecurringGiftTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_donor_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out ARecurringGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3993,22 +4071,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out ARecurringGiftDetailTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, ARecurringGiftDetailTable.TableId) + " FROM PUB_a_recurring_gift_detail" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, ARecurringGiftDetailTable.TableId) + " FROM PUB_a_recurring_gift_detail" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out ARecurringGiftDetailTable AData, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out ARecurringGiftDetailTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4030,22 +4109,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ARecurringGiftDetailTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadByPrimaryKey(ARecurringGiftDetailTable.TableId, AData, new System.Object[4]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadByPrimaryKey(ARecurringGiftDetailTable.TableId, Data, new System.Object[4]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ARecurringGiftDetailTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ARecurringGiftDetailTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4067,28 +4147,29 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftDetailTable AData, ARecurringGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadUsingTemplate(ARecurringGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadUsingTemplate(ARecurringGiftDetailTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadUsingTemplate(ARecurringGiftDetailTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftDetailTable AData, ARecurringGiftDetailRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadUsingTemplate(ARecurringGiftDetailRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftDetailTable AData, ARecurringGiftDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadUsingTemplate(ARecurringGiftDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftDetailTable AData, ARecurringGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadUsingTemplate(ARecurringGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4110,22 +4191,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadUsingTemplate(ARecurringGiftDetailTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadUsingTemplate(ARecurringGiftDetailTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4174,23 +4256,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaARecurringGift(out ARecurringGiftDetailTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaARecurringGift(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, ARecurringGiftTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, ARecurringGiftTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"},
                 new System.Object[3]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaARecurringGift(out ARecurringGiftDetailTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaARecurringGift(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGift(out AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, null, ATransaction, null, 0, 0);
+            return LoadViaARecurringGift(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaARecurringGift(out ARecurringGiftDetailTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaARecurringGift(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGift(out AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaARecurringGift(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4213,29 +4296,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftTemplate(out ARecurringGiftDetailTable AData, ARecurringGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaARecurringGiftTemplate(ARecurringGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, ARecurringGiftTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, ARecurringGiftTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftTemplate(out ARecurringGiftDetailTable AData, ARecurringGiftRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaARecurringGiftTemplate(ARecurringGiftRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGiftTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaARecurringGiftTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftTemplate(out ARecurringGiftDetailTable AData, ARecurringGiftRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaARecurringGiftTemplate(ARecurringGiftRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGiftTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaARecurringGiftTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftTemplate(out ARecurringGiftDetailTable AData, ARecurringGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaARecurringGiftTemplate(ARecurringGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGiftTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaARecurringGiftTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4258,23 +4342,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaARecurringGiftTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, ARecurringGiftTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, ARecurringGiftTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaARecurringGiftTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGiftTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaARecurringGiftTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaARecurringGiftTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaARecurringGiftTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaARecurringGiftTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaARecurringGiftTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4318,23 +4403,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetail(out ARecurringGiftDetailTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaAMotivationDetail(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, AMotivationDetailTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, AMotivationDetailTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
                 new System.Object[3]{ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetail(out ARecurringGiftDetailTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaAMotivationDetail(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetail(out AData, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, null, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetail(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetail(out ARecurringGiftDetailTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaAMotivationDetail(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetail(out AData, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetail(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4357,29 +4443,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out ARecurringGiftDetailTable AData, AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaAMotivationDetailTemplate(AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, AMotivationDetailTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, AMotivationDetailTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out ARecurringGiftDetailTable AData, AMotivationDetailRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaAMotivationDetailTemplate(AMotivationDetailRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out ARecurringGiftDetailTable AData, AMotivationDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaAMotivationDetailTemplate(AMotivationDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out ARecurringGiftDetailTable AData, AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaAMotivationDetailTemplate(AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4402,23 +4489,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaAMotivationDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, AMotivationDetailTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, AMotivationDetailTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaAMotivationDetailTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaAMotivationDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4462,23 +4550,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKey(out ARecurringGiftDetailTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientKey(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_recipient_key_n"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_recipient_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKey(out ARecurringGiftDetailTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientKey(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKey(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKey(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKey(out ARecurringGiftDetailTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientKey(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKey(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKey(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4501,29 +4590,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out ARecurringGiftDetailTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_recipient_key_n"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_recipient_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out ARecurringGiftDetailTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKeyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKeyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out ARecurringGiftDetailTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKeyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKeyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out ARecurringGiftDetailTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKeyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKeyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4546,23 +4636,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_recipient_key_n"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_recipient_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKeyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKeyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKeyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKeyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4606,23 +4697,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMailing(out ARecurringGiftDetailTable AData, String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaPMailing(String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PMailingTable.TableId, AData, new string[1]{"p_mailing_code_c"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PMailingTable.TableId, Data, new string[1]{"p_mailing_code_c"},
                 new System.Object[1]{AMailingCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMailing(out ARecurringGiftDetailTable AData, String AMailingCode, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPMailing(String AMailingCode, TDBTransaction ATransaction)
         {
-            LoadViaPMailing(out AData, AMailingCode, null, ATransaction, null, 0, 0);
+            return LoadViaPMailing(AMailingCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMailing(out ARecurringGiftDetailTable AData, String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPMailing(String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMailing(out AData, AMailingCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMailing(AMailingCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4645,29 +4737,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out ARecurringGiftDetailTable AData, PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaPMailingTemplate(PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PMailingTable.TableId, AData, new string[1]{"p_mailing_code_c"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PMailingTable.TableId, Data, new string[1]{"p_mailing_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out ARecurringGiftDetailTable AData, PMailingRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPMailingTemplate(PMailingRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out ARecurringGiftDetailTable AData, PMailingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPMailingTemplate(PMailingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out ARecurringGiftDetailTable AData, PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPMailingTemplate(PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4690,23 +4783,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaPMailingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PMailingTable.TableId, AData, new string[1]{"p_mailing_code_c"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PMailingTable.TableId, Data, new string[1]{"p_mailing_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPMailingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPMailingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4750,23 +4844,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumber(out ARecurringGiftDetailTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientLedgerNumber(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"a_recipient_ledger_number_n"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"a_recipient_ledger_number_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumber(out ARecurringGiftDetailTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientLedgerNumber(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumber(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumber(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumber(out ARecurringGiftDetailTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientLedgerNumber(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumber(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumber(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4789,29 +4884,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out ARecurringGiftDetailTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"a_recipient_ledger_number_n"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"a_recipient_ledger_number_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out ARecurringGiftDetailTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumberTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumberTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out ARecurringGiftDetailTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumberTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumberTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out ARecurringGiftDetailTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumberTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumberTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4834,23 +4930,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ARecurringGiftDetailTable();
-            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"a_recipient_ledger_number_n"},
+            ARecurringGiftDetailTable Data = new ARecurringGiftDetailTable();
+            LoadViaForeignKey(ARecurringGiftDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"a_recipient_ledger_number_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumberTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumberTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out ARecurringGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ARecurringGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumberTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumberTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4929,22 +5026,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AGiftBatchTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AGiftBatchTable.TableId) + " FROM PUB_a_gift_batch" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AGiftBatchTable Data = new AGiftBatchTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AGiftBatchTable.TableId) + " FROM PUB_a_gift_batch" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AGiftBatchTable AData, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AGiftBatchTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4966,22 +5064,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AGiftBatchTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadByPrimaryKey(AGiftBatchTable.TableId, AData, new System.Object[2]{ALedgerNumber, ABatchNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadByPrimaryKey(AGiftBatchTable.TableId, Data, new System.Object[2]{ALedgerNumber, ABatchNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AGiftBatchTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ABatchNumber, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AGiftBatchTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ABatchNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5003,28 +5102,29 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftBatchTable AData, AGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadUsingTemplate(AGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadUsingTemplate(AGiftBatchTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadUsingTemplate(AGiftBatchTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftBatchTable AData, AGiftBatchRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadUsingTemplate(AGiftBatchRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftBatchTable AData, AGiftBatchRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadUsingTemplate(AGiftBatchRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftBatchTable AData, AGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadUsingTemplate(AGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5046,22 +5146,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadUsingTemplate(AGiftBatchTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadUsingTemplate(AGiftBatchTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5110,23 +5211,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AGiftBatchTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadViaForeignKey(AGiftBatchTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadViaForeignKey(AGiftBatchTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AGiftBatchTable AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AGiftBatchTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5149,29 +5251,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftBatchTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadViaForeignKey(AGiftBatchTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadViaForeignKey(AGiftBatchTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftBatchTable AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftBatchTable AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftBatchTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5194,23 +5297,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadViaForeignKey(AGiftBatchTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadViaForeignKey(AGiftBatchTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5254,23 +5358,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAAccount(out AGiftBatchTable AData, Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadViaForeignKey(AGiftBatchTable.TableId, AAccountTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadViaForeignKey(AGiftBatchTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
                 new System.Object[2]{ALedgerNumber, AAccountCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAAccount(out AGiftBatchTable AData, Int32 ALedgerNumber, String AAccountCode, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, TDBTransaction ATransaction)
         {
-            LoadViaAAccount(out AData, ALedgerNumber, AAccountCode, null, ATransaction, null, 0, 0);
+            return LoadViaAAccount(ALedgerNumber, AAccountCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAAccount(out AGiftBatchTable AData, Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAAccount(out AData, ALedgerNumber, AAccountCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAAccount(ALedgerNumber, AAccountCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5293,29 +5398,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AGiftBatchTable AData, AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadViaForeignKey(AGiftBatchTable.TableId, AAccountTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadViaForeignKey(AGiftBatchTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AGiftBatchTable AData, AAccountRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AGiftBatchTable AData, AAccountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AGiftBatchTable AData, AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5338,23 +5444,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadViaForeignKey(AGiftBatchTable.TableId, AAccountTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadViaForeignKey(AGiftBatchTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAAccountTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAAccountTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAAccountTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5398,23 +5505,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACostCentre(out AGiftBatchTable AData, Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadViaForeignKey(AGiftBatchTable.TableId, ACostCentreTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_bank_cost_centre_c"},
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadViaForeignKey(AGiftBatchTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_cost_centre_c"},
                 new System.Object[2]{ALedgerNumber, ACostCentreCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACostCentre(out AGiftBatchTable AData, Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction)
         {
-            LoadViaACostCentre(out AData, ALedgerNumber, ACostCentreCode, null, ATransaction, null, 0, 0);
+            return LoadViaACostCentre(ALedgerNumber, ACostCentreCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentre(out AGiftBatchTable AData, Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentre(out AData, ALedgerNumber, ACostCentreCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentre(ALedgerNumber, ACostCentreCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5437,29 +5545,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftBatchTable AData, ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadViaForeignKey(AGiftBatchTable.TableId, ACostCentreTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_bank_cost_centre_c"},
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadViaForeignKey(AGiftBatchTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_cost_centre_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftBatchTable AData, ACostCentreRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftBatchTable AData, ACostCentreRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftBatchTable AData, ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5482,23 +5591,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadViaForeignKey(AGiftBatchTable.TableId, ACostCentreTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_bank_cost_centre_c"},
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadViaForeignKey(AGiftBatchTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_cost_centre_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5542,23 +5652,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AGiftBatchTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadViaForeignKey(AGiftBatchTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadViaForeignKey(AGiftBatchTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AGiftBatchTable AData, String ACurrencyCode, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACurrency(String ACurrencyCode, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, null, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AGiftBatchTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5581,29 +5692,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AGiftBatchTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadViaForeignKey(AGiftBatchTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadViaForeignKey(AGiftBatchTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AGiftBatchTable AData, ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AGiftBatchTable AData, ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AGiftBatchTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5626,23 +5738,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftBatchTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftBatchTable();
-            LoadViaForeignKey(AGiftBatchTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AGiftBatchTable Data = new AGiftBatchTable();
+            LoadViaForeignKey(AGiftBatchTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AGiftBatchTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftBatchTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5721,22 +5834,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AGiftTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AGiftTable.TableId) + " FROM PUB_a_gift" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AGiftTable Data = new AGiftTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AGiftTable.TableId) + " FROM PUB_a_gift" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AGiftTable AData, TDBTransaction ATransaction)
+        public static AGiftTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AGiftTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5758,22 +5872,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AGiftTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadByPrimaryKey(AGiftTable.TableId, AData, new System.Object[3]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AGiftTable Data = new AGiftTable();
+            LoadByPrimaryKey(AGiftTable.TableId, Data, new System.Object[3]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AGiftTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, TDBTransaction ATransaction)
+        public static AGiftTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AGiftTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5795,28 +5910,29 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftTable AData, AGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadUsingTemplate(AGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadUsingTemplate(AGiftTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AGiftTable Data = new AGiftTable();
+            LoadUsingTemplate(AGiftTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftTable AData, AGiftRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftTable LoadUsingTemplate(AGiftRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftTable AData, AGiftRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadUsingTemplate(AGiftRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftTable AData, AGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadUsingTemplate(AGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5838,22 +5954,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadUsingTemplate(AGiftTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AGiftTable Data = new AGiftTable();
+            LoadUsingTemplate(AGiftTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5902,23 +6019,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAGiftBatch(out AGiftTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaAGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, AGiftBatchTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_batch_number_i"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, AGiftBatchTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_batch_number_i"},
                 new System.Object[2]{ALedgerNumber, ABatchNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAGiftBatch(out AGiftTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, TDBTransaction ATransaction)
         {
-            LoadViaAGiftBatch(out AData, ALedgerNumber, ABatchNumber, null, ATransaction, null, 0, 0);
+            return LoadViaAGiftBatch(ALedgerNumber, ABatchNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAGiftBatch(out AGiftTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAGiftBatch(out AData, ALedgerNumber, ABatchNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAGiftBatch(ALedgerNumber, ABatchNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5941,29 +6059,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAGiftBatchTemplate(out AGiftTable AData, AGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaAGiftBatchTemplate(AGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, AGiftBatchTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_batch_number_i"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, AGiftBatchTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_batch_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAGiftBatchTemplate(out AGiftTable AData, AGiftBatchRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAGiftBatchTemplate(AGiftBatchRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAGiftBatchTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAGiftBatchTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAGiftBatchTemplate(out AGiftTable AData, AGiftBatchRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAGiftBatchTemplate(AGiftBatchRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAGiftBatchTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAGiftBatchTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAGiftBatchTemplate(out AGiftTable AData, AGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAGiftBatchTemplate(AGiftBatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAGiftBatchTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAGiftBatchTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5986,23 +6105,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAGiftBatchTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaAGiftBatchTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, AGiftBatchTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_batch_number_i"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, AGiftBatchTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_batch_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAGiftBatchTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAGiftBatchTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAGiftBatchTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAGiftBatchTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAGiftBatchTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAGiftBatchTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAGiftBatchTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAGiftBatchTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6046,23 +6166,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AGiftTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AGiftTable AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AGiftTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6085,29 +6206,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftTable AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftTable AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6130,23 +6252,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6190,23 +6313,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGiving(out AGiftTable AData, String AMethodOfGivingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaAMethodOfGiving(String AMethodOfGivingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, AMethodOfGivingTable.TableId, AData, new string[1]{"a_method_of_giving_code_c"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, AMethodOfGivingTable.TableId, Data, new string[1]{"a_method_of_giving_code_c"},
                 new System.Object[1]{AMethodOfGivingCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGiving(out AGiftTable AData, String AMethodOfGivingCode, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfGiving(String AMethodOfGivingCode, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGiving(out AData, AMethodOfGivingCode, null, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGiving(AMethodOfGivingCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGiving(out AGiftTable AData, String AMethodOfGivingCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfGiving(String AMethodOfGivingCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGiving(out AData, AMethodOfGivingCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGiving(AMethodOfGivingCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6229,29 +6353,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out AGiftTable AData, AMethodOfGivingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaAMethodOfGivingTemplate(AMethodOfGivingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, AMethodOfGivingTable.TableId, AData, new string[1]{"a_method_of_giving_code_c"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, AMethodOfGivingTable.TableId, Data, new string[1]{"a_method_of_giving_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out AGiftTable AData, AMethodOfGivingRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfGivingTemplate(AMethodOfGivingRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGivingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGivingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out AGiftTable AData, AMethodOfGivingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfGivingTemplate(AMethodOfGivingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGivingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGivingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out AGiftTable AData, AMethodOfGivingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfGivingTemplate(AMethodOfGivingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGivingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGivingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6274,23 +6399,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaAMethodOfGivingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, AMethodOfGivingTable.TableId, AData, new string[1]{"a_method_of_giving_code_c"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, AMethodOfGivingTable.TableId, Data, new string[1]{"a_method_of_giving_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfGivingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGivingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGivingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfGivingTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfGivingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfGivingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfGivingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6334,23 +6460,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPayment(out AGiftTable AData, String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaAMethodOfPayment(String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, AMethodOfPaymentTable.TableId, AData, new string[1]{"a_method_of_payment_code_c"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, AMethodOfPaymentTable.TableId, Data, new string[1]{"a_method_of_payment_code_c"},
                 new System.Object[1]{AMethodOfPaymentCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPayment(out AGiftTable AData, String AMethodOfPaymentCode, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfPayment(String AMethodOfPaymentCode, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPayment(out AData, AMethodOfPaymentCode, null, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPayment(AMethodOfPaymentCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPayment(out AGiftTable AData, String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfPayment(String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPayment(out AData, AMethodOfPaymentCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPayment(AMethodOfPaymentCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6373,29 +6500,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out AGiftTable AData, AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaAMethodOfPaymentTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, AMethodOfPaymentTable.TableId, AData, new string[1]{"a_method_of_payment_code_c"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, AMethodOfPaymentTable.TableId, Data, new string[1]{"a_method_of_payment_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out AGiftTable AData, AMethodOfPaymentRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfPaymentTemplate(AMethodOfPaymentRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPaymentTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPaymentTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out AGiftTable AData, AMethodOfPaymentRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfPaymentTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPaymentTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPaymentTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out AGiftTable AData, AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfPaymentTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPaymentTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPaymentTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6418,23 +6546,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaAMethodOfPaymentTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, AMethodOfPaymentTable.TableId, AData, new string[1]{"a_method_of_payment_code_c"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, AMethodOfPaymentTable.TableId, Data, new string[1]{"a_method_of_payment_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfPaymentTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPaymentTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPaymentTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMethodOfPaymentTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaAMethodOfPaymentTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMethodOfPaymentTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMethodOfPaymentTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6478,23 +6607,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out AGiftTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_donor_key_n"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_donor_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out AGiftTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out AGiftTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6517,29 +6647,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AGiftTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_donor_key_n"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_donor_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AGiftTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AGiftTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AGiftTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6562,23 +6693,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftTable();
-            LoadViaForeignKey(AGiftTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_donor_key_n"},
+            AGiftTable Data = new AGiftTable();
+            LoadViaForeignKey(AGiftTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_donor_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6629,25 +6761,26 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out AGiftTable AData, String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AGiftTable();
-            FillDataSet.Tables.Add(AData);
+            AGiftTable Data = new AGiftTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroup(FillDataSet, AGroupId, AUnitKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out AGiftTable AData, String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, TDBTransaction ATransaction)
         {
-            LoadViaSGroup(out AData, AGroupId, AUnitKey, null, ATransaction, null, 0, 0);
+            return LoadViaSGroup(AGroupId, AUnitKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroup(out AGiftTable AData, String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaSGroup(String AGroupId, Int64 AUnitKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroup(out AData, AGroupId, AUnitKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroup(AGroupId, AUnitKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6674,31 +6807,32 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AGiftTable AData, SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AGiftTable();
-            FillDataSet.Tables.Add(AData);
+            AGiftTable Data = new AGiftTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroupTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AGiftTable AData, SGroupRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AGiftTable AData, SGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AGiftTable AData, SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaSGroupTemplate(SGroupRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6725,25 +6859,26 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AGiftTable();
-            FillDataSet.Tables.Add(AData);
+            AGiftTable Data = new AGiftTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaSGroupTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaSGroupTemplate(out AGiftTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftTable LoadViaSGroupTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaSGroupTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaSGroupTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -6832,22 +6967,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AGiftDetailTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AGiftDetailTable.TableId) + " FROM PUB_a_gift_detail" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AGiftDetailTable Data = new AGiftDetailTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AGiftDetailTable.TableId) + " FROM PUB_a_gift_detail" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AGiftDetailTable AData, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AGiftDetailTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6869,22 +7005,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AGiftDetailTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadByPrimaryKey(AGiftDetailTable.TableId, AData, new System.Object[4]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadByPrimaryKey(AGiftDetailTable.TableId, Data, new System.Object[4]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AGiftDetailTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AGiftDetailTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6906,28 +7043,29 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftDetailTable AData, AGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadUsingTemplate(AGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadUsingTemplate(AGiftDetailTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadUsingTemplate(AGiftDetailTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftDetailTable AData, AGiftDetailRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadUsingTemplate(AGiftDetailRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftDetailTable AData, AGiftDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadUsingTemplate(AGiftDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftDetailTable AData, AGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadUsingTemplate(AGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -6949,22 +7087,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadUsingTemplate(AGiftDetailTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadUsingTemplate(AGiftDetailTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7013,23 +7152,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAGift(out AGiftDetailTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaAGift(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, AGiftTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, AGiftTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"},
                 new System.Object[3]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAGift(out AGiftDetailTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAGift(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, TDBTransaction ATransaction)
         {
-            LoadViaAGift(out AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, null, ATransaction, null, 0, 0);
+            return LoadViaAGift(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAGift(out AGiftDetailTable AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAGift(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAGift(out AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAGift(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7052,29 +7192,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAGiftTemplate(out AGiftDetailTable AData, AGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaAGiftTemplate(AGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, AGiftTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, AGiftTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAGiftTemplate(out AGiftDetailTable AData, AGiftRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAGiftTemplate(AGiftRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAGiftTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAGiftTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAGiftTemplate(out AGiftDetailTable AData, AGiftRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAGiftTemplate(AGiftRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAGiftTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAGiftTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAGiftTemplate(out AGiftDetailTable AData, AGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAGiftTemplate(AGiftRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAGiftTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAGiftTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7097,23 +7238,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAGiftTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaAGiftTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, AGiftTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, AGiftTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAGiftTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAGiftTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAGiftTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAGiftTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAGiftTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAGiftTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAGiftTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAGiftTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7157,23 +7299,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetail(out AGiftDetailTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaAMotivationDetail(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, AMotivationDetailTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, AMotivationDetailTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
                 new System.Object[3]{ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetail(out AGiftDetailTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAMotivationDetail(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetail(out AData, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, null, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetail(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetail(out AGiftDetailTable AData, Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAMotivationDetail(Int32 ALedgerNumber, String AMotivationGroupCode, String AMotivationDetailCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetail(out AData, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetail(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7196,29 +7339,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AGiftDetailTable AData, AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaAMotivationDetailTemplate(AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, AMotivationDetailTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, AMotivationDetailTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AGiftDetailTable AData, AMotivationDetailRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAMotivationDetailTemplate(AMotivationDetailRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AGiftDetailTable AData, AMotivationDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAMotivationDetailTemplate(AMotivationDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AGiftDetailTable AData, AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAMotivationDetailTemplate(AMotivationDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7241,23 +7385,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaAMotivationDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, AMotivationDetailTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, AMotivationDetailTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_motivation_group_code_c", "a_motivation_detail_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAMotivationDetailTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAMotivationDetailTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaAMotivationDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAMotivationDetailTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAMotivationDetailTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7301,23 +7446,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKey(out AGiftDetailTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaPPartnerRecipientKey(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_recipient_key_n"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_recipient_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKey(out AGiftDetailTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientKey(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKey(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKey(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKey(out AGiftDetailTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientKey(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKey(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKey(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7340,29 +7486,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out AGiftDetailTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_recipient_key_n"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_recipient_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out AGiftDetailTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKeyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKeyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out AGiftDetailTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKeyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKeyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out AGiftDetailTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKeyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKeyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7385,23 +7532,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_recipient_key_n"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_recipient_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKeyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKeyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientKeyTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientKeyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientKeyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientKeyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7445,23 +7593,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMailing(out AGiftDetailTable AData, String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaPMailing(String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, PMailingTable.TableId, AData, new string[1]{"p_mailing_code_c"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, PMailingTable.TableId, Data, new string[1]{"p_mailing_code_c"},
                 new System.Object[1]{AMailingCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMailing(out AGiftDetailTable AData, String AMailingCode, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPMailing(String AMailingCode, TDBTransaction ATransaction)
         {
-            LoadViaPMailing(out AData, AMailingCode, null, ATransaction, null, 0, 0);
+            return LoadViaPMailing(AMailingCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMailing(out AGiftDetailTable AData, String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPMailing(String AMailingCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMailing(out AData, AMailingCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMailing(AMailingCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7484,29 +7633,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out AGiftDetailTable AData, PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaPMailingTemplate(PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, PMailingTable.TableId, AData, new string[1]{"p_mailing_code_c"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, PMailingTable.TableId, Data, new string[1]{"p_mailing_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out AGiftDetailTable AData, PMailingRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPMailingTemplate(PMailingRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out AGiftDetailTable AData, PMailingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPMailingTemplate(PMailingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out AGiftDetailTable AData, PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPMailingTemplate(PMailingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7529,23 +7679,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaPMailingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, PMailingTable.TableId, AData, new string[1]{"p_mailing_code_c"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, PMailingTable.TableId, Data, new string[1]{"p_mailing_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPMailingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPMailingTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPMailingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPMailingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPMailingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7589,23 +7740,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumber(out AGiftDetailTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaPPartnerRecipientLedgerNumber(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"a_recipient_ledger_number_n"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"a_recipient_ledger_number_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumber(out AGiftDetailTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientLedgerNumber(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumber(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumber(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumber(out AGiftDetailTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientLedgerNumber(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumber(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumber(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7628,29 +7780,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out AGiftDetailTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"a_recipient_ledger_number_n"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"a_recipient_ledger_number_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out AGiftDetailTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumberTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumberTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out AGiftDetailTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumberTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumberTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out AGiftDetailTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumberTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumberTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7673,23 +7826,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, PPartnerTable.TableId, AData, new string[1]{"a_recipient_ledger_number_n"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, PPartnerTable.TableId, Data, new string[1]{"a_recipient_ledger_number_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumberTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumberTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerRecipientLedgerNumberTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaPPartnerRecipientLedgerNumberTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerRecipientLedgerNumberTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerRecipientLedgerNumberTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7733,23 +7887,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACostCentre(out AGiftDetailTable AData, Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, ACostCentreTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
                 new System.Object[2]{ALedgerNumber, ACostCentreCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACostCentre(out AGiftDetailTable AData, Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction)
         {
-            LoadViaACostCentre(out AData, ALedgerNumber, ACostCentreCode, null, ATransaction, null, 0, 0);
+            return LoadViaACostCentre(ALedgerNumber, ACostCentreCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentre(out AGiftDetailTable AData, Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentre(out AData, ALedgerNumber, ACostCentreCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentre(ALedgerNumber, ACostCentreCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7772,29 +7927,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftDetailTable AData, ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, ACostCentreTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftDetailTable AData, ACostCentreRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftDetailTable AData, ACostCentreRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftDetailTable AData, ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7817,23 +7973,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, ACostCentreTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACostCentreTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACostCentreTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACostCentreTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7877,23 +8034,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AGiftDetailTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AGiftDetailTable AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AGiftDetailTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7916,29 +8074,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftDetailTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftDetailTable AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftDetailTable AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftDetailTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7961,23 +8120,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AGiftDetailTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AGiftDetailTable();
-            LoadViaForeignKey(AGiftDetailTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AGiftDetailTable Data = new AGiftDetailTable();
+            LoadViaForeignKey(AGiftDetailTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AGiftDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AGiftDetailTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated

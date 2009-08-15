@@ -128,27 +128,7 @@ namespace Ict.Petra.Server.MPartner.Partner
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             String TableName;
-            PAddresseeTypeTable TmpAddresseeTypeDT;
-            PAcquisitionTable TmpAcquisitionDT;
-            PBusinessTable TmpBusinessDT;
-            PCountryTable TmpCountryDT;
-            ACurrencyTable TmpCurrencyDT;
-            PDataLabelTable TmpDataLabelDT;
-            PDataLabelUseTable TmpDataLabelUseDT;
-            PDataLabelLookupCategoryTable TmpDataLabelLookupCategoryDT;
-            PDataLabelLookupTable TmpDataLabelLookupDT;
-            PDenominationTable TmpDenominationDT;
-            PInterestTable TmpInterestDT;
-            PInterestCategoryTable TmpInterestCategoryDT;
-            PLanguageTable TmpLanguageDT;
-            PLocationTypeTable TmpLocationTypeDT;
-            PtMaritalStatusTable TmpMaritalStatusDT;
-            POccupationTable TmpOccupationDT;
-            PPartnerStatusTable TmpPartnerStatusTableDT;
-            PTypeTable TmpTypeDT;
-            UUnitTypeTable TmpUnitTypeDT;
-            PFoundationProposalStatusTable TmpFoundationProposalStatusDT;
-            PProposalSubmissionTypeTable TmpProposalSubmissionTypeDT;
+            DataTable TmpTable;
 
             TableName = Enum.GetName(typeof(TCacheablePartnerTablesEnum), ACacheableTable);
 #if DEBUGMODE
@@ -169,123 +149,111 @@ namespace Ict.Petra.Server.MPartner.Partner
                     switch (ACacheableTable)
                     {
                         case TCacheablePartnerTablesEnum.AddresseeTypeList:
-                            PAddresseeTypeAccess.LoadAll(out TmpAddresseeTypeDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpAddresseeTypeDT, DomainManager.GClientID);
+                            TmpTable = PAddresseeTypeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.AcquisitionCodeList:
-                            PAcquisitionAccess.LoadAll(out TmpAcquisitionDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpAcquisitionDT, DomainManager.GClientID);
+                            TmpTable = PAcquisitionAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.BusinessCodeList:
-                            PBusinessAccess.LoadAll(out TmpBusinessDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpBusinessDT, DomainManager.GClientID);
+                            TmpTable = PBusinessAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.CountryList:
-                            PCountryAccess.LoadAll(out TmpCountryDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpCountryDT, DomainManager.GClientID);
+                            TmpTable = PCountryAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.CurrencyCodeList:
-                            ACurrencyAccess.LoadAll(out TmpCurrencyDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpCurrencyDT, DomainManager.GClientID);
+                            TmpTable = ACurrencyAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.DataLabelList:
-                            PDataLabelAccess.LoadAll(out TmpDataLabelDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpDataLabelDT, DomainManager.GClientID);
+                            TmpTable = PDataLabelAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.DataLabelUseList:
-                            PDataLabelUseAccess.LoadAll(out TmpDataLabelUseDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpDataLabelUseDT, DomainManager.GClientID);
+                            TmpTable = PDataLabelUseAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.DataLabelLookupCategoryList:
-                            PDataLabelLookupCategoryAccess.LoadAll(out TmpDataLabelLookupCategoryDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                            TmpDataLabelLookupCategoryDT,
-                            DomainManager.GClientID);
+                            TmpTable = PDataLabelLookupCategoryAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.DataLabelLookupList:
-                            PDataLabelLookupAccess.LoadAll(out TmpDataLabelLookupDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                            TmpDataLabelLookupDT,
-                            DomainManager.GClientID);
+                            TmpTable = PDataLabelLookupAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.DenominationList:
-                            PDenominationAccess.LoadAll(out TmpDenominationDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpDenominationDT, DomainManager.GClientID);
+                            TmpTable = PDenominationAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
 
                             // FoundationOwnerList:     this is nonstandard!
                             // InstalledSitesList:     this is nonstandard!
                             break;
 
                         case TCacheablePartnerTablesEnum.InterestList:
-                            PInterestAccess.LoadAll(out TmpInterestDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpInterestDT, DomainManager.GClientID);
+                            TmpTable = PInterestAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.InterestCategoryList:
-                            PInterestCategoryAccess.LoadAll(out TmpInterestCategoryDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                            TmpInterestCategoryDT,
-                            DomainManager.GClientID);
+                            TmpTable = PInterestCategoryAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.LanguageCodeList:
-                            PLanguageAccess.LoadAll(out TmpLanguageDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpLanguageDT, DomainManager.GClientID);
+                            TmpTable = PLanguageAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.LocationTypeList:
-                            PLocationTypeAccess.LoadAll(out TmpLocationTypeDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpLocationTypeDT, DomainManager.GClientID);
+                            TmpTable = PLocationTypeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.MaritalStatusList:
-                            PtMaritalStatusAccess.LoadAll(out TmpMaritalStatusDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpMaritalStatusDT, DomainManager.GClientID);
+                            TmpTable = PtMaritalStatusAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.OccupationList:
-                            POccupationAccess.LoadAll(out TmpOccupationDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpOccupationDT, DomainManager.GClientID);
+                            TmpTable = POccupationAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.PartnerStatusList:
-                            PPartnerStatusAccess.LoadAll(out TmpPartnerStatusTableDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                            TmpPartnerStatusTableDT,
-                            DomainManager.GClientID);
+                            TmpTable = PPartnerStatusAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.PartnerTypeList:
-                            PTypeAccess.LoadAll(out TmpTypeDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTypeDT, DomainManager.GClientID);
+                            TmpTable = PTypeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.ProposalStatusList:
-                            PFoundationProposalStatusAccess.LoadAll(out TmpFoundationProposalStatusDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                            TmpFoundationProposalStatusDT,
-                            DomainManager.GClientID);
+                            TmpTable = PFoundationProposalStatusAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.ProposalSubmissionTypeList:
-                            PProposalSubmissionTypeAccess.LoadAll(out TmpProposalSubmissionTypeDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                            TmpProposalSubmissionTypeDT,
-                            DomainManager.GClientID);
+                            TmpTable = PProposalSubmissionTypeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
                         case TCacheablePartnerTablesEnum.UnitTypeList:
-                            UUnitTypeAccess.LoadAll(out TmpUnitTypeDT, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpUnitTypeDT, DomainManager.GClientID);
+                            TmpTable = UUnitTypeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
 
                             // Unknown Standard Cacheable DataTable
                             break;
@@ -346,10 +314,7 @@ namespace Ict.Petra.Server.MPartner.Partner
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
-            SUserTable TmpUserTable;
-            SUserRow EmptyDR;
             string TableName;
-            DataSet TmpDS;
 
             TableName = Enum.GetName(typeof(TCacheablePartnerTablesEnum), TCacheablePartnerTablesEnum.FoundationOwnerList);
 #if DEBUGMODE
@@ -367,9 +332,8 @@ namespace Ict.Petra.Server.MPartner.Partner
                     out NewTransaction);
                 try
                 {
-                    TmpDS = new DataSet();
-                    TmpDS.Tables.Add(new SUserTable());
-                    TmpDS = DBAccess.GDBAccessObj.Select(TmpDS, "SELECT " + SUserTable.GetPartnerKeyDBName() + ',' +
+                    SUserTable TmpUserTable = new SUserTable();
+                    TmpUserTable = (SUserTable) DBAccess.GDBAccessObj.SelectDT(TmpUserTable, "SELECT " + SUserTable.GetPartnerKeyDBName() + ',' +
                         SUserTable.GetUserIdDBName() + ',' +
                         SUserTable.GetFirstNameDBName() + ',' +
                         SUserTable.GetLastNameDBName() + ' ' +
@@ -380,9 +344,8 @@ namespace Ict.Petra.Server.MPartner.Partner
                         "FROM PUB_" + SUserModuleAccessPermissionTable.GetTableDBName() + ' ' +
                         "WHERE " + SUserModuleAccessPermissionTable.GetModuleIdDBName() +
                         " = 'DEVUSER')" + "AND " + SUserTable.GetRetiredDBName() +
-                        " = FALSE", SUserTable.GetTableName(), ReadTransaction);
-                    TmpUserTable = (SUserTable)TmpDS.Tables[0];
-                    EmptyDR = TmpUserTable.NewRowTyped(false);
+                        " = FALSE", ReadTransaction, null, -1, -1);
+                    SUserRow EmptyDR = TmpUserTable.NewRowTyped(false);
                     EmptyDR.PartnerKey = 0;
                     EmptyDR.UserId = "";
                     TmpUserTable.Rows.InsertAt(EmptyDR, 0);
@@ -462,7 +425,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                     out NewTransaction);
                 try
                 {
-                    PPartnerLedgerAccess.LoadAll(out TmpInstalledSitesDT, RequiredColumns, ReadTransaction, null, 0, 0);
+                    TmpInstalledSitesDT = PPartnerLedgerAccess.LoadAll(RequiredColumns, ReadTransaction, null, 0, 0);
 
                     if (TmpInstalledSitesDT.Rows.Count != 0)
                     {
@@ -473,7 +436,7 @@ namespace Ict.Petra.Server.MPartner.Partner
 
                         for (Counter = 0; Counter <= TmpInstalledSitesDT.Rows.Count - 1; Counter += 1)
                         {
-                            PPartnerAccess.LoadByPrimaryKey(out PartnerDT,
+                            PartnerDT = PPartnerAccess.LoadByPrimaryKey(
                                 TmpInstalledSitesDT[Counter].PartnerKey,
                                 RequiredColumns,
                                 ReadTransaction,
@@ -484,7 +447,8 @@ namespace Ict.Petra.Server.MPartner.Partner
                         }
                     }
 
-                    DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpInstalledSitesDT, DomainManager.GClientID);
+                    DataTable TmpTable = TmpInstalledSitesDT;
+                    DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                 }
                 finally
                 {

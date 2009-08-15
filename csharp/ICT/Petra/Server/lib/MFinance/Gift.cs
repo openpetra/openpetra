@@ -263,12 +263,12 @@ namespace Ict.Petra.Server.MFinance
                 if (GiftDR.Restricted)
                 {
                     AccessToGift = false;
-                    SGroupGiftAccess.LoadViaAGift(out GroupGiftDT,
+                    GroupGiftDT = SGroupGiftAccess.LoadViaAGift(
                         GiftDR.LedgerNumber,
                         GiftDR.BatchNumber,
                         GiftDR.GiftTransactionNumber,
                         ReadTransaction);
-                    SUserGroupAccess.LoadViaSUser(out UserGroupDT, UserInfo.GUserInfo.UserID, ReadTransaction);
+                    UserGroupDT = SUserGroupAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, ReadTransaction);
 
                     // Loop over all rows of GroupGiftDT
                     for (Counter = 0; Counter <= GroupGiftDT.Rows.Count - 1; Counter += 1)

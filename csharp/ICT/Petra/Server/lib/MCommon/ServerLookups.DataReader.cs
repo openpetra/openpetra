@@ -67,33 +67,23 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 // TODO: auto generate
                 if (ATablename == AApSupplierTable.GetTableDBName())
                 {
-                    AApSupplierTable typedTable;
-                    AApSupplierAccess.LoadUsingTemplate(out typedTable, ASearchCriteria, ReadTransaction);
-                    tempTable = typedTable;
+                    tempTable = AApSupplierAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
                 }
                 else if (ATablename == AApDocumentTable.GetTableDBName())
                 {
-                    AApDocumentTable typedTable;
-                    AApDocumentAccess.LoadUsingTemplate(out typedTable, ASearchCriteria, ReadTransaction);
-                    tempTable = typedTable;
+                    tempTable = AApDocumentAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
                 }
                 else if (ATablename == ATransactionTypeTable.GetTableDBName())
                 {
-                    ATransactionTypeTable typedTable;
-                    ATransactionTypeAccess.LoadUsingTemplate(out typedTable, ASearchCriteria, ReadTransaction);
-                    tempTable = typedTable;
+                    tempTable = ATransactionTypeAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
                 }
                 else if (ATablename == ACurrencyTable.GetTableDBName())
                 {
-                    ACurrencyTable typedTable;
-                    ACurrencyAccess.LoadAll(out typedTable, ReadTransaction);
-                    tempTable = typedTable;
+                    tempTable = ACurrencyAccess.LoadAll(ReadTransaction);
                 }
                 else if (ATablename == ADailyExchangeRateTable.GetTableDBName())
                 {
-                    ADailyExchangeRateTable typedTable;
-                    ADailyExchangeRateAccess.LoadAll(out typedTable, ReadTransaction);
-                    tempTable = typedTable;
+                    tempTable = ADailyExchangeRateAccess.LoadAll(ReadTransaction);
                 }
                 else
                 {

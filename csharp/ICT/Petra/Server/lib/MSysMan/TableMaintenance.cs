@@ -80,9 +80,7 @@ namespace Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors
 
             if (ATableName == SUserTable.GetTableDBName())
             {
-                SUserTable usertable;
-                SUserAccess.LoadAll(out usertable, ReadTransaction);
-                table = usertable;
+                table = SUserAccess.LoadAll(ReadTransaction);
             }
 
             return table;

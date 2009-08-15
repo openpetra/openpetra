@@ -89,7 +89,7 @@ namespace Ict.Petra.Server.MCommon
                     out NewTransaction);
                 try
                 {
-                    PPartnerAccess.LoadByPrimaryKey(out PartnerTable, APartnerKey, RequiredColumns, ReadTransaction, null, 0, 0);
+                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, RequiredColumns, ReadTransaction, null, 0, 0);
                 }
                 finally
                 {
@@ -165,7 +165,7 @@ namespace Ict.Petra.Server.MCommon
 
                 try
                 {
-                    PPartnerAccess.LoadByPrimaryKey(out PartnerTable, APartnerKey, ReadTransaction);
+                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
                 }
                 finally
                 {

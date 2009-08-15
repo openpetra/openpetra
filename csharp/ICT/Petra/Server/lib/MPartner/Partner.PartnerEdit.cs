@@ -985,7 +985,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
                 else
                 {
-                    PPartnerAccess.LoadByPrimaryKey(out PersonFamilyPartnerDT, AFamilyPartnerKey, ReadTransaction);
+                    PersonFamilyPartnerDT = PPartnerAccess.LoadByPrimaryKey(AFamilyPartnerKey, ReadTransaction);
 
                     if (PersonFamilyPartnerDT[0].LanguageCode == "99")
                     {
@@ -1041,7 +1041,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     case TPartnerClass.PERSON:
 
                         // Load p_family record of the FAMILY that the PERSON will belong to
-                        PFamilyAccess.LoadByPrimaryKey(out PersonFamilyDT, AFamilyPartnerKey, ReadTransaction);
+                        PersonFamilyDT = PFamilyAccess.LoadByPrimaryKey(AFamilyPartnerKey, ReadTransaction);
                         PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFAMILY);
 
                         // Create DataRow for PPerson using the default values for all DataColumns
@@ -1230,7 +1230,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     SiteLocationRequiredColumns = new StringCollection();
                     SiteLocationRequiredColumns.Add(PLocationTable.GetLocationKeyDBName());
                     SiteLocationRequiredColumns.Add(PLocationTable.GetCountryCodeDBName());
-                    PLocationAccess.LoadViaPPartner(out SiteLocationDT, ASiteKey, SiteLocationRequiredColumns, ReadTransaction, null, 0, 0);
+                    SiteLocationDT = PLocationAccess.LoadViaPPartner(ASiteKey, SiteLocationRequiredColumns, ReadTransaction, null, 0, 0);
 
                     // For the moment just take the CountryCode that we find in the (random) first record...
                     ASiteCountryCode = SiteLocationDT[0].CountryCode;
@@ -1328,7 +1328,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 #endif
                     try
                     {
-                        PPartnerTypeAccess.LoadViaPPartner(out PartnerTypesDT, FPartnerKey, ReadTransaction);
+                        PartnerTypesDT = PPartnerTypeAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
                     }
                     catch (Exception)
                     {
@@ -1359,7 +1359,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PPartnerTypeRow NewDR;
 
             // Load PartnerTypes that the FAMILY has
-            PPartnerTypeAccess.LoadViaPPartner(out PartnerTypeDT, AFamilyPartnerKey, AReadTransaction);
+            PartnerTypeDT = PPartnerTypeAccess.LoadViaPPartner(AFamilyPartnerKey, AReadTransaction);
 
             // Copy over all PartnerTypes from the FAMILY to the new PERSON
             for (int Counter = 0; Counter < PartnerTypeDT.Rows.Count; Counter++)
@@ -1496,7 +1496,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         // Load a Person's SpecialTypes if requested
                         if (AWorkWithSpecialType != "")
                         {
-                            PPartnerTypeAccess.LoadViaPPartner(out PartnerTypesDT,
+                            PartnerTypesDT = PPartnerTypeAccess.LoadViaPPartner(
                                 FamilyPersonsDT[Counter].PartnerKey,
                                 RequiredColumns,
                                 ReadTransaction,
@@ -1608,7 +1608,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 #endif
                     try
                     {
-                        PPartnerInterestAccess.LoadViaPPartner(out InterestDT, FPartnerKey, ReadTransaction);
+                        InterestDT = PPartnerInterestAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
                     }
                     catch (Exception)
                     {
@@ -1669,7 +1669,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 #endif
                     try
                     {
-                        PInterestAccess.LoadAll(out InterestDT, ReadTransaction);
+                        InterestDT = PInterestAccess.LoadAll(ReadTransaction);
                     }
                     catch (Exception)
                     {
@@ -2095,8 +2095,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 // AInspectDS doesn't contain a PPartner DataRow: load that PPartner
                                 // record, change DateModified and save the PPartner record.
                                 // must use AddedPartnerLocationsDV because AInspectDS.PPartnerLocation[0] could be a deleted row; see bug 759
-                                PPartnerAccess.LoadByPrimaryKey(out PartnerDT, ((PPartnerLocationRow)(
-                                                                                    AddedPartnerLocationsDV[0].Row)).PartnerKey,
+                                PartnerDT = PPartnerAccess.LoadByPrimaryKey(((PPartnerLocationRow)(AddedPartnerLocationsDV[0].Row)).PartnerKey,
                                     ASubmitChangesTransaction);
                                 PartnerDT[0].DateModified = DateTime.Today;
                                 PPartnerAccess.SubmitChanges(PartnerDT, ASubmitChangesTransaction, out AVerificationResult);
@@ -2698,7 +2697,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 PartnerDR = APartnerTypeChangeFamilyMembersDT[Counter];
 
                 // Load Family Member's Partner record
-                PPartnerAccess.LoadByPrimaryKey(out PartnerDT, PartnerDR.PartnerKey, ASubmitChangesTransaction);
+                PartnerDT = PPartnerAccess.LoadByPrimaryKey(PartnerDR.PartnerKey, ASubmitChangesTransaction);
 
                 if (PartnerDT[0].StatusCode != ANewPartnerStatusCode)
                 {
@@ -2812,7 +2811,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             {
                                 // get the latest modificationID, otherwise it is emtpy, and that would cause trouble
                                 // when deleting the partner type.
-                                PPartnerTypeAccess.LoadByPrimaryKey(out PartnerType,
+                                PartnerType = PPartnerTypeAccess.LoadByPrimaryKey(
                                     FamilyChangePromotionTable[Counter].PartnerKey,
                                     FamilyChangePromotionTable[Counter].TypeCode,
                                     ASubmitChangesTransaction);
@@ -2943,7 +2942,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 #endif
                     try
                     {
-                        PSubscriptionAccess.LoadViaPPartnerPartnerKey(out SubscriptionDT, FPartnerKey, ReadTransaction);
+                        SubscriptionDT = PSubscriptionAccess.LoadViaPPartnerPartnerKey(FPartnerKey, ReadTransaction);
                     }
                     catch (Exception)
                     {
@@ -3067,7 +3066,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             /*
              * Load the Persons of a Family
              */
-            PPersonAccess.LoadViaPFamily(out FamilyPersonsDT, FPartnerEditScreenDS.PFamily[0].PartnerKey, ASubmitChangesTransaction);
+            FamilyPersonsDT = PPersonAccess.LoadViaPFamily(FPartnerEditScreenDS.PFamily[0].PartnerKey, ASubmitChangesTransaction);
 
             /*
              * Now change the FamilyID of those rows that have been modified on the

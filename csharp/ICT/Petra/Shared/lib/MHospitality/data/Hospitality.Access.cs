@@ -72,22 +72,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcBuildingTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcBuildingTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcBuildingTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcBuildingTable.TableId) + " FROM PUB_pc_building" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcBuildingTable Data = new PcBuildingTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcBuildingTable.TableId) + " FROM PUB_pc_building" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcBuildingTable AData, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcBuildingTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -109,22 +110,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcBuildingTable AData, Int64 AVenueKey, String ABuildingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcBuildingTable LoadByPrimaryKey(Int64 AVenueKey, String ABuildingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcBuildingTable();
-            LoadByPrimaryKey(PcBuildingTable.TableId, AData, new System.Object[2]{AVenueKey, ABuildingCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcBuildingTable Data = new PcBuildingTable();
+            LoadByPrimaryKey(PcBuildingTable.TableId, Data, new System.Object[2]{AVenueKey, ABuildingCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcBuildingTable AData, Int64 AVenueKey, String ABuildingCode, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadByPrimaryKey(Int64 AVenueKey, String ABuildingCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AVenueKey, ABuildingCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AVenueKey, ABuildingCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcBuildingTable AData, Int64 AVenueKey, String ABuildingCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadByPrimaryKey(Int64 AVenueKey, String ABuildingCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AVenueKey, ABuildingCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AVenueKey, ABuildingCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -146,28 +148,29 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcBuildingTable AData, PcBuildingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcBuildingTable LoadUsingTemplate(PcBuildingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcBuildingTable();
-            LoadUsingTemplate(PcBuildingTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcBuildingTable Data = new PcBuildingTable();
+            LoadUsingTemplate(PcBuildingTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcBuildingTable AData, PcBuildingRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadUsingTemplate(PcBuildingRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcBuildingTable AData, PcBuildingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadUsingTemplate(PcBuildingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcBuildingTable AData, PcBuildingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadUsingTemplate(PcBuildingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -189,22 +192,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcBuildingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcBuildingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcBuildingTable();
-            LoadUsingTemplate(PcBuildingTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcBuildingTable Data = new PcBuildingTable();
+            LoadUsingTemplate(PcBuildingTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcBuildingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcBuildingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -253,23 +257,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPVenue(out PcBuildingTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcBuildingTable LoadViaPVenue(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcBuildingTable();
-            LoadViaForeignKey(PcBuildingTable.TableId, PVenueTable.TableId, AData, new string[1]{"p_venue_key_n"},
+            PcBuildingTable Data = new PcBuildingTable();
+            LoadViaForeignKey(PcBuildingTable.TableId, PVenueTable.TableId, Data, new string[1]{"p_venue_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPVenue(out PcBuildingTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadViaPVenue(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPVenue(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPVenue(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenue(out PcBuildingTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadViaPVenue(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenue(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenue(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -292,29 +297,30 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcBuildingTable AData, PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcBuildingTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcBuildingTable();
-            LoadViaForeignKey(PcBuildingTable.TableId, PVenueTable.TableId, AData, new string[1]{"p_venue_key_n"},
+            PcBuildingTable Data = new PcBuildingTable();
+            LoadViaForeignKey(PcBuildingTable.TableId, PVenueTable.TableId, Data, new string[1]{"p_venue_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcBuildingTable AData, PVenueRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcBuildingTable AData, PVenueRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcBuildingTable AData, PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -337,23 +343,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcBuildingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcBuildingTable LoadViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcBuildingTable();
-            LoadViaForeignKey(PcBuildingTable.TableId, PVenueTable.TableId, AData, new string[1]{"p_venue_key_n"},
+            PcBuildingTable Data = new PcBuildingTable();
+            LoadViaForeignKey(PcBuildingTable.TableId, PVenueTable.TableId, Data, new string[1]{"p_venue_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcBuildingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcBuildingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcBuildingTable LoadViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -432,22 +439,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcRoomTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcRoomTable.TableId) + " FROM PUB_pc_room" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcRoomTable Data = new PcRoomTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcRoomTable.TableId) + " FROM PUB_pc_room" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcRoomTable AData, TDBTransaction ATransaction)
+        public static PcRoomTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcRoomTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -469,22 +477,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcRoomTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomTable LoadByPrimaryKey(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomTable();
-            LoadByPrimaryKey(PcRoomTable.TableId, AData, new System.Object[3]{AVenueKey, ABuildingCode, ARoomNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcRoomTable Data = new PcRoomTable();
+            LoadByPrimaryKey(PcRoomTable.TableId, Data, new System.Object[3]{AVenueKey, ABuildingCode, ARoomNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcRoomTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, TDBTransaction ATransaction)
+        public static PcRoomTable LoadByPrimaryKey(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AVenueKey, ABuildingCode, ARoomNumber, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AVenueKey, ABuildingCode, ARoomNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcRoomTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadByPrimaryKey(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AVenueKey, ABuildingCode, ARoomNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AVenueKey, ABuildingCode, ARoomNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -506,28 +515,29 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomTable AData, PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomTable LoadUsingTemplate(PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomTable();
-            LoadUsingTemplate(PcRoomTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcRoomTable Data = new PcRoomTable();
+            LoadUsingTemplate(PcRoomTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomTable AData, PcRoomRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomTable LoadUsingTemplate(PcRoomRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomTable AData, PcRoomRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadUsingTemplate(PcRoomRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomTable AData, PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadUsingTemplate(PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -549,22 +559,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomTable();
-            LoadUsingTemplate(PcRoomTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcRoomTable Data = new PcRoomTable();
+            LoadUsingTemplate(PcRoomTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -613,23 +624,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcBuilding(out PcRoomTable AData, Int64 AVenueKey, String ABuildingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomTable LoadViaPcBuilding(Int64 AVenueKey, String ABuildingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomTable();
-            LoadViaForeignKey(PcRoomTable.TableId, PcBuildingTable.TableId, AData, new string[2]{"p_venue_key_n", "pc_building_code_c"},
+            PcRoomTable Data = new PcRoomTable();
+            LoadViaForeignKey(PcRoomTable.TableId, PcBuildingTable.TableId, Data, new string[2]{"p_venue_key_n", "pc_building_code_c"},
                 new System.Object[2]{AVenueKey, ABuildingCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcBuilding(out PcRoomTable AData, Int64 AVenueKey, String ABuildingCode, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcBuilding(Int64 AVenueKey, String ABuildingCode, TDBTransaction ATransaction)
         {
-            LoadViaPcBuilding(out AData, AVenueKey, ABuildingCode, null, ATransaction, null, 0, 0);
+            return LoadViaPcBuilding(AVenueKey, ABuildingCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcBuilding(out PcRoomTable AData, Int64 AVenueKey, String ABuildingCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcBuilding(Int64 AVenueKey, String ABuildingCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcBuilding(out AData, AVenueKey, ABuildingCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcBuilding(AVenueKey, ABuildingCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -652,29 +664,30 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcBuildingTemplate(out PcRoomTable AData, PcBuildingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomTable LoadViaPcBuildingTemplate(PcBuildingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomTable();
-            LoadViaForeignKey(PcRoomTable.TableId, PcBuildingTable.TableId, AData, new string[2]{"p_venue_key_n", "pc_building_code_c"},
+            PcRoomTable Data = new PcRoomTable();
+            LoadViaForeignKey(PcRoomTable.TableId, PcBuildingTable.TableId, Data, new string[2]{"p_venue_key_n", "pc_building_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcBuildingTemplate(out PcRoomTable AData, PcBuildingRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcBuildingTemplate(PcBuildingRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcBuildingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcBuildingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcBuildingTemplate(out PcRoomTable AData, PcBuildingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcBuildingTemplate(PcBuildingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcBuildingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcBuildingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcBuildingTemplate(out PcRoomTable AData, PcBuildingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcBuildingTemplate(PcBuildingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcBuildingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcBuildingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -697,23 +710,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcBuildingTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomTable LoadViaPcBuildingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomTable();
-            LoadViaForeignKey(PcRoomTable.TableId, PcBuildingTable.TableId, AData, new string[2]{"p_venue_key_n", "pc_building_code_c"},
+            PcRoomTable Data = new PcRoomTable();
+            LoadViaForeignKey(PcRoomTable.TableId, PcBuildingTable.TableId, Data, new string[2]{"p_venue_key_n", "pc_building_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcBuildingTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcBuildingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcBuildingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcBuildingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcBuildingTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcBuildingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcBuildingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcBuildingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -757,23 +771,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPVenue(out PcRoomTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomTable LoadViaPVenue(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomTable();
-            LoadViaForeignKey(PcRoomTable.TableId, PVenueTable.TableId, AData, new string[1]{"p_venue_key_n"},
+            PcRoomTable Data = new PcRoomTable();
+            LoadViaForeignKey(PcRoomTable.TableId, PVenueTable.TableId, Data, new string[1]{"p_venue_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPVenue(out PcRoomTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPVenue(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPVenue(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPVenue(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenue(out PcRoomTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPVenue(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenue(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenue(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -796,29 +811,30 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcRoomTable AData, PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomTable();
-            LoadViaForeignKey(PcRoomTable.TableId, PVenueTable.TableId, AData, new string[1]{"p_venue_key_n"},
+            PcRoomTable Data = new PcRoomTable();
+            LoadViaForeignKey(PcRoomTable.TableId, PVenueTable.TableId, Data, new string[1]{"p_venue_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcRoomTable AData, PVenueRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcRoomTable AData, PVenueRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcRoomTable AData, PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPVenueTemplate(PVenueRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -841,23 +857,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomTable LoadViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomTable();
-            LoadViaForeignKey(PcRoomTable.TableId, PVenueTable.TableId, AData, new string[1]{"p_venue_key_n"},
+            PcRoomTable Data = new PcRoomTable();
+            LoadViaForeignKey(PcRoomTable.TableId, PVenueTable.TableId, Data, new string[1]{"p_venue_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPVenueTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPVenueTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPVenueTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPVenueTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -906,25 +923,26 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeType(out PcRoomTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomTable LoadViaPcRoomAttributeType(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcRoomTable();
-            FillDataSet.Tables.Add(AData);
+            PcRoomTable Data = new PcRoomTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcRoomAttributeType(FillDataSet, ACode, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeType(out PcRoomTable AData, String ACode, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcRoomAttributeType(String ACode, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeType(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeType(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeType(out PcRoomTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcRoomAttributeType(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeType(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeType(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -951,31 +969,32 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomTable AData, PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomTable LoadViaPcRoomAttributeTypeTemplate(PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcRoomTable();
-            FillDataSet.Tables.Add(AData);
+            PcRoomTable Data = new PcRoomTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcRoomAttributeTypeTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomTable AData, PcRoomAttributeTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcRoomAttributeTypeTemplate(PcRoomAttributeTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomTable AData, PcRoomAttributeTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcRoomAttributeTypeTemplate(PcRoomAttributeTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomTable AData, PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcRoomAttributeTypeTemplate(PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1002,25 +1021,26 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomTable LoadViaPcRoomAttributeTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcRoomTable();
-            FillDataSet.Tables.Add(AData);
+            PcRoomTable Data = new PcRoomTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcRoomAttributeTypeTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcRoomAttributeTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomTable LoadViaPcRoomAttributeTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -1107,22 +1127,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcRoomAllocTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcRoomAllocTable.TableId) + " FROM PUB_pc_room_alloc" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcRoomAllocTable.TableId) + " FROM PUB_pc_room_alloc" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcRoomAllocTable AData, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcRoomAllocTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1144,22 +1165,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcRoomAllocTable AData, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadByPrimaryKey(Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadByPrimaryKey(PcRoomAllocTable.TableId, AData, new System.Object[1]{AKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadByPrimaryKey(PcRoomAllocTable.TableId, Data, new System.Object[1]{AKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcRoomAllocTable AData, Int32 AKey, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadByPrimaryKey(Int32 AKey, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AKey, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcRoomAllocTable AData, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadByPrimaryKey(Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1181,28 +1203,29 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAllocTable AData, PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadUsingTemplate(PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadUsingTemplate(PcRoomAllocTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadUsingTemplate(PcRoomAllocTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAllocTable AData, PcRoomAllocRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadUsingTemplate(PcRoomAllocRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAllocTable AData, PcRoomAllocRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadUsingTemplate(PcRoomAllocRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAllocTable AData, PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadUsingTemplate(PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1224,22 +1247,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadUsingTemplate(PcRoomAllocTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadUsingTemplate(PcRoomAllocTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1288,23 +1312,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcAttendee(out PcRoomAllocTable AData, Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPcAttendee(Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadViaForeignKey(PcRoomAllocTable.TableId, PcAttendeeTable.TableId, AData, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadViaForeignKey(PcRoomAllocTable.TableId, PcAttendeeTable.TableId, Data, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
                 new System.Object[2]{AConferenceKey, APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcAttendee(out PcRoomAllocTable AData, Int64 AConferenceKey, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcAttendee(Int64 AConferenceKey, Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendee(out AData, AConferenceKey, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcAttendee(AConferenceKey, APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcAttendee(out PcRoomAllocTable AData, Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcAttendee(Int64 AConferenceKey, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendee(out AData, AConferenceKey, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcAttendee(AConferenceKey, APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1327,29 +1352,30 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcRoomAllocTable AData, PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadViaForeignKey(PcRoomAllocTable.TableId, PcAttendeeTable.TableId, AData, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadViaForeignKey(PcRoomAllocTable.TableId, PcAttendeeTable.TableId, Data, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcRoomAllocTable AData, PcAttendeeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcRoomAllocTable AData, PcAttendeeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcRoomAllocTable AData, PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcAttendeeTemplate(PcAttendeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1372,23 +1398,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPcAttendeeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadViaForeignKey(PcRoomAllocTable.TableId, PcAttendeeTable.TableId, AData, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadViaForeignKey(PcRoomAllocTable.TableId, PcAttendeeTable.TableId, Data, new string[2]{"pc_conference_key_n", "p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcAttendeeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcAttendeeTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcAttendeeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcAttendeeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcAttendeeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1432,23 +1459,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcRoomAllocTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadViaForeignKey(PcRoomAllocTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadViaForeignKey(PcRoomAllocTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 new System.Object[1]{AConferenceKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcRoomAllocTable AData, Int64 AConferenceKey, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcConference(Int64 AConferenceKey, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConference(out PcRoomAllocTable AData, Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcConference(Int64 AConferenceKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConference(out AData, AConferenceKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConference(AConferenceKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1471,29 +1499,30 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadViaForeignKey(PcRoomAllocTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadViaForeignKey(PcRoomAllocTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcConferenceTemplate(PcConferenceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1516,23 +1545,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadViaForeignKey(PcRoomAllocTable.TableId, PcConferenceTable.TableId, AData, new string[1]{"pc_conference_key_n"},
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadViaForeignKey(PcRoomAllocTable.TableId, PcConferenceTable.TableId, Data, new string[1]{"pc_conference_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcConferenceTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcConferenceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcConferenceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcConferenceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1576,23 +1606,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcRoomAllocTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPPerson(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadViaForeignKey(PcRoomAllocTable.TableId, PPersonTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadViaForeignKey(PcRoomAllocTable.TableId, PPersonTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcRoomAllocTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPPerson(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPerson(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPerson(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPerson(out PcRoomAllocTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPPerson(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPerson(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPerson(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1615,29 +1646,30 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadViaForeignKey(PcRoomAllocTable.TableId, PPersonTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadViaForeignKey(PcRoomAllocTable.TableId, PPersonTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, PPersonRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPPersonTemplate(PPersonRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1660,23 +1692,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadViaForeignKey(PcRoomAllocTable.TableId, PPersonTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadViaForeignKey(PcRoomAllocTable.TableId, PPersonTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPersonTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPPersonTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPersonTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPersonTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1720,23 +1753,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoom(out PcRoomAllocTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPcRoom(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadViaForeignKey(PcRoomAllocTable.TableId, PcRoomTable.TableId, AData, new string[3]{"p_venue_key_n", "pc_building_code_c", "pc_room_number_c"},
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadViaForeignKey(PcRoomAllocTable.TableId, PcRoomTable.TableId, Data, new string[3]{"p_venue_key_n", "pc_building_code_c", "pc_room_number_c"},
                 new System.Object[3]{AVenueKey, ABuildingCode, ARoomNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoom(out PcRoomAllocTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcRoom(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, TDBTransaction ATransaction)
         {
-            LoadViaPcRoom(out AData, AVenueKey, ABuildingCode, ARoomNumber, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoom(AVenueKey, ABuildingCode, ARoomNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoom(out PcRoomAllocTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcRoom(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoom(out AData, AVenueKey, ABuildingCode, ARoomNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoom(AVenueKey, ABuildingCode, ARoomNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1759,29 +1793,30 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAllocTable AData, PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPcRoomTemplate(PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadViaForeignKey(PcRoomAllocTable.TableId, PcRoomTable.TableId, AData, new string[3]{"p_venue_key_n", "pc_building_code_c", "pc_room_number_c"},
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadViaForeignKey(PcRoomAllocTable.TableId, PcRoomTable.TableId, Data, new string[3]{"p_venue_key_n", "pc_building_code_c", "pc_room_number_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAllocTable AData, PcRoomRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcRoomTemplate(PcRoomRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAllocTable AData, PcRoomRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcRoomTemplate(PcRoomRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAllocTable AData, PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcRoomTemplate(PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1804,23 +1839,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPcRoomTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAllocTable();
-            LoadViaForeignKey(PcRoomAllocTable.TableId, PcRoomTable.TableId, AData, new string[3]{"p_venue_key_n", "pc_building_code_c", "pc_room_number_c"},
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            LoadViaForeignKey(PcRoomAllocTable.TableId, PcRoomTable.TableId, Data, new string[3]{"p_venue_key_n", "pc_building_code_c", "pc_room_number_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcRoomTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPcRoomTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1869,25 +1905,26 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPhBooking(out PcRoomAllocTable AData, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPhBooking(Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcRoomAllocTable();
-            FillDataSet.Tables.Add(AData);
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPhBooking(FillDataSet, AKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPhBooking(out PcRoomAllocTable AData, Int32 AKey, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPhBooking(Int32 AKey, TDBTransaction ATransaction)
         {
-            LoadViaPhBooking(out AData, AKey, null, ATransaction, null, 0, 0);
+            return LoadViaPhBooking(AKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPhBooking(out PcRoomAllocTable AData, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPhBooking(Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPhBooking(out AData, AKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPhBooking(AKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1914,31 +1951,32 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PcRoomAllocTable AData, PhBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPhBookingTemplate(PhBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcRoomAllocTable();
-            FillDataSet.Tables.Add(AData);
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPhBookingTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PcRoomAllocTable AData, PhBookingRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPhBookingTemplate(PhBookingRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPhBookingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPhBookingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PcRoomAllocTable AData, PhBookingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPhBookingTemplate(PhBookingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPhBookingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPhBookingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PcRoomAllocTable AData, PhBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPhBookingTemplate(PhBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPhBookingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPhBookingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1965,25 +2003,26 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAllocTable LoadViaPhBookingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcRoomAllocTable();
-            FillDataSet.Tables.Add(AData);
+            PcRoomAllocTable Data = new PcRoomAllocTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPhBookingTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPhBookingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPhBookingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPhBookingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PcRoomAllocTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAllocTable LoadViaPhBookingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPhBookingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPhBookingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -2070,22 +2109,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcRoomAttributeTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTypeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcRoomAttributeTypeTable.TableId) + " FROM PUB_pc_room_attribute_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcRoomAttributeTypeTable Data = new PcRoomAttributeTypeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcRoomAttributeTypeTable.TableId) + " FROM PUB_pc_room_attribute_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcRoomAttributeTypeTable AData, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcRoomAttributeTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2107,22 +2147,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcRoomAttributeTypeTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTypeTable LoadByPrimaryKey(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTypeTable();
-            LoadByPrimaryKey(PcRoomAttributeTypeTable.TableId, AData, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcRoomAttributeTypeTable Data = new PcRoomAttributeTypeTable();
+            LoadByPrimaryKey(PcRoomAttributeTypeTable.TableId, Data, new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcRoomAttributeTypeTable AData, String ACode, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadByPrimaryKey(String ACode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcRoomAttributeTypeTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadByPrimaryKey(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2144,28 +2185,29 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTypeTable AData, PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTypeTable LoadUsingTemplate(PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTypeTable();
-            LoadUsingTemplate(PcRoomAttributeTypeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcRoomAttributeTypeTable Data = new PcRoomAttributeTypeTable();
+            LoadUsingTemplate(PcRoomAttributeTypeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTypeTable AData, PcRoomAttributeTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadUsingTemplate(PcRoomAttributeTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTypeTable AData, PcRoomAttributeTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadUsingTemplate(PcRoomAttributeTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTypeTable AData, PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadUsingTemplate(PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2187,22 +2229,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTypeTable();
-            LoadUsingTemplate(PcRoomAttributeTypeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcRoomAttributeTypeTable Data = new PcRoomAttributeTypeTable();
+            LoadUsingTemplate(PcRoomAttributeTypeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTypeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2260,25 +2303,26 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoom(out PcRoomAttributeTypeTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTypeTable LoadViaPcRoom(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcRoomAttributeTypeTable();
-            FillDataSet.Tables.Add(AData);
+            PcRoomAttributeTypeTable Data = new PcRoomAttributeTypeTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcRoom(FillDataSet, AVenueKey, ABuildingCode, ARoomNumber, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoom(out PcRoomAttributeTypeTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadViaPcRoom(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, TDBTransaction ATransaction)
         {
-            LoadViaPcRoom(out AData, AVenueKey, ABuildingCode, ARoomNumber, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoom(AVenueKey, ABuildingCode, ARoomNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoom(out PcRoomAttributeTypeTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadViaPcRoom(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoom(out AData, AVenueKey, ABuildingCode, ARoomNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoom(AVenueKey, ABuildingCode, ARoomNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2305,31 +2349,32 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTypeTable AData, PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTypeTable LoadViaPcRoomTemplate(PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcRoomAttributeTypeTable();
-            FillDataSet.Tables.Add(AData);
+            PcRoomAttributeTypeTable Data = new PcRoomAttributeTypeTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcRoomTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTypeTable AData, PcRoomRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadViaPcRoomTemplate(PcRoomRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTypeTable AData, PcRoomRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadViaPcRoomTemplate(PcRoomRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTypeTable AData, PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadViaPcRoomTemplate(PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2356,25 +2401,26 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTypeTable LoadViaPcRoomTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PcRoomAttributeTypeTable();
-            FillDataSet.Tables.Add(AData);
+            PcRoomAttributeTypeTable Data = new PcRoomAttributeTypeTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcRoomTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTypeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadViaPcRoomTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTypeTable LoadViaPcRoomTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -2465,22 +2511,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PcRoomAttributeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PcRoomAttributeTable.TableId) + " FROM PUB_pc_room_attribute" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PcRoomAttributeTable Data = new PcRoomAttributeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PcRoomAttributeTable.TableId) + " FROM PUB_pc_room_attribute" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PcRoomAttributeTable AData, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PcRoomAttributeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2502,22 +2549,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcRoomAttributeTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, String ARoomAttrTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTable LoadByPrimaryKey(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, String ARoomAttrTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTable();
-            LoadByPrimaryKey(PcRoomAttributeTable.TableId, AData, new System.Object[4]{AVenueKey, ABuildingCode, ARoomNumber, ARoomAttrTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcRoomAttributeTable Data = new PcRoomAttributeTable();
+            LoadByPrimaryKey(PcRoomAttributeTable.TableId, Data, new System.Object[4]{AVenueKey, ABuildingCode, ARoomNumber, ARoomAttrTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcRoomAttributeTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, String ARoomAttrTypeCode, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadByPrimaryKey(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, String ARoomAttrTypeCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AVenueKey, ABuildingCode, ARoomNumber, ARoomAttrTypeCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AVenueKey, ABuildingCode, ARoomNumber, ARoomAttrTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PcRoomAttributeTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, String ARoomAttrTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadByPrimaryKey(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, String ARoomAttrTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AVenueKey, ABuildingCode, ARoomNumber, ARoomAttrTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AVenueKey, ABuildingCode, ARoomNumber, ARoomAttrTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2539,28 +2587,29 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTable AData, PcRoomAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTable LoadUsingTemplate(PcRoomAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTable();
-            LoadUsingTemplate(PcRoomAttributeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcRoomAttributeTable Data = new PcRoomAttributeTable();
+            LoadUsingTemplate(PcRoomAttributeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTable AData, PcRoomAttributeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadUsingTemplate(PcRoomAttributeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTable AData, PcRoomAttributeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadUsingTemplate(PcRoomAttributeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTable AData, PcRoomAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadUsingTemplate(PcRoomAttributeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2582,22 +2631,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTable();
-            LoadUsingTemplate(PcRoomAttributeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PcRoomAttributeTable Data = new PcRoomAttributeTable();
+            LoadUsingTemplate(PcRoomAttributeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2646,23 +2696,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoom(out PcRoomAttributeTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTable LoadViaPcRoom(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTable();
-            LoadViaForeignKey(PcRoomAttributeTable.TableId, PcRoomTable.TableId, AData, new string[3]{"p_venue_key_n", "pc_building_code_c", "pc_room_number_c"},
+            PcRoomAttributeTable Data = new PcRoomAttributeTable();
+            LoadViaForeignKey(PcRoomAttributeTable.TableId, PcRoomTable.TableId, Data, new string[3]{"p_venue_key_n", "pc_building_code_c", "pc_room_number_c"},
                 new System.Object[3]{AVenueKey, ABuildingCode, ARoomNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoom(out PcRoomAttributeTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoom(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, TDBTransaction ATransaction)
         {
-            LoadViaPcRoom(out AData, AVenueKey, ABuildingCode, ARoomNumber, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoom(AVenueKey, ABuildingCode, ARoomNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoom(out PcRoomAttributeTable AData, Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoom(Int64 AVenueKey, String ABuildingCode, String ARoomNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoom(out AData, AVenueKey, ABuildingCode, ARoomNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoom(AVenueKey, ABuildingCode, ARoomNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2685,29 +2736,30 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTable AData, PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTable LoadViaPcRoomTemplate(PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTable();
-            LoadViaForeignKey(PcRoomAttributeTable.TableId, PcRoomTable.TableId, AData, new string[3]{"p_venue_key_n", "pc_building_code_c", "pc_room_number_c"},
+            PcRoomAttributeTable Data = new PcRoomAttributeTable();
+            LoadViaForeignKey(PcRoomAttributeTable.TableId, PcRoomTable.TableId, Data, new string[3]{"p_venue_key_n", "pc_building_code_c", "pc_room_number_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTable AData, PcRoomRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoomTemplate(PcRoomRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTable AData, PcRoomRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoomTemplate(PcRoomRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTable AData, PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoomTemplate(PcRoomRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2730,23 +2782,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTable LoadViaPcRoomTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTable();
-            LoadViaForeignKey(PcRoomAttributeTable.TableId, PcRoomTable.TableId, AData, new string[3]{"p_venue_key_n", "pc_building_code_c", "pc_room_number_c"},
+            PcRoomAttributeTable Data = new PcRoomAttributeTable();
+            LoadViaForeignKey(PcRoomAttributeTable.TableId, PcRoomTable.TableId, Data, new string[3]{"p_venue_key_n", "pc_building_code_c", "pc_room_number_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoomTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoomTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2790,23 +2843,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeType(out PcRoomAttributeTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTable LoadViaPcRoomAttributeType(String ACode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTable();
-            LoadViaForeignKey(PcRoomAttributeTable.TableId, PcRoomAttributeTypeTable.TableId, AData, new string[1]{"pc_room_attr_type_code_c"},
+            PcRoomAttributeTable Data = new PcRoomAttributeTable();
+            LoadViaForeignKey(PcRoomAttributeTable.TableId, PcRoomAttributeTypeTable.TableId, Data, new string[1]{"pc_room_attr_type_code_c"},
                 new System.Object[1]{ACode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeType(out PcRoomAttributeTable AData, String ACode, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoomAttributeType(String ACode, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeType(out AData, ACode, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeType(ACode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeType(out PcRoomAttributeTable AData, String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoomAttributeType(String ACode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeType(out AData, ACode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeType(ACode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2829,29 +2883,30 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomAttributeTable AData, PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTable LoadViaPcRoomAttributeTypeTemplate(PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTable();
-            LoadViaForeignKey(PcRoomAttributeTable.TableId, PcRoomAttributeTypeTable.TableId, AData, new string[1]{"pc_room_attr_type_code_c"},
+            PcRoomAttributeTable Data = new PcRoomAttributeTable();
+            LoadViaForeignKey(PcRoomAttributeTable.TableId, PcRoomAttributeTypeTable.TableId, Data, new string[1]{"pc_room_attr_type_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomAttributeTable AData, PcRoomAttributeTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoomAttributeTypeTemplate(PcRoomAttributeTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomAttributeTable AData, PcRoomAttributeTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoomAttributeTypeTemplate(PcRoomAttributeTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomAttributeTable AData, PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoomAttributeTypeTemplate(PcRoomAttributeTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2874,23 +2929,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PcRoomAttributeTable LoadViaPcRoomAttributeTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PcRoomAttributeTable();
-            LoadViaForeignKey(PcRoomAttributeTable.TableId, PcRoomAttributeTypeTable.TableId, AData, new string[1]{"pc_room_attr_type_code_c"},
+            PcRoomAttributeTable Data = new PcRoomAttributeTable();
+            LoadViaForeignKey(PcRoomAttributeTable.TableId, PcRoomAttributeTypeTable.TableId, Data, new string[1]{"pc_room_attr_type_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoomAttributeTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAttributeTypeTemplate(out PcRoomAttributeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PcRoomAttributeTable LoadViaPcRoomAttributeTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAttributeTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAttributeTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2969,22 +3025,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PhRoomBookingTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhRoomBookingTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhRoomBookingTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PhRoomBookingTable.TableId) + " FROM PUB_ph_room_booking" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PhRoomBookingTable Data = new PhRoomBookingTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PhRoomBookingTable.TableId) + " FROM PUB_ph_room_booking" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PhRoomBookingTable AData, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PhRoomBookingTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3006,22 +3063,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PhRoomBookingTable AData, Int32 ABookingKey, Int32 ARoomAllocKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhRoomBookingTable LoadByPrimaryKey(Int32 ABookingKey, Int32 ARoomAllocKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhRoomBookingTable();
-            LoadByPrimaryKey(PhRoomBookingTable.TableId, AData, new System.Object[2]{ABookingKey, ARoomAllocKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PhRoomBookingTable Data = new PhRoomBookingTable();
+            LoadByPrimaryKey(PhRoomBookingTable.TableId, Data, new System.Object[2]{ABookingKey, ARoomAllocKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PhRoomBookingTable AData, Int32 ABookingKey, Int32 ARoomAllocKey, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadByPrimaryKey(Int32 ABookingKey, Int32 ARoomAllocKey, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ABookingKey, ARoomAllocKey, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ABookingKey, ARoomAllocKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PhRoomBookingTable AData, Int32 ABookingKey, Int32 ARoomAllocKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadByPrimaryKey(Int32 ABookingKey, Int32 ARoomAllocKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ABookingKey, ARoomAllocKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ABookingKey, ARoomAllocKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3043,28 +3101,29 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhRoomBookingTable AData, PhRoomBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhRoomBookingTable LoadUsingTemplate(PhRoomBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhRoomBookingTable();
-            LoadUsingTemplate(PhRoomBookingTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PhRoomBookingTable Data = new PhRoomBookingTable();
+            LoadUsingTemplate(PhRoomBookingTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhRoomBookingTable AData, PhRoomBookingRow ATemplateRow, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadUsingTemplate(PhRoomBookingRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhRoomBookingTable AData, PhRoomBookingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadUsingTemplate(PhRoomBookingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhRoomBookingTable AData, PhRoomBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadUsingTemplate(PhRoomBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3086,22 +3145,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhRoomBookingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhRoomBookingTable();
-            LoadUsingTemplate(PhRoomBookingTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PhRoomBookingTable Data = new PhRoomBookingTable();
+            LoadUsingTemplate(PhRoomBookingTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3150,23 +3210,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPhBooking(out PhRoomBookingTable AData, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhRoomBookingTable LoadViaPhBooking(Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhRoomBookingTable();
-            LoadViaForeignKey(PhRoomBookingTable.TableId, PhBookingTable.TableId, AData, new string[1]{"ph_booking_key_i"},
+            PhRoomBookingTable Data = new PhRoomBookingTable();
+            LoadViaForeignKey(PhRoomBookingTable.TableId, PhBookingTable.TableId, Data, new string[1]{"ph_booking_key_i"},
                 new System.Object[1]{AKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPhBooking(out PhRoomBookingTable AData, Int32 AKey, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPhBooking(Int32 AKey, TDBTransaction ATransaction)
         {
-            LoadViaPhBooking(out AData, AKey, null, ATransaction, null, 0, 0);
+            return LoadViaPhBooking(AKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPhBooking(out PhRoomBookingTable AData, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPhBooking(Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPhBooking(out AData, AKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPhBooking(AKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3189,29 +3250,30 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PhRoomBookingTable AData, PhBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhRoomBookingTable LoadViaPhBookingTemplate(PhBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhRoomBookingTable();
-            LoadViaForeignKey(PhRoomBookingTable.TableId, PhBookingTable.TableId, AData, new string[1]{"ph_booking_key_i"},
+            PhRoomBookingTable Data = new PhRoomBookingTable();
+            LoadViaForeignKey(PhRoomBookingTable.TableId, PhBookingTable.TableId, Data, new string[1]{"ph_booking_key_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PhRoomBookingTable AData, PhBookingRow ATemplateRow, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPhBookingTemplate(PhBookingRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPhBookingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPhBookingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PhRoomBookingTable AData, PhBookingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPhBookingTemplate(PhBookingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPhBookingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPhBookingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PhRoomBookingTable AData, PhBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPhBookingTemplate(PhBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPhBookingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPhBookingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3234,23 +3296,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhRoomBookingTable LoadViaPhBookingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhRoomBookingTable();
-            LoadViaForeignKey(PhRoomBookingTable.TableId, PhBookingTable.TableId, AData, new string[1]{"ph_booking_key_i"},
+            PhRoomBookingTable Data = new PhRoomBookingTable();
+            LoadViaForeignKey(PhRoomBookingTable.TableId, PhBookingTable.TableId, Data, new string[1]{"ph_booking_key_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPhBookingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPhBookingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPhBookingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPhBookingTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPhBookingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPhBookingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPhBookingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3294,23 +3357,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAlloc(out PhRoomBookingTable AData, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhRoomBookingTable LoadViaPcRoomAlloc(Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhRoomBookingTable();
-            LoadViaForeignKey(PhRoomBookingTable.TableId, PcRoomAllocTable.TableId, AData, new string[1]{"ph_room_alloc_key_i"},
+            PhRoomBookingTable Data = new PhRoomBookingTable();
+            LoadViaForeignKey(PhRoomBookingTable.TableId, PcRoomAllocTable.TableId, Data, new string[1]{"ph_room_alloc_key_i"},
                 new System.Object[1]{AKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAlloc(out PhRoomBookingTable AData, Int32 AKey, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPcRoomAlloc(Int32 AKey, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAlloc(out AData, AKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAlloc(AKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAlloc(out PhRoomBookingTable AData, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPcRoomAlloc(Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAlloc(out AData, AKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAlloc(AKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3333,29 +3397,30 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhRoomBookingTable AData, PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhRoomBookingTable LoadViaPcRoomAllocTemplate(PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhRoomBookingTable();
-            LoadViaForeignKey(PhRoomBookingTable.TableId, PcRoomAllocTable.TableId, AData, new string[1]{"ph_room_alloc_key_i"},
+            PhRoomBookingTable Data = new PhRoomBookingTable();
+            LoadViaForeignKey(PhRoomBookingTable.TableId, PcRoomAllocTable.TableId, Data, new string[1]{"ph_room_alloc_key_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhRoomBookingTable AData, PcRoomAllocRow ATemplateRow, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPcRoomAllocTemplate(PcRoomAllocRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAllocTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAllocTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhRoomBookingTable AData, PcRoomAllocRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPcRoomAllocTemplate(PcRoomAllocRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAllocTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAllocTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhRoomBookingTable AData, PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPcRoomAllocTemplate(PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAllocTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAllocTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3378,23 +3443,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhRoomBookingTable LoadViaPcRoomAllocTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhRoomBookingTable();
-            LoadViaForeignKey(PhRoomBookingTable.TableId, PcRoomAllocTable.TableId, AData, new string[1]{"ph_room_alloc_key_i"},
+            PhRoomBookingTable Data = new PhRoomBookingTable();
+            LoadViaForeignKey(PhRoomBookingTable.TableId, PcRoomAllocTable.TableId, Data, new string[1]{"ph_room_alloc_key_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPcRoomAllocTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAllocTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAllocTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhRoomBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhRoomBookingTable LoadViaPcRoomAllocTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAllocTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAllocTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3473,22 +3539,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out PhBookingTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhBookingTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhBookingTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, PhBookingTable.TableId) + " FROM PUB_ph_booking" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            PhBookingTable Data = new PhBookingTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, PhBookingTable.TableId) + " FROM PUB_ph_booking" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out PhBookingTable AData, TDBTransaction ATransaction)
+        public static PhBookingTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out PhBookingTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3510,22 +3577,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PhBookingTable AData, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhBookingTable LoadByPrimaryKey(Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhBookingTable();
-            LoadByPrimaryKey(PhBookingTable.TableId, AData, new System.Object[1]{AKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PhBookingTable Data = new PhBookingTable();
+            LoadByPrimaryKey(PhBookingTable.TableId, Data, new System.Object[1]{AKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PhBookingTable AData, Int32 AKey, TDBTransaction ATransaction)
+        public static PhBookingTable LoadByPrimaryKey(Int32 AKey, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AKey, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out PhBookingTable AData, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadByPrimaryKey(Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3547,28 +3615,29 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhBookingTable AData, PhBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhBookingTable LoadUsingTemplate(PhBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhBookingTable();
-            LoadUsingTemplate(PhBookingTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PhBookingTable Data = new PhBookingTable();
+            LoadUsingTemplate(PhBookingTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhBookingTable AData, PhBookingRow ATemplateRow, TDBTransaction ATransaction)
+        public static PhBookingTable LoadUsingTemplate(PhBookingRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhBookingTable AData, PhBookingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadUsingTemplate(PhBookingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhBookingTable AData, PhBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadUsingTemplate(PhBookingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3590,22 +3659,23 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhBookingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhBookingTable();
-            LoadUsingTemplate(PhBookingTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            PhBookingTable Data = new PhBookingTable();
+            LoadUsingTemplate(PhBookingTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PhBookingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3654,23 +3724,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PhBookingTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhBookingTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhBookingTable();
-            LoadViaForeignKey(PhBookingTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_contact_key_n"},
+            PhBookingTable Data = new PhBookingTable();
+            LoadViaForeignKey(PhBookingTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_contact_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PhBookingTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out PhBookingTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3693,29 +3764,30 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PhBookingTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhBookingTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhBookingTable();
-            LoadViaForeignKey(PhBookingTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_contact_key_n"},
+            PhBookingTable Data = new PhBookingTable();
+            LoadViaForeignKey(PhBookingTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_contact_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PhBookingTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PhBookingTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PhBookingTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3738,23 +3810,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhBookingTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhBookingTable();
-            LoadViaForeignKey(PhBookingTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_contact_key_n"},
+            PhBookingTable Data = new PhBookingTable();
+            LoadViaForeignKey(PhBookingTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_contact_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3798,23 +3871,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoice(out PhBookingTable AData, Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhBookingTable LoadViaAArInvoice(Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhBookingTable();
-            LoadViaForeignKey(PhBookingTable.TableId, AArInvoiceTable.TableId, AData, new string[2]{"a_ledger_number_for_invoice_i", "a_ar_invoice_key_i"},
+            PhBookingTable Data = new PhBookingTable();
+            LoadViaForeignKey(PhBookingTable.TableId, AArInvoiceTable.TableId, Data, new string[2]{"a_ledger_number_for_invoice_i", "a_ar_invoice_key_i"},
                 new System.Object[2]{ALedgerNumber, AKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoice(out PhBookingTable AData, Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaAArInvoice(Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoice(out AData, ALedgerNumber, AKey, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoice(ALedgerNumber, AKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoice(out PhBookingTable AData, Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaAArInvoice(Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoice(out AData, ALedgerNumber, AKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoice(ALedgerNumber, AKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3837,29 +3911,30 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out PhBookingTable AData, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhBookingTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhBookingTable();
-            LoadViaForeignKey(PhBookingTable.TableId, AArInvoiceTable.TableId, AData, new string[2]{"a_ledger_number_for_invoice_i", "a_ar_invoice_key_i"},
+            PhBookingTable Data = new PhBookingTable();
+            LoadViaForeignKey(PhBookingTable.TableId, AArInvoiceTable.TableId, Data, new string[2]{"a_ledger_number_for_invoice_i", "a_ar_invoice_key_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out PhBookingTable AData, AArInvoiceRow ATemplateRow, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out PhBookingTable AData, AArInvoiceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out PhBookingTable AData, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3882,23 +3957,24 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhBookingTable LoadViaAArInvoiceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new PhBookingTable();
-            LoadViaForeignKey(PhBookingTable.TableId, AArInvoiceTable.TableId, AData, new string[2]{"a_ledger_number_for_invoice_i", "a_ar_invoice_key_i"},
+            PhBookingTable Data = new PhBookingTable();
+            LoadViaForeignKey(PhBookingTable.TableId, AArInvoiceTable.TableId, Data, new string[2]{"a_ledger_number_for_invoice_i", "a_ar_invoice_key_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaAArInvoiceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaAArInvoiceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3947,25 +4023,26 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAlloc(out PhBookingTable AData, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhBookingTable LoadViaPcRoomAlloc(Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PhBookingTable();
-            FillDataSet.Tables.Add(AData);
+            PhBookingTable Data = new PhBookingTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcRoomAlloc(FillDataSet, AKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAlloc(out PhBookingTable AData, Int32 AKey, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPcRoomAlloc(Int32 AKey, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAlloc(out AData, AKey, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAlloc(AKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAlloc(out PhBookingTable AData, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPcRoomAlloc(Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAlloc(out AData, AKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAlloc(AKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3992,31 +4069,32 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhBookingTable AData, PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhBookingTable LoadViaPcRoomAllocTemplate(PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PhBookingTable();
-            FillDataSet.Tables.Add(AData);
+            PhBookingTable Data = new PhBookingTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcRoomAllocTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhBookingTable AData, PcRoomAllocRow ATemplateRow, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPcRoomAllocTemplate(PcRoomAllocRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAllocTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAllocTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhBookingTable AData, PcRoomAllocRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPcRoomAllocTemplate(PcRoomAllocRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAllocTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAllocTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhBookingTable AData, PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPcRoomAllocTemplate(PcRoomAllocRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAllocTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAllocTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4043,25 +4121,26 @@ namespace Ict.Petra.Shared.MHospitality.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PhBookingTable LoadViaPcRoomAllocTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new PhBookingTable();
-            FillDataSet.Tables.Add(AData);
+            PhBookingTable Data = new PhBookingTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaPcRoomAllocTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPcRoomAllocTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAllocTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAllocTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPcRoomAllocTemplate(out PhBookingTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PhBookingTable LoadViaPcRoomAllocTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPcRoomAllocTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPcRoomAllocTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable

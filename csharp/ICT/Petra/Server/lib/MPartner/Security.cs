@@ -79,7 +79,7 @@ namespace Ict.Petra.Server.MPartner
                     // Load Foundation
                     try
                     {
-                        PFoundationAccess.LoadByPrimaryKey(out FoundationTable, APartnerRow.PartnerKey,
+                        FoundationTable = PFoundationAccess.LoadByPrimaryKey(APartnerRow.PartnerKey,
                             ReadTransaction);
 
                         if (FoundationTable.Rows.Count > 0)
@@ -170,8 +170,7 @@ namespace Ict.Petra.Server.MPartner
                 // Load Partner
                 try
                 {
-                    PPartnerAccess.LoadByPrimaryKey(out PartnerTable, APartnerKey,
-                        ReadTransaction);
+                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
 
                     if (PartnerTable.Rows.Count > 0)
                     {

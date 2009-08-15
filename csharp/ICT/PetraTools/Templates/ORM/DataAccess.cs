@@ -50,22 +50,23 @@ public class {#TABLENAME}Access : TTypedDataAccess
     }
 
     /// auto generated
-    public static void LoadAll(out {#TABLENAME}Table AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+    public static {#TABLENAME}Table LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
     {
-        AData = new {#TABLENAME}Table();
-        DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, {#TABLENAME}Table.TableId) + " FROM PUB_{#SQLTABLENAME}" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+        {#TABLENAME}Table Data = new {#TABLENAME}Table();
+        DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, {#TABLENAME}Table.TableId) + " FROM PUB_{#SQLTABLENAME}" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+        return Data;
     }
     
     /// auto generated
-    public static void LoadAll(out {#TABLENAME}Table AData, TDBTransaction ATransaction)
+    public static {#TABLENAME}Table LoadAll(TDBTransaction ATransaction)
     {
-        LoadAll(out AData, null, ATransaction, null, 0, 0);
+        return LoadAll(null, ATransaction, null, 0, 0);
     }
     
     /// auto generated
-    public static void LoadAll(out {#TABLENAME}Table AData, StringCollection AFieldList, TDBTransaction ATransaction)
+    public static {#TABLENAME}Table LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
     {
-        LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+        return LoadAll(AFieldList, ATransaction, null, 0, 0);
     }
 {#IFDEF FORMALPARAMETERSPRIMARYKEY}
 
@@ -88,22 +89,23 @@ public class {#TABLENAME}Access : TTypedDataAccess
     }
 
     /// auto generated
-    public static void LoadByPrimaryKey(out {#TABLENAME}Table AData, {#FORMALPARAMETERSPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+    public static {#TABLENAME}Table LoadByPrimaryKey({#FORMALPARAMETERSPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
     {
-        AData = new {#TABLENAME}Table();
-        LoadByPrimaryKey({#TABLENAME}Table.TableId, AData, new System.Object[{#PRIMARYKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        {#TABLENAME}Table Data = new {#TABLENAME}Table();
+        LoadByPrimaryKey({#TABLENAME}Table.TableId, Data, new System.Object[{#PRIMARYKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        return Data;
     }
     
     /// auto generated
-    public static void LoadByPrimaryKey(out {#TABLENAME}Table AData, {#FORMALPARAMETERSPRIMARYKEY}, TDBTransaction ATransaction)
+    public static {#TABLENAME}Table LoadByPrimaryKey({#FORMALPARAMETERSPRIMARYKEY}, TDBTransaction ATransaction)
     {
-        LoadByPrimaryKey(out AData, {#ACTUALPARAMETERSPRIMARYKEY}, null, ATransaction, null, 0, 0);
+        return LoadByPrimaryKey({#ACTUALPARAMETERSPRIMARYKEY}, null, ATransaction, null, 0, 0);
     }
     
     /// auto generated
-    public static void LoadByPrimaryKey(out {#TABLENAME}Table AData, {#FORMALPARAMETERSPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction)
+    public static {#TABLENAME}Table LoadByPrimaryKey({#FORMALPARAMETERSPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction)
     {
-        LoadByPrimaryKey(out AData, {#ACTUALPARAMETERSPRIMARYKEY}, AFieldList, ATransaction, null, 0, 0);
+        return LoadByPrimaryKey({#ACTUALPARAMETERSPRIMARYKEY}, AFieldList, ATransaction, null, 0, 0);
     }
 {#ENDIF FORMALPARAMETERSPRIMARYKEY}
 
@@ -126,28 +128,29 @@ public class {#TABLENAME}Access : TTypedDataAccess
     }
     
     /// auto generated
-    public static void LoadUsingTemplate(out {#TABLENAME}Table AData, {#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+    public static {#TABLENAME}Table LoadUsingTemplate({#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
     {
-        AData = new {#TABLENAME}Table();
-        LoadUsingTemplate({#TABLENAME}Table.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        {#TABLENAME}Table Data = new {#TABLENAME}Table();
+        LoadUsingTemplate({#TABLENAME}Table.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        return Data;
     }
     
     /// auto generated
-    public static void LoadUsingTemplate(out {#TABLENAME}Table AData, {#TABLENAME}Row ATemplateRow, TDBTransaction ATransaction)
+    public static {#TABLENAME}Table LoadUsingTemplate({#TABLENAME}Row ATemplateRow, TDBTransaction ATransaction)
     {
-        LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
     }
     
     /// auto generated
-    public static void LoadUsingTemplate(out {#TABLENAME}Table AData, {#TABLENAME}Row ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+    public static {#TABLENAME}Table LoadUsingTemplate({#TABLENAME}Row ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
     {
-        LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
     }
     
     /// auto generated
-    public static void LoadUsingTemplate(out {#TABLENAME}Table AData, {#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+    public static {#TABLENAME}Table LoadUsingTemplate({#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
     {
-        LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
     }
 
     /// this method is called by all overloads
@@ -169,22 +172,23 @@ public class {#TABLENAME}Access : TTypedDataAccess
     }
     
     /// auto generated
-    public static void LoadUsingTemplate(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+    public static {#TABLENAME}Table LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
     {
-        AData = new {#TABLENAME}Table();
-        LoadUsingTemplate({#TABLENAME}Table.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        {#TABLENAME}Table Data = new {#TABLENAME}Table();
+        LoadUsingTemplate({#TABLENAME}Table.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        return Data;
     }
     
     /// auto generated
-    public static void LoadUsingTemplate(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+    public static {#TABLENAME}Table LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
     {
-        LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
     }
 
     /// auto generated
-    public static void LoadUsingTemplate(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+    public static {#TABLENAME}Table LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
     {
-        LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
     }
 
     /// this method is called by all overloads
@@ -267,23 +271,24 @@ public static void Load{#VIAPROCEDURENAME}(DataSet AData, {#FORMALPARAMETERSOTHE
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}(out {#TABLENAME}Table AData, {#FORMALPARAMETERSOTHERPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
-    AData = new {#TABLENAME}Table();
-    LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, AData, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
+    {#TABLENAME}Table Data = new {#TABLENAME}Table();
+    LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, Data, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
         new System.Object[{#NUMBERFIELDS}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+    return Data;
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}(out {#TABLENAME}Table AData, {#FORMALPARAMETERSOTHERPRIMARYKEY}, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERPRIMARYKEY}, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}(out AData, {#ACTUALPARAMETERSOTHERPRIMARYKEY}, null, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}({#ACTUALPARAMETERSOTHERPRIMARYKEY}, null, ATransaction, null, 0, 0);
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}(out {#TABLENAME}Table AData, {#FORMALPARAMETERSOTHERPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}(out AData, {#ACTUALPARAMETERSOTHERPRIMARYKEY}, AFieldList, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}({#ACTUALPARAMETERSOTHERPRIMARYKEY}, AFieldList, ATransaction, null, 0, 0);
 }
 
 /// auto generated
@@ -306,29 +311,30 @@ public static void Load{#VIAPROCEDURENAME}Template(DataSet AData, {#OTHERTABLENA
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, {#OTHERTABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template({#OTHERTABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
-    AData = new {#TABLENAME}Table();
-    LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, AData, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
+    {#TABLENAME}Table Data = new {#TABLENAME}Table();
+    LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, Data, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
         ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+    return Data;
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, {#OTHERTABLENAME}Row ATemplateRow, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template({#OTHERTABLENAME}Row ATemplateRow, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}Template(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}Template(ATemplateRow, null, null, ATransaction, null, 0, 0);
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, {#OTHERTABLENAME}Row ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template({#OTHERTABLENAME}Row ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}Template(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}Template(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, {#OTHERTABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template({#OTHERTABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}Template(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}Template(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
 }
 
 /// auto generated
@@ -351,23 +357,24 @@ public static void Load{#VIAPROCEDURENAME}Template(DataSet AData, TSearchCriteri
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
-    AData = new {#TABLENAME}Table();
-    LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, AData, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
+    {#TABLENAME}Table Data = new {#TABLENAME}Table();
+    LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, Data, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
         ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+    return Data;
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}Template(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}Template(ASearchCriteria, null, ATransaction, null, 0, 0);
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}Template(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}Template(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
 }
 
 /// auto generated
@@ -416,25 +423,26 @@ public static void Load{#VIAPROCEDURENAME}(DataSet AData, {#FORMALPARAMETERSOTHE
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}(out {#TABLENAME}Table AData, {#FORMALPARAMETERSOTHERPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
     DataSet FillDataSet = new DataSet();
-    AData = new {#TABLENAME}Table();
-    FillDataSet.Tables.Add(AData);
+    {#TABLENAME}Table Data = new {#TABLENAME}Table();
+    FillDataSet.Tables.Add(Data);
     Load{#VIAPROCEDURENAME}(FillDataSet, {#ACTUALPARAMETERSOTHERPRIMARYKEY}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-    FillDataSet.Tables.Remove(AData);
+    FillDataSet.Tables.Remove(Data);
+    return Data;
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}(out {#TABLENAME}Table AData, {#FORMALPARAMETERSOTHERPRIMARYKEY}, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERPRIMARYKEY}, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}(out AData, {#ACTUALPARAMETERSOTHERPRIMARYKEY}, null, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}({#ACTUALPARAMETERSOTHERPRIMARYKEY}, null, ATransaction, null, 0, 0);
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}(out {#TABLENAME}Table AData, {#FORMALPARAMETERSOTHERPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}(out AData, {#ACTUALPARAMETERSOTHERPRIMARYKEY}, AFieldList, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}({#ACTUALPARAMETERSOTHERPRIMARYKEY}, AFieldList, ATransaction, null, 0, 0);
 }
 
 /// auto generated
@@ -461,31 +469,32 @@ public static void Load{#VIAPROCEDURENAME}Template(DataSet AData, {#OTHERTABLENA
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, {#OTHERTABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template({#OTHERTABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
     DataSet FillDataSet = new DataSet();
-    AData = new {#TABLENAME}Table();
-    FillDataSet.Tables.Add(AData);
+    {#TABLENAME}Table Data = new {#TABLENAME}Table();
+    FillDataSet.Tables.Add(Data);
     Load{#VIAPROCEDURENAME}Template(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-    FillDataSet.Tables.Remove(AData);
+    FillDataSet.Tables.Remove(Data);
+    return Data;
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, {#OTHERTABLENAME}Row ATemplateRow, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template({#OTHERTABLENAME}Row ATemplateRow, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}Template(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}Template(ATemplateRow, null, null, ATransaction, null, 0, 0);
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, {#OTHERTABLENAME}Row ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template({#OTHERTABLENAME}Row ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}Template(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}Template(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, {#OTHERTABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template({#OTHERTABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}Template(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}Template(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
 }
 
 /// auto generated
@@ -512,25 +521,26 @@ public static void Load{#VIAPROCEDURENAME}Template(DataSet AData, TSearchCriteri
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
     DataSet FillDataSet = new DataSet();
-    AData = new {#TABLENAME}Table();
-    FillDataSet.Tables.Add(AData);
+    {#TABLENAME}Table Data = new {#TABLENAME}Table();
+    FillDataSet.Tables.Add(Data);
     Load{#VIAPROCEDURENAME}Template(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-    FillDataSet.Tables.Remove(AData);
+    FillDataSet.Tables.Remove(Data);
+    return Data;
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}Template(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}Template(ASearchCriteria, null, ATransaction, null, 0, 0);
 }
 
 /// auto generated
-public static void Load{#VIAPROCEDURENAME}Template(out {#TABLENAME}Table AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
 {
-    Load{#VIAPROCEDURENAME}Template(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+    return Load{#VIAPROCEDURENAME}Template(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
 }
 
 /// auto generated CountViaLinkTable

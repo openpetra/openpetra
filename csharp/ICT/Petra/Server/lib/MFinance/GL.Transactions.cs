@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             ALedgerTable LedgerTable;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            ALedgerAccess.LoadByPrimaryKey(out LedgerTable, ALedgerNumber, Transaction);
+            LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
             ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
             NewRow.LedgerNumber = ALedgerNumber;

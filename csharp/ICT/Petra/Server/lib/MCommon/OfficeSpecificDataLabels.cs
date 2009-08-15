@@ -401,7 +401,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
 
                     if (FOfficeSpecificDataLabelsTDS.PDataLabelValuePartner.Rows.Count > 0)
                     {
-                        PDataLabelUseAccess.LoadAll(out DataLabelUseDT, AReadTransaction);
+                        DataLabelUseDT = PDataLabelUseAccess.LoadAll(AReadTransaction);
 
                         // Initialize 'use' criterium according to the enum
                         LabelUse = Enum.GetName(typeof(TOfficeSpecificDataLabelUseEnum), FOfficeSpecificDataLabelUse);
@@ -555,7 +555,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
 
             // TODO: once we have centrally cached data tables on the server then get the data
             // from there. Until then just load it on the spot here!
-            PDataLabelAccess.LoadAll(out DataLabelDT, ASubmitChangesTransaction);
+            DataLabelDT = PDataLabelAccess.LoadAll(ASubmitChangesTransaction);
 
             AVerificationResult = new TVerificationResultCollection();
 

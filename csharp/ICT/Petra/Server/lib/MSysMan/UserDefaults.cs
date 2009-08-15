@@ -403,7 +403,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 
                         if (SUserDefaultsAccess.CountViaSUser(AUserName, ReadTransaction) != 0)
                         {
-                            SUserDefaultsAccess.LoadViaSUser(out AUserDefaultsDataTable, AUserName, null, ReadTransaction,
+                            AUserDefaultsDataTable = SUserDefaultsAccess.LoadViaSUser(AUserName, null, ReadTransaction,
                                 StringHelper.InitStrArr(new string[] { "ORDER BY", SUserDefaultsTable.GetDefaultCodeDBName() }), 0, 0);
                             AUserDefaultsDataTable.AcceptChanges();
                         }

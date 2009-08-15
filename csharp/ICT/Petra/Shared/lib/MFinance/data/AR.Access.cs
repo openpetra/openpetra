@@ -72,22 +72,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out ATaxTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTypeTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, ATaxTypeTable.TableId) + " FROM PUB_a_tax_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            ATaxTypeTable Data = new ATaxTypeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, ATaxTypeTable.TableId) + " FROM PUB_a_tax_type" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out ATaxTypeTable AData, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out ATaxTypeTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -109,22 +110,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ATaxTypeTable AData, String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTypeTable LoadByPrimaryKey(String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTypeTable();
-            LoadByPrimaryKey(ATaxTypeTable.TableId, AData, new System.Object[1]{ATaxTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ATaxTypeTable Data = new ATaxTypeTable();
+            LoadByPrimaryKey(ATaxTypeTable.TableId, Data, new System.Object[1]{ATaxTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ATaxTypeTable AData, String ATaxTypeCode, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadByPrimaryKey(String ATaxTypeCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ATaxTypeCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ATaxTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ATaxTypeTable AData, String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadByPrimaryKey(String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ATaxTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ATaxTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -146,28 +148,29 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTypeTable AData, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTypeTable LoadUsingTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTypeTable();
-            LoadUsingTemplate(ATaxTypeTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ATaxTypeTable Data = new ATaxTypeTable();
+            LoadUsingTemplate(ATaxTypeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTypeTable AData, ATaxTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadUsingTemplate(ATaxTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTypeTable AData, ATaxTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadUsingTemplate(ATaxTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTypeTable AData, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadUsingTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -189,22 +192,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTypeTable();
-            LoadUsingTemplate(ATaxTypeTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ATaxTypeTable Data = new ATaxTypeTable();
+            LoadUsingTemplate(ATaxTypeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTypeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -258,25 +262,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedger(out ATaxTypeTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTypeTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new ATaxTypeTable();
-            FillDataSet.Tables.Add(AData);
+            ATaxTypeTable Data = new ATaxTypeTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaALedger(FillDataSet, ALedgerNumber, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedger(out ATaxTypeTable AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedger(out ATaxTypeTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -303,31 +308,32 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTypeTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTypeTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new ATaxTypeTable();
-            FillDataSet.Tables.Add(AData);
+            ATaxTypeTable Data = new ATaxTypeTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaALedgerTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTypeTable AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTypeTable AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTypeTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -354,25 +360,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTypeTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new ATaxTypeTable();
-            FillDataSet.Tables.Add(AData);
+            ATaxTypeTable Data = new ATaxTypeTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaALedgerTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTypeTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTypeTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTypeTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -459,22 +466,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out ATaxTableTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTableTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTableTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, ATaxTableTable.TableId) + " FROM PUB_a_tax_table" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            ATaxTableTable Data = new ATaxTableTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, ATaxTableTable.TableId) + " FROM PUB_a_tax_table" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out ATaxTableTable AData, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out ATaxTableTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -496,22 +504,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ATaxTableTable AData, Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTableTable LoadByPrimaryKey(Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTableTable();
-            LoadByPrimaryKey(ATaxTableTable.TableId, AData, new System.Object[4]{ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ATaxTableTable Data = new ATaxTableTable();
+            LoadByPrimaryKey(ATaxTableTable.TableId, Data, new System.Object[4]{ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ATaxTableTable AData, Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadByPrimaryKey(Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out ATaxTableTable AData, Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadByPrimaryKey(Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -533,28 +542,29 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTableTable AData, ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTableTable LoadUsingTemplate(ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTableTable();
-            LoadUsingTemplate(ATaxTableTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ATaxTableTable Data = new ATaxTableTable();
+            LoadUsingTemplate(ATaxTableTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTableTable AData, ATaxTableRow ATemplateRow, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadUsingTemplate(ATaxTableRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTableTable AData, ATaxTableRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadUsingTemplate(ATaxTableRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTableTable AData, ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadUsingTemplate(ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -576,22 +586,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTableTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTableTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTableTable();
-            LoadUsingTemplate(ATaxTableTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            ATaxTableTable Data = new ATaxTableTable();
+            LoadUsingTemplate(ATaxTableTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTableTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out ATaxTableTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -640,23 +651,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedger(out ATaxTableTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTableTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTableTable();
-            LoadViaForeignKey(ATaxTableTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            ATaxTableTable Data = new ATaxTableTable();
+            LoadViaForeignKey(ATaxTableTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedger(out ATaxTableTable AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedger(out ATaxTableTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -679,29 +691,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTableTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTableTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTableTable();
-            LoadViaForeignKey(ATaxTableTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            ATaxTableTable Data = new ATaxTableTable();
+            LoadViaForeignKey(ATaxTableTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTableTable AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTableTable AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTableTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -724,23 +737,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTableTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTableTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTableTable();
-            LoadViaForeignKey(ATaxTableTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            ATaxTableTable Data = new ATaxTableTable();
+            LoadViaForeignKey(ATaxTableTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTableTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out ATaxTableTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -784,23 +798,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxType(out ATaxTableTable AData, String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTableTable LoadViaATaxType(String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTableTable();
-            LoadViaForeignKey(ATaxTableTable.TableId, ATaxTypeTable.TableId, AData, new string[1]{"a_tax_type_code_c"},
+            ATaxTableTable Data = new ATaxTableTable();
+            LoadViaForeignKey(ATaxTableTable.TableId, ATaxTypeTable.TableId, Data, new string[1]{"a_tax_type_code_c"},
                 new System.Object[1]{ATaxTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxType(out ATaxTableTable AData, String ATaxTypeCode, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaATaxType(String ATaxTypeCode, TDBTransaction ATransaction)
         {
-            LoadViaATaxType(out AData, ATaxTypeCode, null, ATransaction, null, 0, 0);
+            return LoadViaATaxType(ATaxTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxType(out ATaxTableTable AData, String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaATaxType(String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxType(out AData, ATaxTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxType(ATaxTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -823,29 +838,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out ATaxTableTable AData, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTableTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTableTable();
-            LoadViaForeignKey(ATaxTableTable.TableId, ATaxTypeTable.TableId, AData, new string[1]{"a_tax_type_code_c"},
+            ATaxTableTable Data = new ATaxTableTable();
+            LoadViaForeignKey(ATaxTableTable.TableId, ATaxTypeTable.TableId, Data, new string[1]{"a_tax_type_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out ATaxTableTable AData, ATaxTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out ATaxTableTable AData, ATaxTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out ATaxTableTable AData, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -868,23 +884,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out ATaxTableTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static ATaxTableTable LoadViaATaxTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new ATaxTableTable();
-            LoadViaForeignKey(ATaxTableTable.TableId, ATaxTypeTable.TableId, AData, new string[1]{"a_tax_type_code_c"},
+            ATaxTableTable Data = new ATaxTableTable();
+            LoadViaForeignKey(ATaxTableTable.TableId, ATaxTypeTable.TableId, Data, new string[1]{"a_tax_type_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out ATaxTableTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaATaxTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out ATaxTableTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static ATaxTableTable LoadViaATaxTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -963,22 +980,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AArCategoryTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArCategoryTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArCategoryTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AArCategoryTable.TableId) + " FROM PUB_a_ar_category" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AArCategoryTable Data = new AArCategoryTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AArCategoryTable.TableId) + " FROM PUB_a_ar_category" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AArCategoryTable AData, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AArCategoryTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1000,22 +1018,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArCategoryTable AData, String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArCategoryTable LoadByPrimaryKey(String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArCategoryTable();
-            LoadByPrimaryKey(AArCategoryTable.TableId, AData, new System.Object[1]{AArCategoryCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArCategoryTable Data = new AArCategoryTable();
+            LoadByPrimaryKey(AArCategoryTable.TableId, Data, new System.Object[1]{AArCategoryCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArCategoryTable AData, String AArCategoryCode, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadByPrimaryKey(String AArCategoryCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AArCategoryCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AArCategoryCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArCategoryTable AData, String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadByPrimaryKey(String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AArCategoryCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AArCategoryCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1037,28 +1056,29 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArCategoryTable AData, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArCategoryTable LoadUsingTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArCategoryTable();
-            LoadUsingTemplate(AArCategoryTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArCategoryTable Data = new AArCategoryTable();
+            LoadUsingTemplate(AArCategoryTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArCategoryTable AData, AArCategoryRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadUsingTemplate(AArCategoryRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArCategoryTable AData, AArCategoryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadUsingTemplate(AArCategoryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArCategoryTable AData, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadUsingTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1080,22 +1100,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArCategoryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArCategoryTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArCategoryTable();
-            LoadUsingTemplate(AArCategoryTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArCategoryTable Data = new AArCategoryTable();
+            LoadUsingTemplate(AArCategoryTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArCategoryTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArCategoryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1151,25 +1172,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArCategoryTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArCategoryTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArCategoryTable();
-            FillDataSet.Tables.Add(AData);
+            AArCategoryTable Data = new AArCategoryTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArDiscount(FillDataSet, AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArCategoryTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArCategoryTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1196,31 +1218,32 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArCategoryTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArCategoryTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArCategoryTable();
-            FillDataSet.Tables.Add(AData);
+            AArCategoryTable Data = new AArCategoryTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArDiscountTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArCategoryTable AData, AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArCategoryTable AData, AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArCategoryTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1247,25 +1270,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArCategoryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArCategoryTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArCategoryTable();
-            FillDataSet.Tables.Add(AData);
+            AArCategoryTable Data = new AArCategoryTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArDiscountTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArCategoryTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArCategoryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArCategoryTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -1354,22 +1378,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AArArticleTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticleTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticleTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AArArticleTable.TableId) + " FROM PUB_a_ar_article" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AArArticleTable Data = new AArArticleTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AArArticleTable.TableId) + " FROM PUB_a_ar_article" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AArArticleTable AData, TDBTransaction ATransaction)
+        public static AArArticleTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AArArticleTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticleTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1391,22 +1416,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArArticleTable AData, String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticleTable LoadByPrimaryKey(String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticleTable();
-            LoadByPrimaryKey(AArArticleTable.TableId, AData, new System.Object[1]{AArArticleCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArArticleTable Data = new AArArticleTable();
+            LoadByPrimaryKey(AArArticleTable.TableId, Data, new System.Object[1]{AArArticleCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArArticleTable AData, String AArArticleCode, TDBTransaction ATransaction)
+        public static AArArticleTable LoadByPrimaryKey(String AArArticleCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AArArticleCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AArArticleCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArArticleTable AData, String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticleTable LoadByPrimaryKey(String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AArArticleCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AArArticleCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1428,28 +1454,29 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticleTable AData, AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticleTable LoadUsingTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticleTable();
-            LoadUsingTemplate(AArArticleTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArArticleTable Data = new AArArticleTable();
+            LoadUsingTemplate(AArArticleTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticleTable AData, AArArticleRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArArticleTable LoadUsingTemplate(AArArticleRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticleTable AData, AArArticleRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticleTable LoadUsingTemplate(AArArticleRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticleTable AData, AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticleTable LoadUsingTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1471,22 +1498,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticleTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticleTable();
-            LoadUsingTemplate(AArArticleTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArArticleTable Data = new AArArticleTable();
+            LoadUsingTemplate(AArArticleTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticleTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArArticleTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticleTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1535,23 +1563,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArCategory(out AArArticleTable AData, String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticleTable LoadViaAArCategory(String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticleTable();
-            LoadViaForeignKey(AArArticleTable.TableId, AArCategoryTable.TableId, AData, new string[1]{"a_ar_category_code_c"},
+            AArArticleTable Data = new AArArticleTable();
+            LoadViaForeignKey(AArArticleTable.TableId, AArCategoryTable.TableId, Data, new string[1]{"a_ar_category_code_c"},
                 new System.Object[1]{AArCategoryCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArCategory(out AArArticleTable AData, String AArCategoryCode, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaAArCategory(String AArCategoryCode, TDBTransaction ATransaction)
         {
-            LoadViaAArCategory(out AData, AArCategoryCode, null, ATransaction, null, 0, 0);
+            return LoadViaAArCategory(AArCategoryCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategory(out AArArticleTable AData, String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaAArCategory(String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategory(out AData, AArCategoryCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategory(AArCategoryCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1574,29 +1603,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArArticleTable AData, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticleTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticleTable();
-            LoadViaForeignKey(AArArticleTable.TableId, AArCategoryTable.TableId, AData, new string[1]{"a_ar_category_code_c"},
+            AArArticleTable Data = new AArArticleTable();
+            LoadViaForeignKey(AArArticleTable.TableId, AArCategoryTable.TableId, Data, new string[1]{"a_ar_category_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArArticleTable AData, AArCategoryRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArArticleTable AData, AArCategoryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArArticleTable AData, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1619,23 +1649,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArArticleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticleTable LoadViaAArCategoryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticleTable();
-            LoadViaForeignKey(AArArticleTable.TableId, AArCategoryTable.TableId, AData, new string[1]{"a_ar_category_code_c"},
+            AArArticleTable Data = new AArArticleTable();
+            LoadViaForeignKey(AArArticleTable.TableId, AArCategoryTable.TableId, Data, new string[1]{"a_ar_category_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArArticleTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaAArCategoryTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArArticleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaAArCategoryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1679,23 +1710,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxType(out AArArticleTable AData, String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticleTable LoadViaATaxType(String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticleTable();
-            LoadViaForeignKey(AArArticleTable.TableId, ATaxTypeTable.TableId, AData, new string[1]{"a_tax_type_code_c"},
+            AArArticleTable Data = new AArArticleTable();
+            LoadViaForeignKey(AArArticleTable.TableId, ATaxTypeTable.TableId, Data, new string[1]{"a_tax_type_code_c"},
                 new System.Object[1]{ATaxTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxType(out AArArticleTable AData, String ATaxTypeCode, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaATaxType(String ATaxTypeCode, TDBTransaction ATransaction)
         {
-            LoadViaATaxType(out AData, ATaxTypeCode, null, ATransaction, null, 0, 0);
+            return LoadViaATaxType(ATaxTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxType(out AArArticleTable AData, String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaATaxType(String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxType(out AData, ATaxTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxType(ATaxTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1718,29 +1750,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArArticleTable AData, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticleTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticleTable();
-            LoadViaForeignKey(AArArticleTable.TableId, ATaxTypeTable.TableId, AData, new string[1]{"a_tax_type_code_c"},
+            AArArticleTable Data = new AArArticleTable();
+            LoadViaForeignKey(AArArticleTable.TableId, ATaxTypeTable.TableId, Data, new string[1]{"a_tax_type_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArArticleTable AData, ATaxTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArArticleTable AData, ATaxTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArArticleTable AData, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1763,23 +1796,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArArticleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticleTable LoadViaATaxTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticleTable();
-            LoadViaForeignKey(AArArticleTable.TableId, ATaxTypeTable.TableId, AData, new string[1]{"a_tax_type_code_c"},
+            AArArticleTable Data = new AArArticleTable();
+            LoadViaForeignKey(AArArticleTable.TableId, ATaxTypeTable.TableId, Data, new string[1]{"a_tax_type_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArArticleTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaATaxTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArArticleTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticleTable LoadViaATaxTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -1858,22 +1892,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AArArticlePriceTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticlePriceTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticlePriceTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AArArticlePriceTable.TableId) + " FROM PUB_a_ar_article_price" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AArArticlePriceTable Data = new AArArticlePriceTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AArArticlePriceTable.TableId) + " FROM PUB_a_ar_article_price" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AArArticlePriceTable AData, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AArArticlePriceTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1895,22 +1930,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArArticlePriceTable AData, String AArArticleCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticlePriceTable LoadByPrimaryKey(String AArArticleCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticlePriceTable();
-            LoadByPrimaryKey(AArArticlePriceTable.TableId, AData, new System.Object[2]{AArArticleCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArArticlePriceTable Data = new AArArticlePriceTable();
+            LoadByPrimaryKey(AArArticlePriceTable.TableId, Data, new System.Object[2]{AArArticleCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArArticlePriceTable AData, String AArArticleCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadByPrimaryKey(String AArArticleCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AArArticleCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AArArticleCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArArticlePriceTable AData, String AArArticleCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadByPrimaryKey(String AArArticleCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AArArticleCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AArArticleCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1932,28 +1968,29 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticlePriceTable AData, AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticlePriceTable LoadUsingTemplate(AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticlePriceTable();
-            LoadUsingTemplate(AArArticlePriceTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArArticlePriceTable Data = new AArArticlePriceTable();
+            LoadUsingTemplate(AArArticlePriceTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticlePriceTable AData, AArArticlePriceRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadUsingTemplate(AArArticlePriceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticlePriceTable AData, AArArticlePriceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadUsingTemplate(AArArticlePriceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticlePriceTable AData, AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadUsingTemplate(AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -1975,22 +2012,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticlePriceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticlePriceTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticlePriceTable();
-            LoadUsingTemplate(AArArticlePriceTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArArticlePriceTable Data = new AArArticlePriceTable();
+            LoadUsingTemplate(AArArticlePriceTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticlePriceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArArticlePriceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2039,23 +2077,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArArticle(out AArArticlePriceTable AData, String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticlePriceTable LoadViaAArArticle(String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticlePriceTable();
-            LoadViaForeignKey(AArArticlePriceTable.TableId, AArArticleTable.TableId, AData, new string[1]{"a_ar_article_code_c"},
+            AArArticlePriceTable Data = new AArArticlePriceTable();
+            LoadViaForeignKey(AArArticlePriceTable.TableId, AArArticleTable.TableId, Data, new string[1]{"a_ar_article_code_c"},
                 new System.Object[1]{AArArticleCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArArticle(out AArArticlePriceTable AData, String AArArticleCode, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaAArArticle(String AArArticleCode, TDBTransaction ATransaction)
         {
-            LoadViaAArArticle(out AData, AArArticleCode, null, ATransaction, null, 0, 0);
+            return LoadViaAArArticle(AArArticleCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticle(out AArArticlePriceTable AData, String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaAArArticle(String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticle(out AData, AArArticleCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticle(AArArticleCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2078,29 +2117,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArArticlePriceTable AData, AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticlePriceTable LoadViaAArArticleTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticlePriceTable();
-            LoadViaForeignKey(AArArticlePriceTable.TableId, AArArticleTable.TableId, AData, new string[1]{"a_ar_article_code_c"},
+            AArArticlePriceTable Data = new AArArticlePriceTable();
+            LoadViaForeignKey(AArArticlePriceTable.TableId, AArArticleTable.TableId, Data, new string[1]{"a_ar_article_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArArticlePriceTable AData, AArArticleRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaAArArticleTemplate(AArArticleRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArArticlePriceTable AData, AArArticleRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaAArArticleTemplate(AArArticleRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArArticlePriceTable AData, AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaAArArticleTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2123,23 +2163,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArArticlePriceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticlePriceTable LoadViaAArArticleTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticlePriceTable();
-            LoadViaForeignKey(AArArticlePriceTable.TableId, AArArticleTable.TableId, AData, new string[1]{"a_ar_article_code_c"},
+            AArArticlePriceTable Data = new AArArticlePriceTable();
+            LoadViaForeignKey(AArArticlePriceTable.TableId, AArArticleTable.TableId, Data, new string[1]{"a_ar_article_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArArticlePriceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaAArArticleTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArArticlePriceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaAArArticleTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2183,23 +2224,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AArArticlePriceTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticlePriceTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticlePriceTable();
-            LoadViaForeignKey(AArArticlePriceTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AArArticlePriceTable Data = new AArArticlePriceTable();
+            LoadViaForeignKey(AArArticlePriceTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AArArticlePriceTable AData, String ACurrencyCode, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaACurrency(String ACurrencyCode, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, null, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AArArticlePriceTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2222,29 +2264,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArArticlePriceTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticlePriceTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticlePriceTable();
-            LoadViaForeignKey(AArArticlePriceTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AArArticlePriceTable Data = new AArArticlePriceTable();
+            LoadViaForeignKey(AArArticlePriceTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArArticlePriceTable AData, ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArArticlePriceTable AData, ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArArticlePriceTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2267,23 +2310,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArArticlePriceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArArticlePriceTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArArticlePriceTable();
-            LoadViaForeignKey(AArArticlePriceTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AArArticlePriceTable Data = new AArArticlePriceTable();
+            LoadViaForeignKey(AArArticlePriceTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArArticlePriceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArArticlePriceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArArticlePriceTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2362,22 +2406,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AArDiscountTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AArDiscountTable.TableId) + " FROM PUB_a_ar_discount" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AArDiscountTable Data = new AArDiscountTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AArDiscountTable.TableId) + " FROM PUB_a_ar_discount" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AArDiscountTable AData, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AArDiscountTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2399,22 +2444,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArDiscountTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadByPrimaryKey(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountTable();
-            LoadByPrimaryKey(AArDiscountTable.TableId, AData, new System.Object[2]{AArDiscountCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArDiscountTable Data = new AArDiscountTable();
+            LoadByPrimaryKey(AArDiscountTable.TableId, Data, new System.Object[2]{AArDiscountCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArDiscountTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadByPrimaryKey(String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArDiscountTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadByPrimaryKey(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2436,28 +2482,29 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadUsingTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountTable();
-            LoadUsingTemplate(AArDiscountTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArDiscountTable Data = new AArDiscountTable();
+            LoadUsingTemplate(AArDiscountTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountTable AData, AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadUsingTemplate(AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountTable AData, AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadUsingTemplate(AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadUsingTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2479,22 +2526,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountTable();
-            LoadUsingTemplate(AArDiscountTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArDiscountTable Data = new AArDiscountTable();
+            LoadUsingTemplate(AArDiscountTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -2543,23 +2591,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AArDiscountTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountTable();
-            LoadViaForeignKey(AArDiscountTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AArDiscountTable Data = new AArDiscountTable();
+            LoadViaForeignKey(AArDiscountTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AArDiscountTable AData, String ACurrencyCode, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaACurrency(String ACurrencyCode, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, null, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AArDiscountTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2582,29 +2631,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArDiscountTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountTable();
-            LoadViaForeignKey(AArDiscountTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AArDiscountTable Data = new AArDiscountTable();
+            LoadViaForeignKey(AArDiscountTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArDiscountTable AData, ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArDiscountTable AData, ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArDiscountTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2627,23 +2677,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountTable();
-            LoadViaForeignKey(AArDiscountTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AArDiscountTable Data = new AArDiscountTable();
+            LoadViaForeignKey(AArDiscountTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2687,23 +2738,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPType(out AArDiscountTable AData, String ATypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaPType(String ATypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountTable();
-            LoadViaForeignKey(AArDiscountTable.TableId, PTypeTable.TableId, AData, new string[1]{"p_partner_type_code_c"},
+            AArDiscountTable Data = new AArDiscountTable();
+            LoadViaForeignKey(AArDiscountTable.TableId, PTypeTable.TableId, Data, new string[1]{"p_partner_type_code_c"},
                 new System.Object[1]{ATypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPType(out AArDiscountTable AData, String ATypeCode, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaPType(String ATypeCode, TDBTransaction ATransaction)
         {
-            LoadViaPType(out AData, ATypeCode, null, ATransaction, null, 0, 0);
+            return LoadViaPType(ATypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPType(out AArDiscountTable AData, String ATypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaPType(String ATypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPType(out AData, ATypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPType(ATypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2726,29 +2778,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPTypeTemplate(out AArDiscountTable AData, PTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaPTypeTemplate(PTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountTable();
-            LoadViaForeignKey(AArDiscountTable.TableId, PTypeTable.TableId, AData, new string[1]{"p_partner_type_code_c"},
+            AArDiscountTable Data = new AArDiscountTable();
+            LoadViaForeignKey(AArDiscountTable.TableId, PTypeTable.TableId, Data, new string[1]{"p_partner_type_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPTypeTemplate(out AArDiscountTable AData, PTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaPTypeTemplate(PTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPTypeTemplate(out AArDiscountTable AData, PTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaPTypeTemplate(PTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPTypeTemplate(out AArDiscountTable AData, PTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaPTypeTemplate(PTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2771,23 +2824,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPTypeTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaPTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountTable();
-            LoadViaForeignKey(AArDiscountTable.TableId, PTypeTable.TableId, AData, new string[1]{"p_partner_type_code_c"},
+            AArDiscountTable Data = new AArDiscountTable();
+            LoadViaForeignKey(AArDiscountTable.TableId, PTypeTable.TableId, Data, new string[1]{"p_partner_type_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPTypeTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaPTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPTypeTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaPTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2831,23 +2885,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArArticle(out AArDiscountTable AData, String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaAArArticle(String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountTable();
-            LoadViaForeignKey(AArDiscountTable.TableId, AArArticleTable.TableId, AData, new string[1]{"a_ar_article_code_c"},
+            AArDiscountTable Data = new AArDiscountTable();
+            LoadViaForeignKey(AArDiscountTable.TableId, AArArticleTable.TableId, Data, new string[1]{"a_ar_article_code_c"},
                 new System.Object[1]{AArArticleCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArArticle(out AArDiscountTable AData, String AArArticleCode, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArArticle(String AArArticleCode, TDBTransaction ATransaction)
         {
-            LoadViaAArArticle(out AData, AArArticleCode, null, ATransaction, null, 0, 0);
+            return LoadViaAArArticle(AArArticleCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticle(out AArDiscountTable AData, String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArArticle(String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticle(out AData, AArArticleCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticle(AArArticleCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2870,29 +2925,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArDiscountTable AData, AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaAArArticleTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountTable();
-            LoadViaForeignKey(AArDiscountTable.TableId, AArArticleTable.TableId, AData, new string[1]{"a_ar_article_code_c"},
+            AArDiscountTable Data = new AArDiscountTable();
+            LoadViaForeignKey(AArDiscountTable.TableId, AArArticleTable.TableId, Data, new string[1]{"a_ar_article_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArDiscountTable AData, AArArticleRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArArticleTemplate(AArArticleRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArDiscountTable AData, AArArticleRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArArticleTemplate(AArArticleRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArDiscountTable AData, AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArArticleTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2915,23 +2971,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaAArArticleTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountTable();
-            LoadViaForeignKey(AArDiscountTable.TableId, AArArticleTable.TableId, AData, new string[1]{"a_ar_article_code_c"},
+            AArDiscountTable Data = new AArDiscountTable();
+            LoadViaForeignKey(AArDiscountTable.TableId, AArArticleTable.TableId, Data, new string[1]{"a_ar_article_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArArticleTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArArticleTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -2980,25 +3037,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArCategory(out AArDiscountTable AData, String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaAArCategory(String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArDiscountTable();
-            FillDataSet.Tables.Add(AData);
+            AArDiscountTable Data = new AArDiscountTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArCategory(FillDataSet, AArCategoryCode, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArCategory(out AArDiscountTable AData, String AArCategoryCode, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArCategory(String AArCategoryCode, TDBTransaction ATransaction)
         {
-            LoadViaAArCategory(out AData, AArCategoryCode, null, ATransaction, null, 0, 0);
+            return LoadViaAArCategory(AArCategoryCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategory(out AArDiscountTable AData, String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArCategory(String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategory(out AData, AArCategoryCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategory(AArCategoryCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3025,31 +3083,32 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountTable AData, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArDiscountTable();
-            FillDataSet.Tables.Add(AData);
+            AArDiscountTable Data = new AArDiscountTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArCategoryTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountTable AData, AArCategoryRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountTable AData, AArCategoryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountTable AData, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3076,25 +3135,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaAArCategoryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArDiscountTable();
-            FillDataSet.Tables.Add(AData);
+            AArDiscountTable Data = new AArDiscountTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArCategoryTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArCategoryTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArCategoryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -3153,25 +3213,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoice(out AArDiscountTable AData, Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaAArInvoice(Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArDiscountTable();
-            FillDataSet.Tables.Add(AData);
+            AArDiscountTable Data = new AArDiscountTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArInvoice(FillDataSet, ALedgerNumber, AKey, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoice(out AArDiscountTable AData, Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoice(Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoice(out AData, ALedgerNumber, AKey, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoice(ALedgerNumber, AKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoice(out AArDiscountTable AData, Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoice(Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoice(out AData, ALedgerNumber, AKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoice(ALedgerNumber, AKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3198,31 +3259,32 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArDiscountTable AData, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArDiscountTable();
-            FillDataSet.Tables.Add(AData);
+            AArDiscountTable Data = new AArDiscountTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArInvoiceTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArDiscountTable AData, AArInvoiceRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArDiscountTable AData, AArInvoiceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArDiscountTable AData, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3249,25 +3311,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaAArInvoiceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArDiscountTable();
-            FillDataSet.Tables.Add(AData);
+            AArDiscountTable Data = new AArDiscountTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArInvoiceTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoiceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoiceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -3330,25 +3393,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetail(out AArDiscountTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaAArInvoiceDetail(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArDiscountTable();
-            FillDataSet.Tables.Add(AData);
+            AArDiscountTable Data = new AArDiscountTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArInvoiceDetail(FillDataSet, ALedgerNumber, AInvoiceKey, ADetailNumber, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetail(out AArDiscountTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoiceDetail(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetail(out AData, ALedgerNumber, AInvoiceKey, ADetailNumber, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetail(ALedgerNumber, AInvoiceKey, ADetailNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetail(out AArDiscountTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoiceDetail(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetail(out AData, ALedgerNumber, AInvoiceKey, ADetailNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetail(ALedgerNumber, AInvoiceKey, ADetailNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3375,31 +3439,32 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArDiscountTable AData, AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaAArInvoiceDetailTemplate(AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArDiscountTable();
-            FillDataSet.Tables.Add(AData);
+            AArDiscountTable Data = new AArDiscountTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArInvoiceDetailTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArDiscountTable AData, AArInvoiceDetailRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoiceDetailTemplate(AArInvoiceDetailRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetailTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetailTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArDiscountTable AData, AArInvoiceDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoiceDetailTemplate(AArInvoiceDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetailTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetailTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArDiscountTable AData, AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoiceDetailTemplate(AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetailTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetailTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3426,25 +3491,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountTable LoadViaAArInvoiceDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArDiscountTable();
-            FillDataSet.Tables.Add(AData);
+            AArDiscountTable Data = new AArDiscountTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArInvoiceDetailTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoiceDetailTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetailTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetailTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountTable LoadViaAArInvoiceDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetailTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetailTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -3535,22 +3601,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AArDiscountPerCategoryTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountPerCategoryTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountPerCategoryTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AArDiscountPerCategoryTable.TableId) + " FROM PUB_a_ar_discount_per_category" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AArDiscountPerCategoryTable Data = new AArDiscountPerCategoryTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AArDiscountPerCategoryTable.TableId) + " FROM PUB_a_ar_discount_per_category" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AArDiscountPerCategoryTable AData, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AArDiscountPerCategoryTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3572,22 +3639,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArDiscountPerCategoryTable AData, String AArCategoryCode, String AArDiscountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountPerCategoryTable LoadByPrimaryKey(String AArCategoryCode, String AArDiscountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountPerCategoryTable();
-            LoadByPrimaryKey(AArDiscountPerCategoryTable.TableId, AData, new System.Object[2]{AArCategoryCode, AArDiscountCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArDiscountPerCategoryTable Data = new AArDiscountPerCategoryTable();
+            LoadByPrimaryKey(AArDiscountPerCategoryTable.TableId, Data, new System.Object[2]{AArCategoryCode, AArDiscountCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArDiscountPerCategoryTable AData, String AArCategoryCode, String AArDiscountCode, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadByPrimaryKey(String AArCategoryCode, String AArDiscountCode, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AArCategoryCode, AArDiscountCode, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AArCategoryCode, AArDiscountCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArDiscountPerCategoryTable AData, String AArCategoryCode, String AArDiscountCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadByPrimaryKey(String AArCategoryCode, String AArDiscountCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AArCategoryCode, AArDiscountCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AArCategoryCode, AArDiscountCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3609,28 +3677,29 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountPerCategoryTable AData, AArDiscountPerCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountPerCategoryTable LoadUsingTemplate(AArDiscountPerCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountPerCategoryTable();
-            LoadUsingTemplate(AArDiscountPerCategoryTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArDiscountPerCategoryTable Data = new AArDiscountPerCategoryTable();
+            LoadUsingTemplate(AArDiscountPerCategoryTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountPerCategoryTable AData, AArDiscountPerCategoryRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadUsingTemplate(AArDiscountPerCategoryRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountPerCategoryTable AData, AArDiscountPerCategoryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadUsingTemplate(AArDiscountPerCategoryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountPerCategoryTable AData, AArDiscountPerCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadUsingTemplate(AArDiscountPerCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3652,22 +3721,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountPerCategoryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountPerCategoryTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountPerCategoryTable();
-            LoadUsingTemplate(AArDiscountPerCategoryTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArDiscountPerCategoryTable Data = new AArDiscountPerCategoryTable();
+            LoadUsingTemplate(AArDiscountPerCategoryTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountPerCategoryTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDiscountPerCategoryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3716,23 +3786,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArCategory(out AArDiscountPerCategoryTable AData, String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountPerCategoryTable LoadViaAArCategory(String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountPerCategoryTable();
-            LoadViaForeignKey(AArDiscountPerCategoryTable.TableId, AArCategoryTable.TableId, AData, new string[1]{"a_ar_category_code_c"},
+            AArDiscountPerCategoryTable Data = new AArDiscountPerCategoryTable();
+            LoadViaForeignKey(AArDiscountPerCategoryTable.TableId, AArCategoryTable.TableId, Data, new string[1]{"a_ar_category_code_c"},
                 new System.Object[1]{AArCategoryCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArCategory(out AArDiscountPerCategoryTable AData, String AArCategoryCode, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArCategory(String AArCategoryCode, TDBTransaction ATransaction)
         {
-            LoadViaAArCategory(out AData, AArCategoryCode, null, ATransaction, null, 0, 0);
+            return LoadViaAArCategory(AArCategoryCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategory(out AArDiscountPerCategoryTable AData, String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArCategory(String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategory(out AData, AArCategoryCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategory(AArCategoryCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3755,29 +3826,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountPerCategoryTable AData, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountPerCategoryTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountPerCategoryTable();
-            LoadViaForeignKey(AArDiscountPerCategoryTable.TableId, AArCategoryTable.TableId, AData, new string[1]{"a_ar_category_code_c"},
+            AArDiscountPerCategoryTable Data = new AArDiscountPerCategoryTable();
+            LoadViaForeignKey(AArDiscountPerCategoryTable.TableId, AArCategoryTable.TableId, Data, new string[1]{"a_ar_category_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountPerCategoryTable AData, AArCategoryRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountPerCategoryTable AData, AArCategoryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountPerCategoryTable AData, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3800,23 +3872,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountPerCategoryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountPerCategoryTable LoadViaAArCategoryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountPerCategoryTable();
-            LoadViaForeignKey(AArDiscountPerCategoryTable.TableId, AArCategoryTable.TableId, AData, new string[1]{"a_ar_category_code_c"},
+            AArDiscountPerCategoryTable Data = new AArDiscountPerCategoryTable();
+            LoadViaForeignKey(AArDiscountPerCategoryTable.TableId, AArCategoryTable.TableId, Data, new string[1]{"a_ar_category_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountPerCategoryTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArCategoryTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDiscountPerCategoryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArCategoryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3860,23 +3933,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArDiscountPerCategoryTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountPerCategoryTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountPerCategoryTable();
-            LoadViaForeignKey(AArDiscountPerCategoryTable.TableId, AArDiscountTable.TableId, AData, new string[2]{"a_ar_discount_code_c", "a_ar_date_valid_from_d"},
+            AArDiscountPerCategoryTable Data = new AArDiscountPerCategoryTable();
+            LoadViaForeignKey(AArDiscountPerCategoryTable.TableId, AArDiscountTable.TableId, Data, new string[2]{"a_ar_discount_code_c", "a_ar_date_valid_from_d"},
                 new System.Object[2]{AArDiscountCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArDiscountPerCategoryTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArDiscountPerCategoryTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3899,29 +3973,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDiscountPerCategoryTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountPerCategoryTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountPerCategoryTable();
-            LoadViaForeignKey(AArDiscountPerCategoryTable.TableId, AArDiscountTable.TableId, AData, new string[2]{"a_ar_discount_code_c", "a_ar_date_valid_from_d"},
+            AArDiscountPerCategoryTable Data = new AArDiscountPerCategoryTable();
+            LoadViaForeignKey(AArDiscountPerCategoryTable.TableId, AArDiscountTable.TableId, Data, new string[2]{"a_ar_discount_code_c", "a_ar_date_valid_from_d"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDiscountPerCategoryTable AData, AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDiscountPerCategoryTable AData, AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDiscountPerCategoryTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -3944,23 +4019,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDiscountPerCategoryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDiscountPerCategoryTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDiscountPerCategoryTable();
-            LoadViaForeignKey(AArDiscountPerCategoryTable.TableId, AArDiscountTable.TableId, AData, new string[2]{"a_ar_discount_code_c", "a_ar_date_valid_from_d"},
+            AArDiscountPerCategoryTable Data = new AArDiscountPerCategoryTable();
+            LoadViaForeignKey(AArDiscountPerCategoryTable.TableId, AArDiscountTable.TableId, Data, new string[2]{"a_ar_discount_code_c", "a_ar_date_valid_from_d"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDiscountPerCategoryTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDiscountPerCategoryTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDiscountPerCategoryTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4039,22 +4115,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AArDefaultDiscountTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDefaultDiscountTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDefaultDiscountTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AArDefaultDiscountTable.TableId) + " FROM PUB_a_ar_default_discount" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AArDefaultDiscountTable Data = new AArDefaultDiscountTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AArDefaultDiscountTable.TableId) + " FROM PUB_a_ar_default_discount" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AArDefaultDiscountTable AData, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AArDefaultDiscountTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4076,22 +4153,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArDefaultDiscountTable AData, String AArCategoryCode, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDefaultDiscountTable LoadByPrimaryKey(String AArCategoryCode, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDefaultDiscountTable();
-            LoadByPrimaryKey(AArDefaultDiscountTable.TableId, AData, new System.Object[3]{AArCategoryCode, AArDiscountCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArDefaultDiscountTable Data = new AArDefaultDiscountTable();
+            LoadByPrimaryKey(AArDefaultDiscountTable.TableId, Data, new System.Object[3]{AArCategoryCode, AArDiscountCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArDefaultDiscountTable AData, String AArCategoryCode, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadByPrimaryKey(String AArCategoryCode, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AArCategoryCode, AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AArCategoryCode, AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArDefaultDiscountTable AData, String AArCategoryCode, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadByPrimaryKey(String AArCategoryCode, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, AArCategoryCode, AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AArCategoryCode, AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4113,28 +4191,29 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDefaultDiscountTable AData, AArDefaultDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDefaultDiscountTable LoadUsingTemplate(AArDefaultDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDefaultDiscountTable();
-            LoadUsingTemplate(AArDefaultDiscountTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArDefaultDiscountTable Data = new AArDefaultDiscountTable();
+            LoadUsingTemplate(AArDefaultDiscountTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDefaultDiscountTable AData, AArDefaultDiscountRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadUsingTemplate(AArDefaultDiscountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDefaultDiscountTable AData, AArDefaultDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadUsingTemplate(AArDefaultDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDefaultDiscountTable AData, AArDefaultDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadUsingTemplate(AArDefaultDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4156,22 +4235,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDefaultDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDefaultDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDefaultDiscountTable();
-            LoadUsingTemplate(AArDefaultDiscountTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArDefaultDiscountTable Data = new AArDefaultDiscountTable();
+            LoadUsingTemplate(AArDefaultDiscountTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDefaultDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArDefaultDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4220,23 +4300,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArCategory(out AArDefaultDiscountTable AData, String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDefaultDiscountTable LoadViaAArCategory(String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDefaultDiscountTable();
-            LoadViaForeignKey(AArDefaultDiscountTable.TableId, AArCategoryTable.TableId, AData, new string[1]{"a_ar_category_code_c"},
+            AArDefaultDiscountTable Data = new AArDefaultDiscountTable();
+            LoadViaForeignKey(AArDefaultDiscountTable.TableId, AArCategoryTable.TableId, Data, new string[1]{"a_ar_category_code_c"},
                 new System.Object[1]{AArCategoryCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArCategory(out AArDefaultDiscountTable AData, String AArCategoryCode, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArCategory(String AArCategoryCode, TDBTransaction ATransaction)
         {
-            LoadViaAArCategory(out AData, AArCategoryCode, null, ATransaction, null, 0, 0);
+            return LoadViaAArCategory(AArCategoryCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategory(out AArDefaultDiscountTable AData, String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArCategory(String AArCategoryCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategory(out AData, AArCategoryCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategory(AArCategoryCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4259,29 +4340,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDefaultDiscountTable AData, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDefaultDiscountTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDefaultDiscountTable();
-            LoadViaForeignKey(AArDefaultDiscountTable.TableId, AArCategoryTable.TableId, AData, new string[1]{"a_ar_category_code_c"},
+            AArDefaultDiscountTable Data = new AArDefaultDiscountTable();
+            LoadViaForeignKey(AArDefaultDiscountTable.TableId, AArCategoryTable.TableId, Data, new string[1]{"a_ar_category_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDefaultDiscountTable AData, AArCategoryRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDefaultDiscountTable AData, AArCategoryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDefaultDiscountTable AData, AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArCategoryTemplate(AArCategoryRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4304,23 +4386,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDefaultDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDefaultDiscountTable LoadViaAArCategoryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDefaultDiscountTable();
-            LoadViaForeignKey(AArDefaultDiscountTable.TableId, AArCategoryTable.TableId, AData, new string[1]{"a_ar_category_code_c"},
+            AArDefaultDiscountTable Data = new AArDefaultDiscountTable();
+            LoadViaForeignKey(AArDefaultDiscountTable.TableId, AArCategoryTable.TableId, Data, new string[1]{"a_ar_category_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDefaultDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArCategoryTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArCategoryTemplate(out AArDefaultDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArCategoryTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArCategoryTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArCategoryTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4364,23 +4447,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArDefaultDiscountTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDefaultDiscountTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDefaultDiscountTable();
-            LoadViaForeignKey(AArDefaultDiscountTable.TableId, AArDiscountTable.TableId, AData, new string[2]{"a_ar_discount_code_c", "a_ar_date_valid_from_d"},
+            AArDefaultDiscountTable Data = new AArDefaultDiscountTable();
+            LoadViaForeignKey(AArDefaultDiscountTable.TableId, AArDiscountTable.TableId, Data, new string[2]{"a_ar_discount_code_c", "a_ar_date_valid_from_d"},
                 new System.Object[2]{AArDiscountCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArDefaultDiscountTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArDefaultDiscountTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4403,29 +4487,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDefaultDiscountTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDefaultDiscountTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDefaultDiscountTable();
-            LoadViaForeignKey(AArDefaultDiscountTable.TableId, AArDiscountTable.TableId, AData, new string[2]{"a_ar_discount_code_c", "a_ar_date_valid_from_d"},
+            AArDefaultDiscountTable Data = new AArDefaultDiscountTable();
+            LoadViaForeignKey(AArDefaultDiscountTable.TableId, AArDiscountTable.TableId, Data, new string[2]{"a_ar_discount_code_c", "a_ar_date_valid_from_d"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDefaultDiscountTable AData, AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDefaultDiscountTable AData, AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDefaultDiscountTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4448,23 +4533,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDefaultDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArDefaultDiscountTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArDefaultDiscountTable();
-            LoadViaForeignKey(AArDefaultDiscountTable.TableId, AArDiscountTable.TableId, AData, new string[2]{"a_ar_discount_code_c", "a_ar_date_valid_from_d"},
+            AArDefaultDiscountTable Data = new AArDefaultDiscountTable();
+            LoadViaForeignKey(AArDefaultDiscountTable.TableId, AArDiscountTable.TableId, Data, new string[2]{"a_ar_discount_code_c", "a_ar_date_valid_from_d"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDefaultDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArDefaultDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArDefaultDiscountTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4543,22 +4629,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AArInvoiceTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AArInvoiceTable.TableId) + " FROM PUB_a_ar_invoice" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AArInvoiceTable Data = new AArInvoiceTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AArInvoiceTable.TableId) + " FROM PUB_a_ar_invoice" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AArInvoiceTable AData, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AArInvoiceTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4580,22 +4667,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArInvoiceTable AData, Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadByPrimaryKey(AArInvoiceTable.TableId, AData, new System.Object[2]{ALedgerNumber, AKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadByPrimaryKey(AArInvoiceTable.TableId, Data, new System.Object[2]{ALedgerNumber, AKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArInvoiceTable AData, Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AKey, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArInvoiceTable AData, Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4617,28 +4705,29 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceTable AData, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadUsingTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadUsingTemplate(AArInvoiceTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadUsingTemplate(AArInvoiceTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceTable AData, AArInvoiceRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadUsingTemplate(AArInvoiceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceTable AData, AArInvoiceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadUsingTemplate(AArInvoiceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceTable AData, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadUsingTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4660,22 +4749,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadUsingTemplate(AArInvoiceTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadUsingTemplate(AArInvoiceTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -4724,23 +4814,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out AArInvoiceTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out AArInvoiceTable AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaPPartner(Int64 APartnerKey, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, null, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartner(out AArInvoiceTable AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaPPartner(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartner(out AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartner(APartnerKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4763,29 +4854,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AArInvoiceTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AArInvoiceTable AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AArInvoiceTable AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AArInvoiceTable AData, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaPPartnerTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4808,23 +4900,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, PPartnerTable.TableId, AData, new string[1]{"p_partner_key_n"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_partner_key_n"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaPPartnerTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaPPartnerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaPPartnerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaPPartnerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4868,23 +4961,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTable(out AArInvoiceTable AData, Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaATaxTable(Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, ATaxTableTable.TableId, AData, new string[4]{"a_ledger_number_i", "a_special_tax_type_code_c", "a_special_tax_rate_code_c", "a_special_tax_valid_from_d"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, ATaxTableTable.TableId, Data, new string[4]{"a_ledger_number_i", "a_special_tax_type_code_c", "a_special_tax_rate_code_c", "a_special_tax_valid_from_d"},
                 new System.Object[4]{ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTable(out AArInvoiceTable AData, Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxTable(Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, TDBTransaction ATransaction)
         {
-            LoadViaATaxTable(out AData, ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTable(ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTable(out AArInvoiceTable AData, Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxTable(Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTable(out AData, ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTable(ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4907,29 +5001,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceTable AData, ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaATaxTableTemplate(ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, ATaxTableTable.TableId, AData, new string[4]{"a_ledger_number_i", "a_special_tax_type_code_c", "a_special_tax_rate_code_c", "a_special_tax_valid_from_d"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, ATaxTableTable.TableId, Data, new string[4]{"a_ledger_number_i", "a_special_tax_type_code_c", "a_special_tax_rate_code_c", "a_special_tax_valid_from_d"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceTable AData, ATaxTableRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxTableTemplate(ATaxTableRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaATaxTableTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTableTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceTable AData, ATaxTableRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxTableTemplate(ATaxTableRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTableTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTableTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceTable AData, ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxTableTemplate(ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTableTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTableTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -4952,23 +5047,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaATaxTableTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, ATaxTableTable.TableId, AData, new string[4]{"a_ledger_number_i", "a_special_tax_type_code_c", "a_special_tax_rate_code_c", "a_special_tax_valid_from_d"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, ATaxTableTable.TableId, Data, new string[4]{"a_ledger_number_i", "a_special_tax_type_code_c", "a_special_tax_rate_code_c", "a_special_tax_valid_from_d"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxTableTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaATaxTableTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTableTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxTableTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTableTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTableTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5012,23 +5108,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AArInvoiceTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AArInvoiceTable AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AArInvoiceTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5051,29 +5148,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceTable AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceTable AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5096,23 +5194,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5156,23 +5255,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxType(out AArInvoiceTable AData, String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaATaxType(String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, ATaxTypeTable.TableId, AData, new string[1]{"a_special_tax_type_code_c"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, ATaxTypeTable.TableId, Data, new string[1]{"a_special_tax_type_code_c"},
                 new System.Object[1]{ATaxTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxType(out AArInvoiceTable AData, String ATaxTypeCode, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxType(String ATaxTypeCode, TDBTransaction ATransaction)
         {
-            LoadViaATaxType(out AData, ATaxTypeCode, null, ATransaction, null, 0, 0);
+            return LoadViaATaxType(ATaxTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxType(out AArInvoiceTable AData, String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxType(String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxType(out AData, ATaxTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxType(ATaxTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5195,29 +5295,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceTable AData, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, ATaxTypeTable.TableId, AData, new string[1]{"a_special_tax_type_code_c"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, ATaxTypeTable.TableId, Data, new string[1]{"a_special_tax_type_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceTable AData, ATaxTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceTable AData, ATaxTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceTable AData, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5240,23 +5341,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaATaxTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, ATaxTypeTable.TableId, AData, new string[1]{"a_special_tax_type_code_c"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, ATaxTypeTable.TableId, Data, new string[1]{"a_special_tax_type_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaATaxTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5300,23 +5402,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AArInvoiceTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AArInvoiceTable AData, String ACurrencyCode, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaACurrency(String ACurrencyCode, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, null, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AArInvoiceTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5339,29 +5442,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceTable AData, ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceTable AData, ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5384,23 +5488,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceTable();
-            LoadViaForeignKey(AArInvoiceTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AArInvoiceTable Data = new AArInvoiceTable();
+            LoadViaForeignKey(AArInvoiceTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5451,25 +5556,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArInvoiceTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArInvoiceTable();
-            FillDataSet.Tables.Add(AData);
+            AArInvoiceTable Data = new AArInvoiceTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArDiscount(FillDataSet, AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArInvoiceTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArInvoiceTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5496,31 +5602,32 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArInvoiceTable();
-            FillDataSet.Tables.Add(AData);
+            AArInvoiceTable Data = new AArInvoiceTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArDiscountTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceTable AData, AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceTable AData, AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5547,25 +5654,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArInvoiceTable();
-            FillDataSet.Tables.Add(AData);
+            AArInvoiceTable Data = new AArInvoiceTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArDiscountTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -5654,22 +5762,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AArInvoiceDetailTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AArInvoiceDetailTable.TableId) + " FROM PUB_a_ar_invoice_detail" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AArInvoiceDetailTable.TableId) + " FROM PUB_a_ar_invoice_detail" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AArInvoiceDetailTable AData, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AArInvoiceDetailTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5691,22 +5800,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArInvoiceDetailTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadByPrimaryKey(AArInvoiceDetailTable.TableId, AData, new System.Object[3]{ALedgerNumber, AInvoiceKey, ADetailNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadByPrimaryKey(AArInvoiceDetailTable.TableId, Data, new System.Object[3]{ALedgerNumber, AInvoiceKey, ADetailNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArInvoiceDetailTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AInvoiceKey, ADetailNumber, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AInvoiceKey, ADetailNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArInvoiceDetailTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AInvoiceKey, ADetailNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AInvoiceKey, ADetailNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5728,28 +5838,29 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailTable AData, AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadUsingTemplate(AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadUsingTemplate(AArInvoiceDetailTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadUsingTemplate(AArInvoiceDetailTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailTable AData, AArInvoiceDetailRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadUsingTemplate(AArInvoiceDetailRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailTable AData, AArInvoiceDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadUsingTemplate(AArInvoiceDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailTable AData, AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadUsingTemplate(AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5771,22 +5882,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadUsingTemplate(AArInvoiceDetailTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadUsingTemplate(AArInvoiceDetailTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -5835,23 +5947,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoice(out AArInvoiceDetailTable AData, Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaAArInvoice(Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArInvoiceTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_invoice_key_i"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArInvoiceTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_invoice_key_i"},
                 new System.Object[2]{ALedgerNumber, AKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoice(out AArInvoiceDetailTable AData, Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArInvoice(Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoice(out AData, ALedgerNumber, AKey, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoice(ALedgerNumber, AKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoice(out AArInvoiceDetailTable AData, Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArInvoice(Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoice(out AData, ALedgerNumber, AKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoice(ALedgerNumber, AKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5874,29 +5987,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDetailTable AData, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArInvoiceTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_invoice_key_i"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArInvoiceTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_invoice_key_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDetailTable AData, AArInvoiceRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDetailTable AData, AArInvoiceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDetailTable AData, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5919,23 +6033,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaAArInvoiceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArInvoiceTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_invoice_key_i"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArInvoiceTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_invoice_key_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArInvoiceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArInvoiceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -5979,23 +6094,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTable(out AArInvoiceDetailTable AData, Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaATaxTable(Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ATaxTableTable.TableId, AData, new string[4]{"a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ATaxTableTable.TableId, Data, new string[4]{"a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"},
                 new System.Object[4]{ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTable(out AArInvoiceDetailTable AData, Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxTable(Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, TDBTransaction ATransaction)
         {
-            LoadViaATaxTable(out AData, ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTable(ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTable(out AArInvoiceDetailTable AData, Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxTable(Int32 ALedgerNumber, String ATaxTypeCode, String ATaxRateCode, System.DateTime ATaxValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTable(out AData, ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTable(ALedgerNumber, ATaxTypeCode, ATaxRateCode, ATaxValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6018,29 +6134,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceDetailTable AData, ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaATaxTableTemplate(ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ATaxTableTable.TableId, AData, new string[4]{"a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ATaxTableTable.TableId, Data, new string[4]{"a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceDetailTable AData, ATaxTableRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxTableTemplate(ATaxTableRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaATaxTableTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTableTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceDetailTable AData, ATaxTableRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxTableTemplate(ATaxTableRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTableTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTableTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceDetailTable AData, ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxTableTemplate(ATaxTableRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTableTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTableTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6063,23 +6180,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaATaxTableTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ATaxTableTable.TableId, AData, new string[4]{"a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ATaxTableTable.TableId, Data, new string[4]{"a_ledger_number_i", "a_tax_type_code_c", "a_tax_rate_code_c", "a_tax_valid_from_d"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxTableTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaATaxTableTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTableTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTableTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxTableTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTableTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTableTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6123,23 +6241,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AArInvoiceDetailTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AArInvoiceDetailTable AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedger(out AArInvoiceDetailTable AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedger(out AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedger(ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6162,29 +6281,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceDetailTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceDetailTable AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceDetailTable AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceDetailTable AData, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6207,23 +6327,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ALedgerTable.TableId, AData, new string[1]{"a_ledger_number_i"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaALedgerTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaALedgerTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaALedgerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6267,23 +6388,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxType(out AArInvoiceDetailTable AData, String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaATaxType(String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ATaxTypeTable.TableId, AData, new string[1]{"a_tax_type_code_c"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ATaxTypeTable.TableId, Data, new string[1]{"a_tax_type_code_c"},
                 new System.Object[1]{ATaxTypeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxType(out AArInvoiceDetailTable AData, String ATaxTypeCode, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxType(String ATaxTypeCode, TDBTransaction ATransaction)
         {
-            LoadViaATaxType(out AData, ATaxTypeCode, null, ATransaction, null, 0, 0);
+            return LoadViaATaxType(ATaxTypeCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxType(out AArInvoiceDetailTable AData, String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxType(String ATaxTypeCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxType(out AData, ATaxTypeCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxType(ATaxTypeCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6306,29 +6428,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceDetailTable AData, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ATaxTypeTable.TableId, AData, new string[1]{"a_tax_type_code_c"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ATaxTypeTable.TableId, Data, new string[1]{"a_tax_type_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceDetailTable AData, ATaxTypeRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceDetailTable AData, ATaxTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceDetailTable AData, ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxTypeTemplate(ATaxTypeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6351,23 +6474,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaATaxTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ATaxTypeTable.TableId, AData, new string[1]{"a_tax_type_code_c"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ATaxTypeTable.TableId, Data, new string[1]{"a_tax_type_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxTypeTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaATaxTypeTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaATaxTypeTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaATaxTypeTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaATaxTypeTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6411,23 +6535,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AArInvoiceDetailTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AArInvoiceDetailTable AData, String ACurrencyCode, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaACurrency(String ACurrencyCode, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, null, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrency(out AArInvoiceDetailTable AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrency(out AData, ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrency(ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6450,29 +6575,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceDetailTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceDetailTable AData, ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceDetailTable AData, ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceDetailTable AData, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6495,23 +6621,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ACurrencyTable.TableId, AData, new string[1]{"a_currency_code_c"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaACurrencyTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaACurrencyTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaACurrencyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6555,23 +6682,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArArticle(out AArInvoiceDetailTable AData, String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaAArArticle(String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArArticleTable.TableId, AData, new string[1]{"a_ar_article_code_c"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArArticleTable.TableId, Data, new string[1]{"a_ar_article_code_c"},
                 new System.Object[1]{AArArticleCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArArticle(out AArInvoiceDetailTable AData, String AArArticleCode, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticle(String AArArticleCode, TDBTransaction ATransaction)
         {
-            LoadViaAArArticle(out AData, AArArticleCode, null, ATransaction, null, 0, 0);
+            return LoadViaAArArticle(AArArticleCode, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticle(out AArInvoiceDetailTable AData, String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticle(String AArArticleCode, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticle(out AData, AArArticleCode, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticle(AArArticleCode, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6594,29 +6722,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArInvoiceDetailTable AData, AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaAArArticleTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArArticleTable.TableId, AData, new string[1]{"a_ar_article_code_c"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArArticleTable.TableId, Data, new string[1]{"a_ar_article_code_c"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArInvoiceDetailTable AData, AArArticleRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticleTemplate(AArArticleRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArInvoiceDetailTable AData, AArArticleRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticleTemplate(AArArticleRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArInvoiceDetailTable AData, AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticleTemplate(AArArticleRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6639,23 +6768,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaAArArticleTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArArticleTable.TableId, AData, new string[1]{"a_ar_article_code_c"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArArticleTable.TableId, Data, new string[1]{"a_ar_article_code_c"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticleTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticleTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticleTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticleTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticleTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6699,23 +6829,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArArticlePrice(out AArInvoiceDetailTable AData, String AArArticleCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaAArArticlePrice(String AArArticleCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArArticlePriceTable.TableId, AData, new string[2]{"a_ar_article_code_c", "a_ar_article_price_d"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArArticlePriceTable.TableId, Data, new string[2]{"a_ar_article_code_c", "a_ar_article_price_d"},
                 new System.Object[2]{AArArticleCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArArticlePrice(out AArInvoiceDetailTable AData, String AArArticleCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticlePrice(String AArArticleCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            LoadViaAArArticlePrice(out AData, AArArticleCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
+            return LoadViaAArArticlePrice(AArArticleCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticlePrice(out AArInvoiceDetailTable AData, String AArArticleCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticlePrice(String AArArticleCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticlePrice(out AData, AArArticleCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticlePrice(AArArticleCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6738,29 +6869,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArArticlePriceTemplate(out AArInvoiceDetailTable AData, AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaAArArticlePriceTemplate(AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArArticlePriceTable.TableId, AData, new string[2]{"a_ar_article_code_c", "a_ar_article_price_d"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArArticlePriceTable.TableId, Data, new string[2]{"a_ar_article_code_c", "a_ar_article_price_d"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArArticlePriceTemplate(out AArInvoiceDetailTable AData, AArArticlePriceRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticlePriceTemplate(AArArticlePriceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArArticlePriceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArArticlePriceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticlePriceTemplate(out AArInvoiceDetailTable AData, AArArticlePriceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticlePriceTemplate(AArArticlePriceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticlePriceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticlePriceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticlePriceTemplate(out AArInvoiceDetailTable AData, AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticlePriceTemplate(AArArticlePriceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticlePriceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticlePriceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6783,23 +6915,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArArticlePriceTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaAArArticlePriceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailTable();
-            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArArticlePriceTable.TableId, AData, new string[2]{"a_ar_article_code_c", "a_ar_article_price_d"},
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            LoadViaForeignKey(AArInvoiceDetailTable.TableId, AArArticlePriceTable.TableId, Data, new string[2]{"a_ar_article_code_c", "a_ar_article_price_d"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArArticlePriceTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticlePriceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArArticlePriceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArArticlePriceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArArticlePriceTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArArticlePriceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArArticlePriceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArArticlePriceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6850,25 +6983,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArInvoiceDetailTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArInvoiceDetailTable();
-            FillDataSet.Tables.Add(AData);
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArDiscount(FillDataSet, AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArInvoiceDetailTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArInvoiceDetailTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6895,31 +7029,32 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArInvoiceDetailTable();
-            FillDataSet.Tables.Add(AData);
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArDiscountTemplate(FillDataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailTable AData, AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailTable AData, AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -6946,25 +7081,26 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             DataSet FillDataSet = new DataSet();
-            AData = new AArInvoiceDetailTable();
-            FillDataSet.Tables.Add(AData);
+            AArInvoiceDetailTable Data = new AArInvoiceDetailTable();
+            FillDataSet.Tables.Add(Data);
             LoadViaAArDiscountTemplate(FillDataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            FillDataSet.Tables.Remove(AData);
+            FillDataSet.Tables.Remove(Data);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated CountViaLinkTable
@@ -7053,22 +7189,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AArInvoiceDiscountTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDiscountTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDiscountTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AArInvoiceDiscountTable.TableId) + " FROM PUB_a_ar_invoice_discount" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AArInvoiceDiscountTable Data = new AArInvoiceDiscountTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AArInvoiceDiscountTable.TableId) + " FROM PUB_a_ar_invoice_discount" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AArInvoiceDiscountTable AData, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AArInvoiceDiscountTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7090,22 +7227,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArInvoiceDiscountTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDiscountTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDiscountTable();
-            LoadByPrimaryKey(AArInvoiceDiscountTable.TableId, AData, new System.Object[4]{ALedgerNumber, AInvoiceKey, AArDiscountCode, AArDiscountDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArInvoiceDiscountTable Data = new AArInvoiceDiscountTable();
+            LoadByPrimaryKey(AArInvoiceDiscountTable.TableId, Data, new System.Object[4]{ALedgerNumber, AInvoiceKey, AArDiscountCode, AArDiscountDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArInvoiceDiscountTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AInvoiceKey, AArDiscountCode, AArDiscountDateValidFrom, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AInvoiceKey, AArDiscountCode, AArDiscountDateValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArInvoiceDiscountTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AInvoiceKey, AArDiscountCode, AArDiscountDateValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AInvoiceKey, AArDiscountCode, AArDiscountDateValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7127,28 +7265,29 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDiscountTable AData, AArInvoiceDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDiscountTable LoadUsingTemplate(AArInvoiceDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDiscountTable();
-            LoadUsingTemplate(AArInvoiceDiscountTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArInvoiceDiscountTable Data = new AArInvoiceDiscountTable();
+            LoadUsingTemplate(AArInvoiceDiscountTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDiscountTable AData, AArInvoiceDiscountRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadUsingTemplate(AArInvoiceDiscountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDiscountTable AData, AArInvoiceDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadUsingTemplate(AArInvoiceDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDiscountTable AData, AArInvoiceDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadUsingTemplate(AArInvoiceDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7170,22 +7309,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDiscountTable();
-            LoadUsingTemplate(AArInvoiceDiscountTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArInvoiceDiscountTable Data = new AArInvoiceDiscountTable();
+            LoadUsingTemplate(AArInvoiceDiscountTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7234,23 +7374,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoice(out AArInvoiceDiscountTable AData, Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDiscountTable LoadViaAArInvoice(Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDiscountTable();
-            LoadViaForeignKey(AArInvoiceDiscountTable.TableId, AArInvoiceTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_invoice_key_i"},
+            AArInvoiceDiscountTable Data = new AArInvoiceDiscountTable();
+            LoadViaForeignKey(AArInvoiceDiscountTable.TableId, AArInvoiceTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_invoice_key_i"},
                 new System.Object[2]{ALedgerNumber, AKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoice(out AArInvoiceDiscountTable AData, Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArInvoice(Int32 ALedgerNumber, Int32 AKey, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoice(out AData, ALedgerNumber, AKey, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoice(ALedgerNumber, AKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoice(out AArInvoiceDiscountTable AData, Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArInvoice(Int32 ALedgerNumber, Int32 AKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoice(out AData, ALedgerNumber, AKey, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoice(ALedgerNumber, AKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7273,29 +7414,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDiscountTable AData, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDiscountTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDiscountTable();
-            LoadViaForeignKey(AArInvoiceDiscountTable.TableId, AArInvoiceTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_invoice_key_i"},
+            AArInvoiceDiscountTable Data = new AArInvoiceDiscountTable();
+            LoadViaForeignKey(AArInvoiceDiscountTable.TableId, AArInvoiceTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_invoice_key_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDiscountTable AData, AArInvoiceRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDiscountTable AData, AArInvoiceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDiscountTable AData, AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArInvoiceTemplate(AArInvoiceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7318,23 +7460,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDiscountTable LoadViaAArInvoiceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDiscountTable();
-            LoadViaForeignKey(AArInvoiceDiscountTable.TableId, AArInvoiceTable.TableId, AData, new string[2]{"a_ledger_number_i", "a_invoice_key_i"},
+            AArInvoiceDiscountTable Data = new AArInvoiceDiscountTable();
+            LoadViaForeignKey(AArInvoiceDiscountTable.TableId, AArInvoiceTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_invoice_key_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArInvoiceTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceTemplate(out AArInvoiceDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArInvoiceTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7378,23 +7521,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArInvoiceDiscountTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDiscountTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDiscountTable();
-            LoadViaForeignKey(AArInvoiceDiscountTable.TableId, AArDiscountTable.TableId, AData, new string[2]{"a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"},
+            AArInvoiceDiscountTable Data = new AArInvoiceDiscountTable();
+            LoadViaForeignKey(AArInvoiceDiscountTable.TableId, AArDiscountTable.TableId, Data, new string[2]{"a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"},
                 new System.Object[2]{AArDiscountCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArInvoiceDiscountTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArInvoiceDiscountTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7417,29 +7561,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDiscountTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDiscountTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDiscountTable();
-            LoadViaForeignKey(AArInvoiceDiscountTable.TableId, AArDiscountTable.TableId, AData, new string[2]{"a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"},
+            AArInvoiceDiscountTable Data = new AArInvoiceDiscountTable();
+            LoadViaForeignKey(AArInvoiceDiscountTable.TableId, AArDiscountTable.TableId, Data, new string[2]{"a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDiscountTable AData, AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDiscountTable AData, AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDiscountTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7462,23 +7607,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDiscountTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDiscountTable();
-            LoadViaForeignKey(AArInvoiceDiscountTable.TableId, AArDiscountTable.TableId, AData, new string[2]{"a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"},
+            AArInvoiceDiscountTable Data = new AArInvoiceDiscountTable();
+            LoadViaForeignKey(AArInvoiceDiscountTable.TableId, AArDiscountTable.TableId, Data, new string[2]{"a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDiscountTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7557,22 +7703,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadAll(out AArInvoiceDetailDiscountTable AData, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailDiscountTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailDiscountTable();
-            DBAccess.GDBAccessObj.SelectDT(AData, GenerateSelectClause(AFieldList, AArInvoiceDetailDiscountTable.TableId) + " FROM PUB_a_ar_invoice_detail_discount" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            AArInvoiceDetailDiscountTable Data = new AArInvoiceDetailDiscountTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AArInvoiceDetailDiscountTable.TableId) + " FROM PUB_a_ar_invoice_detail_discount" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadAll(out AArInvoiceDetailDiscountTable AData, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadAll(TDBTransaction ATransaction)
         {
-            LoadAll(out AData, null, ATransaction, null, 0, 0);
+            return LoadAll(null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadAll(out AArInvoiceDetailDiscountTable AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadAll(out AData, AFieldList, ATransaction, null, 0, 0);
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7594,22 +7741,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArInvoiceDetailDiscountTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailDiscountTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailDiscountTable();
-            LoadByPrimaryKey(AArInvoiceDetailDiscountTable.TableId, AData, new System.Object[5]{ALedgerNumber, AInvoiceKey, ADetailNumber, AArDiscountCode, AArDiscountDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArInvoiceDetailDiscountTable Data = new AArInvoiceDetailDiscountTable();
+            LoadByPrimaryKey(AArInvoiceDetailDiscountTable.TableId, Data, new System.Object[5]{ALedgerNumber, AInvoiceKey, ADetailNumber, AArDiscountCode, AArDiscountDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArInvoiceDetailDiscountTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AInvoiceKey, ADetailNumber, AArDiscountCode, AArDiscountDateValidFrom, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AInvoiceKey, ADetailNumber, AArDiscountCode, AArDiscountDateValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(out AArInvoiceDetailDiscountTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, String AArDiscountCode, System.DateTime AArDiscountDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(out AData, ALedgerNumber, AInvoiceKey, ADetailNumber, AArDiscountCode, AArDiscountDateValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(ALedgerNumber, AInvoiceKey, ADetailNumber, AArDiscountCode, AArDiscountDateValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7631,28 +7779,29 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailDiscountTable AData, AArInvoiceDetailDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailDiscountTable LoadUsingTemplate(AArInvoiceDetailDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailDiscountTable();
-            LoadUsingTemplate(AArInvoiceDetailDiscountTable.TableId, AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArInvoiceDetailDiscountTable Data = new AArInvoiceDetailDiscountTable();
+            LoadUsingTemplate(AArInvoiceDetailDiscountTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailDiscountTable AData, AArInvoiceDetailDiscountRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadUsingTemplate(AArInvoiceDetailDiscountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailDiscountTable AData, AArInvoiceDetailDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadUsingTemplate(AArInvoiceDetailDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailDiscountTable AData, AArInvoiceDetailDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadUsingTemplate(AArInvoiceDetailDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7674,22 +7823,23 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailDiscountTable();
-            LoadUsingTemplate(AArInvoiceDetailDiscountTable.TableId, AData, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            AArInvoiceDetailDiscountTable Data = new AArInvoiceDetailDiscountTable();
+            LoadUsingTemplate(AArInvoiceDetailDiscountTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadUsingTemplate(out AArInvoiceDetailDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadUsingTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -7738,23 +7888,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetail(out AArInvoiceDetailDiscountTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailDiscountTable LoadViaAArInvoiceDetail(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailDiscountTable();
-            LoadViaForeignKey(AArInvoiceDetailDiscountTable.TableId, AArInvoiceDetailTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"},
+            AArInvoiceDetailDiscountTable Data = new AArInvoiceDetailDiscountTable();
+            LoadViaForeignKey(AArInvoiceDetailDiscountTable.TableId, AArInvoiceDetailTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"},
                 new System.Object[3]{ALedgerNumber, AInvoiceKey, ADetailNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetail(out AArInvoiceDetailDiscountTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArInvoiceDetail(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetail(out AData, ALedgerNumber, AInvoiceKey, ADetailNumber, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetail(ALedgerNumber, AInvoiceKey, ADetailNumber, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetail(out AArInvoiceDetailDiscountTable AData, Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArInvoiceDetail(Int32 ALedgerNumber, Int32 AInvoiceKey, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetail(out AData, ALedgerNumber, AInvoiceKey, ADetailNumber, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetail(ALedgerNumber, AInvoiceKey, ADetailNumber, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7777,29 +7928,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArInvoiceDetailDiscountTable AData, AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailDiscountTable LoadViaAArInvoiceDetailTemplate(AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailDiscountTable();
-            LoadViaForeignKey(AArInvoiceDetailDiscountTable.TableId, AArInvoiceDetailTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"},
+            AArInvoiceDetailDiscountTable Data = new AArInvoiceDetailDiscountTable();
+            LoadViaForeignKey(AArInvoiceDetailDiscountTable.TableId, AArInvoiceDetailTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArInvoiceDetailDiscountTable AData, AArInvoiceDetailRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArInvoiceDetailTemplate(AArInvoiceDetailRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetailTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetailTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArInvoiceDetailDiscountTable AData, AArInvoiceDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArInvoiceDetailTemplate(AArInvoiceDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetailTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetailTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArInvoiceDetailDiscountTable AData, AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArInvoiceDetailTemplate(AArInvoiceDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetailTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetailTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7822,23 +7974,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArInvoiceDetailDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailDiscountTable LoadViaAArInvoiceDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailDiscountTable();
-            LoadViaForeignKey(AArInvoiceDetailDiscountTable.TableId, AArInvoiceDetailTable.TableId, AData, new string[3]{"a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"},
+            AArInvoiceDetailDiscountTable Data = new AArInvoiceDetailDiscountTable();
+            LoadViaForeignKey(AArInvoiceDetailDiscountTable.TableId, AArInvoiceDetailTable.TableId, Data, new string[3]{"a_ledger_number_i", "a_invoice_key_i", "a_detail_number_i"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArInvoiceDetailDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArInvoiceDetailTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetailTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetailTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArInvoiceDetailTemplate(out AArInvoiceDetailDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArInvoiceDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArInvoiceDetailTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArInvoiceDetailTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7882,23 +8035,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArInvoiceDetailDiscountTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailDiscountTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailDiscountTable();
-            LoadViaForeignKey(AArInvoiceDetailDiscountTable.TableId, AArDiscountTable.TableId, AData, new string[2]{"a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"},
+            AArInvoiceDetailDiscountTable Data = new AArInvoiceDetailDiscountTable();
+            LoadViaForeignKey(AArInvoiceDetailDiscountTable.TableId, AArDiscountTable.TableId, Data, new string[2]{"a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"},
                 new System.Object[2]{AArDiscountCode, AArDateValidFrom}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArInvoiceDetailDiscountTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscount(out AArInvoiceDetailDiscountTable AData, String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArDiscount(String AArDiscountCode, System.DateTime AArDateValidFrom, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscount(out AData, AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscount(AArDiscountCode, AArDateValidFrom, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7921,29 +8075,30 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailDiscountTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailDiscountTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailDiscountTable();
-            LoadViaForeignKey(AArInvoiceDetailDiscountTable.TableId, AArDiscountTable.TableId, AData, new string[2]{"a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"},
+            AArInvoiceDetailDiscountTable Data = new AArInvoiceDetailDiscountTable();
+            LoadViaForeignKey(AArInvoiceDetailDiscountTable.TableId, AArDiscountTable.TableId, Data, new string[2]{"a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"},
                 ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailDiscountTable AData, AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailDiscountTable AData, AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailDiscountTable AData, AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArDiscountTemplate(AArDiscountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
@@ -7966,23 +8121,24 @@ namespace Ict.Petra.Shared.MFinance.AR.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AArInvoiceDetailDiscountTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            AData = new AArInvoiceDetailDiscountTable();
-            LoadViaForeignKey(AArInvoiceDetailDiscountTable.TableId, AArDiscountTable.TableId, AData, new string[2]{"a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"},
+            AArInvoiceDetailDiscountTable Data = new AArInvoiceDetailDiscountTable();
+            LoadViaForeignKey(AArInvoiceDetailDiscountTable.TableId, AArDiscountTable.TableId, Data, new string[2]{"a_ar_discount_code_c", "a_ar_discount_date_valid_from_d"},
                 ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailDiscountTable AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadViaAArDiscountTemplate(out AArInvoiceDetailDiscountTable AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AArInvoiceDetailDiscountTable LoadViaAArDiscountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadViaAArDiscountTemplate(out AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+            return LoadViaAArDiscountTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated

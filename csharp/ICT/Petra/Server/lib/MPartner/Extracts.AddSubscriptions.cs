@@ -228,7 +228,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                             this.GetType().FullName + ".SubmitChangesInternal: loading Subscriptions for ExtractID " + FExtractID.ToString() + "...");
                     }
 #endif
-                    MExtractAccess.LoadViaMExtractMaster(out ExtractDT, FExtractID, RequiredColumns, SubmitChangesTransaction);
+                    ExtractDT = MExtractAccess.LoadViaMExtractMaster(FExtractID, RequiredColumns, SubmitChangesTransaction);
                     PartnersInExtract = ExtractDT.Rows.Count;
 #if DEBUGMODE
                     if (TSrvSetting.DL >= 7)
@@ -252,7 +252,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                             Console.WriteLine(this.GetType().FullName + ".SubmitChangesInternal: loadbyPrimaryKey");
                         }
 #endif
-                        PSubscriptionAccess.LoadByPrimaryKey(out SubscriptionTable,
+                        SubscriptionTable = PSubscriptionAccess.LoadByPrimaryKey(
                             FInspectDT[0].PublicationCode,
                             ExtractRow.PartnerKey,
                             SubmitChangesTransaction);
@@ -288,7 +288,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                                     ExtractRow.PartnerKey.ToString());
                             }
 #endif
-                            PPartnerAccess.LoadByPrimaryKey(out PartnerTable, ExtractRow.PartnerKey, RequiredColumns2, SubmitChangesTransaction);
+                            PartnerTable = PPartnerAccess.LoadByPrimaryKey(ExtractRow.PartnerKey, RequiredColumns2, SubmitChangesTransaction);
 
                             if (FResponseDT == null)
                             {

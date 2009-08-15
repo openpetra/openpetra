@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.MFinance
                 out NewTransaction);
             try
             {
-                AValidLedgerNumberAccess.LoadViaPPartnerPartnerKey(out ValidLedgerNumberTable,
+                ValidLedgerNumberTable = AValidLedgerNumberAccess.LoadViaPPartnerPartnerKey(
                     APartnerKey,
                     RequiredColumns,
                     ReadTransaction,

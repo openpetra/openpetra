@@ -233,7 +233,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                     out NewTransaction);
                 try
                 {
-                    PPartnerAccess.LoadByPrimaryKey(out PartnerTable, APartnerKey, RequiredColumns, ReadTransaction, null, 0, 0);
+                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, RequiredColumns, ReadTransaction, null, 0, 0);
                 }
                 finally
                 {
@@ -351,7 +351,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
 
                 try
                 {
-                    PPartnerAccess.LoadByPrimaryKey(out MergedPartnerTable,
+                    MergedPartnerTable = PPartnerAccess.LoadByPrimaryKey(
                         AMergedPartnerPartnerKey, RequiredColumns, ReadTransaction, null, 0, 0);
 
                     if (MergedPartnerTable.Rows.Count == 0)
@@ -374,7 +374,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                              * Now we look up the Partner that was Merged in the PartnerMerge DB Table
                              * to get the information about the Merged-Into Partner.
                              */
-                            PPartnerMergeAccess.LoadByPrimaryKey(out PartnerMergeTable, AMergedPartnerPartnerKey, ReadTransaction);
+                            PartnerMergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AMergedPartnerPartnerKey, ReadTransaction);
 
                             if (PartnerMergeTable.Rows.Count == 0)
                             {
@@ -390,7 +390,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                                 /*
                                  * Now we look up the Merged-Into Partner to get some details of it.
                                  */
-                                PPartnerAccess.LoadByPrimaryKey(out PartnerMergedIntoTable,
+                                PartnerMergedIntoTable = PPartnerAccess.LoadByPrimaryKey(
                                     PartnerMergeTable[0].MergeTo, RequiredColumns,
                                     ReadTransaction, null, 0, 0);
 
@@ -602,7 +602,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
 
             try
             {
-                MExtractMasterAccess.LoadUsingTemplate(out ExtractMasterDT, TemplateRow, ReadTransaction);
+                ExtractMasterDT = MExtractMasterAccess.LoadUsingTemplate(TemplateRow, ReadTransaction);
             }
             finally
             {
@@ -669,7 +669,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             // Load data
             try
             {
-                POrganisationAccess.LoadByPrimaryKey(out OrganisationDT, APartnerKey, ReadTransaction);
+                OrganisationDT = POrganisationAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
             }
             finally
             {
@@ -753,7 +753,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             // Load the recently used partners from this user
             try
             {
-                PRecentPartnersAccess.LoadViaSUser(out RecentPartnersDT, UserInfo.GUserInfo.UserID, ReadTransaction);
+                RecentPartnersDT = PRecentPartnersAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, ReadTransaction);
             }
             finally
             {
@@ -789,7 +789,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                 // Get the partner name from the recently used partner
                 try
                 {
-                    PPartnerAccess.LoadByPrimaryKey(out PartnerDT, RecentPartnerRow.PartnerKey, ReadTransaction);
+                    PartnerDT = PPartnerAccess.LoadByPrimaryKey(RecentPartnerRow.PartnerKey, ReadTransaction);
                 }
                 finally
                 {

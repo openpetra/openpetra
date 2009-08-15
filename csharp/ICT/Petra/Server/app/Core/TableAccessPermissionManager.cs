@@ -56,7 +56,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 if (SUserTableAccessPermissionAccess.CountViaSUser(AUserID, ReadTransaction) > 0)
                 {
-                    SUserTableAccessPermissionAccess.LoadViaSUser(out ReturnValue, AUserID, ReadTransaction);
+                    ReturnValue = SUserTableAccessPermissionAccess.LoadViaSUser(AUserID, ReadTransaction);
                 }
                 else
                 {

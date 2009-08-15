@@ -51,8 +51,7 @@ public class {#TABLENAME}Cascading : TTypedDataAccess
 }
 
 {##DELETEBYPRIMARYKEYCASCADING}
-{#OTHERTABLENAME}Table {#MYOTHERTABLENAME}Table = null;
-{#OTHERTABLENAME}Access.Load{#VIAPROCEDURENAME}(out {#MYOTHERTABLENAME}Table, {#ACTUALPARAMETERSPRIMARYKEY}, StringHelper.StrSplit("{#CSVLISTOTHERPRIMARYKEYFIELDS}", ","), ATransaction);
+{#OTHERTABLENAME}Table {#MYOTHERTABLENAME}Table = {#OTHERTABLENAME}Access.Load{#VIAPROCEDURENAME}({#ACTUALPARAMETERSPRIMARYKEY}, StringHelper.StrSplit("{#CSVLISTOTHERPRIMARYKEYFIELDS}", ","), ATransaction);
 for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow = (countRow + 1))
 {
 {#IFDEF OTHERTABLEALSOCASCADING}
@@ -64,8 +63,7 @@ for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow =
 }
 
 {##DELETEBYTEMPLATECASCADING}
-{#OTHERTABLENAME}Table {#MYOTHERTABLENAME}Table = null;
-{#OTHERTABLENAME}Access.Load{#VIAPROCEDURENAME}Template(out {#MYOTHERTABLENAME}Table, ATemplateRow, StringHelper.StrSplit("{#CSVLISTOTHERPRIMARYKEYFIELDS}", ","), ATransaction);
+{#OTHERTABLENAME}Table {#MYOTHERTABLENAME}Table = {#OTHERTABLENAME}Access.Load{#VIAPROCEDURENAME}Template(ATemplateRow, StringHelper.StrSplit("{#CSVLISTOTHERPRIMARYKEYFIELDS}", ","), ATransaction);
 for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow = (countRow + 1))
 {
 {#IFDEF OTHERTABLEALSOCASCADING}

@@ -516,7 +516,7 @@ namespace Ict.Petra.Server.MPartner
             switch (PartnerClass)
             {
                 case TPartnerClass.PERSON:
-                    PPersonAccess.LoadByPrimaryKey(out PersonDT, APartnerDR.PartnerKey, AReadTransaction);
+                    PersonDT = PPersonAccess.LoadByPrimaryKey(APartnerDR.PartnerKey, AReadTransaction);
 
                     if (PersonDT != null)
                     {
@@ -530,7 +530,7 @@ namespace Ict.Petra.Server.MPartner
 
 
                         // Get Family Partner info
-                        PPartnerAccess.LoadByPrimaryKey(out FamilyPartnerDT, PersonDT[0].FamilyKey, AReadTransaction);
+                        FamilyPartnerDT = PPartnerAccess.LoadByPrimaryKey(PersonDT[0].FamilyKey, AReadTransaction);
 
                         if (FamilyPartnerDT != null)
                         {
@@ -614,21 +614,18 @@ namespace Ict.Petra.Server.MPartner
         {
             const string LANG_SEPARATOR = "|";
             String AdditionalLanguages = "";
-            DataView PersonLangDV;
-            PmPersonLanguageTable PersonLangDT;
-            PmPersonLanguageRow PersonLangDR;
 
-            PmPersonLanguageAccess.LoadViaPPerson(out PersonLangDT, APartnerKey, AReadTransaction);
+            PmPersonLanguageTable PersonLangDT = PmPersonLanguageAccess.LoadViaPPerson(APartnerKey, AReadTransaction);
 
             if (PersonLangDT != null)
             {
                 // We want the list of Languages sorted by Language Level so that the Language with the
                 // best level comes first, then the other Languages in descending Language Level order.
-                PersonLangDV = new DataView(PersonLangDT, "", PmPersonLanguageTable.GetLanguageLevelDBName() + " DESC", DataViewRowState.CurrentRows);
+                DataView PersonLangDV = new DataView(PersonLangDT, "", PmPersonLanguageTable.GetLanguageLevelDBName() + " DESC", DataViewRowState.CurrentRows);
 
                 for (int Counter = 0; Counter < PersonLangDV.Count; Counter++)
                 {
-                    PersonLangDR = (PmPersonLanguageRow)PersonLangDV[Counter].Row;
+                    PmPersonLanguageRow PersonLangDR = (PmPersonLanguageRow)PersonLangDV[Counter].Row;
 
                     if (PersonLangDR.LanguageCode != AMainLanguage)
                     {
@@ -654,22 +651,17 @@ namespace Ict.Petra.Server.MPartner
         /// Contains one DataRow if Unit Structure information could be retrieved, otherwise no DataRow.</returns>
         private static PartnerInfoTDSUnitInfoTable GetUnitStructure(Int64 APartnerKey, TDBTransaction AReadTransaction)
         {
-            UmUnitStructureTable UnitStructureDT;
-            PUnitTable UnitDT;
-            PartnerInfoTDSUnitInfoTable UnitInfoDT;
-            PartnerInfoTDSUnitInfoRow UnitInfoDR;
+            PartnerInfoTDSUnitInfoTable UnitInfoDT = new PartnerInfoTDSUnitInfoTable();
 
-            UnitInfoDT = new PartnerInfoTDSUnitInfoTable();
-
-            UmUnitStructureAccess.LoadViaPUnitChildUnitKey(out UnitStructureDT, APartnerKey, AReadTransaction);
+            UmUnitStructureTable UnitStructureDT = UmUnitStructureAccess.LoadViaPUnitChildUnitKey(APartnerKey, AReadTransaction);
 
             if (UnitStructureDT.Rows.Count > 0)
             {
-                PUnitAccess.LoadByPrimaryKey(out UnitDT, UnitStructureDT[0].ParentUnitKey, AReadTransaction);
+                PUnitTable UnitDT = PUnitAccess.LoadByPrimaryKey(UnitStructureDT[0].ParentUnitKey, AReadTransaction);
 
                 if (UnitDT != null)
                 {
-                    UnitInfoDR = UnitInfoDT.NewRowTyped(false);
+                    PartnerInfoTDSUnitInfoRow UnitInfoDR = UnitInfoDT.NewRowTyped(false);
                     UnitInfoDR.ParentUnitKey = UnitDT[0].PartnerKey;
                     UnitInfoDR.ParentUnitName = UnitDT[0].UnitName;
 

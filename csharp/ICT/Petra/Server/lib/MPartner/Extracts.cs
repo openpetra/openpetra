@@ -175,7 +175,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
             try
             {
-                MExtractMasterAccess.LoadByPrimaryKey(out ExtractMasterDT, AExtractId,
+                ExtractMasterDT = MExtractMasterAccess.LoadByPrimaryKey(AExtractId,
                     WriteTransaction);
 
                 if (ExtractMasterDT.Rows.Count == 1)
@@ -327,17 +327,15 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// Extract Id doesn't exist.</returns>
         public static Int32 GetExtractKeyCount(int AExtractId)
         {
-            TDBTransaction ReadTransaction;
             Boolean NewTransaction;
-            MExtractMasterTable ExtractDT;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
             {
-                MExtractMasterAccess.LoadByPrimaryKey(out ExtractDT, AExtractId, ReadTransaction);
+                MExtractMasterTable ExtractDT = MExtractMasterAccess.LoadByPrimaryKey(AExtractId, ReadTransaction);
 
                 if (ExtractDT.Rows.Count == 1)
                 {
@@ -372,21 +370,19 @@ namespace Ict.Petra.Server.MPartner.Extracts
         public static bool UpdateExtractKeyCount(int AExtractId, int ACount,
             out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction WriteTransaction;
-            MExtractMasterTable ExtractMasterDT;
             Boolean NewTransaction;
             Boolean Success = false;
 
             AVerificationResult = null;
 
-            WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
                 IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
             {
-                MExtractMasterAccess.LoadByPrimaryKey(out ExtractMasterDT, AExtractId,
+                MExtractMasterTable ExtractMasterDT = MExtractMasterAccess.LoadByPrimaryKey(AExtractId,
                     WriteTransaction);
 
                 if (ExtractMasterDT.Rows.Count == 1)

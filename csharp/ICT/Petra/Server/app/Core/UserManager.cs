@@ -148,7 +148,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 try
                 {
                     // Load User record
-                    SUserAccess.LoadByPrimaryKey(out UserDT, AUserID, ReadWriteTransaction);
+                    UserDT = SUserAccess.LoadByPrimaryKey(AUserID, ReadWriteTransaction);
                 }
                 catch (Exception Exp)
                 {
@@ -285,7 +285,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
-                SSystemStatusAccess.LoadAll(out SystemStatusDT, ReadTransaction);
+                SystemStatusDT = SSystemStatusAccess.LoadAll(ReadTransaction);
             }
             finally
             {

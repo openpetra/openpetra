@@ -64,7 +64,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 if (SUserModuleAccessPermissionAccess.CountViaSUser(AUserID, ReadTransaction) > 0)
                 {
-                    SUserModuleAccessPermissionAccess.LoadViaSUser(out UserModuleAccessPermissionsDT, AUserID, ReadTransaction);
+                    UserModuleAccessPermissionsDT = SUserModuleAccessPermissionAccess.LoadViaSUser(AUserID, ReadTransaction);
 
 //TLogging.Log("UserModuleAccessPermissionsDT.Rows.Count - 1: " + (UserModuleAccessPermissionsDT.Rows.Count - 1).ToString());
 
