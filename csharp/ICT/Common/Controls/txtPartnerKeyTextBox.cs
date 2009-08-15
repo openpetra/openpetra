@@ -341,27 +341,37 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// avoid recursion / stack overflow in Mono
+        /// </summary>
+        bool FSettingDefaultFont = false;
+        
+        /// <summary>
         /// This procedure sets the default font for this control.
         ///
         /// </summary>
         /// <returns>void</returns>
         protected void SetDefaultFont()
         {
-            System.Single mFontSize;
-            System.Drawing.Font mFont;
-            System.Drawing.Font mControlFont;
-            System.Drawing.Font mTextBoxFont;
-
-            mControlFont = this.Font;
-            mTextBoxFont = this.txtTextBox.Font;
-            mFontSize = 9.25F;
-            mFont = new System.Drawing.Font("Courier New", mFontSize, System.Drawing.FontStyle.Bold);
+            if (FSettingDefaultFont)
+            {
+                return;
+            }
+            FSettingDefaultFont = true;
+            
+            System.Drawing.Font mControlFont = this.Font;
+            System.Drawing.Font mTextBoxFont = this.txtTextBox.Font;
+            System.Single mFontSize = 9.25F;
+            System.Drawing.Font mFont = new System.Drawing.Font("Courier New", mFontSize, System.Drawing.FontStyle.Bold);
 
             if ((!(mControlFont.Equals(mFont))) || (!(mTextBoxFont.Equals(mFont))))
             {
+                // MessageBox.Show(mFont.FontFamily.GetName(-1) + " " + mControlFont.FontFamily.GetName(-1) + " " + mTextBoxFont.FontFamily.GetName(-1));
+                // on Mono the message box displays: Courier New Lucida Console Microsoft Sans Serif
                 this.Font = mFont;
                 this.txtTextBox.Font = mFont;
             }
+            
+            FSettingDefaultFont = false;
         }
 
         /// <summary>
