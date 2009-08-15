@@ -484,9 +484,9 @@
         <!-- first collect all Catalog.GetString from all source files in solution; also resolve calls to Table.GetFieldnameHelp etc; result is in solutionName.CollectedGettext.cs -->
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-solution:${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.sln -petraxml:${PetraXML.file}"/>
         <!-- use solutionName.CollectedGettext.cs as input for po file -->
-        <property name="collectedGettext.file" value="${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.CollectedGettext.cs"/>
+        <property name="collectedGettext.file" value="csharp/ICT/${solutionName}.CollectedGettext.cs"/>
         <if test="${file::exists(collectedGettext.file)}">
-            <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${collectedGettext.file} -o ${TargetLanguage.Pofile}"/>
+            <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ../${collectedGettext.file} -o ${TargetLanguage.Pofile}"/>
         </if>
     </target>
 
