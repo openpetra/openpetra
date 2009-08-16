@@ -1002,9 +1002,8 @@ namespace Ict.Petra.Shared
             Int32 TableSize = 0;
             string TableHash = "";
             CacheableTablesTDSContentsRow ContentsEntryDR;
-            Boolean WriteLockTakenOut;
+            Boolean WriteLockTakenOut = false;
 
-            WriteLockTakenOut = false;
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
@@ -1019,7 +1018,7 @@ namespace Ict.Petra.Shared
             {
                 throw new ECacheableTablesMgrException(
                     "TCacheableTablesManager.AddCachedTableInternal: Cacheable DataTable '" + ACacheableTableName +
-                    "' that is to be added must not be nil");
+                    "' that is to be added must not be null");
             }
 
             if ((ACacheableTableName == null) || (ACacheableTableName == ""))
@@ -1090,7 +1089,16 @@ namespace Ict.Petra.Shared
 #endif
 
                 // add the passed in DataTable to the Cache DataSet
-                UDataCacheDataSet.Tables.Add(ACacheableTable);
+                try
+                {
+                    UDataCacheDataSet.Tables.Add((DataTable)ACacheableTable);
+                }
+                catch (System.InvalidCastException)
+                {
+                    // problem with Mono: https://bugzilla.novell.com/show_bug.cgi?id=521951 Cannot cast from source type to destination type
+                    // it happens after the table has been added, so should not cause any problems
+                }
+
                 UDataCacheDataSet.Tables[ACacheableTable.TableName].TableName = ACacheableTableName;
 
                 if (ACacheableTable.Rows.Count != 0)
@@ -1858,6 +1866,7 @@ namespace Ict.Petra.Shared
     /// <summary>
     /// This Exception is thrown on several occasions by TCacheableTablesManager.
     /// </summary>
+    [Serializable()]
     public class ECacheableTablesMgrException : ApplicationException
     {
         #region ECacheableTablesMgrException
@@ -1900,6 +1909,7 @@ namespace Ict.Petra.Shared
     /// isn't in an up-to-date state. This means it needs to be retrieved anew before
     /// it can be used.
     /// </summary>
+    [Serializable()]
     public class ECacheableTablesMgrTableNotUpToDateException : ECacheableTablesMgrException
     {
         #region ECacheableTablesMgrTableNotUpToDateException
