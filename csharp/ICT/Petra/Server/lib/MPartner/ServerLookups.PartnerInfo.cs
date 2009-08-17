@@ -621,7 +621,8 @@ namespace Ict.Petra.Server.MPartner
             {
                 // We want the list of Languages sorted by Language Level so that the Language with the
                 // best level comes first, then the other Languages in descending Language Level order.
-                DataView PersonLangDV = new DataView(PersonLangDT, "", PmPersonLanguageTable.GetLanguageLevelDBName() + " DESC", DataViewRowState.CurrentRows);
+                DataView PersonLangDV = new DataView(PersonLangDT, "",
+                    PmPersonLanguageTable.GetLanguageLevelDBName() + " DESC", DataViewRowState.CurrentRows);
 
                 for (int Counter = 0; Counter < PersonLangDV.Count; Counter++)
                 {

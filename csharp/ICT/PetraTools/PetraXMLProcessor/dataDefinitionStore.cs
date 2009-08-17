@@ -1367,7 +1367,7 @@ namespace Ict.Tools.DBXML
             {
                 element = (TTable)tables[counter];
 
-                if ((element.strName == tableName) || (TTable.NiceTableName(element.strName) == tableName))
+                if ((element.strName == tableName.Trim()) || (TTable.NiceTableName(element.strName) == tableName.Trim()))
                 {
                     return element;
                 }

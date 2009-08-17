@@ -95,6 +95,7 @@ public class TFixProjectReferences : TCSProjTools
                             child2.InnerText = FProjectGUIDs[System.IO.Path.GetFileNameWithoutExtension(AFilename)];
                         }
                     }
+
                     if (child2.Name == "TargetFrameworkVersion")
                     {
                         containsTargetPlatform = true;
@@ -105,7 +106,7 @@ public class TFixProjectReferences : TCSProjTools
                 if (firstPropertyGroup && !containsTargetPlatform)
                 {
                     XmlNode targetPlatform = doc.CreateElement("TargetFrameworkVersion", xmlns);
-	            targetPlatform.InnerText = "v2.0";
+                    targetPlatform.InnerText = "v2.0";
                     child.AppendChild(targetPlatform);
                 }
 
@@ -132,7 +133,9 @@ public class TFixProjectReferences : TCSProjTools
                             if (child3.Name == "Project")
                             {
                                 string referencedProject =
-                                    System.IO.Path.GetFileNameWithoutExtension(child2.Attributes["Include"].Value.Replace('\\', Path.DirectorySeparatorChar));
+                                    System.IO.Path.GetFileNameWithoutExtension(child2.Attributes["Include"].Value.Replace('\\',
+                                            Path.DirectorySeparatorChar));
+
                                 if (child3.InnerText != FProjectGUIDs[referencedProject])
                                 {
                                     Console.WriteLine("fixing " + child3.InnerText);

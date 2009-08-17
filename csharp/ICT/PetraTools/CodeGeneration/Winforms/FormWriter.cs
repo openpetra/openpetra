@@ -614,6 +614,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             List <ClassNode>AWebConnectorClasses)
         {
             ClassNode WebConnectorClass;
+
             MethodNode MethodInWebConnector = CSParser.GetWebConnectorMethod(AWebConnectorClasses, AFunctionType, ATableName, out WebConnectorClass);
 
             if (MethodInWebConnector != null)
@@ -724,6 +725,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("INITMANUALCODE", "");
             FTemplate.AddToCodelet("INITNEWROWMANUAL", "");
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
+            FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "");
+            FTemplate.AddToCodelet("CLEARDETAILS", "");
 
             if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))
             {
@@ -858,7 +861,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FCodeStorage.ManualFileExistsAndContains("void ShowDetailsManual"))
             {
-                FTemplate.AddToCodelet("SHOWDETAILS", "ShowDetailsManual(ACurrentDetailIndex);" + Environment.NewLine);
+                FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "ShowDetailsManual(ACurrentDetailIndex);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsManual"))

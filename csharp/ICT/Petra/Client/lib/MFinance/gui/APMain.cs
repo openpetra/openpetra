@@ -120,7 +120,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       this.cmbSupplierCode.AcceptNewEntries += new TAcceptNewEntryEventHandler(FPetraUtilsObject.AddComboBoxHistory);
       FPetraUtilsObject.LoadComboBoxHistory(cmbSupplierCode);
       this.AcceptButton = btnSearch;
-
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
@@ -166,7 +165,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     /// auto generated
     public void RunOnceOnActivation()
     {
-
     }
 
     /// <summary>
@@ -174,7 +172,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     /// </summary>
     public void HookupAllControls()
     {
-
     }
 
     /// auto generated

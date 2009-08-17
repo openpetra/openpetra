@@ -271,7 +271,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.cmbDocumentType.Location = new System.Drawing.Point(2,2);
             this.cmbDocumentType.Name = "cmbDocumentType";
             this.cmbDocumentType.Size = new System.Drawing.Size(150, 28);
-            this.cmbDocumentType.Items.AddRange(new object[] {"Invoice","Credit Note"});;
+            this.cmbDocumentType.Items.AddRange(new object[] {"Invoice","Credit Note"});
             this.cmbDocumentType.Text = "Invoice";
             //
             // lblDocumentType

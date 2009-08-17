@@ -622,6 +622,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
+            if (ctrl.HasAttribute("ActionLeavingRow"))
+            {
+                AssignEventHandlerToControl(writer, ctrl, "Selection.FocusRowLeaving", "SourceGrid.RowCancelEventHandler",
+                    ctrl.GetAttribute("ActionLeavingRow"));
+            }
+
             if (ctrl.HasAttribute("ActionFocusRow"))
             {
                 AssignEventHandlerToControl(writer, ctrl, "Selection.FocusRowEntered", "SourceGrid.RowEventHandler",
@@ -630,11 +636,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable") && FCodeStorage.HasAttribute("DatasetType"))
             {
-                string LoadDetailsToGrid = "";
-                LoadDetailsToGrid += "if (FMainDS." + FCodeStorage.GetAttribute("DetailTable") + " != null)" + Environment.NewLine;
-                LoadDetailsToGrid += "{" + Environment.NewLine;
-                LoadDetailsToGrid += "    DataView myDataView = FMainDS." + FCodeStorage.GetAttribute("DetailTable") + ".DefaultView;" +
-                                     Environment.NewLine;
+                writer.Template.AddToCodelet("SHOWDATA", "");
 
                 if (ctrl.HasAttribute("SortOrder"))
                 {
@@ -652,7 +654,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         SortOrder = SortOrder.Replace(SortOrderPart.Split(' ')[0], columnName);
                     }
 
-                    LoadDetailsToGrid += "    myDataView.Sort = \"" + SortOrder + "\";" + Environment.NewLine;
+                    writer.Template.AddToCodelet("DETAILTABLESORT", SortOrder);
                 }
 
                 if (ctrl.HasAttribute("RowFilter"))
@@ -661,7 +663,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     // eg. FBatchNumber in GL Journals
                     string RowFilter = ctrl.GetAttribute("RowFilter");
 
-                    String FilterString = "";
+                    String FilterString = "\"";
 
                     foreach (string RowFilterPart in RowFilter.Split(','))
                     {
@@ -672,49 +674,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
                                 RowFilterPart,
                                 out temp, true).strName;
 
-                        if (FilterString.Length > 0)
+                        if (FilterString.Length > 1)
                         {
-                            FilterString += " and ";
+                            FilterString += " + \" and ";
                         }
 
-                        FilterString += "\"" + columnName + " = \" + F" + TTable.NiceFieldName(columnName) + ".ToString()";
+                        FilterString += columnName + " = \" + F" + TTable.NiceFieldName(columnName) + ".ToString()";
                     }
 
-                    LoadDetailsToGrid += "    myDataView.RowFilter = " + FilterString + ";" + Environment.NewLine;
+                    writer.Template.AddToCodelet("DETAILTABLEFILTER", FilterString);
                 }
-
-                LoadDetailsToGrid += "    myDataView.AllowNew = false;" + Environment.NewLine;
-                LoadDetailsToGrid += "    " + ctrl.controlName + ".DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);" +
-                                     Environment.NewLine;
-                LoadDetailsToGrid += "    " + ctrl.controlName + ".AutoSizeCells();" + Environment.NewLine;
-                LoadDetailsToGrid += "    if (FMainDS." + FCodeStorage.GetAttribute("DetailTable") + ".Rows.Count > 0)" + Environment.NewLine;
-                LoadDetailsToGrid += "    {" + Environment.NewLine;
-
-                if (ctrl.HasAttribute("SortOrder") && ctrl.GetAttribute("SortOrder").Contains("DESC"))
-                {
-                    LoadDetailsToGrid += "        grdDetails.Selection.SelectRow(FMainDS." + FCodeStorage.GetAttribute("DetailTable") +
-                                         ".Rows.Count, true);" + Environment.NewLine;
-                    LoadDetailsToGrid += "        ShowDetails(FMainDS." + FCodeStorage.GetAttribute("DetailTable") + ".Rows.Count - 1);" +
-                                         Environment.NewLine;
-                }
-                else
-                {
-                    LoadDetailsToGrid += "        grdDetails.Selection.SelectRow(1, true);" + Environment.NewLine;
-                    LoadDetailsToGrid += "        ShowDetails(0);" + Environment.NewLine;
-                }
-
-                LoadDetailsToGrid += "    }" + Environment.NewLine;
-                LoadDetailsToGrid += "    else" + Environment.NewLine;
-                LoadDetailsToGrid += "    {" + Environment.NewLine;
-                LoadDetailsToGrid += "        pnlDetails.Enabled = false;" + Environment.NewLine;
-                LoadDetailsToGrid += "    }" + Environment.NewLine;
-                LoadDetailsToGrid += "}" + Environment.NewLine;
-                LoadDetailsToGrid += "else" + Environment.NewLine;
-                LoadDetailsToGrid += "{" + Environment.NewLine;
-                LoadDetailsToGrid += "    pnlDetails.Enabled = false;" + Environment.NewLine;
-                LoadDetailsToGrid += "}" + Environment.NewLine;
-
-                writer.Template.AddToCodelet("SHOWDATA", LoadDetailsToGrid);
             }
         }
     }
@@ -810,7 +779,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class TabControlGenerator : ContainerGenerator
     {
         public TabControlGenerator()
-            : base("tab", typeof(TabControl))
+            : base("tab", "Ict.Common.Controls.TTabVersatile")
         {
             FGenerateLabel = false;
         }
@@ -819,6 +788,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
+
+            if (ctrl.HasAttribute("DragTabPageEnabled") && (ctrl.GetAttribute("DragTabPageEnabled").ToLower() == "false"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "AllowDrop", "false");
+            }
         }
 
         protected void CreateCode(IFormWriter writer, TControlDef ATabControl)

@@ -24,6 +24,7 @@
  *
  ************************************************************************/
 using System;
+using Mono.Unix;
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
@@ -54,6 +55,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.ABatch[ACurrentDetailIndex].BatchNumber);
         }
 
+        private void ShowJournalTab(Object sender, EventArgs e)
+        {
+            ((TFrmGLBatch)ParentForm).SelectTab(TFrmGLBatch.eGLTabs.Journals);
+        }
+
         /// <summary>
         /// add a new batch
         /// </summary>
@@ -78,6 +84,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void CancelRow(System.Object sender, EventArgs e)
         {
             // TODO
+        }
+
+        /// <summary>
+        /// don't allow changing the batch if there are changes
+        /// also don't allow reloading the current batch because the journals might be overwritten
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LeavingRow(System.Object sender, SourceGrid.RowCancelEventArgs e)
+        {
+            if (FPetraUtilsObject.HasChanges)
+            {
+                if (e.Row != FPreviouslySelectedDetailRow)
+                {
+//                    System.Windows.Forms.MessageBox.Show(Catalog.GetString("Please first save the current batch, before you can work on other batches!"));
+                }
+
+                // TODO: alternatively: open another window with the new batch? or don't reload from db when going back to a batch that has already been opened?
+//                e.Cancel = true;
+            }
         }
     }
 }

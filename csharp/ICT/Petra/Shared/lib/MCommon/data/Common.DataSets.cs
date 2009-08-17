@@ -330,7 +330,6 @@ namespace Ict.Petra.Shared.MCommon.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
         }
     }
 
@@ -1124,7 +1123,6 @@ namespace Ict.Petra.Shared.MCommon.Data
                                 "p_partner_key_n"}, "PmStaffData", new string[] {
                                 "p_partner_key_n"}));
             }
-
         }
     }
 }

@@ -371,21 +371,14 @@ namespace Ict.Common.Controls
         /// <param name="e"></param>
         protected override void OnDragOver(System.Windows.Forms.DragEventArgs e)
         {
-            Point MousePoint;
-            TabPage DraggedTabPage;
-            TabPage ReplacedTabPage;
-            TabPage DragDestinationTabPage;
-            Int16 MouseOverTabPageIndex;
-            Int16 DraggedTabPageIndex;
-
             base.OnDragOver(e);
-            MousePoint = new Point(e.X, e.Y);
+            Point MousePoint = new Point(e.X, e.Y);
 
             // We need client coordinates
             MousePoint = PointToClient(MousePoint);
 
             // Get the tab we are hovering over
-            DragDestinationTabPage = GetTabPageByPointInTabHeader(MousePoint, out FDragDestinationTabPageIndex);
+            TabPage DragDestinationTabPage = GetTabPageByPointInTabHeader(MousePoint, out FDragDestinationTabPageIndex);
 
             // Make sure we are hovering over a tab
             if (DragDestinationTabPage != null)
@@ -394,15 +387,15 @@ namespace Ict.Common.Controls
                 if (e.Data.GetDataPresent(typeof(TabPage)))
                 {
                     e.Effect = DragDropEffects.Move;
-                    DraggedTabPage = (TabPage)(e.Data.GetData(typeof(TabPage)));
-                    DraggedTabPageIndex = (short)this.TabPages.IndexOf(DraggedTabPage);
-                    MouseOverTabPageIndex = (short)this.TabPages.IndexOf(DragDestinationTabPage);
+                    TabPage DraggedTabPage = (TabPage)(e.Data.GetData(typeof(TabPage)));
+                    Int16 DraggedTabPageIndex = (short)this.TabPages.IndexOf(DraggedTabPage);
+                    Int16 MouseOverTabPageIndex = (short)this.TabPages.IndexOf(DragDestinationTabPage);
 
                     // TabPage is dropped on a different TabPage
                     if (DraggedTabPageIndex != MouseOverTabPageIndex)
                     {
                         this.SuspendLayout();
-                        ReplacedTabPage = this.TabPages[MouseOverTabPageIndex];
+                        TabPage ReplacedTabPage = this.TabPages[MouseOverTabPageIndex];
                         ControlsUtilities.SwapTabPages(this, DraggedTabPage, ReplacedTabPage);
 
                         // this.TabPages[MouseOverTabPageIndex] := DraggedTabPage;

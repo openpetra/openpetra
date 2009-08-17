@@ -25,6 +25,7 @@
  ************************************************************************/
 using System;
 using System.Data;
+using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -49,9 +50,36 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             GetDataFromControls();
 
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(ALedgerNumber, ABatchNumber));
+            FPreviouslySelectedDetailRow = -1;
+
+            DataView view = new DataView(FMainDS.AJournal);
+
+            // only load from server if there are no journals loaded yet for this batch
+            // otherwise we would overwrite journals that have already been modified
+            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ABatchTable.TableId), ",");
+
+            if (view.Find(new object[] { FLedgerNumber, FBatchNumber }) == -1)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(ALedgerNumber, ABatchNumber));
+            }
 
             ShowData();
+        }
+
+        private void ShowDetailsManual(Int32 ACurrentDetailIndex)
+        {
+            if (ACurrentDetailIndex == -1)
+            {
+                ((TFrmGLBatch)ParentForm).DisableTransactions();
+                this.pnlDetails.Enabled = false;
+            }
+            else
+            {
+                ((TFrmGLBatch)ParentForm).LoadTransactions(
+                    FMainDS.AJournal[ACurrentDetailIndex].LedgerNumber,
+                    FMainDS.AJournal[ACurrentDetailIndex].BatchNumber,
+                    FMainDS.AJournal[ACurrentDetailIndex].JournalNumber);
+            }
         }
 
         /// <summary>
@@ -70,7 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ANewRow"></param>
         private void NewRowManual(ref AJournalRow ANewRow)
         {
-            DataView view = FMainDS.ABatch.DefaultView;
+            DataView view = new DataView(FMainDS.ABatch);
 
             view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ABatchTable.TableId), ",");
             ABatchRow row = (ABatchRow)view.FindRows(new object[] { FLedgerNumber, FBatchNumber })[0].Row;
@@ -112,6 +140,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             cmbDetailTransactionTypeCode.Table = TransactionTypeTable;
             cmbDetailTransactionTypeCode.InitialiseUserControl();
+        }
+
+        private void ShowTransactionTab(Object sender, EventArgs e)
+        {
+            ((TFrmGLBatch)ParentForm).SelectTab(TFrmGLBatch.eGLTabs.Transactions);
+        }
+
+        private void LeavingRow(System.Object sender, SourceGrid.RowCancelEventArgs e)
+        {
+            if (FPetraUtilsObject.HasChanges)
+            {
+                //               System.Windows.Forms.MessageBox.Show(Catalog.GetString("Please first save the current journal, before you can work on other journal!"));
+                // TODO: alternatively: open another window with the new batch? or don't reload from db when going back to a journal that has already been opened?
+                //               e.Cancel = true;
+            }
         }
     }
 }

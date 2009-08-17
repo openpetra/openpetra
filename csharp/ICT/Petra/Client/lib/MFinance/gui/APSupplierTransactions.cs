@@ -165,7 +165,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     /// auto generated
     public void RunOnceOnActivation()
     {
-
     }
 
     /// <summary>
@@ -173,7 +172,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     /// </summary>
     public void HookupAllControls()
     {
-
     }
 
     /// auto generated

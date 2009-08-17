@@ -111,7 +111,6 @@ namespace Ict.Petra.Client.MPartner.Gui
       #endregion
 
       FPetraUtilsObject = new TFrmPetraModuleUtils(AParentFormHandle, this, stbMain);
-
       InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
@@ -149,7 +148,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// auto generated
     public void RunOnceOnActivation()
     {
-
     }
 
     /// <summary>
@@ -157,7 +155,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public void HookupAllControls()
     {
-
     }
 
     /// auto generated

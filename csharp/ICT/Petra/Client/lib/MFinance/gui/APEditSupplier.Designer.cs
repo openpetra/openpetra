@@ -306,7 +306,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.cmbCurrency.Location = new System.Drawing.Point(2,2);
             this.cmbCurrency.Name = "cmbCurrency";
-            this.cmbCurrency.Size = new System.Drawing.Size(150, 28);
+            this.cmbCurrency.Size = new System.Drawing.Size(300, 28);
             this.cmbCurrency.ListTable = TCmbAutoPopulated.TListTableEnum.CurrencyCodeList;
             //
             // lblCurrency
@@ -324,7 +324,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.cmbSupplierType.Location = new System.Drawing.Point(2,2);
             this.cmbSupplierType.Name = "cmbSupplierType";
             this.cmbSupplierType.Size = new System.Drawing.Size(150, 28);
-            this.cmbSupplierType.Items.AddRange(new object[] {"NORMAL","CREDIT CARD"});;
+            this.cmbSupplierType.Items.AddRange(new object[] {"NORMAL","CREDIT CARD"});
             //
             // lblSupplierType
             //
@@ -399,7 +399,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.cmbDefaultPaymentType.Location = new System.Drawing.Point(2,2);
             this.cmbDefaultPaymentType.Name = "cmbDefaultPaymentType";
             this.cmbDefaultPaymentType.Size = new System.Drawing.Size(150, 28);
-            this.cmbDefaultPaymentType.Items.AddRange(new object[] {"CASH","CHEQUE","TRANSFER"});;
+            this.cmbDefaultPaymentType.Items.AddRange(new object[] {"CASH","CHEQUE","TRANSFER"});
             //
             // lblDefaultPaymentType
             //

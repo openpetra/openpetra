@@ -193,7 +193,6 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                                 "a_ledger_number_i", "a_batch_number_i", "a_journal_number_i"}, "ATransaction", new string[] {
                                 "a_ledger_number_i", "a_batch_number_i", "a_journal_number_i"}));
             }
-
         }
     }
 

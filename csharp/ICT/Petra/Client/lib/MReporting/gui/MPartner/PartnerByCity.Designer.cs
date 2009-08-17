@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmPartnerByCity));
 
-            this.tabReportSettings = new System.Windows.Forms.TabControl();
+            this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgReportSpecific = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.txtCityName = new System.Windows.Forms.TextBox();
@@ -396,7 +396,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.ResumeLayout(false);
             this.PerformLayout();
         }
-        private System.Windows.Forms.TabControl tabReportSettings;
+        private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgReportSpecific;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TextBox txtCityName;

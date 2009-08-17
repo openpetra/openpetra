@@ -610,6 +610,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
+        public ContainerGenerator(string prefix, System.String type)
+            : base(prefix, type)
+        {
+        }
+
         public override void GenerateDeclaration(IFormWriter writer, TControlDef ctrl)
         {
             base.GenerateDeclaration(writer, ctrl);

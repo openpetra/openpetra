@@ -503,9 +503,12 @@ namespace Ict.Tools.CodeGeneration
                     string before = FTemplateCode.Substring(0, posNewline);
                     string after = FTemplateCode.Substring(FTemplateCode.IndexOf(Environment.NewLine, posPlaceholder + 1));
 
-                    // indent the value by the given whitespaces
-                    string whitespaces = FTemplateCode.Substring(posNewline, posPlaceholder - posNewline);
-                    AValue = whitespaces + AValue.Replace(Environment.NewLine, whitespaces).TrimEnd(new char[] { '\n', '\r', ' ', '\t' });
+                    if (AValue.Length > 0)
+                    {
+                        // indent the value by the given whitespaces
+                        string whitespaces = FTemplateCode.Substring(posNewline, posPlaceholder - posNewline);
+                        AValue = whitespaces + AValue.Replace(Environment.NewLine, whitespaces).TrimEnd(new char[] { '\n', '\r', ' ', '\t' });
+                    }
 
                     // for debugging
 //                    if (false && APlaceholder == "ODBCPARAMETERSFOREIGNKEY")

@@ -71,10 +71,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.pnlLedgerInfo = new System.Windows.Forms.Panel();
+            this.pnlInfo = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.txtLedgerNumber = new System.Windows.Forms.TextBox();
             this.lblLedgerNumber = new System.Windows.Forms.Label();
+            this.txtBatchNumber = new System.Windows.Forms.TextBox();
+            this.lblBatchNumber = new System.Windows.Forms.Label();
             this.pnlBatches = new System.Windows.Forms.Panel();
             this.pnlDetailGrid = new System.Windows.Forms.Panel();
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
@@ -99,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.pnlContent.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.pnlLedgerInfo.SuspendLayout();
+            this.pnlInfo.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.pnlBatches.SuspendLayout();
             this.pnlDetailGrid.SuspendLayout();
@@ -128,11 +130,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlContent.Controls.Add(this.tableLayoutPanel1);
             //
-            // pnlLedgerInfo
+            // pnlInfo
             //
-            this.pnlLedgerInfo.Location = new System.Drawing.Point(2,2);
-            this.pnlLedgerInfo.Name = "pnlLedgerInfo";
-            this.pnlLedgerInfo.AutoSize = true;
+            this.pnlInfo.Location = new System.Drawing.Point(2,2);
+            this.pnlInfo.Name = "pnlInfo";
+            this.pnlInfo.AutoSize = true;
             //
             // tableLayoutPanel2
             //
@@ -140,12 +142,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.AutoSize = true;
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnCount = 4;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.pnlLedgerInfo.Controls.Add(this.tableLayoutPanel2);
+            this.pnlInfo.Controls.Add(this.tableLayoutPanel2);
             //
             // txtLedgerNumber
             //
@@ -159,12 +163,29 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblLedgerNumber.Location = new System.Drawing.Point(2,2);
             this.lblLedgerNumber.Name = "lblLedgerNumber";
             this.lblLedgerNumber.AutoSize = true;
-            this.lblLedgerNumber.Text = "LedgerNumber:";
+            this.lblLedgerNumber.Text = "Ledger:";
             this.lblLedgerNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblLedgerNumber, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.txtLedgerNumber, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.pnlLedgerInfo, 0, 0);
-            this.tableLayoutPanel1.SetColumnSpan(this.pnlLedgerInfo, 2);
+            //
+            // txtBatchNumber
+            //
+            this.txtBatchNumber.Location = new System.Drawing.Point(2,2);
+            this.txtBatchNumber.Name = "txtBatchNumber";
+            this.txtBatchNumber.Size = new System.Drawing.Size(150, 28);
+            this.txtBatchNumber.ReadOnly = true;
+            //
+            // lblBatchNumber
+            //
+            this.lblBatchNumber.Location = new System.Drawing.Point(2,2);
+            this.lblBatchNumber.Name = "lblBatchNumber";
+            this.lblBatchNumber.AutoSize = true;
+            this.lblBatchNumber.Text = "Batch:";
+            this.lblBatchNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblBatchNumber, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtBatchNumber, 3, 0);
+            this.tableLayoutPanel1.Controls.Add(this.pnlInfo, 0, 0);
+            this.tableLayoutPanel1.SetColumnSpan(this.pnlInfo, 2);
             //
             // pnlBatches
             //
@@ -184,6 +205,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.grdDetails.Name = "grdDetails";
             this.grdDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdDetails.DoubleClick += new System.EventHandler(this.ShowTransactionTab);
+            this.grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(this.LeavingRow);
             this.grdDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
             //
             // pnlDetailButtons
@@ -361,7 +384,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.Text = "";
 
 	
-	
             this.tableLayoutPanel4.ResumeLayout(false);
             this.pnlDetails.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
@@ -369,7 +391,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.pnlDetailGrid.ResumeLayout(false);
             this.pnlBatches.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
-            this.pnlLedgerInfo.ResumeLayout(false);
+            this.pnlInfo.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -377,10 +399,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Panel pnlLedgerInfo;
+        private System.Windows.Forms.Panel pnlInfo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TextBox txtLedgerNumber;
         private System.Windows.Forms.Label lblLedgerNumber;
+        private System.Windows.Forms.TextBox txtBatchNumber;
+        private System.Windows.Forms.Label lblBatchNumber;
         private System.Windows.Forms.Panel pnlBatches;
         private System.Windows.Forms.Panel pnlDetailGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;

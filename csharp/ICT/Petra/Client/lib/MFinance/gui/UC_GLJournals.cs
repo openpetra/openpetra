@@ -65,7 +65,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblLedgerNumber.Text = Catalog.GetString("LedgerNumber:");
+      this.lblLedgerNumber.Text = Catalog.GetString("Ledger:");
+      this.lblBatchNumber.Text = Catalog.GetString("Batch:");
       this.btnAdd.Text = Catalog.GetString("&Add");
       this.btnRemove.Text = Catalog.GetString("Remove");
       this.lblDetailJournalDescription.Text = Catalog.GetString("Journal Description:");
@@ -206,6 +207,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     private void ShowData()
     {
+        FPetraUtilsObject.DisableDataChangedEvent();
+        pnlDetails.Enabled = false;
         if (FMainDS.AJournal != null)
         {
             DataView myDataView = FMainDS.AJournal.DefaultView;
@@ -217,36 +220,41 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FMainDS.AJournal.Rows.Count > 0)
             {
                 grdDetails.Selection.SelectRow(1, true);
-                ShowDetails(0);
-            }
-            else
-            {
-                pnlDetails.Enabled = false;
+                ShowDetails(GetSelectedDetailDataTableIndex());
+                pnlDetails.Enabled = true;
             }
         }
-        else
-        {
-            pnlDetails.Enabled = false;
-        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
-        pnlDetails.Enabled = true;
-        BeforeShowDetailsManual(FMainDS.AJournal[ACurrentDetailIndex]);
-        txtDetailJournalDescription.Text = FMainDS.AJournal[ACurrentDetailIndex].JournalDescription;
-        cmbDetailSubSystemCode.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].SubSystemCode);
-        if (FMainDS.AJournal[ACurrentDetailIndex].IsTransactionTypeCodeNull())
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ACurrentDetailIndex == -1)
         {
-            cmbDetailTransactionTypeCode.SelectedIndex = -1;
+            pnlDetails.Enabled = false;
+            ShowDetailsManual(ACurrentDetailIndex);
         }
         else
         {
-            cmbDetailTransactionTypeCode.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].TransactionTypeCode);
+            pnlDetails.Enabled = true;
+            BeforeShowDetailsManual(FMainDS.AJournal[ACurrentDetailIndex]);
+            txtDetailJournalDescription.Text = FMainDS.AJournal[ACurrentDetailIndex].JournalDescription;
+            cmbDetailSubSystemCode.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].SubSystemCode);
+            if (FMainDS.AJournal[ACurrentDetailIndex].IsTransactionTypeCodeNull())
+            {
+                cmbDetailTransactionTypeCode.SelectedIndex = -1;
+            }
+            else
+            {
+                cmbDetailTransactionTypeCode.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].TransactionTypeCode);
+            }
+            cmbDetailTransactionCurrency.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].TransactionCurrency);
+            dtpDetailDateEffective.Value = FMainDS.AJournal[ACurrentDetailIndex].DateEffective;
+            txtDetailExchangeRateToBase.Text = FMainDS.AJournal[ACurrentDetailIndex].ExchangeRateToBase.ToString();
+            ShowDetailsManual(ACurrentDetailIndex);
         }
-        cmbDetailTransactionCurrency.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].TransactionCurrency);
-        dtpDetailDateEffective.Value = FMainDS.AJournal[ACurrentDetailIndex].DateEffective;
-        txtDetailExchangeRateToBase.Text = FMainDS.AJournal[ACurrentDetailIndex].ExchangeRateToBase.ToString();
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private Int32 FPreviouslySelectedDetailRow = -1;
@@ -257,22 +265,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
-        // display the details of the currently selected row; e.Row: first row has number 1
-        ShowDetails(GetSelectedDetailDataTableIndex());
+        if (GetSelectedDetailDataTableIndex() != -1)
+        {
+            // display the details of the currently selected row
+            ShowDetails(GetSelectedDetailDataTableIndex());
+            pnlDetails.Enabled = true;
+        }
         FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
-        pnlDetails.Enabled = true;
     }
 
     /// get the data from the controls and store in the currently selected detail row
     public void GetDataFromControls()
     {
-        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
     private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
     {
         if (ACurrentDetailIndex != -1)
         {
+            FMainDS.AJournal.Rows[ACurrentDetailIndex].BeginEdit();
             FMainDS.AJournal[ACurrentDetailIndex].JournalDescription = txtDetailJournalDescription.Text;
             if (cmbDetailTransactionTypeCode.SelectedIndex == -1)
             {
@@ -284,6 +296,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             FMainDS.AJournal[ACurrentDetailIndex].TransactionCurrency = cmbDetailTransactionCurrency.GetSelectedString();
             FMainDS.AJournal[ACurrentDetailIndex].ExchangeRateToBase = Convert.ToDouble(txtDetailExchangeRateToBase.Text);
+            FMainDS.AJournal.Rows[ACurrentDetailIndex].EndEdit();
         }
     }
 
@@ -291,7 +304,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// auto generated
     public void RunOnceOnActivation()
     {
-
     }
 
     /// <summary>
@@ -299,7 +311,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// </summary>
     public void HookupAllControls()
     {
-
     }
 
     /// auto generated
@@ -330,7 +341,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             btnAdd.Enabled = e.Enabled;
         }
-
     }
 
 #endregion

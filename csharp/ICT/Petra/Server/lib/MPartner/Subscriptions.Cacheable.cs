@@ -144,8 +144,8 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                         case TCacheableSubscriptionsTablesEnum.PublicationCost:
                             TmpTable = PPublicationCostAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                                TmpTable,
-                                DomainManager.GClientID);
+                            TmpTable,
+                            DomainManager.GClientID);
                             break;
 
                         case TCacheableSubscriptionsTablesEnum.PublicationList:
@@ -156,15 +156,15 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList:
                             TmpTable = PReasonSubscriptionGivenAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                                TmpTable,
-                                DomainManager.GClientID);
+                            TmpTable,
+                            DomainManager.GClientID);
                             break;
 
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList:
                             TmpTable = PReasonSubscriptionCancelledAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                                TmpTable,
-                                DomainManager.GClientID);
+                            TmpTable,
+                            DomainManager.GClientID);
 
                             // Unknown Standard Cacheable DataTable
                             break;

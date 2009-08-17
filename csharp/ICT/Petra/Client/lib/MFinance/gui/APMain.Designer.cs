@@ -85,7 +85,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.btnSearch = new System.Windows.Forms.Button();
             this.btnReset = new System.Windows.Forms.Button();
-            this.tabSearchResult = new System.Windows.Forms.TabControl();
+            this.tabSearchResult = new Ict.Common.Controls.TTabVersatile();
             this.tpgSuppliers = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.pnlSupplierOptions = new System.Windows.Forms.Panel();
@@ -282,7 +282,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.cmbTimeUnit.Location = new System.Drawing.Point(2,2);
             this.cmbTimeUnit.Name = "cmbTimeUnit";
             this.cmbTimeUnit.Size = new System.Drawing.Size(150, 28);
-            this.cmbTimeUnit.Items.AddRange(new object[] {"Days","Weeks","Months"});;
+            this.cmbTimeUnit.Items.AddRange(new object[] {"Days","Weeks","Months"});
             this.cmbTimeUnit.Text = "Days";
             this.tableLayoutPanel3.Controls.Add(this.cmbTimeUnit, 2, 0);
             this.tableLayoutPanel3.SetColumnSpan(this.cmbTimeUnit, 2);
@@ -875,7 +875,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.Button btnReset;
-        private System.Windows.Forms.TabControl tabSearchResult;
+        private Ict.Common.Controls.TTabVersatile tabSearchResult;
         private System.Windows.Forms.TabPage tpgSuppliers;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.Panel pnlSupplierOptions;

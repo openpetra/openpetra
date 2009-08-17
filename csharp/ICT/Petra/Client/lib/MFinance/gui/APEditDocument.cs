@@ -171,7 +171,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     }
 
     /// automatically generated function from webconnector
-    public bool CreateNewAApDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
+    public bool CreateAApDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
     {
         FMainDS = TRemote.MFinance.AccountsPayable.WebConnectors.CreateAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
 
@@ -183,7 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     }
 
     /// automatically generated, create a new record of AApDocumentDetail and display on the edit screen
-    public bool CreateNewAApDocumentDetail(Int32 ALedgerNumber, Int32 AApNumber, string AApSupplier_DefaultExpAccount, string AApSupplier_DefaultCostCentre, double AAmount, Int32 ALastDetailNumber)
+    public bool CreateAApDocumentDetail(Int32 ALedgerNumber, Int32 AApNumber, string AApSupplier_DefaultExpAccount, string AApSupplier_DefaultCostCentre, double AAmount, Int32 ALastDetailNumber)
     {
         FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.CreateAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber));
 
@@ -269,6 +269,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
     private void ShowData()
     {
+        FPetraUtilsObject.DisableDataChangedEvent();
         TPartnerClass partnerClass;
         string partnerShortName;
         TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
@@ -328,6 +329,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         {
             txtExchangeRateToBase.Text = FMainDS.AApDocument[0].ExchangeRateToBase.ToString();
         }
+        pnlDetails.Enabled = false;
         if (FMainDS.AApDocumentDetail != null)
         {
             DataView myDataView = FMainDS.AApDocumentDetail.DefaultView;
@@ -336,21 +338,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             grdDetails.AutoSizeCells();
             if (FMainDS.AApDocumentDetail.Rows.Count > 0)
             {
-                ShowDetails(0);
-            }
-            else
-            {
-                pnlDetails.Enabled = false;
+                grdDetails.Selection.SelectRow(1, true);
+                ShowDetails(GetSelectedDetailDataTableIndex());
+                pnlDetails.Enabled = true;
             }
         }
-        else
-        {
-            pnlDetails.Enabled = false;
-        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
+        FPetraUtilsObject.DisableDataChangedEvent();
         if (FMainDS.AApDocumentDetail[ACurrentDetailIndex].IsNarrativeNull())
         {
             txtDetailNarrative.Text = String.Empty;
@@ -391,6 +389,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         {
             cmbDetailAccountCode.SetSelectedString(FMainDS.AApDocumentDetail[ACurrentDetailIndex].AccountCode);
         }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private Int32 FPreviouslySelectedDetailRow = -1;
@@ -501,7 +500,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     /// auto generated
     public void RunOnceOnActivation()
     {
-
     }
 
     /// <summary>
@@ -509,7 +507,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     /// </summary>
     public void HookupAllControls()
     {
-
     }
 
     /// auto generated

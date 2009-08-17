@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TPartnerFindScreen));
 
             this.pnlMain = new System.Windows.Forms.Panel();
-            this.tabPartnerFindMethods = new System.Windows.Forms.TabControl();
+            this.tabPartnerFindMethods = new Ict.Common.Controls.TTabVersatile();
             this.tpgFindPartner = new System.Windows.Forms.TabPage();
             this.ucoFindByPartnerDetails = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_ByPartnerDetails();
             this.tpgFindBankDetails = new System.Windows.Forms.TabPage();
@@ -871,7 +871,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.PerformLayout();
         }
         private System.Windows.Forms.Panel pnlMain;
-        private System.Windows.Forms.TabControl tabPartnerFindMethods;
+        private Ict.Common.Controls.TTabVersatile tabPartnerFindMethods;
         private System.Windows.Forms.TabPage tpgFindPartner;
         private Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_ByPartnerDetails ucoFindByPartnerDetails;
         private System.Windows.Forms.TabPage tpgFindBankDetails;

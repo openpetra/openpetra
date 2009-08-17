@@ -273,7 +273,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             {
                 TFrmAPEditDocument frm = new TFrmAPEditDocument(this.Handle);
 
-                frm.CreateNewAApDocument(FLedgerNumber, PartnerKey, false);
+                frm.CreateAApDocument(FLedgerNumber, PartnerKey, false);
                 frm.Show();
             }
         }

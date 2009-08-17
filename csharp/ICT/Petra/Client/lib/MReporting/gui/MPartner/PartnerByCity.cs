@@ -186,7 +186,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     /// </summary>
     public void RunOnceOnActivation()
     {
-
     }
 
     /// <summary>
@@ -195,7 +194,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     /// <returns>void</returns>
     public void HookupAllControls()
     {
-
     }
 
     /// <summary>

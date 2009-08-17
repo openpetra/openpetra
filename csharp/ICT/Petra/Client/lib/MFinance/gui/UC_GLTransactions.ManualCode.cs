@@ -51,7 +51,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FBatchNumber = ABatchNumber;
             FJournalNumber = AJournalNumber;
 
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber));
+            GetDataFromControls();
+
+            FPreviouslySelectedDetailRow = -1;
+
+            DataView view = new DataView(FMainDS.ATransaction);
+
+            // only load from server if there are no transactions loaded yet for this journal
+            // otherwise we would overwrite transactions that have already been modified
+            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(AJournalTable.TableId), ",");
+
+            if (view.FindRows(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber }).Length == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber));
+            }
 
             ShowData();
         }
@@ -72,7 +85,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ANewRow"></param>
         private void NewRowManual(ref GLBatchTDSATransactionRow ANewRow)
         {
-            DataView view = FMainDS.AJournal.DefaultView;
+            DataView view = new DataView(FMainDS.AJournal);
 
             view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(AJournalTable.TableId), ",");
             AJournalRow row = (AJournalRow)view.FindRows(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber })[0].Row;

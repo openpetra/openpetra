@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblLedgerNumber.Text = Catalog.GetString("LedgerNumber:");
+      this.lblLedgerNumber.Text = Catalog.GetString("Ledger:");
       this.rbtPosting.Text = Catalog.GetString("Posting");
       this.rbtEditing.Text = Catalog.GetString("Editing");
       this.rbtAll.Text = Catalog.GetString("All");
@@ -199,6 +199,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     private void ShowData()
     {
+        FPetraUtilsObject.DisableDataChangedEvent();
+        pnlDetails.Enabled = false;
         if (FMainDS.ABatch != null)
         {
             DataView myDataView = FMainDS.ABatch.DefaultView;
@@ -208,41 +210,45 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.AutoSizeCells();
             if (FMainDS.ABatch.Rows.Count > 0)
             {
-                grdDetails.Selection.SelectRow(FMainDS.ABatch.Rows.Count, true);
-                ShowDetails(FMainDS.ABatch.Rows.Count - 1);
-            }
-            else
-            {
-                pnlDetails.Enabled = false;
+                grdDetails.Selection.SelectRow(1, true);
+                ShowDetails(GetSelectedDetailDataTableIndex());
+                pnlDetails.Enabled = true;
             }
         }
-        else
-        {
-            pnlDetails.Enabled = false;
-        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
-        pnlDetails.Enabled = true;
-        if (FMainDS.ABatch[ACurrentDetailIndex].IsBatchDescriptionNull())
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ACurrentDetailIndex == -1)
         {
-            txtDetailBatchDescription.Text = String.Empty;
+            pnlDetails.Enabled = false;
+            ShowDetailsManual(ACurrentDetailIndex);
         }
         else
         {
-            txtDetailBatchDescription.Text = FMainDS.ABatch[ACurrentDetailIndex].BatchDescription;
+            pnlDetails.Enabled = true;
+            if (FMainDS.ABatch[ACurrentDetailIndex].IsBatchDescriptionNull())
+            {
+                txtDetailBatchDescription.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailBatchDescription.Text = FMainDS.ABatch[ACurrentDetailIndex].BatchDescription;
+            }
+            if (FMainDS.ABatch[ACurrentDetailIndex].IsBatchControlTotalNull())
+            {
+                txtDetailBatchControlTotal.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailBatchControlTotal.Text = FMainDS.ABatch[ACurrentDetailIndex].BatchControlTotal.ToString();
+            }
+            dtpDetailDateEffective.Value = FMainDS.ABatch[ACurrentDetailIndex].DateEffective;
+            ShowDetailsManual(ACurrentDetailIndex);
         }
-        if (FMainDS.ABatch[ACurrentDetailIndex].IsBatchControlTotalNull())
-        {
-            txtDetailBatchControlTotal.Text = String.Empty;
-        }
-        else
-        {
-            txtDetailBatchControlTotal.Text = FMainDS.ABatch[ACurrentDetailIndex].BatchControlTotal.ToString();
-        }
-        dtpDetailDateEffective.Value = FMainDS.ABatch[ACurrentDetailIndex].DateEffective;
-        ShowDetailsManual(ACurrentDetailIndex);
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private Int32 FPreviouslySelectedDetailRow = -1;
@@ -253,22 +259,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
-        // display the details of the currently selected row; e.Row: first row has number 1
-        ShowDetails(GetSelectedDetailDataTableIndex());
+        if (GetSelectedDetailDataTableIndex() != -1)
+        {
+            // display the details of the currently selected row
+            ShowDetails(GetSelectedDetailDataTableIndex());
+            pnlDetails.Enabled = true;
+        }
         FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
-        pnlDetails.Enabled = true;
     }
 
     /// get the data from the controls and store in the currently selected detail row
     public void GetDataFromControls()
     {
-        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
     private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
     {
         if (ACurrentDetailIndex != -1)
         {
+            FMainDS.ABatch.Rows[ACurrentDetailIndex].BeginEdit();
             if (txtDetailBatchDescription.Text.Length == 0)
             {
                 FMainDS.ABatch[ACurrentDetailIndex].SetBatchDescriptionNull();
@@ -286,6 +296,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.ABatch[ACurrentDetailIndex].BatchControlTotal = Convert.ToDouble(txtDetailBatchControlTotal.Text);
             }
             FMainDS.ABatch[ACurrentDetailIndex].DateEffective = dtpDetailDateEffective.Value;
+            FMainDS.ABatch.Rows[ACurrentDetailIndex].EndEdit();
         }
     }
 
@@ -293,7 +304,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// auto generated
     public void RunOnceOnActivation()
     {
-
     }
 
     /// <summary>
@@ -301,7 +311,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// </summary>
     public void HookupAllControls()
     {
-
     }
 
     /// auto generated
@@ -336,7 +345,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             btnDelete.Enabled = e.Enabled;
         }
-
     }
 
 #endregion

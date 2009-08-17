@@ -163,7 +163,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblLedgerNumber.Location = new System.Drawing.Point(2,2);
             this.lblLedgerNumber.Name = "lblLedgerNumber";
             this.lblLedgerNumber.AutoSize = true;
-            this.lblLedgerNumber.Text = "LedgerNumber:";
+            this.lblLedgerNumber.Text = "Ledger:";
             this.lblLedgerNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblLedgerNumber, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.txtLedgerNumber, 1, 0);
@@ -242,6 +242,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.grdDetails.Name = "grdDetails";
             this.grdDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdDetails.DoubleClick += new System.EventHandler(this.ShowJournalTab);
+            this.grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(this.LeavingRow);
             this.grdDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
             //
             // pnlDetailButtons
@@ -385,7 +387,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.Name = "TUC_GLBatches";
             this.Text = "";
 
-	
 	
             this.tableLayoutPanel5.ResumeLayout(false);
             this.pnlDetails.ResumeLayout(false);

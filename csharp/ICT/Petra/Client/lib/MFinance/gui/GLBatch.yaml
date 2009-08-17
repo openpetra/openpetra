@@ -11,7 +11,7 @@ RootNode:
         pnlContent:
             Controls: [tabGLBatch]
             Dock: Fill
-        tabGLBatch: {NoAttributes=true, Dock=Fill}
+        tabGLBatch: {Dock=Fill, DragTabPageEnabled=false}
         tpgBatches:
             Label: Batches
             Controls: [ucoBatches]

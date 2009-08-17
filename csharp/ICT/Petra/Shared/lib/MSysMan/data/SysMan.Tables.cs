@@ -14099,7 +14099,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(14, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
-
                 }));
             return true;
         }
@@ -15085,7 +15084,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
-
                 }));
             return true;
         }
@@ -16726,7 +16724,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
                     new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
-
                 }));
             return true;
         }

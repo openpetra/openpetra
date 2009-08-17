@@ -52,7 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 DetailAmount = 0;
             }
 
-            CreateNewAApDocumentDetail(
+            CreateAApDocumentDetail(
                 FMainDS.AApDocument[0].LedgerNumber,
                 FMainDS.AApDocument[0].ApNumber,
                 FMainDS.AApSupplier[0].DefaultExpAccount,

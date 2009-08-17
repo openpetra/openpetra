@@ -247,7 +247,6 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                                 "a_ledger_number_i", "a_payment_number_i"}, "AApDocumentPayment", new string[] {
                                 "a_ledger_number_i", "a_payment_number_i"}));
             }
-
         }
     }
 }

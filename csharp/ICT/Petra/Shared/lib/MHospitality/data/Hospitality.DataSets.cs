@@ -249,7 +249,6 @@ namespace Ict.Petra.Shared.MHospitality.Data
                                 "pc_key_i"}, "PhRoomBooking", new string[] {
                                 "ph_room_alloc_key_i"}));
             }
-
         }
     }
 }

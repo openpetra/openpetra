@@ -11,11 +11,14 @@ RootNode:
         actNew: {Label=&Add, ActionClick=NewRow}
     Controls:
         pnlContent:
-            Controls: [pnlLedgerInfo, pnlBatches]
+            Controls: [pnlInfo, pnlBatches]
             Dock: Fill
-        pnlLedgerInfo:
-            Controls: [txtLedgerNumber]
-        txtLedgerNumber: {TODO=true}
+        pnlInfo:
+            Controls:
+                Row0: [txtLedgerNumber, txtBatchNumber, txtJournalNumber]
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger}
+        txtBatchNumber: {ReadOnly=true, Label=Batch}
+        txtJournalNumber: {ReadOnly=true, Label=Journal}
         pnlBatches:
             Controls: [pnlDetailGrid, pnlDetails]
             Dock: Fill
@@ -36,6 +39,7 @@ RootNode:
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
             SortOrder: ATransaction.TransactionNumber ASC
+            RowFilter: ATransaction.BatchNumber, ATransaction.JournalNumber
         pnlDetails:
             Dock: Bottom
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate, cmbDetailKeyMinistryKey, pnlDetailAmounts]

@@ -62,18 +62,18 @@ namespace {#NAMESPACE}
 
     }
 
-{#IFDEF CANFINDWEBCONNECTOR_CREATENEWMASTER}
+{#IFDEF CANFINDWEBCONNECTOR_CREATEMASTER}
     /// automatically generated function from webconnector
-    public bool CreateNew{#MASTERTABLE}({#CREATENEWMASTER_FORMALPARAMETERS})
+    public bool Create{#MASTERTABLE}({#CREATEMASTER_FORMALPARAMETERS})
     {
-{#IFDEF CREATENEWMASTER_WITHVERIFICATION}
+{#IFDEF CREATEMASTER_WITHVERIFICATION}
         TVerificationResultCollection VerificationResult;
 
-        FMainDS = {#WEBCONNECTORMASTER}.CreateNew{#MASTERTABLE}({#CREATENEWMASTER_ACTUALPARAMETERS}, out VerificationResult);
+        FMainDS = {#WEBCONNECTORMASTER}.Create{#MASTERTABLE}({#CREATEMASTER_ACTUALPARAMETERS}, out VerificationResult);
 
         if (VerificationResult != null && VerificationResult.Count > 0)
         {
-            return CreateNewMasterManual({#CREATENEWMASTER_ACTUALPARAMETERS}, VerificationResult);
+            return CreateMasterManual({#CREATEMASTER_ACTUALPARAMETERS}, VerificationResult);
         }
         else
         {
@@ -83,24 +83,24 @@ namespace {#NAMESPACE}
             
             return true;
         }
-{#ENDIF CREATENEWMASTER_WITHVERIFICATION}
-{#IFDEF CREATENEWMASTER_WITHOUTVERIFICATION}
-        FMainDS = {#WEBCONNECTORMASTER}.CreateNew{#MASTERTABLE}({#CREATENEWMASTER_ACTUALPARAMETERS});
+{#ENDIF CREATEMASTER_WITHVERIFICATION}
+{#IFDEF CREATEMASTER_WITHOUTVERIFICATION}
+        FMainDS = {#WEBCONNECTORMASTER}.Create{#MASTERTABLE}({#CREATEMASTER_ACTUALPARAMETERS});
 
         FPetraUtilsObject.SetChangedFlag();
 
         ShowData();
         
         return true;
-{#ENDIF CREATENEWMASTER_WITHOUTVERIFICATION}
+{#ENDIF CREATEMASTER_WITHOUTVERIFICATION}
     }
-{#ENDIF CANFINDWEBCONNECTOR_CREATENEWMASTER}
+{#ENDIF CANFINDWEBCONNECTOR_CREATEMASTER}
 
-{#IFDEF CANFINDWEBCONNECTOR_CREATENEWDETAIL}
+{#IFDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
-    public bool CreateNew{#DETAILTABLE}({#CREATENEWDETAIL_FORMALPARAMETERS})
+    public bool Create{#DETAILTABLE}({#CREATEDETAIL_FORMALPARAMETERS})
     {
-        FMainDS.Merge({#WEBCONNECTORDETAIL}.CreateNew{#DETAILTABLE}({#CREATENEWDETAIL_ACTUALPARAMETERS}));
+        FMainDS.Merge({#WEBCONNECTORDETAIL}.Create{#DETAILTABLE}({#CREATEDETAIL_ACTUALPARAMETERS}));
 
         FPetraUtilsObject.SetChangedFlag();
 
@@ -110,7 +110,7 @@ namespace {#NAMESPACE}
         
         return true;
     }
-{#ENDIF CANFINDWEBCONNECTOR_CREATENEWDETAIL}
+{#ENDIF CANFINDWEBCONNECTOR_CREATEDETAIL}
 {#IFDEF DETAILTABLE}
 
     private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
@@ -191,14 +191,40 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDATA}
     private void ShowData()
     {
+        FPetraUtilsObject.DisableDataChangedEvent();
         {#SHOWDATA}
+{#IFDEF DETAILTABLE}
+        pnlDetails.Enabled = false;
+        if (FMainDS.{#DETAILTABLE} != null)
+        {
+            DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
+{#IFDEF DETAILTABLESORT}
+            myDataView.Sort = "{#DETAILTABLESORT}";
+{#ENDIF DETAILTABLESORT}
+{#IFDEF DETAILTABLEFILTER}
+            myDataView.RowFilter = {#DETAILTABLEFILTER};
+{#ENDIF DETAILTABLEFILTER}
+            myDataView.AllowNew = false;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            grdDetails.AutoSizeCells();
+            if (FMainDS.{#DETAILTABLE}.Rows.Count > 0)
+            {
+                grdDetails.Selection.SelectRow(1, true);
+                ShowDetails(GetSelectedDetailDataTableIndex());
+                pnlDetails.Enabled = true;
+            }
+        }
+{#ENDIF DETAILTABLE}
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 {#ENDIF SHOWDATA}
 
 {#IFDEF SHOWDETAILS}
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
+        FPetraUtilsObject.DisableDataChangedEvent();
         {#SHOWDETAILS}
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private Int32 FPreviouslySelectedDetailRow = -1;

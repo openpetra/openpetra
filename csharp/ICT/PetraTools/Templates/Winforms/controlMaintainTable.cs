@@ -166,18 +166,50 @@ namespace {#NAMESPACE}
         return -1;
     }
 
-{#IFDEF SHOWDATA}
     private void ShowData()
     {
+        FPetraUtilsObject.DisableDataChangedEvent();
         {#SHOWDATA}
+        pnlDetails.Enabled = false;
+        if (FMainDS.{#DETAILTABLE} != null)
+        {
+            DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
+{#IFDEF DETAILTABLESORT}
+            myDataView.Sort = "{#DETAILTABLESORT}";
+{#ENDIF DETAILTABLESORT}
+{#IFDEF DETAILTABLEFILTER}
+            myDataView.RowFilter = {#DETAILTABLEFILTER};
+{#ENDIF DETAILTABLEFILTER}
+            myDataView.AllowNew = false;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            grdDetails.AutoSizeCells();
+            if (FMainDS.{#DETAILTABLE}.Rows.Count > 0)
+            {
+                grdDetails.Selection.SelectRow(1, true);
+                ShowDetails(GetSelectedDetailDataTableIndex());
+                pnlDetails.Enabled = true;
+            }
+        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
-{#ENDIF SHOWDATA}
 
 {#IFDEF SHOWDETAILS}
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
-        pnlDetails.Enabled = true;
-        {#SHOWDETAILS}
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ACurrentDetailIndex == -1)
+        {
+            pnlDetails.Enabled = false;
+            {#CLEARDETAILS}
+            {#SHOWDETAILSMANUAL}
+        }
+        else
+        {
+            pnlDetails.Enabled = true;
+            {#SHOWDETAILS}
+            {#SHOWDETAILSMANUAL}
+        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private Int32 FPreviouslySelectedDetailRow = -1;
@@ -190,10 +222,13 @@ namespace {#NAMESPACE}
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
 {#ENDIF SAVEDETAILS}
-        // display the details of the currently selected row; e.Row: first row has number 1
-        ShowDetails(GetSelectedDetailDataTableIndex());
+        if (GetSelectedDetailDataTableIndex() != -1)
+        {
+            // display the details of the currently selected row
+            ShowDetails(GetSelectedDetailDataTableIndex());
+            pnlDetails.Enabled = true;
+        }
         FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
-        pnlDetails.Enabled = true;
     }
 {#ENDIF SHOWDETAILS}
     
@@ -201,14 +236,16 @@ namespace {#NAMESPACE}
     /// get the data from the controls and store in the currently selected detail row
     public void GetDataFromControls()
     {
-        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
     private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
     {
         if (ACurrentDetailIndex != -1)
         {
+            FMainDS.{#DETAILTABLE}.Rows[ACurrentDetailIndex].BeginEdit();
             {#SAVEDETAILS}
+            FMainDS.{#DETAILTABLE}.Rows[ACurrentDetailIndex].EndEdit();
         }
     }
 {#ENDIF SAVEDETAILS}

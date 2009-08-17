@@ -267,7 +267,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     /// auto generated
     public void RunOnceOnActivation()
     {
-
     }
 
     /// <summary>
@@ -275,7 +274,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     /// </summary>
     public void HookupAllControls()
     {
-
     }
 
     /// auto generated

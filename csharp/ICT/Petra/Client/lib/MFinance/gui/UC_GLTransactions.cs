@@ -65,7 +65,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblLedgerNumber.Text = Catalog.GetString("LedgerNumber:");
+      this.lblLedgerNumber.Text = Catalog.GetString("Ledger:");
+      this.lblBatchNumber.Text = Catalog.GetString("Batch:");
+      this.lblJournalNumber.Text = Catalog.GetString("Journal:");
       this.btnNew.Text = Catalog.GetString("&Add");
       this.btnRemove.Text = Catalog.GetString("Remove");
       this.lblDetailCostCentreCode.Text = Catalog.GetString("Cost Centre Code:");
@@ -219,59 +221,65 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     private void ShowData()
     {
+        FPetraUtilsObject.DisableDataChangedEvent();
+        pnlDetails.Enabled = false;
         if (FMainDS.ATransaction != null)
         {
             DataView myDataView = FMainDS.ATransaction.DefaultView;
             myDataView.Sort = "a_transaction_number_i ASC";
+            myDataView.RowFilter = "a_batch_number_i = " + FBatchNumber.ToString() + " and a_journal_number_i = " + FJournalNumber.ToString();
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdDetails.AutoSizeCells();
             if (FMainDS.ATransaction.Rows.Count > 0)
             {
                 grdDetails.Selection.SelectRow(1, true);
-                ShowDetails(0);
-            }
-            else
-            {
-                pnlDetails.Enabled = false;
+                ShowDetails(GetSelectedDetailDataTableIndex());
+                pnlDetails.Enabled = true;
             }
         }
-        else
-        {
-            pnlDetails.Enabled = false;
-        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
-        pnlDetails.Enabled = true;
-        cmbDetailCostCentreCode.SetSelectedString(FMainDS.ATransaction[ACurrentDetailIndex].CostCentreCode);
-        cmbDetailAccountCode.SetSelectedString(FMainDS.ATransaction[ACurrentDetailIndex].AccountCode);
-        if (FMainDS.ATransaction[ACurrentDetailIndex].IsNarrativeNull())
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ACurrentDetailIndex == -1)
         {
-            txtDetailNarrative.Text = String.Empty;
+            pnlDetails.Enabled = false;
         }
         else
         {
-            txtDetailNarrative.Text = FMainDS.ATransaction[ACurrentDetailIndex].Narrative;
+            pnlDetails.Enabled = true;
+            cmbDetailCostCentreCode.SetSelectedString(FMainDS.ATransaction[ACurrentDetailIndex].CostCentreCode);
+            cmbDetailAccountCode.SetSelectedString(FMainDS.ATransaction[ACurrentDetailIndex].AccountCode);
+            if (FMainDS.ATransaction[ACurrentDetailIndex].IsNarrativeNull())
+            {
+                txtDetailNarrative.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailNarrative.Text = FMainDS.ATransaction[ACurrentDetailIndex].Narrative;
+            }
+            if (FMainDS.ATransaction[ACurrentDetailIndex].IsReferenceNull())
+            {
+                txtDetailReference.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailReference.Text = FMainDS.ATransaction[ACurrentDetailIndex].Reference;
+            }
+            dtpDetailTransactionDate.Value = FMainDS.ATransaction[ACurrentDetailIndex].TransactionDate;
+            if (FMainDS.ATransaction[ACurrentDetailIndex].IsKeyMinistryKeyNull())
+            {
+                cmbDetailKeyMinistryKey.SelectedIndex = -1;
+            }
+            else
+            {
+                cmbDetailKeyMinistryKey.SetSelectedInt64(FMainDS.ATransaction[ACurrentDetailIndex].KeyMinistryKey);
+            }
         }
-        if (FMainDS.ATransaction[ACurrentDetailIndex].IsReferenceNull())
-        {
-            txtDetailReference.Text = String.Empty;
-        }
-        else
-        {
-            txtDetailReference.Text = FMainDS.ATransaction[ACurrentDetailIndex].Reference;
-        }
-        dtpDetailTransactionDate.Value = FMainDS.ATransaction[ACurrentDetailIndex].TransactionDate;
-        if (FMainDS.ATransaction[ACurrentDetailIndex].IsKeyMinistryKeyNull())
-        {
-            cmbDetailKeyMinistryKey.SelectedIndex = -1;
-        }
-        else
-        {
-            cmbDetailKeyMinistryKey.SetSelectedInt64(FMainDS.ATransaction[ACurrentDetailIndex].KeyMinistryKey);
-        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private Int32 FPreviouslySelectedDetailRow = -1;
@@ -282,22 +290,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
-        // display the details of the currently selected row; e.Row: first row has number 1
-        ShowDetails(GetSelectedDetailDataTableIndex());
+        if (GetSelectedDetailDataTableIndex() != -1)
+        {
+            // display the details of the currently selected row
+            ShowDetails(GetSelectedDetailDataTableIndex());
+            pnlDetails.Enabled = true;
+        }
         FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
-        pnlDetails.Enabled = true;
     }
 
     /// get the data from the controls and store in the currently selected detail row
     public void GetDataFromControls()
     {
-        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
     private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
     {
         if (ACurrentDetailIndex != -1)
         {
+            FMainDS.ATransaction.Rows[ACurrentDetailIndex].BeginEdit();
             FMainDS.ATransaction[ACurrentDetailIndex].CostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
             FMainDS.ATransaction[ACurrentDetailIndex].AccountCode = cmbDetailAccountCode.GetSelectedString();
             if (txtDetailNarrative.Text.Length == 0)
@@ -325,6 +337,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FMainDS.ATransaction[ACurrentDetailIndex].KeyMinistryKey = cmbDetailKeyMinistryKey.GetSelectedInt64();
             }
+            FMainDS.ATransaction.Rows[ACurrentDetailIndex].EndEdit();
         }
     }
 
@@ -332,7 +345,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// auto generated
     public void RunOnceOnActivation()
     {
-
     }
 
     /// <summary>
@@ -340,7 +352,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// </summary>
     public void HookupAllControls()
     {
-
     }
 
     /// auto generated
@@ -371,7 +382,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             btnNew.Enabled = e.Enabled;
         }
-
     }
 
 #endregion

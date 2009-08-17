@@ -3758,7 +3758,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true)
                 },
                 new int[] {
-
                 }));
             return true;
         }
@@ -4399,7 +4398,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
         }
     }
 
@@ -5041,7 +5039,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(18, "LocationKeyOfEditedRecord", "LocationKeyOfEditedRecord", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
-
                 }));
             return true;
         }
@@ -6241,7 +6238,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(9, "AnswerProcessedServerSide", "AnswerProcessedServerSide", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
-
                 }));
             return true;
         }
@@ -7126,7 +7122,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                                 "p_site_key_n", "p_location_key_i"}, "PPartnerLocation", new string[] {
                                 "p_site_key_n", "p_location_key_i"}));
             }
-
         }
     }
 
@@ -7162,7 +7157,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(5, "PrivatePartnerOwner", "p_user_id_c", "User ID", OdbcType.VarChar, 40, false)
                 },
                 new int[] {
-
                 }));
             return true;
         }
@@ -7655,7 +7649,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(11, "Notes", "p_comment_c", "Comments", OdbcType.VarChar, 10000, false)
                 },
                 new int[] {
-
                 }));
             return true;
         }
@@ -8448,7 +8441,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(1, "ParentUnitName", "p_unit_name_c", "Unit Name", OdbcType.VarChar, 160, false)
                 },
                 new int[] {
-
                 }));
             return true;
         }

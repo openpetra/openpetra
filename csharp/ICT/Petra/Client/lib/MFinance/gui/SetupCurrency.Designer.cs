@@ -257,7 +257,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             this.cmbDetailCountryCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailCountryCode.Name = "cmbDetailCountryCode";
-            this.cmbDetailCountryCode.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailCountryCode.Size = new System.Drawing.Size(300, 28);
             this.cmbDetailCountryCode.ListTable = TCmbAutoPopulated.TListTableEnum.CountryList;
             //
             // lblDetailCountryCode

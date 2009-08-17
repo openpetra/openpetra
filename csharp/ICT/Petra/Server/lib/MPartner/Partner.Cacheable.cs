@@ -333,7 +333,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                 try
                 {
                     SUserTable TmpUserTable = new SUserTable();
-                    TmpUserTable = (SUserTable) DBAccess.GDBAccessObj.SelectDT(TmpUserTable, "SELECT " + SUserTable.GetPartnerKeyDBName() + ',' +
+                    TmpUserTable = (SUserTable)DBAccess.GDBAccessObj.SelectDT(TmpUserTable, "SELECT " + SUserTable.GetPartnerKeyDBName() + ',' +
                         SUserTable.GetUserIdDBName() + ',' +
                         SUserTable.GetFirstNameDBName() + ',' +
                         SUserTable.GetLastNameDBName() + ' ' +

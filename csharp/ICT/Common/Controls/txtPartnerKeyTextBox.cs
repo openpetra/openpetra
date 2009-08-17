@@ -344,7 +344,7 @@ namespace Ict.Common.Controls
         /// avoid recursion / stack overflow in Mono
         /// </summary>
         bool FSettingDefaultFont = false;
-        
+
         /// <summary>
         /// This procedure sets the default font for this control.
         ///
@@ -356,8 +356,9 @@ namespace Ict.Common.Controls
             {
                 return;
             }
+
             FSettingDefaultFont = true;
-            
+
             System.Drawing.Font mControlFont = this.Font;
             System.Drawing.Font mTextBoxFont = this.txtTextBox.Font;
             System.Single mFontSize = 9.25F;
@@ -370,7 +371,7 @@ namespace Ict.Common.Controls
                 this.Font = mFont;
                 this.txtTextBox.Font = mFont;
             }
-            
+
             FSettingDefaultFont = false;
         }
 

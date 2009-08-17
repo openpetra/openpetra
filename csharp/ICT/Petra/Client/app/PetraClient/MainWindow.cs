@@ -84,7 +84,6 @@ namespace Ict.Petra.Client.App.PetraClient
       FPetraUtilsObject = new TFrmPetraModuleUtils(AParentFormHandle, this, stbMain);
       ucoMainWindowContent.PetraUtilsObject = FPetraUtilsObject;
       ucoMainWindowContent.InitUserControl();
-
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
@@ -121,7 +120,6 @@ namespace Ict.Petra.Client.App.PetraClient
     /// auto generated
     public void RunOnceOnActivation()
     {
-
     }
 
     /// <summary>
@@ -129,7 +127,6 @@ namespace Ict.Petra.Client.App.PetraClient
     /// </summary>
     public void HookupAllControls()
     {
-
     }
 
     /// auto generated

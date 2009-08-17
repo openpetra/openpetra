@@ -38305,7 +38305,6 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                     new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
-
                 }));
             return true;
         }
@@ -41561,7 +41560,6 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                     new TTypedColumnInfo(14, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
-
                 }));
             return true;
         }

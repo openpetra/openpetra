@@ -310,7 +310,8 @@ namespace Ict.Petra.Client.CommonForms
             SetChangedFlag();
         }
 
-        /** Event handlers for all controlsthis one is for all controls which have the standard sender : Object, e EventArgs
+        /** Event handlers for all controls
+         * this one is for all controls which have the standard sender : Object, e EventArgs
          */
         protected void MultiEventHandler(System.Object sender, EventArgs e)
         {

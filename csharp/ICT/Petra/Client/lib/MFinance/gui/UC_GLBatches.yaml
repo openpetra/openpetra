@@ -20,7 +20,7 @@ RootNode:
             OptionalValues: [Posting, Editing, All]
         pnlLedgerInfo:
             Controls: [txtLedgerNumber]
-        txtLedgerNumber: {ReadOnly=true}
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger}
         pnlBatches:
             Controls: [pnlDetailGrid, pnlDetails]
             Dock: Fill
@@ -36,6 +36,8 @@ RootNode:
             Dock: Fill
             Columns: [ABatch.BatchNumber, ABatch.BatchStatus, ABatch.DateEffective, ABatch.BatchDebitTotal, ABatch.BatchCreditTotal, ABatch.BatchControlTotal, ABatch.BatchDescription]
             ActionFocusRow: FocusedRowChanged
+            ActionLeavingRow: LeavingRow 
+            ActionDoubleClick: ShowJournalTab
             SortOrder: ABatch.BatchNumber DESC
         pnlDetails:
             Dock: Bottom

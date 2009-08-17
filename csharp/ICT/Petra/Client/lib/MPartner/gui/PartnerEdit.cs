@@ -156,7 +156,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// auto generated
     public void RunOnceOnActivation()
     {
-
     }
 
     /// <summary>
@@ -164,7 +163,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public void HookupAllControls()
     {
-
     }
 
     /// auto generated

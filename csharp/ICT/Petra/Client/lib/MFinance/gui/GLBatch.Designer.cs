@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmGLBatch));
 
             this.pnlContent = new System.Windows.Forms.Panel();
-            this.tabGLBatch = new System.Windows.Forms.TabControl();
+            this.tabGLBatch = new Ict.Common.Controls.TTabVersatile();
             this.tpgBatches = new System.Windows.Forms.TabPage();
             this.ucoBatches = new Ict.Petra.Client.MFinance.Gui.GL.TUC_GLBatches();
             this.tpgJournals = new System.Windows.Forms.TabPage();
@@ -165,6 +165,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tabGLBatch.Controls.Add(this.tpgBatches);
             this.tabGLBatch.Controls.Add(this.tpgJournals);
             this.tabGLBatch.Controls.Add(this.tpgTransactions);
+            this.tabGLBatch.AllowDrop = false;
             //
             // tbbSave
             //
@@ -364,7 +365,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.PerformLayout();
         }
         private System.Windows.Forms.Panel pnlContent;
-        private System.Windows.Forms.TabControl tabGLBatch;
+        private Ict.Common.Controls.TTabVersatile tabGLBatch;
         private System.Windows.Forms.TabPage tpgBatches;
         private Ict.Petra.Client.MFinance.Gui.GL.TUC_GLBatches ucoBatches;
         private System.Windows.Forms.TabPage tpgJournals;
