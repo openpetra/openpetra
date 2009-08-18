@@ -123,11 +123,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 3;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlContent.Controls.Add(this.tableLayoutPanel1);
@@ -175,6 +176,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.rgrShowBatches.Location = new System.Drawing.Point(2,2);
             this.rgrShowBatches.Name = "rgrShowBatches";
             this.rgrShowBatches.AutoSize = true;
+            this.rgrShowBatches.Tag = "SuppressChangeDetection";
             //
             // tableLayoutPanel3
             //
@@ -198,6 +200,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.rbtPosting.Location = new System.Drawing.Point(2,2);
             this.rbtPosting.Name = "rbtPosting";
             this.rbtPosting.AutoSize = true;
+            this.rbtPosting.Tag = "SuppressChangeDetection";
             this.rbtPosting.Text = "Posting";
             this.rbtPosting.Checked = true;
             this.tableLayoutPanel3.Controls.Add(this.rbtPosting, 0, 0);
@@ -208,6 +211,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.rbtEditing.Location = new System.Drawing.Point(2,2);
             this.rbtEditing.Name = "rbtEditing";
             this.rbtEditing.AutoSize = true;
+            this.rbtEditing.Tag = "SuppressChangeDetection";
             this.rbtEditing.Text = "Editing";
             this.tableLayoutPanel3.Controls.Add(this.rbtEditing, 2, 0);
             this.tableLayoutPanel3.SetColumnSpan(this.rbtEditing, 2);
@@ -217,11 +221,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.rbtAll.Location = new System.Drawing.Point(2,2);
             this.rbtAll.Name = "rbtAll";
             this.rbtAll.AutoSize = true;
+            this.rbtAll.Tag = "SuppressChangeDetection";
             this.rbtAll.Text = "All";
             this.tableLayoutPanel3.Controls.Add(this.rbtAll, 4, 0);
             this.tableLayoutPanel3.SetColumnSpan(this.rbtAll, 2);
             this.rgrShowBatches.Text = "Show batches available for";
-            this.tableLayoutPanel1.Controls.Add(this.rgrShowBatches, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.rgrShowBatches, 2, 0);
             this.tableLayoutPanel1.SetColumnSpan(this.rgrShowBatches, 2);
             //
             // pnlBatches
@@ -243,7 +248,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.grdDetails.Name = "grdDetails";
             this.grdDetails.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grdDetails.DoubleClick += new System.EventHandler(this.ShowJournalTab);
-            this.grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(this.LeavingRow);
             this.grdDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
             //
             // pnlDetailButtons
@@ -374,8 +378,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDateCantBeBeyond.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel5.Controls.Add(this.lblDateCantBeBeyond, 2, 2);
             this.tableLayoutPanel5.Controls.Add(this.dtpDateCantBeBeyond, 3, 2);
-            this.tableLayoutPanel1.Controls.Add(this.pnlBatches, 0, 2);
-            this.tableLayoutPanel1.SetColumnSpan(this.pnlBatches, 2);
+            this.tableLayoutPanel1.Controls.Add(this.pnlBatches, 0, 1);
+            this.tableLayoutPanel1.SetColumnSpan(this.pnlBatches, 2 * 2);
 
             //
             // TUC_GLBatches

@@ -33,7 +33,6 @@ RootNode:
             Dock: Fill
             Columns: [AJournal.JournalNumber, AJournal.JournalStatus, AJournal.JournalDebitTotal, AJournal.JournalCreditTotal, AJournal.TransactionCurrency, AJournal.JournalDescription, AJournal.SubSystemCode, AJournal.TransactionTypeCode]
             ActionFocusRow: FocusedRowChanged
-            ActionLeavingRow: LeavingRow 
             ActionDoubleClick: ShowTransactionTab
             SortOrder: AJournal.JournalNumber ASC
             RowFilter: AJournal.BatchNumber

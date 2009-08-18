@@ -12,11 +12,14 @@ RootNode:
         actDelete: {Label=&Cancel, ActionClick=CancelRow}
     Controls:
         pnlContent:
-            Controls: [pnlLedgerInfo, rgrShowBatches, pnlBatches]
+            Controls:
+                Row0: [pnlLedgerInfo, rgrShowBatches]
+                Row1: [pnlBatches]
             Dock: Fill
         rgrShowBatches: 
             Label: Show batches available for
             ControlsOrientation: horizontal
+            SuppressChangeDetection: true
             OptionalValues: [Posting, Editing, All]
         pnlLedgerInfo:
             Controls: [txtLedgerNumber]
@@ -24,6 +27,7 @@ RootNode:
         pnlBatches:
             Controls: [pnlDetailGrid, pnlDetails]
             Dock: Fill
+            ColSpan: 2
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]
@@ -36,7 +40,6 @@ RootNode:
             Dock: Fill
             Columns: [ABatch.BatchNumber, ABatch.BatchStatus, ABatch.DateEffective, ABatch.BatchDebitTotal, ABatch.BatchCreditTotal, ABatch.BatchControlTotal, ABatch.BatchDescription]
             ActionFocusRow: FocusedRowChanged
-            ActionLeavingRow: LeavingRow 
             ActionDoubleClick: ShowJournalTab
             SortOrder: ABatch.BatchNumber DESC
         pnlDetails:

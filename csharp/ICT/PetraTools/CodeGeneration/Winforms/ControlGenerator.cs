@@ -1023,6 +1023,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     newCtrl.SetAttribute("RadioChecked", "true");
                 }
 
+                if (TXMLParser.HasAttribute(curNode, "SuppressChangeDetection"))
+                {
+                    newCtrl.SetAttribute("SuppressChangeDetection", TXMLParser.GetAttribute(curNode, "SuppressChangeDetection"));
+                }
+
                 Controls.Add(radioButtonName);
             }
 

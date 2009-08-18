@@ -219,6 +219,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.AutoSizeCells();
             if (FMainDS.AJournal.Rows.Count > 0)
             {
+                grdDetails.Selection.ResetSelection(false);
                 grdDetails.Selection.SelectRow(1, true);
                 ShowDetails(GetSelectedDetailDataTableIndex());
                 pnlDetails.Enabled = true;

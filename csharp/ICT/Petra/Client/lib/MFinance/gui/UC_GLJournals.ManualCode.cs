@@ -146,15 +146,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             ((TFrmGLBatch)ParentForm).SelectTab(TFrmGLBatch.eGLTabs.Transactions);
         }
-
-        private void LeavingRow(System.Object sender, SourceGrid.RowCancelEventArgs e)
-        {
-            if (FPetraUtilsObject.HasChanges)
-            {
-                //               System.Windows.Forms.MessageBox.Show(Catalog.GetString("Please first save the current journal, before you can work on other journal!"));
-                // TODO: alternatively: open another window with the new batch? or don't reload from db when going back to a journal that has already been opened?
-                //               e.Cancel = true;
-            }
-        }
     }
 }

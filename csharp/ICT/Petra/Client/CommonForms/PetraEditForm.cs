@@ -195,17 +195,8 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>todoComment</summary>
         public void HookupSomeControls()
         {
-            //Int32 ctlCount;
-            Int32 otherCount;
-            String otherString;
-
-            //MessageBox.Show("PetraEditForm - HookupAlLControls");
-            // this adds all controls on form to ArrayList
-
-
-            //ctlCount = 0;
-            otherCount = 0;
-            otherString = "";
+            Int32 otherCount = 0;
+            String otherString = "";
 
             foreach (Control ctrl in FAllControls)
             {
@@ -277,7 +268,7 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     // can't check for by type without creating compilation mess
                     // if you "require" ICT.Petra.CommonControls,
-                    // compiler gets very upset about PetraForm being decalred already
+                    // compiler gets very upset about PetraForm being declared already
                 }
                 else
                 {
@@ -296,7 +287,7 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-        /** This is available fo rthe child form to respoond to by overriding
+        /** This is available for the child form to respond to by overriding
          */
         protected void ControlValueChanged()
         {
@@ -315,11 +306,9 @@ namespace Ict.Petra.Client.CommonForms
          */
         protected void MultiEventHandler(System.Object sender, EventArgs e)
         {
-            string ctrltype;
-            string ctrlname;
-
-            ctrlname = ((Control)sender).Name;
-            ctrltype = sender.GetType().FullName;
+            Control ctrl = (Control)sender;
+            string ctrlname = ctrl.Name;
+            string ctrltype = sender.GetType().FullName;
 
             if (ctrlname == "lblLabel")
             {
@@ -327,7 +316,10 @@ namespace Ict.Petra.Client.CommonForms
                 return;
             }
 
-            if ((this.SuppressChangeDetection == false) && ((Control)sender).Visible && ((Control)sender).Enabled)
+            if ((this.SuppressChangeDetection == false)
+                && ((ctrl.Tag == null) || (ctrl.Tag.GetType() != typeof(string)) || !((string)ctrl.Tag).Contains("SuppressChangeDetection"))
+                && ((Control)sender).Visible
+                && ((Control)sender).Enabled)
             {
                 LocalControlValueChanged();
                 ControlValueChanged();

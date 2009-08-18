@@ -85,25 +85,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             // TODO
         }
-
-        /// <summary>
-        /// don't allow changing the batch if there are changes
-        /// also don't allow reloading the current batch because the journals might be overwritten
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void LeavingRow(System.Object sender, SourceGrid.RowCancelEventArgs e)
-        {
-            if (FPetraUtilsObject.HasChanges)
-            {
-                if (e.Row != FPreviouslySelectedDetailRow)
-                {
-//                    System.Windows.Forms.MessageBox.Show(Catalog.GetString("Please first save the current batch, before you can work on other batches!"));
-                }
-
-                // TODO: alternatively: open another window with the new batch? or don't reload from db when going back to a batch that has already been opened?
-//                e.Cancel = true;
-            }
-        }
     }
 }

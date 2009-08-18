@@ -338,6 +338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             grdDetails.AutoSizeCells();
             if (FMainDS.AApDocumentDetail.Rows.Count > 0)
             {
+                grdDetails.Selection.ResetSelection(false);
                 grdDetails.Selection.SelectRow(1, true);
                 ShowDetails(GetSelectedDetailDataTableIndex());
                 pnlDetails.Enabled = true;

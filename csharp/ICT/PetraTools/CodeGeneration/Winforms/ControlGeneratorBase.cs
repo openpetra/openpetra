@@ -277,6 +277,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl.controlName, "Size", "new System.Drawing.Size(" + FWidth.ToString() + ", " + FHeight.ToString() + ")");
             }
 
+            if (ctrl.HasAttribute("SuppressChangeDetection") && (ctrl.GetAttribute("SuppressChangeDetection").ToLower() == "true"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "Tag", "\"SuppressChangeDetection\"");
+            }
+
             string ActionToPerform = ctrl.GetAttribute("Action");
 
             if (writer.CodeStorage.FActionList.ContainsKey(ActionToPerform))
