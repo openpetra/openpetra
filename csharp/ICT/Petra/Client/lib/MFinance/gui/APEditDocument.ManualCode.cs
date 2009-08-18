@@ -42,9 +42,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
             double DetailAmount = FMainDS.AApDocument[0].TotalAmount;
 
-            foreach (AApDocumentDetailRow detailRow in FMainDS.AApDocumentDetail.Rows)
+            if (FMainDS.AApDocumentDetail != null)
             {
-                DetailAmount -= detailRow.Amount;
+                foreach (AApDocumentDetailRow detailRow in FMainDS.AApDocumentDetail.Rows)
+                {
+                    DetailAmount -= detailRow.Amount;
+                }
             }
 
             if (DetailAmount < 0)
@@ -80,6 +83,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             {
                 dtpDateDue.Value = dtpDateIssued.Value.AddDays((double)nudCreditTerms.Value);
             }
+        }
+
+        /// initialise some comboboxes
+        private void BeforeShowDetailsManual(AApDocumentDetailRow ARow)
+        {
+            // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
+            bool ActiveOnly = this.Enabled;
+
+            TFinanceComboboxes.InitialiseAccountList(ref cmbDetailAccountCode, ARow.LedgerNumber, true, ActiveOnly);
+            TFinanceComboboxes.InitialiseCostCentreList(ref cmbDetailCostCentreCode, ARow.LedgerNumber, true, ActiveOnly, false);
         }
     }
 }

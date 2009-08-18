@@ -101,6 +101,8 @@ namespace {#NAMESPACE}
     public bool Create{#DETAILTABLE}({#CREATEDETAIL_FORMALPARAMETERS})
     {
         FMainDS.Merge({#WEBCONNECTORDETAIL}.Create{#DETAILTABLE}({#CREATEDETAIL_ACTUALPARAMETERS}));
+        FMainDS.InitVars();
+        FMainDS.{#DETAILTABLE}.InitVars();
 
         FPetraUtilsObject.SetChangedFlag();
 

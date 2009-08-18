@@ -46,6 +46,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     public partial class TFrmAPSupplierTransactions
     {
         Int32 FLedgerNumber = -1;
+        Int64 FPartnerKey = -1;
 
         /// <summary>
         /// load the supplier, do the first search with the default search parameters
@@ -55,6 +56,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         public void LoadSupplier(Int32 ALedgerNumber, Int64 APartnerKey)
         {
             FLedgerNumber = ALedgerNumber;
+            FPartnerKey = APartnerKey;
 
             FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.FindAApDocument(
                     ALedgerNumber, APartnerKey,
@@ -89,6 +91,32 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 frm.LoadAApDocument(FLedgerNumber, Convert.ToInt32(SelectedGridRow[0][FMainDS.AApDocument.ColumnApNumber.ColumnName]));
                 frm.Show();
             }
+        }
+
+        /// <summary>
+        /// create a new invoice
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateInvoice(object sender, EventArgs e)
+        {
+            TFrmAPEditDocument frm = new TFrmAPEditDocument(this.Handle);
+
+            frm.CreateAApDocument(FLedgerNumber, FPartnerKey, false);
+            frm.Show();
+        }
+
+        /// <summary>
+        /// create a new credit note
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateCreditNote(object sender, EventArgs e)
+        {
+            TFrmAPEditDocument frm = new TFrmAPEditDocument(this.Handle);
+
+            frm.CreateAApDocument(FLedgerNumber, FPartnerKey, true);
+            frm.Show();
         }
     }
 }

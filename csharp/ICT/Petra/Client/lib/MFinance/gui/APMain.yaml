@@ -36,6 +36,7 @@ RootNode:
         actCreateCreditNote:
             Label: Create C&redit Note
             ShortCut: Ctrl+R
+            ActionClick: CreateCreditNote
             Enabled: cndSelectedSupplier
         actFindInvoice:
             Label: &Find Invoice...

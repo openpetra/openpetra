@@ -105,6 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.btnAddDetail = new System.Windows.Forms.Button();
             this.btnRemoveDetail = new System.Windows.Forms.Button();
+            this.btnAnalysisAttributes = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailNarrative = new System.Windows.Forms.TextBox();
@@ -113,14 +114,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailItemRef = new System.Windows.Forms.Label();
             this.txtDetailAmount = new System.Windows.Forms.TextBox();
             this.lblDetailAmount = new System.Windows.Forms.Label();
-            this.cmbDetailCostCentreCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbDetailCostCentreCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailCostCentreCode = new System.Windows.Forms.Label();
-            this.btnAnalysisAttributes = new System.Windows.Forms.Button();
+            this.btnUseTaxAccountCostCentre = new System.Windows.Forms.Button();
             this.txtDetailBaseAmount = new System.Windows.Forms.TextBox();
             this.lblDetailBaseAmount = new System.Windows.Forms.Label();
-            this.cmbDetailAccountCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbDetailAccountCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailAccountCode = new System.Windows.Forms.Label();
-            this.btnUseTaxAccountCostCentre = new System.Windows.Forms.Button();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
@@ -453,7 +453,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowCount = 3;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlDetailButtons.Controls.Add(this.tableLayoutPanel3);
@@ -476,6 +477,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.btnRemoveDetail.Text = "&Remove Detail";
             this.tableLayoutPanel3.Controls.Add(this.btnRemoveDetail, 0, 1);
             this.tableLayoutPanel3.SetColumnSpan(this.btnRemoveDetail, 2);
+            //
+            // btnAnalysisAttributes
+            //
+            this.btnAnalysisAttributes.Location = new System.Drawing.Point(2,2);
+            this.btnAnalysisAttributes.Name = "btnAnalysisAttributes";
+            this.btnAnalysisAttributes.Size = new System.Drawing.Size(100, 28);
+            this.btnAnalysisAttributes.Text = "Analysis Attri&b.";
+            this.tableLayoutPanel3.Controls.Add(this.btnAnalysisAttributes, 0, 2);
+            this.tableLayoutPanel3.SetColumnSpan(this.btnAnalysisAttributes, 2);
             //
             // pnlDetails
             //
@@ -557,7 +567,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.cmbDetailCostCentreCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailCostCentreCode.Name = "cmbDetailCostCentreCode";
-            this.cmbDetailCostCentreCode.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailCostCentreCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailCostCentreCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblDetailCostCentreCode
             //
@@ -569,14 +580,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel4.Controls.Add(this.lblDetailCostCentreCode, 2, 2);
             this.tableLayoutPanel4.Controls.Add(this.cmbDetailCostCentreCode, 3, 2);
             //
-            // btnAnalysisAttributes
+            // btnUseTaxAccountCostCentre
             //
-            this.btnAnalysisAttributes.Location = new System.Drawing.Point(2,2);
-            this.btnAnalysisAttributes.Name = "btnAnalysisAttributes";
-            this.btnAnalysisAttributes.Size = new System.Drawing.Size(100, 28);
-            this.btnAnalysisAttributes.Text = "Analysis Attri&b.";
-            this.tableLayoutPanel4.Controls.Add(this.btnAnalysisAttributes, 4, 2);
-            this.tableLayoutPanel4.SetColumnSpan(this.btnAnalysisAttributes, 2);
+            this.btnUseTaxAccountCostCentre.Location = new System.Drawing.Point(2,2);
+            this.btnUseTaxAccountCostCentre.Name = "btnUseTaxAccountCostCentre";
+            this.btnUseTaxAccountCostCentre.AutoSize = true;
+            this.btnUseTaxAccountCostCentre.Text = "Use Ta&x Acct+CC";
+            this.tableLayoutPanel4.Controls.Add(this.btnUseTaxAccountCostCentre, 4, 2);
+            this.tableLayoutPanel4.SetColumnSpan(this.btnUseTaxAccountCostCentre, 2);
             //
             // txtDetailBaseAmount
             //
@@ -599,7 +610,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.cmbDetailAccountCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailAccountCode.Name = "cmbDetailAccountCode";
-            this.cmbDetailAccountCode.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailAccountCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailAccountCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblDetailAccountCode
             //
@@ -610,15 +622,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel4.Controls.Add(this.lblDetailAccountCode, 2, 3);
             this.tableLayoutPanel4.Controls.Add(this.cmbDetailAccountCode, 3, 3);
-            //
-            // btnUseTaxAccountCostCentre
-            //
-            this.btnUseTaxAccountCostCentre.Location = new System.Drawing.Point(2,2);
-            this.btnUseTaxAccountCostCentre.Name = "btnUseTaxAccountCostCentre";
-            this.btnUseTaxAccountCostCentre.AutoSize = true;
-            this.btnUseTaxAccountCostCentre.Text = "Use Ta&x Acct+CC";
-            this.tableLayoutPanel4.Controls.Add(this.btnUseTaxAccountCostCentre, 4, 3);
-            this.tableLayoutPanel4.SetColumnSpan(this.btnUseTaxAccountCostCentre, 2);
             this.grpDetails.Text = "Details";
             //
             // tbbSave
@@ -790,7 +793,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             // TFrmAPEditDocument
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(660, 500);
+            this.ClientSize = new System.Drawing.Size(750, 600);
             // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
@@ -860,6 +863,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Button btnAddDetail;
         private System.Windows.Forms.Button btnRemoveDetail;
+        private System.Windows.Forms.Button btnAnalysisAttributes;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.TextBox txtDetailNarrative;
@@ -868,14 +872,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         private System.Windows.Forms.Label lblDetailItemRef;
         private System.Windows.Forms.TextBox txtDetailAmount;
         private System.Windows.Forms.Label lblDetailAmount;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDetailCostCentreCode;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailCostCentreCode;
         private System.Windows.Forms.Label lblDetailCostCentreCode;
-        private System.Windows.Forms.Button btnAnalysisAttributes;
+        private System.Windows.Forms.Button btnUseTaxAccountCostCentre;
         private System.Windows.Forms.TextBox txtDetailBaseAmount;
         private System.Windows.Forms.Label lblDetailBaseAmount;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDetailAccountCode;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailAccountCode;
         private System.Windows.Forms.Label lblDetailAccountCode;
-        private System.Windows.Forms.Button btnUseTaxAccountCostCentre;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.MenuStrip mnuMain;

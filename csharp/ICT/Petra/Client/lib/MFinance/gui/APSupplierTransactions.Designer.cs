@@ -464,12 +464,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tbbNewInvoice.Name = "tbbNewInvoice";
             this.tbbNewInvoice.AutoSize = true;
+            this.tbbNewInvoice.Click += new System.EventHandler(this.CreateInvoice);
             this.tbbNewInvoice.Text = "New &Invoice";
             //
             // tbbNewCreditNote
             //
             this.tbbNewCreditNote.Name = "tbbNewCreditNote";
             this.tbbNewCreditNote.AutoSize = true;
+            this.tbbNewCreditNote.Click += new System.EventHandler(this.CreateCreditNote);
             this.tbbNewCreditNote.Text = "New &Credit Note";
             //
             // tbbSeparator0
@@ -580,12 +582,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.mniNewInvoice.Name = "mniNewInvoice";
             this.mniNewInvoice.AutoSize = true;
+            this.mniNewInvoice.Click += new System.EventHandler(this.CreateInvoice);
             this.mniNewInvoice.Text = "New &Invoice";
             //
             // mniNewCreditNote
             //
             this.mniNewCreditNote.Name = "mniNewCreditNote";
             this.mniNewCreditNote.AutoSize = true;
+            this.mniNewCreditNote.Click += new System.EventHandler(this.CreateCreditNote);
             this.mniNewCreditNote.Text = "New &Credit Note";
             //
             // mniActionNew

@@ -81,14 +81,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       this.grpDocumentInfo.Text = Catalog.GetString("Document Information");
       this.btnAddDetail.Text = Catalog.GetString("Add De&tail");
       this.btnRemoveDetail.Text = Catalog.GetString("&Remove Detail");
+      this.btnAnalysisAttributes.Text = Catalog.GetString("Analysis Attri&b.");
       this.lblDetailNarrative.Text = Catalog.GetString("Narrati&ve:");
       this.lblDetailItemRef.Text = Catalog.GetString("Detail &Ref:");
       this.lblDetailAmount.Text = Catalog.GetString("A&mount:");
       this.lblDetailCostCentreCode.Text = Catalog.GetString("C&ost Centre:");
-      this.btnAnalysisAttributes.Text = Catalog.GetString("Analysis Attri&b.");
+      this.btnUseTaxAccountCostCentre.Text = Catalog.GetString("Use Ta&x Acct+CC");
       this.lblDetailBaseAmount.Text = Catalog.GetString("Base:");
       this.lblDetailAccountCode.Text = Catalog.GetString("Accou&nt:");
-      this.btnUseTaxAccountCostCentre.Text = Catalog.GetString("Use Ta&x Acct+CC");
       this.grpDetails.Text = Catalog.GetString("Details");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
@@ -186,6 +186,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     public bool CreateAApDocumentDetail(Int32 ALedgerNumber, Int32 AApNumber, string AApSupplier_DefaultExpAccount, string AApSupplier_DefaultCostCentre, double AAmount, Int32 ALastDetailNumber)
     {
         FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.CreateAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber));
+        FMainDS.InitVars();
+        FMainDS.AApDocumentDetail.InitVars();
 
         FPetraUtilsObject.SetChangedFlag();
 
@@ -350,6 +352,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     private void ShowDetails(Int32 ACurrentDetailIndex)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
+        BeforeShowDetailsManual(FMainDS.AApDocumentDetail[ACurrentDetailIndex]);
         if (FMainDS.AApDocumentDetail[ACurrentDetailIndex].IsNarrativeNull())
         {
             txtDetailNarrative.Text = String.Empty;

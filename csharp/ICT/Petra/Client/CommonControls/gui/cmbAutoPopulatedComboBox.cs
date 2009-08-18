@@ -593,23 +593,25 @@ namespace Ict.Petra.Client.CommonControls
                 FDataCache_ListTable.Rows.InsertAt(Dr, 0);
             }
 
+            string DescriptionDBName = (ADescDBName != null && ADescDBName.Length > 0) ? ADescDBName : null;
+
+            cmbAutoPopulated.LabelDisplaysColumn = DescriptionDBName;
+
             cmbAutoPopulated.cmbCombobox.BeginUpdate();
             FDataView = new DataView(FDataCache_ListTable);
             FDataView.RowFilter = FFilter;
-            cmbAutoPopulated.cmbCombobox.DataSource = FDataView;
             cmbAutoPopulated.cmbCombobox.DisplayMember = ADisplayDBName;
             cmbAutoPopulated.cmbCombobox.ValueMember = AValueDBName;
             cmbAutoPopulated.cmbCombobox.DisplayInColumn1 = ADisplayDBName;
-            cmbAutoPopulated.cmbCombobox.DisplayInColumn2 = (ADescDBName != null && ADescDBName.Length > 0) ? ADescDBName : null;
+            cmbAutoPopulated.cmbCombobox.DisplayInColumn2 = DescriptionDBName;
             cmbAutoPopulated.cmbCombobox.DisplayInColumn3 = null;
             cmbAutoPopulated.cmbCombobox.DisplayInColumn4 = null;
             cmbAutoPopulated.cmbCombobox.ColumnsToSearch = AColumnsToSearch;
+            cmbAutoPopulated.cmbCombobox.DataSource = FDataView;
             cmbAutoPopulated.cmbCombobox.EndUpdate();
             cmbAutoPopulated.cmbCombobox.Name = this.Name + "_internal_ComboBox";
             cmbAutoPopulated.cmbCombobox.SuppressSelectionColor = true;
             cmbAutoPopulated.cmbCombobox.SelectedItem = null;
-
-            cmbAutoPopulated.LabelDisplaysColumn = cmbAutoPopulated.cmbCombobox.DisplayInColumn2;
 
             FUserControlInitialised = true;
         }

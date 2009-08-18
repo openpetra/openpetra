@@ -166,6 +166,12 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                             SubmitChangesTransaction);
                         myLedgerTable[0].LastApInvNumber++;
                         AInspectDS.AApDocument[0].ApNumber = myLedgerTable[0].LastApInvNumber;
+
+                        foreach (AApDocumentDetailRow detailrow in AInspectDS.AApDocumentDetail.Rows)
+                        {
+                            detailrow.ApNumber = AInspectDS.AApDocument[0].ApNumber;
+                        }
+
                         ALedgerAccess.SubmitChanges(myLedgerTable, SubmitChangesTransaction, out AVerificationResult);
                     }
 

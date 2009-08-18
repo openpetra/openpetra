@@ -650,15 +650,10 @@ namespace Ict.Common.Controls
 
         /// <summary>
         /// This event occurs when the control is created.
-        /// }{*******************************************************************************
-        /// This procedure ensures that the height of this control cannot be changed.
-        ///
         /// </summary>
-        /// <returns>void</returns>
         protected override void OnCreateControl()
         {
             base.OnCreateControl();
-            System.Drawing.Font mLabelFont;
 
             if (!(DesignMode))
             {
@@ -667,14 +662,12 @@ namespace Ict.Common.Controls
                     this.FLabelDisplaysColumn = this.cmbCombobox.DisplayMember;
                 }
 
-                mLabelFont = new System.Drawing.Font(this.Font.FontFamily, (this.Font.Size - 1), System.Drawing.FontStyle.Regular);
+                System.Drawing.Font mLabelFont = new System.Drawing.Font(this.Font.FontFamily, (this.Font.Size - 1), System.Drawing.FontStyle.Regular);
                 this.lblDescription.Font = mLabelFont;
 
                 if (this.cmbCombobox.DataSource != null)
                 {
                     DataBindLabel(this.FLabelDisplaysColumn);
-
-                    // this.lblDescription.DataBindings.Add('Text', this.cmbCombobox.DataSource, this.FLabelDisplaysColumn);
                 }
             }
         }
@@ -708,8 +701,6 @@ namespace Ict.Common.Controls
             if (!(DesignMode))
             {
                 DataBindLabel(this.FLabelDisplaysColumn);
-
-                // this.lblDescription.DataBindings.Add('Text', this.cmbCombobox.DataSource, this.FLabelDisplaysColumn);
             }
         }
 
@@ -813,10 +804,6 @@ namespace Ict.Common.Controls
         /// <param name="e"></param>
         protected void TCmbLabelled_VisibleChanged(System.Object sender, System.EventArgs e)
         {
-            System.Drawing.Graphics mGraphics;
-            mGraphics = lblDescription.CreateGraphics();
-
-            // this.lblDescription.Refresh;
             this.cmbCombobox.Invalidate();
             this.cmbCombobox.SetSelectionColorLength();
             this.lblDescription.Invalidate();

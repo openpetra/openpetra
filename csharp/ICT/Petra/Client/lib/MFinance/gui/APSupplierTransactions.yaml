@@ -10,8 +10,8 @@ RootNode:
     WindowWidth: 754
     WindowHeight: 623
     Actions:
-        actNewInvoice: {Label=New &Invoice, ShortCut=Ctrl+I}        
-        actNewCreditNote:{Label=New &Credit Note, ShortCut=Ctrl+R}
+        actNewInvoice: {Label=New &Invoice, ShortCut=Ctrl+I, ActionClick=CreateInvoice}        
+        actNewCreditNote:{Label=New &Credit Note, ShortCut=Ctrl+R, ActionClick=CreateCreditNote}
         actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O, ActionClick=OpenSelectedApDocument}
         actReverseSelected: {Label=Re&verse Selected, ShortCut=F5}
         actApproveTagged: {Label=&Approve Tagged, ShortCut=F6}

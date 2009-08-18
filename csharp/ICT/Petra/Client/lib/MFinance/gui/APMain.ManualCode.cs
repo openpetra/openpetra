@@ -265,7 +265,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void CreateInvoice(object sender, EventArgs e)
+        private void CreateInvoice(object sender, EventArgs e)
         {
             Int64 PartnerKey = GetCurrentlySelectedSupplier();
 
@@ -274,6 +274,24 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 TFrmAPEditDocument frm = new TFrmAPEditDocument(this.Handle);
 
                 frm.CreateAApDocument(FLedgerNumber, PartnerKey, false);
+                frm.Show();
+            }
+        }
+
+        /// <summary>
+        /// create a new credit note
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateCreditNote(object sender, EventArgs e)
+        {
+            Int64 PartnerKey = GetCurrentlySelectedSupplier();
+
+            if (PartnerKey != -1)
+            {
+                TFrmAPEditDocument frm = new TFrmAPEditDocument(this.Handle);
+
+                frm.CreateAApDocument(FLedgerNumber, PartnerKey, true);
                 frm.Show();
             }
         }

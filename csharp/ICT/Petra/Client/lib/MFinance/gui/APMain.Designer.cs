@@ -591,6 +591,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tbbCreateCreditNote.Name = "tbbCreateCreditNote";
             this.tbbCreateCreditNote.AutoSize = true;
+            this.tbbCreateCreditNote.Click += new System.EventHandler(this.CreateCreditNote);
             this.tbbCreateCreditNote.Text = "Create C&redit Note";
             //
             // tbrMain
@@ -721,6 +722,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.mniCreateCreditNote.Name = "mniCreateCreditNote";
             this.mniCreateCreditNote.AutoSize = true;
+            this.mniCreateCreditNote.Click += new System.EventHandler(this.CreateCreditNote);
             this.mniCreateCreditNote.Text = "Create C&redit Note";
             //
             // mniSupplier
