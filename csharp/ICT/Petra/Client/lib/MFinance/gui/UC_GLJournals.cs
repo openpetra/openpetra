@@ -103,7 +103,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       FPetraUtilsObject.SetStatusBarText(txtDetailJournalDescription, Catalog.GetString("Enter a description for this general ledger journal."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailSubSystemCode, Catalog.GetString("The subsystem from which this journal came."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailTransactionTypeCode, Catalog.GetString("Select the type of journal."));
-      cmbDetailTransactionTypeCode.InitialiseUserControl();
       FPetraUtilsObject.SetStatusBarText(cmbDetailTransactionCurrency, Catalog.GetString("Select a currency code to use for the journal transactions."));
       cmbDetailTransactionCurrency.InitialiseUserControl();
       FPetraUtilsObject.SetStatusBarText(dtpDetailDateEffective, Catalog.GetString("Enter the date for the journal to come into effect."));
@@ -217,7 +216,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdDetails.AutoSizeCells();
-            if (FMainDS.AJournal.Rows.Count > 0)
+            if (myDataView.Count > 0)
             {
                 grdDetails.Selection.ResetSelection(false);
                 grdDetails.Selection.SelectRow(1, true);
@@ -266,12 +265,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
-        if (GetSelectedDetailDataTableIndex() != -1)
-        {
-            // display the details of the currently selected row
-            ShowDetails(GetSelectedDetailDataTableIndex());
-            pnlDetails.Enabled = true;
-        }
+        // display the details of the currently selected row
+        ShowDetails(GetSelectedDetailDataTableIndex());
         FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
     }
 

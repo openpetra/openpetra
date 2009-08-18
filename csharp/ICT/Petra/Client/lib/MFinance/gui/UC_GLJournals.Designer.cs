@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblLedgerNumber = new System.Windows.Forms.Label();
             this.txtBatchNumber = new System.Windows.Forms.TextBox();
             this.lblBatchNumber = new System.Windows.Forms.Label();
-            this.pnlBatches = new System.Windows.Forms.Panel();
+            this.pnlJournals = new System.Windows.Forms.Panel();
             this.pnlDetailGrid = new System.Windows.Forms.Panel();
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlDetailButtons = new System.Windows.Forms.Panel();
@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlInfo.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.pnlBatches.SuspendLayout();
+            this.pnlJournals.SuspendLayout();
             this.pnlDetailGrid.SuspendLayout();
             this.pnlDetailButtons.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -187,12 +187,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.Controls.Add(this.pnlInfo, 0, 0);
             this.tableLayoutPanel1.SetColumnSpan(this.pnlInfo, 2);
             //
-            // pnlBatches
+            // pnlJournals
             //
-            this.pnlBatches.Name = "pnlBatches";
-            this.pnlBatches.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlBatches.Controls.Add(this.pnlDetailGrid);
-            this.pnlBatches.Controls.Add(this.pnlDetails);
+            this.pnlJournals.Name = "pnlJournals";
+            this.pnlJournals.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlJournals.Controls.Add(this.pnlDetailGrid);
+            this.pnlJournals.Controls.Add(this.pnlDetails);
             //
             // pnlDetailGrid
             //
@@ -308,7 +308,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.cmbDetailTransactionTypeCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailTransactionTypeCode.Name = "cmbDetailTransactionTypeCode";
             this.cmbDetailTransactionTypeCode.Size = new System.Drawing.Size(300, 28);
-            this.cmbDetailTransactionTypeCode.ListTable = TCmbAutoPopulated.TListTableEnum.TransactionTypeCodeList;
+            this.cmbDetailTransactionTypeCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblDetailTransactionTypeCode
             //
@@ -369,8 +369,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailExchangeRateToBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel4.Controls.Add(this.lblDetailExchangeRateToBase, 0, 5);
             this.tableLayoutPanel4.Controls.Add(this.txtDetailExchangeRateToBase, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.pnlBatches, 0, 1);
-            this.tableLayoutPanel1.SetColumnSpan(this.pnlBatches, 2);
+            this.tableLayoutPanel1.Controls.Add(this.pnlJournals, 0, 1);
+            this.tableLayoutPanel1.SetColumnSpan(this.pnlJournals, 2);
 
             //
             // TUC_GLJournals
@@ -388,7 +388,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel3.ResumeLayout(false);
             this.pnlDetailButtons.ResumeLayout(false);
             this.pnlDetailGrid.ResumeLayout(false);
-            this.pnlBatches.ResumeLayout(false);
+            this.pnlJournals.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.pnlInfo.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -404,7 +404,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Label lblLedgerNumber;
         private System.Windows.Forms.TextBox txtBatchNumber;
         private System.Windows.Forms.Label lblBatchNumber;
-        private System.Windows.Forms.Panel pnlBatches;
+        private System.Windows.Forms.Panel pnlJournals;
         private System.Windows.Forms.Panel pnlDetailGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlDetailButtons;

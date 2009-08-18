@@ -183,7 +183,7 @@ namespace {#NAMESPACE}
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdDetails.AutoSizeCells();
-            if (FMainDS.{#DETAILTABLE}.Rows.Count > 0)
+            if (myDataView.Count > 0)
             {
                 grdDetails.Selection.ResetSelection(false);
                 grdDetails.Selection.SelectRow(1, true);
@@ -223,12 +223,8 @@ namespace {#NAMESPACE}
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
 {#ENDIF SAVEDETAILS}
-        if (GetSelectedDetailDataTableIndex() != -1)
-        {
-            // display the details of the currently selected row
-            ShowDetails(GetSelectedDetailDataTableIndex());
-            pnlDetails.Enabled = true;
-        }
+        // display the details of the currently selected row
+        ShowDetails(GetSelectedDetailDataTableIndex());
         FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
     }
 {#ENDIF SHOWDETAILS}

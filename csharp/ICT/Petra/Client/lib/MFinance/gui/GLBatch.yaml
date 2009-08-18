@@ -6,7 +6,7 @@ RootNode:
     FormType: browse
     Template: windowTDS
     WindowWidth: 660
-    WindowHeight: 500
+    WindowHeight: 700
     Controls:
         pnlContent:
             Controls: [tabGLBatch]

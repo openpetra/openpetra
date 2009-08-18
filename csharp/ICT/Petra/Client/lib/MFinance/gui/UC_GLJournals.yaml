@@ -11,14 +11,14 @@ RootNode:
         actNew: {Label=&Add, ActionClick=NewRow}
     Controls:
         pnlContent:
-            Controls: [pnlInfo, pnlBatches]
+            Controls: [pnlInfo, pnlJournals]
             Dock: Fill
         pnlInfo:
             Controls: 
                 Row0: [txtLedgerNumber, txtBatchNumber]
         txtLedgerNumber: {ReadOnly=true, Label=Ledger}
         txtBatchNumber: {ReadOnly=true, Label=Batch}
-        pnlBatches:
+        pnlJournals:
             Controls: [pnlDetailGrid, pnlDetails]
             Dock: Fill
         pnlDetailGrid:
@@ -42,8 +42,8 @@ RootNode:
         txtDetailJournalDescription: {Label=Journal Description, Width=350}
         # SubSystemCode: the user can only select GL, but the system can generate eg. AP journals or GR journals
         cmbDetailSubSystemCode: {Label=Sub System, ReadOnly=true}
-        # transaction type depends on the ledger and the selected sub system
-        cmbDetailTransactionTypeCode: {Label=Transaction Type, List=TransactionTypeCodeList}
+        # transaction type depends on the ledger and the selected sub system; see BeforeShowDetailsManual
+        cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList}
         cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
         dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
         txtDetailExchangeRateToBase: {Label= Exchange Rate to Base, TODOSaveToDailyExchangeRateTableWithDialog=think}

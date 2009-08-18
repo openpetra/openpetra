@@ -3,7 +3,7 @@
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * @Authors:
- *       christiank, markusm
+ *       christiank, markusm, timop
  *
  * Copyright 2004-2009 by OM International
  *
@@ -32,6 +32,7 @@ using System.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Client.CommonControls;
@@ -57,6 +58,9 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         public enum TListTableEnum
         {
+            /// user defined list; calls InitializeUserControl(DataTable, ...) and AppearanceSetup(Int32[], Int32)
+            UserDefinedList,
+
             /// <summary>todoComment</summary>
             AccommodationCodeList,
 
@@ -77,9 +81,6 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             CurrencyCodeList,
-
-            /// for GL journals transaction type
-            TransactionTypeCodeList,
 
             /// <summary>todoComment</summary>
             DataLabelLookupList,
@@ -307,712 +308,496 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
-        /// todoComment
+        /// initialise user controls for specific tables
+        /// it might be better to do this in other functions, see also Client/lib/MFinance/gui/FinanceComboboxes.cs
         /// </summary>
         public void InitialiseUserControl()
         {
-            String TmpDisplayMember = "";
-            String TmpValueMember = "";
-            String TmpColumnsToSearch = "";
-            String TmpDisplayInColumn1 = "";
-            String TmpDisplayInColumn2 = "";
-            String TmpDisplayInColumn3 = "";
-            String TmpDisplayInColumn4 = "";
-
-            if ((FListTable == TListTableEnum.TransactionTypeCodeList) && (FDataCache_ListTable == null))
+            if (DesignMode)
             {
-                // the table must be set manually via the Table property
                 return;
             }
 
-            if (!(DesignMode))
+            switch (FListTable)
             {
-                // Pass on any set Tag
-                cmbAutoPopulated.Tag = this.Tag;
-                cmbAutoPopulated.cmbCombobox.Tag = this.Tag;
-                this.cmbAutoPopulated.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
+                case TListTableEnum.AccommodationCodeList:
 
-                switch (FListTable)
-                {
-                    case TListTableEnum.AccommodationCodeList:
+                    InitialiseUserControl(
+                    TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.AccommodationCodeList),
+                    "AccommodationCode",
+                    null,
+                    null);
+                    break;
 
-                        // Setup Data
-                        FDataCache_ListTable = TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.AccommodationCodeList);
-                        TmpDisplayMember = "AccommodationCode";
-                        TmpValueMember = "AccommodationCode";
-                        TmpDisplayInColumn1 = "AccommodationCode";
-                        TmpDisplayInColumn2 = null;
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = null;
-                        break;
-
-                    case TListTableEnum.AcquisitionCodeList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.AcquisitionCodeList);
-                        TmpDisplayMember = "p_acquisition_code_c";
-                        TmpValueMember = "p_acquisition_code_c";
-                        TmpDisplayInColumn1 = "p_acquisition_code_c";
-                        TmpDisplayInColumn2 = "p_acquisition_description_c";
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = "p_acquisition_description_c";
-                        break;
-
-                    case TListTableEnum.AddresseeTypeList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.AddresseeTypeList);
-                        TmpDisplayMember = "p_addressee_type_code_c";
-                        TmpValueMember = "p_addressee_type_code_c";
-                        TmpDisplayInColumn1 = "p_addressee_type_code_c";
-                        TmpDisplayInColumn2 = "p_description_c";
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = null;
-                        break;
-
-                    case TListTableEnum.AddressLayoutList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.AddressLayoutList);
-                        TmpDisplayMember = "AddressLayout";
-                        TmpValueMember = "AddressLayout";
-                        TmpDisplayInColumn1 = "AddressLayout";
-                        TmpDisplayInColumn2 = null;
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = null;
-                        break;
-
-                    case TListTableEnum.BusinessCodeList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.BusinessCodeList);
-
-                        // MessageBox.Show('BusinessCodeList Entries: ' + FDataCache_ListTable.Rows.Count.ToString);
-                        TmpDisplayMember = "p_business_code_c";
-                        TmpValueMember = "p_business_code_c";
-                        TmpDisplayInColumn1 = "p_business_code_c";
-                        TmpDisplayInColumn2 = "p_business_description_c";
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = null;
-                        break;
-
-                    case TListTableEnum.CountryList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CountryList);
-                        TmpDisplayMember = "p_country_code_c";
-                        TmpValueMember = "p_country_code_c";
-                        TmpColumnsToSearch = "#VALUE#, p_country_name_c";
-                        TmpDisplayInColumn1 = "p_country_code_c";
-                        TmpDisplayInColumn2 = "p_country_name_c";
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = "p_country_name_c";
-                        break;
-
-                    case TListTableEnum.CurrencyCodeList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList);
-                        TmpDisplayMember = ACurrencyTable.GetCurrencyCodeDBName();
-                        TmpValueMember = ACurrencyTable.GetCurrencyCodeDBName();
-                        TmpDisplayInColumn1 = ACurrencyTable.GetCurrencyCodeDBName();
-                        TmpDisplayInColumn2 = ACurrencyTable.GetCurrencyNameDBName();
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = ACurrencyTable.GetCurrencyNameDBName();
-                        break;
-
-                    case TListTableEnum.TransactionTypeCodeList:
-
-                        TmpDisplayMember = ATransactionTypeTable.GetTransactionTypeCodeDBName();
-                        TmpValueMember = ATransactionTypeTable.GetTransactionTypeCodeDBName();
-                        TmpDisplayInColumn1 = ATransactionTypeTable.GetTransactionTypeCodeDBName();
-                        TmpDisplayInColumn2 = ATransactionTypeTable.GetTransactionTypeDescriptionDBName();
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = ATransactionTypeTable.GetTransactionTypeDescriptionDBName();
-                        break;
-
-                    case TListTableEnum.DenominationList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DenominationList);
-                        TmpDisplayMember = "p_denomination_code_c";
-                        TmpValueMember = "p_denomination_code_c";
-                        TmpDisplayInColumn1 = "p_denomination_code_c";
-                        TmpDisplayInColumn2 = "p_denomination_name_c";
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = "p_denomination_name_c";
-                        break;
-
-                    case TListTableEnum.FoundationOwnerList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.FoundationOwnerList);
-                        TmpDisplayMember = "s_user_id_c";
-                        TmpValueMember = "p_partner_key_n";
-                        TmpDisplayInColumn1 = "s_user_id_c";
-                        TmpDisplayInColumn2 = null;
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = null;
-                        break;
-
-                    case TListTableEnum.GenderList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.GenderList);
-                        TmpDisplayMember = "Gender";
-                        TmpValueMember = "Gender";
-                        TmpDisplayInColumn1 = "Gender";
-                        TmpDisplayInColumn2 = null;
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = null;
-                        break;
-
-                    case TListTableEnum.InterestList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.InterestList);
-                        TmpDisplayMember = PInterestTable.GetInterestDBName();
-                        TmpValueMember = PInterestTable.GetInterestDBName();
-                        TmpDisplayInColumn1 = PInterestTable.GetInterestDBName();
-                        TmpDisplayInColumn2 = PInterestTable.GetDescriptionDBName();
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = PInterestTable.GetDescriptionDBName();
-                        break;
-
-                    case TListTableEnum.InterestCategoryList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.InterestCategoryList);
-                        TmpDisplayMember = PInterestCategoryTable.GetCategoryDBName();
-                        TmpValueMember = PInterestCategoryTable.GetCategoryDBName();
-                        TmpDisplayInColumn1 = PInterestCategoryTable.GetCategoryDBName();
-                        TmpDisplayInColumn2 = PInterestCategoryTable.GetDescriptionDBName();
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = PInterestCategoryTable.GetDescriptionDBName();
-                        break;
-
-                    case TListTableEnum.LanguageCodeList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LanguageCodeList);
-                        TmpDisplayMember = "p_language_code_c";
-                        TmpValueMember = "p_language_code_c";
-                        TmpColumnsToSearch = "#VALUE#, p_language_description_c";
-                        TmpDisplayInColumn1 = "p_language_code_c";
-                        TmpDisplayInColumn2 = "p_language_description_c";
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = "p_language_description_c";
-                        break;
-
-                    case TListTableEnum.LocationTypeList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LocationTypeList);
-                        TmpDisplayMember = PLocationTypeTable.GetCodeDBName();
-                        TmpValueMember = PLocationTypeTable.GetCodeDBName();
-                        TmpDisplayInColumn1 = PLocationTypeTable.GetCodeDBName();
-                        TmpDisplayInColumn2 = null;
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = null;
-                        break;
-
-                    case TListTableEnum.MaritalStatusList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.MaritalStatusList);
-                        TmpDisplayMember = "pt_code_c";
-                        TmpValueMember = "pt_code_c";
-                        TmpDisplayInColumn1 = "pt_code_c";
-                        TmpDisplayInColumn2 = "pt_description_c";
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = "pt_description_c";
-                        break;
-
-                    case TListTableEnum.PartnerClassList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.PartnerClassList);
-                        TmpDisplayMember = "PartnerClass";
-                        TmpValueMember = "PartnerClass";
-                        TmpDisplayInColumn1 = "PartnerClass";
-                        TmpDisplayInColumn2 = null;
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = null;
-                        break;
-
-                    case TListTableEnum.PartnerStatusList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.PartnerStatusList);
-                        TmpDisplayMember = "p_status_code_c";
-                        TmpValueMember = "p_status_code_c";
-                        TmpDisplayInColumn1 = "p_status_code_c";
-                        TmpDisplayInColumn2 = null;
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = null;
-                        break;
-
-                    case TListTableEnum.ProposalStatusList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ProposalStatusList);
-                        TmpDisplayMember = "p_status_code_c";
-                        TmpValueMember = "p_status_code_c";
-                        TmpDisplayInColumn1 = "p_status_code_c";
-                        TmpDisplayInColumn2 = "p_status_description_c";
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = "p_status_description_c";
-                        break;
-
-                    case TListTableEnum.ProposalSubmissionTypeList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ProposalSubmissionTypeList);
-                        TmpDisplayMember = "p_submission_type_code_c";
-                        TmpValueMember = "p_submission_type_code_c";
-                        TmpDisplayInColumn1 = "p_submission_type_code_c";
-                        TmpDisplayInColumn2 = "p_submission_type_description_c";
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = "p_submission_type_description_c";
-                        break;
-
-                    case TListTableEnum.ProposalReviewFrequencyList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.ProposalReviewFrequency);
-                        TmpDisplayMember = "ProposalReviewFrequency";
-                        TmpValueMember = "ProposalReviewFrequency";
-                        TmpDisplayInColumn1 = "ProposalReviewFrequency";
-                        TmpDisplayInColumn2 = null;
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = null;
-                        break;
-
-                    case TListTableEnum.ProposalSubmitFrequencyList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.ProposalSubmitFrequency);
-                        TmpDisplayMember = "ProposalSubmitFrequency";
-                        TmpValueMember = "ProposalSubmitFrequency";
-                        TmpDisplayInColumn1 = "ProposalSubmitFrequency";
-                        TmpDisplayInColumn2 = null;
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = null;
-                        break;
-
-                    case TListTableEnum.ReasonSubscriptionCancelledList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheableSubscriptionsTable(
-                        TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList);
-                        TmpDisplayMember = "p_code_c";
-                        TmpValueMember = "p_code_c";
-                        TmpDisplayInColumn1 = "p_code_c";
-                        TmpDisplayInColumn2 = "p_description_c";
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = "p_description_c";
-                        break;
-
-                    case TListTableEnum.ReasonSubscriptionGivenList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheableSubscriptionsTable(
-                        TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList);
-                        TmpDisplayMember = "p_code_c";
-                        TmpValueMember = "p_code_c";
-                        TmpDisplayInColumn1 = "p_code_c";
-                        TmpDisplayInColumn2 = "p_description_c";
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = "p_description_c";
-                        break;
-
-                    case TListTableEnum.PublicationList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum.PublicationList);
-                        TmpDisplayMember = PPublicationTable.GetPublicationCodeDBName();
-                        TmpValueMember = PPublicationTable.GetPublicationCodeDBName();
-                        TmpDisplayInColumn1 = PPublicationTable.GetPublicationCodeDBName();
-                        TmpDisplayInColumn2 = PPublicationTable.GetPublicationDescriptionDBName();
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = PPublicationTable.GetPublicationDescriptionDBName();
-                        break;
-
-                    case TListTableEnum.SubscriptionStatus:
-
-                        // Setup Data
-                        FDataCache_ListTable = TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.SubscriptionStatus);
-                        TmpDisplayMember = "SubscriptionStatus";
-                        TmpValueMember = "SubscriptionStatus";
-                        TmpDisplayInColumn1 = "SubscriptionStatus";
-                        TmpDisplayInColumn2 = null;
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = null;
-                        break;
-
-                    case TListTableEnum.UnitTypeList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.UnitTypeList);
-                        TmpDisplayMember = UUnitTypeTable.GetUnitTypeCodeDBName();
-                        TmpValueMember = UUnitTypeTable.GetUnitTypeCodeDBName();
-                        TmpDisplayInColumn1 = UUnitTypeTable.GetUnitTypeCodeDBName();
-                        TmpDisplayInColumn2 = UUnitTypeTable.GetUnitTypeNameDBName();
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = UUnitTypeTable.GetUnitTypeNameDBName();
-                        break;
-
-                    case TListTableEnum.DataLabelLookupList:
-
-                        // Setup Data
-                        FDataCache_ListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelLookupList);
-                        TmpDisplayMember = PDataLabelLookupTable.GetValueCodeDBName();
-                        TmpValueMember = PDataLabelLookupTable.GetValueCodeDBName();
-                        TmpDisplayInColumn1 = PDataLabelLookupTable.GetValueCodeDBName();
-                        TmpDisplayInColumn2 = PDataLabelLookupTable.GetValueDescDBName();
-                        TmpDisplayInColumn3 = null;
-                        TmpDisplayInColumn4 = null;
-                        cmbAutoPopulated.LabelDisplaysColumn = PDataLabelLookupTable.GetValueDescDBName();
-                        break;
-                }
-
-                if (FAddNotSetValue)
-                {
-                    DataRow Dr = FDataCache_ListTable.NewRow();
-                    Dr[TmpValueMember] = FNotSetValue;
-                    Dr[TmpDisplayMember] = FNotSetDisplay;
-                    FDataCache_ListTable.Rows.InsertAt(Dr, 0);
-                }
-
-                cmbAutoPopulated.cmbCombobox.BeginUpdate();
-
-                // Create a data view so the filter can be applied. If the filter string
-                // that needs to be set from the outside is empty then it does not have
-                // any effect
-                FDataView = new DataView(FDataCache_ListTable);
-                FDataView.RowFilter = FFilter;
-                cmbAutoPopulated.cmbCombobox.DataSource = FDataView;
-                cmbAutoPopulated.cmbCombobox.DisplayMember = TmpDisplayMember;
-                cmbAutoPopulated.cmbCombobox.ValueMember = TmpValueMember;
-                cmbAutoPopulated.cmbCombobox.DisplayInColumn1 = TmpDisplayInColumn1;
-                cmbAutoPopulated.cmbCombobox.DisplayInColumn2 = TmpDisplayInColumn2;
-                cmbAutoPopulated.cmbCombobox.DisplayInColumn3 = TmpDisplayInColumn3;
-                cmbAutoPopulated.cmbCombobox.DisplayInColumn4 = TmpDisplayInColumn4;
-                cmbAutoPopulated.cmbCombobox.ColumnsToSearch = TmpColumnsToSearch;
-                cmbAutoPopulated.cmbCombobox.EndUpdate();
-                cmbAutoPopulated.cmbCombobox.Name = this.Name + "_internal_ComboBox";
-                cmbAutoPopulated.cmbCombobox.SuppressSelectionColor = true;
-                cmbAutoPopulated.cmbCombobox.SelectedItem = null;
-                FUserControlInitialised = true;
-            }
-        }
-
-        private void AppearanceSetup(TListTableEnum AListTable)
-        {
-            switch (AListTable)
-            {
                 case TListTableEnum.AcquisitionCodeList:
-                    cmbAutoPopulated.ComboBoxWidth = 100;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
-                    cmbAutoPopulated.ColumnWidthCol2 = 350;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.AcquisitionCodeList),
+                    "p_acquisition_code_c",
+                    "p_acquisition_description_c",
+                    null);
                     break;
 
                 case TListTableEnum.AddresseeTypeList:
-                    cmbAutoPopulated.ComboBoxWidth = 100;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
-                    cmbAutoPopulated.ColumnWidthCol2 = 150;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
-                    cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 9;
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.AddresseeTypeList),
+                    "p_addressee_type_code_c",
+                    "p_description_c",
+                    null);
                     break;
 
                 case TListTableEnum.AddressLayoutList:
-                    cmbAutoPopulated.ComboBoxWidth = 100;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
-                    cmbAutoPopulated.ColumnWidthCol2 = 0;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
+
+                    InitialiseUserControl(
+                    TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.AddressLayoutList),
+                    "AddressLayout",
+                    null,
+                    null);
                     break;
 
                 case TListTableEnum.BusinessCodeList:
-                    cmbAutoPopulated.ComboBoxWidth = 100;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.BusinessCodeList),
+                    "p_business_code_c",
+                    "p_business_description_c",
+                    null);
+                    break;
+
+                case TListTableEnum.CountryList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CountryList),
+                    "p_country_code_c",
+                    "p_country_name_c",
+                    "#VALUE#, p_country_name_c");
+                    break;
+
+                case TListTableEnum.CurrencyCodeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList),
+                    ACurrencyTable.GetCurrencyCodeDBName(),
+                    ACurrencyTable.GetCurrencyNameDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.DenominationList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DenominationList),
+                    "p_denomination_code_c",
+                    "p_denomination_name_c",
+                    null);
+                    break;
+
+                case TListTableEnum.FoundationOwnerList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.FoundationOwnerList),
+                    "s_user_id_c",
+                    "p_partner_key_n",
+                    null,
+                    null);
+                    break;
+
+                case TListTableEnum.GenderList:
+
+                    InitialiseUserControl(
+                    TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.GenderList),
+                    "Gender",
+                    null,
+                    null);
+                    break;
+
+                case TListTableEnum.InterestList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.InterestList),
+                    PInterestTable.GetInterestDBName(),
+                    PInterestTable.GetDescriptionDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.InterestCategoryList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.InterestCategoryList),
+                    PInterestCategoryTable.GetCategoryDBName(),
+                    PInterestCategoryTable.GetDescriptionDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.LanguageCodeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LanguageCodeList),
+                    "p_language_code_c",
+                    "p_language_description_c",
+                    "#VALUE#, p_language_description_c");
+                    break;
+
+                case TListTableEnum.LocationTypeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LocationTypeList),
+                    "pt_code_c",
+                    null,
+                    null);
+                    break;
+
+                case TListTableEnum.MaritalStatusList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.MaritalStatusList),
+                    "pt_code_c",
+                    "pt_description_c",
+                    null);
+                    break;
+
+
+                case TListTableEnum.PartnerClassList:
+
+                    InitialiseUserControl(
+                    TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.PartnerClassList),
+                    "PartnerClass",
+                    null,
+                    null);
+                    break;
+
+                case TListTableEnum.PartnerStatusList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.PartnerStatusList),
+                    "p_status_code_c",
+                    null,
+                    null);
+                    break;
+
+                case TListTableEnum.ProposalStatusList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ProposalStatusList),
+                    "p_status_code_c",
+                    "p_status_description_c",
+                    null);
+                    break;
+
+                case TListTableEnum.ProposalSubmissionTypeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ProposalSubmissionTypeList),
+                    "p_submission_type_code_c",
+                    "p_submission_type_description_c",
+                    null);
+                    break;
+
+                case TListTableEnum.ProposalReviewFrequencyList:
+
+                    InitialiseUserControl(
+                    TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.ProposalReviewFrequency),
+                    "ProposalReviewFrequency",
+                    null,
+                    null);
+                    break;
+
+                case TListTableEnum.ProposalSubmitFrequencyList:
+
+                    InitialiseUserControl(
+                    TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.ProposalSubmitFrequency),
+                    "ProposalSubmitFrequency",
+                    null,
+                    null);
+                    break;
+
+                case TListTableEnum.ReasonSubscriptionCancelledList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList),
+                    "p_code_c",
+                    "p_description_c",
+                    null);
+                    break;
+
+                case TListTableEnum.ReasonSubscriptionGivenList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList),
+                    "p_code_c",
+                    "p_description_c",
+                    null);
+                    break;
+
+                case TListTableEnum.PublicationList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum.PublicationList),
+                    PPublicationTable.GetPublicationCodeDBName(),
+                    PPublicationTable.GetPublicationDescriptionDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.SubscriptionStatus:
+
+                    InitialiseUserControl(
+                    TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.SubscriptionStatus),
+                    "SubscriptionStatus",
+                    null,
+                    null);
+                    break;
+
+                case TListTableEnum.UnitTypeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.UnitTypeList),
+                    UUnitTypeTable.GetUnitTypeCodeDBName(),
+                    UUnitTypeTable.GetUnitTypeNameDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.DataLabelLookupList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelLookupList),
+                    PDataLabelLookupTable.GetValueCodeDBName(),
+                    PDataLabelLookupTable.GetValueDescDBName(),
+                    null);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// generic function for initialising the user control
+        /// does not depend on table implementations
+        /// </summary>
+        /// <param name="ATable"></param>
+        /// <param name="ADisplayDBName"></param>
+        /// <param name="AValueDBName">name of the column in the table that has the name</param>
+        /// <param name="ADescDBName">name of the column in the table that has the description; can be empty</param>
+        /// <param name="AColumnsToSearch"></param>
+        void InitialiseUserControl(DataTable ATable, string ADisplayDBName, string AValueDBName, string ADescDBName, string AColumnsToSearch)
+        {
+            FDataCache_ListTable = ATable;
+
+            // Pass on any set Tag
+            cmbAutoPopulated.Tag = this.Tag;
+            cmbAutoPopulated.cmbCombobox.Tag = this.Tag;
+            this.cmbAutoPopulated.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
+
+            if (FAddNotSetValue)
+            {
+                DataRow Dr = FDataCache_ListTable.NewRow();
+                Dr[AValueDBName] = FNotSetValue;
+                Dr[ADisplayDBName] = FNotSetDisplay;
+                FDataCache_ListTable.Rows.InsertAt(Dr, 0);
+            }
+
+            cmbAutoPopulated.cmbCombobox.BeginUpdate();
+            FDataView = new DataView(FDataCache_ListTable);
+            FDataView.RowFilter = FFilter;
+            cmbAutoPopulated.cmbCombobox.DataSource = FDataView;
+            cmbAutoPopulated.cmbCombobox.DisplayMember = ADisplayDBName;
+            cmbAutoPopulated.cmbCombobox.ValueMember = AValueDBName;
+            cmbAutoPopulated.cmbCombobox.DisplayInColumn1 = ADisplayDBName;
+            cmbAutoPopulated.cmbCombobox.DisplayInColumn2 = (ADescDBName != null && ADescDBName.Length > 0) ? ADescDBName : null;
+            cmbAutoPopulated.cmbCombobox.DisplayInColumn3 = null;
+            cmbAutoPopulated.cmbCombobox.DisplayInColumn4 = null;
+            cmbAutoPopulated.cmbCombobox.ColumnsToSearch = AColumnsToSearch;
+            cmbAutoPopulated.cmbCombobox.EndUpdate();
+            cmbAutoPopulated.cmbCombobox.Name = this.Name + "_internal_ComboBox";
+            cmbAutoPopulated.cmbCombobox.SuppressSelectionColor = true;
+            cmbAutoPopulated.cmbCombobox.SelectedItem = null;
+
+            cmbAutoPopulated.LabelDisplaysColumn = cmbAutoPopulated.cmbCombobox.DisplayInColumn2;
+
+            FUserControlInitialised = true;
+        }
+
+        /// <summary>
+        /// overload
+        /// assume that display is equals value
+        /// </summary>
+        /// <param name="ATable"></param>
+        /// <param name="AValueDBName">name of the column in the table that has the name</param>
+        /// <param name="ADescDBName">name of the column in the table that has the description; can be empty</param>
+        /// <param name="AColumnsToSearch"></param>
+        public void InitialiseUserControl(DataTable ATable, string AValueDBName, string ADescDBName, string AColumnsToSearch)
+        {
+            InitialiseUserControl(ATable, AValueDBName, AValueDBName, ADescDBName, AColumnsToSearch);
+        }
+
+        /// <summary>
+        /// quick general way of setting the appearance of the combobox
+        /// assumption: the width of the combobox is equal the width of the first column in the list
+        /// assumption: if a value is not greater than 0, the default values are used
+        /// assumption: images are not being used when this function is called
+        /// </summary>
+        /// <param name="AColumnWidth"></param>
+        /// <param name="AMaxDropDownItems"></param>
+        public void AppearanceSetup(Int32[] AColumnWidth, Int32 AMaxDropDownItems)
+        {
+            cmbAutoPopulated.ComboBoxWidth = 100;
+            cmbAutoPopulated.ColumnWidthCol1 = 100;
+            cmbAutoPopulated.ColumnWidthCol2 = 0;
+            cmbAutoPopulated.ColumnWidthCol3 = 0;
+            cmbAutoPopulated.ColumnWidthCol4 = 0;
+            cmbAutoPopulated.ImageColumn = 0;
+            cmbAutoPopulated.Images = null;
+
+            for (Int32 Counter = 0; Counter < AColumnWidth.Length; Counter++)
+            {
+                if (AColumnWidth[Counter] > 0)
+                {
+                    switch (Counter)
+                    {
+                        case 0:
+                            cmbAutoPopulated.ComboBoxWidth = AColumnWidth[Counter];
+                            cmbAutoPopulated.ColumnWidthCol1 = AColumnWidth[Counter];
+                            break;
+
+                        case 1:
+                            cmbAutoPopulated.ColumnWidthCol2 = AColumnWidth[Counter];
+                            break;
+
+                        case 2:
+                            cmbAutoPopulated.ColumnWidthCol3 = AColumnWidth[Counter];
+                            break;
+
+                        case 3:
+                            cmbAutoPopulated.ColumnWidthCol4 = AColumnWidth[Counter];
+                            break;
+                    }
+                }
+            }
+
+            if (AMaxDropDownItems > 0)
+            {
+                cmbAutoPopulated.cmbCombobox.MaxDropDownItems = AMaxDropDownItems;
+            }
+        }
+
+        /// it might be better to do this in other functions, see also Client/lib/MFinance/gui/FinanceComboboxes.cs
+        private void AppearanceSetup(TListTableEnum AListTable)
+        {
+            cmbAutoPopulated.ComboBoxWidth = 0;
+            cmbAutoPopulated.ColumnWidthCol1 = 100;
+            cmbAutoPopulated.ColumnWidthCol2 = 0;
+            cmbAutoPopulated.ColumnWidthCol3 = 0;
+            cmbAutoPopulated.ColumnWidthCol4 = 0;
+            cmbAutoPopulated.ImageColumn = 0;
+            cmbAutoPopulated.Images = null;
+
+            switch (AListTable)
+            {
+                case TListTableEnum.AcquisitionCodeList:
+                    cmbAutoPopulated.ColumnWidthCol2 = 350;
+                    break;
+
+                case TListTableEnum.AddresseeTypeList:
                     cmbAutoPopulated.ColumnWidthCol2 = 150;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
+                    cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 9;
+                    break;
+
+                case TListTableEnum.BusinessCodeList:
+                    cmbAutoPopulated.ColumnWidthCol2 = 150;
                     cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 9;
                     break;
 
                 case TListTableEnum.CountryList:
-                    cmbAutoPopulated.ComboBoxWidth = 50;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
+                    cmbAutoPopulated.ColumnWidthCol1 = 50;
                     cmbAutoPopulated.ColumnWidthCol2 = 200;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
                     break;
 
                 case TListTableEnum.CurrencyCodeList:
-                    cmbAutoPopulated.ComboBoxWidth = 60;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
+                    cmbAutoPopulated.ColumnWidthCol1 = 60;
                     cmbAutoPopulated.ColumnWidthCol2 = 170;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
-                    break;
-
-                case TListTableEnum.TransactionTypeCodeList:
-                    cmbAutoPopulated.ComboBoxWidth = 100;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
-                    cmbAutoPopulated.ColumnWidthCol2 = 150;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
                     break;
 
                 case TListTableEnum.DenominationList:
-                    cmbAutoPopulated.ComboBoxWidth = 100;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
                     cmbAutoPopulated.ColumnWidthCol2 = 330;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
                     break;
 
                 case TListTableEnum.FoundationOwnerList:
-                    cmbAutoPopulated.ComboBoxWidth = 120;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
-                    cmbAutoPopulated.ColumnWidthCol2 = 0;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
+                    cmbAutoPopulated.ColumnWidthCol1 = 120;
                     break;
 
                 case TListTableEnum.GenderList:
-                    cmbAutoPopulated.ComboBoxWidth = 88;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
-                    cmbAutoPopulated.ColumnWidthCol2 = 0;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
+                    cmbAutoPopulated.ColumnWidthCol1 = 88;
                     cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 3;
                     break;
 
                 case TListTableEnum.InterestList:
-                    cmbAutoPopulated.ComboBoxWidth = 130;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
+                    cmbAutoPopulated.ColumnWidthCol1 = 130;
                     cmbAutoPopulated.ColumnWidthCol2 = 230;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
                     cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 3;
                     break;
 
                 case TListTableEnum.InterestCategoryList:
-                    cmbAutoPopulated.ComboBoxWidth = 130;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
+                    cmbAutoPopulated.ColumnWidthCol1 = 130;
                     cmbAutoPopulated.ColumnWidthCol2 = 230;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
                     cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 3;
                     break;
 
                 case TListTableEnum.LanguageCodeList:
-                    cmbAutoPopulated.ComboBoxWidth = 57;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
+                    cmbAutoPopulated.ColumnWidthCol1 = 57;
                     cmbAutoPopulated.ColumnWidthCol2 = 130;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
                     break;
 
                 case TListTableEnum.LocationTypeList:
-                    cmbAutoPopulated.ComboBoxWidth = 110;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
-                    cmbAutoPopulated.ColumnWidthCol2 = 0;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
+                    cmbAutoPopulated.ColumnWidthCol1 = 110;
                     break;
 
                 case TListTableEnum.MaritalStatusList:
-                    cmbAutoPopulated.ComboBoxWidth = 39;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
+                    cmbAutoPopulated.ColumnWidthCol1 = 39;
                     cmbAutoPopulated.ColumnWidthCol2 = 230;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
                     cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 10;
                     break;
 
                 case TListTableEnum.PartnerClassList:
-                    cmbAutoPopulated.ComboBoxWidth = 130;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
-                    cmbAutoPopulated.ColumnWidthCol2 = 0;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
+                    cmbAutoPopulated.ColumnWidthCol1 = 130;
                     break;
 
                 case TListTableEnum.PartnerStatusList:
-                    cmbAutoPopulated.ComboBoxWidth = 95;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
-                    cmbAutoPopulated.ColumnWidthCol2 = 0;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
-                    break;
-
-                case TListTableEnum.ProposalReviewFrequencyList:
-                    cmbAutoPopulated.ComboBoxWidth = 100;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
-                    cmbAutoPopulated.ColumnWidthCol2 = 0;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
-                    break;
-
-                case TListTableEnum.ProposalSubmitFrequencyList:
-                    cmbAutoPopulated.ComboBoxWidth = 100;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
-                    cmbAutoPopulated.ColumnWidthCol2 = 0;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
-                    break;
-
-                case TListTableEnum.ProposalStatusList:
-                    cmbAutoPopulated.ComboBoxWidth = 100;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
-                    cmbAutoPopulated.ColumnWidthCol2 = 0;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
+                    cmbAutoPopulated.ColumnWidthCol1 = 95;
                     break;
 
                 case TListTableEnum.ProposalSubmissionTypeList:
-                    cmbAutoPopulated.ComboBoxWidth = 100;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
                     cmbAutoPopulated.ColumnWidthCol2 = 100;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
                     break;
 
                 case TListTableEnum.ReasonSubscriptionCancelledList:
-                    cmbAutoPopulated.ComboBoxWidth = 110;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
+                    cmbAutoPopulated.ColumnWidthCol1 = 110;
                     cmbAutoPopulated.ColumnWidthCol2 = 450;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
                     break;
 
                 case TListTableEnum.ReasonSubscriptionGivenList:
-                    cmbAutoPopulated.ComboBoxWidth = 110;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
+                    cmbAutoPopulated.ColumnWidthCol1 = 110;
                     cmbAutoPopulated.ColumnWidthCol2 = 450;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
                     break;
 
                 case TListTableEnum.PublicationList:
-                    cmbAutoPopulated.ComboBoxWidth = 110;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
+                    cmbAutoPopulated.ColumnWidthCol1 = 110;
                     cmbAutoPopulated.ColumnWidthCol2 = 350;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
                     break;
 
                 case TListTableEnum.SubscriptionStatus:
-                    cmbAutoPopulated.ComboBoxWidth = 110;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
-                    cmbAutoPopulated.ColumnWidthCol2 = 0;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
+                    cmbAutoPopulated.ColumnWidthCol1 = 110;
                     break;
 
                 case TListTableEnum.UnitTypeList:
-                    cmbAutoPopulated.ComboBoxWidth = 90;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
+                    cmbAutoPopulated.ColumnWidthCol1 = 90;
                     cmbAutoPopulated.ColumnWidthCol2 = 200;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
                     break;
 
                 case TListTableEnum.DataLabelLookupList:
-                    cmbAutoPopulated.ComboBoxWidth = 100;
-                    cmbAutoPopulated.ColumnWidthCol1 = ComboBoxWidth;
                     cmbAutoPopulated.ColumnWidthCol2 = 200;
-                    cmbAutoPopulated.ColumnWidthCol3 = 0;
-                    cmbAutoPopulated.ColumnWidthCol4 = 0;
-                    cmbAutoPopulated.ImageColumn = 0;
-                    cmbAutoPopulated.Images = null;
                     break;
+            }
+
+            if (cmbAutoPopulated.ComboBoxWidth == 0)
+            {
+                cmbAutoPopulated.ComboBoxWidth = cmbAutoPopulated.ColumnWidthCol1;
             }
 
             if (DesignMode)

@@ -11,7 +11,7 @@ RootNode:
         actNew: {Label=&Add, ActionClick=NewRow}
     Controls:
         pnlContent:
-            Controls: [pnlInfo, pnlBatches]
+            Controls: [pnlInfo, pnlTransactions]
             Dock: Fill
         pnlInfo:
             Controls:
@@ -19,7 +19,7 @@ RootNode:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger}
         txtBatchNumber: {ReadOnly=true, Label=Batch}
         txtJournalNumber: {ReadOnly=true, Label=Journal}
-        pnlBatches:
+        pnlTransactions:
             Controls: [pnlDetailGrid, pnlDetails]
             Dock: Fill
         pnlDetailGrid:
@@ -43,8 +43,8 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate, cmbDetailKeyMinistryKey, pnlDetailAmounts]
-        cmbDetailCostCentreCode: {Label=Cost Centre Code}
-        cmbDetailAccountCode: {Label=Account Code}
+        cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList}
+        cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList}
         txtDetailNarrative: {Label=Narrative}
         txtDetailReference: {Label=Reference}
         dtpDetailTransactionDate: {Label=Transaction Date}
@@ -63,6 +63,6 @@ RootNode:
         txtDebitAmountBase: {Label=Dr Amount, ReadOnly=true}
         txtCreditAmountBase: {Label=Cr Amount, ReadOnly=true}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true}
-        txtCreditTotalAmount: {Label=Debit Total, ReadOnly=true}
+        txtCreditTotalAmount: {Label=Credit Total, ReadOnly=true}
         txtDebitTotalAmountBase: {Label=Debit Total, ReadOnly=true}
-        txtCreditTotalAmountBase: {Label=Debit Total, ReadOnly=true} 
+        txtCreditTotalAmountBase: {Label=Credit Total, ReadOnly=true} 

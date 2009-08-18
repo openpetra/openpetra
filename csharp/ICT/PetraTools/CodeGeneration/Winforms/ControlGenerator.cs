@@ -235,7 +235,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl.controlName, "ListTable", "TCmbAutoPopulated.TListTableEnum." + ctrl.GetAttribute("List"));
-            writer.Template.AddToCodelet("INITUSERCONTROLS", ctrl.controlName + ".InitialiseUserControl();" + Environment.NewLine);
+
+            if (ctrl.GetAttribute("List") != "UserDefinedList")
+            {
+                writer.Template.AddToCodelet("INITUSERCONTROLS", ctrl.controlName + ".InitialiseUserControl();" + Environment.NewLine);
+            }
+            else
+            {
+                // user defined lists have to be either filled in manual code
+                // eg UC_GLJournals.ManualCode.cs, BeforeShowDetailsManual
+                // or UC_GLTransactions.ManualCode.cs, LoadTransactions
+            }
         }
     }
     public class TCmbVersatileGenerator : ComboBoxGenerator

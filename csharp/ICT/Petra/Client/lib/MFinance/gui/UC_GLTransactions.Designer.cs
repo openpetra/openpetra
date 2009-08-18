@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblBatchNumber = new System.Windows.Forms.Label();
             this.txtJournalNumber = new System.Windows.Forms.TextBox();
             this.lblJournalNumber = new System.Windows.Forms.Label();
-            this.pnlBatches = new System.Windows.Forms.Panel();
+            this.pnlTransactions = new System.Windows.Forms.Panel();
             this.pnlDetailGrid = new System.Windows.Forms.Panel();
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlDetailButtons = new System.Windows.Forms.Panel();
@@ -88,9 +88,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.btnRemove = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.cmbDetailCostCentreCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbDetailCostCentreCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailCostCentreCode = new System.Windows.Forms.Label();
-            this.cmbDetailAccountCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbDetailAccountCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailAccountCode = new System.Windows.Forms.Label();
             this.txtDetailNarrative = new System.Windows.Forms.TextBox();
             this.lblDetailNarrative = new System.Windows.Forms.Label();
@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlInfo.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.pnlBatches.SuspendLayout();
+            this.pnlTransactions.SuspendLayout();
             this.pnlDetailGrid.SuspendLayout();
             this.pnlDetailButtons.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -230,12 +230,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.Controls.Add(this.pnlInfo, 0, 0);
             this.tableLayoutPanel1.SetColumnSpan(this.pnlInfo, 2);
             //
-            // pnlBatches
+            // pnlTransactions
             //
-            this.pnlBatches.Name = "pnlBatches";
-            this.pnlBatches.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlBatches.Controls.Add(this.pnlDetailGrid);
-            this.pnlBatches.Controls.Add(this.pnlDetails);
+            this.pnlTransactions.Name = "pnlTransactions";
+            this.pnlTransactions.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlTransactions.Controls.Add(this.pnlDetailGrid);
+            this.pnlTransactions.Controls.Add(this.pnlDetails);
             //
             // pnlDetailGrid
             //
@@ -318,7 +318,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.cmbDetailCostCentreCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailCostCentreCode.Name = "cmbDetailCostCentreCode";
-            this.cmbDetailCostCentreCode.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailCostCentreCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailCostCentreCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblDetailCostCentreCode
             //
@@ -334,7 +335,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.cmbDetailAccountCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailAccountCode.Name = "cmbDetailAccountCode";
-            this.cmbDetailAccountCode.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailAccountCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailAccountCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblDetailAccountCode
             //
@@ -567,7 +569,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblCreditTotalAmount.Location = new System.Drawing.Point(2,2);
             this.lblCreditTotalAmount.Name = "lblCreditTotalAmount";
             this.lblCreditTotalAmount.AutoSize = true;
-            this.lblCreditTotalAmount.Text = "Debit Total:";
+            this.lblCreditTotalAmount.Text = "Credit Total:";
             this.lblCreditTotalAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel5.Controls.Add(this.lblCreditTotalAmount, 0, 4);
             this.tableLayoutPanel5.Controls.Add(this.txtCreditTotalAmount, 1, 4);
@@ -584,14 +586,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblCreditTotalAmountBase.Location = new System.Drawing.Point(2,2);
             this.lblCreditTotalAmountBase.Name = "lblCreditTotalAmountBase";
             this.lblCreditTotalAmountBase.AutoSize = true;
-            this.lblCreditTotalAmountBase.Text = "Debit Total:";
+            this.lblCreditTotalAmountBase.Text = "Credit Total:";
             this.lblCreditTotalAmountBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel5.Controls.Add(this.lblCreditTotalAmountBase, 2, 4);
             this.tableLayoutPanel5.Controls.Add(this.txtCreditTotalAmountBase, 3, 4);
             this.tableLayoutPanel4.Controls.Add(this.pnlDetailAmounts, 0, 6);
             this.tableLayoutPanel4.SetColumnSpan(this.pnlDetailAmounts, 2);
-            this.tableLayoutPanel1.Controls.Add(this.pnlBatches, 0, 1);
-            this.tableLayoutPanel1.SetColumnSpan(this.pnlBatches, 2);
+            this.tableLayoutPanel1.Controls.Add(this.pnlTransactions, 0, 1);
+            this.tableLayoutPanel1.SetColumnSpan(this.pnlTransactions, 2);
 
             //
             // TUC_GLTransactions
@@ -611,7 +613,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel3.ResumeLayout(false);
             this.pnlDetailButtons.ResumeLayout(false);
             this.pnlDetailGrid.ResumeLayout(false);
-            this.pnlBatches.ResumeLayout(false);
+            this.pnlTransactions.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.pnlInfo.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -629,7 +631,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Label lblBatchNumber;
         private System.Windows.Forms.TextBox txtJournalNumber;
         private System.Windows.Forms.Label lblJournalNumber;
-        private System.Windows.Forms.Panel pnlBatches;
+        private System.Windows.Forms.Panel pnlTransactions;
         private System.Windows.Forms.Panel pnlDetailGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlDetailButtons;
@@ -638,9 +640,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDetailCostCentreCode;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailCostCentreCode;
         private System.Windows.Forms.Label lblDetailCostCentreCode;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDetailAccountCode;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailAccountCode;
         private System.Windows.Forms.Label lblDetailAccountCode;
         private System.Windows.Forms.TextBox txtDetailNarrative;
         private System.Windows.Forms.Label lblDetailNarrative;

@@ -61,10 +61,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // otherwise we would overwrite transactions that have already been modified
             view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(AJournalTable.TableId), ",");
 
-            if (view.FindRows(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber }).Length == 0)
+            if (view.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber }) == -1)
             {
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber));
             }
+
+            // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
+            bool ActiveOnly = this.Enabled;
+
+            TFinanceComboboxes.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, ActiveOnly);
+            TFinanceComboboxes.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, ActiveOnly, false);
 
             ShowData();
         }

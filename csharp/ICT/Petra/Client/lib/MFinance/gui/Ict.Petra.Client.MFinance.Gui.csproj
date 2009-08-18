@@ -171,6 +171,7 @@
     <Compile Include="BankStatementImport.Designer.cs">
       <DependentUpon>BankStatementImport.cs</DependentUpon>
     </Compile>
+    <Compile Include="FinanceComboboxes.cs" />
     <Compile Include="FinanceMain.cs" />
     <Compile Include="FinanceMain.Designer.cs">
       <DependentUpon>FinanceMain.cs</DependentUpon>

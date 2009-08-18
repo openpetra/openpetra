@@ -71,7 +71,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (ACurrentDetailIndex == -1)
             {
                 ((TFrmGLBatch)ParentForm).DisableTransactions();
-                this.pnlDetails.Enabled = false;
             }
             else
             {
@@ -128,18 +127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.cmbDetailSubSystemCode.Items.Clear();
             this.cmbDetailSubSystemCode.Items.AddRange(new object[] { ARow.SubSystemCode });
 
-            TTypedDataTable TransactionTypeTable;
-            TRemote.MCommon.DataReader.GetData(TTypedDataTable.GetTableNameSQL(ATransactionTypeTable.TableId),
-                new TSearchCriteria[] {
-                    new TSearchCriteria(TTypedDataTable.GetColumnNameSQL(ATransactionTypeTable.TableId,
-                            ATransactionTypeTable.ColumnLedgerNumberId), FLedgerNumber),
-                    new TSearchCriteria(TTypedDataTable.GetColumnNameSQL(ATransactionTypeTable.TableId,
-                            ATransactionTypeTable.ColumnSubSystemCodeId), ARow.SubSystemCode)
-                },
-                out TransactionTypeTable);
-
-            cmbDetailTransactionTypeCode.Table = TransactionTypeTable;
-            cmbDetailTransactionTypeCode.InitialiseUserControl();
+            TFinanceComboboxes.InitialiseTransactionTypeList(ref cmbDetailTransactionTypeCode, FLedgerNumber, ARow.SubSystemCode);
         }
 
         private void ShowTransactionTab(Object sender, EventArgs e)

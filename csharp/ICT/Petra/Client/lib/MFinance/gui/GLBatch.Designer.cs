@@ -336,7 +336,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // TFrmGLBatch
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(660, 500);
+            this.ClientSize = new System.Drawing.Size(660, 700);
             // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
