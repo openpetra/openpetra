@@ -29,11 +29,11 @@ using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Shared.MFinance.AP.Data.Access;
+using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MFinance.AP.Data;
-using Ict.Petra.Shared.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MCommon.Data.Access;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Server.MCommon.DataReader

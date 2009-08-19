@@ -30,12 +30,12 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Shared.MCommon.Data.Access;
-using Ict.Petra.Shared.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MSysMan.Data.Access;
+using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.App.ClientDomain;
@@ -50,7 +50,7 @@ namespace Ict.Petra.Server.MFinance
     /// @Comment These Business Objects can be instantiated by other Server Objects
     ///          (usually UIConnectors).
     /// </summary>
-    public class Gift
+    public class TGift
     {
         /// <summary>
         /// constant for split gifts

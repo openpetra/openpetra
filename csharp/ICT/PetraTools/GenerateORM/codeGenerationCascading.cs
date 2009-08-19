@@ -196,7 +196,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
                         codeGenerationAccess.GetNamespace(currentTable.strGroup), false);
                     Template.AddToCodelet("USINGNAMESPACES",
                         codeGenerationAccess.GetNamespace(currentTable.strGroup).Replace(
-                            ".Data;", ".Data.Access;"), false);
+                            ".Data;", ".Data.Access;").
+                        Replace("Ict.Petra.Shared.", "Ict.Petra.Server."), false);
 
                     Template.InsertSnippet("TABLECASCADINGLOOP", snippet);
                 }

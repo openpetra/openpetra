@@ -27,7 +27,7 @@ using System;
 using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Petra.Shared.MSysMan.Data.Access;
+using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared.MSysMan.Data;
 
 namespace Ict.Petra.Server.MSysMan.Maintenance

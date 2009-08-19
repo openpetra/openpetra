@@ -36,9 +36,9 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Shared.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.ServerLookups;
 

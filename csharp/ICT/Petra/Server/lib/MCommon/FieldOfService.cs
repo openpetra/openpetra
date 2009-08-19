@@ -32,7 +32,7 @@ using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
 using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using System.Data;
 using Ict.Petra.Shared.MPartner;
 

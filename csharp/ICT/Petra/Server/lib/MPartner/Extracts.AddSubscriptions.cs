@@ -36,9 +36,9 @@ using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 using Ict.Petra.Shared.Interfaces.MPartner.Extracts;
 using Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors;
-using Ict.Petra.Shared.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon;
 

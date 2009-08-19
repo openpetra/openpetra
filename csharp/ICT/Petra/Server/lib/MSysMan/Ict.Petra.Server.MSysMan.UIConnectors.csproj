@@ -65,10 +65,6 @@
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MSysMan.DataAccess">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.DataAccess.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="Ict.Petra.Shared.MSysMan.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.DataTables.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -80,5 +76,11 @@
   <ItemGroup>
     <Compile Include="Ict.Petra.Server.MSysMan.UIConnectors.AssemblyInfo.cs" />
     <Compile Include="TableMaintenance.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="data\Ict.Petra.Server.MSysMan.DataAccess.csproj">
+      <Project>{CF8F3805-344B-4B75-8498-C93205B2A2A9}</Project>
+      <Name>Ict.Petra.Server.MSysMan.DataAccess</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

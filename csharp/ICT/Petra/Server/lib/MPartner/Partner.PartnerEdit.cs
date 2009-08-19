@@ -37,11 +37,11 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
-using Ict.Petra.Shared.MCommon.Data.Cascading;
+using Ict.Petra.Server.MCommon.Data.Cascading;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.MCommon;
@@ -745,10 +745,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     #region Process data
 
                     // Determination of Last Gift information
-                    Gift.GetLastGiftDetails(FPartnerKey, out LastGiftDate, out LastGiftInfo);
+                    TGift.GetLastGiftDetails(FPartnerKey, out LastGiftDate, out LastGiftInfo);
 
                     // Determination of Last Contact Date
-                    Mailroom.GetLastContactDate(FPartnerKey, out LastContactDate);
+                    TMailroom.GetLastContactDate(FPartnerKey, out LastContactDate);
 
                     // Create 'miscellaneous' DataRow
                     MiscellaneousDataDT = FPartnerEditScreenDS.MiscellaneousData;

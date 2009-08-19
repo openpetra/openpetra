@@ -127,55 +127,55 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     {
                         codeGenerationAccess.WriteTypedDataAccess(store, "partner", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MPartner\\data\\",
-                            "Ict.Petra.Shared.MPartner.Partner.Data.Access",
+                            "Ict.Petra.Server.MPartner.Partner.Data.Access",
                             "Partner.Access");
                         codeGenerationAccess.WriteTypedDataAccess(store, "mailroom", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MPartner\\data\\",
-                            "Ict.Petra.Shared.MPartner.Mailroom.Data.Access",
+                            "Ict.Petra.Server.MPartner.Mailroom.Data.Access",
                             "Mailroom.Access");
                         codeGenerationAccess.WriteTypedDataAccess(store, "personnel", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MPersonnel\\data\\",
-                            "Ict.Petra.Shared.MPersonnel.Personnel.Data.Access",
+                            "Ict.Petra.Server.MPersonnel.Personnel.Data.Access",
                             "Personnel.Access");
                         codeGenerationAccess.WriteTypedDataAccess(store, "units", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MPersonnel\\data\\",
-                            "Ict.Petra.Shared.MPersonnel.Units.Data.Access",
+                            "Ict.Petra.Server.MPersonnel.Units.Data.Access",
                             "Units.Access");
                         codeGenerationAccess.WriteTypedDataAccess(store, "conference", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MConference\\data\\",
-                            "Ict.Petra.Shared.MConference.Data.Access",
+                            "Ict.Petra.Server.MConference.Data.Access",
                             "Conference.Access");
                         codeGenerationAccess.WriteTypedDataAccess(store, "hospitality", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MHospitality\\data\\",
-                            "Ict.Petra.Shared.MHospitality.Data.Access",
+                            "Ict.Petra.Server.MHospitality.Data.Access",
                             "Hospitality.Access");
                         codeGenerationAccess.WriteTypedDataAccess(store, "account", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MFinance\\data\\",
-                            "Ict.Petra.Shared.MFinance.Account.Data.Access",
+                            "Ict.Petra.Server.MFinance.Account.Data.Access",
                             "Account.Access");
                         codeGenerationAccess.WriteTypedDataAccess(store, "ap", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MFinance\\data\\",
-                            "Ict.Petra.Shared.MFinance.AP.Data.Access",
+                            "Ict.Petra.Server.MFinance.AP.Data.Access",
                             "AP.Access");
                         codeGenerationAccess.WriteTypedDataAccess(store, "ar", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MFinance\\data\\",
-                            "Ict.Petra.Shared.MFinance.AR.Data.Access",
+                            "Ict.Petra.Server.MFinance.AR.Data.Access",
                             "AR.Access");
                         codeGenerationAccess.WriteTypedDataAccess(store, "gift", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MFinance\\data\\",
-                            "Ict.Petra.Shared.MFinance.Gift.Data.Access",
+                            "Ict.Petra.Server.MFinance.Gift.Data.Access",
                             "Gift.Access");
                         codeGenerationAccess.WriteTypedDataAccess(store, "sysman", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MSysMan\\data\\",
-                            "Ict.Petra.Shared.MSysMan.Data.Access",
+                            "Ict.Petra.Server.MSysMan.Data.Access",
                             "SysMan.Access");
                         codeGenerationAccess.WriteTypedDataAccess(store, "main", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MCommon\\data\\",
-                            "Ict.Petra.Shared.MCommon.Data.Access",
+                            "Ict.Petra.Server.MCommon.Data.Access",
                             "Common.Access");
                         codeGenerationCascading.WriteTypedDataCascading(store, cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\MCommon\\data\\",
-                            "Ict.Petra.Shared.MCommon.Data.Cascading",
+                            "Ict.Petra.Server.MCommon.Data.Cascading",
                             "Cascading");
                     }
                     else if (cmdLine.GetOptValue("do") == "dataset")

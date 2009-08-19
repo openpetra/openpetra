@@ -29,10 +29,10 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
-using Ict.Petra.Shared.MCommon.Data.Cascading;
+using Ict.Petra.Server.MCommon.Data.Cascading;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Shared.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Server.MPartner.Extracts

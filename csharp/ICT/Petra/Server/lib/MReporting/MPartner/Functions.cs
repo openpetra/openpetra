@@ -31,7 +31,7 @@ using Ict.Common.DB;
 using System.Diagnostics;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner;
 using System.Collections;

@@ -33,11 +33,11 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-using Ict.Petra.Shared.MPersonnel.Personnel.Data.Access;
+using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MPartner;
@@ -504,7 +504,7 @@ namespace Ict.Petra.Server.MPartner
             }
 
             // Determination of Last Contact Date
-            Mailroom.GetLastContactDate(PartnerKey, out LastContactDate);
+            TMailroom.GetLastContactDate(PartnerKey, out LastContactDate);
             PartnerInfoDR.LastContact = LastContactDate;
 
 

@@ -32,7 +32,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Shared.MSysMan.Data.Access;
+using Ict.Petra.Server.MSysMan.Data.Access;
 
 namespace Ict.Petra.Server.App.Core
 {
@@ -443,7 +443,7 @@ namespace Ict.Petra.Server.App.Core
                         ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                             TEnforceIsolationLevel.eilMinimum,
                             out NewTransaction);
-                        FSystemDefaultsDT = Ict.Petra.Shared.MSysMan.Data.Access.SSystemDefaultsAccess.LoadAll(ReadTransaction);
+                        FSystemDefaultsDT = SSystemDefaultsAccess.LoadAll(ReadTransaction);
                     }
                     finally
                     {

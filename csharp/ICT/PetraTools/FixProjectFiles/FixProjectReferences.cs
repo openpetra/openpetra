@@ -136,6 +136,10 @@ public class TFixProjectReferences : TCSProjTools
                                     System.IO.Path.GetFileNameWithoutExtension(child2.Attributes["Include"].Value.Replace('\\',
                                             Path.DirectorySeparatorChar));
 
+                                if (!FProjectGUIDs.ContainsKey(referencedProject))
+                                {
+                                    Console.WriteLine("missing referencedProject " + referencedProject);
+                                }
                                 if (child3.InnerText != FProjectGUIDs[referencedProject])
                                 {
                                     Console.WriteLine("fixing " + child3.InnerText);

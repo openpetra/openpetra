@@ -31,7 +31,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Shared.MSysMan.Data.Access;
+using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Common.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App;

@@ -32,7 +32,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Shared.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Server.App.ClientDomain;
@@ -49,7 +49,7 @@ namespace Ict.Petra.Server.MPartner
     /// Business Logic can be contained in Classes or can be contained just in
     /// procedures/functions that are not part of a Class.
     /// </summary>
-    public class Mailroom
+    public class TMailroom
     {
         /// <summary>
         /// todoComment

@@ -65,10 +65,6 @@
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MPartner.DataAccess">
-      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataAccess.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -89,6 +85,10 @@
     <ProjectReference Include="..\Ict.Petra.Server.MReporting.csproj">
       <Project>{1532B4C2-5A04-4FFC-B383-E147A2377370}</Project>
       <Name>Ict.Petra.Server.MReporting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MPartner\data\Ict.Petra.Server.MPartner.DataAccess.csproj">
+      <Project>{6372DC9A-981C-48F8-8719-E5B2CF7157DF}</Project>
+      <Name>Ict.Petra.Server.MPartner.DataAccess</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -36,7 +36,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Shared.MSysMan.Data.Access;
+using Ict.Petra.Server.MSysMan.Data.Access;
 
 namespace Ict.Petra.Server.App.Core.Security
 {
@@ -475,7 +475,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 TheTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 try
                 {
-                    SubmissionOK = Ict.Petra.Shared.MSysMan.Data.Access.SUserAccess.SubmitChanges(AUserDataTable,
+                    SubmissionOK = SUserAccess.SubmitChanges(AUserDataTable,
                         TheTransaction,
                         out AVerificationResult);
                 }

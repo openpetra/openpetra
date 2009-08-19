@@ -32,7 +32,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MSysMan.Maintenance;
 

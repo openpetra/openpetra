@@ -29,7 +29,7 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Shared.MSysMan.Data.Access;
+using Ict.Petra.Server.MSysMan.Data.Access;
 
 namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
 {

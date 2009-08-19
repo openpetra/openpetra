@@ -451,7 +451,7 @@
     </target>
 
     <target name="generateORMAccess">
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataaccess -petraxml:${PetraXML.file} -outputshared:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataaccess -petraxml:${PetraXML.file} -outputshared:${OpenPetraRoot.dir}/csharp/ICT/Petra/Server -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
     </target>
 
     <target name="generateORMDatasets">

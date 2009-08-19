@@ -36,7 +36,7 @@ using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.RemotedExceptions;
 
 namespace Ict.Petra.Server.MCommon

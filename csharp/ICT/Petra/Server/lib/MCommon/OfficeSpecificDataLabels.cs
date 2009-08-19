@@ -36,10 +36,10 @@ using Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Shared.MCommon.Data.Access;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data.Access;
-using Ict.Petra.Shared.MPersonnel.Personnel.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Server.MCommon.UIConnectors

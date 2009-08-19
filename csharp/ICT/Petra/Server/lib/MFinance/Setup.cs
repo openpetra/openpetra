@@ -29,7 +29,7 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance
 {

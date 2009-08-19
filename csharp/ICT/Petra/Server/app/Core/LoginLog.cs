@@ -34,7 +34,7 @@ using Ict.Common.Verification;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Shared.MSysMan.Data.Access;
+using Ict.Petra.Server.MSysMan.Data.Access;
 
 
 namespace Ict.Petra.Server.App.Core.Security

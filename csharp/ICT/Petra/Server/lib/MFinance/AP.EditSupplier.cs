@@ -32,7 +32,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.AP.Data;
-using Ict.Petra.Shared.MFinance.AP.Data.Access;
+using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
 
 namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors

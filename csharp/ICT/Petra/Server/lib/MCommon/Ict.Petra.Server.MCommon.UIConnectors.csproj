@@ -65,24 +65,12 @@
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MCommon.DataAccess">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataAccess.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.MCommon.DataAccess">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataAccess.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="Ict.Petra.Shared.MCommon.DataSets">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataSets.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.MPartner.DataAccess">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataAccess.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
@@ -95,10 +83,6 @@
     </Reference>
     <Reference Include="Ict.Petra.Shared.Interfaces">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.MPersonnel.DataAccess">
-      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.DataAccess.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MPersonnel.DataTables">
@@ -126,6 +110,18 @@
     <ProjectReference Include="Ict.Petra.Server.MCommon.csproj">
       <Project>{1F2FFC91-5C00-44ED-8EFD-3940426793CF}</Project>
       <Name>Ict.Petra.Server.MCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MPartner\data\Ict.Petra.Server.MPartner.DataAccess.csproj">
+      <Project>{6372DC9A-981C-48F8-8719-E5B2CF7157DF}</Project>
+      <Name>Ict.Petra.Server.MPartner.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="data\Ict.Petra.Server.MCommon.DataAccess.csproj">
+      <Project>{41425C75-D148-4BEC-9B8F-DBD277E4762F}</Project>
+      <Name>Ict.Petra.Server.MCommon.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MPersonnel\data\Ict.Petra.Server.MPersonnel.DataAccess.csproj">
+      <Project>{A2B90810-5C72-4154-8E6C-47F243E6538D}</Project>
+      <Name>Ict.Petra.Server.MPersonnel.DataAccess</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

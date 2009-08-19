@@ -36,7 +36,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
