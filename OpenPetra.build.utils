@@ -91,6 +91,12 @@
       return fileOK;
     }
 
+    [Function("GetMainVersionWithoutBuildNr")]
+    public static string GetMainVersionWithoutBuildNr(string AReleaseVersion)
+    {
+        return AReleaseVersion.Substring(0, AReleaseVersion.IndexOf("-"));
+    }
+
     [Function("ChangeProjectFileRelease")]
     public static bool ChangeProjectFileRelease(string filename, bool makerelease)
     {

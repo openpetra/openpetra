@@ -1,16 +1,16 @@
 [Setup]
 AppCopyright=by developers of OpenPetra.org
 AppName=OpenPetra.org
-AppVerName=OpenPetra.org Remote 0.0.5
+AppVerName=OpenPetra.org Remote {#PATCHVERSION}
 DefaultDirName={pf}\OpenPetra.org
 DefaultGroupName=OpenPetra.org
 AppPublisherURL=http://www.openpetra.org
 LicenseFile=..\..\..\LICENSE
-VersionInfoVersion=0.0.5.0
+VersionInfoVersion={#RELEASEID}
 VersionInfoCompany=OM International
 VersionInfoDescription=Administration Software for Charities
 VersionInfoCopyright=2009 OM International
-OutputBaseFilename=OpenPetraRemoteSetup-0.0.5-0
+OutputBaseFilename=OpenPetraRemoteSetup-{#RELEASEVERSION}
 
 [Languages]
 Name: en; MessagesFile: compiler:Default.isl,..\language\lang-en.isl

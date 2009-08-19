@@ -6,6 +6,7 @@
     <property name="Output.dir" value="Debug" unless="${property::exists('Output.dir')}"/>
     <property name="Configuration" value="DEBUG" unless="${property::exists('Configuration')}"/>
     <property name="ReleaseID" value="0.0.0.99" unless="${property::exists('ReleaseID')}"/>
+    <property name="ReleaseVersion" value="0.0.0-99" unless="${property::exists('ReleaseVersion')}"/>
     <property name="PetraRelease" value="0300"/>
     <property name="ThirdParty.dir" value="${OpenPetraRoot.dir}/csharp/ThirdParty/"/>
     <property name="PetraToolsExe.dir" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}"/>
@@ -195,20 +196,20 @@
     
     <target name="createSQLStatements" depends="compilePetraTools" description="Create the SQL files.">
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
-        <if test="${DBMS.Type=='sqlite'}">
-            <!-- sqlite does not have an petra.sql file, but we need one for generating the documentation -->
-            <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:postgresql -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
-        </if>
+        <!-- we don't need SQL statements for sqlite, but only for the other DBMS -->
         <if test="${DBMS.Type!='sqlite'}">
             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
         </if>
     </target>
 
-    <target name="dbdoc"> <!-- depends="createSQLStatements" -->
+    <target name="dbdoc">
         <mkdir dir="${DBDoc.Output.dir}" failonerror="false"/>    
         <mkdir dir="${DBDoc.Output.dir}/tables" failonerror="false"/>    
         <mkdir dir="${DBDoc.Output.dir}/img" failonerror="false"/>    
 
+        <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:postgresql -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
+        
         <copy todir="${DBDoc.Output.dir}">
             <fileset basedir="${OpenPetraRoot.dir}/db/html/">
                 <include name="*.html" />
@@ -267,6 +268,9 @@
          <property name="Current.File" value="${BaseData.Dir}/init.sql.local"/>
          <property name="toReplace" value="{#ABSOLUTEBASEDATAPATH}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, BaseData.Dir)}'/>
+         
+         <property name="toReplace" value="{#RELEASEVERSION}"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
 
          <copy file="${DemoData.Dir}/init.sql"
             tofile="${DemoData.Dir}/init.sql.local"/>
@@ -662,13 +666,28 @@
         <call target="switchToDebug"/>
     </target>
     
+    <target name="setupTemplate">
+        <property name="Current.File" value="${SetupOriginal.File}.local"/>
+
+        <copy file="${SetupOriginal.File}" tofile="${Current.File}"/>
+    
+        <property name="toReplace" value="{#RELEASEVERSION}"/>
+        <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
+        <property name="toReplace" value="{#RELEASEID}"/>
+        <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseID)}'/>
+        <property name="toReplace" value="{#PATCHVERSION}"/>
+        <echo message='${script::ReplaceInFile(Current.File, toReplace, script::GetMainVersionWithoutBuildNr(ReleaseVersion))}'/>
+
+        <exec program="${Innosetup.ISCC}" commandline=" ${Current.File}"
+              workingdir="${path::get-directory-name(Current.File)}"/>
+    </target>
     <target name="setupStandalone">
-        <exec program="${Innosetup.ISCC}" commandline=" ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/standalone.iss"
-              workingdir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone"/>
+        <property name="SetupOriginal.File" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/standalone.iss"/>
+        <call target="setupTemplate"/>
     </target>
     <target name="setupRemote">
-        <exec program="${Innosetup.ISCC}" commandline=" ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin/remote.iss"
-              workingdir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin"/>
+        <property name="SetupOriginal.File" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin/remote.iss"/>
+        <call target="setupTemplate"/>
     </target>
     <target name="setupLinuxServer">
         <!-- for the moment, just create a tar.gz file, with sub directories 
@@ -747,12 +766,9 @@
         
         <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db"
                     tofile="${setupDir}/db30/demo.db"/>
+        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo-pg.bak"
+                    tofile="${setupDir}/db30/demo-pg.bak"/>
 
-        <property name="DBMS.Type" value="PostgreSQL"/>
-        <call target="recreateDatabase"/>
-        <call target="resetDatabase"/>
-        <ExecCmd program="sh" superuser="postgres" commandline="/C ${pgdump.exe} --format=c petra -f ${path::get-temp-path()}/demo-pg.bak"/>
-        <copy file="${path::get-temp-path()}/demo-pg.bak" tofile="${setupDir}/db30/demo-pg.bak"/>
         <copy file="${OpenPetraRoot.dir}/LICENSE"
                     tofile="${setupDir}/LICENSE"/>
         <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/INSTALL"
@@ -775,7 +791,35 @@
         
         <delete dir="${setupDir}"/>
     </target>
+
+    <target name="createSQLiteDB">
+        <property name="DBMS.Type" value="sqlite"/>
+        <property name="DBMS.Password" value="CHANGEME"/>
+        <call target="recreateDatabase"/>
+        <call target="resetDatabase"/>
+        <copy file="${SQLitedb.file}" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db"/>
+    </target>
+
+    <target name="createPostgreSQLDB">
+        <property name="DBMS.Type" value="postgresql"/>
+        <property name="DBMS.Password" value="CHANGEME"/>
+        <call target="recreateDatabase"/>
+        <call target="resetDatabase"/>
+        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+            <!-- this currently only works on Linux -->
+            <ExecCmd program="sh" superuser="postgres" commandline="/C ${pgdump.exe} --format=c petra -f ${path::get-temp-path()}/demo-pg.bak"/>
+            <copy file="${path::get-temp-path()}/demo-pg.bak" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo-pg.bak"/>
+        </if>
+    </target>
     
-    <target name="buildRelease" depends="switchToDebug, compileCommon, compilePetraTools, recreateDatabase, resetDatabase, compileRelease, translation, setupStandalone, setupRemote, setupLinuxServer"/>
-    
+    <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, translation, setupStandalone, setupRemote"/>
+    <target name="buildReleaseLinux" depends="switchToDebug, createSQLiteDB, createPostgreSQLDB, compileRelease, translation, setupLinuxServer"/>
+    <target name="buildRelease">
+        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+            <call target="buildReleaseLinux"/>
+        </if>
+        <if test="${framework::get-runtime-framework() == 'net-2.0'}" >
+            <call target="buildReleaseWindows"/>
+        </if>
+    </target>
 </project>
