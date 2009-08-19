@@ -269,15 +269,15 @@
          <property name="toReplace" value="{#ABSOLUTEBASEDATAPATH}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, BaseData.Dir)}'/>
          
-         <property name="toReplace" value="{#RELEASEVERSION}"/>
-         <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
-
          <copy file="${DemoData.Dir}/init.sql"
             tofile="${DemoData.Dir}/init.sql.local"/>
          <property name="Current.File" value="${DemoData.Dir}/init.sql.local"/>
          <property name="toReplace" value="{#ABSOLUTEBASEDATAPATH}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, DemoData.Dir)}'/>
 
+         <property name="toReplace" value="{#RELEASEVERSION}"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
+         
          <property name="passwordChangeme" value="CHANGEME"/>
          <property name="passwordsalt" value="${script::GetPasswordSalt()}"/>
          <property name="passwordhash" value="${script::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
