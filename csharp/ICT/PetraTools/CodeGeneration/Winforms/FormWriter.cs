@@ -601,7 +601,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("ADDMAINCONTROLS", "this.Controls.Add(this." + ctrl.controlName + ");" + Environment.NewLine);
             }
 
-            if (prefix == "mnu")
+            if ((prefix == "mnu") && !FCodeStorage.GetAttribute("BaseClass").Contains("UserControl"))
             {
                 FTemplate.AddToCodelet("ADDMAINCONTROLS", "this.MainMenuStrip = " + ctrl.controlName + ";" + Environment.NewLine);
             }

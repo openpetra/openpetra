@@ -803,6 +803,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.SetControlProperty(ctrl.controlName, "AllowDrop", "false");
             }
+
+            AssignEventHandlerToControl(writer, ctrl, "SelectedIndexChanged", "TabSelectionChanged");
+
+            writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SelectedIndex = 0;" + Environment.NewLine);
+            writer.Template.AddToCodelet("INITMANUALCODE", "TabSelectionChanged(null, null);" + Environment.NewLine);
+
+            writer.Template.SetCodelet("TABPAGES", "true");
         }
 
         protected void CreateCode(IFormWriter writer, TControlDef ATabControl)

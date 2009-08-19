@@ -10,6 +10,7 @@ RootNode:
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
         actDelete: {Label=&Cancel, ActionClick=CancelRow}
+        actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
     Controls:
         pnlContent:
             Controls:
@@ -33,9 +34,10 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnNew, btnDelete]
+            Controls: [btnNew, btnDelete, btnPostBatch]
         btnNew: {Action=actNew}
         btnDelete: {Action=actDelete}
+        btnPostBatch: {Action=actPostBatch}
         grdDetails:
             Dock: Fill
             Columns: [ABatch.BatchNumber, ABatch.BatchStatus, ABatch.DateEffective, ABatch.BatchDebitTotal, ABatch.BatchCreditTotal, ABatch.BatchControlTotal, ABatch.BatchDescription]
@@ -52,3 +54,11 @@ RootNode:
         txtDetailBatchControlTotal: {Label=Batch Hash Total, Type=Currency}
         dtpDateCantBeBeyond: {Label=Date can't be beyond, ReadOnly=true}
         dtpDetailDateEffective: {Label=Effective Date}
+        tbrTabPage: {NoAttribute=true}
+        mnuTabPage: {NoAttribute=true}
+    Menu:
+        mniBatch:
+            Label: &Batch
+            mniPost: {Action=actPostBatch}
+    Toolbar:
+        tbbPostBatch: {Action=actPostBatch}

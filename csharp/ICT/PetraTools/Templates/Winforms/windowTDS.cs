@@ -292,5 +292,62 @@ namespace {#NAMESPACE}
 
 #endregion
 {#ENDIF ACTIONENABLING}
+{#IFDEF TABPAGES}
+
+        private ToolStrip PreviouslyMergedToolbarItems = null;
+        private ToolStrip PreviouslyMergedMenuItems = null;
+        
+        /// <summary>
+        /// change the toolbars that are associated with the tabs
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TabSelectionChanged(System.Object sender, EventArgs e)
+        {
+            TabPage currentTab = tabGLBatch.TabPages[tabGLBatch.SelectedIndex];
+
+            if (PreviouslyMergedToolbarItems != null)
+            {
+                ToolStripManager.RevertMerge(tbrMain, PreviouslyMergedToolbarItems);
+                PreviouslyMergedToolbarItems = null;
+            }
+
+            if (PreviouslyMergedMenuItems != null)
+            {
+                ToolStripManager.RevertMerge(mnuMain, PreviouslyMergedMenuItems);
+                PreviouslyMergedMenuItems = null;
+            }
+            
+            Control[] tabToolbar = currentTab.Controls.Find("tbrTabPage", true);
+            if (tabToolbar.Length == 1)
+            {
+                ToolStrip ItemsToMerge = (ToolStrip) tabToolbar[0];
+                ItemsToMerge.Visible = false;
+                foreach (ToolStripItem item in ItemsToMerge.Items)
+                {
+                    item.MergeAction = MergeAction.Append;
+                }
+                ToolStripManager.Merge(ItemsToMerge, tbrMain);
+                
+                PreviouslyMergedToolbarItems = ItemsToMerge;
+            }
+
+            Control[] tabMenu = currentTab.Controls.Find("mnuTabPage", true);
+            if (tabMenu.Length == 1)
+            {
+                ToolStrip ItemsToMerge = (ToolStrip) tabMenu[0];
+                ItemsToMerge.Visible = false;
+                Int32 NewPosition = mnuMain.Items.IndexOf(mniHelp);
+                foreach (ToolStripItem item in ItemsToMerge.Items)
+                {
+                    item.MergeAction = MergeAction.Insert;
+                    item.MergeIndex = NewPosition++;
+                }
+                ToolStripManager.Merge(ItemsToMerge, mnuMain);
+                
+                PreviouslyMergedMenuItems = ItemsToMerge;
+            }
+        }
+{#ENDIF TABPAGES}
   }
 }

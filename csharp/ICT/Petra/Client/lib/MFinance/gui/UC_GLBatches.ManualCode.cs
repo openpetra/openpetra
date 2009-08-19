@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void NewRow(System.Object sender, EventArgs e)
+        private void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewABatch();
 
@@ -81,9 +81,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void CancelRow(System.Object sender, EventArgs e)
+        private void CancelRow(System.Object sender, EventArgs e)
         {
             // TODO
+        }
+
+        private void PostBatch(System.Object sender, EventArgs e)
+        {
+            // TODO
+            System.Windows.Forms.MessageBox.Show("Validation of current batch and Posting will happen here");
         }
     }
 }

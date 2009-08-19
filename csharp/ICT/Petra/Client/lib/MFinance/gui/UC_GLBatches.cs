@@ -72,10 +72,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.rgrShowBatches.Text = Catalog.GetString("Show batches available for");
       this.btnNew.Text = Catalog.GetString("&Add");
       this.btnDelete.Text = Catalog.GetString("&Cancel");
+      this.btnPostBatch.Text = Catalog.GetString("&Post Batch");
       this.lblDetailBatchDescription.Text = Catalog.GetString("Batch Description:");
       this.lblDetailBatchControlTotal.Text = Catalog.GetString("Batch Hash Total:");
       this.lblDetailDateEffective.Text = Catalog.GetString("Effective Date:");
       this.lblDateCantBeBeyond.Text = Catalog.GetString("Date can't be beyond:");
+      this.tbbPostBatch.Text = Catalog.GetString("&Post Batch");
+      this.mniPost.Text = Catalog.GetString("&Post Batch");
+      this.mniBatch.Text = Catalog.GetString("&Batch");
       #endregion
 
     }
@@ -341,6 +345,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         if (e.ActionName == "actDelete")
         {
             btnDelete.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actPostBatch")
+        {
+            btnPostBatch.Enabled = e.Enabled;
+            tbbPostBatch.Enabled = e.Enabled;
+            mniPost.Enabled = e.Enabled;
         }
     }
 
