@@ -1815,7 +1815,7 @@ namespace Ict.Common.Data
             return 1 == Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_" +
                     TTypedDataTable.GetTableNameSQL(ATableId) +
                     GenerateWhereClauseFromPrimaryKey(ATableId),
-                    ATransaction, ParametersArray));
+                    ATransaction, false, ParametersArray));
         }
 
         /// <summary>

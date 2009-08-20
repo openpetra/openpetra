@@ -4,15 +4,15 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>Ict.Petra.Shared.MFinance.DataAccess</RootNamespace>
-    <AssemblyName>Ict.Petra.Shared.MFinance.DataAccess</AssemblyName>
+    <RootNamespace>Ict.Petra.Server.MFinance.DataAccess</RootNamespace>
+    <AssemblyName>Ict.Petra.Server.MFinance.DataAccess</AssemblyName>
     <BaseIntermediateOutputPath>../../../_bin\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DocumentationFile>..\..\..\_bin\Debug\Ict.Petra.Shared.MFinance.DataAccess.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\_bin\Debug\Ict.Petra.Server.MFinance.DataAccess.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>../../../_bin\Debug\</OutputPath>
