@@ -140,6 +140,7 @@ public class TFixProjectReferences : TCSProjTools
                                 {
                                     Console.WriteLine("missing referencedProject " + referencedProject);
                                 }
+
                                 if (child3.InnerText != FProjectGUIDs[referencedProject])
                                 {
                                     Console.WriteLine("fixing " + child3.InnerText);
