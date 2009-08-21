@@ -43,5 +43,8 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>GL Batch</summary>
         public const String TRANSACTION_FX_REVAL = "FX REVAL";
+
+        /// <summary>General Ledger</summary>
+        public const String ACCOUNT_HIERARCHY_STANDARD = "STANDARD";
     }
 }

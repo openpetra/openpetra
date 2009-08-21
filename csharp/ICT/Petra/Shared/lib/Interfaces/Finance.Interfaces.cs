@@ -340,6 +340,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
         TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
                                             out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
+        bool PostGLBatch(Int32 ALedgerNumber,
+                         Int32 ABatchNumber,
+                         out TVerificationResultCollection AVerifications);
     }
 
 }

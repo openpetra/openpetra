@@ -44,6 +44,11 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         private ABatchTable TableABatch;
         private AJournalTable TableAJournal;
         private GLBatchTDSATransactionTable TableATransaction;
+        private AAccountTable TableAAccount;
+        private ACostCentreTable TableACostCentre;
+        private AAccountHierarchyDetailTable TableAAccountHierarchyDetail;
+        private AGeneralLedgerMasterTable TableAGeneralLedgerMaster;
+        private AGeneralLedgerMasterPeriodTable TableAGeneralLedgerMasterPeriod;
 
         /// auto generated
         public GLBatchTDS() :
@@ -100,6 +105,51 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         }
 
         /// auto generated
+        public AAccountTable AAccount
+        {
+            get
+            {
+                return this.TableAAccount;
+            }
+        }
+
+        /// auto generated
+        public ACostCentreTable ACostCentre
+        {
+            get
+            {
+                return this.TableACostCentre;
+            }
+        }
+
+        /// auto generated
+        public AAccountHierarchyDetailTable AAccountHierarchyDetail
+        {
+            get
+            {
+                return this.TableAAccountHierarchyDetail;
+            }
+        }
+
+        /// auto generated
+        public AGeneralLedgerMasterTable AGeneralLedgerMaster
+        {
+            get
+            {
+                return this.TableAGeneralLedgerMaster;
+            }
+        }
+
+        /// auto generated
+        public AGeneralLedgerMasterPeriodTable AGeneralLedgerMasterPeriod
+        {
+            get
+            {
+                return this.TableAGeneralLedgerMasterPeriod;
+            }
+        }
+
+        /// auto generated
         public new virtual GLBatchTDS GetChangesTyped(bool removeEmptyTables)
         {
             return ((GLBatchTDS)(base.GetChangesTyped(removeEmptyTables)));
@@ -112,6 +162,11 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.Tables.Add(new ABatchTable("ABatch"));
             this.Tables.Add(new AJournalTable("AJournal"));
             this.Tables.Add(new GLBatchTDSATransactionTable("ATransaction"));
+            this.Tables.Add(new AAccountTable("AAccount"));
+            this.Tables.Add(new ACostCentreTable("ACostCentre"));
+            this.Tables.Add(new AAccountHierarchyDetailTable("AAccountHierarchyDetail"));
+            this.Tables.Add(new AGeneralLedgerMasterTable("AGeneralLedgerMaster"));
+            this.Tables.Add(new AGeneralLedgerMasterPeriodTable("AGeneralLedgerMasterPeriod"));
         }
 
         /// auto generated
@@ -132,6 +187,26 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             if ((ds.Tables.IndexOf("ATransaction") != -1))
             {
                 this.Tables.Add(new GLBatchTDSATransactionTable("ATransaction"));
+            }
+            if ((ds.Tables.IndexOf("AAccount") != -1))
+            {
+                this.Tables.Add(new AAccountTable("AAccount"));
+            }
+            if ((ds.Tables.IndexOf("ACostCentre") != -1))
+            {
+                this.Tables.Add(new ACostCentreTable("ACostCentre"));
+            }
+            if ((ds.Tables.IndexOf("AAccountHierarchyDetail") != -1))
+            {
+                this.Tables.Add(new AAccountHierarchyDetailTable("AAccountHierarchyDetail"));
+            }
+            if ((ds.Tables.IndexOf("AGeneralLedgerMaster") != -1))
+            {
+                this.Tables.Add(new AGeneralLedgerMasterTable("AGeneralLedgerMaster"));
+            }
+            if ((ds.Tables.IndexOf("AGeneralLedgerMasterPeriod") != -1))
+            {
+                this.Tables.Add(new AGeneralLedgerMasterPeriodTable("AGeneralLedgerMasterPeriod"));
             }
         }
 
@@ -156,6 +231,26 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             {
                 this.TableATransaction.InitVars();
             }
+            if ((this.TableAAccount != null))
+            {
+                this.TableAAccount.InitVars();
+            }
+            if ((this.TableACostCentre != null))
+            {
+                this.TableACostCentre.InitVars();
+            }
+            if ((this.TableAAccountHierarchyDetail != null))
+            {
+                this.TableAAccountHierarchyDetail.InitVars();
+            }
+            if ((this.TableAGeneralLedgerMaster != null))
+            {
+                this.TableAGeneralLedgerMaster.InitVars();
+            }
+            if ((this.TableAGeneralLedgerMasterPeriod != null))
+            {
+                this.TableAGeneralLedgerMasterPeriod.InitVars();
+            }
         }
 
         /// auto generated
@@ -166,6 +261,11 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.TableABatch = ((ABatchTable)(this.Tables["ABatch"]));
             this.TableAJournal = ((AJournalTable)(this.Tables["AJournal"]));
             this.TableATransaction = ((GLBatchTDSATransactionTable)(this.Tables["ATransaction"]));
+            this.TableAAccount = ((AAccountTable)(this.Tables["AAccount"]));
+            this.TableACostCentre = ((ACostCentreTable)(this.Tables["ACostCentre"]));
+            this.TableAAccountHierarchyDetail = ((AAccountHierarchyDetailTable)(this.Tables["AAccountHierarchyDetail"]));
+            this.TableAGeneralLedgerMaster = ((AGeneralLedgerMasterTable)(this.Tables["AGeneralLedgerMaster"]));
+            this.TableAGeneralLedgerMasterPeriod = ((AGeneralLedgerMasterPeriodTable)(this.Tables["AGeneralLedgerMasterPeriod"]));
         }
 
         /// auto generated
@@ -173,11 +273,60 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         {
 
             if (((this.TableALedger != null)
+                        && (this.TableAAccount != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccount1", "ALedger", new string[] {
+                                "a_ledger_number_i"}, "AAccount", new string[] {
+                                "a_ledger_number_i"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableAAccountHierarchyDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccountHierarchyDetail2", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "AAccountHierarchyDetail", new string[] {
+                                "a_ledger_number_i", "a_reporting_account_code_c"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableAAccountHierarchyDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccountHierarchyDetail3", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "AAccountHierarchyDetail", new string[] {
+                                "a_ledger_number_i", "a_account_code_to_report_to_c"}));
+            }
+            if (((this.TableALedger != null)
                         && (this.TableABatch != null)))
             {
                 this.FConstraints.Add(new TTypedConstraint("FKBatch1", "ALedger", new string[] {
                                 "a_ledger_number_i"}, "ABatch", new string[] {
                                 "a_ledger_number_i"}));
+            }
+            if (((this.TableALedger != null)
+                        && (this.TableACostCentre != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKCostCentre1", "ALedger", new string[] {
+                                "a_ledger_number_i"}, "ACostCentre", new string[] {
+                                "a_ledger_number_i"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableAGeneralLedgerMaster != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKGeneralLedgerMaster1", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "AGeneralLedgerMaster", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}));
+            }
+            if (((this.TableACostCentre != null)
+                        && (this.TableAGeneralLedgerMaster != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKGeneralLedgerMaster2", "ACostCentre", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}, "AGeneralLedgerMaster", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}));
+            }
+            if (((this.TableAGeneralLedgerMaster != null)
+                        && (this.TableAGeneralLedgerMasterPeriod != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKGlmPeriod1", "AGeneralLedgerMaster", new string[] {
+                                "a_glm_sequence_i"}, "AGeneralLedgerMasterPeriod", new string[] {
+                                "a_glm_sequence_i"}));
             }
             if (((this.TableABatch != null)
                         && (this.TableAJournal != null)))
@@ -192,6 +341,20 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 this.FConstraints.Add(new TTypedConstraint("FKTransaction1", "AJournal", new string[] {
                                 "a_ledger_number_i", "a_batch_number_i", "a_journal_number_i"}, "ATransaction", new string[] {
                                 "a_ledger_number_i", "a_batch_number_i", "a_journal_number_i"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableATransaction != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKTransaction2", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "ATransaction", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}));
+            }
+            if (((this.TableACostCentre != null)
+                        && (this.TableATransaction != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKTransaction3", "ACostCentre", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}, "ATransaction", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}));
             }
         }
     }

@@ -1904,6 +1904,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref AInspectDS, out AVerificationResult);
         }
 
+        /// generated method from connector
+        public bool PostGLBatch(Int32 ALedgerNumber,
+                                Int32 ABatchNumber,
+                                out TVerificationResultCollection AVerifications)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.PostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
     }
 }
 

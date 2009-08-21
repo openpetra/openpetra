@@ -3,7 +3,7 @@
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * @Authors:
- *       timop
+ *       timop, morayh
  *
  * Copyright 2004-2009 by OM International
  *
@@ -26,6 +26,7 @@
 using System;
 using System.Data;
 using System.Data.Odbc;
+using System.Collections.Generic;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Verification;
@@ -55,7 +56,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private static Int32 CreateGLMYear(Int32 ALedgerNumber,
             string AAccountCode,
             string ACostCentreCode,
-            TVerificationResultCollection AVerificationResult,
+            out TVerificationResultCollection AVerificationResult,
             TDBTransaction ATransaction)
         {
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ATransaction);
@@ -66,7 +67,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             ALedgerRow Ledger = LedgerTable[0];
-
+#if NOTNEEDED
             if (AGeneralLedgerMasterAccess.Exists(ALedgerNumber, Ledger.CurrentFinancialYear, AAccountCode, ACostCentreCode, ATransaction))
             {
                 throw new Exception("TFinancialYearWebConnector.CreateGLMYear: There is already a GLM Master record for " +
@@ -74,7 +75,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     Ledger.CurrentFinancialYear.ToString() + "/" +
                     AAccountCode + "/" + ACostCentreCode);
             }
-
+#endif
             AGeneralLedgerMasterTable GLMTable = new AGeneralLedgerMasterTable();
             AGeneralLedgerMasterRow GLMRow = GLMTable.NewRowTyped();
 
@@ -101,16 +102,14 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// this method loads the batch and the journals and the transactions, also the ledger
-        /// runs validations on batch, journals and transactions
-        /// some things are even modified, eg. batch period etc from date effective
+        /// load the batch and all associated tables into the typed dataset
         /// </summary>
         /// <param name="ADataSet"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
-        /// <returns></returns>
-        private static bool ValidateBatchAndTransactions(out GLBatchTDS ADataSet,
+        /// <returns>false if batch does not exist at all</returns>
+        private static bool LoadData(out GLBatchTDS ADataSet,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
@@ -130,9 +129,70 @@ namespace Ict.Petra.Server.MFinance.GL
                 return false;
             }
 
-            ABatchTable BatchTable = ABatchAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, Transaction);
-            ADataSet.Merge(BatchTable);
+            ALedgerAccess.LoadByPrimaryKey(ADataSet, ALedgerNumber, Transaction);
 
+            ABatchAccess.LoadByPrimaryKey(ADataSet, ALedgerNumber, ABatchNumber, Transaction);
+
+            AJournalAccess.LoadViaABatch(ADataSet, ALedgerNumber, ABatchNumber, Transaction);
+
+            foreach (AJournalRow journal in ADataSet.AJournal.Rows)
+            {
+                ATransactionAccess.LoadViaAJournal(ADataSet, journal.LedgerNumber,
+                    journal.BatchNumber,
+                    journal.JournalNumber,
+                    Transaction);
+            }
+
+            // get all accounts that are referenced by all transactions of this batch
+            string stmt = "SELECT DISTINCT " + AAccountTable.GetAccountCodeDBName() + ", " +
+                          AAccountTable.GetForeignCurrencyCodeDBName() + ", " +
+                          AAccountTable.GetForeignCurrencyFlagDBName() + ", " +
+                          AAccountTable.GetDebitCreditIndicatorDBName() +
+                          " FROM " + TTypedDataTable.GetTableNameSQL(AAccountTable.TableId) + ", " +
+                          TTypedDataTable.GetTableNameSQL(ATransactionTable.TableId) +
+                          " WHERE " + ATransactionTable.GetLedgerNumberDBName() + " = ? AND " +
+                          ATransactionTable.GetBatchNumberDBName() + " = ? AND " +
+                          AAccountTable.GetLedgerNumberDBName() + " = " + ATransactionTable.GetLedgerNumberDBName() + " AND " +
+                          AAccountTable.GetAccountCodeDBName() + " = " + ATransactionTable.GetAccountCodeDBName();
+            OdbcParameter paramLedgerNumber = TTypedDataTable.CreateOdbcParameter(ATransactionTable.TableId,
+                ATransactionTable.ColumnLedgerNumberId);
+            paramLedgerNumber.Value = ALedgerNumber;
+            OdbcParameter paramBatchNumber = TTypedDataTable.CreateOdbcParameter(ATransactionTable.TableId,
+                ATransactionTable.ColumnBatchNumberId);
+            paramBatchNumber.Value = ABatchNumber;
+            OdbcParameter[] ParametersArray = new OdbcParameter[] {
+                paramLedgerNumber,
+                paramBatchNumber
+            };
+
+            DBAccess.GDBAccessObj.SelectDT(ADataSet.AAccount, stmt, Transaction, ParametersArray, -1, -1);
+
+            // TODO: use cached table?
+            AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(ADataSet, ALedgerNumber, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD, Transaction);
+
+            // TODO: use cached table?
+            ACostCentreAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return true;
+        }
+
+        /// <summary>
+        /// runs validations on batch, journals and transactions
+        /// some things are even modified, eg. batch period etc from date effective
+        /// </summary>
+        /// <param name="ADataSet"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        /// <returns></returns>
+        private static bool ValidateBatchAndTransactions(ref GLBatchTDS ADataSet,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerifications)
+        {
+            AVerifications = new TVerificationResultCollection();
             ABatchRow Batch = ADataSet.ABatch[0];
 
             if ((Batch.BatchStatus == MFinanceConstants.BATCH_CANCELLED) || (Batch.BatchStatus == MFinanceConstants.BATCH_POSTED))
@@ -168,6 +228,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             Int32 DateEffectivePeriodNumber;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             if (!TFinancialYear.IsValidPeriod(Batch.LedgerNumber, Batch.DateEffective, out DateEffectivePeriodNumber, Transaction))
             {
@@ -185,8 +246,9 @@ namespace Ict.Petra.Server.MFinance.GL
                 // TODO: BatchYear?
             }
 
-            AJournalTable JournalTable = AJournalAccess.LoadViaABatch(ALedgerNumber, ABatchNumber, Transaction);
-            ADataSet.Merge(JournalTable);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            DataView accountView = new DataView(ADataSet.AAccount);
 
             foreach (AJournalRow journal in ADataSet.AJournal.Rows)
             {
@@ -204,46 +266,37 @@ namespace Ict.Petra.Server.MFinance.GL
                             TResultSeverity.Resv_Critical));
                 }
 
-                ATransactionTable TransactionTable = ATransactionAccess.LoadViaAJournal(journal.LedgerNumber,
-                    journal.BatchNumber,
-                    journal.JournalNumber,
-                    Transaction);
+                DataView TransactionsOfJournalView = new DataView(ADataSet.ATransaction);
+                TransactionsOfJournalView.RowFilter = ATransactionTable.GetJournalNumberDBName() + " = " + journal.JournalNumber.ToString();
 
-                foreach (ATransactionRow transaction in TransactionTable.Rows)
+                foreach (DataRowView TransactionViewRow in TransactionsOfJournalView)
                 {
+                    ATransactionRow transaction = (ATransactionRow)TransactionViewRow.Row;
+
                     // check that transactions on foreign currency accounts are using the correct currency
                     // (fx reval transactions are an exception because they are posted in base currency)
-                    if (transaction.Reference != MFinanceConstants.TRANSACTION_FX_REVAL)
+                    if (!((transaction.Reference == MFinanceConstants.TRANSACTION_FX_REVAL)
+                          && (journal.TransactionTypeCode == MFinanceConstants.TRANSACTION_FX_REVAL)))
                     {
-                        string stmt = "SELECT " + AAccountTable.GetForeignCurrencyCodeDBName() +
-                                      " FROM " + TTypedDataTable.GetTableNameSQL(AAccountTable.TableId) +
-                                      " WHERE " + AAccountTable.GetLedgerNumberDBName() + " = ? AND " +
-                                      AAccountTable.GetAccountCodeDBName() + " = ? AND " +
-                                      AAccountTable.GetForeignCurrencyFlagDBName() + " = true AND " +
-                                      AAccountTable.GetForeignCurrencyCodeDBName() + " <> ?";
+                        // get the account that this transaction is writing to
+                        accountView.RowFilter = AAccountTable.GetAccountCodeDBName() + " = " + transaction.AccountCode;
 
-                        OdbcParameter paramLedgerNumber = TTypedDataTable.CreateOdbcParameter(AAccountTable.TableId,
-                            AAccountTable.ColumnLedgerNumberId);
-                        paramLedgerNumber.Value = transaction.LedgerNumber;
-                        OdbcParameter paramAccountCode = TTypedDataTable.CreateOdbcParameter(AAccountTable.TableId, AAccountTable.ColumnAccountCodeId);
-                        paramAccountCode.Value = transaction.AccountCode;
-                        OdbcParameter paramForeignCurrencyCode = TTypedDataTable.CreateOdbcParameter(AAccountTable.TableId,
-                            AAccountTable.ColumnForeignCurrencyCodeId);
-                        paramForeignCurrencyCode.Value = journal.TransactionCurrency;
-                        OdbcParameter[] ParametersArray = new OdbcParameter[] {
-                            paramLedgerNumber,
-                            paramAccountCode,
-                            paramForeignCurrencyCode
-                        };
-                        DataTable accountForeignCurrency = DBAccess.GDBAccessObj.SelectDT(stmt, "temp", Transaction, ParametersArray);
+                        if (accountView.Count != 1)
+                        {
+                            // should not get here
+                            throw new Exception("ValidateBatchAndTransactions: Cannot find account " + transaction.AccountCode);
+                        }
 
-                        foreach (DataRow account in accountForeignCurrency.Rows)
+                        AAccountRow Account = (AAccountRow)accountView[0].Row;
+
+                        if (Account.ForeignCurrencyFlag && (journal.TransactionCurrency != Account.ForeignCurrencyCode))
                         {
                             AVerifications.Add(new TVerificationResult(
                                     String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
                                     String.Format(Catalog.GetString(
                                             "Transaction {0} in Journal {1} with currency {2} does not fit the foreign currency {3} of account {4}."),
-                                        transaction.TransactionNumber, transaction.JournalNumber, journal.TransactionCurrency, account[0],
+                                        transaction.TransactionNumber, transaction.JournalNumber, journal.TransactionCurrency,
+                                        Account.ForeignCurrencyCode,
                                         transaction.AccountCode),
                                     TResultSeverity.Resv_Critical));
                         }
@@ -258,13 +311,72 @@ namespace Ict.Petra.Server.MFinance.GL
                                 TResultSeverity.Resv_Critical));
                     }
                 }
-
-                ADataSet.Merge(TransactionTable);
             }
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
             return !AVerifications.HasCriticalError();
+        }
+
+        /// Helper class for storing the amounts of a batch at posting level for account/costcentre combinations
+        private class TAmount
+        {
+            /// amount in the base currency of the ledger
+            public double baseAmount = 0.0;
+
+            /// amount in transaction currency; only for foreign currency accounts
+            public double transAmount = 0.0;
+
+            /// generate a key for the account/costcentre combination
+            public static string MakeKey(string AccountCode, string CostCentreCode)
+            {
+                return AccountCode + ":" + CostCentreCode;
+            }
+
+            /// get the account code from the key
+            public static string GetAccountCode(string key)
+            {
+                return key.Split(':')[0];
+            }
+
+            /// get the cost centre code from the key
+            public static string GetCostCentreCode(string key)
+            {
+                return key.Split(':')[1];
+            }
+        }
+
+        /// Helper class for managing the account hierarchy for posting the batch
+        private class TAccountTreeElement
+        {
+            /// Constructor
+            public TAccountTreeElement(bool AInvert, bool AForeign)
+            {
+                Invert = AInvert;
+                Foreign = AForeign;
+            }
+
+            /// is the debit credit indicator different of the reporting account to the parent account
+            public bool Invert = false;
+
+            /// is this account a foreign currency account
+            public bool Foreign = false;
+
+            /// generate a key for the reporting account/parent account combination
+            public static string MakeKey(string ReportingAccountCode, string AccountCodeReportTo)
+            {
+                return ReportingAccountCode + ":" + AccountCodeReportTo;
+            }
+
+            /// get the reporting account code from the key
+            public static string GetReportingAccountCode(string key)
+            {
+                return key.Split(':')[0];
+            }
+
+            /// get the parent account code from the key
+            public static string GetAccountReportToCode(string key)
+            {
+                return key.Split(':')[1];
+            }
         }
 
         /// <summary>
@@ -272,8 +384,12 @@ namespace Ict.Petra.Server.MFinance.GL
         /// add sums for costcentre/account combinations
         /// </summary>
         /// <param name="MainDS">only contains the batch to post, and its journals and transactions</param>
-        private static void MarkAsPostedAndCollectData(ref GLBatchTDS MainDS)
+        /// <returns>a list with the sums for each costcentre/account combination</returns>
+        private static SortedList <string, TAmount>MarkAsPostedAndCollectData(ref GLBatchTDS MainDS)
         {
+            SortedList <string, TAmount>PostingLevel = new SortedList <string, TAmount>();
+            DataView accountView = new DataView(MainDS.AAccount);
+
             foreach (AJournalRow journal in MainDS.AJournal.Rows)
             {
                 DataView myView = new DataView(MainDS.ATransaction);
@@ -284,11 +400,373 @@ namespace Ict.Petra.Server.MFinance.GL
                     ATransactionRow transaction = (ATransactionRow)transactionview.Row;
                     transaction.TransactionStatus = true;
 
-                    // TODO
+                    // get the account that this transaction is writing to
+                    accountView.RowFilter = AAccountTable.GetAccountCodeDBName() + " = " + transaction.AccountCode;
+                    AAccountRow Account = (AAccountRow)accountView[0].Row;
+
+                    // Set the sign of the amounts according to the debit/credit indicator
+                    double SignBaseAmount = transaction.AmountInBaseCurrency;
+                    double SignTransAmount = transaction.TransactionAmount;
+
+                    if (Account.DebitCreditIndicator != transaction.DebitCreditIndicator)
+                    {
+                        SignBaseAmount *= -1.0;
+                        SignTransAmount *= -1.0;
+                    }
+
+                    // TODO: do we need to check for base currency corrections?
+                    // or do we get rid of these problems by not having international currency?
+
+                    string key = TAmount.MakeKey(transaction.AccountCode, transaction.CostCentreCode);
+
+                    if (!PostingLevel.ContainsKey(key))
+                    {
+                        PostingLevel.Add(key, new TAmount());
+                    }
+
+                    PostingLevel[key].baseAmount += SignBaseAmount;
+
+                    // Only foreign currency accounts store a value in the transaction currency
+                    if (Account.ForeignCurrencyFlag)
+                    {
+                        PostingLevel[key].transAmount += SignTransAmount;
+                    }
                 }
 
                 journal.JournalStatus = MFinanceConstants.BATCH_POSTED;
             }
+
+            return PostingLevel;
+        }
+
+        /// <summary>
+        /// Calculate the summarization trees for each posting account and each
+        /// posting cost centre. The result of the union of these trees,
+        /// excluding the base posting/posting combination, is the set of
+        /// accounts that receive the summary data.
+        /// </summary>
+        /// <param name="APostingLevel"></param>
+        /// <param name="AAccountTree"></param>
+        /// <param name="ACostCentreTree"></param>
+        /// <param name="AAccountView"></param>
+        /// <param name="AAccountHierarchyDetailView"></param>
+        /// <param name="ACostCentreView"></param>
+        /// <returns></returns>
+        private static bool CalculateTrees(ref SortedList <string, TAmount>APostingLevel,
+            out SortedList <string, TAccountTreeElement>AAccountTree,
+            out SortedList <string, string>ACostCentreTree,
+            DataView AAccountView,
+            DataView AAccountHierarchyDetailView,
+            DataView ACostCentreView)
+        {
+            // get all accounts that each posting level account is directly or indirectly posting to
+            AAccountTree = new SortedList <string, TAccountTreeElement>();
+
+            foreach (string PostingLevelKey in APostingLevel.Keys)
+            {
+                string AccountCode = TAmount.GetAccountCode(PostingLevelKey);
+
+                // only once for each account, even though there might be several entries for one account in APostingLevel because of different costcentres
+                if (AAccountTree.ContainsKey(TAccountTreeElement.MakeKey(AccountCode, AccountCode)))
+                {
+                    continue;
+                }
+
+                AAccountView.RowFilter = AAccountTable.GetAccountCodeDBName() + "=" + AccountCode;
+                AAccountRow Account = (AAccountRow)AAccountView[0].Row;
+                bool DebitCreditIndicator = Account.DebitCreditIndicator;
+                AAccountTree.Add(TAccountTreeElement.MakeKey(AccountCode, AccountCode),
+                    new TAccountTreeElement(false, Account.ForeignCurrencyFlag));
+
+                AAccountHierarchyDetailView.RowFilter = AAccountHierarchyDetailTable.GetReportingAccountCodeDBName() + "=" + AccountCode;
+
+                while (AAccountHierarchyDetailView.Count > 0)
+                {
+                    AAccountHierarchyDetailRow HierarchyDetail = (AAccountHierarchyDetailRow)AAccountHierarchyDetailView[0].Row;
+                    AAccountView.RowFilter = AAccountTable.GetAccountCodeDBName() + "=" + HierarchyDetail.AccountCodeToReportTo;
+                    Account = (AAccountRow)AAccountView[0].Row;
+                    AAccountTree.Add(TAccountTreeElement.MakeKey(AccountCode, HierarchyDetail.AccountCodeToReportTo),
+                        new TAccountTreeElement(DebitCreditIndicator != Account.DebitCreditIndicator, Account.ForeignCurrencyFlag));
+                    AAccountHierarchyDetailView.RowFilter = AAccountHierarchyDetailTable.GetReportingAccountCodeDBName() + "=" +
+                                                            HierarchyDetail.AccountCodeToReportTo;
+                }
+            }
+
+            ACostCentreTree = new SortedList <string, string>();
+
+            foreach (string PostingLevelKey in APostingLevel.Keys)
+            {
+                string CostCentreCode = TAmount.GetCostCentreCode(PostingLevelKey);
+
+                // only once for each cost centre
+                if (ACostCentreTree.ContainsKey(CostCentreCode + ":" + CostCentreCode))
+                {
+                    continue;
+                }
+
+                ACostCentreTree.Add(CostCentreCode + ":" + CostCentreCode,
+                    CostCentreCode + ":" + CostCentreCode);
+
+                ACostCentreView.RowFilter = ACostCentreTable.GetCostCentreCodeDBName() + "=" + CostCentreCode;
+                ACostCentreRow CostCentre = (ACostCentreRow)ACostCentreView[0].Row;
+
+                while (!CostCentre.IsCostCentreToReportToNull())
+                {
+                    ACostCentreTree.Add(CostCentreCode + ":" + CostCentre.CostCentreToReportTo,
+                        CostCentreCode + ":" + CostCentre.CostCentreToReportTo);
+
+                    ACostCentreView.RowFilter = ACostCentreTable.GetCostCentreCodeDBName() + "=" + CostCentre.CostCentreToReportTo;
+                    CostCentre = (ACostCentreRow)ACostCentreView[0].Row;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// for each posting level, propagate the value upwards through both the account and the cost centre hierarchy in glm master;
+        /// also propagate the value from the posting period through the following periods;
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="APostingLevel"></param>
+        /// <param name="AAccountTree"></param>
+        /// <param name="ACostCentreTree"></param>
+        /// <returns></returns>
+        private static bool SummarizeData(
+            ref GLBatchTDS AMainDS,
+            ref SortedList <string, TAmount>APostingLevel,
+            ref SortedList <string, TAccountTreeElement>AAccountTree,
+            ref SortedList <string, string>ACostCentreTree)
+        {
+            Int32 TempGLMSequence = 0;
+            Int32 FromPeriod = AMainDS.ABatch[0].BatchPeriod;
+
+            if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
+            {
+                // If the year end close is running, then we are posting the year end
+                // reallocations.  These appear as part of the final period, but
+                // should only be written to the forward periods.
+                // In year end, a_current_period_i = a_number_of_accounting_periods_i = a_batch_period_i.
+                FromPeriod++;
+            }
+
+            DataView GLMMasterView = AMainDS.AGeneralLedgerMaster.DefaultView;
+            DataView GLMPeriodView = AMainDS.AGeneralLedgerMasterPeriod.DefaultView;
+
+            // Loop through the posting data collected earlier.  Summarize it to a
+            // temporary table, which is much faster than finding and updating records
+            // in the glm tables multiple times.  WriteData will write it to the real
+            // tables in a single pass.
+            foreach (string PostingLevelKey in APostingLevel.Keys)
+            {
+                string AccountCode = TAmount.GetAccountCode(PostingLevelKey);
+                string CostCentreCode = TAmount.GetCostCentreCode(PostingLevelKey);
+
+                TAmount PostingLevelElement = APostingLevel[PostingLevelKey];
+
+                // Combine the summarization trees for both the account and the cost centre.
+                foreach (string AccountTreeKey in AAccountTree.Keys)
+                {
+                    if (TAccountTreeElement.GetReportingAccountCode(AccountTreeKey) == AccountCode)
+                    {
+                        string AccountCodeToReportTo = TAccountTreeElement.GetAccountReportToCode(AccountTreeKey);
+                        TAccountTreeElement AccountTreeElement = AAccountTree[AccountTreeKey];
+
+                        foreach (string CostCentreKey in ACostCentreTree.Keys)
+                        {
+                            if (CostCentreKey.StartsWith(CostCentreCode + ":"))
+                            {
+                                string CostCentreCodeToReportTo = CostCentreKey.Split(':')[1];
+                                double SignBaseAmount = PostingLevelElement.baseAmount;
+                                double SignTransAmount = PostingLevelElement.transAmount;
+
+                                // Set the sign of the amounts according to the debit/credit indicator
+                                if (AccountTreeElement.Invert)
+                                {
+                                    SignBaseAmount *= -1;
+                                    SignTransAmount *= -1;
+                                }
+
+                                // Find the summary level, creating it if it does not already exist.
+                                GLMMasterView.RowFilter = AGeneralLedgerMasterTable.GetAccountCodeDBName() + "=" + AccountCodeToReportTo + " and " +
+                                                          AGeneralLedgerMasterTable.GetCostCentreCodeDBName() + "=" + CostCentreCodeToReportTo;
+                                AGeneralLedgerMasterRow GlmRow;
+
+                                if (GLMMasterView.Count == 0)
+                                {
+                                    TempGLMSequence++;
+                                    GlmRow = AMainDS.AGeneralLedgerMaster.NewRowTyped();
+                                    GlmRow.LedgerNumber = -1;
+                                    GlmRow.Year = -1;
+                                    GlmRow.AccountCode = AccountCodeToReportTo;
+                                    GlmRow.CostCentreCode = CostCentreCodeToReportTo;
+                                    AMainDS.AGeneralLedgerMaster.Rows.Add(GlmRow);
+                                    GLMMasterView.RowFilter = AGeneralLedgerMasterTable.GetAccountCodeDBName() + "=" + AccountCodeToReportTo +
+                                                              " and " +
+                                                              AGeneralLedgerMasterTable.GetCostCentreCodeDBName() + "=" + CostCentreCodeToReportTo;
+                                }
+
+                                GlmRow = (AGeneralLedgerMasterRow)GLMMasterView[0].Row;
+                                GlmRow.YtdActualBase += SignBaseAmount;
+
+                                if (AccountTreeElement.Foreign)
+                                {
+                                    GlmRow.YtdActualForeign += SignTransAmount;
+                                }
+
+                                if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
+                                {
+                                    GlmRow.ClosingPeriodActualBase += SignBaseAmount;
+                                }
+
+                                // Add the period data from the posting level to the summary levels
+                                for (Int32 PeriodCount = FromPeriod;
+                                     PeriodCount <= AMainDS.ALedger[0].CurrentPeriod + AMainDS.ALedger[0].NumberOfAccountingPeriods;
+                                     PeriodCount++)
+                                {
+                                    GLMPeriodView.RowFilter = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "=" +
+                                                              TempGLMSequence.ToString() + " and " +
+                                                              AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName() + "=" + PeriodCount.ToString();
+                                    AGeneralLedgerMasterPeriodRow GlmPeriodRow;
+
+                                    if (GLMPeriodView.Count == 0)
+                                    {
+                                        GlmPeriodRow = AMainDS.AGeneralLedgerMasterPeriod.NewRowTyped();
+                                        GlmPeriodRow.GlmSequence = TempGLMSequence;
+                                        GlmPeriodRow.PeriodNumber = PeriodCount;
+                                        AMainDS.AGeneralLedgerMasterPeriod.Rows.Add(GlmPeriodRow);
+                                        GLMPeriodView.RowFilter = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "=" +
+                                                                  TempGLMSequence.ToString() + " and " +
+                                                                  AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName() + "=" +
+                                                                  PeriodCount.ToString();
+                                    }
+
+                                    GlmPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodView[0].Row;
+                                    GlmPeriodRow.ActualBase += SignBaseAmount;
+
+                                    if (AccountTreeElement.Foreign)
+                                    {
+                                        GlmPeriodRow.ActualForeign += SignTransAmount;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// write all changes to the database; on failure the whole transaction is rolled back
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="AVerifications"></param>
+        /// <returns></returns>
+        private static bool SubmitChanges(ref GLBatchTDS AMainDS, out TVerificationResultCollection AVerifications)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ABatchAccess.SubmitChanges(AMainDS.ABatch, Transaction, out AVerifications);
+
+            if (!AVerifications.HasCriticalError())
+            {
+                AJournalAccess.SubmitChanges(AMainDS.AJournal, Transaction, out AVerifications);
+
+                if (!AVerifications.HasCriticalError())
+                {
+                    ATransactionAccess.SubmitChanges(AMainDS.ATransaction, Transaction, out AVerifications);
+
+                    if (!AVerifications.HasCriticalError())
+                    {
+                        // write glm master and periods
+                        foreach (AGeneralLedgerMasterRow glmMaster in AMainDS.AGeneralLedgerMaster.Rows)
+                        {
+                            AGeneralLedgerMasterTable DBMasterTable =
+                                AGeneralLedgerMasterAccess.LoadByUniqueKey(AMainDS.ALedger[0].LedgerNumber,
+                                    AMainDS.ALedger[0].CurrentFinancialYear,
+                                    glmMaster.AccountCode,
+                                    glmMaster.CostCentreCode,
+                                    Transaction);
+
+                            if (DBMasterTable.Count == 0)
+                            {
+                                CreateGLMYear(AMainDS.ALedger[0].LedgerNumber,
+                                    glmMaster.AccountCode,
+                                    glmMaster.CostCentreCode,
+                                    out AVerifications,
+                                    Transaction);
+
+                                if (AVerifications.HasCriticalError())
+                                {
+                                    DBAccess.GDBAccessObj.RollbackTransaction();
+                                    return false;
+                                }
+
+                                DBMasterTable = AGeneralLedgerMasterAccess.LoadByUniqueKey(AMainDS.ALedger[0].LedgerNumber,
+                                    AMainDS.ALedger[0].CurrentFinancialYear,
+                                    glmMaster.AccountCode,
+                                    glmMaster.CostCentreCode,
+                                    Transaction);
+                            }
+
+                            AGeneralLedgerMasterRow DBMasterRow = DBMasterTable[0];
+                            DBMasterRow.YtdActualBase += glmMaster.YtdActualBase;
+                            DBMasterRow.YtdActualForeign += glmMaster.YtdActualForeign;
+
+                            if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
+                            {
+                                DBMasterRow.ClosingPeriodActualBase += glmMaster.ClosingPeriodActualBase;
+                            }
+
+                            AGeneralLedgerMasterAccess.SubmitChanges(DBMasterTable, Transaction, out AVerifications);
+
+                            if (AVerifications.HasCriticalError())
+                            {
+                                DBAccess.GDBAccessObj.RollbackTransaction();
+                                return false;
+                            }
+
+                            DataView GLMPeriodView = AMainDS.AGeneralLedgerMasterPeriod.DefaultView;
+                            GLMPeriodView.RowFilter = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "=" + glmMaster.GlmSequence.ToString();
+
+                            foreach (DataRowView GLMPeriodRowView in GLMPeriodView)
+                            {
+                                AGeneralLedgerMasterPeriodRow glmPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodRowView.Row;
+
+                                AGeneralLedgerMasterPeriodTable DBPeriodTable =
+                                    AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(DBMasterRow.GlmSequence,
+                                        glmPeriodRow.PeriodNumber,
+                                        Transaction);
+                                AGeneralLedgerMasterPeriodRow DBPeriodRow = DBPeriodTable[0];
+                                DBPeriodRow.ActualBase += glmPeriodRow.ActualBase;
+                                DBPeriodRow.ActualForeign += glmPeriodRow.ActualForeign;
+
+                                AGeneralLedgerMasterPeriodAccess.SubmitChanges(DBPeriodTable, Transaction, out AVerifications);
+
+                                if (AVerifications.HasCriticalError())
+                                {
+                                    DBAccess.GDBAccessObj.RollbackTransaction();
+                                    return false;
+                                }
+                            }
+                        }
+
+                        // TODO: write glm and glmperiod tables only at the very end! otherwise too many times calls to submitchanges
+                    }
+                }
+            }
+
+            if (AVerifications.HasCriticalError())
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                return false;
+            }
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+
+            return true;
         }
 
         /// <summary>
@@ -301,22 +779,38 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             GLBatchTDS MainDS;
 
+            // get the data from the database into the MainDS
+            if (!LoadData(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            {
+                return false;
+            }
+
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
-            // also get the data from the database into the MainDS
-            if (!ValidateBatchAndTransactions(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!ValidateBatchAndTransactions(ref MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
             }
 
             // post each journal, each transaction; add sums for costcentre/account combinations
-            MarkAsPostedAndCollectData(ref MainDS);
+            SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref MainDS);
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            // key is PostingAccount, the value TAccountTreeElement describes the parent account and other details of the relation
+            SortedList <string, TAccountTreeElement>AccountTree;
 
-            // TODO: what about international currency etc?
-            // TODO: CalculateTrees
-            // TODO: SummarizeData (optionally using stored procedures?)
+            // key is the PostingCostCentre, the value is the parent Cost Centre
+            SortedList <string, string>CostCentreTree;
+
+            // TODO Can anything of this be done in StoredProcedures? Only SQLite here?
+
+            CalculateTrees(ref PostingLevel, out AccountTree, out CostCentreTree,
+                MainDS.AAccount.DefaultView,
+                MainDS.AAccountHierarchyDetail.DefaultView,
+                MainDS.ACostCentre.DefaultView);
+
+            SummarizeData(ref MainDS, ref PostingLevel, ref AccountTree, ref CostCentreTree);
+
             // TODO: WriteData
+
 
             return false;
         }

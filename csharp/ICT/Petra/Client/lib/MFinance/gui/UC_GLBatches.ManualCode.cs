@@ -26,6 +26,7 @@
 using System;
 using Mono.Unix;
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
@@ -33,6 +34,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public partial class TUC_GLBatches
     {
         private Int32 FLedgerNumber;
+        private Int32 FSelectedBatchNumber;
 
         /// <summary>
         /// load the batches into the grid
@@ -53,6 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).LoadJournals(
                 FMainDS.ABatch[ACurrentDetailIndex].LedgerNumber,
                 FMainDS.ABatch[ACurrentDetailIndex].BatchNumber);
+            FSelectedBatchNumber = FMainDS.ABatch[ACurrentDetailIndex].BatchNumber;
         }
 
         private void ShowJournalTab(Object sender, EventArgs e)
@@ -88,8 +91,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void PostBatch(System.Object sender, EventArgs e)
         {
-            // TODO
-            System.Windows.Forms.MessageBox.Show("Validation of current batch and Posting will happen here");
+            // TODO: show VerificationResult
+            // TODO: display progress of posting
+            TVerificationResultCollection Verifications;
+            TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications);
         }
     }
 }

@@ -9,6 +9,11 @@
             <CustomField name="DateEntered" type="DateTime"/>
             <CustomField name="AnalysisAttributes" type="string"/>
         </Table>
+        <Table sqltable="a_account"/>
+        <Table sqltable="a_cost_centre"/>
+        <Table sqltable="a_account_hierarchy_detail"/>
+        <Table sqltable="a_general_ledger_master"/>
+        <Table sqltable="a_general_ledger_master_period"/>
     </DataSet> 
     
 </PetraDataSets>
