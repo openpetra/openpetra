@@ -36,6 +36,10 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
             },
             new int[] { 
                 {#COLUMNPRIMARYKEYORDER}
+{#IFDEF COLUMNUNIQUEKEYORDER}
+            }, new int[] {
+                {#COLUMNUNIQUEKEYORDER}
+{#ENDIF COLUMNUNIQUEKEYORDER}
             }));
         return true;
     }

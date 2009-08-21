@@ -103,6 +103,30 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 snippet.AddToCodelet("COLUMNPRIMARYKEYORDER", "");
             }
 
+            if (currentTable.HasUniqueKey())
+            {
+                TConstraint primKey = currentTable.GetFirstUniqueKey();
+                bool first = true;
+
+                foreach (string columnName in primKey.strThisFields)
+                {
+                    string toAdd = currentTable.grpTableField.List.IndexOf(currentTable.GetField(columnName)).ToString();
+
+                    if (!first)
+                    {
+                        toAdd = ", " + toAdd;
+                    }
+
+                    first = false;
+
+                    snippet.AddToCodelet("COLUMNUNIQUEKEYORDER", toAdd);
+                }
+            }
+            else
+            {
+                snippet.AddToCodelet("COLUMNUNIQUEKEYORDER", "");
+            }
+
             int colOrder = 0;
 
             foreach (TTableField col in currentTable.grpTableField.List)

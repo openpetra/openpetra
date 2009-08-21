@@ -271,6 +271,23 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
+        /// check if there is any verification that shows a critical error
+        /// </summary>
+        /// <returns></returns>
+        public bool HasCriticalError()
+        {
+            foreach (TVerificationResult v in List)
+            {
+                if (v.FResultSeverity == TResultSeverity.Resv_Critical)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// generate the text for a message box showing all verification errors
         /// </summary>
         /// <param name="AErrorMessages">will have the list of error messages</param>

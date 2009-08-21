@@ -188,5 +188,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             return SubmissionResult;
         }
+
+        /// <summary>
+        /// post a GL Batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="APostingDate"></param>
+        public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, DateTime APostingDate)
+        {
+            // TODO: first validate Batch, and Transactions; check credit/debit totals; check currency
+            // TODO: post each journal, each transaction; add sums for costcentre/account combinations
+            // TODO: what about international currency etc?
+            // TODO: CalculateTrees
+            // TODO: SummarizeData
+            // TODO: WriteData
+
+            return false;
+        }
     }
 }

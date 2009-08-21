@@ -120,6 +120,44 @@ namespace Ict.Tools.CodeGeneration.DataStore
                    ";" + Environment.NewLine;
         }
 
+        /// <summary>
+        /// get formal and actual parameters for a unique or primary key
+        /// </summary>
+        /// <param name="AConstraint"></param>
+        /// <param name="formalParametersKey"></param>
+        /// <param name="actualParametersKey"></param>
+        /// <param name="numberKeyColumns"></param>
+        private static void PrepareCodeletsKey(
+            TTable ACurrentTable,
+            TConstraint AConstraint,
+            out string formalParametersKey,
+            out string actualParametersKey,
+            out int numberKeyColumns)
+        {
+            formalParametersKey = "";
+            actualParametersKey = "";
+
+            numberKeyColumns = AConstraint.strThisFields.Count;
+
+            int counterKeyField = 0;
+
+            foreach (string field in AConstraint.strThisFields)
+            {
+                if (counterKeyField > 0)
+                {
+                    formalParametersKey += ", ";
+                    actualParametersKey += ", ";
+                }
+
+                TTableField typedField = ACurrentTable.GetField(field);
+
+                formalParametersKey += typedField.GetDotNetType() + " A" + TTable.NiceFieldName(field);
+                actualParametersKey += "A" + TTable.NiceFieldName(field);
+
+                counterKeyField++;
+            }
+        }
+
         private static void PrepareCodeletsPrimaryKey(
             TTable ACurrentTable,
             out string formalParametersPrimaryKey,
@@ -135,25 +173,33 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 return;
             }
 
-            numberPrimaryKeyColumns = ACurrentTable.GetPrimaryKey().strThisFields.Count;
+            PrepareCodeletsKey(ACurrentTable,
+                ACurrentTable.GetPrimaryKey(),
+                out formalParametersPrimaryKey,
+                out actualParametersPrimaryKey,
+                out numberPrimaryKeyColumns);
+        }
 
-            int counterPrimaryKeyField = 0;
+        private static void PrepareCodeletsUniqueKey(
+            TTable ACurrentTable,
+            out string formalParametersUniqueKey,
+            out string actualParametersUniqueKey,
+            out int numberUniqueKeyColumns)
+        {
+            formalParametersUniqueKey = "";
+            actualParametersUniqueKey = "";
+            numberUniqueKeyColumns = 0;
 
-            foreach (string field in ACurrentTable.GetPrimaryKey().strThisFields)
+            if (!ACurrentTable.HasUniqueKey())
             {
-                if (counterPrimaryKeyField > 0)
-                {
-                    formalParametersPrimaryKey += ", ";
-                    actualParametersPrimaryKey += ", ";
-                }
-
-                TTableField typedField = ACurrentTable.GetField(field);
-
-                formalParametersPrimaryKey += typedField.GetDotNetType() + " A" + TTable.NiceFieldName(field);
-                actualParametersPrimaryKey += "A" + TTable.NiceFieldName(field);
-
-                counterPrimaryKeyField++;
+                return;
             }
+
+            PrepareCodeletsKey(ACurrentTable,
+                ACurrentTable.GetFirstUniqueKey(),
+                out formalParametersUniqueKey,
+                out actualParametersUniqueKey,
+                out numberUniqueKeyColumns);
         }
 
         private static void PrepareCodeletsForeignKey(
@@ -621,6 +667,20 @@ namespace Ict.Tools.CodeGeneration.DataStore
             ASnippet.SetCodelet("FORMALPARAMETERSPRIMARYKEY", formalParametersPrimaryKey);
             ASnippet.SetCodelet("ACTUALPARAMETERSPRIMARYKEY", actualParametersPrimaryKey);
             ASnippet.SetCodelet("PRIMARYKEYNUMBERCOLUMNS", numberPrimaryKeyColumns.ToString());
+
+            string formalParametersUniqueKey;
+            string actualParametersUniqueKey;
+            int numberUniqueKeyColumns;
+
+            PrepareCodeletsUniqueKey(ACurrentTable,
+                out formalParametersUniqueKey,
+                out actualParametersUniqueKey,
+                out numberUniqueKeyColumns);
+
+            ASnippet.SetCodelet("FORMALPARAMETERSUNIQUEKEY", formalParametersUniqueKey);
+            ASnippet.SetCodelet("ACTUALPARAMETERSUNIQUEKEY", actualParametersUniqueKey);
+            ASnippet.SetCodelet("UNIQUEKEYNUMBERCOLUMNS", numberUniqueKeyColumns.ToString());
+
 
             ASnippet.SetCodelet("SEQUENCENAMEANDFIELD", "");
 

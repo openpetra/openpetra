@@ -128,6 +128,43 @@ namespace Ict.Petra.Server.MPartner.Mailroom.Data.Access
         {
             return LoadByPrimaryKey(AExtractId, AFieldList, ATransaction, null, 0, 0);
         }
+        /// this method is called by all overloads
+        public static void LoadByUniqueKey(DataSet ADataSet, String AExtractName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadByUniqueKey(MExtractMasterTable.TableId, ADataSet, new System.Object[1]{AExtractName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, String AExtractName, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, AExtractName, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, String AExtractName, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, AExtractName, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static MExtractMasterTable LoadByUniqueKey(String AExtractName, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            MExtractMasterTable Data = new MExtractMasterTable();
+            LoadByUniqueKey(MExtractMasterTable.TableId, Data, new System.Object[1]{AExtractName}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static MExtractMasterTable LoadByUniqueKey(String AExtractName, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(AExtractName, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static MExtractMasterTable LoadByUniqueKey(String AExtractName, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(AExtractName, AFieldList, ATransaction, null, 0, 0);
+        }
 
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, MExtractMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
@@ -221,6 +258,12 @@ namespace Ict.Petra.Server.MPartner.Mailroom.Data.Access
         public static bool Exists(Int32 AExtractId, TDBTransaction ATransaction)
         {
             return Exists(MExtractMasterTable.TableId, new System.Object[1]{AExtractId}, ATransaction);
+        }
+
+        /// check if a row exists by using the unique key
+        public static bool Exists(String AExtractName, TDBTransaction ATransaction)
+        {
+            return Exists(MExtractMasterTable.TableId, new System.Object[1]{AExtractName}, ATransaction);
         }
 
         /// this method is called by all overloads
@@ -11988,6 +12031,43 @@ namespace Ict.Petra.Server.MPartner.Mailroom.Data.Access
         {
             return LoadByPrimaryKey(AContactId, AFieldList, ATransaction, null, 0, 0);
         }
+        /// this method is called by all overloads
+        public static void LoadByUniqueKey(DataSet ADataSet, Int64 APartnerKey, System.DateTime AContactDate, Int32 AContactTime, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadByUniqueKey(PPartnerContactTable.TableId, ADataSet, new System.Object[3]{APartnerKey, AContactDate, AContactTime}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AContactDate, Int32 AContactTime, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, APartnerKey, AContactDate, AContactTime, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AContactDate, Int32 AContactTime, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, APartnerKey, AContactDate, AContactTime, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static PPartnerContactTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AContactDate, Int32 AContactTime, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            PPartnerContactTable Data = new PPartnerContactTable();
+            LoadByUniqueKey(PPartnerContactTable.TableId, Data, new System.Object[3]{APartnerKey, AContactDate, AContactTime}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static PPartnerContactTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AContactDate, Int32 AContactTime, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(APartnerKey, AContactDate, AContactTime, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static PPartnerContactTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AContactDate, Int32 AContactTime, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(APartnerKey, AContactDate, AContactTime, AFieldList, ATransaction, null, 0, 0);
+        }
 
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PPartnerContactRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
@@ -12081,6 +12161,12 @@ namespace Ict.Petra.Server.MPartner.Mailroom.Data.Access
         public static bool Exists(Int32 AContactId, TDBTransaction ATransaction)
         {
             return Exists(PPartnerContactTable.TableId, new System.Object[1]{AContactId}, ATransaction);
+        }
+
+        /// check if a row exists by using the unique key
+        public static bool Exists(Int64 APartnerKey, System.DateTime AContactDate, Int32 AContactTime, TDBTransaction ATransaction)
+        {
+            return Exists(PPartnerContactTable.TableId, new System.Object[3]{APartnerKey, AContactDate, AContactTime}, ATransaction);
         }
 
         /// this method is called by all overloads

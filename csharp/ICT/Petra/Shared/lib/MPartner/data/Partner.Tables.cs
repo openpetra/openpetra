@@ -16340,6 +16340,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 },
                 new int[] {
                     0
+                }, new int[] {
+                    15, 16
                 }));
             return true;
         }
@@ -21768,6 +21770,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 },
                 new int[] {
                     0
+                }, new int[] {
+                    2
                 }));
             return true;
         }

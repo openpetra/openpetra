@@ -319,7 +319,7 @@ namespace Ict.Common.Data
 
                     // Console.WriteLine('number of constraints: ' + tables['Partner'].Constraints.Count.ToString());
                     // Console.WriteLine('number of columns: ' + tables['Partner'].Columns.Count.ToString());
-                    this.Merge(ds, false, System.Data.MissingSchemaAction.Add); // MissingSchemaAction.Ignore
+                    base.Merge(ds, false, System.Data.MissingSchemaAction.Add); // MissingSchemaAction.Ignore
 
                     // TLogging.Log('before InitVars', [ToLogfile]);
                     // Console.WriteLine('number of constraints: ' + tables['Partner'].Constraints.Count.ToString());
@@ -454,6 +454,26 @@ namespace Ict.Common.Data
         {
             InitVars();
             InitConstraints();
+        }
+
+        /// <summary>
+        /// overload that makes sure that the typed tables are mapped again
+        /// </summary>
+        /// <param name="ATable"></param>
+        public new void Merge(DataTable ATable)
+        {
+            base.Merge(ATable);
+            MapTables();
+        }
+
+        /// <summary>
+        /// overload that makes sure that the typed tables are mapped again
+        /// </summary>
+        /// <param name="ADataSet"></param>
+        public new void Merge(DataSet ADataSet)
+        {
+            base.Merge(ADataSet);
+            MapTables();
         }
 
         /// <summary>

@@ -50,5 +50,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Cacheable.cs" />
     <Compile Include="CommonRoutines.cs" />
+    <Compile Include="Constants.cs" />
   </ItemGroup>
 </Project>

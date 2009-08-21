@@ -208,17 +208,39 @@ namespace Ict.Common.Data
             /// the order number of the columns that are part of the primary key
             public int[] PrimaryKeyColumns;
 
+            /// the order number of the columns that are part of the unique key
+            public int[] UniqueKeyColumns;
+
             /// the columns of this table
             public TTypedColumnInfo[] columns;
 
             /// constructor
             public TTypedTableInfo(short AId, string AName, string ADBName, TTypedColumnInfo[] AColumns, int[] APrimaryKeyColumns)
+                : this(AId, AName, ADBName, AColumns, APrimaryKeyColumns, new int[]
+                       {
+                       })
             {
                 id = AId;
                 name = AName;
                 dbname = ADBName;
                 columns = AColumns;
                 PrimaryKeyColumns = APrimaryKeyColumns;
+            }
+
+            /// constructor
+            public TTypedTableInfo(short AId,
+                string AName,
+                string ADBName,
+                TTypedColumnInfo[] AColumns,
+                int[] APrimaryKeyColumns,
+                int[] AUniqueKeyColumns)
+            {
+                id = AId;
+                name = AName;
+                dbname = ADBName;
+                columns = AColumns;
+                PrimaryKeyColumns = APrimaryKeyColumns;
+                UniqueKeyColumns = AUniqueKeyColumns;
             }
         }
 
@@ -299,13 +321,12 @@ namespace Ict.Common.Data
             return -1;
         }
 
-        /// get the names of the columns that are part of the primary key
-        public static string[] GetPrimaryKeyColumnStringList(short ATableNumber)
+        /// get the names of the columns that are part of the key
+        public static string[] GetKeyColumnStringList(short ATableNumber, int[] AKeyColumnsOrder)
         {
-            int[] primaryKeyColumnsOrder = GetPrimaryKeyColumnOrdList(ATableNumber);
             string s = "";
 
-            foreach (int item in primaryKeyColumnsOrder)
+            foreach (int item in AKeyColumnsOrder)
             {
                 if (s.Length > 0)
                 {
@@ -318,10 +339,28 @@ namespace Ict.Common.Data
             return s.Split(',');
         }
 
+        /// get the names of the columns that are part of the primary key
+        public static string[] GetPrimaryKeyColumnStringList(short ATableNumber)
+        {
+            return GetKeyColumnStringList(ATableNumber, GetPrimaryKeyColumnOrdList(ATableNumber));
+        }
+
+        /// get the names of the columns that are part of the unique key
+        public static string[] GetUniqueKeyColumnStringList(short ATableNumber)
+        {
+            return GetKeyColumnStringList(ATableNumber, GetUniqueKeyColumnOrdList(ATableNumber));
+        }
+
         /// get the order number of the columns that are part of the primary key
         public static int[] GetPrimaryKeyColumnOrdList(short ATableNumber)
         {
             return TableInfo[ATableNumber].PrimaryKeyColumns;
+        }
+
+        /// get the order number of the columns that are part of a unique key
+        public static int[] GetUniqueKeyColumnOrdList(short ATableNumber)
+        {
+            return TableInfo[ATableNumber].UniqueKeyColumns;
         }
 
         /// get the names of the columns in this table

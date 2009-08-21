@@ -490,6 +490,23 @@ namespace Ict.Tools.DBXML
         }
 
         /// <summary>
+        /// get a reference to the first unique key
+        /// </summary>
+        /// <returns>the first unique key of the table</returns>
+        public TConstraint GetFirstUniqueKey()
+        {
+            foreach (TConstraint c in grpConstraint.List)
+            {
+                if (c.strType == "uniquekey")
+                {
+                    return c;
+                }
+            }
+
+            throw new Exception("cannot find a unique key of table " + this.strName);
+        }
+
+        /// <summary>
         /// get the list of constraints of other tables, that reference this table
         /// </summary>
         /// <returns>the list of constraints of other tables, that reference this table</returns>

@@ -2334,6 +2334,8 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 },
                 new int[] {
                     0, 1, 2
+                }, new int[] {
+                    0, 3, 4, 5
                 }));
             return true;
         }
@@ -10608,6 +10610,8 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 },
                 new int[] {
                     0, 1, 2
+                }, new int[] {
+                    0, 3, 4, 5
                 }));
             return true;
         }
@@ -14731,6 +14735,8 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 },
                 new int[] {
                     0, 1, 2
+                }, new int[] {
+                    0, 3, 4
                 }));
             return true;
         }
@@ -28302,6 +28308,8 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 },
                 new int[] {
                     0, 1
+                }, new int[] {
+                    2, 4, 3, 5
                 }));
             return true;
         }
@@ -49267,6 +49275,8 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 },
                 new int[] {
                     0, 1
+                }, new int[] {
+                    2, 4, 6
                 }));
             return true;
         }

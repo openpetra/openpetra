@@ -1306,6 +1306,43 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         {
             return LoadByPrimaryKey(AEpMatchKey, AFieldList, ATransaction, null, 0, 0);
         }
+        /// this method is called by all overloads
+        public static void LoadByUniqueKey(DataSet ADataSet, String AMatchText, Int32 ADetail, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadByUniqueKey(AEpMatchTable.TableId, ADataSet, new System.Object[2]{AMatchText, ADetail}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, String AMatchText, Int32 ADetail, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, AMatchText, ADetail, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, String AMatchText, Int32 ADetail, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, AMatchText, ADetail, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadByUniqueKey(String AMatchText, Int32 ADetail, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadByUniqueKey(AEpMatchTable.TableId, Data, new System.Object[2]{AMatchText, ADetail}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadByUniqueKey(String AMatchText, Int32 ADetail, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(AMatchText, ADetail, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadByUniqueKey(String AMatchText, Int32 ADetail, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(AMatchText, ADetail, AFieldList, ATransaction, null, 0, 0);
+        }
 
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, AEpMatchRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
@@ -1399,6 +1436,12 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         public static bool Exists(Int32 AEpMatchKey, TDBTransaction ATransaction)
         {
             return Exists(AEpMatchTable.TableId, new System.Object[1]{AEpMatchKey}, ATransaction);
+        }
+
+        /// check if a row exists by using the unique key
+        public static bool Exists(String AMatchText, Int32 ADetail, TDBTransaction ATransaction)
+        {
+            return Exists(AEpMatchTable.TableId, new System.Object[2]{AMatchText, ADetail}, ATransaction);
         }
 
         /// this method is called by all overloads
@@ -10540,6 +10583,43 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         {
             return LoadByPrimaryKey(ABudgetSequence, AFieldList, ATransaction, null, 0, 0);
         }
+        /// this method is called by all overloads
+        public static void LoadByUniqueKey(DataSet ADataSet, Int32 ALedgerNumber, Int32 AYear, Int32 ARevision, String ACostCentreCode, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadByUniqueKey(ABudgetTable.TableId, ADataSet, new System.Object[5]{ALedgerNumber, AYear, ARevision, ACostCentreCode, AAccountCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int32 ALedgerNumber, Int32 AYear, Int32 ARevision, String ACostCentreCode, String AAccountCode, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, ALedgerNumber, AYear, ARevision, ACostCentreCode, AAccountCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int32 ALedgerNumber, Int32 AYear, Int32 ARevision, String ACostCentreCode, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, ALedgerNumber, AYear, ARevision, ACostCentreCode, AAccountCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static ABudgetTable LoadByUniqueKey(Int32 ALedgerNumber, Int32 AYear, Int32 ARevision, String ACostCentreCode, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            ABudgetTable Data = new ABudgetTable();
+            LoadByUniqueKey(ABudgetTable.TableId, Data, new System.Object[5]{ALedgerNumber, AYear, ARevision, ACostCentreCode, AAccountCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static ABudgetTable LoadByUniqueKey(Int32 ALedgerNumber, Int32 AYear, Int32 ARevision, String ACostCentreCode, String AAccountCode, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(ALedgerNumber, AYear, ARevision, ACostCentreCode, AAccountCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static ABudgetTable LoadByUniqueKey(Int32 ALedgerNumber, Int32 AYear, Int32 ARevision, String ACostCentreCode, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(ALedgerNumber, AYear, ARevision, ACostCentreCode, AAccountCode, AFieldList, ATransaction, null, 0, 0);
+        }
 
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, ABudgetRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
@@ -10633,6 +10713,12 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         public static bool Exists(Int32 ABudgetSequence, TDBTransaction ATransaction)
         {
             return Exists(ABudgetTable.TableId, new System.Object[1]{ABudgetSequence}, ATransaction);
+        }
+
+        /// check if a row exists by using the unique key
+        public static bool Exists(Int32 ALedgerNumber, Int32 AYear, Int32 ARevision, String ACostCentreCode, String AAccountCode, TDBTransaction ATransaction)
+        {
+            return Exists(ABudgetTable.TableId, new System.Object[5]{ALedgerNumber, AYear, ARevision, ACostCentreCode, AAccountCode}, ATransaction);
         }
 
         /// this method is called by all overloads
@@ -19409,6 +19495,43 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         {
             return LoadByPrimaryKey(AGlmSequence, AFieldList, ATransaction, null, 0, 0);
         }
+        /// this method is called by all overloads
+        public static void LoadByUniqueKey(DataSet ADataSet, Int32 ALedgerNumber, Int32 AYear, String AAccountCode, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadByUniqueKey(AGeneralLedgerMasterTable.TableId, ADataSet, new System.Object[4]{ALedgerNumber, AYear, AAccountCode, ACostCentreCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int32 ALedgerNumber, Int32 AYear, String AAccountCode, String ACostCentreCode, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, ALedgerNumber, AYear, AAccountCode, ACostCentreCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int32 ALedgerNumber, Int32 AYear, String AAccountCode, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, ALedgerNumber, AYear, AAccountCode, ACostCentreCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AGeneralLedgerMasterTable LoadByUniqueKey(Int32 ALedgerNumber, Int32 AYear, String AAccountCode, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AGeneralLedgerMasterTable Data = new AGeneralLedgerMasterTable();
+            LoadByUniqueKey(AGeneralLedgerMasterTable.TableId, Data, new System.Object[4]{ALedgerNumber, AYear, AAccountCode, ACostCentreCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AGeneralLedgerMasterTable LoadByUniqueKey(Int32 ALedgerNumber, Int32 AYear, String AAccountCode, String ACostCentreCode, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(ALedgerNumber, AYear, AAccountCode, ACostCentreCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AGeneralLedgerMasterTable LoadByUniqueKey(Int32 ALedgerNumber, Int32 AYear, String AAccountCode, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(ALedgerNumber, AYear, AAccountCode, ACostCentreCode, AFieldList, ATransaction, null, 0, 0);
+        }
 
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, AGeneralLedgerMasterRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
@@ -19502,6 +19625,12 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         public static bool Exists(Int32 AGlmSequence, TDBTransaction ATransaction)
         {
             return Exists(AGeneralLedgerMasterTable.TableId, new System.Object[1]{AGlmSequence}, ATransaction);
+        }
+
+        /// check if a row exists by using the unique key
+        public static bool Exists(Int32 ALedgerNumber, Int32 AYear, String AAccountCode, String ACostCentreCode, TDBTransaction ATransaction)
+        {
+            return Exists(AGeneralLedgerMasterTable.TableId, new System.Object[4]{ALedgerNumber, AYear, AAccountCode, ACostCentreCode}, ATransaction);
         }
 
         /// this method is called by all overloads

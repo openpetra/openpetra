@@ -51,6 +51,9 @@
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -66,6 +69,9 @@
     <Reference Include="Ict.Petra.Shared.MFinance">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataSets">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataSets.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
@@ -94,6 +100,8 @@
   <ItemGroup>
     <Compile Include="Cacheable.cs" />
     <Compile Include="DataAggregates.ALedgerName.cs" />
+    <Compile Include="GL.FinancialYear.cs" />
+    <Compile Include="GL.Posting.cs" />
     <Compile Include="MFinance.AssemblyInfo.cs" />
     <Compile Include="Gift.cs" />
     <Compile Include="Setup.cs" />

@@ -108,6 +108,45 @@ public class {#TABLENAME}Access : TTypedDataAccess
         return LoadByPrimaryKey({#ACTUALPARAMETERSPRIMARYKEY}, AFieldList, ATransaction, null, 0, 0);
     }
 {#ENDIF FORMALPARAMETERSPRIMARYKEY}
+{#IFDEF FORMALPARAMETERSUNIQUEKEY}
+    /// this method is called by all overloads
+    public static void LoadByUniqueKey(DataSet ADataSet, {#FORMALPARAMETERSUNIQUEKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+    {
+        LoadByUniqueKey({#TABLENAME}Table.TableId, ADataSet, new System.Object[{#UNIQUEKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSUNIQUEKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+    }
+
+    /// auto generated
+    public static void LoadByUniqueKey(DataSet AData, {#FORMALPARAMETERSUNIQUEKEY}, TDBTransaction ATransaction)
+    {
+        LoadByUniqueKey(AData, {#ACTUALPARAMETERSUNIQUEKEY}, null, ATransaction, null, 0, 0);
+    }
+    
+    /// auto generated
+    public static void LoadByUniqueKey(DataSet AData, {#FORMALPARAMETERSUNIQUEKEY}, StringCollection AFieldList, TDBTransaction ATransaction)
+    {
+        LoadByUniqueKey(AData, {#ACTUALPARAMETERSUNIQUEKEY}, AFieldList, ATransaction, null, 0, 0);
+    }
+
+    /// auto generated
+    public static {#TABLENAME}Table LoadByUniqueKey({#FORMALPARAMETERSUNIQUEKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+    {
+        {#TABLENAME}Table Data = new {#TABLENAME}Table();
+        LoadByUniqueKey({#TABLENAME}Table.TableId, Data, new System.Object[{#UNIQUEKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSUNIQUEKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        return Data;
+    }
+    
+    /// auto generated
+    public static {#TABLENAME}Table LoadByUniqueKey({#FORMALPARAMETERSUNIQUEKEY}, TDBTransaction ATransaction)
+    {
+        return LoadByUniqueKey({#ACTUALPARAMETERSUNIQUEKEY}, null, ATransaction, null, 0, 0);
+    }
+    
+    /// auto generated
+    public static {#TABLENAME}Table LoadByUniqueKey({#FORMALPARAMETERSUNIQUEKEY}, StringCollection AFieldList, TDBTransaction ATransaction)
+    {
+        return LoadByUniqueKey({#ACTUALPARAMETERSUNIQUEKEY}, AFieldList, ATransaction, null, 0, 0);
+    }
+{#ENDIF FORMALPARAMETERSUNIQUEKEY}
 
     /// this method is called by all overloads
     public static void LoadUsingTemplate(DataSet ADataSet, {#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
@@ -204,6 +243,14 @@ public class {#TABLENAME}Access : TTypedDataAccess
         return Exists({#TABLENAME}Table.TableId, new System.Object[{#PRIMARYKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSPRIMARYKEY}}, ATransaction);
     }
 {#ENDIF FORMALPARAMETERSPRIMARYKEY}
+{#IFDEF FORMALPARAMETERSUNIQUEKEY}
+
+    /// check if a row exists by using the unique key
+    public static bool Exists({#FORMALPARAMETERSUNIQUEKEY}, TDBTransaction ATransaction)
+    {
+        return Exists({#TABLENAME}Table.TableId, new System.Object[{#UNIQUEKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSUNIQUEKEY}}, ATransaction);
+    }
+{#ENDIF FORMALPARAMETERSUNIQUEKEY}
 
     /// this method is called by all overloads
     public static int CountUsingTemplate({#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)

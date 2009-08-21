@@ -110,6 +110,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 },
                 new int[] {
                     0
+                }, new int[] {
+                    1
                 }));
             return true;
         }
@@ -20611,6 +20613,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 },
                 new int[] {
                     0
+                }, new int[] {
+                    1, 2, 3
                 }));
             return true;
         }

@@ -851,6 +851,28 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// create the odbc parameters for the the given key, with the actual values
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <param name="AKeyColumns"></param>
+        /// <param name="AKeyValues"></param>
+        /// <returns></returns>
+        private static OdbcParameter[] CreateOdbcParameterArrayFromKey(short ATableId, int[] AKeyColumns, System.Object[] AKeyValues)
+        {
+            OdbcParameter[] ParametersArray = new OdbcParameter[AKeyValues.Length];
+            int counter = 0;
+
+            foreach (System.Object obj in AKeyValues)
+            {
+                ParametersArray[counter] = CreateOdbcParameter(ATableId, AKeyColumns[counter], obj);
+                ParametersArray[counter].Value = obj;
+                counter++;
+            }
+
+            return ParametersArray;
+        }
+
+        /// <summary>
         /// create the odbc parameters for the primary key, with the actual values
         /// </summary>
         /// <param name="ATableId"></param>
@@ -858,18 +880,7 @@ namespace Ict.Common.Data
         /// <returns></returns>
         private static OdbcParameter[] CreateOdbcParameterArrayFromPrimaryKey(short ATableId, System.Object[] APrimaryKeyValues)
         {
-            OdbcParameter[] ParametersArray = new OdbcParameter[APrimaryKeyValues.Length];
-            int counter = 0;
-            int[] primaryKeyColumns = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
-
-            foreach (System.Object obj in APrimaryKeyValues)
-            {
-                ParametersArray[counter] = CreateOdbcParameter(ATableId, primaryKeyColumns[counter], obj);
-                ParametersArray[counter].Value = obj;
-                counter++;
-            }
-
-            return ParametersArray;
+            return CreateOdbcParameterArrayFromKey(ATableId, TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId), APrimaryKeyValues);
         }
 
         /// <summary>
@@ -1579,6 +1590,59 @@ namespace Ict.Common.Data
                 GenerateSelectClause(AFieldList, ATableId) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClauseFromPrimaryKey(ATableId) +
+                GenerateOrderByClause(AOrderBy),
+                ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// <summary>
+        /// load data row by unique key into a dataset
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <param name="ADataSet"></param>
+        /// <param name="AUniqueKeyValues"></param>
+        /// <param name="AFieldList"></param>
+        /// <param name="ATransaction"></param>
+        /// <param name="AOrderBy"></param>
+        /// <param name="AStartRecord"></param>
+        /// <param name="AMaxRecords"></param>
+        public static void LoadByUniqueKey(short ATableId,
+            DataSet ADataSet,
+            System.Object[] AUniqueKeyValues,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy,
+            int AStartRecord,
+            int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromKey(ATableId, TTypedDataTable.GetUniqueKeyColumnOrdList(
+                    ATableId), AUniqueKeyValues);
+            DBAccess.GDBAccessObj.Select(ADataSet,
+                GenerateSelectClause(AFieldList, ATableId) +
+                " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                GenerateWhereClause(TTypedDataTable.GetUniqueKeyColumnStringList(ATableId)) +
+                GenerateOrderByClause(AOrderBy),
+                TTypedDataTable.GetTableName(ATableId),
+                ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+        }
+
+        /// <summary>
+        /// different version for data table
+        /// </summary>
+        public static void LoadByUniqueKey(short ATableId,
+            TTypedDataTable ADataTable,
+            System.Object[] AUniqueKeyValues,
+            StringCollection AFieldList,
+            TDBTransaction ATransaction,
+            StringCollection AOrderBy,
+            int AStartRecord,
+            int AMaxRecords)
+        {
+            OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromKey(ATableId, TTypedDataTable.GetUniqueKeyColumnOrdList(
+                    ATableId), AUniqueKeyValues);
+            ADataTable = (TTypedDataTable)DBAccess.GDBAccessObj.SelectDT(ADataTable,
+                GenerateSelectClause(AFieldList, ATableId) +
+                " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                GenerateWhereClause(TTypedDataTable.GetUniqueKeyColumnStringList(ATableId)) +
                 GenerateOrderByClause(AOrderBy),
                 ATransaction, ParametersArray, AStartRecord, AMaxRecords);
         }

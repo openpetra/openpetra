@@ -789,6 +789,43 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         {
             return LoadByPrimaryKey(APartnerKey, AApplicationKey, ARegistrationOffice, AFieldList, ATransaction, null, 0, 0);
         }
+        /// this method is called by all overloads
+        public static void LoadByUniqueKey(DataSet ADataSet, Int64 APartnerKey, System.DateTime AGenAppDate, String AAppTypeName, String AOldLink, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadByUniqueKey(PmGeneralApplicationTable.TableId, ADataSet, new System.Object[4]{APartnerKey, AGenAppDate, AAppTypeName, AOldLink}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AGenAppDate, String AAppTypeName, String AOldLink, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, APartnerKey, AGenAppDate, AAppTypeName, AOldLink, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AGenAppDate, String AAppTypeName, String AOldLink, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, APartnerKey, AGenAppDate, AAppTypeName, AOldLink, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static PmGeneralApplicationTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AGenAppDate, String AAppTypeName, String AOldLink, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            PmGeneralApplicationTable Data = new PmGeneralApplicationTable();
+            LoadByUniqueKey(PmGeneralApplicationTable.TableId, Data, new System.Object[4]{APartnerKey, AGenAppDate, AAppTypeName, AOldLink}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static PmGeneralApplicationTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AGenAppDate, String AAppTypeName, String AOldLink, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(APartnerKey, AGenAppDate, AAppTypeName, AOldLink, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static PmGeneralApplicationTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AGenAppDate, String AAppTypeName, String AOldLink, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(APartnerKey, AGenAppDate, AAppTypeName, AOldLink, AFieldList, ATransaction, null, 0, 0);
+        }
 
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PmGeneralApplicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
@@ -882,6 +919,12 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         public static bool Exists(Int64 APartnerKey, Int32 AApplicationKey, Int64 ARegistrationOffice, TDBTransaction ATransaction)
         {
             return Exists(PmGeneralApplicationTable.TableId, new System.Object[3]{APartnerKey, AApplicationKey, ARegistrationOffice}, ATransaction);
+        }
+
+        /// check if a row exists by using the unique key
+        public static bool Exists(Int64 APartnerKey, System.DateTime AGenAppDate, String AAppTypeName, String AOldLink, TDBTransaction ATransaction)
+        {
+            return Exists(PmGeneralApplicationTable.TableId, new System.Object[4]{APartnerKey, AGenAppDate, AAppTypeName, AOldLink}, ATransaction);
         }
 
         /// this method is called by all overloads
@@ -5175,6 +5218,43 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         {
             return LoadByPrimaryKey(APartnerKey, AApplicationKey, ARegistrationOffice, AFieldList, ATransaction, null, 0, 0);
         }
+        /// this method is called by all overloads
+        public static void LoadByUniqueKey(DataSet ADataSet, Int64 APartnerKey, System.DateTime AStAppDate, String AStApplicationType, String AStBasicXyzTbdIdentifier, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadByUniqueKey(PmShortTermApplicationTable.TableId, ADataSet, new System.Object[4]{APartnerKey, AStAppDate, AStApplicationType, AStBasicXyzTbdIdentifier}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AStAppDate, String AStApplicationType, String AStBasicXyzTbdIdentifier, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, APartnerKey, AStAppDate, AStApplicationType, AStBasicXyzTbdIdentifier, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AStAppDate, String AStApplicationType, String AStBasicXyzTbdIdentifier, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, APartnerKey, AStAppDate, AStApplicationType, AStBasicXyzTbdIdentifier, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static PmShortTermApplicationTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AStAppDate, String AStApplicationType, String AStBasicXyzTbdIdentifier, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            PmShortTermApplicationTable Data = new PmShortTermApplicationTable();
+            LoadByUniqueKey(PmShortTermApplicationTable.TableId, Data, new System.Object[4]{APartnerKey, AStAppDate, AStApplicationType, AStBasicXyzTbdIdentifier}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static PmShortTermApplicationTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AStAppDate, String AStApplicationType, String AStBasicXyzTbdIdentifier, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(APartnerKey, AStAppDate, AStApplicationType, AStBasicXyzTbdIdentifier, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static PmShortTermApplicationTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AStAppDate, String AStApplicationType, String AStBasicXyzTbdIdentifier, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(APartnerKey, AStAppDate, AStApplicationType, AStBasicXyzTbdIdentifier, AFieldList, ATransaction, null, 0, 0);
+        }
 
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PmShortTermApplicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
@@ -5268,6 +5348,12 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         public static bool Exists(Int64 APartnerKey, Int32 AApplicationKey, Int64 ARegistrationOffice, TDBTransaction ATransaction)
         {
             return Exists(PmShortTermApplicationTable.TableId, new System.Object[3]{APartnerKey, AApplicationKey, ARegistrationOffice}, ATransaction);
+        }
+
+        /// check if a row exists by using the unique key
+        public static bool Exists(Int64 APartnerKey, System.DateTime AStAppDate, String AStApplicationType, String AStBasicXyzTbdIdentifier, TDBTransaction ATransaction)
+        {
+            return Exists(PmShortTermApplicationTable.TableId, new System.Object[4]{APartnerKey, AStAppDate, AStApplicationType, AStBasicXyzTbdIdentifier}, ATransaction);
         }
 
         /// this method is called by all overloads
@@ -8776,6 +8862,43 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         {
             return LoadByPrimaryKey(APartnerKey, AApplicationKey, ARegistrationOffice, AFieldList, ATransaction, null, 0, 0);
         }
+        /// this method is called by all overloads
+        public static void LoadByUniqueKey(DataSet ADataSet, Int64 APartnerKey, System.DateTime AYpAppDate, String AYpBasicAppType, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadByUniqueKey(PmYearProgramApplicationTable.TableId, ADataSet, new System.Object[3]{APartnerKey, AYpAppDate, AYpBasicAppType}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AYpAppDate, String AYpBasicAppType, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, APartnerKey, AYpAppDate, AYpBasicAppType, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AYpAppDate, String AYpBasicAppType, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, APartnerKey, AYpAppDate, AYpBasicAppType, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static PmYearProgramApplicationTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AYpAppDate, String AYpBasicAppType, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            PmYearProgramApplicationTable Data = new PmYearProgramApplicationTable();
+            LoadByUniqueKey(PmYearProgramApplicationTable.TableId, Data, new System.Object[3]{APartnerKey, AYpAppDate, AYpBasicAppType}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static PmYearProgramApplicationTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AYpAppDate, String AYpBasicAppType, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(APartnerKey, AYpAppDate, AYpBasicAppType, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static PmYearProgramApplicationTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AYpAppDate, String AYpBasicAppType, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(APartnerKey, AYpAppDate, AYpBasicAppType, AFieldList, ATransaction, null, 0, 0);
+        }
 
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PmYearProgramApplicationRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
@@ -8869,6 +8992,12 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         public static bool Exists(Int64 APartnerKey, Int32 AApplicationKey, Int64 ARegistrationOffice, TDBTransaction ATransaction)
         {
             return Exists(PmYearProgramApplicationTable.TableId, new System.Object[3]{APartnerKey, AApplicationKey, ARegistrationOffice}, ATransaction);
+        }
+
+        /// check if a row exists by using the unique key
+        public static bool Exists(Int64 APartnerKey, System.DateTime AYpAppDate, String AYpBasicAppType, TDBTransaction ATransaction)
+        {
+            return Exists(PmYearProgramApplicationTable.TableId, new System.Object[3]{APartnerKey, AYpAppDate, AYpBasicAppType}, ATransaction);
         }
 
         /// this method is called by all overloads
@@ -15522,6 +15651,43 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         {
             return LoadByPrimaryKey(ASiteKey, AKey, AFieldList, ATransaction, null, 0, 0);
         }
+        /// this method is called by all overloads
+        public static void LoadByUniqueKey(DataSet ADataSet, Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadByUniqueKey(PmPastExperienceTable.TableId, ADataSet, new System.Object[4]{APartnerKey, AEndDate, AStartDate, APrevLocation}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, APartnerKey, AEndDate, AStartDate, APrevLocation, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, APartnerKey, AEndDate, AStartDate, APrevLocation, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static PmPastExperienceTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            PmPastExperienceTable Data = new PmPastExperienceTable();
+            LoadByUniqueKey(PmPastExperienceTable.TableId, Data, new System.Object[4]{APartnerKey, AEndDate, AStartDate, APrevLocation}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static PmPastExperienceTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(APartnerKey, AEndDate, AStartDate, APrevLocation, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static PmPastExperienceTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(APartnerKey, AEndDate, AStartDate, APrevLocation, AFieldList, ATransaction, null, 0, 0);
+        }
 
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PmPastExperienceRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
@@ -15615,6 +15781,12 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         public static bool Exists(Int64 ASiteKey, Int64 AKey, TDBTransaction ATransaction)
         {
             return Exists(PmPastExperienceTable.TableId, new System.Object[2]{ASiteKey, AKey}, ATransaction);
+        }
+
+        /// check if a row exists by using the unique key
+        public static bool Exists(Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, TDBTransaction ATransaction)
+        {
+            return Exists(PmPastExperienceTable.TableId, new System.Object[4]{APartnerKey, AEndDate, AStartDate, APrevLocation}, ATransaction);
         }
 
         /// this method is called by all overloads
@@ -26028,6 +26200,43 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         {
             return LoadByPrimaryKey(ASiteKey, AKey, AFieldList, ATransaction, null, 0, 0);
         }
+        /// this method is called by all overloads
+        public static void LoadByUniqueKey(DataSet ADataSet, Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadByUniqueKey(PmStaffDataTable.TableId, ADataSet, new System.Object[3]{APartnerKey, AStartOfCommitment, AEndOfCommitment}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, APartnerKey, AStartOfCommitment, AEndOfCommitment, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadByUniqueKey(AData, APartnerKey, AStartOfCommitment, AEndOfCommitment, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static PmStaffDataTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            PmStaffDataTable Data = new PmStaffDataTable();
+            LoadByUniqueKey(PmStaffDataTable.TableId, Data, new System.Object[3]{APartnerKey, AStartOfCommitment, AEndOfCommitment}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static PmStaffDataTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(APartnerKey, AStartOfCommitment, AEndOfCommitment, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static PmStaffDataTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadByUniqueKey(APartnerKey, AStartOfCommitment, AEndOfCommitment, AFieldList, ATransaction, null, 0, 0);
+        }
 
         /// this method is called by all overloads
         public static void LoadUsingTemplate(DataSet ADataSet, PmStaffDataRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
@@ -26121,6 +26330,12 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         public static bool Exists(Int64 ASiteKey, Int64 AKey, TDBTransaction ATransaction)
         {
             return Exists(PmStaffDataTable.TableId, new System.Object[2]{ASiteKey, AKey}, ATransaction);
+        }
+
+        /// check if a row exists by using the unique key
+        public static bool Exists(Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, TDBTransaction ATransaction)
+        {
+            return Exists(PmStaffDataTable.TableId, new System.Object[3]{APartnerKey, AStartOfCommitment, AEndOfCommitment}, ATransaction);
         }
 
         /// this method is called by all overloads
