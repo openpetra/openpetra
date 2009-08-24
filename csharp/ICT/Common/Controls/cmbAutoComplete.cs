@@ -171,11 +171,6 @@ namespace Ict.Common.Controls
                     value = value.Substring(1);
                 }
 
-                if (value.IndexOf(' ') == 0)
-                {
-                    value = value.Substring(1);
-                }
-
                 value = value.Trim();
                 this.FColumnsToSearchDesignTime = value;
 
@@ -997,16 +992,14 @@ namespace Ict.Common.Controls
 
             if (mIndex >= 0)
             {
-                this.FColumnsToSearch.Insert(mIndex, this.ValueMember);
-                this.FColumnsToSearch.Remove(StrValueMember);
+                this.FColumnsToSearch[mIndex] = this.ValueMember;
             }
 
             mIndex = this.FColumnsToSearch.IndexOf(StrDisplayMember);
 
             if (mIndex >= 0)
             {
-                this.FColumnsToSearch.Insert(mIndex, this.DisplayMember);
-                this.FColumnsToSearch.Remove(StrDisplayMember);
+                this.FColumnsToSearch[mIndex] = this.DisplayMember;
             }
 
             // If there is nothing to check then the result is FALSE anyway

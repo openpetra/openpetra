@@ -442,7 +442,7 @@ namespace Ict.Petra.Client.CommonControls
 
                     InitialiseUserControl(
                     TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LocationTypeList),
-                    "pt_code_c",
+                    PLocationTypeTable.GetCodeDBName(),
                     null,
                     null);
                     break;
@@ -572,11 +572,11 @@ namespace Ict.Petra.Client.CommonControls
         /// does not depend on table implementations
         /// </summary>
         /// <param name="ATable"></param>
-        /// <param name="ADisplayDBName"></param>
         /// <param name="AValueDBName">name of the column in the table that has the name</param>
+        /// <param name="ADisplayDBName"></param>
         /// <param name="ADescDBName">name of the column in the table that has the description; can be empty</param>
         /// <param name="AColumnsToSearch"></param>
-        void InitialiseUserControl(DataTable ATable, string ADisplayDBName, string AValueDBName, string ADescDBName, string AColumnsToSearch)
+        void InitialiseUserControl(DataTable ATable, string AValueDBName, string ADisplayDBName, string ADescDBName, string AColumnsToSearch)
         {
             FDataCache_ListTable = ATable;
 
@@ -600,6 +600,7 @@ namespace Ict.Petra.Client.CommonControls
             cmbAutoPopulated.cmbCombobox.BeginUpdate();
             FDataView = new DataView(FDataCache_ListTable);
             FDataView.RowFilter = FFilter;
+            cmbAutoPopulated.cmbCombobox.DataSource = FDataView;
             cmbAutoPopulated.cmbCombobox.DisplayMember = ADisplayDBName;
             cmbAutoPopulated.cmbCombobox.ValueMember = AValueDBName;
             cmbAutoPopulated.cmbCombobox.DisplayInColumn1 = ADisplayDBName;
@@ -607,7 +608,6 @@ namespace Ict.Petra.Client.CommonControls
             cmbAutoPopulated.cmbCombobox.DisplayInColumn3 = null;
             cmbAutoPopulated.cmbCombobox.DisplayInColumn4 = null;
             cmbAutoPopulated.cmbCombobox.ColumnsToSearch = AColumnsToSearch;
-            cmbAutoPopulated.cmbCombobox.DataSource = FDataView;
             cmbAutoPopulated.cmbCombobox.EndUpdate();
             cmbAutoPopulated.cmbCombobox.Name = this.Name + "_internal_ComboBox";
             cmbAutoPopulated.cmbCombobox.SuppressSelectionColor = true;
