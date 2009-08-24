@@ -124,11 +124,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tpgReportSpecific.Controls.Add(this.tableLayoutPanel1);
             //
             // txtCityName
@@ -144,6 +139,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.lblCityName.AutoSize = true;
             this.lblCityName.Text = "Name of City:";
             this.lblCityName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Controls.Add(this.lblCityName, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtCityName, 1, 0);
             this.tpgReportSpecific.Text = "Report parameters";

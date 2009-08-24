@@ -61,9 +61,10 @@ namespace Ict.Tools.CodeGeneration
 
     public interface IFormWriter
     {
-        void CreateCode(TCodeStorage AStorage, string AXamlFilename);
+        void CreateCode(TCodeStorage AStorage, string AXamlFilename, string ATemplate);
         void CreateResourceFile(string AResourceFile, string AResourceTemplate);
         bool WriteFile(string ADestinationFile, string ATemplate);
+        bool WriteFile(string ADestinationFile);
         void SetControlProperty(string AControlName, string APropertyName, string APropertyValue);
         void SetControlProperty(TControlDef ACtrl, string APropertyName);
         void ApplyDerivedFunctionality(IControlGenerator generator, XmlNode curNode);

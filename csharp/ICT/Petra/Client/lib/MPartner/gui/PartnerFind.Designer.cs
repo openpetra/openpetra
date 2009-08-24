@@ -218,14 +218,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 4;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlModalButtons.Controls.Add(this.tableLayoutPanel1);
             //
             // btnHelp
@@ -234,8 +226,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.AutoSize = true;
             this.btnHelp.Text = "&Help";
-            this.tableLayoutPanel1.Controls.Add(this.btnHelp, 0, 0);
-            this.tableLayoutPanel1.SetColumnSpan(this.btnHelp, 2);
             //
             // btnCancel
             //
@@ -243,8 +233,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.AutoSize = true;
             this.btnCancel.Text = "&Cancel";
-            this.tableLayoutPanel1.Controls.Add(this.btnCancel, 0, 1);
-            this.tableLayoutPanel1.SetColumnSpan(this.btnCancel, 2);
             //
             // btnFullyLoadData
             //
@@ -252,8 +240,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnFullyLoadData.Name = "btnFullyLoadData";
             this.btnFullyLoadData.AutoSize = true;
             this.btnFullyLoadData.Text = "Fully load Data";
-            this.tableLayoutPanel1.Controls.Add(this.btnFullyLoadData, 0, 2);
-            this.tableLayoutPanel1.SetColumnSpan(this.btnFullyLoadData, 2);
             //
             // btnAccept
             //
@@ -261,8 +247,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnAccept.Name = "btnAccept";
             this.btnAccept.AutoSize = true;
             this.btnAccept.Text = "&Accept";
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.btnHelp, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnCancel, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.btnFullyLoadData, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.btnAccept, 0, 3);
-            this.tableLayoutPanel1.SetColumnSpan(this.btnAccept, 2);
             //
             // mniFileSearch
             //

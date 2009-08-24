@@ -703,12 +703,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
          * based on the code model, create the code;
          * using the code generators that have been loaded
          */
-        public virtual void CreateCode(TCodeStorage ACodeStorage, string AXAMLFilename)
+        public virtual void CreateCode(TCodeStorage ACodeStorage, string AXAMLFilename, string ATemplateFile)
         {
             ResetAllValues();
             FCodeStorage = ACodeStorage;
             TControlGenerator.FCodeStorage = ACodeStorage;
-            FTemplate = new ProcessTemplate();
+            FTemplate = new ProcessTemplate(ATemplateFile);
 
             // load default header with license and copyright
             TAppSettingsManager opts = new TAppSettingsManager(false);
@@ -912,6 +912,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // but need to be updated in the main code file; need to use special regions
             //string autoActionSection = designWriter.CreateAutoActionSection();
             //writer.ReplaceRegion("CodeGenerator Managed Code", autoActionSection);
+        }
+
+        public bool WriteFile(string ADestinationFile)
+        {
+            return FTemplate.FinishWriting(ADestinationFile, ".cs", true);
         }
 
         public bool WriteFile(string ADestinationFile, string ATemplateFile)

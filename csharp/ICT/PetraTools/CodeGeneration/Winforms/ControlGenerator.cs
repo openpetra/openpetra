@@ -804,10 +804,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl.controlName, "AllowDrop", "false");
             }
 
-            AssignEventHandlerToControl(writer, ctrl, "SelectedIndexChanged", "TabSelectionChanged");
+            // writer.Template.FTemplateCode.Contains is not very clean, since it might be in a snippet or in an ifdef that will not be part of the resulting file
+            Console.WriteLine(writer.Template.FTemplateCode.Length.ToString());
 
-            writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SelectedIndex = 0;" + Environment.NewLine);
-            writer.Template.AddToCodelet("INITMANUALCODE", "TabSelectionChanged(null, null);" + Environment.NewLine);
+            if (writer.CodeStorage.ManualFileExistsAndContains("void TabSelectionChanged")
+                || writer.Template.FTemplateCode.Contains("void TabSelectionChanged"))
+            {
+                AssignEventHandlerToControl(writer, ctrl, "SelectedIndexChanged", "TabSelectionChanged");
+
+                writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SelectedIndex = 0;" + Environment.NewLine);
+                writer.Template.AddToCodelet("INITMANUALCODE", "TabSelectionChanged(null, null);" + Environment.NewLine);
+            }
 
             writer.Template.SetCodelet("TABPAGES", "true");
         }
@@ -978,6 +985,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
                     TlpGenerator.CreateCode(writer, ChildControl);
                 }
+
+                TlpGenerator.WriteTableLayout(writer, tlpControlName);
             }
 
             if ((base.FPrefix == "grp") || (base.FPrefix == "rgr") || (base.FPrefix == "tpg"))

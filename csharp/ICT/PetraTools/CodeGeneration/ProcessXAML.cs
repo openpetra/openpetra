@@ -156,7 +156,21 @@ namespace Ict.Tools.CodeGeneration
                     return false;
                 }
 
-                writer.CreateCode(codeStorage, FXamlFilename);
+                string template = TYml2Xml.GetAttribute(rootNode, "Template");
+
+                if (template.Length > 0)
+                {
+                    template = templateDir + Path.DirectorySeparatorChar + template + ".cs";
+                }
+
+/*        else if (File.Exists(destinationFile))
+ *      {
+ *        // if file exists, load it as the template
+ *        template = destinationFile;
+ *      }
+ */
+
+                writer.CreateCode(codeStorage, FXamlFilename, template);
 
                 // Create the resource file...
                 string ResourceTemplate = templateDir + Path.DirectorySeparatorChar + "resources.resx";
@@ -183,20 +197,7 @@ namespace Ict.Tools.CodeGeneration
                     writer.WriteFile(designerFile, designerTemplate);
                 }
 
-                string template = TYml2Xml.GetAttribute(rootNode, "Template");
-
-                if (template.Length > 0)
-                {
-                    template = templateDir + Path.DirectorySeparatorChar + template + ".cs";
-                }
-
-/*        else if (File.Exists(destinationFile))
- *      {
- *        // if file exists, load it as the template
- *        template = destinationFile;
- *      }
- */
-                return writer.WriteFile(destinationFile, template);
+                return writer.WriteFile(destinationFile);
             }
 
             return false;

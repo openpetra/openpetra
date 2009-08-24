@@ -575,6 +575,8 @@ namespace Ict.Tools.CodeGeneration
         public XmlNode xmlNode = null;
         public TCodeStorage FCodeStorage = null;
         public int rowNumber = -1;
+        public int colSpan = 1;
+        public int rowSpan = 1;
 
         /// e.g. tableLayoutPanel1.ColumnStyles.Add
         //public string otherFunctionCalls = "";

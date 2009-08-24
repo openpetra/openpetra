@@ -180,13 +180,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.ColumnCount = 4;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlSupplierInfo.Controls.Add(this.tableLayoutPanel1);
             //
             // txtSupplierName
@@ -203,8 +196,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblSupplierName.AutoSize = true;
             this.lblSupplierName.Text = "Current Supplier:";
             this.lblSupplierName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel1.Controls.Add(this.lblSupplierName, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.txtSupplierName, 1, 0);
             //
             // txtSupplierCurrency
             //
@@ -220,6 +211,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblSupplierCurrency.AutoSize = true;
             this.lblSupplierCurrency.Text = "Currency:";
             this.lblSupplierCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel1.ColumnCount = 4;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.lblSupplierName, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.txtSupplierName, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblSupplierCurrency, 2, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtSupplierCurrency, 3, 0);
             //
@@ -235,19 +235,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.AutoSize = true;
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.ColumnCount = 6;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 5;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.grpDocumentInfo.Controls.Add(this.tableLayoutPanel2);
             //
             // txtDocumentCode
@@ -263,8 +250,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDocumentCode.AutoSize = true;
             this.lblDocumentCode.Text = "Invoice &Number:";
             this.lblDocumentCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDocumentCode, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtDocumentCode, 1, 0);
             //
             // cmbDocumentType
             //
@@ -281,8 +266,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDocumentType.AutoSize = true;
             this.lblDocumentType.Text = "T&ype:";
             this.lblDocumentType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDocumentType, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.cmbDocumentType, 3, 0);
             //
             // txtReference
             //
@@ -297,9 +280,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblReference.AutoSize = true;
             this.lblReference.Text = "&Reference:";
             this.lblReference.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblReference, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtReference, 1, 1);
-            this.tableLayoutPanel2.SetColumnSpan(this.txtReference, 2 * 2 - 1);
             //
             // dtpDateIssued
             //
@@ -315,8 +295,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDateIssued.AutoSize = true;
             this.lblDateIssued.Text = "&Date Issued:";
             this.lblDateIssued.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDateIssued, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.dtpDateIssued, 1, 2);
             //
             // dtpDateDue
             //
@@ -332,8 +310,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDateDue.AutoSize = true;
             this.lblDateDue.Text = "Date D&ue:";
             this.lblDateDue.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDateDue, 2, 2);
-            this.tableLayoutPanel2.Controls.Add(this.dtpDateDue, 3, 2);
             //
             // nudCreditTerms
             //
@@ -349,8 +325,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblCreditTerms.AutoSize = true;
             this.lblCreditTerms.Text = "Credit &Terms:";
             this.lblCreditTerms.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblCreditTerms, 4, 2);
-            this.tableLayoutPanel2.Controls.Add(this.nudCreditTerms, 5, 2);
             //
             // nudDiscountDays
             //
@@ -366,8 +340,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDiscountDays.AutoSize = true;
             this.lblDiscountDays.Text = "Discount &Days:";
             this.lblDiscountDays.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDiscountDays, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.nudDiscountDays, 1, 3);
             //
             // txtDiscountPercentage
             //
@@ -382,8 +354,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDiscountPercentage.AutoSize = true;
             this.lblDiscountPercentage.Text = "Discount &Value (%):";
             this.lblDiscountPercentage.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDiscountPercentage, 2, 3);
-            this.tableLayoutPanel2.Controls.Add(this.txtDiscountPercentage, 3, 3);
             //
             // txtTotalAmount
             //
@@ -398,8 +368,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblTotalAmount.AutoSize = true;
             this.lblTotalAmount.Text = "&Amount:";
             this.lblTotalAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblTotalAmount, 0, 4);
-            this.tableLayoutPanel2.Controls.Add(this.txtTotalAmount, 1, 4);
             //
             // txtExchangeRateToBase
             //
@@ -414,8 +382,40 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblExchangeRateToBase.AutoSize = true;
             this.lblExchangeRateToBase.Text = "E&xchange Rate:";
             this.lblExchangeRateToBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel2.ColumnCount = 6;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 5;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.lblDocumentCode, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblReference, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDateIssued, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblDiscountDays, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.lblTotalAmount, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this.txtDocumentCode, 1, 0);
+            this.tableLayoutPanel2.SetColumnSpan(this.txtReference, 2 * 2 - 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtReference, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.dtpDateIssued, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.nudDiscountDays, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.txtTotalAmount, 1, 4);
+            this.tableLayoutPanel2.Controls.Add(this.lblDocumentType, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDateDue, 2, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblDiscountPercentage, 2, 3);
             this.tableLayoutPanel2.Controls.Add(this.lblExchangeRateToBase, 2, 4);
+            this.tableLayoutPanel2.Controls.Add(this.cmbDocumentType, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.dtpDateDue, 3, 2);
+            this.tableLayoutPanel2.Controls.Add(this.txtDiscountPercentage, 3, 3);
             this.tableLayoutPanel2.Controls.Add(this.txtExchangeRateToBase, 3, 4);
+            this.tableLayoutPanel2.Controls.Add(this.lblCreditTerms, 4, 2);
+            this.tableLayoutPanel2.Controls.Add(this.nudCreditTerms, 5, 2);
             this.grpDocumentInfo.Text = "Document Information";
             //
             // grpDetails
@@ -450,13 +450,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.AutoSize = true;
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlDetailButtons.Controls.Add(this.tableLayoutPanel3);
             //
             // btnAddDetail
@@ -466,8 +459,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.btnAddDetail.Size = new System.Drawing.Size(100, 28);
             this.btnAddDetail.Click += new System.EventHandler(this.NewDetail);
             this.btnAddDetail.Text = "Add De&tail";
-            this.tableLayoutPanel3.Controls.Add(this.btnAddDetail, 0, 0);
-            this.tableLayoutPanel3.SetColumnSpan(this.btnAddDetail, 2);
             //
             // btnRemoveDetail
             //
@@ -475,8 +466,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.btnRemoveDetail.Name = "btnRemoveDetail";
             this.btnRemoveDetail.Size = new System.Drawing.Size(100, 28);
             this.btnRemoveDetail.Text = "&Remove Detail";
-            this.tableLayoutPanel3.Controls.Add(this.btnRemoveDetail, 0, 1);
-            this.tableLayoutPanel3.SetColumnSpan(this.btnRemoveDetail, 2);
             //
             // btnAnalysisAttributes
             //
@@ -484,8 +473,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.btnAnalysisAttributes.Name = "btnAnalysisAttributes";
             this.btnAnalysisAttributes.Size = new System.Drawing.Size(100, 28);
             this.btnAnalysisAttributes.Text = "Analysis Attri&b.";
+            this.tableLayoutPanel3.ColumnCount = 1;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 3;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.btnAddDetail, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.btnRemoveDetail, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.btnAnalysisAttributes, 0, 2);
-            this.tableLayoutPanel3.SetColumnSpan(this.btnAnalysisAttributes, 2);
             //
             // pnlDetails
             //
@@ -499,18 +495,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.AutoSize = true;
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.ColumnCount = 6;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.RowCount = 4;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlDetails.Controls.Add(this.tableLayoutPanel4);
             //
             // txtDetailNarrative
@@ -526,9 +510,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailNarrative.AutoSize = true;
             this.lblDetailNarrative.Text = "Narrati&ve:";
             this.lblDetailNarrative.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel4.Controls.Add(this.lblDetailNarrative, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.txtDetailNarrative, 1, 0);
-            this.tableLayoutPanel4.SetColumnSpan(this.txtDetailNarrative, 2 * 2 - 1);
             //
             // txtDetailItemRef
             //
@@ -543,9 +524,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailItemRef.AutoSize = true;
             this.lblDetailItemRef.Text = "Detail &Ref:";
             this.lblDetailItemRef.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel4.Controls.Add(this.lblDetailItemRef, 0, 1);
-            this.tableLayoutPanel4.Controls.Add(this.txtDetailItemRef, 1, 1);
-            this.tableLayoutPanel4.SetColumnSpan(this.txtDetailItemRef, 2 * 2 - 1);
             //
             // txtDetailAmount
             //
@@ -560,8 +538,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailAmount.AutoSize = true;
             this.lblDetailAmount.Text = "A&mount:";
             this.lblDetailAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel4.Controls.Add(this.lblDetailAmount, 0, 2);
-            this.tableLayoutPanel4.Controls.Add(this.txtDetailAmount, 1, 2);
             //
             // cmbDetailCostCentreCode
             //
@@ -577,8 +553,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailCostCentreCode.AutoSize = true;
             this.lblDetailCostCentreCode.Text = "C&ost Centre:";
             this.lblDetailCostCentreCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel4.Controls.Add(this.lblDetailCostCentreCode, 2, 2);
-            this.tableLayoutPanel4.Controls.Add(this.cmbDetailCostCentreCode, 3, 2);
             //
             // btnUseTaxAccountCostCentre
             //
@@ -586,8 +560,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.btnUseTaxAccountCostCentre.Name = "btnUseTaxAccountCostCentre";
             this.btnUseTaxAccountCostCentre.AutoSize = true;
             this.btnUseTaxAccountCostCentre.Text = "Use Ta&x Acct+CC";
-            this.tableLayoutPanel4.Controls.Add(this.btnUseTaxAccountCostCentre, 4, 2);
-            this.tableLayoutPanel4.SetColumnSpan(this.btnUseTaxAccountCostCentre, 2);
             //
             // txtDetailBaseAmount
             //
@@ -603,8 +575,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailBaseAmount.AutoSize = true;
             this.lblDetailBaseAmount.Text = "Base:";
             this.lblDetailBaseAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel4.Controls.Add(this.lblDetailBaseAmount, 0, 3);
-            this.tableLayoutPanel4.Controls.Add(this.txtDetailBaseAmount, 1, 3);
             //
             // cmbDetailAccountCode
             //
@@ -620,8 +590,32 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailAccountCode.AutoSize = true;
             this.lblDetailAccountCode.Text = "Accou&nt:";
             this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel4.ColumnCount = 5;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.RowCount = 4;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailNarrative, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailItemRef, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailAmount, 0, 2);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailBaseAmount, 0, 3);
+            this.tableLayoutPanel4.SetColumnSpan(this.txtDetailNarrative, 2 * 2 - 1);
+            this.tableLayoutPanel4.Controls.Add(this.txtDetailNarrative, 1, 0);
+            this.tableLayoutPanel4.SetColumnSpan(this.txtDetailItemRef, 2 * 2 - 1);
+            this.tableLayoutPanel4.Controls.Add(this.txtDetailItemRef, 1, 1);
+            this.tableLayoutPanel4.Controls.Add(this.txtDetailAmount, 1, 2);
+            this.tableLayoutPanel4.Controls.Add(this.txtDetailBaseAmount, 1, 3);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailCostCentreCode, 2, 2);
             this.tableLayoutPanel4.Controls.Add(this.lblDetailAccountCode, 2, 3);
+            this.tableLayoutPanel4.Controls.Add(this.cmbDetailCostCentreCode, 3, 2);
             this.tableLayoutPanel4.Controls.Add(this.cmbDetailAccountCode, 3, 3);
+            this.tableLayoutPanel4.Controls.Add(this.btnUseTaxAccountCostCentre, 4, 2);
             this.grpDetails.Text = "Details";
             //
             // tbbSave

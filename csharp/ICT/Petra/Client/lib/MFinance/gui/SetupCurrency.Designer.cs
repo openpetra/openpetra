@@ -154,12 +154,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlButtons.Controls.Add(this.tableLayoutPanel1);
             //
             // btnNew
@@ -169,8 +163,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.btnNew.AutoSize = true;
             this.btnNew.Click += new System.EventHandler(this.NewRow);
             this.btnNew.Text = "&New";
-            this.tableLayoutPanel1.Controls.Add(this.btnNew, 0, 0);
-            this.tableLayoutPanel1.SetColumnSpan(this.btnNew, 2);
             //
             // btnDelete
             //
@@ -179,8 +171,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.btnDelete.AutoSize = true;
             this.btnDelete.Click += new System.EventHandler(this.DeleteRow);
             this.btnDelete.Text = "&Delete";
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.btnNew, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.btnDelete, 0, 1);
-            this.tableLayoutPanel1.SetColumnSpan(this.btnDelete, 2);
             //
             // pnlDetails
             //
@@ -194,15 +191,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.AutoSize = true;
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 5;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pnlDetails.Controls.Add(this.tableLayoutPanel2);
             //
             // txtDetailCurrencyCode
@@ -218,8 +206,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailCurrencyCode.AutoSize = true;
             this.lblDetailCurrencyCode.Text = "Currency Code:";
             this.lblDetailCurrencyCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailCurrencyCode, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailCurrencyCode, 1, 0);
             //
             // txtDetailCurrencyName
             //
@@ -234,8 +220,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailCurrencyName.AutoSize = true;
             this.lblDetailCurrencyName.Text = "Currency Name:";
             this.lblDetailCurrencyName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailCurrencyName, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailCurrencyName, 1, 1);
             //
             // txtDetailCurrencySymbol
             //
@@ -250,8 +234,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailCurrencySymbol.AutoSize = true;
             this.lblDetailCurrencySymbol.Text = "Currency Symbol:";
             this.lblDetailCurrencySymbol.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailCurrencySymbol, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailCurrencySymbol, 1, 2);
             //
             // cmbDetailCountryCode
             //
@@ -267,8 +249,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailCountryCode.AutoSize = true;
             this.lblDetailCountryCode.Text = "Country Code:";
             this.lblDetailCountryCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailCountryCode, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.cmbDetailCountryCode, 1, 3);
             //
             // txtDetailDisplayFormat
             //
@@ -283,7 +263,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailDisplayFormat.AutoSize = true;
             this.lblDetailDisplayFormat.Text = "Number of Decimals:";
             this.lblDetailDisplayFormat.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 5;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailCurrencyCode, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailCurrencyName, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailCurrencySymbol, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailCountryCode, 0, 3);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailDisplayFormat, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailCurrencyCode, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailCurrencyName, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailCurrencySymbol, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.cmbDetailCountryCode, 1, 3);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailDisplayFormat, 1, 4);
             //
             // tbbSave
