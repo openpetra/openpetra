@@ -95,7 +95,6 @@ namespace Ict.Petra.Client.MCommon
             this.txtMobileTelephoneNo = new System.Windows.Forms.TextBox();
             this.lblMobileTelephoneNo = new System.Windows.Forms.Label();
             this.chkMailingAddress = new System.Windows.Forms.CheckBox();
-            this.txtDummyValue = new System.Windows.Forms.TextBox();
             this.grpAddress = new System.Windows.Forms.GroupBox();
             this.btnCreatedLocation = new Ict.Common.Controls.TbtnCreated();
             this.cmbCountry = new Ict.Petra.Client.CommonControls.TUC_CountryComboBox();
@@ -505,19 +504,6 @@ namespace Ict.Petra.Client.MCommon
             this.chkMailingAddress.Tag = "CustomDisableAlthoughInvisible";
 
             //
-            // txtDummyValue
-            //
-            this.txtDummyValue.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
-            this.txtDummyValue.Location = new System.Drawing.Point(711, 4);
-            this.txtDummyValue.Name = "txtDummyValue";
-            this.txtDummyValue.Size = new System.Drawing.Size(24, 21);
-            this.txtDummyValue.TabIndex = 35;
-            this.txtDummyValue.TabStop = false;
-            this.txtDummyValue.Text = "TextBox1";
-            this.txtDummyValue.Visible = false;
-
-            //
             // grpAddress
             //
             this.grpAddress.Anchor =
@@ -706,7 +692,6 @@ namespace Ict.Petra.Client.MCommon
             this.pnlAddress.AutoScroll = true;
             this.pnlAddress.AutoScrollMinSize = new System.Drawing.Size(650, 280);
             this.pnlAddress.Controls.Add(this.grpAddress);
-            this.pnlAddress.Controls.Add(this.txtDummyValue);
             this.pnlAddress.Controls.Add(this.grpPartnerLocation);
             this.pnlAddress.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlAddress.Location = new System.Drawing.Point(0, 0);
@@ -762,7 +747,6 @@ namespace Ict.Petra.Client.MCommon
         private System.Windows.Forms.TextBox txtMobileTelephoneNo;
         private System.Windows.Forms.Label lblMobileTelephoneNo;
         private System.Windows.Forms.CheckBox chkMailingAddress;
-        private System.Windows.Forms.TextBox txtDummyValue;
         private TCmbAutoPopulated cmbLocationType;
         private System.Windows.Forms.GroupBox grpPartnerLocation;
         private System.Windows.Forms.GroupBox grpAddress;

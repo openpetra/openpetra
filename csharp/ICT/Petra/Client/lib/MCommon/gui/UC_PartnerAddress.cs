@@ -170,7 +170,6 @@ namespace Ict.Petra.Client.MCommon
             this.txtAltTelephoneNo.Text = Catalog.GetString("Alternate Phone No");
             this.txtMobileTelephoneNo.Text = Catalog.GetString("Mobile Phone No");
             this.lblMobileTelephoneNo.Text = Catalog.GetString("Mo&bile:");
-            this.txtDummyValue.Text = Catalog.GetString("TextBox1");
             this.grpAddress.Text = Catalog.GetString("Address");
             this.grpPartnerLocation.Text = Catalog.GetString("Partner-specific Data for this Address");
             this.txtValidFrom.Text = Catalog.GetString("Valid From");
@@ -435,7 +434,6 @@ namespace Ict.Petra.Client.MCommon
             this.txtCity.DataBindings.Add("Text", FLocationDV, PLocationTable.GetCityDBName());
             this.txtCounty.DataBindings.Add("Text", FLocationDV, PLocationTable.GetCountyDBName());
             this.txtPostalCode.DataBindings.Add("Text", FLocationDV, PLocationTable.GetPostalCodeDBName());
-            this.txtDummyValue.DataBindings.Add("Text", FLocationDV, "DUMMY");
             this.chkMailingAddress.DataBindings.Add("Checked", FPartnerLocationDV, PPartnerLocationTable.GetSendMailDBName());
             this.txtTelephoneNo.DataBindings.Add("Text", FPartnerLocationDV, PPartnerLocationTable.GetTelephoneNumberDBName());
             this.txtFaxNo.DataBindings.Add("Text", FPartnerLocationDV, PPartnerLocationTable.GetFaxNumberDBName());

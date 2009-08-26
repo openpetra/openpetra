@@ -488,7 +488,8 @@ namespace Ict.Common.Controls
         /// <returns></returns>
         public bool DataSourceContainsColumn(String AColumn)
         {
-            if (!(DesignMode))
+            // check for null is required for Mono; called from DataSourceContainsColumn with null parameter
+            if (!(DesignMode) && AColumn != null)
             {
                 return GetDataSourceTableFromSelf().Columns.Contains(AColumn);
             }

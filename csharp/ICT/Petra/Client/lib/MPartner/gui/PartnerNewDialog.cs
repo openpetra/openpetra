@@ -344,6 +344,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Make the Grid respond on updown keys
                 cmbPartnerClass.Focus();
                 grdInstalledSites.Focus();
+                
+                // make sure that the grid row gets selected; Mono would not do it automatically
+                DataGrid_FocusRowEntered(null, null);
 
                 FFormSetupFinished = true;
             }
