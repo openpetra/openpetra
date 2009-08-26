@@ -805,8 +805,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             // writer.Template.FTemplateCode.Contains is not very clean, since it might be in a snippet or in an ifdef that will not be part of the resulting file
-            Console.WriteLine(writer.Template.FTemplateCode.Length.ToString());
-
             if (writer.CodeStorage.ManualFileExistsAndContains("void TabSelectionChanged")
                 || writer.Template.FTemplateCode.Contains("void TabSelectionChanged"))
             {

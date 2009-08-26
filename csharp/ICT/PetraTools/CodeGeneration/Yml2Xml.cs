@@ -359,29 +359,8 @@ namespace Ict.Tools.CodeGeneration
                     // reuse an element, move an existing leaf from base to the main node, or create a new element
                     XmlNode newElement = TYml2Xml.LoadChild(parent, nodeName, ADepth);
 
-                    if (nodeContent.Length == 0)
+                    if (nodeContent.Length > 0)
                     {
-                        // this is just a parent node, without attributes etc.
-                        if (GetIndentationNext(currentLine) > 0)
-                        {
-                            // There are children
-                            Int32 childrenAbsoluteIndentation = GetAbsoluteIndentationNext(currentLine);
-
-                            do
-                            {
-                                ParseNode(myDoc, newElement, ADepth);
-                            } while (GetAbsoluteIndentationNext(currentLine) == childrenAbsoluteIndentation);
-                        }
-                    }
-                    else
-                    {
-                        if (GetIndentationNext(currentLine) > 0)
-                        {
-                            throw new Exception("Problem in file " + System.IO.Path.GetFullPath(
-                                    filename) + ", line " +
-                                (currentLine + 1).ToString() + "; we don't support attributes on the one line and then sub elements additionaly");
-                        }
-
                         // there is some content directly in the line
                         // can be scalar, sequence, or mapping
                         if (nodeContent.StartsWith("{"))
@@ -463,6 +442,18 @@ namespace Ict.Tools.CodeGeneration
                             parent.RemoveChild(newElement);
                             TYml2Xml.SetAttribute(parent, nodeName, nodeContent);
                         }
+                    }
+
+                    // this is a parent node, so read the child nodes as well
+                    if (GetIndentationNext(currentLine) > 0)
+                    {
+                        // There are children
+                        Int32 childrenAbsoluteIndentation = GetAbsoluteIndentationNext(currentLine);
+
+                        do
+                        {
+                            ParseNode(myDoc, newElement, ADepth);
+                        } while (GetAbsoluteIndentationNext(currentLine) == childrenAbsoluteIndentation);
                     }
                 }
             }
