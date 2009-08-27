@@ -2,7 +2,10 @@
 <!-- this contains the csharp functions that are used in OpenPetra.build -->
 <project name="OpenPetra" default="help">
     <script language="C#">
-        <imports>
+		<references>
+		  <include name="System.dll" />
+        </references>
+		<imports>
           <import namespace="System.Text.RegularExpressions" />
         </imports>    
         <code>

@@ -54,20 +54,20 @@
     <target name="compilePetraTools" description="compile the PetraTools">
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools.sln"/>
         <call target="compileTemplate"/>
-        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/Debug/System.Data.SQLite.dll"/>
         </if>
     </target>
     <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServerAdmin, compilePetraServer, compilePetraClient"/>
     <target name="compileTemplate">
-        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <exec program="${mdtool}" commandline="build --buildfile:${solution.file}">
                <environment>
                   <variable name="MONO_PATH" value="${NAntBin.dir}"/> <!-- variable does not exist yet; otherwise: value="${NAntBin.dir}:${environment::get-variable('MONO_PATH')}" -->
                </environment>
             </exec>
         </if>
-        <if test="${framework::get-runtime-framework() == 'net-2.0'}" >
+        <if test="${framework::get-target-framework() == 'net-2.0'}" >
             <solution configuration="${Configuration}" solutionfile="${solution.file}" />
         </if>
     </target>
@@ -104,7 +104,7 @@
                 <include name="Mono.Security.dll" />
             </fileset>
         </copy>
-        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <!-- requires sqlite 3.6.1 or higher to be installed on the linux system -->
             <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" 
                   tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/System.Data.SQLite.dll"/>
@@ -306,7 +306,7 @@
              <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver;" database="petra" failonerror="false"/>
              <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER';" database="petra"/>
              <property name="tempfile" value="${path::get-temp-path()}/userpermissions.sql"/>
-             <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+             <if test="${framework::get-target-framework() == 'mono-2.0'}" >
                  <!-- at least on Mac, the tmp directory of the current user is returned, which the postgres user has no access to -->
                  <property name="tempfile" value="/tmp/userpermissions.sql"/>
              </if>
@@ -332,7 +332,7 @@
     </target>
 
     <target name="startPetraServer" depends="" description="start a local Petra Server"> <!-- compilePetra, startDatabase??? -->
-        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <exec program="mono" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}"
                     commandline="PetraServerConsole.exe -RunWithoutMenu:true"
@@ -344,7 +344,7 @@
                </environment>
             </exec>
         </if>
-        <if test="${framework::get-runtime-framework() == 'net-2.0'}" >
+        <if test="${framework::get-target-framework() == 'net-2.0'}" >
             <exec program="cmd.exe" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}"
                     commandline="/C start PetraServerConsole.exe -RunWithoutMenu:false"
@@ -357,7 +357,7 @@
     </target>
 
     <target name="startPetraClient" depends="" description="start the Petra Client"> <!-- compilePetra, startPetraServer??? -->
-        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <exec program="mono" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
                     commandline="PetraClient.exe -AutoLogin:demo"
@@ -367,7 +367,7 @@
                </environment>
             </exec>
         </if>
-        <if test="${framework::get-runtime-framework() == 'net-2.0'}" >
+        <if test="${framework::get-target-framework() == 'net-2.0'}" >
             <exec program="cmd.exe" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
                     commandline="/C start PetraClient.exe -AutoLogin:demo"
@@ -380,7 +380,7 @@
     </target>
 
     <target name="stopPetraServer" depends="" description="stop the local Petra Server">
-        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <exec program="mono" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}"
                     commandline="PetraServerAdminConsole.exe -Command:Stop"
@@ -390,7 +390,7 @@
                </environment>
             </exec>
         </if>
-        <if test="${framework::get-runtime-framework() == 'net-2.0'}" >
+        <if test="${framework::get-target-framework() == 'net-2.0'}" >
             <exec program="PetraServerAdminConsole.exe" 
                     basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}"
@@ -795,7 +795,7 @@
     <target name="createSQLiteDB">
         <property name="DBMS.Type" value="sqlite"/>
         <property name="DBMS.Password" value="CHANGEME"/>
-        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
                 <!-- Linux version of sqlite does not work with encryption; 
                      use it only for testing purposes; 
                      see also http://sqlite.phxsoftware.com/forums/p/1508/6579.aspx#6579 -->        
@@ -811,7 +811,7 @@
         <property name="DBMS.Password" value="CHANGEME"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
-        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <!-- this currently only works on Linux -->
             <ExecCmd program="sh" superuser="postgres" commandline="/C ${pgdump.exe} --format=c petra -f ${path::get-temp-path()}/demo-pg.bak"/>
             <copy file="${path::get-temp-path()}/demo-pg.bak" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo-pg.bak"/>
@@ -821,10 +821,10 @@
     <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, translation, setupStandalone, setupRemote"/>
     <target name="buildReleaseLinux" depends="switchToDebug, createSQLiteDB, createPostgreSQLDB, compileRelease, translation, setupLinuxServer"/>
     <target name="buildRelease">
-        <if test="${framework::get-runtime-framework() == 'mono-2.0'}" >
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <call target="buildReleaseLinux"/>
         </if>
-        <if test="${framework::get-runtime-framework() == 'net-2.0'}" >
+        <if test="${framework::get-target-framework() == 'net-2.0'}" >
             <call target="buildReleaseWindows"/>
         </if>
     </target>
