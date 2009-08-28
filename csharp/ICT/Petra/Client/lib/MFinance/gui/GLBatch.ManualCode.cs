@@ -60,6 +60,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             this.tpgJournals.Enabled = true;
+            DisableTransactions();
             this.ucoJournals.LoadJournals(ALedgerNumber, ABatchNumber);
         }
 
@@ -108,11 +109,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else if (ATab == eGLTabs.Journals)
             {
-                this.tabGLBatch.SelectedTab = this.tpgJournals;
+                if (this.tpgJournals.Enabled)
+                {
+                    this.tabGLBatch.SelectedTab = this.tpgJournals;
+                }
             }
             else if (ATab == eGLTabs.Transactions)
             {
-                this.tabGLBatch.SelectedTab = this.tpgTransactions;
+                if (this.tpgTransactions.Enabled)
+                {
+                    this.tabGLBatch.SelectedTab = this.tpgTransactions;
+                }
             }
         }
     }
