@@ -1,3 +1,6 @@
+DELETE FROM a_transaction;
+DELETE FROM a_journal;
+DELETE FROM a_batch;
 DELETE FROM a_accounting_period;
 DELETE FROM a_account_hierarchy_detail;
 DELETE FROM a_account_hierarchy;

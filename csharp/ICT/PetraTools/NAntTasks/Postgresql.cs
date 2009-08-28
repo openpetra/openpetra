@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -137,6 +137,8 @@ namespace Ict.Tools.NAntTasks
             }
 
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
             process.EnableRaisingEvents = true;
             try
             {
@@ -148,6 +150,17 @@ namespace Ict.Tools.NAntTasks
             catch (Exception exp)
             {
                 throw new Exception("cannot start " + process.StartInfo.FileName + Environment.NewLine + exp.Message);
+            }
+
+            string[] output = process.StandardOutput.ReadToEnd().Split('\n');
+
+            foreach (string line in output)
+            {
+                if (!(line.Trim().StartsWith("INSERT") || line.Trim().StartsWith("GRANT") || line.Trim().StartsWith("COPY")
+                      || line.Trim().StartsWith("DELETE")))
+                {
+                    Console.WriteLine(line);
+                }
             }
 
             while (!process.HasExited)

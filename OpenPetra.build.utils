@@ -55,6 +55,38 @@
       return true;
     }
 
+    [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+    static extern uint QueryDosDevice(string lpDeviceName, StringBuilder lpTargetPath, int ucc);
+
+	// this will reverse the effect of the MSDOS subst command, ie a locally mapped network drive will be mapped back to the real path behind it
+	// see also http://bloggingabout.net/blogs/ramon/archive/2007/04/05/get-the-physical-path-of-a-path-that-uses-a-subst-drive.aspx
+    [Function("GetRealPath")]
+	public static string GetRealPath(string path)
+    {
+        const int BUFFER_LENGTH = 1024;
+
+        if (Directory.Exists(path))
+        {
+            path = new DirectoryInfo(path).FullName;
+        }
+        else if (File.Exists(path))
+        {
+            path = new FileInfo(path).FullName;
+        }
+
+        StringBuilder pathInformation = new StringBuilder(BUFFER_LENGTH);
+        QueryDosDevice(path.Substring(0,2), pathInformation, BUFFER_LENGTH);
+
+        // If drive is substed, the result will be in the format of "\??\C:\RealPath\".
+        // after that strip the \??\ prefix and combine the paths.
+        if (pathInformation.ToString().Contains(@"\??\"))
+        {
+            return pathInformation.ToString(4, pathInformation.Length-4) + path.Substring(2); // Remove the drive letter
+        }
+
+        return path;
+    }
+	
     [Function("GetFilenameWithoutExtension")]
     public static string GetFilenameWithoutExtension(string filename)
     {

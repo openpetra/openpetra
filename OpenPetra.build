@@ -55,7 +55,7 @@
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools.sln"/>
         <call target="compileTemplate"/>
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/Debug/System.Data.SQLite.dll"/>
+            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/Debug/System.Data.SQLite.dll" overwrite="true"/>
         </if>
     </target>
     <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServerAdmin, compilePetraServer, compilePetraClient"/>
@@ -107,13 +107,13 @@
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <!-- requires sqlite 3.6.1 or higher to be installed on the linux system -->
             <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" 
-                  tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/System.Data.SQLite.dll"/>
+                  tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/System.Data.SQLite.dll" overwrite="true"/>
         </if>
         <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
         <if test="${file::exists(language.file)}">
             <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
             <copy file="${language.file}"
-                tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo"/>
+                tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo" overwrite="true"/>
         </if>
     </target>
     <target name="compilePetraServerAdmin" description="compile Ict/Petra/ServerAdmin">
@@ -165,7 +165,7 @@
         <if test="${file::exists(language.file)}">
             <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
             <copy file="${language.file}"
-                tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo"/>
+                tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo" overwrite="true"/>
         </if>
     </target>
     <target name="cleanPetra" description="remove all compiled code of Petra">
@@ -259,18 +259,24 @@
     </target>
 
     <target name="resetDatabase" depends="" description="useful for debugging the creation of fresh database"> <!-- depends: recreateDatabase --> 
-         <property name="OpenPetraRoot.dir" value="${path::get-full-path(OpenPetraRoot.dir)}"/>
+		 <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+			 <property name="OpenPetraRoot.dir" value="${path::get-full-path(OpenPetraRoot.dir)}"/>
+		 </if>
+		 <if test="${framework::get-target-framework() == 'net-2.0'}" >
+		    <!-- GetRealPath resolves problems with substed path for psql to load from; cannot find such file or path -->
+			<property name="OpenPetraRoot.dir" value="${string::replace(script::GetRealPath(OpenPetraRoot.dir), '\', '/')}"/>
+	     </if>
          <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
          <property name="DemoData.Dir" value="${OpenPetraRoot.dir}/db/${SelectedDemo}"/>
 
          <copy file="${BaseData.Dir}/init.sql"
-            tofile="${BaseData.Dir}/init.sql.local"/>
+            tofile="${BaseData.Dir}/init.sql.local" overwrite="true"/>
          <property name="Current.File" value="${BaseData.Dir}/init.sql.local"/>
          <property name="toReplace" value="{#ABSOLUTEBASEDATAPATH}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, BaseData.Dir)}'/>
          
          <copy file="${DemoData.Dir}/init.sql"
-            tofile="${DemoData.Dir}/init.sql.local"/>
+            tofile="${DemoData.Dir}/init.sql.local" overwrite="true"/>
          <property name="Current.File" value="${DemoData.Dir}/init.sql.local"/>
          <property name="toReplace" value="{#ABSOLUTEBASEDATAPATH}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, DemoData.Dir)}'/>
@@ -410,7 +416,7 @@
     </target>
     <target name="startSOAPServer" description="only supports postgresql server at the moment, not sqlite; would need microsoft xsp">
         <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
-                    tofile="${WebServerInstall.dir}/server.asmx"/>
+                    tofile="${WebServerInstall.dir}/server.asmx" overwrite="true"/>
         <mkdir dir="${WebServerInstall.dir}/bin" failonerror="false"/>
         <copy todir="${WebServerInstall.dir}/bin">
             <!-- some unmanaged dlls cause problems for mono xsp -->
@@ -423,7 +429,7 @@
         <property name="webconfigfile" value="${WebServerInstall.dir}/web.config"/>
         <if test="${not file::exists(webconfigfile)}">
             <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/web-sample-${DBMS.Type}.config"
-                tofile="${webconfigfile}"/>
+                tofile="${webconfigfile}" overwrite="true"/>
         </if>
         <!-- TODO: run on linux as well? -->
         <exec program="cmd.exe" 
@@ -669,7 +675,7 @@
     <target name="setupTemplate">
         <property name="Current.File" value="${SetupOriginal.File}.local"/>
 
-        <copy file="${SetupOriginal.File}" tofile="${Current.File}"/>
+        <copy file="${SetupOriginal.File}" tofile="${Current.File}" overwrite="true"/>
     
         <property name="toReplace" value="{#RELEASEVERSION}"/>
         <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
@@ -728,7 +734,7 @@
             </fileset>
         </copy>
         <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll"
-                    tofile="${setupDir}/bin30/System.Data.SQLite.dll" overwrite="true"/>
+                    tofile="${setupDir}/bin30/System.Data.SQLite.dll"/>
        
         <foreach item="File" property="filename">
             <in>
@@ -803,7 +809,7 @@
         </if>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
-        <copy file="${SQLitedb.file}" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db"/>
+        <copy file="${SQLitedb.file}" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db" overwrite="true"/>
     </target>
 
     <target name="createPostgreSQLDB">
@@ -814,7 +820,7 @@
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <!-- this currently only works on Linux -->
             <ExecCmd program="sh" superuser="postgres" commandline="/C ${pgdump.exe} --format=c petra -f ${path::get-temp-path()}/demo-pg.bak"/>
-            <copy file="${path::get-temp-path()}/demo-pg.bak" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo-pg.bak"/>
+            <copy file="${path::get-temp-path()}/demo-pg.bak" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo-pg.bak" overwrite="true"/>
         </if>
     </target>
     
