@@ -70,6 +70,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction, out VerificationResult);
             ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out VerificationResult);
 
+            MainDS.ABatch.AcceptChanges();
+            	
             DBAccess.GDBAccessObj.CommitTransaction();
             return MainDS;
         }
