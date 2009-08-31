@@ -224,6 +224,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();
+        ShowDataManual();
         pnlDetails.Enabled = false;
         if (FMainDS.ATransaction != null)
         {
@@ -250,6 +251,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         if (ACurrentDetailIndex == -1)
         {
             pnlDetails.Enabled = false;
+            ShowDetailsManual(ACurrentDetailIndex);
         }
         else
         {
@@ -282,6 +284,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 cmbDetailKeyMinistryKey.SetSelectedInt64(FMainDS.ATransaction[ACurrentDetailIndex].KeyMinistryKey);
             }
+            ShowDetailsManual(ACurrentDetailIndex);
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
@@ -335,6 +338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FMainDS.ATransaction[ACurrentDetailIndex].KeyMinistryKey = cmbDetailKeyMinistryKey.GetSelectedInt64();
             }
+            GetDetailDataFromControlsManual(ACurrentDetailIndex);
             FMainDS.ATransaction.Rows[ACurrentDetailIndex].EndEdit();
         }
     }

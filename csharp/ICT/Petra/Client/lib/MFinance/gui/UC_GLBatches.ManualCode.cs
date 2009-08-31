@@ -50,6 +50,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ShowData();
         }
 
+        /// <summary>
+        /// show ledger number
+        /// </summary>
+        private void ShowDataManual()
+        {
+            txtLedgerNumber.Text = FLedgerNumber.ToString();
+        }
+
         private void ShowDetailsManual(Int32 ACurrentDetailIndex)
         {
             ((TFrmGLBatch)ParentForm).LoadJournals(
@@ -94,6 +102,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // TODO: show VerificationResult
             // TODO: display progress of posting
             TVerificationResultCollection Verifications;
+
             TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications);
         }
     }

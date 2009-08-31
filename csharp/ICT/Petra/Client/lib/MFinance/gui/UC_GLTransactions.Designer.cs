@@ -413,6 +413,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtDebitAmount.Location = new System.Drawing.Point(2,2);
             this.txtDebitAmount.Name = "txtDebitAmount";
             this.txtDebitAmount.Size = new System.Drawing.Size(150, 28);
+            this.txtDebitAmount.TextChanged += new System.EventHandler(this.UpdateBaseAndTotals);
             //
             // lblDebitAmount
             //
@@ -442,6 +443,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtCreditAmount.Location = new System.Drawing.Point(2,2);
             this.txtCreditAmount.Name = "txtCreditAmount";
             this.txtCreditAmount.Size = new System.Drawing.Size(150, 28);
+            this.txtCreditAmount.TextChanged += new System.EventHandler(this.UpdateBaseAndTotals);
             //
             // lblCreditAmount
             //
@@ -536,7 +538,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel5.SetColumnSpan(this.lblTransactionCurrency, 2 * 2 - 1);
+            this.tableLayoutPanel5.SetColumnSpan(this.lblTransactionCurrency, 2);
             this.tableLayoutPanel5.Controls.Add(this.lblTransactionCurrency, 0, 0);
             this.tableLayoutPanel5.Controls.Add(this.lblDebitAmount, 0, 1);
             this.tableLayoutPanel5.Controls.Add(this.lblCreditAmount, 0, 2);
@@ -546,7 +548,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel5.Controls.Add(this.txtCreditAmount, 1, 2);
             this.tableLayoutPanel5.Controls.Add(this.txtDebitTotalAmount, 1, 3);
             this.tableLayoutPanel5.Controls.Add(this.txtCreditTotalAmount, 1, 4);
-            this.tableLayoutPanel5.SetColumnSpan(this.lblBaseCurrency, 2 * 2 - 1);
+            this.tableLayoutPanel5.SetColumnSpan(this.lblBaseCurrency, 2);
             this.tableLayoutPanel5.Controls.Add(this.lblBaseCurrency, 2, 0);
             this.tableLayoutPanel5.Controls.Add(this.lblDebitAmountBase, 2, 1);
             this.tableLayoutPanel5.Controls.Add(this.lblCreditAmountBase, 2, 2);
@@ -573,7 +575,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel4.Controls.Add(this.lblDetailReference, 0, 3);
             this.tableLayoutPanel4.Controls.Add(this.lblDetailTransactionDate, 0, 4);
             this.tableLayoutPanel4.Controls.Add(this.lblDetailKeyMinistryKey, 0, 5);
-            this.tableLayoutPanel4.SetColumnSpan(this.pnlDetailAmounts, 2 * 2 - 1);
+            this.tableLayoutPanel4.SetColumnSpan(this.pnlDetailAmounts, 2);
             this.tableLayoutPanel4.Controls.Add(this.pnlDetailAmounts, 0, 6);
             this.tableLayoutPanel4.Controls.Add(this.cmbDetailCostCentreCode, 1, 0);
             this.tableLayoutPanel4.Controls.Add(this.cmbDetailAccountCode, 1, 1);

@@ -369,7 +369,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel5.Controls.Add(this.lblDetailBatchDescription, 0, 0);
             this.tableLayoutPanel5.Controls.Add(this.lblDetailBatchControlTotal, 0, 1);
             this.tableLayoutPanel5.Controls.Add(this.lblDetailDateEffective, 0, 2);
-            this.tableLayoutPanel5.SetColumnSpan(this.txtDetailBatchDescription, 2 * 2 - 1);
+            this.tableLayoutPanel5.SetColumnSpan(this.txtDetailBatchDescription, 2);
             this.tableLayoutPanel5.Controls.Add(this.txtDetailBatchDescription, 1, 0);
             this.tableLayoutPanel5.Controls.Add(this.txtDetailBatchControlTotal, 1, 1);
             this.tableLayoutPanel5.Controls.Add(this.dtpDetailDateEffective, 1, 2);
@@ -382,7 +382,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Controls.Add(this.pnlLedgerInfo, 0, 0);
-            this.tableLayoutPanel1.SetColumnSpan(this.pnlBatches, 2 * 2 - 1);
+            this.tableLayoutPanel1.SetColumnSpan(this.pnlBatches, 2);
             this.tableLayoutPanel1.Controls.Add(this.pnlBatches, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.rgrShowBatches, 1, 0);
             //

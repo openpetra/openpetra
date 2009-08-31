@@ -71,13 +71,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out VerificationResult);
 
             MainDS.ABatch.AcceptChanges();
-            	
+
             DBAccess.GDBAccessObj.CommitTransaction();
             return MainDS;
         }
 
         /// <summary>
         /// loads a list of batches for the given ledger
+        /// also get the ledger for the base currency etc
         /// TODO: limit to period, limit to batch status, etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -87,6 +88,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
             ABatchAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;

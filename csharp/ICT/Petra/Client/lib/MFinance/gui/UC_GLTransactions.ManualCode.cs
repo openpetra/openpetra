@@ -25,6 +25,7 @@
  ************************************************************************/
 using System;
 using System.Data;
+using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -76,6 +77,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// get the details of the current journal
+        /// </summary>
+        /// <returns></returns>
+        private AJournalRow GetJournalRow()
+        {
+            DataView view = new DataView(FMainDS.AJournal);
+
+            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(AJournalTable.TableId), ",");
+            return (AJournalRow)view.FindRows(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber })[0].Row;
+        }
+
+        /// <summary>
         /// add a new transactions
         /// </summary>
         /// <param name="sender"></param>
@@ -91,15 +104,72 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ANewRow"></param>
         private void NewRowManual(ref GLBatchTDSATransactionRow ANewRow)
         {
-            DataView view = new DataView(FMainDS.AJournal);
+            AJournalRow row = GetJournalRow();
 
-            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(AJournalTable.TableId), ",");
-            AJournalRow row = (AJournalRow)view.FindRows(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber })[0].Row;
             ANewRow.LedgerNumber = row.LedgerNumber;
             ANewRow.BatchNumber = row.BatchNumber;
             ANewRow.JournalNumber = row.JournalNumber;
             ANewRow.TransactionNumber = row.LastTransactionNumber + 1;
             row.LastTransactionNumber++;
+        }
+
+        /// <summary>
+        /// show ledger, batch and journal number
+        /// </summary>
+        private void ShowDataManual()
+        {
+            txtLedgerNumber.Text = FLedgerNumber.ToString();
+            txtBatchNumber.Text = FBatchNumber.ToString();
+            txtJournalNumber.Text = FJournalNumber.ToString();
+
+            if (FMainDS.ALedger.Count == 1)
+            {
+                lblBaseCurrency.Text = String.Format(Catalog.GetString("{0} (Base Currency)"), FMainDS.ALedger[0].BaseCurrency);
+                lblTransactionCurrency.Text = String.Format(Catalog.GetString("{0} (Transaction Currency)"), GetJournalRow().TransactionCurrency);
+            }
+        }
+
+        private void ShowDetailsManual(Int32 ACurrentDetailIndex)
+        {
+            ATransactionRow row = FMainDS.ATransaction[ACurrentDetailIndex];
+
+            if (row.DebitCreditIndicator)
+            {
+                txtDebitAmountBase.Text = row.AmountInBaseCurrency.ToString();
+                txtCreditAmountBase.Text = "0";
+                txtDebitAmount.Text = row.TransactionAmount.ToString();
+                txtCreditAmount.Text = "0";
+            }
+            else
+            {
+                txtDebitAmountBase.Text = "0";
+                txtCreditAmountBase.Text = row.AmountInBaseCurrency.ToString();
+                txtDebitAmount.Text = "0";
+                txtCreditAmount.Text = row.TransactionAmount.ToString();
+            }
+        }
+
+        private void GetDetailDataFromControlsManual(Int32 ACurrentDetailIndex)
+        {
+            ATransactionRow row = FMainDS.ATransaction[ACurrentDetailIndex];
+
+            row.DebitCreditIndicator = (txtDebitAmount.Text.Length > 0 && Convert.ToDouble(txtDebitAmount.Text) > 0);
+
+            if (row.DebitCreditIndicator)
+            {
+                row.TransactionAmount = Convert.ToDouble(txtDebitAmount.Text);
+            }
+            else
+            {
+                row.TransactionAmount = Convert.ToDouble(txtCreditAmount.Text);
+            }
+        }
+
+        // TODO: verification: currency: must be double; check decimal point; only positive
+
+        private void UpdateBaseAndTotals(System.Object sender, EventArgs e)
+        {
+            // TODO: update base value, and totals
         }
     }
 }

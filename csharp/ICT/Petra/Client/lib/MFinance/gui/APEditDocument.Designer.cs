@@ -401,7 +401,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel2.Controls.Add(this.lblDiscountDays, 0, 3);
             this.tableLayoutPanel2.Controls.Add(this.lblTotalAmount, 0, 4);
             this.tableLayoutPanel2.Controls.Add(this.txtDocumentCode, 1, 0);
-            this.tableLayoutPanel2.SetColumnSpan(this.txtReference, 2 * 2 - 1);
+            this.tableLayoutPanel2.SetColumnSpan(this.txtReference, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtReference, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.dtpDateIssued, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.nudDiscountDays, 1, 3);
@@ -605,9 +605,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel4.Controls.Add(this.lblDetailItemRef, 0, 1);
             this.tableLayoutPanel4.Controls.Add(this.lblDetailAmount, 0, 2);
             this.tableLayoutPanel4.Controls.Add(this.lblDetailBaseAmount, 0, 3);
-            this.tableLayoutPanel4.SetColumnSpan(this.txtDetailNarrative, 2 * 2 - 1);
+            this.tableLayoutPanel4.SetColumnSpan(this.txtDetailNarrative, 2);
             this.tableLayoutPanel4.Controls.Add(this.txtDetailNarrative, 1, 0);
-            this.tableLayoutPanel4.SetColumnSpan(this.txtDetailItemRef, 2 * 2 - 1);
+            this.tableLayoutPanel4.SetColumnSpan(this.txtDetailItemRef, 2);
             this.tableLayoutPanel4.Controls.Add(this.txtDetailItemRef, 1, 1);
             this.tableLayoutPanel4.Controls.Add(this.txtDetailAmount, 1, 2);
             this.tableLayoutPanel4.Controls.Add(this.txtDetailBaseAmount, 1, 3);

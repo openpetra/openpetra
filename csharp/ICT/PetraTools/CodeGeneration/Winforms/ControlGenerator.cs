@@ -430,6 +430,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public TextBoxGenerator()
             : base("txt", typeof(TextBox))
         {
+            FChangeEventName = "TextChanged";
         }
 
         public override bool ControlFitsNode(XmlNode curNode)

@@ -296,9 +296,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel2.Controls.Add(this.lblDetailToCurrencyCode, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailDateEffectiveFrom, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailRateOfExchange, 0, 3);
-            this.tableLayoutPanel2.SetColumnSpan(this.lblValueOneDirection, 2 * 2 - 1);
+            this.tableLayoutPanel2.SetColumnSpan(this.lblValueOneDirection, 2);
             this.tableLayoutPanel2.Controls.Add(this.lblValueOneDirection, 0, 4);
-            this.tableLayoutPanel2.SetColumnSpan(this.lblValueOtherDirection, 2 * 2 - 1);
+            this.tableLayoutPanel2.SetColumnSpan(this.lblValueOtherDirection, 2);
             this.tableLayoutPanel2.Controls.Add(this.lblValueOtherDirection, 0, 5);
             this.tableLayoutPanel2.Controls.Add(this.cmbDetailFromCurrencyCode, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.cmbDetailToCurrencyCode, 1, 1);

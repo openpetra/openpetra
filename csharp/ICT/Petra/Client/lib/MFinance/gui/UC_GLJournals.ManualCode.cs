@@ -66,6 +66,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ShowData();
         }
 
+        /// <summary>
+        /// show ledger and batch number
+        /// </summary>
+        private void ShowDataManual()
+        {
+            txtLedgerNumber.Text = FLedgerNumber.ToString();
+            txtBatchNumber.Text = FBatchNumber.ToString();
+        }
+
         private void ShowDetailsManual(Int32 ACurrentDetailIndex)
         {
             if (ACurrentDetailIndex == -1)

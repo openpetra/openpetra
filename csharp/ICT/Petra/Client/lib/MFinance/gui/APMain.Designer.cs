@@ -506,11 +506,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Controls.Add(this.lblSupplierCode, 0, 0);
-            this.tableLayoutPanel1.SetColumnSpan(this.pnlSearchFilter, 2 * 2 - 1);
+            this.tableLayoutPanel1.SetColumnSpan(this.pnlSearchFilter, 2);
             this.tableLayoutPanel1.Controls.Add(this.pnlSearchFilter, 0, 1);
-            this.tableLayoutPanel1.SetColumnSpan(this.pnlSearchButtons, 2 * 2 - 1);
+            this.tableLayoutPanel1.SetColumnSpan(this.pnlSearchButtons, 2);
             this.tableLayoutPanel1.Controls.Add(this.pnlSearchButtons, 0, 2);
-            this.tableLayoutPanel1.SetColumnSpan(this.tabSearchResult, 2 * 2 - 1);
+            this.tableLayoutPanel1.SetColumnSpan(this.tabSearchResult, 2);
             this.tableLayoutPanel1.Controls.Add(this.tabSearchResult, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.cmbSupplierCode, 1, 0);
             //

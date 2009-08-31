@@ -209,6 +209,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();
+        ShowDataManual();
         pnlDetails.Enabled = false;
         if (FMainDS.AJournal != null)
         {

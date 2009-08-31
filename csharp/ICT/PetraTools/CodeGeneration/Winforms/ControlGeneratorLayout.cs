@@ -194,7 +194,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                                 if (childctrl.colSpan > 1)
                                 {
                                     writer.CallControlFunction(FTlpName,
-                                        "SetColumnSpan(this." + childctrl.controlName + ", " + childctrl.colSpan + " * 2 - 1)");
+                                        "SetColumnSpan(this." + childctrl.controlName + ", " + childctrl.colSpan + ")");
                                 }
 
                                 if (childctrl.rowSpan > 1)
@@ -543,7 +543,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else
             {
-                // checkbox, radiobutton, groupbox: no label
+                // checkbox, radiobutton, groupbox, label control: no label
                 // no label: merge cells
                 Int32 colSpan = 1;
 
@@ -552,7 +552,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     colSpan = Convert.ToInt32(ctrl.GetAttribute("ColSpan"));
                 }
 
-                ctrl.SetAttribute("ColSpan", (colSpan * 2).ToString());
+                ctrl.SetAttribute("ColSpan", (colSpan + 1).ToString());
                 AddControl(ctrl,
                     FCurrentColumn * 2,
                     FCurrentRow);
