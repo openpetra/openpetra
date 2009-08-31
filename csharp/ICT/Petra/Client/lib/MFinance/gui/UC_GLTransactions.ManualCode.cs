@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             GetDataFromControls();
 
-            FPreviouslySelectedDetailRow = -1;
+            FCurrentDetailIndex = -1;
 
             DataView view = new DataView(FMainDS.ATransaction);
 

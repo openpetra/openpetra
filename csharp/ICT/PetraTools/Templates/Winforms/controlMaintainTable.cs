@@ -31,6 +31,8 @@ namespace {#NAMESPACE}
 
     private {#DATASETTYPE} FMainDS;
 
+	private Int32 FCurrentDetailIndex = -1;
+
     /// constructor
     public {#CLASSNAME}() : base()
     {
@@ -207,25 +209,24 @@ namespace {#NAMESPACE}
         else
         {
             pnlDetails.Enabled = true;
+            FCurrentDetailIndex = ACurrentDetailIndex;
             {#SHOWDETAILS}
             {#SHOWDETAILSMANUAL}
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private Int32 FPreviouslySelectedDetailRow = -1;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
 {#IFDEF SAVEDETAILS}
         // get the details from the previously selected row
-        if (FPreviouslySelectedDetailRow != -1)
+        if (FCurrentDetailIndex != -1)
         {
-            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+            GetDetailsFromControls(FCurrentDetailIndex);
         }
 {#ENDIF SAVEDETAILS}
         // display the details of the currently selected row
         ShowDetails(GetSelectedDetailDataTableIndex());
-        FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
     }
 {#ENDIF SHOWDETAILS}
     
@@ -233,7 +234,7 @@ namespace {#NAMESPACE}
     /// get the data from the controls and store in the currently selected detail row
     public void GetDataFromControls()
     {
-        GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        GetDetailsFromControls(FCurrentDetailIndex);
     }
 
     private void GetDetailsFromControls(Int32 ACurrentDetailIndex)

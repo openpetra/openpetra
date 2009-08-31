@@ -55,6 +55,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     private Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS FMainDS;
 
+	private Int32 FCurrentDetailIndex = -1;
+
     /// constructor
     public TUC_GLJournals() : base()
     {
@@ -238,6 +240,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         else
         {
             pnlDetails.Enabled = true;
+            FCurrentDetailIndex = ACurrentDetailIndex;
             BeforeShowDetailsManual(FMainDS.AJournal[ACurrentDetailIndex]);
             txtDetailJournalDescription.Text = FMainDS.AJournal[ACurrentDetailIndex].JournalDescription;
             cmbDetailSubSystemCode.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].SubSystemCode);
@@ -257,23 +260,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private Int32 FPreviouslySelectedDetailRow = -1;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
         // get the details from the previously selected row
-        if (FPreviouslySelectedDetailRow != -1)
+        if (FCurrentDetailIndex != -1)
         {
-            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+            GetDetailsFromControls(FCurrentDetailIndex);
         }
         // display the details of the currently selected row
         ShowDetails(GetSelectedDetailDataTableIndex());
-        FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
     }
 
     /// get the data from the controls and store in the currently selected detail row
     public void GetDataFromControls()
     {
-        GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        GetDetailsFromControls(FCurrentDetailIndex);
     }
 
     private void GetDetailsFromControls(Int32 ACurrentDetailIndex)

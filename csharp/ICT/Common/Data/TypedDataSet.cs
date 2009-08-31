@@ -729,12 +729,7 @@ namespace Ict.Common.Data
         /// </returns>
         public virtual TTypedDataSet GetChangesTyped(Boolean removeEmptyTables)
         {
-            // countCol: System.Int32;  countRow: System.Int32;  countTab: System.Int32;  row: System.Data.DataRow;  tab: System.Data.DataTable;
-            TTypedDataSet ds;
-
-            // Console.WriteLine('Call TTypedDataSet.GetChangesTyped');
-
-            ds = (TTypedDataSet) base.GetChanges();
+            TTypedDataSet ds = (TTypedDataSet) base.GetChanges();
 
             if (ds == null)
             {
