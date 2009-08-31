@@ -103,7 +103,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // TODO: display progress of posting
             TVerificationResultCollection Verifications;
 
-            TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications);
+            if (!TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
+            {
+                string ErrorMessages = String.Empty;
+
+                foreach (TVerificationResult verif in Verifications)
+                {
+                    ErrorMessages += "[" + verif.FResultContext + "] " +
+                                     verif.FResultTextCaption + ": " +
+                                     verif.FResultText + Environment.NewLine;
+                }
+
+                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
+            }
         }
     }
 }

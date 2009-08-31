@@ -63,6 +63,12 @@ namespace Ict.Common.DB
             ArrayList ExceptionList;
             NpgsqlConnection TheConnection;
 
+#if EXTREME_DEBUGGING
+            NpgsqlEventLog.Level = LogLevel.Debug;
+            NpgsqlEventLog.LogName = "NpgsqlTests.LogFile";
+            NpgsqlEventLog.EchoMessages = false;
+#endif
+
             if (AConnectionString.Length == 0)
             {
                 if (AUsername == "")
@@ -469,7 +475,7 @@ namespace Ict.Common.DB
         /// <returns>Sequence Value.</returns>
         public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
         {
-            return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT NEXTVAL('" + ASequenceName + "')", ATransaction));
+            return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT NEXTVAL('" + ASequenceName + "')", ATransaction, false));
         }
 
         /// <summary>
@@ -483,7 +489,7 @@ namespace Ict.Common.DB
         /// <returns>Sequence Value.</returns>
         public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
         {
-            return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT last_value FROM " + ASequenceName + "", ATransaction));
+            return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT last_value FROM " + ASequenceName + "", ATransaction, false));
         }
     }
 }

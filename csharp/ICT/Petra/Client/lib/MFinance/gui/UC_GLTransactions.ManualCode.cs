@@ -163,13 +163,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 row.TransactionAmount = Convert.ToDouble(txtCreditAmount.Text);
             }
+
+            // TODO: use the current exchange rate (corporate or daily?); use cache
+            // TODO: or create a daily exchange rate, download from the web?
+            row.AmountInBaseCurrency = 1 * row.TransactionAmount;
+            row.AmountInIntlCurrency = 1.5 * row.TransactionAmount;
         }
 
         // TODO: verification: currency: must be double; check decimal point; only positive
 
         private void UpdateBaseAndTotals(System.Object sender, EventArgs e)
         {
-            // TODO: update base value, and totals
+            try
+            {
+                txtDebitAmountBase.Text = (1.0 * Convert.ToDouble(txtDebitAmount.Text)).ToString();
+                txtCreditAmountBase.Text = (1.0 * Convert.ToDouble(txtCreditAmount.Text)).ToString();
+            }
+            catch (Exception)
+            {
+            }
+
+            // TODO: filter transactions of this journal, and add up the total amounts
         }
     }
 }
