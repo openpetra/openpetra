@@ -464,6 +464,8 @@ namespace Ict.Petra.Server.MFinance.GL
                 journal.JournalStatus = MFinanceConstants.BATCH_POSTED;
             }
 
+            MainDS.ABatch[0].BatchStatus = MFinanceConstants.BATCH_POSTED;
+
             return PostingLevel;
         }
 
@@ -652,7 +654,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                 // Add the period data from the posting level to the summary levels
                                 for (Int32 PeriodCount = FromPeriod;
-                                     PeriodCount <= AMainDS.ALedger[0].CurrentPeriod + AMainDS.ALedger[0].NumberOfAccountingPeriods;
+                                     PeriodCount <= AMainDS.ALedger[0].NumberOfAccountingPeriods + AMainDS.ALedger[0].NumberFwdPostingPeriods;
                                      PeriodCount++)
                                 {
                                     GLMPeriodView.RowFilter = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "=" +
@@ -725,7 +727,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                 if (DBMasterTable.Count == 0)
                                 {
-                                    CreateGLMYear(AMainDS.ALedger[0].LedgerNumber,
+                                    int NewGlmSequence = CreateGLMYear(AMainDS.ALedger[0].LedgerNumber,
                                         glmMaster.AccountCode,
                                         glmMaster.CostCentreCode,
                                         out AVerifications,
@@ -737,16 +739,16 @@ namespace Ict.Petra.Server.MFinance.GL
                                         return false;
                                     }
 
-                                    DBMasterTable = AGeneralLedgerMasterAccess.LoadByUniqueKey(AMainDS.ALedger[0].LedgerNumber,
-                                        AMainDS.ALedger[0].CurrentFinancialYear,
-                                        glmMaster.AccountCode,
-                                        glmMaster.CostCentreCode,
-                                        Transaction);
+                                    DBMasterTable = AGeneralLedgerMasterAccess.LoadByPrimaryKey(NewGlmSequence, Transaction);
                                 }
 
                                 AGeneralLedgerMasterRow DBMasterRow = DBMasterTable[0];
                                 DBMasterRow.YtdActualBase += glmMaster.YtdActualBase;
-                                DBMasterRow.YtdActualForeign += glmMaster.YtdActualForeign;
+
+                                if (!glmMaster.IsYtdActualForeignNull())
+                                {
+                                    DBMasterRow.YtdActualForeign += glmMaster.YtdActualForeign;
+                                }
 
                                 if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
                                 {
@@ -775,7 +777,11 @@ namespace Ict.Petra.Server.MFinance.GL
                                             Transaction);
                                     AGeneralLedgerMasterPeriodRow DBPeriodRow = DBPeriodTable[0];
                                     DBPeriodRow.ActualBase += glmPeriodRow.ActualBase;
-                                    DBPeriodRow.ActualForeign += glmPeriodRow.ActualForeign;
+
+                                    if (!glmPeriodRow.IsActualForeignNull())
+                                    {
+                                        DBPeriodRow.ActualForeign += glmPeriodRow.ActualForeign;
+                                    }
 
                                     AGeneralLedgerMasterPeriodAccess.SubmitChanges(DBPeriodTable, Transaction, out AVerifications);
 
@@ -797,6 +803,9 @@ namespace Ict.Petra.Server.MFinance.GL
                 AVerifications = new TVerificationResultCollection();
 
                 AVerifications.Add(new TVerificationResult("error during posting", e.Message, TResultSeverity.Resv_Critical));
+
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
             }
 
             if (AVerifications.HasCriticalError())
@@ -849,8 +858,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 MainDS.ACostCentre.DefaultView);
 
             SummarizeData(ref MainDS, ref PostingLevel, ref AccountTree, ref CostCentreTree);
-
-            MainDS.ABatch[0].BatchStatus = MFinanceConstants.BATCH_POSTED;
 
             return SubmitChanges(ref MainDS, out AVerifications);
         }

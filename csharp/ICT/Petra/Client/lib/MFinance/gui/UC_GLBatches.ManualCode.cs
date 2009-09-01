@@ -24,6 +24,7 @@
  *
  ************************************************************************/
 using System;
+using System.Windows.Forms;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Verification;
@@ -103,6 +104,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // TODO: display progress of posting
             TVerificationResultCollection Verifications;
 
+            if (FPetraUtilsObject.HasChanges)
+            {
+                // save first, then post
+                if (!((TFrmGLBatch)ParentForm).SaveChanges())
+                {
+                    // saving failed, therefore do not try to post
+                    MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
+                        Catalog.GetString("Please first save the batch, and then post it!"));
+                    return;
+                }
+            }
+
             if (!TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
             {
                 string ErrorMessages = String.Empty;
@@ -115,6 +128,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
+            }
+            else
+            {
+                // TODO: print reports on successfully posted batch
+                MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
+
+                // TODO: refresh the grid, to reflect that the batch has been posted
+                LoadBatches(FLedgerNumber);
             }
         }
     }
