@@ -165,7 +165,7 @@ namespace Ict.Petra.Client.CommonDialogs
 
                 if (CmdOpts.IsFlagSet("AutoLogin") == true)
                 {
-                    txtUserName.Text = CmdOpts.GetOptValue("AutoLogin");
+                    txtUserName.Text = CmdOpts.GetOptValue("AutoLogin").ToUpper();
 
                     if (CmdOpts.IsFlagSet("AutoLoginPasswd"))
                     {

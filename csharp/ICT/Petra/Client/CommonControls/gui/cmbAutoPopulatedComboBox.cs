@@ -600,7 +600,6 @@ namespace Ict.Petra.Client.CommonControls
             cmbAutoPopulated.cmbCombobox.BeginUpdate();
             FDataView = new DataView(FDataCache_ListTable);
             FDataView.RowFilter = FFilter;
-            cmbAutoPopulated.cmbCombobox.DataSource = FDataView;
             cmbAutoPopulated.cmbCombobox.DisplayMember = ADisplayDBName;
             cmbAutoPopulated.cmbCombobox.ValueMember = AValueDBName;
             cmbAutoPopulated.cmbCombobox.DisplayInColumn1 = ADisplayDBName;
@@ -608,6 +607,7 @@ namespace Ict.Petra.Client.CommonControls
             cmbAutoPopulated.cmbCombobox.DisplayInColumn3 = null;
             cmbAutoPopulated.cmbCombobox.DisplayInColumn4 = null;
             cmbAutoPopulated.cmbCombobox.ColumnsToSearch = AColumnsToSearch;
+            cmbAutoPopulated.cmbCombobox.DataSource = FDataView;
             cmbAutoPopulated.cmbCombobox.EndUpdate();
             cmbAutoPopulated.cmbCombobox.Name = this.Name + "_internal_ComboBox";
             cmbAutoPopulated.cmbCombobox.SuppressSelectionColor = true;
