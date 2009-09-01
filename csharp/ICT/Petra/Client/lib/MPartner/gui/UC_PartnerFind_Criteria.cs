@@ -370,7 +370,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                 DataRow SingleDataRow = FFindCriteriaDataTable.Rows[0];
                 SingleDataRow.BeginEdit();
                 SingleDataRow["PersonalName"] = txtPersonalName.Text;
-                SingleDataRow["PartnerClass"] = cmbPartnerClass.SelectedValue;
+
+                // it probably happens too early on Mono, and there are no values yet; 
+                // therefore cmbPartnerClass.Text and cmbPartnerClass.SelectedValue both return System.Data.DataRowView
+                if (cmbPartnerClass.Text != "System.Data.DataRowView")
+                {
+                    SingleDataRow["PartnerClass"] = cmbPartnerClass.Text;
+                }
+                else
+                {
+                    SingleDataRow["PartnerClass"] = "*";
+                }
+                
                 SingleDataRow.EndEdit();
 
                 if (txtPersonalName.Text.Length == 1)
