@@ -58,11 +58,11 @@ RootNode:
         mniReports:
            Label: &Reports
            mniGLReports: {Label=&GL}
-           mniGiftReports: {Label=G&ift
+               mniAccountDetail: {ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MFinance.TFrmAccountDetail}
+           mniGiftReports: {Label=G&ift}
            mniAPReports: {Label=Accounts &Payable}
         mniConsolidations: {Label=&Consolidations}
-        mniFinanceSetup:
-           Label: &Setup
+        mniFinanceSetup: {Label=&Setup}
            mniSetupCurrency: {Label=&Currency, ActionOpenScreen=Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupCurrency}
            mniSetupCorporateExchangeRate: {Label=C&orporate Exchange Rate}
            mniSetupDailyExchangeRate: {Label=&Daily Exchange Rate, ActionOpenScreen=Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupDailyExchangeRate}

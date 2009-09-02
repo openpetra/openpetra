@@ -151,6 +151,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
 
+            CheckForOtherControls(ctrl);
+
             if (TXMLParser.HasAttribute(ctrl.xmlNode, "RadioChecked"))
             {
                 writer.SetControlProperty(ctrl.controlName,
@@ -188,7 +190,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override bool ControlFitsNode(XmlNode curNode)
         {
-            if (this.FPrefix == "cmb")
+            if (SimplePrefixMatch(curNode))
             {
                 return TYml2Xml.HasAttribute(curNode, "AutoComplete");
             }
@@ -223,7 +225,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override bool ControlFitsNode(XmlNode curNode)
         {
-            if (this.FPrefix == "cmb")
+            if (SimplePrefixMatch(curNode))
             {
                 return TYml2Xml.HasAttribute(curNode, "List");
             }
@@ -371,41 +373,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.SetControlProperties(writer, ctrl);
 
-            XmlNode Controls = TXMLParser.GetChild(ctrl.xmlNode, "Controls");
-
-            if (Controls != null)
-            {
-                StringCollection childControls = TYml2Xml.GetElements(Controls);
-
-                // this is a checkbox that enables another control or a group of controls
-                ctrl.SetAttribute("GenerateCheckBoxWithOtherControls", "yes");
-
-                if (childControls.Count == 1)
-                {
-                    TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(childControls[0]);
-                    ChildCtrl.parentName = ctrl.controlName;
-
-                    // use the label of the child control
-                    if (ChildCtrl.HasAttribute("Label"))
-                    {
-                        ctrl.Label = ChildCtrl.Label;
-                    }
-                }
-                else
-                {
-                    foreach (string child in childControls)
-                    {
-                        TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(child);
-
-                        if (ChildCtrl == null)
-                        {
-                            throw new Exception("cannot find control " + child + " which should belong to " + ctrl.controlName);
-                        }
-
-                        ChildCtrl.parentName = ctrl.controlName;
-                    }
-                }
-            }
+            CheckForOtherControls(ctrl);
 
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
             writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 5, 3, 0)");

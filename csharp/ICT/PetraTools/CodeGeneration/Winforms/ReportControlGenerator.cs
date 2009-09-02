@@ -40,24 +40,33 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         public static string GetParameterName(XmlNode curNode)
         {
+            if (TYml2Xml.HasAttribute(curNode, "NoParameter") && (TYml2Xml.GetAttribute(curNode, "NoParameter").ToLower() == "true"))
+            {
+                return null;
+            }
+
             string result = "param_" + curNode.Name;
 
-            if (TXMLParser.HasAttribute(curNode, "ParameterName"))
+            if (TYml2Xml.HasAttribute(curNode, "ParameterName"))
             {
-                result = TXMLParser.GetAttribute(curNode, "ParameterName");
+                result = TYml2Xml.GetAttribute(curNode, "ParameterName");
             }
 
             return result;
         }
     }
-#if TODO
-    public class TcmbAutoCompleteReportGenerator : TcmbAutoCompleteGenerator
+    public class TcmbAutoPopulatedReportGenerator : TcmbAutoPopulatedGenerator
     {
         public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
         {
             string controlName = curNode.Name;
 
             string paramName = ReportControls.GetParameterName(curNode);
+
+            if (paramName == null)
+            {
+                return;
+            }
 
             writer.Template.AddToCodelet("READCONTROLS",
                 "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".GetSelectedString());" +
@@ -74,7 +83,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
     }
-#endif
     public class ComboBoxReportGenerator : ComboBoxGenerator
     {
         public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
@@ -83,10 +91,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             string paramName = ReportControls.GetParameterName(curNode);
 
+            if (paramName == null)
+            {
+                return;
+            }
+
             writer.Template.AddToCodelet("READCONTROLS",
                 "if (this." + controlName + ".SelectedItem != null) " + Environment.NewLine +
                 "{" + Environment.NewLine +
-                "  ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".SelectedItem.ToString()) " + Environment.NewLine +
+                "  ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".SelectedItem.ToString()); " + Environment.NewLine +
                 "}" + Environment.NewLine +
                 "else" + Environment.NewLine +
                 "{" + Environment.NewLine +
@@ -94,7 +107,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 "}" + Environment.NewLine);
             writer.Template.AddToCodelet("SETCONTROLS",
                 controlName + ".SelectedValue = " +
-                "AParameters.Get('" + paramName + "').ToString();" +
+                "AParameters.Get(\"" + paramName + "\").ToString();" +
                 Environment.NewLine);
         }
     }
@@ -106,6 +119,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string controlName = curNode.Name;
 
             string paramName = ReportControls.GetParameterName(curNode);
+
+            if (paramName == null)
+            {
+                return;
+            }
 
             writer.Template.AddToCodelet("READCONTROLS",
                 "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".Checked);" +
@@ -125,6 +143,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             string paramName = ReportControls.GetParameterName(curNode);
 
+            if (paramName == null)
+            {
+                return;
+            }
+
             writer.Template.AddToCodelet("READCONTROLS",
                 "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".Text);" +
                 Environment.NewLine);
@@ -142,6 +165,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string controlName = curNode.Name;
 
             string paramName = ReportControls.GetParameterName(curNode);
+
+            if (paramName == null)
+            {
+                return;
+            }
 
             writer.Template.AddToCodelet("READCONTROLS",
                 "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".Text);" +
@@ -161,6 +189,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             string paramName = ReportControls.GetParameterName(curNode);
 
+            if (paramName == null)
+            {
+                return;
+            }
+
             writer.Template.AddToCodelet("READCONTROLS",
                 "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".GetCheckedStringList());" +
                 Environment.NewLine);
@@ -178,6 +211,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string controlName = curNode.Name;
 
             string paramName = ReportControls.GetParameterName(curNode);
+
+            if (paramName == null)
+            {
+                return;
+            }
 
             writer.Template.AddToCodelet("READCONTROLS",
                 "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".Value);" +
@@ -199,6 +237,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
         {
             string paramName = ReportControls.GetParameterName(curNode);
+
+            if (paramName == null)
+            {
+                return;
+            }
+
             StringCollection optionalValues =
                 TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "OptionalValues"));
 
@@ -224,6 +268,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
         {
             string paramName = ReportControls.GetParameterName(curNode);
+
+            if (paramName == null)
+            {
+                return;
+            }
+
             StringCollection Controls =
                 TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
 
@@ -234,6 +284,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 string rbtValue = rbtCtrl.Label;
                 rbtValue = StringHelper.UpperCamelCase(rbtValue.Replace("'", "").Replace(" ", "_"), false, false);
                 string rbtName = "rbt" + curNode.Name.Substring(3);
+
+                if (curNode.Name.StartsWith("tableLayoutPanel"))
+                {
+                    // the table layouts of sub controls for each radio button need to be skipped
+                    continue;
+                }
+
                 writer.Template.AddToCodelet("READCONTROLS",
                     "if (" + rbtName + ".Checked) " + Environment.NewLine +
                     "{" + Environment.NewLine +

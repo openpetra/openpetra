@@ -45,6 +45,12 @@
     <Reference Include="Ict.Common">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Common.Controls">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.Data">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
     </Reference>
@@ -54,15 +60,32 @@
     <Reference Include="Ict.Petra.Shared.MFinance">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MReporting">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MReporting.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.UserInfo">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.UserInfo.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Posix">
+      <HintPath>..\..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
+    </Reference>
+    <Reference Include="SourceGrid">
+      <HintPath>..\..\..\..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="SourceGrid.Extensions">
+      <HintPath>..\..\..\..\..\..\ThirdParty\DevAge\SourceGrid.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="FinanceControls.cs" />
     <Compile Include="LedgerSelection.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +96,10 @@
     <ProjectReference Include="..\..\..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
       <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
       <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\CommonControls\gui\Ict.Petra.Client.CommonControls.Gui.csproj">
+      <Project>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</Project>
+      <Name>Ict.Petra.Client.CommonControls.Gui</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

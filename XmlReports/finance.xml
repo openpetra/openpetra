@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "reports.dtd">
+<reports>
+	<report id="Finance Common">
+		<description>
+			Calculations are provided, that can be used on several finance reports
+		</description>
+		<reportparameters>
+		</reportparameters>
+		
+		<reportheader/>
+		<pageheader>
+		</pageheader>
+
+		<calculations>
+			<calculation id="Select All Costcentres"
+					returns="line_a_cost_centre_code_c, cost_centre_name"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					SELECT a_cost_centre_code_c AS line_a_cost_centre_code_c,
+					 	a_cost_centre_name_c AS cost_centre_name FROM
+					PUB_a_cost_centre WHERE a_ledger_number_i = {{param_ledger_number_i}}
+					</value></queryDetail>
+				</query>
+			</calculation>
+			<calculation id="Select All Active Costcentres"
+					returns="line_a_cost_centre_code_c, cost_centre_name"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					SELECT a_cost_centre_code_c AS line_a_cost_centre_code_c,
+					 	a_cost_centre_name_c AS cost_centre_name FROM
+					PUB_a_cost_centre 
+					WHERE a_ledger_number_i = {{param_ledger_number_i}}
+					AND a_cost_centre_active_flag_l = 1
+					</value></queryDetail>
+				</query>
+			</calculation>
+			<calculation id="Select Costcentres"
+					returns="line_a_cost_centre_code_c, cost_centre_name"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					SELECT a_cost_centre_code_c AS line_a_cost_centre_code_c,
+						a_cost_centre_name_c AS cost_centre_name FROM
+					PUB_a_cost_centre WHERE a_ledger_number_i = {{param_ledger_number_i}} AND (
+					</value><value function = "csv" text="a_cost_centre_code_c" variable="param_cost_centre_codes"/>
+					<value text=")"/></queryDetail>
+				</query>
+			</calculation>
+		
+
+		</calculations>
+
+		<levels>		
+		
+			<!-- required: the main report level -->
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="todo">
+					</lowerLevelReport>
+				</detail>
+			</level> <!-- main -->
+
+		</levels>
+	</report><!-- Finance Common -->
+	
+</reports>

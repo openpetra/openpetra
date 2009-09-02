@@ -488,6 +488,7 @@
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/app/PetraClient/MainWindow.yaml ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MPartner/gui ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MPartner ${generateWinformsParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MFinance ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MFinance/gui ${generateWinformsParameters}"/>
     </target>
 

@@ -436,9 +436,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
  *              }
  *          }
  */
-            else if (ctrl.HasAttribute("GenerateCheckBoxWithOtherControls"))
+            else if (ctrl.HasAttribute("GenerateWithOtherControls"))
             {
-                // add the checkbox first
+                // add the checkbox/radiobutton first
                 if (FOrientation == eOrientation.Vertical)
                 {
                     AddControl(ctrl, 0, FCurrentRow);

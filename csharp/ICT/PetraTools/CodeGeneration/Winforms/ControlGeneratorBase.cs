@@ -413,6 +413,49 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// this is useful for radiobuttons or checkboxes which have other controls that depend on them
+        /// </summary>
+        /// <param name="ctrl"></param>
+        protected void CheckForOtherControls(TControlDef ctrl)
+        {
+            XmlNode Controls = TXMLParser.GetChild(ctrl.xmlNode, "Controls");
+
+            if (Controls != null)
+            {
+                StringCollection childControls = TYml2Xml.GetElements(Controls);
+
+                // this is a checkbox that enables another control or a group of controls
+                ctrl.SetAttribute("GenerateWithOtherControls", "yes");
+
+                if (childControls.Count == 1)
+                {
+                    TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(childControls[0]);
+                    ChildCtrl.parentName = ctrl.controlName;
+
+                    // use the label of the child control
+                    if (ChildCtrl.HasAttribute("Label"))
+                    {
+                        ctrl.Label = ChildCtrl.Label;
+                    }
+                }
+                else
+                {
+                    foreach (string child in childControls)
+                    {
+                        TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(child);
+
+                        if (ChildCtrl == null)
+                        {
+                            throw new Exception("cannot find control " + child + " which should belong to " + ctrl.controlName);
+                        }
+
+                        ChildCtrl.parentName = ctrl.controlName;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// fetch the partner short name from the server;
         /// this control is readonly, therefore we don't need statusbar help
         /// </summary>

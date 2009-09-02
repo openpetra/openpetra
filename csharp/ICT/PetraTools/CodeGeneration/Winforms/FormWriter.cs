@@ -75,11 +75,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 //			AvailableControlGenerators.Add(new StatusBarTextGenerator());
                 AvailableControlGenerators.Add(new ToolBarGenerator());
                 AvailableControlGenerators.Add(new GroupBoxGenerator());
+                AvailableControlGenerators.Add(new ButtonGenerator());
                 AvailableControlGenerators.Add(new RangeGenerator());
                 AvailableControlGenerators.Add(new PanelGenerator());
                 AvailableControlGenerators.Add(new CheckBoxReportGenerator());
+                AvailableControlGenerators.Add(new TClbVersatileReportGenerator());
                 AvailableControlGenerators.Add(new DateTimePickerReportGenerator());
                 AvailableControlGenerators.Add(new TextBoxReportGenerator());
+                AvailableControlGenerators.Add(new ComboBoxReportGenerator());
+                AvailableControlGenerators.Add(new TcmbAutoPopulatedReportGenerator());
+                AvailableControlGenerators.Add(new RadioGroupComplexReportGenerator());
+                AvailableControlGenerators.Add(new RadioGroupSimpleReportGenerator());
+                AvailableControlGenerators.Add(new RadioButtonReportGenerator());
             }
             else
             {
@@ -731,6 +738,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))
             {
                 FTemplate.AddToCodelet("SHOWDETAILS", "BeforeShowDetailsManual(FMainDS.{#DETAILTABLE}[ACurrentDetailIndex]);" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("void ReadControlsManual"))
+            {
+                FTemplate.AddToCodelet("READCONTROLS", "ReadControlsManual(ACalc);" + Environment.NewLine);
             }
 
             FTemplate.AddToCodelet("INITACTIONSTATE", "FPetraUtilsObject.InitActionState();" + Environment.NewLine);

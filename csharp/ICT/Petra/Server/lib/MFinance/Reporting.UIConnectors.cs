@@ -271,7 +271,7 @@ namespace Ict.Petra.Server.MFinance.Reporting
             resultRow[1] = currentYearEnd.ToString("yyyy");
             tab.Rows.InsertAt(resultRow, counter);
             counter = counter + 1;
-            ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
+            ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction();
             try
             {
                 // add the previous years, which are retrieved by reading from the old batches

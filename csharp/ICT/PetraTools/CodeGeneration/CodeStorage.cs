@@ -105,13 +105,30 @@ namespace Ict.Tools.CodeGeneration
         /// <returns></returns>
         public bool ImplementationContains(string ANamespaceAndClassname, string ASearchText)
         {
-            string pathAndName = System.IO.Path.GetDirectoryName(this.FFilename) +
-                                 System.IO.Path.DirectorySeparatorChar +
-                                 ANamespaceAndClassname.Substring(ANamespaceAndClassname.LastIndexOf(".") + 1 + 4);
+            string pathAndName = System.IO.Path.GetDirectoryName(this.FFilename).Replace("\\", "/");
 
-            if (System.IO.File.Exists(pathAndName + ".cs"))
+            // cut off after /Client/lib
+            pathAndName = pathAndName.Substring(0, pathAndName.IndexOf("Client/lib") + "Client/lib".Length);
+
+            // use only last part of namespace after Ict.Petra.Client
+            ANamespaceAndClassname = ANamespaceAndClassname.Substring("Ict.Petra.Client".Length);
+            pathAndName += ANamespaceAndClassname.Substring(0, ANamespaceAndClassname.LastIndexOf(".")).Replace(".", "/");
+
+            // get the file name without TFrm prefix
+            string filename = "/" + ANamespaceAndClassname.Substring(ANamespaceAndClassname.LastIndexOf(".") + 1 + 4);
+            string alternativePathName = pathAndName;
+
+            if (!System.IO.File.Exists(pathAndName + filename + ".cs"))
             {
-                System.IO.StreamReader r = new System.IO.StreamReader(pathAndName + ".cs");
+                // try to use path name without the last part of the namespace
+                // eg Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupCurrency is in MFinance/Gui/SetupCurrency.cs
+
+                pathAndName = pathAndName.Substring(0, pathAndName.LastIndexOf("/"));
+            }
+
+            if (System.IO.File.Exists(pathAndName + filename + ".cs"))
+            {
+                System.IO.StreamReader r = new System.IO.StreamReader(pathAndName + filename + ".cs");
                 string temp = r.ReadToEnd();
                 r.Close();
 
@@ -122,12 +139,14 @@ namespace Ict.Tools.CodeGeneration
             }
             else
             {
-                Console.WriteLine("Warning naming conventions: cannot find file " + pathAndName + ".cs");
+                Console.WriteLine("Warning naming conventions: cannot find file " +
+                    pathAndName + filename + ".cs or " +
+                    alternativePathName + filename + ".cs");
             }
 
-            if (System.IO.File.Exists(pathAndName + ".ManualCode.cs"))
+            if (System.IO.File.Exists(pathAndName + filename + ".ManualCode.cs"))
             {
-                System.IO.StreamReader r = new System.IO.StreamReader(pathAndName + ".ManualCode.cs");
+                System.IO.StreamReader r = new System.IO.StreamReader(pathAndName + filename + ".ManualCode.cs");
                 string temp = r.ReadToEnd();
                 r.Close();
 

@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.lblDetailTransactionDate.Text = Catalog.GetString("Transaction Date:");
       this.lblDetailKeyMinistryKey.Text = Catalog.GetString("Key Ministry:");
       this.lblTransactionCurrency.Text = Catalog.GetString("TODOTransactionCurrency:");
-      this.lblBaseCurrency.Text = Catalog.GetString("TODOBaseCurrency:");
+      this.lblBaseCurrency.Text = Catalog.GetString("TODOBase Currency:");
       this.lblDebitAmount.Text = Catalog.GetString("Dr Amount:");
       this.lblDebitAmountBase.Text = Catalog.GetString("Dr Amount:");
       this.lblCreditAmount.Text = Catalog.GetString("Cr Amount:");

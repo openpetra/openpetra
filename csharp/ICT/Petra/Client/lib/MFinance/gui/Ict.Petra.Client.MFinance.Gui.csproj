@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{B8226A6F-E8BE-41B3-8509-0FD128B16574}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -134,6 +134,18 @@
       <Project>{2B06F76C-A8FE-4F0A-A312-B53055F9E77A}</Project>
       <Name>Ict.Petra.Client.MPartner.Gui</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\MReporting\gui\Ict.Petra.Client.MReporting.Gui.csproj">
+      <Project>{4DCB81E4-7B19-43D5-BEFC-351706003550}</Project>
+      <Name>Ict.Petra.Client.MReporting.Gui</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MReporting\gui\MFinance\Ict.Petra.Client.MReporting.Gui.MFinance.csproj">
+      <Project>{5669E7C8-72A2-47D5-BEBE-C4DCD8099F59}</Project>
+      <Name>Ict.Petra.Client.MReporting.Gui.MFinance</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\logic\Ict.Petra.Client.MFinance.Logic.csproj">
+      <Project>{45767519-3EC2-4143-B0CC-252033363D35}</Project>
+      <Name>Ict.Petra.Client.MFinance.Logic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\logic\Ict.Petra.Client.MFinance.Logic.csproj">
       <Project>{45767519-3EC2-4143-B0CC-252033363D35}</Project>
       <Name>Ict.Petra.Client.MFinance.Logic</Name>
@@ -171,7 +183,6 @@
     <Compile Include="BankStatementImport.Designer.cs">
       <DependentUpon>BankStatementImport.cs</DependentUpon>
     </Compile>
-    <Compile Include="FinanceComboboxes.cs" />
     <Compile Include="FinanceMain.cs" />
     <Compile Include="FinanceMain.Designer.cs">
       <DependentUpon>FinanceMain.cs</DependentUpon>

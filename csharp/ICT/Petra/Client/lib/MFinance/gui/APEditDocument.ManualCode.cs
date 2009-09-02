@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.AP.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
@@ -91,8 +92,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
 
-            TFinanceComboboxes.InitialiseAccountList(ref cmbDetailAccountCode, ARow.LedgerNumber, true, ActiveOnly);
-            TFinanceComboboxes.InitialiseCostCentreList(ref cmbDetailCostCentreCode, ARow.LedgerNumber, true, ActiveOnly, false);
+            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, ARow.LedgerNumber, true, false, ActiveOnly);
+            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
         }
     }
 }

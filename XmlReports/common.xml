@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "reports.dtd">
+<reports>
+
+	<report id="Common Calculations">
+		<description>
+			some calculations that are needed by several reports
+		</description>
+
+		<reportparameters/>
+		<reportheader/>
+		<pageheader/>
+		<calculations>
+			<!-- the previous available year end dates; or information from a_last_year_batch -->
+			<calculation id="Select Available Years"
+					returns="availYear"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+						SELECT DISTINCT a_current_financial_year_i AS availYear FROM PUB_a_ledger
+						WHERE a_ledger_number_i = {{param_ledger_number_i}}
+						UNION SELECT DISTINCT a_batch_year_i AS availYear
+						FROM PUB_a_previous_year_batch 
+						WHERE a_ledger_number_i = {{param_ledger_number_i}}
+						ORDER BY 1 DESC
+        				</value>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Select DetailAccountChildren"
+					returns="line_a_account_code_c, line_a_account_alias_c, account_code_short_desc, debit_credit_indicator"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value function="getAllAccountDescendants({{param_ledger_number_i}}, {line_a_account_code_c}, {{param_account_hierarchy_c}})"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Select AccountChildren"
+					returns="line_a_account_alias_c, line_a_account_code_c, account_code_short_desc, debit_credit_indicator"
+					returnsFormat="row">
+				<query>
+					<queryDetail>
+						<switch> 
+							<case condition="eq({param_account_hierarchy_c}, STANDARD)">
+								<!-- a simple query for the STANDARD account hierarchy, no need for Aliases -->
+								<value> 
+					SELECT acc.a_account_code_c AS line_a_account_alias_c, 
+						acc.a_account_code_c AS line_a_account_code_c, 
+						acc.a_account_code_short_desc_c AS account_code_short_desc,
+						acc.a_debit_credit_indicator_l AS debit_credit_indicator,
+						ahd.a_report_order_i
+					FROM PUB_a_account_hierarchy_detail AS ahd, PUB_a_account AS acc
+					WHERE ahd.a_ledger_number_i = acc.a_ledger_number_i
+					  AND ahd.a_reporting_account_code_c = acc.a_account_code_c
+					  AND acc.a_ledger_number_i = {{param_ledger_number_i}} 
+					  AND ahd.a_account_code_to_report_to_c = {param_parentaccountcode}
+					  AND ahd.a_account_hierarchy_code_c = "STANDARD"
+          			 			</value>
+          			 		</case>
+          			 		<default>
+								<value>
+					SELECT acc.a_account_code_c AS line_a_account_alias_c,
+						acc.a_account_code_c AS line_a_account_code_c, 
+						acc.a_account_code_short_desc_c AS account_code_short_desc,
+						acc.a_debit_credit_indicator_l AS debit_credit_indicator,
+						ahd.a_report_order_i
+					FROM PUB_a_account_hierarchy_detail AS ahd, PUB_a_account as ACC
+					WHERE ahd.a_ledger_number_i = acc.a_ledger_number_i
+					  AND ahd.a_reporting_account_code_c = acc.a_account_code_c
+					  AND acc.a_ledger_number_i = {{param_ledger_number_i}} 
+					  AND ahd.a_account_code_to_report_to_c = {param_parentaccountcode}
+					  AND ahd.a_account_hierarchy_code_c = {param_account_hierarchy_c}
+	 			      AND NOT EXISTS(
+					    	SELECT prop.a_property_value_c FROM PUB_a_account_property AS prop 
+					    	WHERE prop.a_ledger_number_i = acc.a_ledger_number_i
+					    	AND prop.a_property_code_c = {param_account_hierarchy_c}
+					    	AND prop.a_account_code_c = acc.a_account_code_c)
+					UNION
+					SELECT prop.a_property_value_c AS line_a_account_alias_c,
+						acc.a_account_code_c AS line_a_account_code_c, 
+						acc.a_account_code_short_desc_c AS account_code_short_desc,
+						acc.a_debit_credit_indicator_l AS debit_credit_indicator,
+						ahd.a_report_order_i
+					FROM (PUB_a_account_hierarchy_detail AS ahd INNER JOIN PUB_a_account AS acc 
+						ON ahd.a_ledger_number_i = acc.a_ledger_number_i 
+					    AND ahd.a_reporting_account_code_c = acc.a_account_code_c)
+						INNER JOIN PUB_a_account_property AS prop 
+						ON prop.a_ledger_number_i = acc.a_ledger_number_i 
+						AND prop.a_account_code_c = acc.a_account_code_c 
+					WHERE ahd.a_ledger_number_i = {{param_ledger_number_i}} 
+						AND prop.a_property_code_c = {param_account_hierarchy_c} 
+						AND ahd.a_account_hierarchy_code_c = {param_account_hierarchy_c}
+						AND ahd.a_account_code_to_report_to_c = {param_parentaccountcode}
+								</value>
+          			 		</default>
+          			 	</switch>
+        			</queryDetail>
+					<queryDetail><value>ORDER BY 5</value></queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Select AllAccountDescendants"
+					returns="line_a_account_alias_c, line_a_account_code_c, account_code_short_desc, debit_credit_indicator"
+					returnsFormat="csvList">
+			 	<!-- This sql query returns all the accounts, that are below the given account, 
+			 		 no matter if they are direct descendants or grand children or even deeper.
+			 		 This calculation is only used by function getAllAccountDescendants.
+			 		 Example usage see in "Select DetailAccountChildren".
+			 	-->
+				<query>
+					<queryDetail>
+						<switch> 
+							<case condition="eq({param_account_hierarchy_c}, STANDARD)">
+								<!-- a simple query for the STANDARD account hierarchy, no need for Aliases -->
+								<value> 
+					SELECT acc.a_account_code_c AS line_a_account_alias_c,
+						acc.a_account_code_c AS line_a_account_code_c, 
+						acc.a_account_code_short_desc_c AS account_code_short_desc, 
+						acc.a_debit_credit_indicator_l AS debit_credit_indicator, 
+						ahd.a_report_order_i, 
+          				acc.a_posting_status_l
+          			FROM 
+					PUB_a_account_hierarchy_detail AS ahd INNER JOIN PUB_a_account AS acc
+					ON (ahd.a_ledger_number_i = acc.a_ledger_number_i
+					  AND ahd.a_reporting_account_code_c = acc.a_account_code_c)
+					WHERE acc.a_ledger_number_i = {{param_ledger_number_i}}
+					  AND ahd.a_account_code_to_report_to_c = {param_parentaccountcode}
+					  AND ahd.a_account_hierarchy_code_c = {param_account_hierarchy_c}
+          			  ORDER BY 5
+          			 			</value>
+          			 		</case>
+          			 		<default>
+								<value>
+					SELECT acc.a_account_code_c AS line_a_account_alias_c,
+						acc.a_account_code_c AS line_a_account_code_c, 
+						acc.a_account_code_short_desc_c AS account_code_short_desc,
+						acc.a_debit_credit_indicator_l AS debit_credit_indicator,
+						ahd.a_report_order_i,
+						acc.a_posting_status_l
+					FROM PUB_a_account_hierarchy_detail AS ahd INNER JOIN PUB_a_account AS acc
+						ON (ahd.a_ledger_number_i = acc.a_ledger_number_i 
+						    AND ahd.a_reporting_account_code_c = acc.a_account_code_c)
+					WHERE acc.a_ledger_number_i = {{param_ledger_number_i}}
+					  AND ahd.a_account_code_to_report_to_c = {param_parentaccountcode}
+					  AND ahd.a_account_hierarchy_code_c = {param_account_hierarchy_c}
+          			  AND NOT EXISTS(
+					    	SELECT prop.a_property_value_c FROM PUB_a_account_property AS prop 
+					    	WHERE prop.a_ledger_number_i = acc.a_ledger_number_i 
+					    	AND prop.a_property_code_c = {param_account_hierarchy_c}
+					    	AND prop.a_account_code_c = acc.a_account_code_c) 
+					UNION
+					SELECT prop.a_property_value_c AS line_a_account_alias_c,
+						acc.a_account_code_c AS line_a_account_code_c, 
+						acc.a_account_code_short_desc_c AS account_code_short_desc,
+						acc.a_debit_credit_indicator_l AS debit_credit_indicator,
+						ahd.a_report_order_i,
+						acc.a_posting_status_l
+					FROM (PUB_a_account_hierarchy_detail AS ahd INNER JOIN PUB_a_account AS acc
+						ON ahd.a_ledger_number_i = acc.a_ledger_number_i
+					    AND ahd.a_reporting_account_code_c = acc.a_account_code_c) 
+						INNER JOIN PUB_a_account_property AS prop
+						ON prop.a_ledger_number_i = acc.a_ledger_number_i
+						AND prop.a_account_code_c = acc.a_account_code_c
+					WHERE ahd.a_ledger_number_i = {{param_ledger_number_i}}
+						AND prop.a_property_code_c = {param_account_hierarchy_c}
+						AND ahd.a_account_hierarchy_code_c = {param_account_hierarchy_c}
+						AND ahd.a_account_code_to_report_to_c = {param_parentaccountcode}
+					ORDER BY 5
+								</value>
+          			 		</default>
+          			 	</switch>
+          			 </queryDetail>
+          		</query>
+          	</calculation>
+								
+			<calculation id="Select RootCostCentre"
+					returns="line_a_cost_centre_code_c"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					SELECT a_cost_centre_code_c AS line_a_cost_centre_code_c FROM
+            		PUB_a_cost_centre WHERE a_ledger_number_i = {{param_ledger_number_i}} AND 
+            		(a_cost_centre_to_report_to_c IS NULL OR a_cost_centre_to_report_to_c = "")
+ 					</value></queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="GetGLMSequences"
+					returns="glm_sequence_i"
+					returnsFormat="internal">
+				<query>
+					<queryDetail><value function="getGlmSequences({{param_ledger_number_i}}, {line_a_cost_centre_code_c}, {line_a_account_code_c}, {{param_year_i}})"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Variance" 
+					returnsFormat="currency" 
+					returns="functionresult">
+				<caption>
+					<value text="Variance\n"/>
+					<value function="getCaption({{FirstColumn}})"/>
+					<value text="\nto "/>
+					<value function="getCaption({{SecondColumn}})"/>
+				</caption>
+				<shortcaption>
+					<value text="Variance\n"/>
+					<value function="getShortCaption({{FirstColumn}})"/>
+					<value text="\nto "/>
+					<value function="getShortCaption({{SecondColumn}})"/>
+				</shortcaption>
+				<query>
+					<queryDetail><value function="sub(column({{FirstColumn}}),column({{SecondColumn}}))"/>
+					</queryDetail>                             
+				</query>
+			</calculation>
+			<calculation id="Variance %" 
+					returnsFormat="percentage" 
+					returns="functionresult">
+				<caption>
+					<value text="Variance %\n"/>
+					<value function="getCaption({{FirstColumn}})"/>
+					<value text="\nto "/>
+					<value function="getCaption({{SecondColumn}})"/>
+				</caption>
+				<shortcaption>
+					<value text="Variance %\n"/>
+					<value function="getShortCaption({{FirstColumn}})"/>
+					<value text="\nto "/>
+					<value function="getShortCaption({{SecondColumn}})"/>
+				</shortcaption>
+				<query>
+					<queryDetail><value function="round(mul(div(sub(column({{FirstColumn}}),column({{SecondColumn}})),column({{SecondColumn}})),100))"/>
+					</queryDetail>                             
+				</query>
+			</calculation>
+			<calculation id="Account %" 
+					returnsFormat="percentage" 
+					returns="functionresult">
+				<caption><value text="Account %\n"/>
+					<value function="getCaption({{FirstColumn}})"/>
+				</caption>
+				<query>
+					<queryDetail><value function="round(mul(div(column({{FirstColumn}}),FatherColumn({{FirstColumn}})), 100))"/>
+					</queryDetail>                             
+				</query>
+			</calculation>
+			<calculation id="Account % INC/EXP" 
+					returnsFormat="percentage" 
+					returns="functionresult">
+				<caption><value text="INC/EXP %\n"/>
+					<value function="getCaption({{FirstColumn}})"/>
+				</caption>
+				<query>
+					<queryDetail><value function="round(mul(div(column({{FirstColumn}}),SecondLevelColumn({{FirstColumn}})), 100))"/>
+					</queryDetail>                             
+				</query>
+			</calculation>
+			
+			<calculation id="Select Banking Details of partner"
+					returns="AccountName, BankCode, BankAccount"
+					returnsFormat="row">
+					
+					<!-- 
+					calculation: Select Banking Details of partner (parameters: PartnerKey, param_bankdetailusage)
+						returns p_banking_details.p_account_name_c, p_banking_details.p_bank_account_number_c and p_bank.p_branch_code_c
+					using p_partner_banking_details, and p_banking_details_usage
+					if no usage available, and only one bank account, use the default bank account
+					Problem: if the bank account name is empty, use the shortname of the partner
+					-->
+
+				<template>
+					<queryDetail><value>
+					SELECT {{TempAccountName}} AS AccountName,
+						   bank.p_branch_code_c AS BankCode,
+						   bdetails.p_bank_account_number_c AS BankAccount
+					FROM PUB_p_partner_banking_details AS pbdetails, 
+						  PUB_p_banking_details AS bdetails,
+						  PUB_p_bank as bank,
+						  PUB_p_partner as partner
+					WHERE pbdetails.p_partner_key_n = {{PartnerKey}}
+					  AND pbdetails.p_banking_details_key_i = bdetails.p_banking_details_key_i
+					  AND partner.p_partner_key_n = pbdetails.p_partner_key_n
+					  AND (NOT EXISTS (SELECT usage.p_type_c FROM PUB_p_banking_details_usage AS usage 
+									WHERE pbdetails.p_partner_key_n = usage.p_partner_key_n) 
+						   OR EXISTS (SELECT usage.p_type_c FROM PUB_p_banking_details_usage AS usage 
+					              WHERE pbdetails.p_banking_details_key_i = usage.p_banking_details_key_i
+						                     AND pbdetails.p_partner_key_n = usage.p_partner_key_n
+						                     AND usage.p_type_c = {param_bankdetailusage}))
+					  AND bank.p_partner_key_n = bdetails.p_bank_key_n
+					  AND {{TempAccountNameCondition}}
+					  </value>
+					</queryDetail>  
+				</template>
+				<query>
+					<queryDetail>
+						<parameter name="TempAccountName" value="bdetails.p_account_name_c"/>
+						<parameter name="TempAccountNameCondition" value="(bdetails.p_account_name_c IS NOT NULL AND LENGTH(bdetails.p_account_name_c) &lt;&gt; 0 )"/> 
+					</queryDetail>
+					<queryDetail>
+						<value>UNION </value>
+						<parameter name="TempAccountName" value="PUB_p_partner.p_partner_short_name_c"/>
+						<parameter name="TempAccountNameCondition" value="(bdetails.p_account_name_c IS NULL OR LENGTH(bdetails.p_account_name_c) = 0)"/> 
+					</queryDetail>
+				</query>
+			</calculation>
+
+		</calculations>
+		<levels/>
+	</report><!-- Common Calculations -->
+</reports>

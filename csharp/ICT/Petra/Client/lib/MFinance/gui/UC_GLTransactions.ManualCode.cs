@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
@@ -70,8 +71,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
 
-            TFinanceComboboxes.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, ActiveOnly);
-            TFinanceComboboxes.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, ActiveOnly, false);
+            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly);
+            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
 
             ShowData();
         }

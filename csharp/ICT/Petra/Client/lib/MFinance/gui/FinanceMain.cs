@@ -98,8 +98,9 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.mniICHReports.Text = Catalog.GetString("ICH &reports...");
       this.mniClearingHouse.Text = Catalog.GetString("&Clearing House");
       this.mniLedger.Text = Catalog.GetString("&Ledger");
+      this.mniAccountDetail.Text = Catalog.GetString("AccountDetail");
       this.mniGLReports.Text = Catalog.GetString("&GL");
-      this.mniGiftReports.Text = Catalog.GetString("G&if");
+      this.mniGiftReports.Text = Catalog.GetString("G&ift");
       this.mniAPReports.Text = Catalog.GetString("Accounts &Payable");
       this.mniReports.Text = Catalog.GetString("&Reports");
       this.mniConsolidations.Text = Catalog.GetString("&Consolidations");
@@ -252,7 +253,6 @@ namespace Ict.Petra.Client.MFinance.Gui
         mniICHCalculation.Enabled = false;
         mniICHImportFile.Enabled = false;
         mniICHReports.Enabled = false;
-        mniGLReports.Enabled = false;
         mniGiftReports.Enabled = false;
         mniAPReports.Enabled = false;
         mniConsolidations.Enabled = false;
@@ -286,6 +286,14 @@ namespace Ict.Petra.Client.MFinance.Gui
     protected void OpenScreenAccountsPayable(object sender, EventArgs e)
     {
         Ict.Petra.Client.MFinance.Gui.AccountsPayable.TFrmAPMain frm = new Ict.Petra.Client.MFinance.Gui.AccountsPayable.TFrmAPMain(this.Handle);
+        frm.LedgerNumber = FLedgerNumber;
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenAccountDetail(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MFinance.TFrmAccountDetail frm = new Ict.Petra.Client.MReporting.Gui.MFinance.TFrmAccountDetail(this.Handle);
         frm.LedgerNumber = FLedgerNumber;
         frm.Show();
     }

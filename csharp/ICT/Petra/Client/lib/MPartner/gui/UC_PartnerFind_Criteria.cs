@@ -371,7 +371,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 SingleDataRow.BeginEdit();
                 SingleDataRow["PersonalName"] = txtPersonalName.Text;
 
-                // it probably happens too early on Mono, and there are no values yet; 
+                // it probably happens too early on Mono, and there are no values yet;
                 // therefore cmbPartnerClass.Text and cmbPartnerClass.SelectedValue both return System.Data.DataRowView
                 if (cmbPartnerClass.Text != "System.Data.DataRowView")
                 {
@@ -381,7 +381,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     SingleDataRow["PartnerClass"] = "*";
                 }
-                
+
                 SingleDataRow.EndEdit();
 
                 if (txtPersonalName.Text.Length == 1)

@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "reports.dtd">
+<reports>
+	<report id="Balance Sheet">
+		<description>
+			This is the balance sheet. It shows the year-to-date data for given costcentres.
+			The selected accounting hierarchy is used, starting with the "BAL SHT" account.
+			The available columns are: Actual End of Previous Year, Actual Previous Year, Actual Selected Year.
+			There are 2 levels of detail, standard and summary.			
+			There is also a "costcentre breakdown" option which shows the data of each account broken down by cost centres.
+			For "costcentre breakdown", the ledger must have the "branch processing" parameter activated.			
+
+			requires common.xml and finance.xml
+		</description>
+		<reportparameters>
+			<reportparameter name="param_ledger_number_i"/>
+			<reportparameter name="param_year_i"/>
+			<reportparameter name="param_account_hierarchy_c"/>
+			<reportparameter name="param_start_period_i"/>
+			<reportparameter name="param_end_period_i"/>
+			<reportparameter name="param_costcentreoptions">
+				<option name ="SelectedCostCentres" 
+					condition="a_ledger.a_branch_processing_l = true"/>
+				<option name="AllCostCentres" 
+					condition="a_ledger.a_branch_processing_l = true"/>
+				<option name="AccountLevel"/>
+			</reportparameter>
+			<reportparameter name="param_cost_centre_codes" 
+				condition="param_costcentreoptions = SelectedCostCentres or AllCostCentres"/>
+			<reportparameter name="param_cost_centre_breakdown" 
+					comment="group not by costcentre but by account"
+					condition="param_costcentreoptions = SelectedCostCentres" />
+			<reportparameter name="param_depth">
+				<option name="detail"/>
+				<option name="standard"/>
+				<option name="summary"/>
+			</reportparameter>
+			<reportparameter name="param_currency">
+				<option name="depends on columns"/>
+				<option name="base"/>
+				<option name="international"/>
+			</reportparameter>
+		</reportparameters>
+
+		<reportheader/>
+		<pageheader>
+			<field whichfield="title1"><value text ="Balance Sheet" /></field>
+			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
+				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="period1"><value text="As At "/>
+				<value function="getPeriodEndDate({{param_ledger_number_i}}, {{param_end_period_i}})" format="formatteddate"/>
+				<value text="  ("/>
+				<value function="getStatePeriod({{param_ledger_number_i}}, {{param_year_i}}, {{param_end_period_i}})"/>
+				<value text=")"/>
+			</field>
+			<field whichfield="descr2"><value text="Currency: "/>
+				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+			</field>
+			<field whichfield="type"><value function = "getBalanceSheetType({param_depth}, {GLOBAL:param_currency})"/></field>
+			<field whichfield="descr3">
+				<value function="getAccountingHierarchy({param_account_hierarchy_c})"/>
+			</field>
+		</pageheader>
+		
+		<calculations>
+
+			<calculation id="Actual Previous Year" 
+					returnsFormat="currency" returns="amount">
+				<caption><value text="Actual "/>
+					<value function="GetPreviousYearCaption()"/>
+					<value text="\n"/><value function="GetYTDPerColumn()"/>
+					<value text="\n"/><value function="GetLedgerPerColumn()"/>
+					</caption>
+				<query>
+					<queryDetail><value function="GetActual(
+											  {{param_end_period_i}},
+											  sub({{param_year_i}}, 1),
+											  true,
+											  {param_currency})"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+
+			<calculation id="Actual Selected Year" 
+					returnsFormat="currency"
+					returns="amount">
+				<caption><value text="Actual "/>
+					<value function="GetCurrentYearCaption()"/>
+					<value text="\n"/><value function="GetYTDPerColumn()"/>
+					<value text="\n"/><value function="GetLedgerPerColumn()"/>
+					</caption>
+				<query>
+					<queryDetail><value function="GetActual(
+                                              {{param_end_period_i}},
+                                              {{param_year_i}},
+                                              true,
+                                              {param_currency})"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+
+			<calculation id="Actual End of Previous Year" 
+					returnsFormat="currency" returns="amount">
+				<caption><value text="Actual End of "/>
+					<value function="GetPreviousYearCaption()"/>
+					<value text="\n"/><value function="GetLedgerPerColumn()"/>
+					</caption>
+				<query>
+					<queryDetail><value function="getActualEndOfLastYear(
+                                              {{param_end_period_i}},
+                                              {{param_year_i}},
+                                              {param_currency})"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+		</calculations>
+		<levels>
+		<level name="main">
+			<detail>
+				<switch>
+					<case condition="eq({param_cost_centre_breakdown}, true)">
+						<lowerLevelReport level="summaryBreakDown">
+							<parameter name="param_ledger_number_i"/>
+						</lowerLevelReport>
+					</case>
+					<case condition="eq({param_costcentreoptions}, AccountLevel)">
+						<lowerLevelReport level="summaryCostCentre" calculation="Select RootCostCentre">
+							<parameter name="param_ledger_number_i"/>
+							<parameter name = "showCostCentreCode" value="false"/>
+						</lowerLevelReport>
+					</case>
+					<case condition="and(eq({param_costcentreoptions}, SelectedCostCentres),eq({param_cost_centre_summary}, true))">
+						<lowerLevelReport level="summaryCostCentre" calculation="Select Costcentres">
+							<parameter name="param_ledger_number_i"/>
+							<parameter name="param_cost_centre_codes"/>
+							<parameter name = "showCostCentreCode" value="true"/>
+						</lowerLevelReport>
+					</case>
+					<case condition="eq({param_costcentreoptions}, SelectedCostCentres)">
+						<lowerLevelReport level="summaryCostCentre" calculation="Select Costcentres">
+							<parameter name="param_ledger_number_i"/>
+							<parameter name="param_cost_centre_codes"/>
+							<parameter name = "showCostCentreCode" value="true"/>
+						</lowerLevelReport>
+					</case>
+					<case condition="eq({param_costcentreoptions}, AllCostCentres)">
+						<lowerLevelReport level="summaryCostCentre" calculation="Select All Costcentres">
+							<parameter name="param_ledger_number_i"/>
+							<parameter name = "showCostCentreCode" value="true"/>
+						</lowerLevelReport>
+					</case>
+					<case condition="eq({param_costcentreoptions}, AllActiveCostCentres)">
+						<lowerLevelReport level="summaryCostCentre" calculation="Select All Active Costcentres">
+							<parameter name="param_ledger_number_i"/>
+							<parameter name = "showCostCentreCode" value="true"/>
+						</lowerLevelReport>
+					</case>
+				</switch>
+			</detail>
+
+		</level> <!-- main -->
+
+		<level name="summaryBreakDown" identification="line_a_cost_centre_code_c">
+			<header>
+				<field whichfield="header 0" pos="0 cm" width="10cm">
+						<value text="For Cost Centre(s) "/>
+						<value variable="param_cost_centre_codes"/>
+				</field>
+			</header>
+			<detail>
+				<lowerLevelReport level="summaryAccount" calculation ="Select AccountChildren">
+						<parameter name="param_ledger_number_i"/>
+						<parameter name="param_parentaccountcode" value = "BAL SHT"/>
+				</lowerLevelReport>			
+			</detail>
+			<footer>
+				<field whichfield="left 0" pos="0cm" width="5 cm">
+					<value text="TOTAL ASSETS - LIABILITIES"/></field>
+				<field whichfield="columns" pos="indented" line="above_below">
+					<value function="getAssetsMinusLiabs({{lineId}}, {{column}})"/>
+				</field>
+			</footer>
+		</level><!-- SummaryBreakDown -->
+		
+		<level name="summaryCostCentre" identification="line_a_cost_centre_code_c">
+			<header>
+				<if condition="eq({showCostCentreCode}, true)">
+					<field whichfield="header 0" pos="0 cm" width="5 cm">
+						<value text="For Cost Centre "/> 
+						<value variable="line_a_cost_centre_code_c"/></field>
+					<field whichfield="header 1" pos="5 cm" width="5 cm">
+						<value variable="cost_centre_name"/>
+					</field>
+				</if>
+			</header>
+			<detail>
+				<lowerLevelReport level="summaryAccount" calculation ="Select AccountChildren">
+						<parameter name="param_ledger_number_i"/>
+						<parameter name="param_parentaccountcode" value = "BAL SHT"/>
+				</lowerLevelReport>
+			</detail>			
+			<footer>
+				<field whichfield="left 0" pos="0cm" width="5 cm">
+					<value text="TOTAL ASSETS - LIABILITIES"/></field>
+				<field whichfield="columns" pos="indented" line="above_below">
+					<value function="getAssetsMinusLiabs({{lineId}}, {{column}})"/>
+				</field>
+			</footer>
+		</level> <!-- summaryCostCentre -->
+		
+		
+		<level name="summaryAccount" identification="line_a_account_code_c">
+			<header>
+				<field whichfield="header 0" pos="0cm" width="5cm">
+					<value variable="account_code_short_desc"/></field>
+			</header>
+			<detail>
+				<switch>
+					<case condition="eq({line_a_account_code_c},PL)">
+					</case>
+					<case condition="or(eq({param_depth}, detail),eq({param_depth}, standard))">
+						<lowerLevelReport level="subSummaryAccount" calculation="Select AccountChildren">
+							<parameter name="param_ledger_number_i"/>
+							<parameter name="param_parentaccountcode">
+								<value variable="line_a_account_code_c"/>
+							</parameter>
+						</lowerLevelReport>
+					</case>
+					<case condition="eq({param_depth}, summary)">
+						<lowerLevelReport level="detailAccount" calculation="Select AccountChildren">
+							<parameter name="param_ledger_number_i"/>
+							<parameter name="param_parentaccountcode">
+								<value variable="line_a_account_code_c"/>
+							</parameter>
+						</lowerLevelReport>
+					</case>
+				</switch>	
+			</detail>			
+			<footer>
+				<switch>
+					<case condition="eq({param_cost_centre_breakdown}, false)">
+						<field whichfield="left 0" pos="0cm" width="6cm"><value variable="account_code_short_desc"/></field>
+						<field calculation="GetGLMSequences" whichfield="columns" pos="indented" line="above"/>
+					</case>
+					<default>
+						<field whichfield="columns" line="above_below" pos="indented">
+							<value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
+					</default>
+				</switch>
+			</footer>
+		</level> <!-- summaryAccount -->
+
+		<level name="subSummaryAccount" identification="line_a_account_code_c" condition="HasColumns">
+			<header>
+				<field whichfield="header 0" pos="0.25cm" width="6cm"><value variable="account_code_short_desc"/></field>
+			</header>
+			<detail>
+				<switch>
+					<case condition="eq({line_a_account_code_c},PL)">
+					</case>
+					<case condition="eq({param_depth}, detail)">
+						<lowerLevelReport level="detailAccount" calculation="Select DetailAccountChildren">
+							<parameter name="param_ledger_number_i"/>
+							<parameter name="param_parentaccountcode">
+								<value variable="line_a_account_code_c"/>
+							</parameter>
+						</lowerLevelReport>
+					</case>
+					<case condition="eq({param_depth}, standard)">
+						<lowerLevelReport level="detailAccount" calculation="Select AccountChildren">
+							<parameter name="param_ledger_number_i"/>
+							<parameter name="param_parentaccountcode">
+								<value variable="line_a_account_code_c"/>
+							</parameter>
+						</lowerLevelReport>
+					</case>
+				</switch>
+			</detail>			
+			<footer>
+				<switch>
+					<case condition="eq({param_cost_centre_breakdown}, true)">
+						<field whichfield="columns" line="none" pos="indented">
+							<value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
+					</case>
+					<default>
+						<field calculation="GetGLMSequences" whichfield ="columns" pos="indented" format="currency"></field>
+					</default>
+				</switch>
+			</footer>
+		</level> <!-- subSummaryAccount -->
+		
+		<level name="detailAccount" identification="line_a_account_code_c" condition="HasColumns">
+			<header>
+				<if condition="eq({param_cost_centre_breakdown}, true)">
+					<field whichfield="header 0" pos="0.5 cm" width="1.5cm"><value variable="line_a_account_alias_c"/></field>
+					<field whichfield="header 1" pos="2 cm" width="5cm"><value variable="account_code_short_desc"/></field>
+				</if>
+			</header>
+
+			<detail>
+				<switch>
+					<case condition="eq({param_cost_centre_summary}, true)">
+						<lowerLevelReport level="detailCostCentreNoDisplay" calculation="Select Costcentres">
+							<parameter name="param_ledger_number_i"/>
+							<parameter name="param_cost_centre_codes"/>
+						</lowerLevelReport>
+					</case>
+					<case condition="eq({param_cost_centre_breakdown}, true)">
+						<lowerLevelReport level="detailCostCentre" calculation="Select Costcentres">
+							<parameter name="param_ledger_number_i"/>
+							<parameter name="param_cost_centre_codes"/>
+						</lowerLevelReport>
+					</case>
+					<default>
+						<field whichfield="left 0" pos="0.5 cm" width="1cm"><value variable="line_a_account_alias_c"/></field>
+						<field whichfield="left 1" pos="1.5cm" width="5cm"><value variable="account_code_short_desc"/></field>
+						<field calculation="GetGLMSequences" whichfield="columns"/>
+					</default>
+				</switch>
+			</detail>			
+			<footer>
+			    <switch>
+				<case condition="eq({param_cost_centre_summary}, true)">
+					<field whichfield="left 0" pos="0.5 cm" width="1.5cm"><value variable="line_a_account_alias_c"/></field>
+					<field whichfield="left 1" pos="2 cm" width="5cm"><value variable="account_code_short_desc"/></field>
+					<field whichfield="columns">
+						<value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
+				</case>
+				<case condition="eq({param_cost_centre_breakdown}, true)">
+					<field whichfield="columns" line="above">
+						<value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
+				</case>
+				</switch>
+			</footer>
+		</level> <!-- detailAccount -->
+
+		<level name="detailCostCentre" identification="line_a_cost_centre_code_c" condition="HasColumns">
+			<detail>
+				<field whichfield="left 0" pos="0.5 cm" width="1 cm"><value variable="line_a_cost_centre_code_c"/></field>
+				<field whichfield="left 1" pos="1.5 cm" width="5 cm"><value variable="cost_centre_name"/></field>
+				<field calculation="GetGLMSequences" whichfield="columns"></field>
+			</detail>
+		</level><!-- detailCostCentre -->
+
+		<!-- this is used for the summary of cost centres; the values need to be calculated, to build the sum, but should not be displayed -->
+		<level name="detailCostCentreNoDisplay" identification="line_a_account_code_c, line_a_cost_centre_code_c" condition="invisible">
+			<detail>
+				<field whichfield="left 0" pos="0.5 cm" width="1 cm"><value variable="line_a_cost_centre_code_c"/></field>
+				<field whichfield="left 1" pos="1.5 cm" width="5 cm"><value variable="cost_centre_name"/></field>
+				<field calculation="GetGLMSequences" whichfield="columns"></field>
+			</detail>
+		</level><!-- detailCostCentreNoDisplay -->
+
+		</levels>
+	</report><!-- balance sheet -->
+	
+</reports>

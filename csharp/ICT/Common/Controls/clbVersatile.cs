@@ -101,25 +101,22 @@ namespace Ict.Common.Controls
 
         private void Clb_DoubleClickCell(System.Object Sender, SourceGrid.CellContextEventArgs e)
         {
-            Int32 Row;
+            Int32 Row = e.CellContext.Position.Row;
 
-            Row = e.CellContext.Position.Row - 1;
             FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
         }
 
         private void Clb_EnterKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
-            Int32 Row;
+            Int32 Row = e.Row;
 
-            Row = e.Row - 1;
             FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
         }
 
         private void Clb_SpaceKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
-            Int32 Row;
+            Int32 Row = e.Row;
 
-            Row = e.Row - 1;
             FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
         }
 

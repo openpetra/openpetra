@@ -405,7 +405,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblBaseCurrency.Location = new System.Drawing.Point(2,2);
             this.lblBaseCurrency.Name = "lblBaseCurrency";
             this.lblBaseCurrency.AutoSize = true;
-            this.lblBaseCurrency.Text = "TODOBaseCurrency:";
+            this.lblBaseCurrency.Text = "TODOBase Currency:";
             this.lblBaseCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // txtDebitAmount

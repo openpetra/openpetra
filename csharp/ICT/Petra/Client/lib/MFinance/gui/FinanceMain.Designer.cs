@@ -112,6 +112,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.mniICHReports = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReports = new System.Windows.Forms.ToolStripMenuItem();
             this.mniGLReports = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniAccountDetail = new System.Windows.Forms.ToolStripMenuItem();
             this.mniGiftReports = new System.Windows.Forms.ToolStripMenuItem();
             this.mniAPReports = new System.Windows.Forms.ToolStripMenuItem();
             this.mniConsolidations = new System.Windows.Forms.ToolStripMenuItem();
@@ -437,17 +438,26 @@ namespace Ict.Petra.Client.MFinance.Gui
                         mniClearingHouse});
             this.mniLedger.Text = "&Ledger";
             //
+            // mniAccountDetail
+            //
+            this.mniAccountDetail.Name = "mniAccountDetail";
+            this.mniAccountDetail.AutoSize = true;
+            this.mniAccountDetail.Click += new System.EventHandler(this.OpenScreenAccountDetail);
+            this.mniAccountDetail.Text = "AccountDetail";
+            //
             // mniGLReports
             //
             this.mniGLReports.Name = "mniGLReports";
             this.mniGLReports.AutoSize = true;
+            this.mniGLReports.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                           mniAccountDetail});
             this.mniGLReports.Text = "&GL";
             //
             // mniGiftReports
             //
             this.mniGiftReports.Name = "mniGiftReports";
             this.mniGiftReports.AutoSize = true;
-            this.mniGiftReports.Text = "G&if";
+            this.mniGiftReports.Text = "G&ift";
             //
             // mniAPReports
             //
@@ -744,6 +754,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.ToolStripMenuItem mniICHReports;
         private System.Windows.Forms.ToolStripMenuItem mniReports;
         private System.Windows.Forms.ToolStripMenuItem mniGLReports;
+        private System.Windows.Forms.ToolStripMenuItem mniAccountDetail;
         private System.Windows.Forms.ToolStripMenuItem mniGiftReports;
         private System.Windows.Forms.ToolStripMenuItem mniAPReports;
         private System.Windows.Forms.ToolStripMenuItem mniConsolidations;

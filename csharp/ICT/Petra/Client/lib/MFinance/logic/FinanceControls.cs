@@ -1,0 +1,310 @@
+﻿/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       timop
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
+using System;
+using System.Data;
+using Mono.Unix;
+using Ict.Common;
+using Ict.Common.Data;
+using Ict.Common.Controls;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+
+namespace Ict.Petra.Client.MFinance.Logic
+{
+    /// <summary>
+    /// this provides some static functions that initialise
+    /// comboboxes and other controls with static values or cached values for the finance module
+    /// this helps to make similar controls look the same throughout the application
+    /// </summary>
+    public class TFinanceControls
+    {
+        /// <summary>
+        /// returns a filter for cost centre cached table
+        /// </summary>
+        /// <param name="APostingOnly"></param>
+        /// <param name="AExcludePosting"></param>
+        /// <param name="AActiveOnly"></param>
+        /// <param name="ALocalOnly"></param>
+        private static string PrepareCostCentreFilter(bool APostingOnly, bool AExcludePosting, bool AActiveOnly, bool ALocalOnly)
+        {
+            string Filter = "";
+
+            if (APostingOnly)
+            {
+                Filter += ACostCentreTable.GetPostingCostCentreFlagDBName() + " = true";
+            }
+            else if (AExcludePosting)
+            {
+                Filter += ACostCentreTable.GetPostingCostCentreFlagDBName() + " = false";
+            }
+
+            if (AActiveOnly)
+            {
+                if (Filter.Length > 0)
+                {
+                    Filter += " AND ";
+                }
+
+                Filter += ACostCentreTable.GetCostCentreActiveFlagDBName() + " = true";
+            }
+
+            if (ALocalOnly)
+            {
+                if (Filter.Length > 0)
+                {
+                    Filter += " AND ";
+                }
+
+                Filter += ACostCentreTable.GetCostCentreTypeDBName() + " = \"Local\"";
+            }
+
+            return Filter;
+        }
+
+        /// <summary>
+        /// returns a filter for accounts cached table
+        /// </summary>
+        /// <param name="APostingOnly"></param>
+        /// <param name="AExcludePosting"></param>
+        /// <param name="AActiveOnly"></param>
+        private static string PrepareAccountFilter(bool APostingOnly, bool AExcludePosting, bool AActiveOnly)
+        {
+            string Filter = "";
+
+            if (APostingOnly)
+            {
+                Filter += AAccountTable.GetPostingStatusDBName() + " = true";
+            }
+            else if (AExcludePosting)
+            {
+                Filter += AAccountTable.GetPostingStatusDBName() + " = false";
+            }
+
+            if (AActiveOnly)
+            {
+                if (Filter.Length > 0)
+                {
+                    Filter += " AND ";
+                }
+
+                Filter += AAccountTable.GetAccountActiveFlagDBName() + " = true";
+            }
+
+            return Filter;
+        }
+
+        /// <summary>
+        /// fill checkedlistbox values with cost centre list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APostingOnly"></param>
+        /// <param name="AExcludePosting"></param>
+        /// <param name="AActiveOnly"></param>
+        /// <param name="ALocalOnly">Local Costcentres only; otherwise foreign costcentres (ie from other legal entities) are included)</param>
+        public static void InitialiseCostCentreList(ref TClbVersatile AControl,
+            Int32 ALedgerNumber,
+            bool APostingOnly,
+            bool AExcludePosting,
+            bool AActiveOnly,
+            bool ALocalOnly)
+        {
+            string CheckedMember = "CHECKED";
+            string DisplayMember = ACostCentreTable.GetCostCentreNameDBName();
+            string ValueMember = ACostCentreTable.GetCostCentreCodeDBName();
+
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, ALedgerNumber);
+            DataView view = new DataView(Table);
+
+            view.RowFilter = PrepareCostCentreFilter(APostingOnly, AExcludePosting, AActiveOnly, ALocalOnly);
+
+            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+            AControl.Columns.Clear();
+            AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+        }
+
+        /// <summary>
+        /// fill checkedlistbox values with account codes
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APostingOnly"></param>
+        /// <param name="AExcludePosting"></param>
+        /// <param name="AActiveOnly"></param>
+        public static void InitialiseAccountList(ref TClbVersatile AControl,
+            Int32 ALedgerNumber,
+            bool APostingOnly,
+            bool AExcludePosting,
+            bool AActiveOnly)
+        {
+            string CheckedMember = "CHECKED";
+            string DisplayMember = AAccountTable.GetAccountCodeShortDescDBName();
+            string ValueMember = AAccountTable.GetAccountCodeDBName();
+
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
+            DataView view = new DataView(Table);
+
+            view.RowFilter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly);
+
+            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+            AControl.Columns.Clear();
+            AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
+            AControl.AddTextColumn(Catalog.GetString("Account Description"), NewTable.Columns[DisplayMember], 200);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+        }
+
+        /// <summary>
+        /// fill combobox values with cost centre list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APostingOnly"></param>
+        /// <param name="AExcludePosting"></param>
+        /// <param name="AActiveOnly"></param>
+        /// <param name="ALocalOnly">Local Costcentres only; otherwise foreign costcentres (ie from other legal entities) are included)</param>
+        public static void InitialiseCostCentreList(ref TCmbAutoPopulated AControl,
+            Int32 ALedgerNumber,
+            bool APostingOnly,
+            bool AExcludePosting,
+            bool AActiveOnly,
+            bool ALocalOnly)
+        {
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, ALedgerNumber);
+
+            AControl.InitialiseUserControl(Table,
+                ACostCentreTable.GetCostCentreCodeDBName(),
+                ACostCentreTable.GetCostCentreNameDBName(),
+                null);
+            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+
+            AControl.Filter = PrepareCostCentreFilter(APostingOnly, AExcludePosting, AActiveOnly, ALocalOnly);
+        }
+
+        /// <summary>
+        /// fill combobox values with account codes
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APostingOnly"></param>
+        /// <param name="AExcludePosting"></param>
+        /// <param name="AActiveOnly"></param>
+        public static void InitialiseAccountList(ref TCmbAutoPopulated AControl,
+            Int32 ALedgerNumber,
+            bool APostingOnly,
+            bool AExcludePosting,
+            bool AActiveOnly)
+        {
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
+
+            AControl.InitialiseUserControl(Table,
+                AAccountTable.GetAccountCodeDBName(),
+                AAccountTable.GetAccountCodeShortDescDBName(),
+                null);
+            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+
+            AControl.Filter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly);
+        }
+
+        /// <summary>
+        /// fill combobox values with list of transaction types
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ASubSystemCode"></param>
+        public static void InitialiseTransactionTypeList(ref TCmbAutoPopulated AControl, Int32 ALedgerNumber, string ASubSystemCode)
+        {
+            // TODO: use cached table for transaction types? use filter to get only appropriate types for subsystem?
+            TTypedDataTable Table;
+
+            TRemote.MCommon.DataReader.GetData(TTypedDataTable.GetTableNameSQL(ATransactionTypeTable.TableId),
+                new TSearchCriteria[] {
+                    new TSearchCriteria(TTypedDataTable.GetColumnNameSQL(ATransactionTypeTable.TableId,
+                            ATransactionTypeTable.ColumnLedgerNumberId), ALedgerNumber),
+                    new TSearchCriteria(TTypedDataTable.GetColumnNameSQL(ATransactionTypeTable.TableId,
+                            ATransactionTypeTable.ColumnSubSystemCodeId), ASubSystemCode)
+                },
+                out Table);
+
+            AControl.InitialiseUserControl(
+                Table,
+                ATransactionTypeTable.GetTransactionTypeCodeDBName(),
+                ATransactionTypeTable.GetTransactionTypeDescriptionDBName(),
+                null);
+
+            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+        }
+
+        /// <summary>
+        /// This function fills the available account hierarchies of a given ledger into a combobox
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNr"></param>
+        public static void InitialiseAccountHierarchyList(ref TCmbAutoPopulated AControl, System.Int32 ALedgerNr)
+        {
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountHierarchyList, ALedgerNr);
+
+            AControl.InitialiseUserControl(Table,
+                AAccountHierarchyTable.GetAccountHierarchyCodeDBName(),
+                null,
+                null);
+            AControl.AppearanceSetup(new int[] { 150 }, -1);
+
+            AControl.Filter = AAccountHierarchyTable.GetLedgerNumberDBName() + " = " + ALedgerNr.ToString();
+        }
+
+        /// <summary>
+        /// This function fills the available financial years of a given ledger into a combobox
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNr"></param>
+        public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoPopulated AControl, System.Int32 ALedgerNr)
+        {
+            string DisplayMember;
+            string ValueMember;
+            DataTable Table = TRemote.MFinance.Reporting.UIConnectors.GetAvailableFinancialYears(0, out DisplayMember, out ValueMember);
+
+            AControl.InitialiseUserControl(Table,
+                ValueMember,
+                DisplayMember,
+                null,
+                null);
+
+            AControl.AppearanceSetup(new int[] { -1 }, -1);
+        }
+    }
+}

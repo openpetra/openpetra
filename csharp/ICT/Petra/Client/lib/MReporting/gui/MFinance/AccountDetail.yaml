@@ -1,0 +1,87 @@
+﻿RootNode:
+    BaseYaml: ../ReportingForm.yaml
+    FormType: report
+    FormTitle: Account Detail
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        XMLFILES: [accountdetail.xml,accountdetailcommon.xml,finance.xml,common.xml]
+        REPORTNAME: Account Detail
+        CURRENTREPORT: Account Detail
+        SETAVAILABLEFUNCTIONS: BLANK
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Controls:
+        tpgReportSpecific:
+            Label: General Settings
+            Controls: [grpLedger, grpCurrency, rgrPeriod, rgrSorting]
+        grpLedger:
+            Label: Ledger Details
+            Controls: [txtLedger, cmbAccountHierarchy]
+            ControlsOrientation: horizontal
+        grpCurrency:
+            Controls: [cmbCurrency]
+        txtLedger: {ReadOnly=true, NoParameter=true}
+        cmbAccountHierarchy:
+            List: UserDefinedList
+            ParameterName: param_account_hierarchy_c
+        cmbCurrency:
+            ParameterName: param_currency
+            OptionalValues: [Base, International, Transaction]
+        rgrPeriod:
+            Controls: [rbtPeriodRange, rbtDateRange]
+        rbtPeriodRange:
+            Controls: [txtStartPeriod, txtEndPeriod, cmbPeriodYear]
+            ControlsOrientation: horizontal
+        txtStartPeriod: {Label=from, ParameterName=param_start_period_i}
+        txtEndPeriod: {Label=to, ParameterName=param_end_period_i}
+        cmbPeriodYear: {Label=Year, List=UserDefinedList, ParameterName=param_year_i}
+        rbtDateRange:
+            Controls: [dtpDateStart, dtpDateEnd]
+            ControlsOrientation: horizontal
+        dtpDateStart: {NoLabel=true, ParameterName=param_start_date}
+        dtpDateEnd: {Label=to, ParameterName=param_end_date}
+        rgrSorting:
+            ParameterName: param_sortby
+            Controls: [rbtSortByAccount, rbtSortByCostCentre, rbtSortByReference, rbtSortByAnalysisType]
+        rbtSortByAccount: {Label=Sort by Account}
+        rbtSortByCostCentre: {Label=Sort by Cost Centre}
+        rbtSortByReference: 
+            Controls: [txtReferenceFrom, txtReferenceTo]
+            ControlsOrientation: horizontal
+        rbtSortByAnalysisType: 
+            Controls: [txtAnalysisTypeFrom, txtAnalysisTypeTo]
+            ControlsOrientation: horizontal
+        txtReferenceFrom: {Label=from, ParameterName=param_reference_start}
+        txtReferenceTo: {Label=to, ParameterName=param_reference_end}
+        txtAnalysisTypeFrom: {Label=from, ParameterName=param_analyis_type_start}
+        txtAnalysisTypeTo: {Label=to, ParameterName=param_analyis_type_end}
+        tpgCCAccount:
+            Label: Account/CostCentre Settings
+            Controls: [rgrAccounts, rgrCostCentres]
+        rgrAccounts:
+            Controls: [rbtAccountRange, rbtAccountList]
+        rgrCostCentres:
+            Controls: [rbtCostCentreRange, rbtCostCentreList]
+        rbtAccountRange:
+            Controls: [cmbAccountStart, cmbAccountEnd]
+        rbtCostCentreRange:
+            Controls: [cmbCostCentreStart, cmbCostCentreEnd]
+        rbtAccountList:
+            Controls: [clbAccounts, btnUnselectAllAccounts]
+            ControlsOrientation: horizontal
+        rbtCostCentreList:
+            Controls: [clbCostCentres, btnUnselectAllCostCentres]
+            ControlsOrientation: horizontal
+        cmbAccountStart: {Label=From, List=UserDefinedList, ParameterName=param_account_code_end}
+        cmbAccountEnd: {Label=To, List=UserDefinedList, ParameterName=param_account_code_start}
+        cmbCostCentreStart: {Label=From, List=UserDefinedList, ParameterName=param_cost_centre_code_start}
+        cmbCostCentreEnd: {Label=To, List=UserDefinedList, ParameterName=param_cost_centre_code_end}
+        clbAccounts: {List=UserDefinedList, NoLabel=true, Dock=Fill, ParameterName=param_account_codes}
+        clbCostCentres: {List=UserDefinedList, NoLabel=true, Dock=Fill, ParameterName=param_cost_centre_codes}
+        btnUnselectAllAccounts: {Label=Unselect All}
+        btnUnselectAllCostCentres: {Label=Unselect All}

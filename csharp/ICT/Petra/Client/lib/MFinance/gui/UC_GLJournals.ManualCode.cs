@@ -29,6 +29,7 @@ using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
@@ -136,7 +137,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.cmbDetailSubSystemCode.Items.Clear();
             this.cmbDetailSubSystemCode.Items.AddRange(new object[] { ARow.SubSystemCode });
 
-            TFinanceComboboxes.InitialiseTransactionTypeList(ref cmbDetailTransactionTypeCode, FLedgerNumber, ARow.SubSystemCode);
+            TFinanceControls.InitialiseTransactionTypeList(ref cmbDetailTransactionTypeCode, FLedgerNumber, ARow.SubSystemCode);
         }
 
         private void ShowTransactionTab(Object sender, EventArgs e)

@@ -576,7 +576,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <param name="ADisplayDBName"></param>
         /// <param name="ADescDBName">name of the column in the table that has the description; can be empty</param>
         /// <param name="AColumnsToSearch"></param>
-        void InitialiseUserControl(DataTable ATable, string AValueDBName, string ADisplayDBName, string ADescDBName, string AColumnsToSearch)
+        public void InitialiseUserControl(DataTable ATable, string AValueDBName, string ADisplayDBName, string ADescDBName, string AColumnsToSearch)
         {
             FDataCache_ListTable = ATable;
 
@@ -885,6 +885,15 @@ namespace Ict.Petra.Client.CommonControls
             set
             {
                 this.cmbAutoPopulated.cmbCombobox.SelectedIndex = SelectedIndex;
+            }
+        }
+
+        /// the number of items in the combobox items list
+        public Int32 Count
+        {
+            get
+            {
+                return cmbAutoPopulated.cmbCombobox.Items.Count;
             }
         }
     }
