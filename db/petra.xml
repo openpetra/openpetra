@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- for the dtd, it seems we need to either have an absolute path, 
-     or a path relative from where we are calling the program that parses petra.xml -->
-<!DOCTYPE database SYSTEM "db/datastructure.dtd">
+<!DOCTYPE database SYSTEM "datastructure.dtd">
 <database name="petra">
   <table name="p_language"
          descr="List of language codes"
