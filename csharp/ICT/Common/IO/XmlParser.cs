@@ -100,6 +100,37 @@ namespace Ict.Common.IO
         /// </summary>
         protected XmlDocument myDoc;
         XmlReader reader;
+        static string XMLFilePathForDTD = String.Empty;
+
+        /// <summary>
+        /// this fixes the problem that we have the filename of the DTD with a relative path name in the XML file
+        /// this only works for situations with the dtd file in the same directory as the xml file
+        /// </summary>
+		private class MyUrlResolver : XmlUrlResolver
+		{
+			string FXmlFilePath = String.Empty;
+			
+			/// <summary>
+			/// pass the path of the xml file to build the proper path for the dtd file
+			/// </summary>
+			/// <param name="AXmlFilePath"></param>
+			public MyUrlResolver(string AXmlFilePath)
+			{
+				FXmlFilePath = AXmlFilePath;
+			}
+			
+			/// <summary>
+			/// overload this method to get the dtd from the same directory as the xml file
+			/// </summary>
+			public override object GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn)
+			{
+				if (!File.Exists(absoluteUri.AbsolutePath))
+				{
+					return File.Open(FXmlFilePath + Path.DirectorySeparatorChar + Path.GetFileName(absoluteUri.AbsolutePath), FileMode.Open, FileAccess.Read);
+				}
+				return base.GetEntity(absoluteUri, role, ofObjectToReturn);
+			}
+		}
 
         /// <summary>
         /// constructor
@@ -122,18 +153,8 @@ namespace Ict.Common.IO
                 XmlReaderSettings settings = new XmlReaderSettings();
                 settings.IgnoreWhitespace = false;
                 settings.ProhibitDtd = false;
-
-                // TODO there seems to be problems finding the dtd file on Mono; so no validation there for the moment
-                // also see http://bytes.com/groups/net-xml/178914-exception-xmldocumet-load
-                if (withValidation && (Ict.Common.Utilities.DetermineExecutingCLR() != TExecutingCLREnum.eclrMono))
-                {
-                    settings.ValidationType = ValidationType.DTD;
-                }
-                else
-                {
-                    settings.ValidationType = ValidationType.None;
-                }
-
+                settings.XmlResolver = new MyUrlResolver(Path.GetDirectoryName(filename));
+                settings.ValidationType = withValidation?ValidationType.DTD:ValidationType.None;
                 settings.ValidationEventHandler += new ValidationEventHandler(eventHandler);
 
                 reader = XmlReader.Create(new StreamReader(filename), settings);
