@@ -306,5 +306,25 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             AControl.AppearanceSetup(new int[] { -1 }, -1);
         }
+
+        /// <summary>
+        /// return the ledger number and name for readonly text boxes
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        public static string GetLedgerNumberAndName(Int32 ALedgerNumber)
+        {
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+
+            foreach (DataRow row in Table.Rows)
+            {
+                if (row["LedgerNumber"].ToString() == ALedgerNumber.ToString())
+                {
+                    return ALedgerNumber.ToString() + " " + row["LedgerName"];
+                }
+            }
+
+            return "ledger " + ALedgerNumber.ToString();
+        }
     }
 }

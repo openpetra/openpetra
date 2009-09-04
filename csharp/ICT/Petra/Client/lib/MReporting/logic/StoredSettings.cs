@@ -282,9 +282,10 @@ namespace Ict.Petra.Client.MReporting.Logic
             if (System.IO.File.Exists(path))
             {
                 AParameters.Load(path);
-                AParameters.RemoveVariable("systemsettings");
 
                 // nobody needs to see this variable
+                AParameters.RemoveVariable("systemsettings");
+
                 ReturnValue = UpdateRecentlyUsedSettings(ASettingsName);
             }
             else

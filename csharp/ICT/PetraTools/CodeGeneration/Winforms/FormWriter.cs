@@ -740,11 +740,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("SHOWDETAILS", "BeforeShowDetailsManual(FMainDS.{#DETAILTABLE}[ACurrentDetailIndex]);" + Environment.NewLine);
             }
 
-            if (FCodeStorage.ManualFileExistsAndContains("void ReadControlsManual"))
-            {
-                FTemplate.AddToCodelet("READCONTROLS", "ReadControlsManual(ACalc);" + Environment.NewLine);
-            }
-
             FTemplate.AddToCodelet("INITACTIONSTATE", "FPetraUtilsObject.InitActionState();" + Environment.NewLine);
 
             if (FCodeStorage.ManualFileExistsAndContains("InitializeManualCode"))
@@ -884,6 +879,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("GetDetailDataFromControlsManual"))
             {
                 FTemplate.AddToCodelet("SAVEDETAILS", "GetDetailDataFromControlsManual(ACurrentDetailIndex);" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("void ReadControlsManual"))
+            {
+                FTemplate.AddToCodelet("READCONTROLS", "ReadControlsManual(ACalc);" + Environment.NewLine);
             }
 
             InsertCodeIntoTemplate(AXAMLFilename);

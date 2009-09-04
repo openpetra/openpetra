@@ -81,6 +81,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     datatype + "());" +
                     Environment.NewLine);
             }
+            else
+            {
+                writer.Template.AddToCodelet("SETCONTROLS",
+                    controlName + ".SetSelectedString(" +
+                    "AParameters.Get(\"" + paramName + "\").ToString());" +
+                    Environment.NewLine);
+            }
         }
     }
     public class ComboBoxReportGenerator : ComboBoxGenerator
@@ -283,6 +290,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 TControlDef rbtCtrl = writer.CodeStorage.GetControl(controlName);
                 string rbtValue = rbtCtrl.Label;
                 rbtValue = StringHelper.UpperCamelCase(rbtValue.Replace("'", "").Replace(" ", "_"), false, false);
+
+                if (rbtCtrl.HasAttribute("ParameterValue"))
+                {
+                    rbtValue = rbtCtrl.GetAttribute("ParameterValue");
+                }
+
                 string rbtName = "rbt" + curNode.Name.Substring(3);
 
                 if (curNode.Name.StartsWith("tableLayoutPanel"))

@@ -297,10 +297,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ActionToPerform.Length == 0)
             {
-            	// try to find an action that matches the control name, eg. mniSomething matches actSomething
-            	ActionToPerform = "act" + ctrl.controlName.Substring(ctrl.controlTypePrefix.Length);
+                // try to find an action that matches the control name, eg. mniSomething matches actSomething
+                ActionToPerform = "act" + ctrl.controlName.Substring(ctrl.controlTypePrefix.Length);
             }
-            
+
             if (writer.CodeStorage.FActionList.ContainsKey(ActionToPerform))
             {
                 // deal with enabling and disabling of action, affecting the menu item

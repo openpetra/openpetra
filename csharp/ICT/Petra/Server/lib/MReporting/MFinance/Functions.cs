@@ -645,36 +645,35 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
         private double GetActualValue(TFinancialPeriod period, String pv_currency_select_c)
         {
-            double ReturnValue;
-            string strSql;
-            DataTable tab;
-
-            ReturnValue = 0;
-            strSql = "SELECT a_actual_base_n, a_actual_intl_n, a_actual_foreign_n " + "FROM PUB_a_general_ledger_master_period " +
-                     "WHERE a_glm_sequence_i = " + StringHelper.IntToStr(period.realGlmSequence.glmSequence) + ' ' + "AND a_period_number_i = " +
-                     StringHelper.IntToStr(period.realPeriod);
-            tab = ActualsCache.GetDataTable(situation.GetDatabaseConnection(), strSql);
+            string strSql = "SELECT a_actual_base_n, a_actual_intl_n, a_actual_foreign_n " + "FROM PUB_a_general_ledger_master_period " +
+                            "WHERE a_glm_sequence_i = " + StringHelper.IntToStr(period.realGlmSequence.glmSequence) + ' ' +
+                            "AND a_period_number_i = " +
+                            StringHelper.IntToStr(period.realPeriod);
+            DataTable tab = ActualsCache.GetDataTable(situation.GetDatabaseConnection(), strSql);
 
             if (tab.Rows.Count > 0)
             {
                 if (StringHelper.IsSame(pv_currency_select_c, "Base"))
                 {
-                    ReturnValue = Convert.ToDouble(tab.Rows[0]["a_actual_base_n"]);
+                    return Convert.ToDouble(tab.Rows[0]["a_actual_base_n"]);
                 }
-                else
+                else if (StringHelper.IsSame(pv_currency_select_c, "Intl") || StringHelper.IsSame(pv_currency_select_c, "International"))
                 {
-                    if (StringHelper.IsSame(pv_currency_select_c, "Intl") || StringHelper.IsSame(pv_currency_select_c, "International"))
+                    return Convert.ToDouble(tab.Rows[0]["a_actual_base_n"]) * period.exchangeRateToIntl;
+                }
+                else if (StringHelper.IsSame(pv_currency_select_c, "Transaction"))
+                {
+                    if (tab.Rows[0].IsNull("a_actual_foreign_n"))
                     {
-                        ReturnValue = Convert.ToDouble(tab.Rows[0]["a_actual_base_n"]) * period.exchangeRateToIntl;
+                        // this is not a foreign currency account, so it must be base currency
+                        return Convert.ToDouble(tab.Rows[0]["a_actual_base_n"]);
                     }
-                    else
-                    {
-                        ReturnValue = Convert.ToDouble(tab.Rows[0]["a_actual_foreign_n"]);
-                    }
+
+                    return Convert.ToDouble(tab.Rows[0]["a_actual_foreign_n"]);
                 }
             }
 
-            return ReturnValue;
+            return 0.0;
         }
 
         /// <summary>
@@ -833,7 +832,15 @@ namespace Ict.Petra.Server.MReporting.MFinance
                         }
                         else
                         {
-                            lv_currency_amount_n = Convert.ToDouble(tab.Rows[0]["a_start_balance_foreign_n"]);
+                            if (tab.Rows[0].IsNull("a_start_balance_foreign_n"))
+                            {
+                                // there is no foreign currency, this is an account in base currency
+                                lv_currency_amount_n = Convert.ToDouble(tab.Rows[0]["a_start_balance_base_n"]);
+                            }
+                            else
+                            {
+                                lv_currency_amount_n = Convert.ToDouble(tab.Rows[0]["a_start_balance_foreign_n"]);
+                            }
                         }
                     }
                 }

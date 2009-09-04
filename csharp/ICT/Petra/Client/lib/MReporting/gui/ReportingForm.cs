@@ -349,7 +349,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
 
 #if DEBUGMODE
-                FCalculator.GetParameters().Save("debugParameter.xml");
+                FCalculator.GetParameters().Save("debugParameter.xml", true);
 #endif
                 this.FWinForm.Cursor = Cursors.WaitCursor;
                 TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
@@ -359,7 +359,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 if (FCalculator.GenerateResultRemoteClient())
                 {
 #if DEBUGMODE
-                    FCalculator.GetParameters().Save("debugParameterReturn.xml");
+                    FCalculator.GetParameters().Save("debugParameterReturn.xml", true);
                     FCalculator.GetResults().WriteCSV(FCalculator.GetParameters(), "debugResultReturn.csv");
 #endif
                     this.FWinForm.Cursor = Cursors.Default;
@@ -432,34 +432,39 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>
         /// This procedure loads the available saved settings into the Load menu
-        /// 
+        ///
         /// </summary>
         protected void UpdateLoadingMenu(StringCollection ARecentlyUsedSettings)
         {
             for (System.Int32 Counter = 0; Counter <= ARecentlyUsedSettings.Count - 1; Counter++)
             {
-            	ToolStripItem mniItem, tbbItem;
+                ToolStripItem mniItem, tbbItem;
+
                 if (((IFrmReporting)FTheForm).GetRecentSettingsItems(Counter, out mniItem, out tbbItem))
                 {
                     mniItem.Text = ARecentlyUsedSettings[Counter];
+
                     // TODO tbbItem.Text = ARecentlyUsedSettings[Counter];
                     mniItem.Visible = true;
+
                     // TODO tbbItem.Visible = true;
                 }
             }
 
             for (System.Int32 Counter = ARecentlyUsedSettings.Count; true; Counter++)
             {
-               	ToolStripItem mniItem, tbbItem;
-               	if (((IFrmReporting)FTheForm).GetRecentSettingsItems(Counter, out mniItem, out tbbItem))
-               	{
-                	mniItem.Visible = false;
-                	// TODO tbbItem.Visible = false;
-               	}
-               	else
-               	{
-               		break;
-               	}
+                ToolStripItem mniItem, tbbItem;
+
+                if (((IFrmReporting)FTheForm).GetRecentSettingsItems(Counter, out mniItem, out tbbItem))
+                {
+                    mniItem.Visible = false;
+
+                    // TODO tbbItem.Visible = false;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 
@@ -492,9 +497,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// This procedure loads the parameters of the default settings;
         /// at the moment this is implemented to use the last used settings
-        /// 
+        ///
         /// </summary>
-        protected void LoadDefaultSettings()
+        public void LoadDefaultSettings()
         {
             StringCollection RecentlyUsedSettings;
 
@@ -507,13 +512,13 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// has anything changed in the currently selected column? 
+        /// has anything changed in the currently selected column?
         /// if yes, show error message; telling the user to save changes first
         /// </summary>
         /// <returns>true if column has changed and error message was displayed</returns>
         private bool ColumnChangedWithErrorMessage(string AFailedAction)
         {
-#if TODO        	
+#if TODO
             if (ColumnChanged(FSelectedColumn))
             {
                 MessageBox.Show(
@@ -525,12 +530,12 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             else
             {
-				SelectColumn(-1);
+                SelectColumn(-1);
             }
 #endif
             return false;
         }
-        
+
         /// <summary>
         /// show a dialog with all available stored settings for this report
         /// </summary>
@@ -540,7 +545,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             if (ColumnChangedWithErrorMessage(Catalog.GetString("Settings cannot be loaded")))
             {
-            	return;
+                return;
             }
 
             TFrmSettingsLoad SettingsDialog = new TFrmSettingsLoad(FStoredSettings);
@@ -564,11 +569,13 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             ToolStripItem ctrl = (ToolStripItem)sender;
-            if (ctrl.Name.Substring(3).StartsWith("LoadSettings"))
-            {
-	            LoadSettings(ctrl.Text);
-            }
 
+            if (ctrl.Name.Substring(3).StartsWith("LoadSettings")
+                && !ctrl.Name.Contains("LoadSettingsDialog")
+                && !ctrl.Name.EndsWith("LoadSettings"))
+            {
+                LoadSettings(ctrl.Text);
+            }
         }
 
         /// <summary>
@@ -591,16 +598,16 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (FCurrentSettingsName == "")
             {
-            	FCurrentSettingsName = FCurrentReport;
+                FCurrentSettingsName = FCurrentReport;
             }
-            
+
             TFrmSettingsSave SettingsDialog = new TFrmSettingsSave(FStoredSettings, FCurrentSettingsName);
 
             if (SettingsDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-            	StringCollection RecentlyUsedSettings = null;
+                StringCollection RecentlyUsedSettings = null;
 
-            	FCurrentSettingsName = SettingsDialog.GetNewName();
+                FCurrentSettingsName = SettingsDialog.GetNewName();
 
                 // set the title of the window
                 FWinForm.Text = FWindowCaption + ": " + FCurrentSettingsName;
@@ -667,8 +674,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             SettingsDialog.ShowDialog();
             UpdateLoadingMenu(this.FStoredSettings.GetRecentlyUsedSettings());
         }
+
         #endregion
-        
+
         #region Parameter/Settings Handling
 
         /// <summary>
@@ -888,7 +896,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         /// <param name="AParameters"></param>
         void SetControls(TParameterList AParameters);
-        
+
         /// <summary>
         /// this is used for writing the captions of the menu items and toolbar buttons for recently used report settings
         /// </summary>

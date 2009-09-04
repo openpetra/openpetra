@@ -37,8 +37,8 @@
         rbtPeriodRange:
             Controls: [txtStartPeriod, txtEndPeriod, cmbPeriodYear]
             ControlsOrientation: horizontal
-        txtStartPeriod: {Label=from, ParameterName=param_start_period_i}
-        txtEndPeriod: {Label=to, ParameterName=param_end_period_i}
+        txtStartPeriod: {Label=from, ParameterName=param_start_period_i, Width=30}
+        txtEndPeriod: {Label=to, ParameterName=param_end_period_i, Width=30}
         cmbPeriodYear: {Label=Year, List=UserDefinedList, ParameterName=param_year_i}
         rbtDateRange:
             Controls: [dtpDateStart, dtpDateEnd]
@@ -48,12 +48,12 @@
         rgrSorting:
             ParameterName: param_sortby
             Controls: [rbtSortByAccount, rbtSortByCostCentre, rbtSortByReference, rbtSortByAnalysisType]
-        rbtSortByAccount: {Label=Sort by Account}
-        rbtSortByCostCentre: {Label=Sort by Cost Centre}
-        rbtSortByReference: 
+        rbtSortByAccount: {Label=Sort by Account, ParameterValue=Account}
+        rbtSortByCostCentre: {Label=Sort by Cost Centre, ParameterValue=Cost Centre}
+        rbtSortByReference: {ParameterValue=Reference} 
             Controls: [txtReferenceFrom, txtReferenceTo]
             ControlsOrientation: horizontal
-        rbtSortByAnalysisType: 
+        rbtSortByAnalysisType: {ParameterValue=Analysis Type} 
             Controls: [txtAnalysisTypeFrom, txtAnalysisTypeTo]
             ControlsOrientation: horizontal
         txtReferenceFrom: {Label=from, ParameterName=param_reference_start}
@@ -77,8 +77,8 @@
         rbtCostCentreList:
             Controls: [clbCostCentres, btnUnselectAllCostCentres]
             ControlsOrientation: horizontal
-        cmbAccountStart: {Label=From, List=UserDefinedList, ParameterName=param_account_code_end}
-        cmbAccountEnd: {Label=To, List=UserDefinedList, ParameterName=param_account_code_start}
+        cmbAccountStart: {Label=From, List=UserDefinedList, ParameterName=param_account_code_start}
+        cmbAccountEnd: {Label=To, List=UserDefinedList, ParameterName=param_account_code_end}
         cmbCostCentreStart: {Label=From, List=UserDefinedList, ParameterName=param_cost_centre_code_start}
         cmbCostCentreEnd: {Label=To, List=UserDefinedList, ParameterName=param_cost_centre_code_end}
         clbAccounts: {List=UserDefinedList, NoLabel=true, Dock=Fill, ParameterName=param_account_codes}

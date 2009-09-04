@@ -99,13 +99,13 @@
 						</case>
 					</switch>
 				</fielddetail>
-				<fielddetail condition="eq({param_cost_centre_codes},*NOTUSED*)">
+				<fielddetail condition="eq({param_rgrCostCentres},CostCentreRange)">
 					<value text="    Cost Centre: "/>
 					<value variable="param_cost_centre_code_start"/>
 					<value text=" To "/>				
 					<value variable="param_cost_centre_code_end"/>
 				</fielddetail>
-				<fielddetail condition="eq({param_cost_centre_code_start},*NOTUSED*)">
+				<fielddetail condition="eq({param_rgrCostCentres},CostCentreList)">
 					<value text="    Cost Centres: "/>
 					<value variable="param_cost_centre_codes"/>
 				</fielddetail>
@@ -114,13 +114,13 @@
 				<fielddetail>
 					<value function="getAccountingHierarchy({param_account_hierarchy_c})"/>
 				</fielddetail>
-				<fielddetail condition="eq({param_account_codes},*NOTUSED*)">
+				<fielddetail condition="eq({param_rgrAccounts},AccountRange)">
 					<value text="Account: "/>
 					<value variable="param_account_code_start"/>
 					<value text=" To "/>				
 					<value variable="param_account_code_end"/>
 				</fielddetail>
-				<fielddetail condition="eq({param_account_code_start},*NOTUSED*)">
+				<fielddetail condition="eq({param_rgrAccounts},AccountList)">
 					<value text="Accounts: "/>
 					<value variable="param_account_codes"/>
 				</fielddetail>
@@ -136,13 +136,17 @@
 				<value variable="param_current_period_i"/>
 			</field>			
 			<field whichfield="period1">
-				<fielddetail>
+				<fielddetail condition="eq({param_rgrPeriod},DateRange)">
 					<value text="Period:  "/>
 					<value variable="param_start_date" format="formatteddate"/>
 					<value text=" To "/>
 					<value variable="param_end_date" format="formatteddate"/>
 				</fielddetail>
-				<fielddetail condition="not(isNull(param_start_period_i))">
+				<fielddetail condition="eq({param_rgrPeriod},PeriodRange)">
+					<value text="Period:  "/>
+					<value function="getPeriodStartDate({{param_ledger_number_i}}, {{param_start_period_i}})"/>
+					<value text=" To "/>
+					<value function="getPeriodEndDate({{param_ledger_number_i}}, {{param_end_period_i}})"/>
 					<value text = "   (" />
 					<value variable="param_start_period_i"/>
 					<value text=" To "/>

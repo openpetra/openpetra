@@ -1447,8 +1447,19 @@ namespace Ict.Petra.Server.MReporting
             {
                 strName = StringHelper.GetNextCSV(ref strReturns).Trim();
 
+                // in sqlite, eg. accountdetailcommon.xml, select j.a_transaction_currency_c will keep the j; other db's will remove the table name
+                if (!ARow.Table.Columns.Contains(strName))
+                {
+                    foreach (DataColumn col in ARow.Table.Columns)
+                    {
+                        if (col.ColumnName.Contains("." + strName))
+                        {
+                            strName = col.ColumnName;
+                        }
+                    }
+                }
+
                 // the parameters are stored first
-                // MessageBox.Show(strName + ' ' + row[strName].ToString() + ' ' + typeof(row[strName]).ToString());
                 if (ARow[strName].GetType() == typeof(String))
                 {
                     value = new TVariant(Convert.ToString(ARow[strName]));

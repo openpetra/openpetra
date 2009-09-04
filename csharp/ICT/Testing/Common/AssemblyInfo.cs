@@ -3,9 +3,7 @@
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * @Authors:
- *       christiank
- * @Description:
- *       namespace containing Petra Reporting Module Screens and UserControls for the Petra Finance Module.
+ *       timop
  *
  * Copyright 2004-2009 by OM International
  *
@@ -27,8 +25,8 @@
  ************************************************************************/
 #region Using directives
 
+using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #endregion
@@ -36,15 +34,14 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Petra Client Reporting Module (Finance) GUI Library")]
+[assembly: AssemblyTitle("Tests.Common")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ICT")]
-[assembly: AssemblyProduct("Petra Client")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("OpenPetra.Testing")]
 [assembly: AssemblyCopyright("(c) OM International 2004-2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-
 
 // This sets the default COM visibility of types in the assembly to invisible.
 // If you need to expose a type to COM, use [ComVisible(true)] on that type.

@@ -100,8 +100,6 @@ namespace Ict.Common.Controls
         private const String StrValueMember = "#VALUE#";
         private const String StrDisplayMember = "#DISPLAY#";
 
-        /// <summary>used for lists with only one column, only strings</summary>
-        private DataTable FStringTable;
         private bool UPressedKey;
         private String UInitialString;
         private bool FAcceptNewValues;
@@ -275,9 +273,8 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This property manages the colour of the selection. If set to TRUE the
-        /// selected item of the ComboBox is not coloured in selection mode colours.
-        ///
+        /// property for the current selection;
+        /// SelectedItem is about the display member, SelectedValue reflects the value member
         /// </summary>
         public new System.Object SelectedItem
         {
@@ -289,12 +286,12 @@ namespace Ict.Common.Controls
                     return base.SelectedItem;
                 }
 
-                if ((DataSource == null) && Items.Count > 0 && SelectedIndex > -1)
-	            {
+                if ((DataSource == null) && (Items.Count > 0) && (SelectedIndex > -1))
+                {
                     // use the normal Items values, not the datasource etc
                     return Convert.ToString(Items[this.SelectedIndex]);
-	            }
-            	
+                }
+
                 DataRowView mRowView = GetSelectedRowView();
 
                 if (mRowView == null)
@@ -317,6 +314,35 @@ namespace Ict.Common.Controls
                 {
                     Int32 m_SelectedIndex = this.FindStringSortedByLength(value.ToString(), GetColumnNrOfValueMember());
                     base.SelectedIndex = m_SelectedIndex;
+                }
+            }
+        }
+
+        /// <summary>
+        /// property for the current selection;
+        /// SelectedItem is about the display member, SelectedValue reflects the value member
+        /// </summary>
+        public new System.Object SelectedValue
+        {
+            get
+            {
+                return base.SelectedValue;
+            }
+            set
+            {
+                if (DesignMode)
+                {
+                    base.SelectedValue = value;
+                }
+
+                if (DataSource == null)
+                {
+                    SelectedItem = value;
+                }
+                else
+                {
+                    // TODO??? something special about DataSource situation?
+                    base.SelectedItem = value;
                 }
             }
         }
@@ -394,23 +420,14 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void SetDataSourceStringList(StringCollection AList)
         {
-            FStringTable = new DataTable();
-            FStringTable.Columns.Add(new DataColumn("VALUE", typeof(String)));
+            this.BeginUpdate();
+            this.DataSource = null;
 
             foreach (String s in AList)
             {
-                DataRow row = FStringTable.NewRow();
-                row[0] = s;
-                FStringTable.Rows.Add(row);
+                this.Items.Add(s);
             }
 
-            this.BeginUpdate();
-            this.DataSource = new DataView(FStringTable);
-
-            // it seems you need to first set the DataSource, and then the DisplayMember and ValueMember;
-            // otherwise you can get just System.Data.DataRowView displayed in the GUI for the values
-            this.DisplayMember = "VALUE";
-            this.ValueMember = "VALUE";
             this.EndUpdate();
         }
 
@@ -422,14 +439,10 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void AddStringItem(String AItem)
         {
-            DataRow row;
             string currentText = this.Text;
 
-            row = FStringTable.NewRow();
-            row[0] = AItem;
-            FStringTable.Rows.Add(row);
             this.BeginUpdate();
-            this.DataSource = new DataView(FStringTable);
+            this.Items.Add(AItem);
             this.EndUpdate();
             this.Text = currentText;
         }
@@ -471,21 +484,7 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void RemoveStringItem(String AItem)
         {
-            DataRow toDelete;
-
-            foreach (DataRow row in FStringTable.Rows)
-            {
-                if (row[0].ToString() == AItem)
-                {
-                    toDelete = row;
-                    toDelete.Delete();
-                    break;
-                }
-            }
-
-            this.BeginUpdate();
-            this.DataSource = new DataView(FStringTable, "", "VALUE", DataViewRowState.CurrentRows);
-            this.EndUpdate();
+            this.Items.Remove(AItem);
         }
 
         /// <summary>
@@ -494,11 +493,14 @@ namespace Ict.Common.Controls
         /// </returns>
         private System.Int32 GetColumnNr(String AColumnName)
         {
-            DataTable mDataTable;
+            if (this.DataSource == null)
+            {
+                return -1;
+            }
 
             if ((AColumnName != null) || (AColumnName == ""))
             {
-                mDataTable = null;
+                DataTable mDataTable = null;
 
                 if (this.DataSource != null)
                 {
@@ -615,12 +617,6 @@ namespace Ict.Common.Controls
             if ((DataSourceChanging != null) && (!(DesignMode)))
             {
                 DataSourceChanging(this, e);
-
-                // this.SelectedIndex := 1;
-                // this.SelectedIndex := 1;
-                // this.SelectedItem := nil;
-                // this.SelectedValue := nil;
-                // this.Text := '';
             }
         }
 
@@ -964,16 +960,12 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         private bool DoColumnNamesExistInDataSource()
         {
-            bool ReturnValue;
+            if (DataSource == null)
+            {
+                return true;
+            }
 
-            System.Int32 mIndex;
-            System.Int32 mCountExistance;
-            System.Data.DataColumnCollection mComboboxItems;
-
-            // Initialisation
-            ReturnValue = false;
-            mComboboxItems = null;
-            mCountExistance = 0;
+            System.Data.DataColumnCollection mComboboxItems = null;
 
             // Get the Column collection of the datasource
             if (this.DataSource is System.Data.DataTable)
@@ -986,7 +978,7 @@ namespace Ict.Common.Controls
             }
 
             // Replace the placeholders #VALUE# and #DISPLAY# with the real stuff.
-            mIndex = this.FColumnsToSearch.IndexOf(StrValueMember);
+            System.Int32 mIndex = this.FColumnsToSearch.IndexOf(StrValueMember);
 
             if (mIndex >= 0)
             {
@@ -1006,6 +998,8 @@ namespace Ict.Common.Controls
                 return false;
             }
 
+            System.Int32 mCountExistance = 0;
+
             // Check whether the column names in this string collections are in the datasource
             foreach (String mColumnName in this.FColumnsToSearch)
             {
@@ -1017,10 +1011,10 @@ namespace Ict.Common.Controls
 
             if (mCountExistance == this.FColumnsToSearch.Count)
             {
-                ReturnValue = true;
+                return true;
             }
 
-            return ReturnValue;
+            return false;
         }
 
         /// <summary>
@@ -1135,6 +1129,12 @@ namespace Ict.Common.Controls
             // Set return value
             ReturnValue = -1;
 
+            if (DataSource == null)
+            {
+                // TODO: proper implementation of FindStringSortedByLength for simple string lists
+                return FindString(SearchString);
+            }
+
             // Check whether the DataSource is of DataSet, DataTable, or DataView
             IsCorrectDataType = this.HasDataSourceCorrectDataType(this.DataSource);
 
@@ -1246,31 +1246,28 @@ namespace Ict.Common.Controls
         /// <returns>The index of the item if found or -1 if nothing is found.</returns>
         public int FindStringInComboBox(string SearchString)
         {
-            String ItemString;
-
-            System.Int32 ColumnIndex;
-            System.Data.DataRowView TmpRowView;
-
             // try to find the best match, if there is no exact match
-            int BestMatch;
-            BestMatch = -1;
+            int BestMatch = -1;
+
             SearchString = SearchString.ToUpper();
 
-            if ((DataSource == null) && (FStringTable == null))
+            if (DataSource == null)
             {
                 // use the normal Items list with string object
                 foreach (string value in Items)
                 {
-                    if (value == SearchString)
+                    if (value.ToUpper() == SearchString)
                     {
                         return Items.IndexOf(value);
                     }
                 }
+
+                return -1;
             }
 
             foreach (object Item in Items)
             {
-                TmpRowView = (System.Data.DataRowView)Item;
+                System.Data.DataRowView TmpRowView = (System.Data.DataRowView)Item;
 
                 if ((TmpRowView == null) || (TmpRowView.DataView == null) || (TmpRowView.DataView.Table == null))
                 {
@@ -1278,11 +1275,11 @@ namespace Ict.Common.Controls
                     return -1;
                 }
 
-                for (ColumnIndex = 0; ColumnIndex <= TmpRowView.DataView.Table.Columns.Count - 1; ColumnIndex += 1)
+                for (System.Int32 ColumnIndex = 0; ColumnIndex <= TmpRowView.DataView.Table.Columns.Count - 1; ColumnIndex += 1)
                 {
                     if (TmpRowView[ColumnIndex].GetType() == typeof(String))
                     {
-                        ItemString = TmpRowView[ColumnIndex].ToString().ToUpper();
+                        string ItemString = TmpRowView[ColumnIndex].ToString().ToUpper();
 
                         if (ItemString.IndexOf(SearchString) >= 0)
                         {
@@ -1292,20 +1289,14 @@ namespace Ict.Common.Controls
                             }
                             else
                             {
+                                // deactivated BestMatch for the moment
                                 BestMatch = -1;
                             }
                         }
-
-                        // End of "if (ItemString.IndexOf(SearchString) >= 0) then"
                     }
-
-                    // End of "if (ItemType = typeof(System.String)) then"
                 }
-
-                // End of "for ColumnIndex := 0 to Columns.Count  1  do"
             }
 
-            // End of "for Item in Items do"
             return BestMatch;
         }
 
@@ -1517,7 +1508,7 @@ namespace Ict.Common.Controls
         {
             string ReturnValue = "";
 
-            if ((DataSource == null) && (FStringTable == null))
+            if (DataSource == null)
             {
                 if (Items.Count > 0)
                 {
@@ -1533,14 +1524,14 @@ namespace Ict.Common.Controls
 
             if ((this.SelectedItem != null) && (SelectedIndex != -1) && (this.SelectedItem != System.DBNull.Value))
             {
-            	if (this.Items[SelectedIndex] is System.Data.DataRowView)
-            	{
-            		ReturnValue = ((System.Data.DataRowView)this.Items[SelectedIndex])[ColumnNumber].ToString();
-            	}
-            	else if (this.Items[SelectedIndex] is System.String)
-            	{
-            		ReturnValue = (string)this.Items[SelectedIndex];
-            	}
+                if (this.Items[SelectedIndex] is System.Data.DataRowView)
+                {
+                    ReturnValue = ((System.Data.DataRowView) this.Items[SelectedIndex])[ColumnNumber].ToString();
+                }
+                else if (this.Items[SelectedIndex] is System.String)
+                {
+                    ReturnValue = (string)this.Items[SelectedIndex];
+                }
             }
             else
             {

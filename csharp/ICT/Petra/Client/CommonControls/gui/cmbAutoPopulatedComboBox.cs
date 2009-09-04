@@ -885,7 +885,7 @@ namespace Ict.Petra.Client.CommonControls
             }
             set
             {
-                this.cmbAutoPopulated.cmbCombobox.SelectedIndex = SelectedIndex;
+                this.cmbAutoPopulated.cmbCombobox.SelectedIndex = value;
             }
         }
 

@@ -99,7 +99,6 @@ namespace Ict.Common.IO
         /// the XmlDocument that is currently parsed
         /// </summary>
         protected XmlDocument myDoc;
-        XmlReader reader;
         static string XMLFilePathForDTD = String.Empty;
 
         /// <summary>
@@ -149,7 +148,9 @@ namespace Ict.Common.IO
             }
 
             eventHandler = new ValidationEventHandler(ValidationCallback);
-            reader = null;
+            XmlReader reader = null;
+            StreamReader sr = null;
+
             try
             {
                 // TODO there seems to be problems finding the dtd file on Mono; so no validation there for the moment
@@ -166,7 +167,8 @@ namespace Ict.Common.IO
                 settings.ValidationType = withValidation ? ValidationType.DTD : ValidationType.None;
                 settings.ValidationEventHandler += new ValidationEventHandler(eventHandler);
 
-                reader = XmlReader.Create(new StreamReader(filename), settings);
+                sr = new StreamReader(filename);
+                reader = XmlReader.Create(sr, settings);
 
                 myDoc = new XmlDocument();
                 myDoc.Load(reader);
@@ -175,6 +177,7 @@ namespace Ict.Common.IO
             {
                 if (reader != null)
                 {
+                    sr.Close();
                     reader.Close();
                 }
 
@@ -183,6 +186,7 @@ namespace Ict.Common.IO
                 // can be displayed to the user
                 throw e;
             }
+            sr.Close();
             reader.Close();
         }
 
@@ -210,7 +214,6 @@ namespace Ict.Common.IO
         public TXMLParser(TXMLParser AReuseParser) : base()
         {
             this.myDoc = AReuseParser.myDoc;
-            this.reader = AReuseParser.reader;
         }
 
         /// <summary>

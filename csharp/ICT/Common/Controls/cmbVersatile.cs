@@ -583,7 +583,6 @@ namespace Ict.Common.Controls
             // TcmbVersatile
             //
             this.Leave += new System.EventHandler(this.TcmbVersatile_Leave);
-            this.TextChanged += new System.EventHandler(this.TcmbVersatile_TextChanged);
         }
 
         /// <summary>
@@ -633,23 +632,10 @@ namespace Ict.Common.Controls
             }
         }
 
-        private void TcmbVersatile_TextChanged(System.Object sender, System.EventArgs e)
-        {
-            if (this.Text == "")
-            {
-            }
-
-            // messagebox.Show('Text empty!!!');
-            // this.SelectedIndex := 1;
-            // this.SelectedIndex := 1;
-            // this.SelectedItem := nil;
-        }
-
         private void TcmbVersatile_Leave(System.Object sender, System.EventArgs e)
         {
             if (this.Text == "")
             {
-                this.SelectedIndex = -1;
                 this.SelectedIndex = -1;
             }
         }
@@ -1420,10 +1406,6 @@ namespace Ict.Common.Controls
             // Set draw mode
             this.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
 
-            // this.SelectedIndex := 1;
-            // this.SelectedIndex := 1;
-            // this.SelectedItem := nil;
-            // messagebox.show(this.SelectedIndex.ToString);
             // Set default display in first column
             if (((this.DisplayInColumn1 == null) || (this.DisplayInColumn1 == "")) && (this.ColumnNum == 1))
             {

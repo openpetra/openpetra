@@ -1048,8 +1048,7 @@ namespace Ict.Common.Data
                 {
                     First = false;
 
-                    // problem with mono: NULL is printed directly in the statement, no odbc parameter
-                    if ((CurrentValue != System.DBNull.Value) && (CurrentValue.GetType() != typeof(double)))
+                    if (CurrentValue != System.DBNull.Value)
                     {
                         Counter = Counter + 1;
                     }
@@ -1078,8 +1077,7 @@ namespace Ict.Common.Data
                 {
                     First = false;
 
-                    // problem with mono: NULL is printed directly in the statement, no odbc parameter
-                    if ((CurrentValue != System.DBNull.Value) && (CurrentValue.GetType() != typeof(double)))
+                    if (CurrentValue != System.DBNull.Value)
                     {
                         ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, CurrentValue);
                         ReturnValue[Counter].Value = CurrentValue;
@@ -1165,12 +1163,7 @@ namespace Ict.Common.Data
                 if ((item != System.DBNull.Value) && NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
                 {
                     CurrentValue = GetSafeValue(ADataRow, i, DataRowVersion.Current);
-
-                    // problem with mono: Decimal is printed directly in the statement, no odbc parameter
-                    if (CurrentValue.GetType() != typeof(double))
-                    {
-                        Counter = Counter + 1;
-                    }
+                    Counter = Counter + 1;
                 }
             }
 
@@ -1185,15 +1178,11 @@ namespace Ict.Common.Data
 
                 if ((item != System.DBNull.Value) && NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
                 {
-                    // problem with mono: Decimal is printed directly in the statement, no odbc parameter
                     CurrentValue = GetSafeValue(ADataRow, i, DataRowVersion.Current);
 
-                    if (CurrentValue.GetType() != typeof(double))
-                    {
-                        ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, item);
-                        ReturnValue[Counter].Value = item;
-                        Counter = Counter + 1;
-                    }
+                    ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, item);
+                    ReturnValue[Counter].Value = item;
+                    Counter = Counter + 1;
                 }
             }
 
@@ -1246,8 +1235,7 @@ namespace Ict.Common.Data
                 {
                     if (NotEquals(ADataRow, i, ref CurrentValue))
                     {
-                        // problem with mono: NULL is printed directly in the statement, no odbc parameter
-                        if ((CurrentValue != System.DBNull.Value) && (CurrentValue.GetType() != typeof(double)))
+                        if (CurrentValue != System.DBNull.Value)
                         {
                             Counter = Counter + 1;
                         }
@@ -1272,8 +1260,7 @@ namespace Ict.Common.Data
                 {
                     if (NotEquals(ADataRow, i, ref CurrentValue))
                     {
-                        // problem with mono: NULL is printed directly in the statement, no odbc parameter
-                        if ((CurrentValue != System.DBNull.Value) && (CurrentValue.GetType() != typeof(double)))
+                        if (CurrentValue != System.DBNull.Value)
                         {
                             ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, CurrentValue);
                             ReturnValue[Counter].Value = CurrentValue;
@@ -1393,17 +1380,8 @@ namespace Ict.Common.Data
                         First = false;
                     }
 
-                    // problem with mono: Decimal is printed directly in the statement, no odbc parameter
                     CurrentValue = GetSafeValue(ADataRow, Counter, DataRowVersion.Current);
-
-                    if (CurrentValue.GetType() == typeof(double))
-                    {
-                        ReturnValue = ReturnValue + CurrentValue.ToString();
-                    }
-                    else
-                    {
-                        ReturnValue = ReturnValue + '?';
-                    }
+                    ReturnValue = ReturnValue + '?';
                 }
             }
 
@@ -1454,15 +1432,9 @@ namespace Ict.Common.Data
                                 First = false;
                             }
 
-                            // problem with mono: NULL is printed directly in the statement, no odbc parameter
                             if (CurrentValue == System.DBNull.Value)
                             {
                                 ReturnValue = ReturnValue + AColumnNames[Counter] + " = NULL";
-                            }
-                            // problem with mono: Decimal is printed directly in the statement, no odbc parameter
-                            else if (CurrentValue.GetType() == typeof(double))
-                            {
-                                ReturnValue = ReturnValue + AColumnNames[Counter] + " = " + CurrentValue.ToString();
                             }
                             else
                             {

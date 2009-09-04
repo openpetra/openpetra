@@ -319,7 +319,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 if (FCalculator.GenerateResultRemoteClient())
                 {
 #if DEBUGMODE
-                    FCalculator.GetParameters().Save("debugParameterReturn.xml");
+                    FCalculator.GetParameters().Save("debugParameterReturn.xml", true);
                     FCalculator.GetResults().WriteCSV(FCalculator.GetParameters(), "debugResultReturn.csv");
 #endif
 

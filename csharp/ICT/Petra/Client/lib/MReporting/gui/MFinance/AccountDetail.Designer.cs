@@ -339,7 +339,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.txtStartPeriod.Location = new System.Drawing.Point(2,2);
             this.txtStartPeriod.Name = "txtStartPeriod";
-            this.txtStartPeriod.Size = new System.Drawing.Size(150, 28);
+            this.txtStartPeriod.Size = new System.Drawing.Size(30, 28);
             //
             // lblStartPeriod
             //
@@ -353,7 +353,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.txtEndPeriod.Location = new System.Drawing.Point(2,2);
             this.txtEndPeriod.Name = "txtEndPeriod";
-            this.txtEndPeriod.Size = new System.Drawing.Size(150, 28);
+            this.txtEndPeriod.Size = new System.Drawing.Size(30, 28);
             //
             // lblEndPeriod
             //

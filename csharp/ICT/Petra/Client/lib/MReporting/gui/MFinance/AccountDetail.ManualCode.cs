@@ -51,23 +51,25 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 TFinanceControls.InitialiseAccountHierarchyList(ref cmbAccountHierarchy, FLedgerNumber);
                 TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
 
+                txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+
                 // if there is only one hierarchy, disable the control
                 this.cmbAccountHierarchy.Enabled = (this.cmbAccountHierarchy.Count > 1);
-
-                // TODO does not seem to work to select the first and last item; SelectedIndex is broken?
-                // or is this not important at all, because of prepared initial settings?
                 cmbAccountStart.SelectedIndex = 0;
                 cmbAccountEnd.SelectedIndex = cmbAccountEnd.Count - 1;
                 cmbCostCentreStart.SelectedIndex = 0;
                 cmbCostCentreEnd.SelectedIndex = cmbCostCentreEnd.Count - 1;
-                clbAccounts.SetCheckedStringList("");     // TODO: select first account?
-                clbCostCentres.SetCheckedStringList(FLedgerNumber + "00S");
+                clbAccounts.SetCheckedStringList("");
+                clbCostCentres.SetCheckedStringList("");
+
+                FPetraUtilsObject.LoadDefaultSettings();
             }
         }
 
         private void ReadControlsManual(TRptCalculator ACalc)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
+            ACalc.AddParameter("param_with_analysis_attributes", false);
         }
     }
 }
