@@ -283,28 +283,28 @@ namespace Ict.Common.Controls
         {
             get
             {
-                System.Object ReturnValue;
-
                 if (DesignMode)
                 {
                     // messagebox.Show('I am in DesignMode!');
-                    ReturnValue = base.SelectedItem;
+                    return base.SelectedItem;
+                }
+
+                if ((DataSource == null) && Items.Count > 0 && SelectedIndex > -1)
+	            {
+                    // use the normal Items values, not the datasource etc
+                    return Convert.ToString(Items[this.SelectedIndex]);
+	            }
+            	
+                DataRowView mRowView = GetSelectedRowView();
+
+                if (mRowView == null)
+                {
+                    return System.DBNull.Value;
                 }
                 else
                 {
-                    DataRowView mRowView = GetSelectedRowView();
-
-                    if (mRowView == null)
-                    {
-                        ReturnValue = System.DBNull.Value;
-                    }
-                    else
-                    {
-                        ReturnValue = mRowView[GetColumnNrOfValueMember()];
-                    }
+                    return mRowView[GetColumnNrOfValueMember()];
                 }
-
-                return ReturnValue;
             }
 
             set
@@ -394,14 +394,12 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void SetDataSourceStringList(StringCollection AList)
         {
-            DataRow row;
-
             FStringTable = new DataTable();
             FStringTable.Columns.Add(new DataColumn("VALUE", typeof(String)));
 
             foreach (String s in AList)
             {
-                row = FStringTable.NewRow();
+                DataRow row = FStringTable.NewRow();
                 row[0] = s;
                 FStringTable.Rows.Add(row);
             }
@@ -1533,14 +1531,16 @@ namespace Ict.Common.Controls
                 ColumnNumber = GetColumnNrOfValueMember();
             }
 
-            if ((this.SelectedItem != null) && (this.SelectedItem != System.DBNull.Value))
+            if ((this.SelectedItem != null) && (SelectedIndex != -1) && (this.SelectedItem != System.DBNull.Value))
             {
-                DataRowView rowView = GetSelectedRowView();
-
-                if (rowView != null)
-                {
-                    ReturnValue = rowView[ColumnNumber].ToString();
-                }
+            	if (this.Items[SelectedIndex] is System.Data.DataRowView)
+            	{
+            		ReturnValue = ((System.Data.DataRowView)this.Items[SelectedIndex])[ColumnNumber].ToString();
+            	}
+            	else if (this.Items[SelectedIndex] is System.String)
+            	{
+            		ReturnValue = (string)this.Items[SelectedIndex];
+            	}
             }
             else
             {

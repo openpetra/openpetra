@@ -140,9 +140,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.clbCostCentres = new Ict.Common.Controls.TClbVersatile();
             this.btnUnselectAllCostCentres = new System.Windows.Forms.Button();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
-            this.tbbGenerate = new System.Windows.Forms.ToolStripButton();
-            this.tbbSave = new System.Windows.Forms.ToolStripButton();
-            this.tbbSaveAs = new System.Windows.Forms.ToolStripButton();
+            this.tbbGenerateReport = new System.Windows.Forms.ToolStripButton();
+            this.tbbSaveSettings = new System.Windows.Forms.ToolStripButton();
+            this.tbbSaveSettingsAs = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSaveSettings = new System.Windows.Forms.ToolStripMenuItem();
@@ -878,26 +878,30 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.tabReportSettings.Controls.Add(this.tpgReportSpecific);
             this.tabReportSettings.Controls.Add(this.tpgCCAccount);
             //
-            // tbbGenerate
+            // tbbGenerateReport
             //
-            this.tbbGenerate.Name = "tbbGenerate";
-            this.tbbGenerate.AutoSize = true;
-            this.tbbGenerate.Click += new System.EventHandler(this.actGenerate);
-            this.tbbGenerate.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbGenerate.Glyph"));
-            this.tbbGenerate.ToolTipText = "Generate the report";
-            this.tbbGenerate.Text = "&Generate";
+            this.tbbGenerateReport.Name = "tbbGenerateReport";
+            this.tbbGenerateReport.AutoSize = true;
+            this.tbbGenerateReport.Click += new System.EventHandler(this.actGenerateReport);
+            this.tbbGenerateReport.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbGenerateReport.Glyph"));
+            this.tbbGenerateReport.ToolTipText = "Generate the report";
+            this.tbbGenerateReport.Text = "&Generate";
             //
-            // tbbSave
+            // tbbSaveSettings
             //
-            this.tbbSave.Name = "tbbSave";
-            this.tbbSave.AutoSize = true;
-            this.tbbSave.Text = "Save";
+            this.tbbSaveSettings.Name = "tbbSaveSettings";
+            this.tbbSaveSettings.AutoSize = true;
+            this.tbbSaveSettings.Click += new System.EventHandler(this.actSaveSettings);
+            this.tbbSaveSettings.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbSaveSettings.Glyph"));
+            this.tbbSaveSettings.Text = "&Save Settings";
             //
-            // tbbSaveAs
+            // tbbSaveSettingsAs
             //
-            this.tbbSaveAs.Name = "tbbSaveAs";
-            this.tbbSaveAs.AutoSize = true;
-            this.tbbSaveAs.Text = "SaveAs";
+            this.tbbSaveSettingsAs.Name = "tbbSaveSettingsAs";
+            this.tbbSaveSettingsAs.AutoSize = true;
+            this.tbbSaveSettingsAs.Click += new System.EventHandler(this.actSaveSettingsAs);
+            this.tbbSaveSettingsAs.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbSaveSettingsAs.Glyph"));
+            this.tbbSaveSettingsAs.Text = "Save Settings &As...";
             //
             // tbrMain
             //
@@ -905,32 +909,38 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.tbrMain.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           tbbGenerate,
-                        tbbSave,
-                        tbbSaveAs});
+                           tbbGenerateReport,
+                        tbbSaveSettings,
+                        tbbSaveSettingsAs});
             //
             // mniSaveSettings
             //
             this.mniSaveSettings.Name = "mniSaveSettings";
             this.mniSaveSettings.AutoSize = true;
+            this.mniSaveSettings.Click += new System.EventHandler(this.actSaveSettings);
+            this.mniSaveSettings.Image = ((System.Drawing.Bitmap)resources.GetObject("mniSaveSettings.Glyph"));
             this.mniSaveSettings.Text = "&Save Settings";
             //
             // mniSaveSettingsAs
             //
             this.mniSaveSettingsAs.Name = "mniSaveSettingsAs";
             this.mniSaveSettingsAs.AutoSize = true;
+            this.mniSaveSettingsAs.Click += new System.EventHandler(this.actSaveSettingsAs);
+            this.mniSaveSettingsAs.Image = ((System.Drawing.Bitmap)resources.GetObject("mniSaveSettingsAs.Glyph"));
             this.mniSaveSettingsAs.Text = "Save Settings &As...";
             //
             // mniMaintainSettings
             //
             this.mniMaintainSettings.Name = "mniMaintainSettings";
             this.mniMaintainSettings.AutoSize = true;
+            this.mniMaintainSettings.Click += new System.EventHandler(this.actMaintainSettings);
             this.mniMaintainSettings.Text = "&Maintain Settings...";
             //
             // mniLoadSettingsDialog
             //
             this.mniLoadSettingsDialog.Name = "mniLoadSettingsDialog";
             this.mniLoadSettingsDialog.AutoSize = true;
+            this.mniLoadSettingsDialog.Click += new System.EventHandler(this.actLoadSettingsDialog);
             this.mniLoadSettingsDialog.Text = "&Open...";
             //
             // mniSeparator0
@@ -943,36 +953,42 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.mniLoadSettings1.Name = "mniLoadSettings1";
             this.mniLoadSettings1.AutoSize = true;
+            this.mniLoadSettings1.Click += new System.EventHandler(this.actLoadSettings);
             this.mniLoadSettings1.Text = "RecentSettings";
             //
             // mniLoadSettings2
             //
             this.mniLoadSettings2.Name = "mniLoadSettings2";
             this.mniLoadSettings2.AutoSize = true;
+            this.mniLoadSettings2.Click += new System.EventHandler(this.actLoadSettings);
             this.mniLoadSettings2.Text = "RecentSettings";
             //
             // mniLoadSettings3
             //
             this.mniLoadSettings3.Name = "mniLoadSettings3";
             this.mniLoadSettings3.AutoSize = true;
+            this.mniLoadSettings3.Click += new System.EventHandler(this.actLoadSettings);
             this.mniLoadSettings3.Text = "RecentSettings";
             //
             // mniLoadSettings4
             //
             this.mniLoadSettings4.Name = "mniLoadSettings4";
             this.mniLoadSettings4.AutoSize = true;
+            this.mniLoadSettings4.Click += new System.EventHandler(this.actLoadSettings);
             this.mniLoadSettings4.Text = "RecentSettings";
             //
             // mniLoadSettings5
             //
             this.mniLoadSettings5.Name = "mniLoadSettings5";
             this.mniLoadSettings5.AutoSize = true;
+            this.mniLoadSettings5.Click += new System.EventHandler(this.actLoadSettings);
             this.mniLoadSettings5.Text = "RecentSettings";
             //
             // mniLoadSettings
             //
             this.mniLoadSettings.Name = "mniLoadSettings";
             this.mniLoadSettings.AutoSize = true;
+            this.mniLoadSettings.Click += new System.EventHandler(this.actLoadSettings);
             this.mniLoadSettings.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniLoadSettingsDialog,
                         mniSeparator0,
@@ -981,7 +997,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                         mniLoadSettings3,
                         mniLoadSettings4,
                         mniLoadSettings5});
-            this.mniLoadSettings.Text = "&Load Settings";
+            this.mniLoadSettings.Text = "RecentSettings";
             //
             // mniSeparator1
             //
@@ -993,7 +1009,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.mniGenerateReport.Name = "mniGenerateReport";
             this.mniGenerateReport.AutoSize = true;
-            this.mniGenerateReport.Text = "&Generate Report...";
+            this.mniGenerateReport.Click += new System.EventHandler(this.actGenerateReport);
+            this.mniGenerateReport.Image = ((System.Drawing.Bitmap)resources.GetObject("mniGenerateReport.Glyph"));
+            this.mniGenerateReport.ToolTipText = "Generate the report";
+            this.mniGenerateReport.Text = "&Generate";
             //
             // mniSeparator2
             //
@@ -1212,9 +1231,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private Ict.Common.Controls.TClbVersatile clbCostCentres;
         private System.Windows.Forms.Button btnUnselectAllCostCentres;
         private System.Windows.Forms.ToolStrip tbrMain;
-        private System.Windows.Forms.ToolStripButton tbbGenerate;
-        private System.Windows.Forms.ToolStripButton tbbSave;
-        private System.Windows.Forms.ToolStripButton tbbSaveAs;
+        private System.Windows.Forms.ToolStripButton tbbGenerateReport;
+        private System.Windows.Forms.ToolStripButton tbbSaveSettings;
+        private System.Windows.Forms.ToolStripButton tbbSaveSettingsAs;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniSaveSettings;

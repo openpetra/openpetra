@@ -175,9 +175,9 @@ namespace {#NAMESPACE}
         mniSaveSettings.Enabled = AEnabled;
         mniSaveSettingsAs.Enabled = AEnabled;
         mniMaintainSettings.Enabled = AEnabled;
-        //tbbLoad.Enabled = AEnabled;
-        tbbSave.Enabled = AEnabled;
-        tbbSaveAs.Enabled = AEnabled;
+        //tbbLoadSettings.Enabled = AEnabled;
+        tbbSaveSettings.Enabled = AEnabled;
+        tbbSaveSettingsAs.Enabled = AEnabled;
     }
 
     /// <summary>
@@ -190,17 +190,35 @@ namespace {#NAMESPACE}
         if (ABusy == false)
         {
             mniGenerateReport.Text = "&Generate Report...";
-            tbbGenerate.Text = "Generate";
-            tbbGenerate.ToolTipText = "Generate a report and display the preview";
+            tbbGenerateReport.Text = "Generate";
+            tbbGenerateReport.ToolTipText = "Generate a report and display the preview";
         }
         else
         {
             mniGenerateReport.Text = "&Cancel Report";
-            tbbGenerate.Text = "Cancel";
-            tbbGenerate.ToolTipText = "Cancel the calculation of the report (after cancelling it might still take a while)";
+            tbbGenerateReport.Text = "Cancel";
+            tbbGenerateReport.ToolTipText = "Cancel the calculation of the report (after cancelling it might still take a while)";
         }
     }
-    
+
+    /// <summary>
+    /// this is used for writing the captions of the menu items and toolbar buttons for recently used report settings
+    /// </summary>
+    /// <returns>false if an item with that index does not exist</returns>
+    public bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem)
+    {
+        if (AIndex < 0 || AIndex >= mniLoadSettings.DropDownItems.Count - 2)
+        {
+            mniItem = null;
+            tbbItem = null;
+            return false;
+        }
+        mniItem = mniLoadSettings.DropDownItems[AIndex + 2];
+        // TODO
+        tbbItem = null;
+        return true;
+    }
+
 #region Action Handling
 
     {#ACTIONHANDLERS}

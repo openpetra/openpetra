@@ -600,6 +600,7 @@ namespace Ict.Petra.Client.CommonControls
             cmbAutoPopulated.cmbCombobox.BeginUpdate();
             FDataView = new DataView(FDataCache_ListTable);
             FDataView.RowFilter = FFilter;
+            FDataView.Sort = ADisplayDBName;
             cmbAutoPopulated.cmbCombobox.DisplayMember = ADisplayDBName;
             cmbAutoPopulated.cmbCombobox.ValueMember = AValueDBName;
             cmbAutoPopulated.cmbCombobox.DisplayInColumn1 = ADisplayDBName;

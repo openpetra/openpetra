@@ -32,6 +32,7 @@ using System.Windows.Forms;
 using System.Data;
 using System.Resources;
 using System.Threading;
+using Mono.Unix;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
@@ -206,13 +207,12 @@ namespace Ict.Petra.Client.MReporting.Gui
             FColumnParameters = new TParameterList();
             FColumnParameters.Add("MaxDisplayColumns", 0);
 
-#if TODO
-            FWindowCaption = this.Text;
+            FWindowCaption = FWinForm.Text;
             string SettingsDirectory = TClientSettings.ReportingPathReportSettings;
             this.FStoredSettings = new TStoredSettings(FReportName, SettingsDirectory);
             UpdateLoadingMenu(this.FStoredSettings.GetRecentlyUsedSettings());
             FSelectedColumn = -1;
-#endif
+
             return ReturnValue;
         }
 
@@ -428,6 +428,247 @@ namespace Ict.Petra.Client.MReporting.Gui
 // TODO            EnableDisableToolbar(true);
         }
 
+        #region Manage Settings
+
+        /// <summary>
+        /// This procedure loads the available saved settings into the Load menu
+        /// 
+        /// </summary>
+        protected void UpdateLoadingMenu(StringCollection ARecentlyUsedSettings)
+        {
+            for (System.Int32 Counter = 0; Counter <= ARecentlyUsedSettings.Count - 1; Counter++)
+            {
+            	ToolStripItem mniItem, tbbItem;
+                if (((IFrmReporting)FTheForm).GetRecentSettingsItems(Counter, out mniItem, out tbbItem))
+                {
+                    mniItem.Text = ARecentlyUsedSettings[Counter];
+                    // TODO tbbItem.Text = ARecentlyUsedSettings[Counter];
+                    mniItem.Visible = true;
+                    // TODO tbbItem.Visible = true;
+                }
+            }
+
+            for (System.Int32 Counter = ARecentlyUsedSettings.Count; true; Counter++)
+            {
+               	ToolStripItem mniItem, tbbItem;
+               	if (((IFrmReporting)FTheForm).GetRecentSettingsItems(Counter, out mniItem, out tbbItem))
+               	{
+                	mniItem.Visible = false;
+                	// TODO tbbItem.Visible = false;
+               	}
+               	else
+               	{
+               		break;
+               	}
+            }
+        }
+
+        /// <summary>
+        /// This procedure loads the parameters of the given settings
+        /// </summary>
+        protected void LoadSettings(String ASettingsName)
+        {
+            TParameterList Parameters;
+            StringCollection RecentlyUsedSettings;
+
+            FCurrentSettingsName = ASettingsName;
+            Parameters = new TParameterList();
+            RecentlyUsedSettings = FStoredSettings.LoadSettings(ref FCurrentSettingsName, ref Parameters);
+
+            // set the title of the window
+            if (FCurrentSettingsName.Length > 0)
+            {
+                FWinForm.Text = FWindowCaption + ": " + FCurrentSettingsName;
+            }
+            else
+            {
+                FWinForm.Text = FWindowCaption;
+            }
+
+            SetControls(Parameters);
+            UpdateLoadingMenu(RecentlyUsedSettings);
+        }
+
+        /// <summary>
+        /// This procedure loads the parameters of the default settings;
+        /// at the moment this is implemented to use the last used settings
+        /// 
+        /// </summary>
+        protected void LoadDefaultSettings()
+        {
+            StringCollection RecentlyUsedSettings;
+
+            RecentlyUsedSettings = FStoredSettings.GetRecentlyUsedSettings();
+
+            if (RecentlyUsedSettings.Count > 0)
+            {
+                LoadSettings(RecentlyUsedSettings[0]);
+            }
+        }
+
+        /// <summary>
+        /// has anything changed in the currently selected column? 
+        /// if yes, show error message; telling the user to save changes first
+        /// </summary>
+        /// <returns>true if column has changed and error message was displayed</returns>
+        private bool ColumnChangedWithErrorMessage(string AFailedAction)
+        {
+#if TODO        	
+            if (ColumnChanged(FSelectedColumn))
+            {
+                MessageBox.Show(
+                    AFailedAction + "." + Environment.NewLine + "Please first apply the changes to the current column, " +
+                    Environment.NewLine +
+                    "or cancel the changes.",
+                    "Column changed");
+                return true;
+            }
+            else
+            {
+				SelectColumn(-1);
+            }
+#endif
+            return false;
+        }
+        
+        /// <summary>
+        /// show a dialog with all available stored settings for this report
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void MI_LoadSettingsDialog_Click(System.Object sender, System.EventArgs e)
+        {
+            if (ColumnChangedWithErrorMessage(Catalog.GetString("Settings cannot be loaded")))
+            {
+            	return;
+            }
+
+            TFrmSettingsLoad SettingsDialog = new TFrmSettingsLoad(FStoredSettings);
+
+            if (SettingsDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                LoadSettings(SettingsDialog.GetNewName());
+            }
+        }
+
+        /// <summary>
+        /// load settings from menu, recently used settings
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void MI_LoadSettings_Click(System.Object sender, System.EventArgs e)
+        {
+            if (ColumnChangedWithErrorMessage(Catalog.GetString("Settings cannot be loaded")))
+            {
+                return;
+            }
+
+            ToolStripItem ctrl = (ToolStripItem)sender;
+            if (ctrl.Name.Substring(3).StartsWith("LoadSettings"))
+            {
+	            LoadSettings(ctrl.Text);
+            }
+
+        }
+
+        /// <summary>
+        /// save report settings with a new name
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void MI_SaveSettingsAs_Click(System.Object sender, System.EventArgs e)
+        {
+            if (ColumnChangedWithErrorMessage(Catalog.GetString("Settings cannot be saved")))
+            {
+                return;
+            }
+
+            // read the settings and parameters from the controls
+            if (!ReadControlsWithErrorHandling())
+            {
+                return;
+            }
+
+            if (FCurrentSettingsName == "")
+            {
+            	FCurrentSettingsName = FCurrentReport;
+            }
+            
+            TFrmSettingsSave SettingsDialog = new TFrmSettingsSave(FStoredSettings, FCurrentSettingsName);
+
+            if (SettingsDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+            	StringCollection RecentlyUsedSettings = null;
+
+            	FCurrentSettingsName = SettingsDialog.GetNewName();
+
+                // set the title of the window
+                FWinForm.Text = FWindowCaption + ": " + FCurrentSettingsName;
+                try
+                {
+                    RecentlyUsedSettings = this.FStoredSettings.SaveSettings(FCurrentSettingsName, FCalculator.GetParameters());
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Not a valid name. Please use letters numbers and underscores etc, values not saved");
+                    FWinForm.Text = FWindowCaption + ": Not a valid name, values not saved!";
+                }
+
+                if (RecentlyUsedSettings != null)
+                {
+                    UpdateLoadingMenu(RecentlyUsedSettings);
+                }
+            }
+        }
+
+        /// <summary>
+        /// save report settings; if those are the system default settings, the user still has to enter a new name
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void MI_SaveSettings_Click(System.Object sender, System.EventArgs e)
+        {
+            if (ColumnChangedWithErrorMessage(Catalog.GetString("Settings cannot be saved")))
+            {
+                return;
+            }
+
+            if ((FCurrentSettingsName.Length == 0) || (FStoredSettings.IsSystemSettings(FCurrentSettingsName)))
+            {
+                MI_SaveSettingsAs_Click(sender, e);
+            }
+            else
+            {
+                // read the settings and parameters from the controls
+                if (!ReadControlsWithErrorHandling())
+                {
+                    return;
+                }
+
+                StringCollection RecentlyUsedSettings = this.FStoredSettings.SaveSettings(FCurrentSettingsName, FCalculator.GetParameters());
+
+                if (RecentlyUsedSettings != null)
+                {
+                    UpdateLoadingMenu(RecentlyUsedSettings);
+                }
+            }
+        }
+
+        /// <summary>
+        /// maintain existing report settings (rename, delete)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void MI_MaintainSettings_Click(System.Object sender, System.EventArgs e)
+        {
+            TFrmSettingsMaintain SettingsDialog;
+
+            SettingsDialog = new TFrmSettingsMaintain(FStoredSettings);
+            SettingsDialog.ShowDialog();
+            UpdateLoadingMenu(this.FStoredSettings.GetRecentlyUsedSettings());
+        }
+        #endregion
+        
         #region Parameter/Settings Handling
 
         /// <summary>
@@ -647,5 +888,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         /// <param name="AParameters"></param>
         void SetControls(TParameterList AParameters);
+        
+        /// <summary>
+        /// this is used for writing the captions of the menu items and toolbar buttons for recently used report settings
+        /// </summary>
+        /// <returns>false if an item with that index does not exist</returns>
+        bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem);
     }
 }

@@ -103,7 +103,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 "}" + Environment.NewLine +
                 "else" + Environment.NewLine +
                 "{" + Environment.NewLine +
-                "  ACalc.AddParameter(\"" + paramName + "\", \"\");" +
+                "  ACalc.AddParameter(\"" + paramName + "\", \"\");" + Environment.NewLine +
                 "}" + Environment.NewLine);
             writer.Template.AddToCodelet("SETCONTROLS",
                 controlName + ".SelectedValue = " +

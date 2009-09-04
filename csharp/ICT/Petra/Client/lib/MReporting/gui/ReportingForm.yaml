@@ -6,7 +6,12 @@ RootNode:
     #don't generate this file with designer code, because it should not have the menuitems and toolbar
     FormType: abstract
     Actions:
-        actGenerate: {Label=&Generate, Tooltip=Generate the report, Image=Go.ico, ActionClick=FPetraUtilsObject.MI_GenerateReport_Click}
+        actGenerateReport: {Label=&Generate, Tooltip=Generate the report, Image=Go.ico, ActionClick=FPetraUtilsObject.MI_GenerateReport_Click}
+        actSaveSettingsAs: {Label=Save Settings &As..., Image=SaveAs.ico, ActionClick=FPetraUtilsObject.MI_SaveSettingsAs_Click}
+        actSaveSettings: {Label=&Save Settings, Image=Save.ico, ActionClick=FPetraUtilsObject.MI_SaveSettings_Click}
+        actLoadSettingsDialog: {Label=&Open..., ActionClick=FPetraUtilsObject.MI_LoadSettingsDialog_Click}
+        actLoadSettings: {Label=RecentSettings, ActionClick=FPetraUtilsObject.MI_LoadSettings_Click}
+        actMaintainSettings: {Label=&Maintain Settings..., ActionClick=FPetraUtilsObject.MI_MaintainSettings_Click}
     Controls:
         tabReportSettings:
             Dock: Fill
@@ -38,20 +43,20 @@ RootNode:
         mniFile:
             mniLoadSettings:
                 Label: &Load Settings
-                mniLoadSettingsDialog: {Label=&Open...}
+                mniLoadSettingsDialog:
                 mniSeparator: {Label=-}
-                mniLoadSettings1: {Label=RecentSettings}
-                mniLoadSettings2: {Label=RecentSettings}
-                mniLoadSettings3: {Label=RecentSettings}
-                mniLoadSettings4: {Label=RecentSettings}
-                mniLoadSettings5: {Label=RecentSettings}
-            mniSaveSettings: {Label=&Save Settings}
-            mniSaveSettingsAs: {Label=Save Settings &As...}
-            mniMaintainSettings: {Label=&Maintain Settings...}
+                mniLoadSettings1: {Action=actLoadSettings}
+                mniLoadSettings2: {Action=actLoadSettings}
+                mniLoadSettings3: {Action=actLoadSettings}
+                mniLoadSettings4: {Action=actLoadSettings}
+                mniLoadSettings5: {Action=actLoadSettings}
+            mniSaveSettings:
+            mniSaveSettingsAs:
+            mniMaintainSettings:
             mniSeparator: {Label=-}
-            mniGenerateReport: {Label=&Generate Report...}
+            mniGenerateReport:
             mniSeparator: {Label=-}
     Toolbar:
-        tbbGenerate: {Action=actGenerate}
-        tbbSave: {Action=actSaveSetting, Image=Save.ico}
-        tbbSaveAs: {Action=actSaveSettingAs, Image=SaveAs.ico}
+        tbbGenerateReport:
+        tbbSaveSettings:
+        tbbSaveSettingsAs:
