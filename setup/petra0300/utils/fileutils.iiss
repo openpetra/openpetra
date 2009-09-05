@@ -3,6 +3,7 @@ function ReplaceInTextFile(Filename, OriginalText, NewText: String; CaseSensitiv
 var
   ReplacedSuccessfully: Boolean;
   FileString: String;
+  FileStringAnsi: AnsiString;
   LowerFileString: String;
   LowerOriginalText: String;
   NumberReplacements: LongInt;
@@ -13,12 +14,13 @@ begin
   NumberReplacements := 0;
 
   { Attempt to open the file and read it into a string }
-  if (LoadStringFromFile(Filename, FileString))
+  if (LoadStringFromFile(Filename, FileStringAnsi))
   then begin
+    FileString := FileStringAnsi;
     if (CaseSensitive)
     then begin
       { Change the OriginalText, replacing only if an exact match, including case }
-      StringChange(FileString, OriginalText, NewText);
+      StringChangeEx(FileString, OriginalText, NewText, true);
 
       { Since we don't know how many replacements, just set to none }
       NumberReplacements := 0;
