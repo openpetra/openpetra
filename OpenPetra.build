@@ -245,6 +245,7 @@
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
+             <echo message="please run sudo ls before calling this, then you don't need to enter a password for postgres user"/>
              <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS petra;" database="template1"/>
              <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE petra;" database="template1"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="petra"/>
@@ -742,20 +743,11 @@
         <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll"
                     tofile="${setupDir}/bin30/System.Data.SQLite.dll"/>
        
-        <foreach item="File" property="filename">
-            <in>
-                <items>
-                    <include name="${OpenPetraRoot.dir}/i18n/**.mo" />
-                    <exclude name="${OpenPetraRoot.dir}/i18n/new.mo" />
-                </items>
-            </in>
-            <do>
-                <property name="languageid" value="${path::get-file-name-without-extension(filename)}"/>
-                <mkdir dir="${setupDir}/bin30/locale/${languageid}/LC_MESSAGES"/>
-                <copy file="${filename}"
-                    tofile="${setupDir}/bin30/locale/${languageid}/LC_MESSAGES/i18n"/>
-            </do>
-        </foreach>
+        <copy todir="${setupDir}/bin30/locale/">
+           <fileset basedir="${OpenPetraRoot.dir}/setup/petra0300/i18n/locale">
+               <include name="**/*.mo" />
+           </fileset> 
+        </copy>
         
         <copy todir="${setupDir}/etc30">
             <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/">
