@@ -11,17 +11,15 @@ RootNode:
         actNew: {Label=&Add, ActionClick=NewRow}
     Controls:
         pnlContent:
-            Controls: [pnlInfo, pnlTransactions]
+            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
             Dock: Fill
         pnlInfo:
             Controls:
                 Row0: [txtLedgerNumber, txtBatchNumber, txtJournalNumber]
+            Dock: Top
         txtLedgerNumber: {ReadOnly=true, Label=Ledger}
         txtBatchNumber: {ReadOnly=true, Label=Batch}
         txtJournalNumber: {ReadOnly=true, Label=Journal}
-        pnlTransactions:
-            Controls: [pnlDetailGrid, pnlDetails]
-            Dock: Fill
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]

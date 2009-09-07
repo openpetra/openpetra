@@ -13,10 +13,11 @@ RootNode:
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
     Controls:
         pnlContent:
-            Controls:
-                Row0: [pnlLedgerInfo, rgrShowBatches]
-                Row1: [pnlBatches]
             Dock: Fill
+            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+        pnlInfo: 
+            Controls: [pnlLedgerInfo, rgrShowBatches]
+            Dock: Top
         rgrShowBatches: 
             Label: Show batches available for
             ControlsOrientation: horizontal
@@ -25,10 +26,6 @@ RootNode:
         pnlLedgerInfo:
             Controls: [txtLedgerNumber]
         txtLedgerNumber: {ReadOnly=true, Label=Ledger}
-        pnlBatches:
-            Controls: [pnlDetailGrid, pnlDetails]
-            Dock: Fill
-            ColSpan: 2
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]

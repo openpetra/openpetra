@@ -43,7 +43,7 @@ using Ict.Testing.NUnitPetraClient;
 
 namespace Tests.Reporting
 {
-    /// This is a test for the reports. 
+    /// This is a test for the reports.
     /// It runs as a NUnit test, and the login is defined in the config file.
     [TestFixture]
     public class TReportingTest : System.Object

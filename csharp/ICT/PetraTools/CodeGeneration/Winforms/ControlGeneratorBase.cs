@@ -268,11 +268,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "Dock"))
             {
                 writer.SetControlProperty(ctrl, "Dock");
+            }
 
-                if (TYml2Xml.GetAttribute(ctrl.xmlNode, "Dock").ToLower() != "fill")
-                {
-                    writer.SetControlProperty(ctrl.controlName, "AutoSize", "true");
-                }
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "Dock") && (TYml2Xml.GetAttribute(ctrl.xmlNode, "Dock").ToLower() == "fill"))
+            {
+                // no other size information required
             }
             else if (TYml2Xml.HasAttribute(ctrl.xmlNode, "Width"))
             {
@@ -280,6 +280,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         "Width") + ", " + FHeight.ToString() + ")");
             }
             else if (FAutoSize)
+            {
+                writer.SetControlProperty(ctrl.controlName, "AutoSize", "true");
+            }
+            else if (TYml2Xml.HasAttribute(ctrl.xmlNode, "Dock") && (TYml2Xml.GetAttribute(ctrl.xmlNode, "Dock").ToLower() != "fill"))
             {
                 writer.SetControlProperty(ctrl.controlName, "AutoSize", "true");
             }

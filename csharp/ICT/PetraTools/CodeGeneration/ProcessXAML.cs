@@ -40,12 +40,14 @@ namespace Ict.Tools.CodeGeneration
     public class ProcessXAML
     {
         String FXamlFilename;
+        String FSelectedLocalisation = null;
         SortedList FFormTypes = new SortedList();
         public SortedList FXmlNodes;
 
-        public ProcessXAML(string AFilename)
+        public ProcessXAML(string AFilename, string ASelectedLocalisation)
         {
             FXamlFilename = AFilename;
+            FSelectedLocalisation = ASelectedLocalisation;
         }
 
         public void AddWriter(String AFormType, System.Type AFormProcessor)
@@ -110,7 +112,7 @@ namespace Ict.Tools.CodeGeneration
                 TParseXAML yamlParser = new TParseXAML(ref codeStorage);
 
                 // should not need to be specific to special forms
-                yamlParser.LoadRecursively(FXamlFilename);
+                yamlParser.LoadRecursively(FXamlFilename, FSelectedLocalisation);
 
                 // todo: parse the existing cs file as well and merge into existing data from YAML file
                 // load the existing file if it exists

@@ -871,6 +871,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
+            if (ctrl.HasAttribute("Width") && ctrl.HasAttribute("Height"))
+            {
+                FWidth = Convert.ToInt32(ctrl.GetAttribute("Width"));
+                FHeight = Convert.ToInt32(ctrl.GetAttribute("Height"));
+                FAutoSize = false;
+            }
+            else if (ctrl.HasAttribute("Width") || ctrl.HasAttribute("Height"))
+            {
+                throw new Exception("Control " + ctrl.controlName + " must have both Width and Height attributes, or none");
+            }
+
             base.SetControlProperties(writer, ctrl);
             string ControlName = ctrl.controlName;
 
@@ -1016,9 +1027,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     newCtrl.SetAttribute("RadioChecked", "true");
                 }
 
-                if (TXMLParser.HasAttribute(curNode, "SuppressChangeDetection"))
+                if (TYml2Xml.HasAttribute(curNode, "SuppressChangeDetection"))
                 {
-                    newCtrl.SetAttribute("SuppressChangeDetection", TXMLParser.GetAttribute(curNode, "SuppressChangeDetection"));
+                    newCtrl.SetAttribute("SuppressChangeDetection", TYml2Xml.GetAttribute(curNode, "SuppressChangeDetection"));
                 }
 
                 Controls.Add(radioButtonName);

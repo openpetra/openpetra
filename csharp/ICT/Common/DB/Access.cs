@@ -427,10 +427,6 @@ namespace Ict.Common.DB
 
             try
             {
-                FSqlConnection.Open();
-
-                FLastDBAction = DateTime.Now;
-
                 if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log("    Connecting to " + ADataBaseType + ": " + CurrentConnectionInstance.GetConnectionString());
@@ -441,6 +437,10 @@ namespace Ict.Common.DB
                     TLogging.Log(
                         "    Connecting to " + ADataBaseType + ": " + CurrentConnectionInstance.GetConnectionString(), TLoggingType.ToConsole);
                 }
+
+                FSqlConnection.Open();
+
+                FLastDBAction = DateTime.Now;
             }
             catch (Exception exp)
             {

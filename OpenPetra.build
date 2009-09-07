@@ -505,7 +505,7 @@
 
     <target name="generateWinforms" depends="compilePetraTools" description="Generate Winforms User Interface">
         <!-- todo: go through all yaml files that have FormType different from abstract -->
-        <property name="generateWinformsParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file}"/>
+        <property name="generateWinformsParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation}"/>
         <property name="ClientPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/app/PetraClient/MainWindow.yaml ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MPartner/gui ${generateWinformsParameters}"/>
@@ -844,7 +844,7 @@
     </target>
     
     <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, translation, setupStandalone, setupRemote"/>
-    <target name="buildReleaseLinux" depends="switchToDebug, createSQLiteDB, createPostgreSQLDB, compileRelease, translation, setupLinuxServer"/>
+    <target name="buildReleaseLinux" depends="switchToDebug, createSQLiteDB, createPostgreSQLDB, generateWinforms, compileRelease, translation, setupLinuxServer"/>
     <target name="buildRelease">
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <call target="buildReleaseLinux"/>

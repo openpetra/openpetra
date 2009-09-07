@@ -36,9 +36,9 @@ namespace GenerateWinForms
 {
 class Program
 {
-    private static void ProcessFile(string filename)
+    private static void ProcessFile(string filename, string ASelectedLocalisation)
     {
-        ProcessXAML processor = new ProcessXAML(filename);
+        ProcessXAML processor = new ProcessXAML(filename, ASelectedLocalisation);
 
         // report is at the moment the only real different type of screen,
         // because it uses different controls
@@ -61,7 +61,7 @@ class Program
 
             if (!opts.HasValue("ymlfile"))
             {
-                Console.WriteLine("call: GenerateWinForms -ymlfile:c:\\test.yaml -petraxml:petra.xml");
+                Console.WriteLine("call: GenerateWinForms -ymlfile:c:\\test.yaml -petraxml:petra.xml -localisation:en");
                 Console.Write("Press any key to continue . . . ");
                 Console.ReadLine();
                 Environment.Exit(-1);
@@ -74,6 +74,13 @@ class Program
             if (!fullYmlfilePath.Contains("csharp/ICT"))
             {
                 Console.WriteLine("ymlfile must be below the csharp/ICT directory");
+            }
+
+            string SelectedLocalisation = null;             // none selected by default; winforms autosize works quite well
+
+            if (opts.HasValue("localisation"))
+            {
+                SelectedLocalisation = opts.GetValue("localisation");
             }
 
             CSParser.ICTPath = fullYmlfilePath.Substring(0, fullYmlfilePath.IndexOf("csharp/ICT") + "csharp/ICT".Length);
@@ -91,19 +98,23 @@ class Program
 
                 foreach (string file in collection)
                 {
-                    ProcessFile(file);
+                    ProcessFile(file, SelectedLocalisation);
                 }
             }
             else if (System.IO.Directory.Exists(ymlfileParam))
             {
                 foreach (string file in System.IO.Directory.GetFiles(ymlfileParam, "*.yaml"))
                 {
-                    ProcessFile(file);
+                    // only look for main files, not language specific files (*.XY.yaml)
+                    if (file[file.Length - 8] != '.')
+                    {
+                        ProcessFile(file, SelectedLocalisation);
+                    }
                 }
             }
             else
             {
-                ProcessFile(ymlfileParam);
+                ProcessFile(ymlfileParam, SelectedLocalisation);
             }
         }
         catch (Exception e)

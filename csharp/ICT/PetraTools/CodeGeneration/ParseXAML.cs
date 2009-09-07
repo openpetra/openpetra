@@ -109,9 +109,9 @@ namespace Ict.Tools.CodeGeneration
             // todo
         }
 
-        public Boolean LoadRecursively(string AXamlFilename)
+        public Boolean LoadRecursively(string AXamlFilename, string ASelectedLocalisation)
         {
-            return LoadRecursively(AXamlFilename, 0);
+            return LoadRecursively(AXamlFilename, ASelectedLocalisation, false, 0);
         }
 
         /**
@@ -120,11 +120,33 @@ namespace Ict.Tools.CodeGeneration
          * @param depth 0 is the last file that is derived from all base files
          */
         protected Boolean LoadRecursively(string AXamlFilename,
+            string ASelectedLocalisation,
+            bool AAlreadyGotLocalisation,
             Int32 depth)
         {
+            // check if file exists for localisation
+            string localisedFile = null;
+
+            if ((ASelectedLocalisation != null) && !AAlreadyGotLocalisation)
+            {
+                localisedFile = Path.GetDirectoryName(AXamlFilename) + Path.DirectorySeparatorChar +
+                                Path.GetFileNameWithoutExtension(AXamlFilename) + "." + ASelectedLocalisation + ".yaml";
+
+                // first check if there is such a file
+                if (!File.Exists(localisedFile))
+                {
+                    localisedFile = null;
+                }
+            }
+
+            if (localisedFile == null)
+            {
+                localisedFile = AXamlFilename;
+            }
+
             string baseyaml;
 
-            if (!TYml2Xml.ReadHeader(AXamlFilename, out baseyaml))
+            if (!TYml2Xml.ReadHeader(localisedFile, out baseyaml))
             {
                 throw new Exception("This is not an OpenPetra Yaml file");
             }
@@ -134,10 +156,12 @@ namespace Ict.Tools.CodeGeneration
                 LoadRecursively(System.IO.Path.GetDirectoryName(AXamlFilename) +
                     System.IO.Path.DirectorySeparatorChar +
                     baseyaml,
+                    ASelectedLocalisation,
+                    localisedFile != AXamlFilename,
                     depth - 1);
             }
 
-            Console.WriteLine("Loading " + AXamlFilename + "...");
+            Console.WriteLine("Loading " + localisedFile + "...");
 
             if ((depth == 0) && (FCodeStorage.FXmlNodes != null))
             {
@@ -145,11 +169,11 @@ namespace Ict.Tools.CodeGeneration
                 TYml2Xml.Tag((XmlNode)FCodeStorage.FXmlNodes["RootNode"]);
             }
 
-            TYml2Xml yml2xml = new TYml2Xml(AXamlFilename);
+            TYml2Xml yml2xml = new TYml2Xml(localisedFile);
             yml2xml.ParseYML2XML(FCodeStorage.FXmlDocument, depth);
 
             // for debugging:
-            FCodeStorage.FXmlDocument.Save(AXamlFilename + ".xml");
+            FCodeStorage.FXmlDocument.Save(localisedFile + ".xml");
 
             FCodeStorage.FXmlNodes = TYml2Xml.ReferenceNodes(FCodeStorage.FXmlDocument);
             FCodeStorage.FRootNode = (XmlNode)FCodeStorage.FXmlNodes["RootNode"];
