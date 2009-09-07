@@ -349,7 +349,7 @@ namespace Ict.Common
 
             while (localstr.IndexOf("\"\"") != -1)
             {
-                localstr = localstr.Replace("\"\"", "   ");
+                localstr = localstr.Replace("\"\"", "  ");
             }
 
             return localstr.IndexOf('"') + 1;
