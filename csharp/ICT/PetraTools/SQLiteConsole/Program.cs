@@ -72,7 +72,15 @@ class TSQLiteConsole
 
         try
         {
-            if (!InitDBConnection(settings.GetValue("file"), settings.GetValue("password")))
+            if (!System.IO.File.Exists(settings.GetValue("file")))
+            {
+                Console.WriteLine("database file " + settings.GetValue("file") + " does not exist");
+
+                // this is to avoid InitDBConnection trying to find/copy the base database
+                Environment.Exit(1);
+            }
+
+            if (!InitDBConnection(settings.GetValue("file"), settings.GetValue("password", "")))
             {
                 Console.WriteLine("cannot connect to database " + settings.GetValue("file"));
                 Environment.Exit(1);

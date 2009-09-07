@@ -430,12 +430,17 @@ namespace Ict.Common.DB
                 FSqlConnection.Open();
 
                 FLastDBAction = DateTime.Now;
-#if DEBUGMODE
+
                 if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log("    Connecting to " + ADataBaseType + ": " + CurrentConnectionInstance.GetConnectionString());
                 }
-#endif
+                else
+                {
+                    // always log to console which type of database and location/port we are connecting to
+                    TLogging.Log(
+                        "    Connecting to " + ADataBaseType + ": " + CurrentConnectionInstance.GetConnectionString(), TLoggingType.ToConsole);
+                }
             }
             catch (Exception exp)
             {
