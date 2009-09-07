@@ -58,6 +58,24 @@
             <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/Debug/System.Data.SQLite.dll" overwrite="true"/>
         </if>
     </target>
+    <target name="compileTesting" description="compile the Testing module">
+        <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Testing/Reporting/app.config"/>
+        <if test="${not file::exists(appconfigfile)}">
+            <copy file="${OpenPetraRoot.dir}/csharp/ICT/Testing/Reporting/app-sample.config"
+                tofile="${appconfigfile}"/>
+            <!-- app.config is part of the Tests.Reporting project and will be copied to _bin/${Output.dir}/Tests.Reporting.dll.config -->
+        </if>
+    
+        <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Testing.sln"/>
+        <call target="compileTemplate"/>
+
+        <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/${Output.dir}/Tests.Reporting.dll.config"/>
+        <if test="${not file::exists(appconfigfileBin)}">
+            <!-- mdbuild does not seem to copy the app file -->
+            <copy file="${appconfigfile}"
+                tofile="${appconfigfileBin}"/>
+        </if>
+    </target>
     <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServerAdmin, compilePetraServer, compilePetraClient"/>
     <target name="compileTemplate">
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
@@ -192,6 +210,9 @@
         <delete dir="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}" failonerror="false" />
         <delete dir="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/ObjCode" failonerror="false" />
         <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/*.txt" /></fileset></delete>
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/${Output.dir}" failonerror="false" />
+        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/ObjCode" failonerror="false" />
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/*.txt" /></fileset></delete>
     </target>
     
     <target name="createSQLStatements" depends="compilePetraTools" description="Create the SQL files.">
@@ -603,7 +624,7 @@
     </target>
 
     <target name="fixProjectFiles">
-        <ExecDotNet program="${PetraToolsExe.dir}/FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools,Testing"/>
     </target>
     
     <target name="switchToDebug">

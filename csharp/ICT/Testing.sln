@@ -1,0 +1,30 @@
+
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+# SharpDevelop 3.0.0.3800
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Reporting", "Testing\Reporting\Tests.Reporting.csproj", "{BA377109-67E1-4E95-BF24-758AE808109F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Common", "Testing\Common\Tests.Common.csproj", "{B153A068-F378-4DC5-8936-DF8F26D0C92F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Testing.NUnitClient", "Testing\NUnitPetraClient\Ict.Testing.NUnitClient.csproj", "{212F7EE5-B247-4924-93D9-93646CB6C804}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BA377109-67E1-4E95-BF24-758AE808109F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA377109-67E1-4E95-BF24-758AE808109F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA377109-67E1-4E95-BF24-758AE808109F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA377109-67E1-4E95-BF24-758AE808109F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B153A068-F378-4DC5-8936-DF8F26D0C92F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B153A068-F378-4DC5-8936-DF8F26D0C92F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B153A068-F378-4DC5-8936-DF8F26D0C92F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B153A068-F378-4DC5-8936-DF8F26D0C92F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{212F7EE5-B247-4924-93D9-93646CB6C804}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{212F7EE5-B247-4924-93D9-93646CB6C804}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{212F7EE5-B247-4924-93D9-93646CB6C804}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{212F7EE5-B247-4924-93D9-93646CB6C804}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -51,7 +51,16 @@ public class TFixSolutionForMD
         {
             string line = reader.ReadLine();
 
-            if (line.Contains("Any CPU.ActiveCfg"))
+            if (line.StartsWith("Microsoft Visual Studio Solution File"))
+            {
+                // monodevelop has problems with format 10.00 of vs 2008
+                writer.WriteLine("Microsoft Visual Studio Solution File, Format Version 9.00");
+            }
+            else if (line.StartsWith("# Visual Studio "))
+            {
+                writer.WriteLine("# Visual Studio 2005");
+            }
+            else if (line.Contains("Any CPU.ActiveCfg"))
             {
                 // correct order
                 writer.WriteLine(line);
