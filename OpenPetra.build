@@ -507,11 +507,11 @@
         <!-- todo: go through all yaml files that have FormType different from abstract -->
         <property name="generateWinformsParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation}"/>
         <property name="ClientPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client"/>
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/app/PetraClient/MainWindow.yaml ${generateWinformsParameters}"/>
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MPartner/gui ${generateWinformsParameters}"/>
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MPartner ${generateWinformsParameters}"/>
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MFinance ${generateWinformsParameters}"/>
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinforms.exe" commandline="-ymlfile:${ClientPath}/lib/MFinance/gui ${generateWinformsParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/app/PetraClient/MainWindow.yaml ${generateWinformsParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MPartner/gui ${generateWinformsParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MPartner ${generateWinformsParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MFinance ${generateWinformsParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MFinance/gui ${generateWinformsParameters}"/>
     </target>
 
     <target name="translationTemplate">

@@ -806,7 +806,9 @@ namespace Ict.Tools.CodeGeneration
 
                         while (newElement.Attributes.Count > 0)
                         {
-                            baseElement.Attributes.Append(newElement.Attributes[0]);
+                            XmlAttribute AttribToMove = newElement.Attributes[0];
+                            newElement.Attributes.Remove(AttribToMove);
+                            baseElement.Attributes.Append(AttribToMove);
                         }
                     }
                 }
@@ -899,8 +901,17 @@ namespace Ict.Tools.CodeGeneration
 
                 while (ANode.Attributes.Count > 0)
                 {
-                    // attribute is automatically moved, so no removal is necessary
-                    baseNode.Attributes.Append(ANode.Attributes[0]);
+                    // Mono requires the attribute to be removed first before adding it
+                    XmlAttribute origAttribute = ANode.Attributes[0];
+                    ANode.Attributes.Remove(origAttribute);
+                    if (baseNode.Attributes[origAttribute.Name] != null)
+                    {
+                        baseNode.Attributes[origAttribute.Name].Value = origAttribute.Value;
+                    }
+                    else
+                    {
+                        baseNode.Attributes.Append(origAttribute);
+                    }
                 }
             }
         }
