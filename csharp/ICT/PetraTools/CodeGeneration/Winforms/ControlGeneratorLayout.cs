@@ -246,8 +246,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FOrientation = eOrientation.Vertical;
 
-            if (TXMLParser.HasAttribute(ACtrl.xmlNode, "ControlsOrientation")
-                && (TXMLParser.GetAttribute(ACtrl.xmlNode, "ControlsOrientation").ToLower() == "horizontal"))
+            if (TYml2Xml.HasAttribute(ACtrl.xmlNode, "ControlsOrientation")
+                && (TYml2Xml.GetAttribute(ACtrl.xmlNode, "ControlsOrientation").ToLower() == "horizontal"))
             {
                 FOrientation = eOrientation.Horizontal;
             }

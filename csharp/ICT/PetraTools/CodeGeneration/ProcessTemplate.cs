@@ -26,6 +26,7 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -546,26 +547,23 @@ namespace Ict.Tools.CodeGeneration
         public Boolean processTemplateParameters(XmlNode curNode)
         {
             // add all attributes as template parameters
-            IEnumerator enumerator = curNode.Attributes.GetEnumerator();
+            SortedList <string, string>attrList = TYml2Xml.GetAttributes(curNode);
 
-            while (enumerator.MoveNext())
+            foreach (string key in attrList.Keys)
             {
-                XmlAttribute current = (XmlAttribute)enumerator.Current;
-
                 // some placeholders should be replaced after all other processing, e.g. Initialise_Ledger
-                AddToCodelet(current.Name, current.Value);
+                AddToCodelet(key, attrList[key]);
             }
 
             // there might be some sequences (e.g. XMLFILES)
-            curNode = curNode.FirstChild;
+            List <XmlNode>children = TYml2Xml.GetChildren(curNode, true);
 
-            while (curNode != null)
+            foreach (XmlNode child in children)
             {
-                string nodeValue = StringHelper.StrMerge(TYml2Xml.GetElements(curNode), ",");
+                string nodeValue = StringHelper.StrMerge(TYml2Xml.GetElements(child), ",");
 
                 // some placeholders should be replaced after all other processing, e.g. Initialise_Ledger
-                AddToCodelet(curNode.Name, nodeValue);
-                curNode = TXMLParser.NextNotBlank(curNode.NextSibling);
+                AddToCodelet(child.Name, nodeValue);
             }
 
             return true;

@@ -877,9 +877,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FHeight = Convert.ToInt32(ctrl.GetAttribute("Height"));
                 FAutoSize = false;
             }
-            else if (ctrl.HasAttribute("Width") || ctrl.HasAttribute("Height"))
+            else if (ctrl.HasAttribute("Height"))
             {
-                throw new Exception("Control " + ctrl.controlName + " must have both Width and Height attributes, or none");
+                // assume width of parent control
+                FWidth = FCodeStorage.FWidth - 10;
+                ctrl.SetAttribute("Width", FWidth.ToString());
+                FHeight = Convert.ToInt32(ctrl.GetAttribute("Height"));
+                FAutoSize = false;
+            }
+            else if (ctrl.HasAttribute("Width"))
+            {
+                throw new Exception(
+                    "Control " + ctrl.controlName + " must have both Width and Height attributes, or just Height, but not Width alone");
             }
 
             base.SetControlProperties(writer, ctrl);

@@ -684,6 +684,41 @@ namespace Ict.Tools.CodeGeneration
         }
 
         /// <summary>
+        /// get all attributes, even from base node
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static SortedList <string, string>GetAttributes(XmlNode xmlNode)
+        {
+            XmlNode baseElement = xmlNode;
+
+            SortedList <string, string>ReturnValue = new SortedList <string, string>();
+
+            while (baseElement != null)
+            {
+                IEnumerator enumerator = baseElement.Attributes.GetEnumerator();
+
+                while (enumerator.MoveNext())
+                {
+                    XmlAttribute attr = (XmlAttribute)enumerator.Current;
+
+                    if (ReturnValue.ContainsKey(attr.Name))
+                    {
+                        ReturnValue[attr.Name] = attr.Value;
+                    }
+                    else
+                    {
+                        ReturnValue.Add(attr.Name, attr.Value);
+                    }
+                }
+
+                baseElement = TXMLParser.GetChild(baseElement, "base");
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// get the child node with the given name
         /// TODO: consider base nodes as well
         /// </summary>

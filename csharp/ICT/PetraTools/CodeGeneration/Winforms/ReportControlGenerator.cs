@@ -286,7 +286,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             foreach (string controlName in Controls)
             {
-                curNode = (XmlNode)writer.CodeStorage.FXmlNodes[controlName];
                 TControlDef rbtCtrl = writer.CodeStorage.GetControl(controlName);
                 string rbtValue = rbtCtrl.Label;
                 rbtValue = StringHelper.UpperCamelCase(rbtValue.Replace("'", "").Replace(" ", "_"), false, false);
@@ -296,9 +295,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     rbtValue = rbtCtrl.GetAttribute("ParameterValue");
                 }
 
-                string rbtName = "rbt" + curNode.Name.Substring(3);
+                string rbtName = "rbt" + controlName.Substring(3);
 
-                if (curNode.Name.StartsWith("tableLayoutPanel"))
+                if (controlName.StartsWith("tableLayoutPanel"))
                 {
                     // the table layouts of sub controls for each radio button need to be skipped
                     continue;
