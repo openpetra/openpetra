@@ -947,6 +947,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     // add control itself
                     ctrlGenerator.GenerateDeclaration(writer, ChildControl);
                     ctrlGenerator.SetControlProperties(writer, ChildControl);
+                    writer.ApplyDerivedFunctionality(ctrlGenerator, curNode);
                 }
             }
             else

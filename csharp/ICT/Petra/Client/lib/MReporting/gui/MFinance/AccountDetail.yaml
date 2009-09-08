@@ -21,10 +21,12 @@
             Controls: [grpLedger, grpCurrency, rgrPeriod, rgrSorting]
         grpLedger:
             Label: Ledger Details
+            Dock: Top
             Controls: [txtLedger, cmbAccountHierarchy]
             ControlsOrientation: horizontal
         grpCurrency:
             Controls: [cmbCurrency]
+            Dock: Top
         txtLedger: {ReadOnly=true, NoParameter=true}
         cmbAccountHierarchy:
             List: UserDefinedList
@@ -34,6 +36,7 @@
             OptionalValues: [Base, International, Transaction]
         rgrPeriod:
             Controls: [rbtPeriodRange, rbtDateRange]
+            Dock: Top
         rbtPeriodRange:
             Controls: [txtStartPeriod, txtEndPeriod, cmbPeriodYear]
             ControlsOrientation: horizontal
@@ -47,6 +50,7 @@
         dtpDateEnd: {Label=to, ParameterName=param_end_date}
         rgrSorting:
             ParameterName: param_sortby
+            Dock: Top
             Controls: [rbtSortByAccount, rbtSortByCostCentre, rbtSortByReference, rbtSortByAnalysisType]
         rbtSortByAccount: {Label=Sort by Account, ParameterValue=Account}
         rbtSortByCostCentre: {Label=Sort by Cost Centre, ParameterValue=Cost Centre}
