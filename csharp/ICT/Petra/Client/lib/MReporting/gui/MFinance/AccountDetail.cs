@@ -472,6 +472,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 #region Action Handling
 
     /// auto generated
+    protected void actClose(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.ExecuteAction(eActionId.eClose);
+    }
+
+    /// auto generated
     protected void actGenerateReport(object sender, EventArgs e)
     {
         FPetraUtilsObject.MI_GenerateReport_Click(sender, e);
@@ -505,12 +511,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     protected void actMaintainSettings(object sender, EventArgs e)
     {
         FPetraUtilsObject.MI_MaintainSettings_Click(sender, e);
-    }
-
-    /// auto generated
-    protected void actClose(object sender, EventArgs e)
-    {
-        FPetraUtilsObject.ExecuteAction(eActionId.eClose);
     }
 
 #endregion

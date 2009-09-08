@@ -69,6 +69,9 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.tbbTogglePartner.Text = Catalog.GetString("Partner Data");
       this.tbbTogglePersonnel.Text = Catalog.GetString("Personnel Data");
       this.tbbToggleFinance.Text = Catalog.GetString("Finance Data");
+      this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
+      this.mniFileSave.Text = Catalog.GetString("&Save");
+      this.mniFilePrint.Text = Catalog.GetString("&Print...");
       this.mniFileNew.Text = Catalog.GetString("&New Partner...");
       this.mniFileDeactivatePartner.Text = Catalog.GetString("Deacti&vate Partner...");
       this.mniFileDeletePartner.Text = Catalog.GetString("&Delete THIS Partner...");
@@ -77,16 +80,13 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.mniFileSendEmail.Text = Catalog.GetString("&Send Email");
       this.mniFilePrintSection.Text = Catalog.GetString("P&rint Section...");
       this.mniFileExportPartner.Text = Catalog.GetString("&Export Partner");
-      this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
-      this.mniFileSave.Text = Catalog.GetString("&Save");
-      this.mniFilePrint.Text = Catalog.GetString("&Print...");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
       this.mniFile.Text = Catalog.GetString("&File");
-      this.mniEditFindNewAddress.Text = Catalog.GetString("Find New &Address...");
       this.mniEditUndoCurrentField.Text = Catalog.GetString("Undo &Current Field");
       this.mniEditUndoScreen.Text = Catalog.GetString("&Undo Screen");
       this.mniEditFind.Text = Catalog.GetString("&Find...");
+      this.mniEditFindNewAddress.Text = Catalog.GetString("Find New &Address...");
       this.mniEdit.Text = Catalog.GetString("&Edit");
       this.mniViewPartnerData.Text = Catalog.GetString("&Partner Data");
       this.mniViewPersonnelData.Text = Catalog.GetString("P&ersonnel Data");
@@ -198,6 +198,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             mniClose.Enabled = e.Enabled;
         }
+        mniFilePrint.Enabled = false;
         mniFileNew.Enabled = false;
         mniFileDeactivatePartner.Enabled = false;
         mniFileDeletePartner.Enabled = false;
@@ -206,11 +207,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         mniFileSendEmail.Enabled = false;
         mniFilePrintSection.Enabled = false;
         mniFileExportPartner.Enabled = false;
-        mniFilePrint.Enabled = false;
-        mniEditFindNewAddress.Enabled = false;
         mniEditUndoCurrentField.Enabled = false;
         mniEditUndoScreen.Enabled = false;
         mniEditFind.Enabled = false;
+        mniEditFindNewAddress.Enabled = false;
         mniViewPartnerData.Enabled = false;
         mniViewPersonnelData.Enabled = false;
         mniViewFinanceData.Enabled = false;

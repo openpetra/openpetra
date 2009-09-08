@@ -904,6 +904,7 @@ namespace Ict.Tools.CodeGeneration
                     // Mono requires the attribute to be removed first before adding it
                     XmlAttribute origAttribute = ANode.Attributes[0];
                     ANode.Attributes.Remove(origAttribute);
+
                     if (baseNode.Attributes[origAttribute.Name] != null)
                     {
                         baseNode.Attributes[origAttribute.Name].Value = origAttribute.Value;
@@ -994,6 +995,11 @@ namespace Ict.Tools.CodeGeneration
                         {
                             returnValue = 1;
                         }
+                        else
+                        {
+                            // no specific order; if first
+                            returnValue = -1;
+                        }
                     }
                     else if (depth1 > depth2)
                     {
@@ -1005,12 +1011,17 @@ namespace Ict.Tools.CodeGeneration
                         {
                             returnValue = -1;
                         }
+                        else
+                        {
+                            returnValue = 1;
+                        }
                     }
                     else if (realParentNode1 == realParentNode2)
                     {
                         // are the nodes siblings? then keep the order
+                        XmlNode child = node1.ParentNode.FirstChild;
 
-                        foreach (XmlNode child in node1.ParentNode.ChildNodes)
+                        while (child != null)
                         {
                             if (child == node1)
                             {
@@ -1022,6 +1033,8 @@ namespace Ict.Tools.CodeGeneration
                                 returnValue = +1;
                                 break;
                             }
+
+                            child = child.NextSibling;
                         }
                     }
                     else

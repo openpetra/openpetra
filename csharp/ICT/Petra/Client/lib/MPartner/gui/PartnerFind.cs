@@ -295,6 +295,12 @@ namespace Ict.Petra.Client.MPartner.Gui
     }
 
     /// auto generated
+    protected void actClose(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.ExecuteAction(eActionId.eClose);
+    }
+
+    /// auto generated
     protected void actMainMenu(object sender, EventArgs e)
     {
         FPetraUtilsObject.OpenMainScreen(sender, e);
@@ -334,12 +340,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     protected void actSysManModule(object sender, EventArgs e)
     {
         FPetraUtilsObject.OpenSysManModule(sender, e);
-    }
-
-    /// auto generated
-    protected void actClose(object sender, EventArgs e)
-    {
-        FPetraUtilsObject.ExecuteAction(eActionId.eClose);
     }
 
 #endregion
