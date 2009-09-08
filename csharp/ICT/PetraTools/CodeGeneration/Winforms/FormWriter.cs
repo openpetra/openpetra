@@ -341,18 +341,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return;
             }
 
-            string TempFileName = @"temp.xml";
+            string formattedImage = Image2Base64(FResourceDirectory + System.IO.Path.DirectorySeparatorChar + AImageName, AImageOrIcon);
 
-            if (!Image2Xml(FResourceDirectory + System.IO.Path.DirectorySeparatorChar + AImageName, TempFileName, AImageOrIcon))
+            if (formattedImage.Length == 0)
             {
                 return;
             }
-
-            XmlDocument TmpDoc = new XmlDocument();
-            TmpDoc.Load(TempFileName);
-
-            XmlNode TmpNode = TmpDoc.LastChild;
-            XmlNode DestNode = FImageResources.LastChild;
 
             XmlElement HeaderElement = FImageResources.CreateElement("data");
 
@@ -370,52 +364,27 @@ namespace Ict.Tools.CodeGeneration.Winforms
             HeaderElement.SetAttribute("mimetype", "application/x-microsoft.net.object.bytearray.base64");
 
             XmlElement ImageElement = FImageResources.CreateElement("value");
-            string formattedImage = "\n        ";
-            string unformattedImage = TmpNode.InnerText.Trim();
-
-            for (int counter = 0; counter < unformattedImage.Length; counter += 80)
-            {
-                int toCopy = 80;
-
-                if (counter + toCopy > unformattedImage.Length)
-                {
-                    toCopy = unformattedImage.Length - counter;
-                }
-
-                formattedImage += unformattedImage.Substring(counter, toCopy) + '\n';
-
-                if (counter + 80 < unformattedImage.Length)
-                {
-                    formattedImage += "        ";
-                }
-            }
-
             ImageElement.InnerText = formattedImage;
 
+            XmlNode DestNode = FImageResources.LastChild;
             XmlNode HeaderNode = DestNode.AppendChild(HeaderElement);
             HeaderNode.AppendChild(ImageElement);
         }
 
         /// <summary>
-        /// Reads the binary data of the image and stores it in ATempFileName as xml data
+        /// Reads the binary data of the image and returns it as a formatted Base64 string
         /// which then can be used in a .resx file.
         /// It seems for bitmaps for buttons and toolbars and menuitems, we need gif bitmaps
         /// but for window icons we need ico files
         /// </summary>
         /// <param name="AImageFileName">Full file name of the image</param>
-        /// <param name="ATempFileName">Xml File where the image is stored</param>
         /// <param name="AImageOrIcon">is this an icon or bitmap</param>
-        /// <returns>true if the image was properly stored in the Xml file</returns>
-        private bool Image2Xml(string AImageFileName, string ATempFileName, string AImageOrIcon)
+        /// <returns>the formatted Base64 representation of the image</returns>
+        private string Image2Base64(string AImageFileName, string AImageOrIcon)
         {
-            int bufferSize = 10000;
-
-            byte[] buffer = new byte[bufferSize];
-            int readBytes = 0;
-
             if (!File.Exists(AImageFileName))
             {
-                return false;
+                return "";
             }
 
             if (!AImageFileName.EndsWith(".gif") && (AImageOrIcon == "Bitmap"))
@@ -435,33 +404,46 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 iconBitmap.Save(AImageFileName, System.Drawing.Imaging.ImageFormat.Gif);
             }
 
-            using (XmlWriter writer = XmlWriter.Create(ATempFileName))
-                  {
-                      FileStream inputFile = new FileStream(AImageFileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            int bufferSize = 500000;
+            byte[] buffer = new byte[bufferSize];
+            int readBytes = 0;
+            string unformattedImage = "";
+            FileStream inputFile = new FileStream(AImageFileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            BinaryReader br = new BinaryReader(inputFile);
 
-                      writer.WriteStartDocument();
-                      writer.WriteStartElement("value");
-                      writer.WriteCharEntity('\n');
+            do
+            {
+                readBytes = br.Read(buffer, 0, bufferSize);
 
-                      for (int counter = 0; counter < 8; counter++)
-                      {
-                          writer.WriteCharEntity(' ');
-                      }
+                // Base64FormattingOptions.InsertLineBreaks would break by 76 characters, but we want to break the line at 80
+                // there seems to be a problem if the image is bigger than the buffer; resx files are invalid...
+                // so we increased the bufferSize so that only one run is required
+                unformattedImage += Convert.ToBase64String(buffer, 0, readBytes, Base64FormattingOptions.None);
+            } while (bufferSize <= readBytes);
 
-                      BinaryReader br = new BinaryReader(inputFile);
+            br.Close();
 
-                      do
-                      {
-                          readBytes = br.Read(buffer, 0, bufferSize);
-                          writer.WriteBase64(buffer, 0, readBytes);
-                      } while (bufferSize <= readBytes);
+            string formattedImage = "\n        ";
+            unformattedImage = unformattedImage.Trim();
 
-                      br.Close();
+            for (int counter = 0; counter < unformattedImage.Length; counter += 80)
+            {
+                int toCopy = 80;
 
-                      writer.WriteEndElement();           // value
-                      writer.WriteEndDocument();
-                  }
-                  return true;
+                if (counter + toCopy > unformattedImage.Length)
+                {
+                    toCopy = unformattedImage.Length - counter;
+                }
+
+                formattedImage += unformattedImage.Substring(counter, toCopy) + '\n';
+
+                if (counter + 80 < unformattedImage.Length)
+                {
+                    formattedImage += "        ";
+                }
+            }
+
+            return formattedImage;
         }
 
         /// <summary>
