@@ -111,7 +111,7 @@ namespace Ict.Tools.CodeGeneration
             pathAndName = pathAndName.Substring(0, pathAndName.IndexOf("Client/lib") + "Client/lib".Length);
 
             // use only last part of namespace after Ict.Petra.Client
-            ANamespaceAndClassname = ANamespaceAndClassname.Substring("Ict.Petra.Client".Length);
+            ANamespaceAndClassname = ANamespaceAndClassname.Substring("Ict.Petra.Client".Length).Replace(".Gui.", ".gui.");
             pathAndName += ANamespaceAndClassname.Substring(0, ANamespaceAndClassname.LastIndexOf(".")).Replace(".", "/");
 
             // get the file name without TFrm prefix
