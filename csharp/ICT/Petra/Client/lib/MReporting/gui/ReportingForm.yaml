@@ -41,8 +41,7 @@ RootNode:
             Dock: Fill
     Menu:
         mniFile:
-            mniLoadSettings:
-                Label: &Load Settings
+            mniLoadSettings: {Label=&Load Settings, Order=AlwaysFirst}
                 mniLoadSettingsDialog:
                 mniSeparator: {Label=-}
                 mniLoadSettings1: {Action=actLoadSettings}

@@ -611,6 +611,11 @@ namespace Ict.Tools.CodeGeneration
             return TYml2Xml.HasAttribute(xmlNode, name);
         }
 
+        public void ClearAttribute(string name)
+        {
+            TYml2Xml.ClearAttribute(xmlNode, name);
+        }
+
         public string GetAttribute(string name)
         {
             return TYml2Xml.GetAttribute(xmlNode, name);

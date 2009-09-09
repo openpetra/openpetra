@@ -639,6 +639,26 @@ namespace Ict.Tools.CodeGeneration
         }
 
         /// <summary>
+        /// remove attribute
+        /// </summary>
+        /// <param name="xmlNode"></param>
+        /// <param name="name"></param>
+        public static void ClearAttribute(XmlNode xmlNode, string name)
+        {
+            XmlNode baseElement = xmlNode;
+
+            while (baseElement != null)
+            {
+                if (TXMLParser.HasAttribute(baseElement, name))
+                {
+                    baseElement.Attributes.Remove(baseElement.Attributes[name]);
+                }
+
+                baseElement = TXMLParser.GetChild(baseElement, "base");
+            }
+        }
+
+        /// <summary>
         /// check for the attribute; if the current node does not have it, check the base node
         /// </summary>
         /// <param name="name"></param>

@@ -146,12 +146,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
-            string controlName = base.FPrefix + ctrl.controlName.Substring(3);
+            CheckForOtherControls(ctrl);
 
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
-
-            CheckForOtherControls(ctrl);
 
             if (TXMLParser.HasAttribute(ctrl.xmlNode, "RadioChecked"))
             {
@@ -220,7 +218,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public TcmbAutoPopulatedGenerator()
             : base("cmb", "Ict.Petra.Client.CommonControls.TCmbAutoPopulated")
         {
-            this.FWidth = 300;
+            this.FDefaultWidth = 300;
         }
 
         public override bool ControlFitsNode(XmlNode curNode)
@@ -371,9 +369,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
-            base.SetControlProperties(writer, ctrl);
-
             CheckForOtherControls(ctrl);
+
+            base.SetControlProperties(writer, ctrl);
 
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
             writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 5, 3, 0)");
@@ -384,7 +382,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public TClbVersatileGenerator()
             : base("clb", typeof(TClbVersatile))
         {
-            FHeight = 100;
+            FDefaultHeight = 100;
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
@@ -873,16 +871,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (ctrl.HasAttribute("Width") && ctrl.HasAttribute("Height"))
             {
-                FWidth = Convert.ToInt32(ctrl.GetAttribute("Width"));
-                FHeight = Convert.ToInt32(ctrl.GetAttribute("Height"));
                 FAutoSize = false;
             }
             else if (ctrl.HasAttribute("Height"))
             {
                 // assume width of parent control
-                FWidth = FCodeStorage.FWidth - 10;
-                ctrl.SetAttribute("Width", FWidth.ToString());
-                FHeight = Convert.ToInt32(ctrl.GetAttribute("Height"));
+                ctrl.SetAttribute("Width", (FCodeStorage.FWidth - 10).ToString());
                 FAutoSize = false;
             }
             else if (ctrl.HasAttribute("Width"))
@@ -963,7 +957,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 TableLayoutPanelGenerator TlpGenerator = new TableLayoutPanelGenerator();
                 TlpGenerator.SetOrientation(ctrl);
-                string tlpControlName = TlpGenerator.CreateLayout(writer, ControlName, Controls);
+                string tlpControlName = TlpGenerator.CreateLayout(writer, ControlName, Controls, -1, -1);
                 writer.CallControlFunction(ControlName,
                     "Controls.Add(this." +
                     tlpControlName + ")");
@@ -1100,29 +1094,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 DefaultValue = TXMLParser.GetAttribute(curNode, "DefaultValue");
             }
 
-            // prepare the controls so that they have a radiobutton instead of a label
-            StringCollection radioControls = new StringCollection();
-
             foreach (string controlName in Controls)
             {
-                TControlDef radioButton = null;
-
-                if (controlName.StartsWith("rbt"))
-                {
-                    // allow a simple radiobutton in the group of radiobuttons
-                    radioButton = writer.CodeStorage.GetControl(controlName);
-                }
-                else
-                {
-                    // this is a complex radio button, that enables several other controls (hence the name complex)
-                    TControlDef controlWithRadioButton = writer.CodeStorage.GetControl(controlName);
-                    controlWithRadioButton.SetAttribute("GenerateWithRadioButton", "yes");
-                    radioButton = writer.CodeStorage.FindOrCreateControl("rbt" +
-                        controlWithRadioButton.controlName.Substring(controlWithRadioButton.controlTypePrefix.Length),
-                        controlWithRadioButton.controlName);
-                    radioButton.parentName = curNode.Name;
-                    radioButton.Label = controlWithRadioButton.Label;
-                }
+                TControlDef radioButton = writer.CodeStorage.GetControl(controlName);
 
                 if (StringHelper.IsSame(DefaultValue, controlName))
                 {
@@ -1336,8 +1310,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             string controlName = ctrl.controlName;
 
-            FWidth = 650;
-            FHeight = 386;
+            FDefaultWidth = 650;
+            FDefaultHeight = 386;
             base.SetControlProperties(writer, ctrl);
 
             // todo: use properties from yaml

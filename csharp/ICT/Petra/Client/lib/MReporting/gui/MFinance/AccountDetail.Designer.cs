@@ -144,9 +144,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.tbbSaveSettingsAs = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSaveSettings = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSaveSettingsAs = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniMaintainSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.mniLoadSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.mniLoadSettingsDialog = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator0 = new System.Windows.Forms.ToolStripSeparator();
@@ -155,6 +152,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.mniLoadSettings3 = new System.Windows.Forms.ToolStripMenuItem();
             this.mniLoadSettings4 = new System.Windows.Forms.ToolStripMenuItem();
             this.mniLoadSettings5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSaveSettings = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSaveSettingsAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniMaintainSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mniGenerateReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -215,9 +215,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel1
             //
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grpLedger.Controls.Add(this.tableLayoutPanel1);
             //
@@ -271,9 +269,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel2
             //
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.AutoSize = true;
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grpCurrency.Controls.Add(this.tableLayoutPanel2);
             //
@@ -308,9 +304,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel3
             //
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.AutoSize = true;
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rgrPeriod.Controls.Add(this.tableLayoutPanel3);
             //
@@ -324,9 +318,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel4
             //
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.AutoSize = true;
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // txtStartPeriod
@@ -397,9 +389,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel5
             //
-            this.tableLayoutPanel5.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.AutoSize = true;
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // dtpDateStart
@@ -451,9 +441,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel6
             //
-            this.tableLayoutPanel6.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
-            this.tableLayoutPanel6.AutoSize = true;
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rgrSorting.Controls.Add(this.tableLayoutPanel6);
             //
@@ -481,9 +469,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel7
             //
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
-            this.tableLayoutPanel7.AutoSize = true;
             this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // txtReferenceFrom
@@ -535,9 +521,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel8
             //
-            this.tableLayoutPanel8.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel8.Name = "tableLayoutPanel8";
-            this.tableLayoutPanel8.AutoSize = true;
             this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // txtAnalysisTypeFrom
@@ -607,9 +591,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel9
             //
-            this.tableLayoutPanel9.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel9.Name = "tableLayoutPanel9";
-            this.tableLayoutPanel9.AutoSize = true;
             this.tableLayoutPanel9.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tpgCCAccount.Controls.Add(this.tableLayoutPanel9);
             //
@@ -621,9 +603,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel10
             //
-            this.tableLayoutPanel10.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel10.Name = "tableLayoutPanel10";
-            this.tableLayoutPanel10.AutoSize = true;
             this.tableLayoutPanel10.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rgrAccounts.Controls.Add(this.tableLayoutPanel10);
             //
@@ -637,9 +617,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel11
             //
-            this.tableLayoutPanel11.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel11.Name = "tableLayoutPanel11";
-            this.tableLayoutPanel11.AutoSize = true;
             this.tableLayoutPanel11.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // cmbAccountStart
@@ -692,9 +670,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel12
             //
-            this.tableLayoutPanel12.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel12.Name = "tableLayoutPanel12";
-            this.tableLayoutPanel12.AutoSize = true;
             this.tableLayoutPanel12.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // clbAccounts
@@ -737,9 +713,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel13
             //
-            this.tableLayoutPanel13.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel13.Name = "tableLayoutPanel13";
-            this.tableLayoutPanel13.AutoSize = true;
             this.tableLayoutPanel13.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rgrCostCentres.Controls.Add(this.tableLayoutPanel13);
             //
@@ -753,9 +727,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel14
             //
-            this.tableLayoutPanel14.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel14.Name = "tableLayoutPanel14";
-            this.tableLayoutPanel14.AutoSize = true;
             this.tableLayoutPanel14.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // cmbCostCentreStart
@@ -808,9 +780,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // tableLayoutPanel15
             //
-            this.tableLayoutPanel15.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel15.Name = "tableLayoutPanel15";
-            this.tableLayoutPanel15.AutoSize = true;
             this.tableLayoutPanel15.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // clbCostCentres
@@ -896,29 +866,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                         tbbSaveSettings,
                         tbbSaveSettingsAs});
             //
-            // mniSaveSettings
-            //
-            this.mniSaveSettings.Name = "mniSaveSettings";
-            this.mniSaveSettings.AutoSize = true;
-            this.mniSaveSettings.Click += new System.EventHandler(this.actSaveSettings);
-            this.mniSaveSettings.Image = ((System.Drawing.Bitmap)resources.GetObject("mniSaveSettings.Glyph"));
-            this.mniSaveSettings.Text = "&Save Settings";
-            //
-            // mniSaveSettingsAs
-            //
-            this.mniSaveSettingsAs.Name = "mniSaveSettingsAs";
-            this.mniSaveSettingsAs.AutoSize = true;
-            this.mniSaveSettingsAs.Click += new System.EventHandler(this.actSaveSettingsAs);
-            this.mniSaveSettingsAs.Image = ((System.Drawing.Bitmap)resources.GetObject("mniSaveSettingsAs.Glyph"));
-            this.mniSaveSettingsAs.Text = "Save Settings &As...";
-            //
-            // mniMaintainSettings
-            //
-            this.mniMaintainSettings.Name = "mniMaintainSettings";
-            this.mniMaintainSettings.AutoSize = true;
-            this.mniMaintainSettings.Click += new System.EventHandler(this.actMaintainSettings);
-            this.mniMaintainSettings.Text = "&Maintain Settings...";
-            //
             // mniLoadSettingsDialog
             //
             this.mniLoadSettingsDialog.Name = "mniLoadSettingsDialog";
@@ -982,6 +929,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                         mniLoadSettings5});
             this.mniLoadSettings.Text = "RecentSettings";
             //
+            // mniSaveSettings
+            //
+            this.mniSaveSettings.Name = "mniSaveSettings";
+            this.mniSaveSettings.AutoSize = true;
+            this.mniSaveSettings.Click += new System.EventHandler(this.actSaveSettings);
+            this.mniSaveSettings.Image = ((System.Drawing.Bitmap)resources.GetObject("mniSaveSettings.Glyph"));
+            this.mniSaveSettings.Text = "&Save Settings";
+            //
+            // mniSaveSettingsAs
+            //
+            this.mniSaveSettingsAs.Name = "mniSaveSettingsAs";
+            this.mniSaveSettingsAs.AutoSize = true;
+            this.mniSaveSettingsAs.Click += new System.EventHandler(this.actSaveSettingsAs);
+            this.mniSaveSettingsAs.Image = ((System.Drawing.Bitmap)resources.GetObject("mniSaveSettingsAs.Glyph"));
+            this.mniSaveSettingsAs.Text = "Save Settings &As...";
+            //
+            // mniMaintainSettings
+            //
+            this.mniMaintainSettings.Name = "mniMaintainSettings";
+            this.mniMaintainSettings.AutoSize = true;
+            this.mniMaintainSettings.Click += new System.EventHandler(this.actMaintainSettings);
+            this.mniMaintainSettings.Text = "&Maintain Settings...";
+            //
             // mniSeparator1
             //
             this.mniSeparator1.Name = "mniSeparator1";
@@ -1017,10 +987,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.mniFile.Name = "mniFile";
             this.mniFile.AutoSize = true;
             this.mniFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           mniSaveSettings,
+                           mniLoadSettings,
+                        mniSaveSettings,
                         mniSaveSettingsAs,
                         mniMaintainSettings,
-                        mniLoadSettings,
                         mniSeparator1,
                         mniGenerateReport,
                         mniSeparator2,
@@ -1217,9 +1187,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private System.Windows.Forms.ToolStripButton tbbSaveSettingsAs;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
-        private System.Windows.Forms.ToolStripMenuItem mniSaveSettings;
-        private System.Windows.Forms.ToolStripMenuItem mniSaveSettingsAs;
-        private System.Windows.Forms.ToolStripMenuItem mniMaintainSettings;
         private System.Windows.Forms.ToolStripMenuItem mniLoadSettings;
         private System.Windows.Forms.ToolStripMenuItem mniLoadSettingsDialog;
         private System.Windows.Forms.ToolStripSeparator mniSeparator0;
@@ -1228,6 +1195,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private System.Windows.Forms.ToolStripMenuItem mniLoadSettings3;
         private System.Windows.Forms.ToolStripMenuItem mniLoadSettings4;
         private System.Windows.Forms.ToolStripMenuItem mniLoadSettings5;
+        private System.Windows.Forms.ToolStripMenuItem mniSaveSettings;
+        private System.Windows.Forms.ToolStripMenuItem mniSaveSettingsAs;
+        private System.Windows.Forms.ToolStripMenuItem mniMaintainSettings;
         private System.Windows.Forms.ToolStripSeparator mniSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mniGenerateReport;
         private System.Windows.Forms.ToolStripSeparator mniSeparator2;

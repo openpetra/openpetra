@@ -62,8 +62,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
+            ctrl.SetAttribute("Dock", "Fill");
             base.SetControlProperties(writer, ctrl);
-            writer.SetControlProperty(ctrl.controlName, "Dock", "System.Windows.Forms.DockStyle.Fill");
         }
 
         /// <summary>
@@ -259,8 +259,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <param name="writer"></param>
         /// <param name="parentContainerName"></param>
         /// <param name="controls"></param>
+        /// <param name="ANewWidth"></param>
+        /// <param name="ANewHeight"></param>
         /// <returns>the name of the table layout control that still needs to be added to the parent</returns>
-        public string CreateLayout(IFormWriter writer, string parentContainerName, StringCollection controls)
+        public string CreateLayout(IFormWriter writer, string parentContainerName, StringCollection controls, Int32 ANewWidth, Int32 ANewHeight)
         {
             // first check if the table layout has already been defined in the container with sets of rows?
             XmlNode containerNode = writer.CodeStorage.GetControl(parentContainerName).xmlNode;
@@ -326,6 +328,33 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 FTlpName = CalculateName();
                 TControlDef newTableLayoutPanel = writer.CodeStorage.FindOrCreateControl(FTlpName, parentContainerName);
+
+                if (!parentContainerName.StartsWith("tableLayoutPanel"))
+                {
+                    TControlDef parentContainer = writer.CodeStorage.GetControl(parentContainerName);
+
+                    if (parentContainer.HasAttribute("Height"))
+                    {
+                        Console.WriteLine(FTlpName + " " + parentContainerName + " " + parentContainer.GetAttribute("Height"));
+                        newTableLayoutPanel.SetAttribute("Height", parentContainer.GetAttribute("Height"));
+                    }
+
+                    if (parentContainer.HasAttribute("Width") && (parentContainer.controlTypePrefix != "tlp"))
+                    {
+                        newTableLayoutPanel.SetAttribute("Width", parentContainer.GetAttribute("Width"));
+                    }
+                }
+
+                if (ANewWidth != -1)
+                {
+                    newTableLayoutPanel.SetAttribute("Width", ANewWidth.ToString());
+                }
+
+                if (ANewHeight != -1)
+                {
+                    newTableLayoutPanel.SetAttribute("Height", ANewHeight.ToString());
+                }
+
                 GenerateDeclaration(writer, newTableLayoutPanel);
                 SetControlProperties(writer, newTableLayoutPanel);
 
@@ -363,51 +392,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.ApplyDerivedFunctionality(ctrlGenerator, curNode);
 
-            if (ctrl.HasAttribute("GenerateWithRadioButton"))
-            {
-                // this is a special case: radiobutton with another control
-                string rbtName = "rbt" + ctrl.controlName.Substring(ctrl.controlTypePrefix.Length);
-                TControlDef rbtControl = writer.CodeStorage.GetControl(rbtName);
-                RadioButtonGenerator rbtGenerator = new RadioButtonGenerator();
-                rbtGenerator.GenerateDeclaration(writer, rbtControl);
-                rbtGenerator.SetControlProperties(writer, rbtControl);
-
-                // add and install event handler for change of selection
-                string RadioButtonCheckedChangedName = "";
-
-                if (RadioButtonCheckedChangedName.Length == 0)
-                {
-                    RadioButtonCheckedChangedName = rbtName;
-                    writer.CodeStorage.FEventHandlersImplementation += "void " + rbtName + "CheckedChanged(object sender, System.EventArgs e)" +
-                                                                       Environment.NewLine + "{" + Environment.NewLine + "  {#CHECKEDCHANGED_" +
-                                                                       rbtName + "}" + Environment.NewLine +
-                                                                       "}" + Environment.NewLine + Environment.NewLine;
-                    writer.Template.AddToCodelet("INITIALISESCREEN", rbtName + "CheckedChanged(null, null);" + Environment.NewLine);
-                }
-
-                writer.Template.AddToCodelet("CONTROLINITIALISATION",
-                    "this." + rbtName +
-                    ".CheckedChanged += new System.EventHandler(this." +
-                    RadioButtonCheckedChangedName +
-                    "CheckedChanged);" + Environment.NewLine);
-
-                // make sure the control is enabled/disabled depending on the selection of the radiobutton
-                writer.Template.AddToCodelet("CHECKEDCHANGED_" + RadioButtonCheckedChangedName,
-                    controlName + ".Enabled = " + rbtName + ".Checked;" + Environment.NewLine);
-
-                if (FOrientation == eOrientation.Vertical)
-                {
-                    AddControl(rbtName, 0, FCurrentRow);
-                    AddControl(ctrl, 1, FCurrentRow);
-                }
-                else if (FOrientation == eOrientation.Horizontal)
-                {
-                    AddControl(rbtName, FCurrentColumn * 2, 0);
-                    AddControl(ctrl, FCurrentColumn * 2 + 1, 0);
-                }
-            }
 /* this does not work yet; creates endless loop/recursion
- *          else if (ctrl.HasAttribute("LabelUnit"))
+ *          if (ctrl.HasAttribute("LabelUnit"))
  *          {
  *              // we need another label after the control
  *              LabelGenerator lblGenerator = new LabelGenerator();
@@ -435,8 +421,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
  *                  AddControl(writer, FTlpName, subTlpControlName, FCurrentColumn * 2 + 1, 0);
  *              }
  *          }
+ *          else
  */
-            else if (ctrl.HasAttribute("GenerateWithOtherControls"))
+            if (ctrl.HasAttribute("GenerateWithOtherControls"))
             {
                 // add the checkbox/radiobutton first
                 if (FOrientation == eOrientation.Vertical)
@@ -455,7 +442,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     // we need another tablelayout to arrange all the controls
                     TableLayoutPanelGenerator TlpGenerator = new TableLayoutPanelGenerator();
                     TlpGenerator.SetOrientation(ctrl);
-                    string subTlpControlName = TlpGenerator.CreateLayout(writer, FTlpName, childControls);
+
+                    Int32 NewHeight = -1;
+                    Int32 NewWidth = -1;
+
+                    if (ctrl.HasAttribute("Height"))
+                    {
+                        Console.WriteLine("tst2 " + ctrl.controlName + " " + FTlpName + " " + ctrl.GetAttribute("Height"));
+                        NewHeight = Convert.ToInt32(ctrl.GetAttribute("Height"));
+                        ctrl.ClearAttribute("Height");
+                    }
+
+                    if (ctrl.HasAttribute("Width"))
+                    {
+                        NewWidth = Convert.ToInt32(ctrl.GetAttribute("Width"));
+                        ctrl.ClearAttribute("Width");
+                    }
+
+                    string subTlpControlName = TlpGenerator.CreateLayout(writer, FTlpName, childControls, NewWidth, NewHeight);
 
                     foreach (string ChildControlName in childControls)
                     {

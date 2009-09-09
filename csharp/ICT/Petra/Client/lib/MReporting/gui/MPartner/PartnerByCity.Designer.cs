@@ -80,9 +80,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tbbSaveSettingsAs = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSaveSettings = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSaveSettingsAs = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniMaintainSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.mniLoadSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.mniLoadSettingsDialog = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator0 = new System.Windows.Forms.ToolStripSeparator();
@@ -91,6 +88,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniLoadSettings3 = new System.Windows.Forms.ToolStripMenuItem();
             this.mniLoadSettings4 = new System.Windows.Forms.ToolStripMenuItem();
             this.mniLoadSettings5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSaveSettings = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSaveSettingsAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniMaintainSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mniGenerateReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -120,9 +120,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             // tableLayoutPanel1
             //
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tpgReportSpecific.Controls.Add(this.tableLayoutPanel1);
             //
@@ -190,29 +188,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                         tbbSaveSettings,
                         tbbSaveSettingsAs});
             //
-            // mniSaveSettings
-            //
-            this.mniSaveSettings.Name = "mniSaveSettings";
-            this.mniSaveSettings.AutoSize = true;
-            this.mniSaveSettings.Click += new System.EventHandler(this.actSaveSettings);
-            this.mniSaveSettings.Image = ((System.Drawing.Bitmap)resources.GetObject("mniSaveSettings.Glyph"));
-            this.mniSaveSettings.Text = "&Save Settings";
-            //
-            // mniSaveSettingsAs
-            //
-            this.mniSaveSettingsAs.Name = "mniSaveSettingsAs";
-            this.mniSaveSettingsAs.AutoSize = true;
-            this.mniSaveSettingsAs.Click += new System.EventHandler(this.actSaveSettingsAs);
-            this.mniSaveSettingsAs.Image = ((System.Drawing.Bitmap)resources.GetObject("mniSaveSettingsAs.Glyph"));
-            this.mniSaveSettingsAs.Text = "Save Settings &As...";
-            //
-            // mniMaintainSettings
-            //
-            this.mniMaintainSettings.Name = "mniMaintainSettings";
-            this.mniMaintainSettings.AutoSize = true;
-            this.mniMaintainSettings.Click += new System.EventHandler(this.actMaintainSettings);
-            this.mniMaintainSettings.Text = "&Maintain Settings...";
-            //
             // mniLoadSettingsDialog
             //
             this.mniLoadSettingsDialog.Name = "mniLoadSettingsDialog";
@@ -276,6 +251,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                         mniLoadSettings5});
             this.mniLoadSettings.Text = "RecentSettings";
             //
+            // mniSaveSettings
+            //
+            this.mniSaveSettings.Name = "mniSaveSettings";
+            this.mniSaveSettings.AutoSize = true;
+            this.mniSaveSettings.Click += new System.EventHandler(this.actSaveSettings);
+            this.mniSaveSettings.Image = ((System.Drawing.Bitmap)resources.GetObject("mniSaveSettings.Glyph"));
+            this.mniSaveSettings.Text = "&Save Settings";
+            //
+            // mniSaveSettingsAs
+            //
+            this.mniSaveSettingsAs.Name = "mniSaveSettingsAs";
+            this.mniSaveSettingsAs.AutoSize = true;
+            this.mniSaveSettingsAs.Click += new System.EventHandler(this.actSaveSettingsAs);
+            this.mniSaveSettingsAs.Image = ((System.Drawing.Bitmap)resources.GetObject("mniSaveSettingsAs.Glyph"));
+            this.mniSaveSettingsAs.Text = "Save Settings &As...";
+            //
+            // mniMaintainSettings
+            //
+            this.mniMaintainSettings.Name = "mniMaintainSettings";
+            this.mniMaintainSettings.AutoSize = true;
+            this.mniMaintainSettings.Click += new System.EventHandler(this.actMaintainSettings);
+            this.mniMaintainSettings.Text = "&Maintain Settings...";
+            //
             // mniSeparator1
             //
             this.mniSeparator1.Name = "mniSeparator1";
@@ -311,10 +309,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniFile.Name = "mniFile";
             this.mniFile.AutoSize = true;
             this.mniFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           mniSaveSettings,
+                           mniLoadSettings,
+                        mniSaveSettings,
                         mniSaveSettingsAs,
                         mniMaintainSettings,
-                        mniLoadSettings,
                         mniSeparator1,
                         mniGenerateReport,
                         mniSeparator2,
@@ -426,9 +424,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private System.Windows.Forms.ToolStripButton tbbSaveSettingsAs;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
-        private System.Windows.Forms.ToolStripMenuItem mniSaveSettings;
-        private System.Windows.Forms.ToolStripMenuItem mniSaveSettingsAs;
-        private System.Windows.Forms.ToolStripMenuItem mniMaintainSettings;
         private System.Windows.Forms.ToolStripMenuItem mniLoadSettings;
         private System.Windows.Forms.ToolStripMenuItem mniLoadSettingsDialog;
         private System.Windows.Forms.ToolStripSeparator mniSeparator0;
@@ -437,6 +432,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private System.Windows.Forms.ToolStripMenuItem mniLoadSettings3;
         private System.Windows.Forms.ToolStripMenuItem mniLoadSettings4;
         private System.Windows.Forms.ToolStripMenuItem mniLoadSettings5;
+        private System.Windows.Forms.ToolStripMenuItem mniSaveSettings;
+        private System.Windows.Forms.ToolStripMenuItem mniSaveSettingsAs;
+        private System.Windows.Forms.ToolStripMenuItem mniMaintainSettings;
         private System.Windows.Forms.ToolStripSeparator mniSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mniGenerateReport;
         private System.Windows.Forms.ToolStripSeparator mniSeparator2;

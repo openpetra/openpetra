@@ -214,9 +214,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // tableLayoutPanel1
             //
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlModalButtons.Controls.Add(this.tableLayoutPanel1);
             //

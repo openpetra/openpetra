@@ -75,9 +75,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
       this.tbbSaveSettings.Text = Catalog.GetString("&Save Settings");
       this.tbbSaveSettingsAs.Text = Catalog.GetString("Save Settings &As...");
-      this.mniSaveSettings.Text = Catalog.GetString("&Save Settings");
-      this.mniSaveSettingsAs.Text = Catalog.GetString("Save Settings &As...");
-      this.mniMaintainSettings.Text = Catalog.GetString("&Maintain Settings...");
       this.mniLoadSettingsDialog.Text = Catalog.GetString("&Open...");
       this.mniLoadSettings1.Text = Catalog.GetString("RecentSettings");
       this.mniLoadSettings2.Text = Catalog.GetString("RecentSettings");
@@ -85,6 +82,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       this.mniLoadSettings4.Text = Catalog.GetString("RecentSettings");
       this.mniLoadSettings5.Text = Catalog.GetString("RecentSettings");
       this.mniLoadSettings.Text = Catalog.GetString("RecentSettings");
+      this.mniSaveSettings.Text = Catalog.GetString("&Save Settings");
+      this.mniSaveSettingsAs.Text = Catalog.GetString("Save Settings &As...");
+      this.mniMaintainSettings.Text = Catalog.GetString("&Maintain Settings...");
       this.mniGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.mniGenerateReport.Text = Catalog.GetString("&Generate");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");

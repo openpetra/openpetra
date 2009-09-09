@@ -150,9 +150,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             // tableLayoutPanel1
             //
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlButtons.Controls.Add(this.tableLayoutPanel1);
             //
@@ -187,9 +185,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             // tableLayoutPanel2
             //
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(2,2);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.AutoSize = true;
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlDetails.Controls.Add(this.tableLayoutPanel2);
             //
