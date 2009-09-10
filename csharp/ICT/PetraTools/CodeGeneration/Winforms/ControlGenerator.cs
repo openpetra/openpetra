@@ -572,8 +572,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (CustomColumnNode != null)
                     {
-                        // todo TYml2Xml.GetAttribute(CustomColumnNode, "Type")
-                        writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".AddTextColumn(\"" +
+                        string ColumnType = "Text";
+
+                        /* TODO DateTime (tracker: #58)
+                         * if (TYml2Xml.GetAttribute(CustomColumnNode, "Type") == "System.DateTime")
+                         * {
+                         *  ColumnType = "DateTime";
+                         * }
+                         */
+
+                        // TODO: different behaviour for double???
+                        if (TYml2Xml.GetAttribute(CustomColumnNode, "Type") == "Boolean")
+                        {
+                            ColumnType = "CheckBox";
+                        }
+
+                        writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Add" + ColumnType + "Column(\"" +
                             TYml2Xml.GetAttribute(CustomColumnNode, "Label") + "\", " +
                             "FMainDS." +
                             ctrl.GetAttribute("TableName") + ".Column" +
@@ -590,8 +604,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (field != null)
                     {
-                        // todo: other types for columns in grid? double, bool etc
-                        writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".AddTextColumn(\"" + field.strLabel + "\", " +
+                        string ColumnType = "Text";
+
+                        /* TODO DateTime (tracker: #58)
+                         * if (field.GetDotNetType() == "System.DateTime")
+                         * {
+                         *  ColumnType = "DateTime";
+                         * }
+                         */
+
+                        // TODO: different behaviour for double???
+                        if (field.GetDotNetType() == "Boolean")
+                        {
+                            ColumnType = "CheckBox";
+                        }
+
+                        writer.Template.AddToCodelet("INITMANUALCODE",
+                            ctrl.controlName + ".Add" + ColumnType + "Column(\"" + field.strLabel + "\", " +
                             "FMainDS." +
                             TTable.NiceTableName(field.strTableName) + ".Column" +
                             TTable.NiceFieldName(field.strName) + ");" + Environment.NewLine);

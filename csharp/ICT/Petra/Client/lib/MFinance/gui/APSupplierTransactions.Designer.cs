@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.mniNewCreditNote = new System.Windows.Forms.ToolStripMenuItem();
             this.mniOpenSelected = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniReverseTransaction = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReverseSelected = new System.Windows.Forms.ToolStripMenuItem();
             this.mniApproveTagged = new System.Windows.Forms.ToolStripMenuItem();
             this.mniPostTagged = new System.Windows.Forms.ToolStripMenuItem();
             this.mniAddTaggedToPayment = new System.Windows.Forms.ToolStripMenuItem();
@@ -373,6 +373,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.btnUntagAll.Location = new System.Drawing.Point(2,2);
             this.btnUntagAll.Name = "btnUntagAll";
             this.btnUntagAll.AutoSize = true;
+            this.btnUntagAll.Click += new System.EventHandler(this.UntagAll);
             this.btnUntagAll.Text = "&Untag All";
             //
             // txtSumOfTagged
@@ -495,6 +496,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tbbPostTagged.Name = "tbbPostTagged";
             this.tbbPostTagged.AutoSize = true;
+            this.tbbPostTagged.Click += new System.EventHandler(this.PostTaggedDocuments);
             this.tbbPostTagged.Text = "&Post Tagged";
             //
             // tbbAddTaggedToPayment
@@ -600,11 +602,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.mniSeparator1.AutoSize = true;
             this.mniSeparator1.Text = "-";
             //
-            // mniReverseTransaction
+            // mniReverseSelected
             //
-            this.mniReverseTransaction.Name = "mniReverseTransaction";
-            this.mniReverseTransaction.AutoSize = true;
-            this.mniReverseTransaction.Text = "Re&verse Selected";
+            this.mniReverseSelected.Name = "mniReverseSelected";
+            this.mniReverseSelected.AutoSize = true;
+            this.mniReverseSelected.Text = "Re&verse Selected";
             //
             // mniApproveTagged
             //
@@ -616,6 +618,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.mniPostTagged.Name = "mniPostTagged";
             this.mniPostTagged.AutoSize = true;
+            this.mniPostTagged.Click += new System.EventHandler(this.PostTaggedDocuments);
             this.mniPostTagged.Text = "&Post Tagged";
             //
             // mniAddTaggedToPayment
@@ -632,7 +635,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                            mniActionNew,
                         mniOpenSelected,
                         mniSeparator1,
-                        mniReverseTransaction,
+                        mniReverseSelected,
                         mniApproveTagged,
                         mniPostTagged,
                         mniAddTaggedToPayment});
@@ -797,7 +800,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         private System.Windows.Forms.ToolStripMenuItem mniNewCreditNote;
         private System.Windows.Forms.ToolStripMenuItem mniOpenSelected;
         private System.Windows.Forms.ToolStripSeparator mniSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem mniReverseTransaction;
+        private System.Windows.Forms.ToolStripMenuItem mniReverseSelected;
         private System.Windows.Forms.ToolStripMenuItem mniApproveTagged;
         private System.Windows.Forms.ToolStripMenuItem mniPostTagged;
         private System.Windows.Forms.ToolStripMenuItem mniAddTaggedToPayment;

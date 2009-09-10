@@ -66,6 +66,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                     cmbType.SelectedIndex == 1,
                     chkHideAgedTransactions.Checked));
 
+            // TODO: calculate duedate column? or should that be done on the server?
+
             ShowData();
         }
 
@@ -117,6 +119,38 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
             frm.CreateAApDocument(FLedgerNumber, FPartnerKey, true);
             frm.Show();
+        }
+
+        /// <summary>
+        /// untag all documents
+        /// </summary>
+        private void UntagAll(object sender, EventArgs e)
+        {
+            foreach (AccountsPayableTDSAApDocumentRow row in FMainDS.AApDocument.Rows)
+            {
+                row.Tagged = false;
+            }
+        }
+
+        /// <summary>
+        /// Post all tagged documents in one GL Batch
+        /// </summary>
+        private void PostTaggedDocuments(object sender, EventArgs e)
+        {
+            string msg = "";
+
+            foreach (AccountsPayableTDSAApDocumentRow row in FMainDS.AApDocument.Rows)
+            {
+                if (!row.IsTaggedNull() && row.Tagged)
+                {
+                    msg += row.ApNumber.ToString() + " ";
+                }
+            }
+
+            MessageBox.Show("tagged: " + msg);
+
+            // TODO: transmit ledgernumber and ap numbers to server
+            // TODO: update view to reflect posted documents
         }
     }
 }

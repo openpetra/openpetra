@@ -94,7 +94,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       this.mniNewCreditNote.Text = Catalog.GetString("New &Credit Note");
       this.mniActionNew.Text = Catalog.GetString("&New...");
       this.mniOpenSelected.Text = Catalog.GetString("&Open Selected");
-      this.mniReverseTransaction.Text = Catalog.GetString("Re&verse Selected");
+      this.mniReverseSelected.Text = Catalog.GetString("Re&verse Selected");
       this.mniApproveTagged.Text = Catalog.GetString("&Approve Tagged");
       this.mniPostTagged.Text = Catalog.GetString("&Post Tagged");
       this.mniAddTaggedToPayment.Text = Catalog.GetString("Add Tagged to Pa&yment");
@@ -111,10 +111,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       FMainDS = new Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS();
       FPetraUtilsObject.SetStatusBarText(txtCurrentSupplierCurrency, Catalog.GetString("The currency code to use for this supplier."));
       grdResult.Columns.Clear();
+      grdResult.AddCheckBoxColumn("", FMainDS.AApDocument.ColumnTagged);
       grdResult.AddTextColumn("AP Number", FMainDS.AApDocument.ColumnApNumber);
       grdResult.AddTextColumn("Invoice Number", FMainDS.AApDocument.ColumnDocumentCode);
       grdResult.AddTextColumn("Date Issued", FMainDS.AApDocument.ColumnDateIssued);
       grdResult.AddTextColumn("Total Amount", FMainDS.AApDocument.ColumnTotalAmount);
+      grdResult.AddTextColumn("Date Due", FMainDS.AApDocument.ColumnDateDue);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
@@ -198,6 +200,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
+        if (e.ActionName == "actUntagAll")
+        {
+            btnUntagAll.Enabled = e.Enabled;
+        }
         if (e.ActionName == "actNewInvoice")
         {
             tbbNewInvoice.Enabled = e.Enabled;
@@ -216,7 +222,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         if (e.ActionName == "actReverseSelected")
         {
             tbbReverseSelected.Enabled = e.Enabled;
-            mniReverseTransaction.Enabled = e.Enabled;
+            mniReverseSelected.Enabled = e.Enabled;
         }
         if (e.ActionName == "actApproveTagged")
         {
@@ -240,6 +246,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         mniReprintRemittanceAdvice.Enabled = false;
         mniReprintCheque.Enabled = false;
         mniReprintPaymentReport.Enabled = false;
+        mniNewInvoice.Enabled = false;
+        mniNewCreditNote.Enabled = false;
+        mniOpenSelected.Enabled = false;
+        mniReverseSelected.Enabled = false;
+        mniApproveTagged.Enabled = false;
+        mniPostTagged.Enabled = false;
+        mniAddTaggedToPayment.Enabled = false;
         mniHelpPetraHelp.Enabled = false;
         mniHelpBugReport.Enabled = false;
         mniHelpAboutPetra.Enabled = false;

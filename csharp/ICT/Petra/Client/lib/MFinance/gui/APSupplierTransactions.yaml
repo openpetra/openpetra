@@ -15,8 +15,9 @@ RootNode:
         actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O, ActionClick=OpenSelectedApDocument}
         actReverseSelected: {Label=Re&verse Selected, ShortCut=F5}
         actApproveTagged: {Label=&Approve Tagged, ShortCut=F6}
-        actPostTagged: {Label=&Post Tagged, ShortCut=F7}
+        actPostTagged: {Label=&Post Tagged, ShortCut=F7, ActionClick=PostTaggedDocuments}
         actAddTaggedToPayment: {Label=Add Tagged to Pa&yment, ShortCut=F8}
+        actUntagAll: {Label=&Untag All, ActionClick=UntagAll}
     Controls:
         pnlContent:
             Dock: Fill
@@ -51,13 +52,16 @@ RootNode:
         btnTagApprovable: {Label=Tag all Appro&vable}
         btnTagPostable: {Label=Tag all P&ostable}
         btnTagPayable: {Label=Tag all Paya&ble}
-        btnUntagAll: {Label=&Untag All}
+        btnUntagAll:
         txtSumOfTagged: {Label=Sum of Tagged, ReadOnly=true}
         grdResult: 
             Dock: Fill
+            TableName: AApDocument
             ActionDoubleClick: actOpenSelected
-            # TODO: show DateDue (calculated from DetailDate and DateDue)
-            Columns: [DetailApNumber, DetailDocumentCode, DetailDateIssued, DetailTotalAmount]
+            Columns: [Tagged, ApNumber, DocumentCode, DateIssued, TotalAmount, DateDue]
+            CustomColumns:
+                Tagged: {Label=, Type=Boolean}
+                DateDue: {Label=Date Due, Type=DateTime}
     Menu:
         mniFile:
             mniReprintRemittanceAdvice: {Label=Reprint Re&mittance Advice}
@@ -68,21 +72,21 @@ RootNode:
             Label: &Action
             mniActionNew:
                 Label: &New...
-                mniNewInvoice: {Action=actNewInvoice}
-                mniNewCreditNote: {Action=actNewCreditNote}
-            mniOpenSelected: {Action=actOpenSelected}
+                mniNewInvoice:
+                mniNewCreditNote:
+            mniOpenSelected:
             mniSeparator: {Label=-}
-            mniReverseTransaction: {Action=actReverseSelected}
-            mniApproveTagged: {Action=actApproveTagged}
-            mniPostTagged: {Action=actPostTagged}
-            mniAddTaggedToPayment: {Action=actAddTaggedToPayment}
+            mniReverseSelected:
+            mniApproveTagged:
+            mniPostTagged:
+            mniAddTaggedToPayment:
     Toolbar:
-        tbbNewInvoice: {Action=actNewInvoice}
-        tbbNewCreditNote: {Action=actNewCreditNote}
+        tbbNewInvoice:
+        tbbNewCreditNote:
         tbbSeparator: {Label=-}
-        tbbOpenSelected: {Action=actOpenSelected}
-        tbbReverseSelected: {Action=actReverseSelected}
+        tbbOpenSelected:
+        tbbReverseSelected:
         tbbSeparator: {Label=-}
-        tbbApproveTagged: {Action=actApproveTagged}
-        tbbPostTagged: {Action=actPostTagged}
-        tbbAddTaggedToPayment: {Action=actAddTaggedToPayment}
+        tbbApproveTagged:
+        tbbPostTagged:
+        tbbAddTaggedToPayment:

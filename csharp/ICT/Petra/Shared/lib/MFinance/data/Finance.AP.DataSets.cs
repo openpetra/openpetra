@@ -41,7 +41,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     {
 
         private AApSupplierTable TableAApSupplier;
-        private AApDocumentTable TableAApDocument;
+        private AccountsPayableTDSAApDocumentTable TableAApDocument;
         private AApDocumentDetailTable TableAApDocumentDetail;
         private AApDocumentPaymentTable TableAApDocumentPayment;
         private AApPaymentTable TableAApPayment;
@@ -75,7 +75,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// auto generated
-        public AApDocumentTable AApDocument
+        public AccountsPayableTDSAApDocumentTable AApDocument
         {
             get
             {
@@ -129,7 +129,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         protected override void InitTables()
         {
             this.Tables.Add(new AApSupplierTable("AApSupplier"));
-            this.Tables.Add(new AApDocumentTable("AApDocument"));
+            this.Tables.Add(new AccountsPayableTDSAApDocumentTable("AApDocument"));
             this.Tables.Add(new AApDocumentDetailTable("AApDocumentDetail"));
             this.Tables.Add(new AApDocumentPaymentTable("AApDocumentPayment"));
             this.Tables.Add(new AApPaymentTable("AApPayment"));
@@ -145,7 +145,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             }
             if ((ds.Tables.IndexOf("AApDocument") != -1))
             {
-                this.Tables.Add(new AApDocumentTable("AApDocument"));
+                this.Tables.Add(new AccountsPayableTDSAApDocumentTable("AApDocument"));
             }
             if ((ds.Tables.IndexOf("AApDocumentDetail") != -1))
             {
@@ -201,7 +201,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         {
             this.DataSetName = "AccountsPayableTDS";
             this.TableAApSupplier = ((AApSupplierTable)(this.Tables["AApSupplier"]));
-            this.TableAApDocument = ((AApDocumentTable)(this.Tables["AApDocument"]));
+            this.TableAApDocument = ((AccountsPayableTDSAApDocumentTable)(this.Tables["AApDocument"]));
             this.TableAApDocumentDetail = ((AApDocumentDetailTable)(this.Tables["AApDocumentDetail"]));
             this.TableAApDocumentPayment = ((AApDocumentPaymentTable)(this.Tables["AApDocumentPayment"]));
             this.TableAApPayment = ((AApPaymentTable)(this.Tables["AApPayment"]));
@@ -247,6 +247,333 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                                 "a_ledger_number_i", "a_payment_number_i"}, "AApDocumentPayment", new string[] {
                                 "a_ledger_number_i", "a_payment_number_i"}));
             }
+        }
+    }
+
+    /// This is either an invoice or a credit note in the Accounts Payable system.
+    [Serializable()]
+    public class AccountsPayableTDSAApDocumentTable : AApDocumentTable
+    {
+        /// TableId for Ict.Common.Data generic functions
+        public new static short TableId = 5400;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTaggedId = 21;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateDueId = 22;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AApDocument", "a_ap_document",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "ApNumber", "a_ap_number_i", "AP Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "PartnerKey", "p_partner_key_n", "Supplier Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(3, "CreditNoteFlag", "a_credit_note_flag_l", "Credit Note Flag", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(4, "DocumentCode", "a_document_code_c", "Invoice Number", OdbcType.VarChar, 30, false),
+                    new TTypedColumnInfo(5, "Reference", "a_reference_c", "Reference", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(6, "DateIssued", "a_date_issued_d", "Date Issued", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(7, "DateEntered", "a_date_entered_d", "Date Entered", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(8, "CreditTerms", "a_credit_terms_i", "Credit Terms", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "TotalAmount", "a_total_amount_n", "Total Amount", OdbcType.Decimal, 24, true),
+                    new TTypedColumnInfo(10, "ExchangeRateToBase", "a_exchange_rate_to_base_n", "Exchange Rate to Base", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(11, "DiscountPercentage", "a_discount_percentage_n", "Discount Percentage", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(12, "DiscountDays", "a_discount_days_i", "Discount Days", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(13, "ApAccount", "a_ap_account_c", "AP Account", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(14, "LastDetailNumber", "a_last_detail_number_i", "Last Detail Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(15, "DocumentStatus", "a_document_status_c", "Document Status", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(16, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(17, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(18, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(19, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(20, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
+                    new TTypedColumnInfo(21, "Tagged", "Tagged", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(22, "DateDue", "DateDue", "", OdbcType.Int, -1, false)
+                },
+                new int[] {
+                    0, 1
+                }));
+            return true;
+        }
+
+        /// constructor
+        public AccountsPayableTDSAApDocumentTable() :
+                base("AApDocument")
+        {
+        }
+
+        /// constructor
+        public AccountsPayableTDSAApDocumentTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public AccountsPayableTDSAApDocumentTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        ///
+        public DataColumn ColumnTagged;
+        ///
+        public DataColumn ColumnDateDue;
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_ap_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("a_credit_note_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_document_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_reference_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_date_issued_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("a_date_entered_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("a_credit_terms_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_total_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_exchange_rate_to_base_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_discount_percentage_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_discount_days_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_ap_account_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_last_detail_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_document_status_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("Tagged", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("DateDue", typeof(DateTime)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
+            this.ColumnApNumber = this.Columns["a_ap_number_i"];
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnCreditNoteFlag = this.Columns["a_credit_note_flag_l"];
+            this.ColumnDocumentCode = this.Columns["a_document_code_c"];
+            this.ColumnReference = this.Columns["a_reference_c"];
+            this.ColumnDateIssued = this.Columns["a_date_issued_d"];
+            this.ColumnDateEntered = this.Columns["a_date_entered_d"];
+            this.ColumnCreditTerms = this.Columns["a_credit_terms_i"];
+            this.ColumnTotalAmount = this.Columns["a_total_amount_n"];
+            this.ColumnExchangeRateToBase = this.Columns["a_exchange_rate_to_base_n"];
+            this.ColumnDiscountPercentage = this.Columns["a_discount_percentage_n"];
+            this.ColumnDiscountDays = this.Columns["a_discount_days_i"];
+            this.ColumnApAccount = this.Columns["a_ap_account_c"];
+            this.ColumnLastDetailNumber = this.Columns["a_last_detail_number_i"];
+            this.ColumnDocumentStatus = this.Columns["a_document_status_c"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.ColumnTagged = this.Columns["Tagged"];
+            this.ColumnDateDue = this.Columns["DateDue"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnLedgerNumber,ColumnApNumber};
+        }
+
+        /// Access a typed row by index
+        public new AccountsPayableTDSAApDocumentRow this[int i]
+        {
+            get
+            {
+                return ((AccountsPayableTDSAApDocumentRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public new AccountsPayableTDSAApDocumentRow NewRowTyped(bool AWithDefaultValues)
+        {
+            AccountsPayableTDSAApDocumentRow ret = ((AccountsPayableTDSAApDocumentRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public new AccountsPayableTDSAApDocumentRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new AccountsPayableTDSAApDocumentRow(builder);
+        }
+
+        /// get typed set of changes
+        public new AccountsPayableTDSAApDocumentTable GetChangesTyped()
+        {
+            return ((AccountsPayableTDSAApDocumentTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static new string GetTableName()
+        {
+            return "AApDocument";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static new string GetTableDBName()
+        {
+            return "a_ap_document";
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetTaggedDBName()
+        {
+            return "Tagged";
+        }
+
+        /// get character length for column
+        public static short GetTaggedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateDueDBName()
+        {
+            return "DateDue";
+        }
+
+        /// get character length for column
+        public static short GetDateDueLength()
+        {
+            return -1;
+        }
+
+    }
+
+    /// This is either an invoice or a credit note in the Accounts Payable system.
+    [Serializable()]
+    public class AccountsPayableTDSAApDocumentRow : AApDocumentRow
+    {
+        private AccountsPayableTDSAApDocumentTable myTable;
+
+        /// Constructor
+        public AccountsPayableTDSAApDocumentRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((AccountsPayableTDSAApDocumentTable)(this.Table));
+        }
+
+        ///
+        public Boolean Tagged
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnTagged.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnTagged)
+                            || (((Boolean)(this[this.myTable.ColumnTagged])) != value)))
+                {
+                    this[this.myTable.ColumnTagged] = value;
+                }
+            }
+        }
+
+        ///
+        public DateTime DateDue
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateDue.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return DateTime.MinValue;
+                }
+                else
+                {
+                    return ((DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateDue)
+                            || (((DateTime)(this[this.myTable.ColumnDateDue])) != value)))
+                {
+                    this[this.myTable.ColumnDateDue] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public override void InitValues()
+        {
+            this.SetNull(this.myTable.ColumnLedgerNumber);
+            this.SetNull(this.myTable.ColumnApNumber);
+            this.SetNull(this.myTable.ColumnPartnerKey);
+            this[this.myTable.ColumnCreditNoteFlag.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnDocumentCode);
+            this.SetNull(this.myTable.ColumnReference);
+            this[this.myTable.ColumnDateIssued.Ordinal] = DateTime.Today;
+            this[this.myTable.ColumnDateEntered.Ordinal] = DateTime.Today;
+            this[this.myTable.ColumnCreditTerms.Ordinal] = 0;
+            this[this.myTable.ColumnTotalAmount.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnExchangeRateToBase);
+            this.SetNull(this.myTable.ColumnDiscountPercentage);
+            this.SetNull(this.myTable.ColumnDiscountDays);
+            this.SetNull(this.myTable.ColumnApAccount);
+            this[this.myTable.ColumnLastDetailNumber.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnDocumentStatus);
+            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnCreatedBy);
+            this.SetNull(this.myTable.ColumnDateModified);
+            this.SetNull(this.myTable.ColumnModifiedBy);
+            this.SetNull(this.myTable.ColumnModificationId);
+            this.SetNull(this.myTable.ColumnTagged);
+            this.SetNull(this.myTable.ColumnDateDue);
+        }
+
+        /// test for NULL value
+        public bool IsTaggedNull()
+        {
+            return this.IsNull(this.myTable.ColumnTagged);
+        }
+
+        /// assign NULL value
+        public void SetTaggedNull()
+        {
+            this.SetNull(this.myTable.ColumnTagged);
+        }
+
+        /// test for NULL value
+        public bool IsDateDueNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateDue);
+        }
+
+        /// assign NULL value
+        public void SetDateDueNull()
+        {
+            this.SetNull(this.myTable.ColumnDateDue);
         }
     }
 }

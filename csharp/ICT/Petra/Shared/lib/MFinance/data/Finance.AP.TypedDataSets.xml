@@ -3,7 +3,10 @@
   
     <DataSet name="AccountsPayableTDS">
         <Table sqltable="a_ap_supplier"/>
-        <Table sqltable="a_ap_document"/>
+        <Table sqltable="a_ap_document">
+            <CustomField name="Tagged" type="Boolean"/>
+            <CustomField name="DateDue" type="DateTime"/>
+        </Table>
         <Table sqltable="a_ap_document_detail"/>
         <Table sqltable="a_ap_document_payment"/>
         <Table sqltable="a_ap_payment"/>
