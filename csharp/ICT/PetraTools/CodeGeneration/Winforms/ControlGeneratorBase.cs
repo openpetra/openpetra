@@ -287,7 +287,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock").ToLower() == "fill"))
             {
-                // no other size information required
+                if ((ctrl.controlTypePrefix == "pnl") || (ctrl.controlTypePrefix == "grp")
+                    || ctrl.controlName.StartsWith("tableLayoutPanel"))
+                {
+                    // for Mono, no other size information required; AutoSize would make the elements too high
+                    // for Windows .Net, we need AutoSize, otherwise the controls have no size at all
+                    if (writer.CodeStorage.FTargetWinforms == "net-2.0")
+                    {
+                        writer.SetControlProperty(ctrl.controlName, "AutoSize", "true");
+                    }
+                }
             }
             else if (FAutoSize)
             {

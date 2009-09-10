@@ -158,6 +158,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.AutoSize = true;
             this.pnlContent.Controls.Add(this.grdResult);
             this.pnlContent.Controls.Add(this.pnlDisplayedBalance);
             this.pnlContent.Controls.Add(this.pnlButtons);
@@ -175,6 +176,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
             this.pnlCurrentSupplierInfo.Controls.Add(this.tableLayoutPanel1);
             //
             // txtCurrentSupplierName
@@ -228,6 +230,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
             this.pnlFilter1.Controls.Add(this.tableLayoutPanel2);
             //
             // cmbType
@@ -297,6 +300,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
             this.pnlFilter2.Controls.Add(this.tableLayoutPanel3);
             //
             // cmbStatus
@@ -340,6 +344,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
             this.pnlButtons.Controls.Add(this.tableLayoutPanel4);
             //
             // btnTagApprovable
@@ -416,6 +421,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.AutoSize = true;
             this.pnlDisplayedBalance.Controls.Add(this.tableLayoutPanel5);
             //
             // txtDisplayedBalance

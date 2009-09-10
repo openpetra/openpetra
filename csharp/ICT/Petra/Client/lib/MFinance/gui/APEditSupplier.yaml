@@ -7,7 +7,7 @@ RootNode:
     FormType: edit
     Template: windowEditUIConnector
     MasterTable: AApSupplier
-    WindowWidth: 660
+    WindowWidth: 800
     WindowHeight: 500
     Actions:
         cndDiscountEnabled: {InitialValue=false}

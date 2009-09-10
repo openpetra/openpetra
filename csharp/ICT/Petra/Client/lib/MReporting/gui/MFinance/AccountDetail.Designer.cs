@@ -217,6 +217,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
             this.grpLedger.Controls.Add(this.tableLayoutPanel1);
             //
             // txtLedger
@@ -271,6 +272,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
             this.grpCurrency.Controls.Add(this.tableLayoutPanel2);
             //
             // cmbCurrency
@@ -306,6 +308,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
             this.rgrPeriod.Controls.Add(this.tableLayoutPanel3);
             //
             // rbtPeriodRange
@@ -320,6 +323,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
             //
             // txtStartPeriod
             //
@@ -391,6 +395,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.AutoSize = true;
             //
             // dtpDateStart
             //
@@ -443,6 +448,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel6.AutoSize = true;
             this.rgrSorting.Controls.Add(this.tableLayoutPanel6);
             //
             // rbtSortByAccount
@@ -471,6 +477,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel7.AutoSize = true;
             //
             // txtReferenceFrom
             //
@@ -523,6 +530,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel8.Name = "tableLayoutPanel8";
             this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel8.AutoSize = true;
             //
             // txtAnalysisTypeFrom
             //
@@ -593,6 +601,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel9.Name = "tableLayoutPanel9";
             this.tableLayoutPanel9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel9.AutoSize = true;
             this.tpgCCAccount.Controls.Add(this.tableLayoutPanel9);
             //
             // rgrAccounts
@@ -605,6 +614,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel10.Name = "tableLayoutPanel10";
             this.tableLayoutPanel10.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel10.AutoSize = true;
             this.rgrAccounts.Controls.Add(this.tableLayoutPanel10);
             //
             // rbtAccountRange
@@ -619,6 +629,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel11.Name = "tableLayoutPanel11";
             this.tableLayoutPanel11.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel11.AutoSize = true;
             //
             // cmbAccountStart
             //
@@ -672,6 +683,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel12.Name = "tableLayoutPanel12";
             this.tableLayoutPanel12.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel12.AutoSize = true;
             //
             // clbAccounts
             //
@@ -715,6 +727,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel13.Name = "tableLayoutPanel13";
             this.tableLayoutPanel13.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel13.AutoSize = true;
             this.rgrCostCentres.Controls.Add(this.tableLayoutPanel13);
             //
             // rbtCostCentreRange
@@ -729,6 +742,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel14.Name = "tableLayoutPanel14";
             this.tableLayoutPanel14.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel14.AutoSize = true;
             //
             // cmbCostCentreStart
             //
@@ -782,6 +796,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.tableLayoutPanel15.Name = "tableLayoutPanel15";
             this.tableLayoutPanel15.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel15.AutoSize = true;
             //
             // clbCostCentres
             //
@@ -1065,7 +1080,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // TFrmAccountDetail
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(700, 500);
+            this.ClientSize = new System.Drawing.Size(650, 600);
             // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
             this.Controls.Add(this.tabReportSettings);
             this.Controls.Add(this.tbrMain);

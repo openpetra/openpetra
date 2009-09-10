@@ -335,7 +335,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (parentContainer.HasAttribute("Height"))
                     {
-                        Console.WriteLine(FTlpName + " " + parentContainerName + " " + parentContainer.GetAttribute("Height"));
                         newTableLayoutPanel.SetAttribute("Height", parentContainer.GetAttribute("Height"));
                     }
 
@@ -448,7 +447,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (ctrl.HasAttribute("Height"))
                     {
-                        Console.WriteLine("tst2 " + ctrl.controlName + " " + FTlpName + " " + ctrl.GetAttribute("Height"));
                         NewHeight = Convert.ToInt32(ctrl.GetAttribute("Height"));
                         ctrl.ClearAttribute("Height");
                     }

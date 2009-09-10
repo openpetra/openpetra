@@ -64,6 +64,9 @@ namespace Ict.Tools.CodeGeneration
         public string FEventHandlersImplementation = "";
         public string FActionHandlers = "";
 
+        /// can be net-2.0 for Windows .net, or mono-2.0 for Mono; mainly to resolve issues with TableLayoutPanel and AutoSize etc
+        public string FTargetWinforms = "net-2.0";
+
         public Int32 FHeight = 500;
         public Int32 FWidth = 700;
         public XmlNode FTemplateParameters = null;

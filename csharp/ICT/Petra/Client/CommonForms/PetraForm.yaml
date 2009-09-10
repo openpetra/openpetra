@@ -4,6 +4,8 @@ RootNode:
     #don't generate a form for this file
     FormType: abstract
     Icon: petraico-big.ico
+    WindowWidth: 700
+    WindowHeight: 500
     Events:
         Activated: {class=System.EventHandler,method=FPetraUtilsObject.TFrmPetra_Activated}
         Load: {class=System.EventHandler, method=FPetraUtilsObject.TFrmPetra_Load}

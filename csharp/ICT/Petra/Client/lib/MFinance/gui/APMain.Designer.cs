@@ -168,11 +168,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.AutoSize = true;
             //
             // tableLayoutPanel1
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
             this.pnlContent.Controls.Add(this.tableLayoutPanel1);
             //
             // cmbSupplierCode
@@ -201,6 +203,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
             this.pnlSearchFilter.Controls.Add(this.tableLayoutPanel2);
             //
             // chkDueToday
@@ -231,6 +234,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
             //
             // nudNumberTimeUnits
             //
@@ -275,6 +279,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
             this.pnlSearchButtons.Controls.Add(this.tableLayoutPanel4);
             //
             // btnSearch
@@ -309,6 +314,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.AutoSize = true;
             this.tpgSuppliers.Controls.Add(this.tableLayoutPanel5);
             //
             // pnlSupplierOptions
@@ -321,6 +327,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel6.AutoSize = true;
             this.pnlSupplierOptions.Controls.Add(this.tableLayoutPanel6);
             //
             // chkShowOutstandingAmounts
@@ -389,6 +396,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel7.AutoSize = true;
             this.tpgOutstandingInvoices.Controls.Add(this.tableLayoutPanel7);
             //
             // pnlTaggingOptions
@@ -401,6 +409,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel8.Name = "tableLayoutPanel8";
             this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel8.AutoSize = true;
             this.pnlTaggingOptions.Controls.Add(this.tableLayoutPanel8);
             //
             // btnTagAllApprovable

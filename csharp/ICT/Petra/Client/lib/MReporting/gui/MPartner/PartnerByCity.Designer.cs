@@ -122,6 +122,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
             this.tpgReportSpecific.Controls.Add(this.tableLayoutPanel1);
             //
             // txtCityName

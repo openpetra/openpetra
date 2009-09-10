@@ -155,6 +155,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.AutoSize = true;
             this.pnlContent.Controls.Add(this.pnlLowerPart);
             this.pnlContent.Controls.Add(this.ucoUpperPart);
             //
@@ -168,6 +169,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.pnlLowerPart.Name = "pnlLowerPart";
             this.pnlLowerPart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlLowerPart.AutoSize = true;
             this.pnlLowerPart.Controls.Add(this.ucoPartnerTabSet);
             //
             // ucoPartnerTabSet

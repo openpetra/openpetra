@@ -156,11 +156,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.AutoSize = true;
             //
             // tableLayoutPanel1
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
             this.pnlContent.Controls.Add(this.tableLayoutPanel1);
             //
             // pnlPartnerInfo
@@ -173,6 +175,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
             this.pnlPartnerInfo.Controls.Add(this.tableLayoutPanel2);
             //
             // txtPartnerKey
@@ -217,6 +220,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
             this.pnlPartnerInfo2.Controls.Add(this.tableLayoutPanel3);
             //
             // txtPartnerName
@@ -251,6 +255,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
             this.pnlDefaults.Controls.Add(this.tableLayoutPanel4);
             //
             // grpGeneralInformation
@@ -263,6 +268,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.AutoSize = true;
             this.grpGeneralInformation.Controls.Add(this.tableLayoutPanel5);
             //
             // cmbCurrency
@@ -316,6 +322,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel6.AutoSize = true;
             this.grpMiscDefaults.Controls.Add(this.tableLayoutPanel6);
             //
             // nudInvoiceAging
@@ -427,6 +434,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel7.AutoSize = true;
             this.grpAccountInformation.Controls.Add(this.tableLayoutPanel7);
             //
             // cmbAPAccount
@@ -682,7 +690,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             // TFrmAPEditSupplier
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(660, 500);
+            this.ClientSize = new System.Drawing.Size(800, 500);
             // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);

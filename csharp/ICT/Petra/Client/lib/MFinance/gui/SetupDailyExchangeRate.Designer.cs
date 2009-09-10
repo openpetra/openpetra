@@ -128,6 +128,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.AutoSize = true;
             this.pnlContent.Controls.Add(this.pnlGrid);
             this.pnlContent.Controls.Add(this.pnlDetails);
             //
@@ -135,6 +136,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             this.pnlGrid.Name = "pnlGrid";
             this.pnlGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlGrid.AutoSize = true;
             this.pnlGrid.Controls.Add(this.grdDetails);
             this.pnlGrid.Controls.Add(this.pnlButtons);
             //
@@ -154,6 +156,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
             this.pnlButtons.Controls.Add(this.tableLayoutPanel1);
             //
             // btnNew
@@ -189,6 +192,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
             this.pnlDetails.Controls.Add(this.tableLayoutPanel2);
             //
             // cmbDetailFromCurrencyCode

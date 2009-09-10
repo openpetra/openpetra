@@ -111,6 +111,8 @@ namespace Ict.Tools.CodeGeneration
                 TCodeStorage codeStorage = new TCodeStorage(myDoc, FXmlNodes, manualCodeFile);
                 TParseXAML yamlParser = new TParseXAML(ref codeStorage);
 
+                codeStorage.FTargetWinforms = opts.GetValue("TargetPlatform", "net-2.0");
+
                 // should not need to be specific to special forms
                 yamlParser.LoadRecursively(FXamlFilename, FSelectedLocalisation);
 

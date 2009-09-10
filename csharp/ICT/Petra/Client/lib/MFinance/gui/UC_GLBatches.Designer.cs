@@ -124,6 +124,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.AutoSize = true;
             this.pnlContent.Controls.Add(this.pnlDetailGrid);
             this.pnlContent.Controls.Add(this.pnlDetails);
             this.pnlContent.Controls.Add(this.pnlInfo);
@@ -138,6 +139,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
             this.pnlInfo.Controls.Add(this.tableLayoutPanel1);
             //
             // pnlLedgerInfo
@@ -150,6 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
             this.pnlLedgerInfo.Controls.Add(this.tableLayoutPanel2);
             //
             // txtLedgerNumber
@@ -185,6 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
             this.rgrShowBatches.Controls.Add(this.tableLayoutPanel3);
             //
             // rbtPosting
@@ -233,6 +237,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.pnlDetailGrid.Name = "pnlDetailGrid";
             this.pnlDetailGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlDetailGrid.AutoSize = true;
             this.pnlDetailGrid.Controls.Add(this.grdDetails);
             this.pnlDetailGrid.Controls.Add(this.pnlDetailButtons);
             //
@@ -253,6 +258,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
             this.pnlDetailButtons.Controls.Add(this.tableLayoutPanel4);
             //
             // btnNew
@@ -298,6 +304,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.AutoSize = true;
             this.pnlDetails.Controls.Add(this.tableLayoutPanel5);
             //
             // txtDetailBatchDescription

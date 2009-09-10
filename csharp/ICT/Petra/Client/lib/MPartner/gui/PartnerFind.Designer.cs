@@ -175,6 +175,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlMain.AutoSize = true;
             this.pnlMain.Controls.Add(this.tabPartnerFindMethods);
             this.pnlMain.Controls.Add(this.pnlModalButtons);
             //
@@ -211,11 +212,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.pnlModalButtons.Name = "pnlModalButtons";
             this.pnlModalButtons.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlModalButtons.AutoSize = true;
             //
             // tableLayoutPanel1
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
             this.pnlModalButtons.Controls.Add(this.tableLayoutPanel1);
             //
             // btnHelp

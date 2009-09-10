@@ -114,6 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.AutoSize = true;
             this.pnlContent.Controls.Add(this.tabGLBatch);
             //
             // tpgBatches

@@ -1,6 +1,6 @@
 ﻿RootNode:
     BaseYaml: AccountDetail.yaml
-    WindowHeight: 600
+    WindowHeight: 670
     Controls:
         grpLedger: {Height=50}
         grpCurrency: {Height=50}

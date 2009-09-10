@@ -135,6 +135,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.pnlTODO.Name = "pnlTODO";
             this.pnlTODO.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlTODO.AutoSize = true;
             //
             // mniImport
             //

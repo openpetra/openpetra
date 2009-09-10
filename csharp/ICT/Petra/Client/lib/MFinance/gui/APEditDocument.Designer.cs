@@ -164,6 +164,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.AutoSize = true;
             this.pnlContent.Controls.Add(this.grpDetails);
             this.pnlContent.Controls.Add(this.grpDocumentInfo);
             this.pnlContent.Controls.Add(this.pnlSupplierInfo);
@@ -178,6 +179,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
             this.pnlSupplierInfo.Controls.Add(this.tableLayoutPanel1);
             //
             // txtSupplierName
@@ -231,6 +233,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
             this.grpDocumentInfo.Controls.Add(this.tableLayoutPanel2);
             //
             // txtDocumentCode
@@ -418,6 +421,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.grpDetails.Name = "grpDetails";
             this.grpDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpDetails.AutoSize = true;
             this.grpDetails.Controls.Add(this.pnlDetailGrid);
             this.grpDetails.Controls.Add(this.pnlDetails);
             //
@@ -425,6 +429,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.pnlDetailGrid.Name = "pnlDetailGrid";
             this.pnlDetailGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlDetailGrid.AutoSize = true;
             this.pnlDetailGrid.Controls.Add(this.grdDetails);
             this.pnlDetailGrid.Controls.Add(this.pnlDetailButtons);
             //
@@ -444,6 +449,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
             this.pnlDetailButtons.Controls.Add(this.tableLayoutPanel3);
             //
             // btnAddDetail
@@ -487,6 +493,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
             this.pnlDetails.Controls.Add(this.tableLayoutPanel4);
             //
             // txtDetailNarrative
