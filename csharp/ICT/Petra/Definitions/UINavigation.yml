@@ -1,0 +1,108 @@
+OpenPetra:
+    SearchBoxes:
+        Partner:
+            Label: Search Partner
+        Transaction:
+            Label: Search Transaction
+            Comment: Search by Reference, or Narrative
+        Batch:
+            Label: Search Batch
+            Comment: Search by Reference, or Batch Number
+        Report:
+            Label: Search Report
+            Comment: Search for Report name, or saved report settings
+        Donor:
+            Label: Search Donor
+            Comment: Search for donor by name, bank account, or partner key
+        Recipient:
+            Label: Search Recipient
+            Comment: Search for recipient (Worker or Project) by name, country, or partner key
+        Task:
+            Label: Search for Task
+    MainMenu:
+        # Department
+        My Petra: {Icon=Petra.ico}
+            Favourites:
+            CustomGroup:
+        Partner:
+            # Module
+            Main:
+                # Sub Module
+                Partners: {Icon=partners.ico}
+                    SearchBoxes: [Partner]
+                    #Skip Task Group?
+                    AddNewPartner:
+                    FindPartner:
+                Extracts:
+                Reports: {Icon=printer.ico}
+                MailingSubscriptions: {Label= Mailing&Subscriptions, Icon=mail.ico}
+            MoreFunctions:
+                SetupPartnerModule:
+        # Department
+        Finance:
+            # Module
+            GeneralLedger:
+                # Sub Module
+                Setup:
+                    # Task Group
+                    Accounts:
+                        # Tasks (parse from c# file, or even dll?)
+                        ViewAccounts:
+                        AddPostingAccount:
+                        AddForeignCurrencyAccount:
+                        AddSummarisationAccount:
+                        EditAccount:
+                        DeleteAccount:
+                        RenameAccount:
+                        ImportChartOfAccounts:
+                    Cost Centres:
+                        AddCostCentre:
+                        EditCostCentre:
+                        DeleteCostCentre:
+                        RenameCostCentre:
+                        LinkCostCentreToPartner:
+                    Other:
+                        LedgerSetupShepherd:
+                        SetupCalendar:
+                        ChangeNumberOfForwardingPeriods:
+                Transactions:
+                    SearchBoxes: [Transaction, Batch]
+                    General:
+                        EnterTransactions:
+                        ImportTransactions:
+                        EditExistingTransactions:
+                        EditTransactionsInPreviouslyUsedBatch:
+                        PostBatch:
+                        FindTransaction:
+                Reports:
+                    AccountDetail:
+                    BalanceSheet:
+                        CurrentPeriod:
+                        EndOfLastYear:
+                        SpecifyParameters:
+                        RepeatLastReport:
+                        MyFancyBalanceSheetWithCoolGraph:
+                    IncomeExpense:
+                PeriodEnd:
+                YearEnd:
+                ICHProcessing:
+            GiftProcessing:
+                SearchBoxes: [Donor, Recipient]
+                GiftEntry:
+                    AddGifts:
+                    ImportGifts:
+                    EditExistingGifts:
+                    EditLastUnpostedGiftBatch:
+                    PostGiftBatch:
+                GiftReceipting:
+                    PrintSingleReceipt:
+                    PrintAnnualReceipt:
+            AccountsPayable:
+            Budgets:
+            ICH:
+            Reports:
+            FinanceModuleSetup:
+        Personnel:
+        ConferenceManagement:
+        FinancialDevelopment:
+        SystemManager:
