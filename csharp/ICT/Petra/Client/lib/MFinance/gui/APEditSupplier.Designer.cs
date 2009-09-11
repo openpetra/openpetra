@@ -102,13 +102,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDiscountValue = new System.Windows.Forms.Label();
             this.grpAccountInformation = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
-            this.cmbAPAccount = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbAPAccount = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblAPAccount = new System.Windows.Forms.Label();
-            this.cmbDefaultBankAccount = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbDefaultBankAccount = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDefaultBankAccount = new System.Windows.Forms.Label();
-            this.cmbCostCentre = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbCostCentre = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblCostCentre = new System.Windows.Forms.Label();
-            this.cmbExpenseAccount = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbExpenseAccount = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblExpenseAccount = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
@@ -441,7 +441,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.cmbAPAccount.Location = new System.Drawing.Point(2,2);
             this.cmbAPAccount.Name = "cmbAPAccount";
-            this.cmbAPAccount.Size = new System.Drawing.Size(150, 28);
+            this.cmbAPAccount.Size = new System.Drawing.Size(300, 28);
+            this.cmbAPAccount.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblAPAccount
             //
@@ -455,7 +456,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.cmbDefaultBankAccount.Location = new System.Drawing.Point(2,2);
             this.cmbDefaultBankAccount.Name = "cmbDefaultBankAccount";
-            this.cmbDefaultBankAccount.Size = new System.Drawing.Size(150, 28);
+            this.cmbDefaultBankAccount.Size = new System.Drawing.Size(300, 28);
+            this.cmbDefaultBankAccount.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblDefaultBankAccount
             //
@@ -469,7 +471,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.cmbCostCentre.Location = new System.Drawing.Point(2,2);
             this.cmbCostCentre.Name = "cmbCostCentre";
-            this.cmbCostCentre.Size = new System.Drawing.Size(150, 28);
+            this.cmbCostCentre.Size = new System.Drawing.Size(300, 28);
+            this.cmbCostCentre.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblCostCentre
             //
@@ -483,7 +486,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.cmbExpenseAccount.Location = new System.Drawing.Point(2,2);
             this.cmbExpenseAccount.Name = "cmbExpenseAccount";
-            this.cmbExpenseAccount.Size = new System.Drawing.Size(150, 28);
+            this.cmbExpenseAccount.Size = new System.Drawing.Size(300, 28);
+            this.cmbExpenseAccount.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblExpenseAccount
             //
@@ -760,13 +764,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         private System.Windows.Forms.Label lblDiscountValue;
         private System.Windows.Forms.GroupBox grpAccountInformation;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
-        private Ict.Common.Controls.TCmbAutoComplete cmbAPAccount;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbAPAccount;
         private System.Windows.Forms.Label lblAPAccount;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDefaultBankAccount;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDefaultBankAccount;
         private System.Windows.Forms.Label lblDefaultBankAccount;
-        private Ict.Common.Controls.TCmbAutoComplete cmbCostCentre;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbCostCentre;
         private System.Windows.Forms.Label lblCostCentre;
-        private Ict.Common.Controls.TCmbAutoComplete cmbExpenseAccount;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbExpenseAccount;
         private System.Windows.Forms.Label lblExpenseAccount;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;

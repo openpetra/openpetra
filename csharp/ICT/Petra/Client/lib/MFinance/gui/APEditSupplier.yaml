@@ -43,10 +43,10 @@ RootNode:
             Label:Supplier &Type
             DataField: AApSupplier.SupplierType
             OptionalValues: [NORMAL, CREDIT CARD]
-        cmbAPAccount: {Label=&AP Account, DataField=AApSupplier.DefaultApAccount, LookupTODO=AAccountCodesWithFILTER???}
-        cmbDefaultBankAccount: {Label=Default &Bank Account, DataField=AApSupplier.DefaultBankAccount}
-        cmbCostCentre: {Label=Default C&ost Centre, DataField=AApSupplier.DefaultCostCentre}
-        cmbExpenseAccount: {Label=Default &Expense Account, DataField=AApSupplier.DefaultExpAccount}
+        cmbAPAccount: {Label=&AP Account, DataField=AApSupplier.DefaultApAccount, List=UserDefinedList}
+        cmbDefaultBankAccount: {Label=Default &Bank Account, DataField=AApSupplier.DefaultBankAccount, List=UserDefinedList}
+        cmbCostCentre: {Label=Default C&ost Centre, DataField=AApSupplier.DefaultCostCentre, List=UserDefinedList}
+        cmbExpenseAccount: {Label=Default &Expense Account, DataField=AApSupplier.DefaultExpAccount, List=UserDefinedList}
         nudInvoiceAging: {Label=Invoice A&ging, LabelUnit=months, DataField=AApSupplier.PreferredScreenDisplay}
         nudCreditTerms: {Label=C&redit Terms, LabelUnit=days, DataField=AApSupplier.DefaultCreditTerms}
         cmbDefaultPaymentType:

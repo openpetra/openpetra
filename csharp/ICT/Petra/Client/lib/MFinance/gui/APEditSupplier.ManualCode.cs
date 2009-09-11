@@ -43,12 +43,14 @@ using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Client.MFinance.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
     public partial class TFrmAPEditSupplier
     {
         AccountsPayableTDS FMainDS;
+        Int32 FLedgerNumber;
 
         /// <summary>
         /// todoComment
@@ -57,6 +59,26 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         {
             FMainDS = new AccountsPayableTDS();
         }
+
+        /// <summary>
+        /// we need the ledger number for the account and costcentre selections, which are dependant on the ledger
+        /// </summary>
+        public Int32 LedgerNumber
+        {
+            set
+            {
+                FLedgerNumber = value;
+
+                TFinanceControls.InitialiseAccountList(ref cmbAPAccount, FLedgerNumber, true, false, false);
+
+                // TODO: limit to bank accounts? how? AAccountProperty: ACC_PROP_BANK_ACCOUNT
+                // https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=76
+                //TFinanceControls.InitialiseAccountList(ref cmbDefaultBankAccount, FLedgerNumber, true, false, false);
+                TFinanceControls.InitialiseAccountList(ref cmbExpenseAccount, FLedgerNumber, true, false, false);
+                TFinanceControls.InitialiseCostCentreList(ref cmbCostCentre, FLedgerNumber, true, false, false, false);
+            }
+        }
+
 
         /// <summary>
         /// called from APMain when adding new supplier;
@@ -134,6 +156,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
             FMainDS.AApSupplier.Rows[0].BeginEdit();
             GetDataFromControls();
+
+            // TODO: enforce AP account
+            if (FMainDS.AApSupplier[0].IsDefaultApAccountNull())
+            {
+                MessageBox.Show(Catalog.GetString("Please select an AP account (eg. 9100)"));
+                FMainDS.AApSupplier.Rows[0].EndEdit();
+                return false;
+            }
 
             if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
             {

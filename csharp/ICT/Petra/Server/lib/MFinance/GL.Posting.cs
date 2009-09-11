@@ -223,11 +223,11 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (trans.DebitCreditIndicator)
                 {
-                    Batch.BatchDebitTotal += trans.AmountInIntlCurrency;
+                    Batch.BatchDebitTotal += trans.TransactionAmount;
                 }
                 else
                 {
-                    Batch.BatchCreditTotal += trans.AmountInIntlCurrency;
+                    Batch.BatchCreditTotal += trans.TransactionAmount;
                 }
             }
 
@@ -284,6 +284,25 @@ namespace Ict.Petra.Server.MFinance.GL
                 journal.JournalPeriod = Batch.BatchPeriod;
 
                 // TODO: JournalYear?
+
+                journal.JournalCreditTotal = 0.0;
+                journal.JournalDebitTotal = 0.0;
+                DataView TransactionsByJournal = ADataSet.ATransaction.DefaultView;
+                TransactionsByJournal.RowFilter = ATransactionTable.GetJournalNumberDBName() + " = " + journal.JournalNumber.ToString();
+
+                foreach (DataRowView transRowView in TransactionsByJournal)
+                {
+                    ATransactionRow trans = (ATransactionRow)transRowView.Row;
+
+                    if (trans.DebitCreditIndicator)
+                    {
+                        journal.JournalDebitTotal += trans.TransactionAmount;
+                    }
+                    else
+                    {
+                        journal.JournalCreditTotal += trans.TransactionAmount;
+                    }
+                }
 
                 if (journal.JournalCreditTotal != journal.JournalDebitTotal)
                 {

@@ -121,9 +121,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       FPetraUtilsObject.SetStatusBarText(cmbDetailKeyMinistryKey, Catalog.GetString("Key ministry to which this transaction applies (just for fund transfers)"));
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Transaction Number", FMainDS.ATransaction.ColumnTransactionNumber);
-      grdDetails.AddTextColumn("Transaction Posted Status", FMainDS.ATransaction.ColumnTransactionStatus);
+      grdDetails.AddCheckBoxColumn("Transaction Posted Status", FMainDS.ATransaction.ColumnTransactionStatus);
       grdDetails.AddTextColumn("Transaction Date", FMainDS.ATransaction.ColumnTransactionDate);
-      grdDetails.AddTextColumn("Debit/Credit Indicator", FMainDS.ATransaction.ColumnDebitCreditIndicator);
+      grdDetails.AddCheckBoxColumn("Debit/Credit Indicator", FMainDS.ATransaction.ColumnDebitCreditIndicator);
       grdDetails.AddTextColumn("Cost Centre Code", FMainDS.ATransaction.ColumnCostCentreCode);
       grdDetails.AddTextColumn("Account Code", FMainDS.ATransaction.ColumnAccountCode);
       grdDetails.AddTextColumn("Transaction Amount", FMainDS.ATransaction.ColumnTransactionAmount);

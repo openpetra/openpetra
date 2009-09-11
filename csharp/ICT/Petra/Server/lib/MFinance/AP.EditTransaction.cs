@@ -40,6 +40,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.ServerLookups;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors;
 
@@ -89,6 +90,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
             NewDocumentRow.LedgerNumber = ALedgerNumber;
             NewDocumentRow.PartnerKey = APartnerKey;
             NewDocumentRow.CreditNoteFlag = ACreditNoteOrInvoice;
+            NewDocumentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_OPEN;
             NewDocumentRow.LastDetailNumber = -1;
 
             // get the supplier defaults
@@ -314,6 +316,8 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                 }
 
                 // TODO: also check if details are filled, and they each have a costcentre and account? totals match sum of details
+
+                // TODO: check for document.apaccount, if not set, get the default apaccount from the supplier, and save the ap document
             }
 
             // is APostingDate inside the valid posting periods?
@@ -330,6 +334,8 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
+
+            // TODO: check if the amount of the document equals the totals of details
 
             return MainDS;
         }
@@ -348,6 +354,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
 
             ABatchRow batch = GLDataset.ABatch[0];
 
+            batch.BatchDescription = Catalog.GetString("Accounts Payable Batch");
             batch.DateEffective = APostingDate;
             batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
 
@@ -397,34 +404,19 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
 
                 foreach (AApDocumentRow document in DocumentsByCurrency[CurrencyCode])
                 {
+                    ATransactionRow transaction = null;
                     DataView DocumentDetails = APDataset.AApDocumentDetail.DefaultView;
                     DocumentDetails.RowFilter = AApDocumentDetailTable.GetApNumberDBName() + " = " + document.ApNumber.ToString();
+
+                    string SupplierShortName;
+                    TPartnerClass SupplierPartnerClass;
+                    TPartnerServerLookups.GetPartnerShortName(document.PartnerKey, out SupplierShortName, out SupplierPartnerClass);
 
                     foreach (DataRowView rowview in DocumentDetails)
                     {
                         AApDocumentDetailRow documentDetail = (AApDocumentDetailRow)rowview.Row;
 
-                        // TODO
-                        // one transaction for the account/costcentre of the detail; debit
-                        // credit transaction: ap account of apdocument (eg 9100); the main costcentre of the ledger
-
-                        ATransactionRow transaction = GLDataset.ATransaction.NewRowTyped();
-                        transaction.LedgerNumber = journal.LedgerNumber;
-                        transaction.BatchNumber = journal.BatchNumber;
-                        transaction.JournalNumber = journal.JournalNumber;
-                        transaction.TransactionNumber = TransactionCounter++;
-                        transaction.TransactionAmount = documentDetail.Amount;
-
-                        // TODO: support foreign currencies
-                        transaction.AmountInBaseCurrency = documentDetail.Amount;
-                        transaction.DebitCreditIndicator = true;
-                        transaction.AccountCode = documentDetail.AccountCode;
-                        transaction.CostCentreCode = documentDetail.CostCentreCode;
-
-                        // TODO transaction.DetailNumber
-                        // TODO transaction.Narrative =
-                        transaction.Reference = "TODO";
-                        GLDataset.ATransaction.Rows.Add(transaction);
+                        // TODO: analysis attributes
 
                         transaction = GLDataset.ATransaction.NewRowTyped();
                         transaction.LedgerNumber = journal.LedgerNumber;
@@ -435,21 +427,70 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
 
                         // TODO: support foreign currencies
                         transaction.AmountInBaseCurrency = documentDetail.Amount;
-                        transaction.DebitCreditIndicator = false;
 
-                        // TODO transaction.AccountCode = document.ApAccount;
-                        // TODO transaction.CostCentreCode =
+                        if (document.CreditNoteFlag)
+                        {
+                            transaction.AmountInBaseCurrency *= -1;
+                        }
+
+                        transaction.DebitCreditIndicator = (transaction.AmountInBaseCurrency > 0);
+
+                        if (transaction.AmountInBaseCurrency < 0)
+                        {
+                            transaction.AmountInBaseCurrency *= -1;
+                        }
+
+                        transaction.AccountCode = documentDetail.AccountCode;
+                        transaction.CostCentreCode = documentDetail.CostCentreCode;
+                        transaction.Narrative = "AP:" + document.ApNumber.ToString() + " - " + documentDetail.Narrative + " - " + SupplierShortName;
+                        transaction.Reference = documentDetail.ItemRef;
+
                         // TODO transaction.DetailNumber
-                        // TODO transaction.Narrative =
-                        transaction.Reference = "TODO";
+
                         GLDataset.ATransaction.Rows.Add(transaction);
                     }
 
-                    journal.LastTransactionNumber = TransactionCounter - 1;
+                    // create one transaction for the AP account
+                    transaction = GLDataset.ATransaction.NewRowTyped();
+                    transaction.LedgerNumber = journal.LedgerNumber;
+                    transaction.BatchNumber = journal.BatchNumber;
+                    transaction.JournalNumber = journal.JournalNumber;
+                    transaction.TransactionNumber = TransactionCounter++;
+                    transaction.TransactionAmount = document.TotalAmount;
+
+                    // TODO: support foreign currencies
+                    transaction.AmountInBaseCurrency = document.TotalAmount;
+
+                    if (document.CreditNoteFlag)
+                    {
+                        transaction.AmountInBaseCurrency *= -1;
+                    }
+
+                    transaction.DebitCreditIndicator = (transaction.AmountInBaseCurrency > 0);
+
+                    if (transaction.AmountInBaseCurrency < 0)
+                    {
+                        transaction.AmountInBaseCurrency *= -1;
+                    }
+
+                    transaction.DebitCreditIndicator = false;
+
+                    // TODO: if document.ApAccount is empty, look for supplier default ap account?
+                    transaction.AccountCode = document.ApAccount;
+                    transaction.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
+                        ALedgerNumber);
+                    transaction.Narrative = "AP:" + document.ApNumber.ToString() + " - " + document.DocumentCode + " - " + SupplierShortName;
+                    transaction.Reference = "AP" + document.ApNumber.ToString();
+
+                    // TODO transaction.DetailNumber
+
+                    GLDataset.ATransaction.Rows.Add(transaction);
                 }
 
-                batch.LastJournal = CounterJournals - 1;
+                journal.LastTransactionNumber = TransactionCounter - 1;
             }
+
+            batch.LastJournal = CounterJournals - 1;
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
@@ -495,6 +536,40 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                 // TODO: what if posting fails? do we have an orphaned batch lying around? can this be put into one single transaction? probably not
                 // TODO: we should cancel that batch
                 return false;
+            }
+
+            // change status of AP documents and save to database
+            foreach (AApDocumentRow row in MainDS.AApDocument.Rows)
+            {
+                row.DocumentStatus = MFinanceConstants.AP_DOCUMENT_POSTED;
+            }
+
+            TDBTransaction SubmitChangesTransaction;
+
+            try
+            {
+                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                if (AApDocumentAccess.SubmitChanges(MainDS.AApDocument, SubmitChangesTransaction,
+                        out AVerifications))
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            catch (Exception e)
+            {
+                // we should not get here; how would the database get broken?
+                // TODO do we need a bigger transaction around everything?
+
+                TLogging.Log("after submitchanges: exception " + e.Message);
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw new Exception(e.ToString() + " " + e.Message);
             }
 
             return true;

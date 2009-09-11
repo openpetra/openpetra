@@ -238,6 +238,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                     this.Handle))
             {
                 TFrmAPEditSupplier frm = new TFrmAPEditSupplier(this.Handle);
+                frm.LedgerNumber = FLedgerNumber;
                 frm.CreateNewSupplier(PartnerKey);
                 frm.Show();
             }
@@ -255,6 +256,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             if (PartnerKey != -1)
             {
                 TFrmAPEditSupplier frm = new TFrmAPEditSupplier(this.Handle);
+                frm.LedgerNumber = FLedgerNumber;
                 frm.EditSupplier(PartnerKey);
                 frm.Show();
             }

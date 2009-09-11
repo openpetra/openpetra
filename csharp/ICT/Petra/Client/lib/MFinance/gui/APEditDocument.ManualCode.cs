@@ -31,6 +31,7 @@ using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.AP.Data;
+using Ict.Petra.Shared.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
@@ -64,6 +65,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 DetailAmount,
                 FMainDS.AApDocument[0].LastDetailNumber);
             FMainDS.AApDocument[0].LastDetailNumber++;
+
+            // for the moment, set all to approved, since we don't support approval of documents at the moment
+            FMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
         }
 
         private void UpdateCreditTerms(object sender, EventArgs e)

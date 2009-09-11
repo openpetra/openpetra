@@ -62,13 +62,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
             FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.FindAApDocument(
                     ALedgerNumber, APartnerKey,
-
-                    // cmbStatus.GetSelectedString(),
-                    "UNPOSTED",
+                    "UNPOSTED", // cmbStatus.GetSelectedString(),
                     cmbType.SelectedIndex == 1,
                     chkHideAgedTransactions.Checked));
 
             // TODO: calculate duedate column? or should that be done on the server?
+
+            foreach (AccountsPayableTDSAApDocumentRow row in FMainDS.AApDocument.Rows)
+            {
+                row.Tagged = false;
+            }
 
             ShowData();
         }
@@ -149,12 +152,23 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 }
             }
 
+            if (TaggedDocuments.Count == 0)
+            {
+                return;
+            }
+
             // TODO: make sure that there are uptodate exchange rates
 
             TVerificationResultCollection Verifications;
 
-            // TODO: posting date
-            if (!TRemote.MFinance.AccountsPayable.WebConnectors.PostAPDocuments(FLedgerNumber, TaggedDocuments, DateTime.Now, out Verifications))
+            // TODO: message box asking for posting date
+            DateTime PostingDate = new DateTime(2009, 06, 01);
+
+            if (!TRemote.MFinance.AccountsPayable.WebConnectors.PostAPDocuments(
+                    FLedgerNumber,
+                    TaggedDocuments,
+                    PostingDate,
+                    out Verifications))
             {
                 string ErrorMessages = String.Empty;
 
@@ -171,6 +185,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             {
                 // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The AP documents have been posted successfully!"));
+
+                // TODO: show posting register of GL Batch?
 
                 // TODO: refresh the grid, to reflect that the transactions have been posted
                 FMainDS.AApDocument.Clear();

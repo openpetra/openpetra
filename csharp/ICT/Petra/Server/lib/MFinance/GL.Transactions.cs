@@ -203,5 +203,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             return TGLPosting.PostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
         }
+
+        /// <summary>
+        /// return the name of the standard costcentre for the given ledger;
+        /// this supports up to 4 digit ledgers
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        public static string GetStandardCostCentre(Int32 ALedgerNumber)
+        {
+            return String.Format("{0:##00}00", ALedgerNumber);
+        }
     }
 }
