@@ -201,6 +201,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors
                                            string ADocumentStatus,
                                            bool IsCreditNoteNotInvoice,
                                            bool AHideAgedTransactions);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
+        bool PostAPDocuments(Int32 ALedgerNumber,
+                             List <Int32> AAPDocumentNumbers,
+                             DateTime APostingDate,
+                             out TVerificationResultCollection AVerifications);
     }
 
 }

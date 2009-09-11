@@ -44,7 +44,43 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>GL Batch</summary>
         public const String TRANSACTION_FX_REVAL = "FX REVAL";
 
+        /// <summary>GL Batch</summary>
+        public const String TRANSACTION_STD = "STD";
+
+        /// <summary>GL Batch</summary>
+        public const String TRANSACTION_ALLOC = "ALLOC";
+
+        /// <summary>GL Batch</summary>
+        public const String TRANSACTION_REALLOC = "REALLOC";
+
         /// <summary>General Ledger</summary>
         public const String ACCOUNT_HIERARCHY_STANDARD = "STANDARD";
+
+        /// <summary>Accounts Payable</summary>
+        public const String AP_DOCUMENT_OPEN = "OPEN";
+
+        /// <summary>Accounts Payable</summary>
+        public const String AP_DOCUMENT_APPROVED = "APPROVED";
+
+        /// <summary>Accounts Payable</summary>
+        public const String AP_DOCUMENT_POSTED = "POSTED";
+
+        /// <summary>Accounts Payable</summary>
+        public const String AP_DOCUMENT_PARTIALLY_PAID = "PARTPAID";
+
+        /// <summary>Accounts Payable</summary>
+        public const String AP_DOCUMENT_PAID = "PAID";
+
+        /// <summary>Sub Systems, General Ledger</summary>
+        public const String SUB_SYSTEM_GL = "GL";
+
+        /// <summary>Sub Systems, Accounts Payable</summary>
+        public const String SUB_SYSTEM_AP = "AP";
+
+        /// <summary>Sub Systems, Accounts Receivable</summary>
+        public const String SUB_SYSTEM_AR = "AR";
+
+        /// <summary>Sub Systems, Gifts receivable</summary>
+        public const String SUB_SYSTEM_GR = "GR";
     }
 }

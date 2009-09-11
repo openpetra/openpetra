@@ -835,6 +835,8 @@ namespace Ict.Petra.Server.MFinance.GL
                 return false;
             }
 
+            // TODO: analysis attributes???
+
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
             if (!ValidateBatchAndTransactions(ref MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {

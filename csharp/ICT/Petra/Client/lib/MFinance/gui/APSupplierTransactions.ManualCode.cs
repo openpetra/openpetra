@@ -26,20 +26,22 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
-using Ict.Petra.Shared;
-using Ict.Common.Data;
 using System.Resources;
 using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
+using Ict.Common.Data;
+using Ict.Common.Verification;
+using Ict.Common.Controls;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Shared.MFinance.AP.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
@@ -137,20 +139,42 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         /// </summary>
         private void PostTaggedDocuments(object sender, EventArgs e)
         {
-            string msg = "";
+            List <Int32>TaggedDocuments = new List <Int32>();
 
             foreach (AccountsPayableTDSAApDocumentRow row in FMainDS.AApDocument.Rows)
             {
                 if (!row.IsTaggedNull() && row.Tagged)
                 {
-                    msg += row.ApNumber.ToString() + " ";
+                    TaggedDocuments.Add(row.ApNumber);
                 }
             }
 
-            MessageBox.Show("tagged: " + msg);
+            // TODO: make sure that there are uptodate exchange rates
 
-            // TODO: transmit ledgernumber and ap numbers to server
-            // TODO: update view to reflect posted documents
+            TVerificationResultCollection Verifications;
+
+            if (!TRemote.MFinance.AccountsPayable.WebConnectors.PostAPDocuments(FLedgerNumber, TaggedDocuments, out Verifications))
+            {
+                string ErrorMessages = String.Empty;
+
+                foreach (TVerificationResult verif in Verifications)
+                {
+                    ErrorMessages += "[" + verif.FResultContext + "] " +
+                                     verif.FResultTextCaption + ": " +
+                                     verif.FResultText + Environment.NewLine;
+                }
+
+                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
+            }
+            else
+            {
+                // TODO: print reports on successfully posted batch
+                MessageBox.Show(Catalog.GetString("The AP documents have been posted successfully!"));
+
+                // TODO: refresh the grid, to reflect that the transactions have been posted
+                FMainDS.AApDocument.Clear();
+                LoadSupplier(FLedgerNumber, FPartnerKey);
+            }
         }
     }
 }

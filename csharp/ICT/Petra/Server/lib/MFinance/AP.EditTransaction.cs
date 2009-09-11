@@ -26,13 +26,17 @@
 using System;
 using System.Data;
 using System.Collections.Specialized;
+using System.Collections.Generic;
+using Mono.Unix;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance;
+using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -272,6 +276,228 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
             AApDocumentAccess.LoadViaAApSupplier(MainDS, ASupplierKey, null);
 
             return MainDS;
+        }
+
+        /// <summary>
+        /// load the AP documents and see if they are ready to be posted
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAPDocumentNumbers"></param>
+        /// <param name="APostingDate"></param>
+        /// <param name="AVerifications"></param>
+        /// <returns></returns>
+        private static AccountsPayableTDS LoadDocumentsAndCheck(Int32 ALedgerNumber,
+            List <Int32>AAPDocumentNumbers,
+            DateTime APostingDate,
+            out TVerificationResultCollection AVerifications)
+        {
+            AccountsPayableTDS MainDS = new AccountsPayableTDS();
+
+            AVerifications = new TVerificationResultCollection();
+
+            // collect the AP documents from the database
+            foreach (Int32 APDocumentNumber in AAPDocumentNumbers)
+            {
+                AApDocumentAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, APDocumentNumber, null);
+                AApDocumentDetailAccess.LoadViaAApDocument(MainDS, ALedgerNumber, APDocumentNumber, null);
+            }
+
+            // do some checks on state of AP documents
+            foreach (AApDocumentRow row in MainDS.AApDocument.Rows)
+            {
+                if (row.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED)
+                {
+                    AVerifications.Add(new TVerificationResult(
+                            Catalog.GetString("error during posting of AP document"),
+                            String.Format(Catalog.GetString("Document with Number {0} cannot be posted since the status is {1}."),
+                                row.ApNumber, row.DocumentStatus), TResultSeverity.Resv_Critical));
+                }
+
+                // TODO: also check if details are filled, and they each have a costcentre and account? totals match sum of details
+            }
+
+            // is APostingDate inside the valid posting periods?
+            Int32 DateEffectivePeriodNumber;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            if (!TFinancialYear.IsValidPeriod(ALedgerNumber, APostingDate, out DateEffectivePeriodNumber, Transaction))
+            {
+                AVerifications.Add(new TVerificationResult(
+                        String.Format(Catalog.GetString("Cannot post the AP documents in Ledger {0}"), ALedgerNumber),
+                        String.Format(Catalog.GetString("The Date Effective {0:d-MMM-yyyy} does not fit any open accounting period."),
+                            APostingDate),
+                        TResultSeverity.Resv_Critical));
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// creates the GL batch needed for posting the AP Documents
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APostingDate"></param>
+        /// <param name="APDataset"></param>
+        /// <returns></returns>
+        private static GLBatchTDS CreateGLBatchAndTransactions(Int32 ALedgerNumber, DateTime APostingDate, ref AccountsPayableTDS APDataset)
+        {
+            // create one GL batch
+            GLBatchTDS GLDataset = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
+
+            ABatchRow batch = GLDataset.ABatch[0];
+
+            batch.DateEffective = APostingDate;
+            batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
+
+            // since the AP documents can be for several suppliers, the currency might be different; group by currency first
+            SortedList <string, List <AApDocumentRow>>DocumentsByCurrency = new SortedList <string, List <AApDocumentRow>>();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            foreach (AApDocumentRow row in APDataset.AApDocument.Rows)
+            {
+                DataView findSupplier = APDataset.AApSupplier.DefaultView;
+                findSupplier.RowFilter = AApSupplierTable.GetPartnerKeyDBName() + " = " + row.PartnerKey.ToString();
+
+                if (findSupplier.Count == 0)
+                {
+                    AApSupplierAccess.LoadByPrimaryKey(APDataset, row.PartnerKey, Transaction);
+                }
+
+                string CurrencyCode = ((AApSupplierRow)findSupplier[0].Row).CurrencyCode;
+
+                DocumentsByCurrency.Add(CurrencyCode, new List <AApDocumentRow>());
+                DocumentsByCurrency[CurrencyCode].Add(row);
+            }
+
+            Int32 CounterJournals = 1;
+
+            // add journal for each currency and the transactions
+            foreach (string CurrencyCode in DocumentsByCurrency.Keys)
+            {
+                AJournalRow journal = GLDataset.AJournal.NewRowTyped();
+                journal.LedgerNumber = batch.LedgerNumber;
+                journal.BatchNumber = batch.BatchNumber;
+                journal.JournalNumber = CounterJournals++;
+                journal.DateEffective = batch.DateEffective;
+                journal.TransactionCurrency = CurrencyCode;
+                journal.JournalDescription = "TODO"; // TODO: journal description for posting AP documents
+                journal.TransactionTypeCode = MFinanceConstants.TRANSACTION_STD;
+                journal.SubSystemCode = MFinanceConstants.SUB_SYSTEM_AP;
+                journal.DateOfEntry = DateTime.Now;
+
+                // TODO journal.ExchangeRateToBase
+                journal.ExchangeRateToBase = 1.0;
+
+                // TODO journal.ExchangeRateTime
+                GLDataset.AJournal.Rows.Add(journal);
+
+                Int32 TransactionCounter = 1;
+
+                foreach (AApDocumentRow document in DocumentsByCurrency[CurrencyCode])
+                {
+                    DataView DocumentDetails = APDataset.AApDocumentDetail.DefaultView;
+                    DocumentDetails.RowFilter = AApDocumentDetailTable.GetApNumberDBName() + " = " + document.ApNumber.ToString();
+
+                    foreach (DataRowView rowview in DocumentDetails)
+                    {
+                        AApDocumentDetailRow documentDetail = (AApDocumentDetailRow)rowview.Row;
+
+                        // TODO
+                        // one transaction for the account/costcentre of the detail; debit
+                        // credit transaction: ap account of apdocument (eg 9100); the main costcentre of the ledger
+
+                        ATransactionRow transaction = GLDataset.ATransaction.NewRowTyped();
+                        transaction.LedgerNumber = journal.LedgerNumber;
+                        transaction.BatchNumber = journal.BatchNumber;
+                        transaction.JournalNumber = journal.JournalNumber;
+                        transaction.TransactionNumber = TransactionCounter++;
+                        transaction.TransactionAmount = documentDetail.Amount;
+
+                        // TODO: support foreign currencies
+                        transaction.AmountInBaseCurrency = documentDetail.Amount;
+                        transaction.DebitCreditIndicator = true;
+                        transaction.AccountCode = documentDetail.AccountCode;
+                        transaction.CostCentreCode = documentDetail.CostCentreCode;
+
+                        // TODO transaction.DetailNumber
+                        // TODO transaction.Narrative =
+                        transaction.Reference = "TODO";
+                        GLDataset.ATransaction.Rows.Add(transaction);
+
+                        transaction = GLDataset.ATransaction.NewRowTyped();
+                        transaction.LedgerNumber = journal.LedgerNumber;
+                        transaction.BatchNumber = journal.BatchNumber;
+                        transaction.JournalNumber = journal.JournalNumber;
+                        transaction.TransactionNumber = TransactionCounter++;
+                        transaction.TransactionAmount = documentDetail.Amount;
+
+                        // TODO: support foreign currencies
+                        transaction.AmountInBaseCurrency = documentDetail.Amount;
+                        transaction.DebitCreditIndicator = false;
+
+                        // TODO transaction.AccountCode = document.ApAccount;
+                        // TODO transaction.CostCentreCode =
+                        // TODO transaction.DetailNumber
+                        // TODO transaction.Narrative =
+                        transaction.Reference = "TODO";
+                        GLDataset.ATransaction.Rows.Add(transaction);
+                    }
+
+                    journal.LastTransactionNumber = TransactionCounter - 1;
+                }
+
+                batch.LastJournal = CounterJournals - 1;
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return GLDataset;
+        }
+
+        /// <summary>
+        /// creates GL transactions for the selected AP documents,
+        /// and posts those GL transactions,
+        /// and marks the AP documents as Posted
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAPDocumentNumbers"></param>
+        /// <param name="APostingDate"></param>
+        /// <param name="AVerifications"></param>
+        /// <returns></returns>
+        public static bool PostAPDocuments(Int32 ALedgerNumber,
+            List <Int32>AAPDocumentNumbers,
+            DateTime APostingDate,
+            out TVerificationResultCollection AVerifications)
+        {
+            AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentNumbers, APostingDate, out AVerifications);
+
+            if (AVerifications.HasCriticalError())
+            {
+                return false;
+            }
+
+            GLBatchTDS GLDataset = CreateGLBatchAndTransactions(ALedgerNumber, APostingDate, ref MainDS);
+
+            ABatchRow batch = GLDataset.ABatch[0];
+
+            // save the batch
+            if (Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
+                    out AVerifications) != TSubmitChangesResult.scrOK)
+            {
+                return false;
+            }
+
+            // post the batch
+            if (!Ict.Petra.Server.MFinance.GL.TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber, out AVerifications))
+            {
+                // TODO: what if posting fails? do we have an orphaned batch lying around? can this be put into one single transaction? probably not
+                // TODO: we should cancel that batch
+                return false;
+            }
+
+            return true;
         }
     }
 }

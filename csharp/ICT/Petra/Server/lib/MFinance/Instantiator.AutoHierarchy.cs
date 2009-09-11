@@ -923,6 +923,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
             return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.FindAApDocument(ALedgerNumber, ASupplierKey, ADocumentStatus, IsCreditNoteNotInvoice, AHideAgedTransactions);
         }
 
+        /// generated method from connector
+        public bool PostAPDocuments(Int32 ALedgerNumber,
+                                    List <Int32>AAPDocumentNumbers,
+                                    DateTime APostingDate,
+                                    out TVerificationResultCollection AVerifications)
+        {
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.PostAPDocuments(ALedgerNumber, AAPDocumentNumbers, APostingDate, out AVerifications);
+        }
+
     }
 }
 
