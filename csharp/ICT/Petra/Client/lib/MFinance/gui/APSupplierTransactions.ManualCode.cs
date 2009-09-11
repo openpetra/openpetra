@@ -153,7 +153,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
             TVerificationResultCollection Verifications;
 
-            if (!TRemote.MFinance.AccountsPayable.WebConnectors.PostAPDocuments(FLedgerNumber, TaggedDocuments, out Verifications))
+            // TODO: posting date
+            if (!TRemote.MFinance.AccountsPayable.WebConnectors.PostAPDocuments(FLedgerNumber, TaggedDocuments, DateTime.Now, out Verifications))
             {
                 string ErrorMessages = String.Empty;
 
