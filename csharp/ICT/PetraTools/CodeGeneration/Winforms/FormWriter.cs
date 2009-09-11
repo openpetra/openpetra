@@ -759,7 +759,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             // find the first control that is a panel or groupbox or tab control
-            AddRootControl("content");
+            if (FCodeStorage.HasRootControl("content"))
+            {
+                AddRootControl("content");
+            }
 
             // Toolbar
             if (FCodeStorage.HasRootControl("tbr"))
@@ -839,6 +842,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         "ENABLEDEPENDINGACTIONS_" + TYml2Xml.GetAttribute(handler.actionNode, "Enabled"),
                         "FPetraUtilsObject.EnableAction(\"" + handler.actionName + "\", e.Enabled);" + Environment.NewLine);
                 }
+            }
+
+            if (FCodeStorage.HasAttribute("UINavigation"))
+            {
+                TNavigationGenerator.LoadPanelNavigation(ref FTemplate,
+                    Path.GetDirectoryName(AXAMLFilename) +
+                    Path.DirectorySeparatorChar +
+                    FCodeStorage.GetAttribute("UINavigation"));
             }
 
             FinishUpInitialisingControls();

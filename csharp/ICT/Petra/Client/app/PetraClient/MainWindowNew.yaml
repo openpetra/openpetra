@@ -1,0 +1,7 @@
+RootNode:
+    BaseClass: System.Windows.Forms.Form
+    Template: windowNavigation
+    DesignerTemplate: windowNavigation.Designer
+    FormType: navigationNew
+    Namespace: Ict.Petra.Client.App.PetraClient
+    UINavigation: ../../../Definitions/UINavigation.yml

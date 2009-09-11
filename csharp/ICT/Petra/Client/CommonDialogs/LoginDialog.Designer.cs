@@ -68,6 +68,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblDatabase = new System.Windows.Forms.Label();
             this.prbLogin = new System.Windows.Forms.ProgressBar();
             this.pnlLoginControls = new System.Windows.Forms.Panel();
+            this.chkNewNavigation = new System.Windows.Forms.CheckBox();
             this.pnlLoginControls.SuspendLayout();
             this.SuspendLayout();
 
@@ -180,12 +181,23 @@ namespace Ict.Petra.Client.CommonDialogs
             this.pnlLoginControls.TabIndex = 11;
 
             //
+            // chkNewNavigation
+            //
+            this.chkNewNavigation.Location = new System.Drawing.Point(8, 112);
+            this.chkNewNavigation.Name = "chkNewNavigation";
+            this.chkNewNavigation.Size = new System.Drawing.Size(188, 24);
+            this.chkNewNavigation.TabIndex = 12;
+            this.chkNewNavigation.Text = "Use New Navigation";
+            this.chkNewNavigation.UseVisualStyleBackColor = true;
+
+            //
             // TLoginForm
             //
             this.AcceptButton = this.btnLogin;
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 14);
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(293, 142);
+            this.Controls.Add(this.chkNewNavigation);
             this.Controls.Add(this.pnlLoginControls);
             this.Controls.Add(this.lblDatabase);
             this.Controls.Add(this.txtPassword);
@@ -208,6 +220,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.PerformLayout();
         }
 
+        private System.Windows.Forms.CheckBox chkNewNavigation;
         private System.Windows.Forms.Label lblUserName;
         private System.Windows.Forms.TextBox txtUserName;
         private System.Windows.Forms.Label lblPassword;

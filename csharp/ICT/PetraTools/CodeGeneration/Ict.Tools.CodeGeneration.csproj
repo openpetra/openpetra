@@ -54,7 +54,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AutoGenerationWriter.cs" />
-    <Compile Include="CodeGeneration.cs" />
     <Compile Include="CodeStorage.cs" />
     <Compile Include="CSParser.cs" />
     <Compile Include="CSProjTools.cs" />

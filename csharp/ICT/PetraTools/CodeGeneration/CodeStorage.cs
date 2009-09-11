@@ -234,6 +234,15 @@ namespace Ict.Tools.CodeGeneration
                 {
                     return true;
                 }
+
+                if ((APrefix == "content")
+                    && ((ctrl.controlTypePrefix == "tab")
+                        || (ctrl.controlTypePrefix == "grp")
+                        || (ctrl.controlTypePrefix == "uco")
+                        || (ctrl.controlTypePrefix == "pnl")))
+                {
+                    return true;
+                }
             }
 
             return false;

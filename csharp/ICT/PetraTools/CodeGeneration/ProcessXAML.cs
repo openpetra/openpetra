@@ -189,9 +189,13 @@ namespace Ict.Tools.CodeGeneration
                     // that is merged from the existing code
                     // and the definitions in the yaml file
 
-                    string designerTemplate = TYml2Xml.GetAttribute(rootNode, "DesignerTemplate");
+                    string designerTemplate = String.Empty;
 
-                    if (designerTemplate.Length == 0)
+                    if (TYml2Xml.HasAttribute(rootNode, "DesignerTemplate"))
+                    {
+                        designerTemplate = TYml2Xml.GetAttribute(rootNode, "DesignerTemplate") + ".cs";
+                    }
+                    else
                     {
                         designerTemplate = "designer.cs";
                     }

@@ -21,7 +21,7 @@ OpenPetra:
             Label: Search for Task
     MainMenu:
         # Department
-        My Petra: {Icon=Petra.ico}
+        MyPetra: {Icon=Petra.ico, Label=My Petra}
             Favourites:
             CustomGroup:
         Partner:
@@ -35,7 +35,7 @@ OpenPetra:
                     FindPartner:
                 Extracts:
                 Reports: {Icon=printer.ico}
-                MailingSubscriptions: {Label= Mailing&Subscriptions, Icon=mail.ico}
+                MailingSubscriptions: {Label=Mailing&Subscriptions, Icon=mail.ico}
             MoreFunctions:
                 SetupPartnerModule:
         # Department
@@ -55,7 +55,7 @@ OpenPetra:
                         DeleteAccount:
                         RenameAccount:
                         ImportChartOfAccounts:
-                    Cost Centres:
+                    CostCentres:
                         AddCostCentre:
                         EditCostCentre:
                         DeleteCostCentre:
