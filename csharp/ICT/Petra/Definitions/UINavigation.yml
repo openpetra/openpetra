@@ -47,7 +47,7 @@ OpenPetra:
                     # Task Group
                     Accounts:
                         # Tasks (parse from c# file, or even dll?)
-                        ViewAccounts:
+                        ViewAccounts: {Description=show all accounts in this ledger}
                         AddPostingAccount:
                         AddForeignCurrencyAccount:
                         AddSummarisationAccount:

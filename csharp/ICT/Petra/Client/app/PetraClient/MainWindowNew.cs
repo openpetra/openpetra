@@ -58,6 +58,8 @@ namespace Ict.Petra.Client.App.PetraClient
       // Required for Windows Form Designer support
       //
       InitializeComponent();
+
+      InitializeManualCode();
     }
 
     private void TFrmPetra_Closed(object sender, EventArgs e)

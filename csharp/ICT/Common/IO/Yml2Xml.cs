@@ -32,7 +32,7 @@ using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Common.IO;
 
-namespace Ict.Tools.CodeGeneration
+namespace Ict.Common.IO
 {
     /// <summary>
     /// TYml2Xml is able to parse a YML file and store it in an XmlDocument
@@ -57,7 +57,7 @@ namespace Ict.Tools.CodeGeneration
     ///        name and colon (name:) is converted into an XML element as a parent for the following indented lines
     ///          indention only happens after node and colon without content
     ///        scalar: name and colon and a literal is converted into an attribute of the current XML element
-    ///        sequence: [element1, element2, element3] are translated to <element name="element1"/><element name="element2/> below the parent node
+    ///        sequence: [element1, element2, element3] are translated to &lt;element name=&quot;element1&quot;/&gt;&lt;element name=&quot;element2&quot;/&gt; below the parent node
     ///        mapping: name and value assignments {size=10, help=Test with spaces} are converted into attributes of the parent node
     ///
     ///        not supported:
@@ -69,10 +69,10 @@ namespace Ict.Tools.CodeGeneration
     ///        and overwriting the data of the base files;
     ///        todo: make a tag so that everything is pushed into base, before the last file is loaded
     ///              change the code: move only attributes into base tag
-    ///                               add an attribute to elements that have been in base, base="yes"
+    ///                               add an attribute to elements that have been in base, base=&quot;yes&quot;
     ///                               this way the order of elements can be maintained easily,
     ///                               but it is still known which elements and attributes have been added since the tag
-    ///              reactivate the check again, in ProcessXAML.cs: if (TXMLParser.GetAttribute(rootNode, "ClassType") != "abstract")
+    ///              reactivate the check again, in ProcessXAML.cs: if (TXMLParser.GetAttribute(rootNode, &quot;ClassType&quot;) != &quot;abstract&quot;)
     ///        todo: save the last file after modification have been done to the xml structure (eg. loaded from csharp file)
     /// </summary>
     public class TYml2Xml
@@ -81,6 +81,10 @@ namespace Ict.Tools.CodeGeneration
         Int32 currentLine = -1;
         string filename = "";
 
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="AFilename"></param>
         public TYml2Xml(string AFilename)
         {
             filename = AFilename;
@@ -136,15 +140,16 @@ namespace Ict.Tools.CodeGeneration
             return baseYamlOrClass.Length > 0;
         }
 
+        /// throw an exception and tell the current position while reading the yaml file
         protected void ThrowException(string AMessage, Int32 lineNr)
         {
             throw new Exception("Error in Yml2Xml: " + AMessage + "; " +
                 "(file: " + filename + " line " + (lineNr + 1).ToString() + ")");
         }
 
-        // returns -1 for comments or invalid line numbers,
-        // otherwise the number of spaces
-        // throws exception if there is a tab in the indentation
+        /// returns -1 for comments or invalid line numbers,
+        /// otherwise the number of spaces
+        /// throws exception if there is a tab in the indentation
         protected Int32 GetAbsoluteIndentation(Int32 lineNr)
         {
             if ((lineNr < 0) || (lineNr >= lines.Length))
@@ -226,9 +231,11 @@ namespace Ict.Tools.CodeGeneration
 
             return 0;
         }
-
-        // does not return comment lines
-        // @returns null if no line available
+       
+        /// <summary>
+        /// does not return comment lines
+        /// </summary>
+        /// <returns>null if no line available</returns>
         protected string GetNextLine()
         {
             string line = null;
@@ -478,7 +485,7 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
-        // fill sorted list which contains a reference to each node by name
+        /// fill sorted list which contains a reference to each node by name
         public static SortedList ReferenceNodes(XmlDocument myDoc)
         {
             SortedList xmlNodes = new SortedList();
@@ -491,6 +498,7 @@ namespace Ict.Tools.CodeGeneration
             return xmlNodes;
         }
 
+        /// create an empty xml document, which will be filled with the data from the yaml file
         static public XmlDocument CreateXmlDocument()
         {
             XmlDocument myDoc = new XmlDocument();
@@ -611,6 +619,7 @@ namespace Ict.Tools.CodeGeneration
             return list;
         }
 
+        /// get the parent node
         public static XmlNode Parent(XmlNode node)
         {
             XmlNode ParentNode = node.ParentNode;
@@ -623,7 +632,7 @@ namespace Ict.Tools.CodeGeneration
             return ParentNode;
         }
 
-        // SetAttribute will never consider the base and the xml hierarchy; use Tag to move things to base
+        /// SetAttribute will never consider the base and the xml hierarchy; use Tag to move things to base
         public static void SetAttribute(XmlNode xmlNode, string name, string value)
         {
             if (TXMLParser.HasAttribute(xmlNode, name))
@@ -661,8 +670,6 @@ namespace Ict.Tools.CodeGeneration
         /// <summary>
         /// check for the attribute; if the current node does not have it, check the base node
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
         public static bool HasAttribute(XmlNode xmlNode, string name)
         {
             XmlNode baseElement = xmlNode;
@@ -683,8 +690,6 @@ namespace Ict.Tools.CodeGeneration
         /// <summary>
         /// get the attribute; if the current node does not have it, check the base node
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
         public static string GetAttribute(XmlNode xmlNode, string name)
         {
             XmlNode baseElement = xmlNode;
@@ -706,7 +711,7 @@ namespace Ict.Tools.CodeGeneration
         /// <summary>
         /// get all attributes, even from base node
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="xmlNode"></param>
         /// <returns></returns>
         public static SortedList <string, string>GetAttributes(XmlNode xmlNode)
         {
@@ -772,8 +777,8 @@ namespace Ict.Tools.CodeGeneration
             return GetElements(child);
         }
 
-        // convert elements of a sequence into a string collection
-        // checks for duplicates, and removes names with a tilde character ~ in front
+        /// convert elements of a sequence into a string collection
+        /// checks for duplicates, and removes names with a tilde character ~ in front
         public static StringCollection GetElements(XmlNode node)
         {
             if ((node != null) && node.HasChildNodes)
@@ -833,8 +838,8 @@ namespace Ict.Tools.CodeGeneration
             return new StringCollection();
         }
 
-        // TYml2Xml.LoadChild will either
-        // reuse an element, move an existing leaf from base to the main node, or create a new element
+        /// TYml2Xml.LoadChild will either
+        /// reuse an element, move an existing leaf from base to the main node, or create a new element
         protected static XmlNode LoadChild(XmlNode parent, string nodeName, int ADepth)
         {
             XmlNode newElement = TXMLParser.GetChild(parent, nodeName);
@@ -881,7 +886,7 @@ namespace Ict.Tools.CodeGeneration
             return newElement;
         }
 
-        // check if parent already has a base element
+        /// check if parent already has a base element
         protected static XmlNode GetBaseNode(XmlNode ANode)
         {
             XmlNode baseNode = ANode.FirstChild;
@@ -975,6 +980,7 @@ namespace Ict.Tools.CodeGeneration
         #endregion
     }
 
+    /// for sorting the controls, depending on Order attribute, and depth
     public class YamlItemOrderComparer : IComparer <XmlNode>
     {
         private static int CheckOrderAttribute(string order1, string order2)
@@ -999,6 +1005,7 @@ namespace Ict.Tools.CodeGeneration
             return 0;
         }
 
+        /// required method of IComparer interface
         public int Compare(XmlNode node1, XmlNode node2)
         {
             return CompareNodes(node1, node2);
@@ -1114,19 +1121,6 @@ namespace Ict.Tools.CodeGeneration
             }
 
             return returnValue;
-        }
-    }
-    public class CtrlItemOrderComparer : IComparer <TControlDef>
-    {
-        /// <summary>
-        /// compare two nodes; considering base nodes and depth of the node, and the order attribute
-        /// </summary>
-        /// <param name="node1"></param>
-        /// <param name="node2"></param>
-        /// <returns>+1 if node1 is greater than node2, -1 if node1 is less than node2, and 0 if they are the same or identical</returns>
-        public int Compare(TControlDef node1, TControlDef node2)
-        {
-            return YamlItemOrderComparer.CompareNodes(node1.xmlNode, node2.xmlNode);
         }
     }
 }

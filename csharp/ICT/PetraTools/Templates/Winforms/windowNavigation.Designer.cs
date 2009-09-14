@@ -43,6 +43,7 @@ namespace {#NAMESPACE}
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof({#CLASSNAME}));
 
 //        	this.imageListButtons = new System.Windows.Forms.ImageList(this.components);
+            this.pnlContent = new System.Windows.Forms.Panel();
             this.pnlNavigation = new System.Windows.Forms.Panel();
             this.sptNavigation = new System.Windows.Forms.SplitContainer();
         	this.pnlMoreButtons = new System.Windows.Forms.Panel();
@@ -51,6 +52,7 @@ namespace {#NAMESPACE}
         	this.btnCollapseNavigation = new System.Windows.Forms.Button();
             {#CONTROLCREATION}
 
+            this.pnlContent.SuspendLayout();
         	this.pnlNavigation.SuspendLayout();
         	this.sptNavigation.Panel1.SuspendLayout();
         	this.sptNavigation.Panel2.SuspendLayout();
@@ -108,6 +110,11 @@ namespace {#NAMESPACE}
         	this.pnlNavigation.Size = new System.Drawing.Size(200, 466);
         	this.pnlNavigation.TabIndex = 0;
         	// 
+        	// pnlContent
+        	// 
+        	this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+        	this.pnlContent.Name = "pnlContent";
+        	// 
         	// sptNavigation
         	// 
         	this.sptNavigation.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -139,6 +146,7 @@ namespace {#NAMESPACE}
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size({#FORMSIZE});
+            this.Controls.Add(pnlContent);
         	this.Controls.Add(this.pnlNavigation);
             this.Name = "{#CLASSNAME}";
             this.Text = "{#FORMTITLE}";
@@ -147,6 +155,7 @@ namespace {#NAMESPACE}
         	this.sptNavigation.Panel1.ResumeLayout(false);
         	this.sptNavigation.Panel2.ResumeLayout(false);
         	this.sptNavigation.ResumeLayout(false);
+            this.pnlContent.ResumeLayout(false);
             {#RESUMELAYOUT}
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -158,6 +167,7 @@ namespace {#NAMESPACE}
         private System.Windows.Forms.Panel pnlNavigationCaption;
         private System.Windows.Forms.Panel pnlMoreButtons;
         private System.Windows.Forms.Panel pnlNavigation;
+        private System.Windows.Forms.Panel pnlContent;
         {#CONTROLDECLARATION}
     }
 }

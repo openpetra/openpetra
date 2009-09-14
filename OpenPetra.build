@@ -765,6 +765,8 @@
         </copy>
         <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll"
                     tofile="${setupDir}/bin30/System.Data.SQLite.dll"/>
+        <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml"
+                    tofile="${setupDir}/bin30/UINavigation.yml"/>
        
         <copy todir="${setupDir}/bin30/locale/">
            <fileset basedir="${OpenPetraRoot.dir}/setup/petra0300/i18n/locale">

@@ -62,7 +62,6 @@
     <Compile Include="ProcessXAML.cs" />
     <Compile Include="TextFile.cs" />
     <Compile Include="WriterInterfaces.cs" />
-    <Compile Include="Yml2Xml.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Ict.Common.csproj">

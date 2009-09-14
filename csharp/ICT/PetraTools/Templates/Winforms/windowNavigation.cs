@@ -34,6 +34,8 @@ namespace {#NAMESPACE}
       // Required for Windows Form Designer support
       //
       InitializeComponent();
+
+      {#INITMANUALCODE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -67,6 +69,7 @@ this.{#BUTTONNAME}.TextImageRelation = System.Windows.Forms.TextImageRelation.Im
 this.{#BUTTONNAME}.Name = "{#BUTTONNAME}";
 this.{#BUTTONNAME}.Text = "{#BUTTONLABEL}";
 this.{#BUTTONNAME}.Size = new System.Drawing.Size(200, 24);
+this.{#BUTTONNAME}.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
 
 {##BUTTONCONTROLDECLARATION}
 private System.Windows.Forms.RadioButton {#BUTTONNAME};

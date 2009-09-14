@@ -122,6 +122,9 @@
     <Compile Include="MainWindowNew.Designer.cs">
       <DependentUpon>MainWindowNew.cs</DependentUpon>
     </Compile>
+    <Compile Include="MainWindowNew.ManualCode.cs">
+      <DependentUpon>MainWindowNew.cs</DependentUpon>
+    </Compile>
     <Compile Include="PetraClientMain.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ShutDown.cs" />

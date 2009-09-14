@@ -53,6 +53,7 @@
     <Compile Include="PatchTools.cs" />
     <Compile Include="SmtpEmail.cs" />
     <Compile Include="XmlParser.cs" />
+    <Compile Include="Yml2Xml.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ict.Common.csproj">

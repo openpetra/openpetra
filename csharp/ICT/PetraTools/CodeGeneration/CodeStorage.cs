@@ -711,5 +711,19 @@ namespace Ict.Tools.CodeGeneration
             }
         }
     }
+
+    public class CtrlItemOrderComparer : IComparer <TControlDef>
+    {
+        /// <summary>
+        /// compare two nodes; considering base nodes and depth of the node, and the order attribute
+        /// </summary>
+        /// <param name="node1"></param>
+        /// <param name="node2"></param>
+        /// <returns>+1 if node1 is greater than node2, -1 if node1 is less than node2, and 0 if they are the same or identical</returns>
+        public int Compare(TControlDef node1, TControlDef node2)
+        {
+            return YamlItemOrderComparer.CompareNodes(node1.xmlNode, node2.xmlNode);
+        }
+    }
     #endregion
 }

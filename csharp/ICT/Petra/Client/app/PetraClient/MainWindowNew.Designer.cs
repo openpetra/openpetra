@@ -67,6 +67,7 @@ namespace Ict.Petra.Client.App.PetraClient
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmMainWindowNew));
 
 //        	this.imageListButtons = new System.Windows.Forms.ImageList(this.components);
+            this.pnlContent = new System.Windows.Forms.Panel();
             this.pnlNavigation = new System.Windows.Forms.Panel();
             this.sptNavigation = new System.Windows.Forms.SplitContainer();
         	this.pnlMoreButtons = new System.Windows.Forms.Panel();
@@ -81,6 +82,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.rbtFinancialDevelopment = new System.Windows.Forms.RadioButton();
             this.rbtSystemManager = new System.Windows.Forms.RadioButton();
 
+            this.pnlContent.SuspendLayout();
         	this.pnlNavigation.SuspendLayout();
         	this.sptNavigation.Panel1.SuspendLayout();
         	this.sptNavigation.Panel2.SuspendLayout();
@@ -137,6 +139,11 @@ namespace Ict.Petra.Client.App.PetraClient
         	this.pnlNavigation.Size = new System.Drawing.Size(200, 466);
         	this.pnlNavigation.TabIndex = 0;
         	//
+        	// pnlContent
+        	//
+        	this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+        	this.pnlContent.Name = "pnlContent";
+        	//
         	// sptNavigation
         	//
         	this.sptNavigation.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -177,6 +184,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.rbtMyPetra.Name = "rbtMyPetra";
             this.rbtMyPetra.Text = "My Petra";
             this.rbtMyPetra.Size = new System.Drawing.Size(200, 24);
+            this.rbtMyPetra.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
             //
             // rbtPartner
             //
@@ -189,6 +197,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.rbtPartner.Name = "rbtPartner";
             this.rbtPartner.Text = "Partner";
             this.rbtPartner.Size = new System.Drawing.Size(200, 24);
+            this.rbtPartner.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
             //
             // rbtFinance
             //
@@ -201,6 +210,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.rbtFinance.Name = "rbtFinance";
             this.rbtFinance.Text = "Finance";
             this.rbtFinance.Size = new System.Drawing.Size(200, 24);
+            this.rbtFinance.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
             //
             // rbtPersonnel
             //
@@ -213,6 +223,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.rbtPersonnel.Name = "rbtPersonnel";
             this.rbtPersonnel.Text = "Personnel";
             this.rbtPersonnel.Size = new System.Drawing.Size(200, 24);
+            this.rbtPersonnel.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
             //
             // rbtConferenceManagement
             //
@@ -225,6 +236,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.rbtConferenceManagement.Name = "rbtConferenceManagement";
             this.rbtConferenceManagement.Text = "ConferenceManagement";
             this.rbtConferenceManagement.Size = new System.Drawing.Size(200, 24);
+            this.rbtConferenceManagement.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
             //
             // rbtFinancialDevelopment
             //
@@ -237,6 +249,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.rbtFinancialDevelopment.Name = "rbtFinancialDevelopment";
             this.rbtFinancialDevelopment.Text = "FinancialDevelopment";
             this.rbtFinancialDevelopment.Size = new System.Drawing.Size(200, 24);
+            this.rbtFinancialDevelopment.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
             //
             // rbtSystemManager
             //
@@ -249,12 +262,14 @@ namespace Ict.Petra.Client.App.PetraClient
             this.rbtSystemManager.Name = "rbtSystemManager";
             this.rbtSystemManager.Text = "SystemManager";
             this.rbtSystemManager.Size = new System.Drawing.Size(200, 24);
+            this.rbtSystemManager.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
 
             //
             // TFrmMainWindowNew
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(700, 500);
+            this.Controls.Add(pnlContent);
         	this.Controls.Add(this.pnlNavigation);
             this.Name = "TFrmMainWindowNew";
             this.Text = "";
@@ -263,6 +278,7 @@ namespace Ict.Petra.Client.App.PetraClient
         	this.sptNavigation.Panel1.ResumeLayout(false);
         	this.sptNavigation.Panel2.ResumeLayout(false);
         	this.sptNavigation.ResumeLayout(false);
+            this.pnlContent.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
@@ -273,6 +289,7 @@ namespace Ict.Petra.Client.App.PetraClient
         private System.Windows.Forms.Panel pnlNavigationCaption;
         private System.Windows.Forms.Panel pnlMoreButtons;
         private System.Windows.Forms.Panel pnlNavigation;
+        private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.RadioButton rbtMyPetra;
         private System.Windows.Forms.RadioButton rbtPartner;
         private System.Windows.Forms.RadioButton rbtFinance;
