@@ -350,18 +350,19 @@ namespace Ict.Common.IO
         /// </returns>
         public static Boolean HasAttribute(XmlNode cur, string attrib)
         {
-            Boolean ReturnValue;
-            XmlNode node;
+            if (cur.Attributes == null)
+            {
+                return false;
+            }
 
-            ReturnValue = false;
-            node = cur.Attributes.GetNamedItem(attrib);
+            XmlNode node = cur.Attributes.GetNamedItem(attrib);
 
             if (node != null)
             {
-                ReturnValue = true;
+                return true;
             }
 
-            return ReturnValue;
+            return false;
         }
 
         /// <summary>

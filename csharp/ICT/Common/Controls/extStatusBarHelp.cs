@@ -157,5 +157,11 @@ namespace Ict.Common.Controls
                 this.FStatusLabel.Text = "";
             }
         }
+
+        /// show a message in the status bar, independent of the selected control
+        public void ShowMessage(string msg)
+        {
+            FStatusLabel.Text = msg;
+        }
     }
 }

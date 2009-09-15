@@ -74,6 +74,7 @@ namespace Ict.Petra.Client.App.PetraClient
         	this.pnlNavigationCaption = new System.Windows.Forms.Panel();
         	this.lblNavigationCaption = new System.Windows.Forms.Label();
         	this.btnCollapseNavigation = new System.Windows.Forms.Button();
+            this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
             this.rbtMyPetra = new System.Windows.Forms.RadioButton();
             this.rbtPartner = new System.Windows.Forms.RadioButton();
             this.rbtFinance = new System.Windows.Forms.RadioButton();
@@ -82,6 +83,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.rbtFinancialDevelopment = new System.Windows.Forms.RadioButton();
             this.rbtSystemManager = new System.Windows.Forms.RadioButton();
 
+            this.stbMain.SuspendLayout();
             this.pnlContent.SuspendLayout();
         	this.pnlNavigation.SuspendLayout();
         	this.sptNavigation.Panel1.SuspendLayout();
@@ -89,6 +91,12 @@ namespace Ict.Petra.Client.App.PetraClient
         	this.sptNavigation.SuspendLayout();
         	this.SuspendLayout();
 
+            //
+            // stbMain
+            //
+            this.stbMain.Name = "stbMain";
+            this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.stbMain.AutoSize = true;
         	//
         	// lblNavigationCaption
         	//
@@ -271,9 +279,12 @@ namespace Ict.Petra.Client.App.PetraClient
             this.ClientSize = new System.Drawing.Size(700, 500);
             this.Controls.Add(pnlContent);
         	this.Controls.Add(this.pnlNavigation);
+            this.Controls.Add(this.stbMain);
+            this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             this.Name = "TFrmMainWindowNew";
             this.Text = "";
 
+            this.stbMain.ResumeLayout(false);
         	this.pnlNavigation.ResumeLayout(false);
         	this.sptNavigation.Panel1.ResumeLayout(false);
         	this.sptNavigation.Panel2.ResumeLayout(false);
@@ -290,6 +301,7 @@ namespace Ict.Petra.Client.App.PetraClient
         private System.Windows.Forms.Panel pnlMoreButtons;
         private System.Windows.Forms.Panel pnlNavigation;
         private System.Windows.Forms.Panel pnlContent;
+        private Ict.Common.Controls.TExtStatusBarHelp stbMain;
         private System.Windows.Forms.RadioButton rbtMyPetra;
         private System.Windows.Forms.RadioButton rbtPartner;
         private System.Windows.Forms.RadioButton rbtFinance;

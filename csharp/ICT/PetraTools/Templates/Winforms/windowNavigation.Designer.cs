@@ -50,8 +50,10 @@ namespace {#NAMESPACE}
         	this.pnlNavigationCaption = new System.Windows.Forms.Panel();
         	this.lblNavigationCaption = new System.Windows.Forms.Label();
         	this.btnCollapseNavigation = new System.Windows.Forms.Button();
+            this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
             {#CONTROLCREATION}
 
+            this.stbMain.SuspendLayout();
             this.pnlContent.SuspendLayout();
         	this.pnlNavigation.SuspendLayout();
         	this.sptNavigation.Panel1.SuspendLayout();
@@ -60,6 +62,12 @@ namespace {#NAMESPACE}
             {#SUSPENDLAYOUT}
         	this.SuspendLayout();
 
+            //
+            // stbMain
+            //
+            this.stbMain.Name = "stbMain";
+            this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.stbMain.AutoSize = true;
         	// 
         	// lblNavigationCaption
         	// 
@@ -148,9 +156,12 @@ namespace {#NAMESPACE}
             this.ClientSize = new System.Drawing.Size({#FORMSIZE});
             this.Controls.Add(pnlContent);
         	this.Controls.Add(this.pnlNavigation);
+            this.Controls.Add(this.stbMain);
+            this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             this.Name = "{#CLASSNAME}";
             this.Text = "{#FORMTITLE}";
 
+            this.stbMain.ResumeLayout(false);
         	this.pnlNavigation.ResumeLayout(false);
         	this.sptNavigation.Panel1.ResumeLayout(false);
         	this.sptNavigation.Panel2.ResumeLayout(false);
@@ -168,6 +179,7 @@ namespace {#NAMESPACE}
         private System.Windows.Forms.Panel pnlMoreButtons;
         private System.Windows.Forms.Panel pnlNavigation;
         private System.Windows.Forms.Panel pnlContent;
+        private Ict.Common.Controls.TExtStatusBarHelp stbMain;
         {#CONTROLDECLARATION}
     }
 }

@@ -4,4 +4,5 @@ RootNode:
     DesignerTemplate: windowNavigation.Designer
     FormType: navigationNew
     Namespace: Ict.Petra.Client.App.PetraClient
+    Icon: petraico-big.ico
     UINavigation: ../../../Definitions/UINavigation.yml

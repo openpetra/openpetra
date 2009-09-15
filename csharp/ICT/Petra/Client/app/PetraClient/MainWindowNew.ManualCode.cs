@@ -26,6 +26,8 @@
 using System;
 using System.Xml;
 using System.Windows.Forms;
+using System.Reflection;
+using System.Collections.Generic;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.IO;
@@ -45,6 +47,11 @@ namespace Ict.Petra.Client.App.PetraClient
             sptNavigation.SplitterMoving += new System.Windows.Forms.SplitterCancelEventHandler(this.SptNavigationSplitterMoving);
         }
 
+        private void WriteToStatusBar(string s)
+        {
+            this.stbMain.ShowMessage(s);
+        }
+
         private void SptNavigationSplitterMoving(object sender, System.Windows.Forms.SplitterCancelEventArgs e)
         {
             // TODO: hide lowest department radio button, add it to panel pnlMoreButtons
@@ -55,7 +62,11 @@ namespace Ict.Petra.Client.App.PetraClient
             ListView lstTasks = new System.Windows.Forms.ListView();
 
             lstTasks.Dock = DockStyle.Fill;
+            lstTasks.Name = "lstTasks" + ASubmoduleNode.Name;
             lstTasks.View = System.Windows.Forms.View.Details;
+            lstTasks.FullRowSelect = true;
+            lstTasks.MouseUp += new System.Windows.Forms.MouseEventHandler(TaskListMouseUp);
+            lstTasks.MouseDown += new System.Windows.Forms.MouseEventHandler(TaskListMouseDown);
 
             ColumnHeader columnHeader = new System.Windows.Forms.ColumnHeader();
             columnHeader.Text = Catalog.GetString("Task");
@@ -82,19 +93,38 @@ namespace Ict.Petra.Client.App.PetraClient
                     listViewGroup.Name = TaskGroupNode.Name;
                     lstTasks.Groups.Add(listViewGroup);
 
-                    XmlNode TaskNode = TaskGroupNode.FirstChild;
-
-                    while (TaskNode != null)
+                    if (TaskGroupNode.FirstChild == null)
                     {
+                        // duplicate group node into task; otherwise you would not notice the error in the yml file?
                         ListViewItem task = new ListViewItem(
                             new string[] {
-                                GetLabel(TaskNode),
-                                Catalog.GetString(TYml2Xml.GetAttribute(TaskNode, "Description"))
+                                GetLabel(TaskGroupNode),
+                                Catalog.GetString(TYml2Xml.GetAttribute(TaskGroupNode, "Description"))
                             }
                             );
+                        task.Name = TaskGroupNode.Name;
                         task.Group = listViewGroup;
+                        task.Tag = TaskGroupNode;
                         lstTasks.Items.Add(task);
-                        TaskNode = TaskNode.NextSibling;
+                    }
+                    else
+                    {
+                        XmlNode TaskNode = TaskGroupNode.FirstChild;
+
+                        while (TaskNode != null)
+                        {
+                            ListViewItem task = new ListViewItem(
+                                new string[] {
+                                    GetLabel(TaskNode),
+                                    Catalog.GetString(TYml2Xml.GetAttribute(TaskNode, "Description"))
+                                }
+                                );
+                            task.Name = TaskNode.Name;
+                            task.Group = listViewGroup;
+                            task.Tag = TaskNode;
+                            lstTasks.Items.Add(task);
+                            TaskNode = TaskNode.NextSibling;
+                        }
                     }
                 }
 
@@ -125,6 +155,137 @@ namespace Ict.Petra.Client.App.PetraClient
             }
 
             pnlContent.Controls.Add(lstTasks);
+        }
+
+        private ListViewItem FSelectedTaskItem = null;
+
+        private void TaskListMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            ListView lst = (ListView)sender;
+            ListViewHitTestInfo info = lst.HitTest(e.Location);
+
+            FSelectedTaskItem = info.Item;
+        }
+
+        private string GetNamespace(XmlNode node)
+        {
+            if (node == null)
+            {
+                return "";
+            }
+
+            if (TYml2Xml.HasAttribute(node, "Namespace"))
+            {
+                return TYml2Xml.GetAttribute(node, "Namespace");
+            }
+
+            return GetNamespace(node.ParentNode);
+        }
+
+        private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
+
+        private void TaskListMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            ListView lst = (ListView)sender;
+
+            Cursor = Cursors.WaitCursor;
+
+            ListViewHitTestInfo info = lst.HitTest(e.Location);
+
+            if ((info.Item != null) && (info.Item == FSelectedTaskItem))
+            {
+                XmlNode node = (XmlNode)info.Item.Tag;
+
+                string strNamespace = GetNamespace(node);
+
+                if (strNamespace.Length == 0)
+                {
+                    WriteToStatusBar("There is no namespace for " + node.Name);
+                    Cursor = Cursors.Default;
+                    return;
+                }
+
+                if (!FGUIAssemblies.Keys.Contains(strNamespace))
+                {
+                    try
+                    {
+                        FGUIAssemblies.Add(strNamespace, Assembly.LoadFrom(strNamespace + ".dll"));
+                    }
+                    catch (Exception exp)
+                    {
+                        WriteToStatusBar("error loading assembly " + strNamespace + ".dll: " + exp.Message);
+                        Cursor = Cursors.Default;
+                        return;
+                    }
+                }
+
+                Assembly asm = FGUIAssemblies[strNamespace];
+                string actionClick = TYml2Xml.GetAttribute(node, "ActionClick");
+                string actionOpenScreen = TYml2Xml.GetAttribute(node, "ActionOpenScreen");
+
+                if (actionClick.Contains("."))
+                {
+                    string className = actionClick.Substring(0, actionClick.IndexOf("."));
+                    string methodName = actionClick.Substring(actionClick.IndexOf(".") + 1);
+                    System.Type classType = asm.GetType(strNamespace + "." + className);
+
+                    if (classType == null)
+                    {
+                        WriteToStatusBar("cannot find class " + strNamespace + "." + className + " for " + node.Name);
+                        Cursor = Cursors.Default;
+                        return;
+                    }
+
+                    MethodInfo method = classType.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
+
+                    if (method != null)
+                    {
+                        method.Invoke(null, new object[] { this.Handle });
+                    }
+                    else
+                    {
+                        WriteToStatusBar("cannot find method " + className + "." + methodName + " for " + node.Name);
+                    }
+                }
+                else if (actionOpenScreen.Length > 0)
+                {
+                    string className = actionOpenScreen;
+                    System.Type classType = asm.GetType(strNamespace + "." + className);
+
+                    if (classType == null)
+                    {
+                        WriteToStatusBar("cannot find class " + strNamespace + "." + className + " for " + node.Name);
+                        Cursor = Cursors.Default;
+                        return;
+                    }
+
+                    System.Object screen = Activator.CreateInstance(classType, new object[] { this.Handle });
+
+                    // TODO: if has property LedgerNumber, assign currently selected ledger???
+
+                    MethodInfo method = classType.GetMethod("Show", BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.Any,
+                        new Type[] { }, null);
+
+                    if (method != null)
+                    {
+                        method.Invoke(screen, null);
+                    }
+                    else
+                    {
+                        WriteToStatusBar("cannot find method " + className + ".Show for " + node.Name);
+                    }
+                }
+                else if (actionClick.Length == 0)
+                {
+                    WriteToStatusBar("No action defined for " + node.Name);
+                }
+                else
+                {
+                    WriteToStatusBar("Invalid action " + actionClick + " defined for " + node.Name);
+                }
+            }
+
+            Cursor = Cursors.Default;
         }
 
         private XmlNode GetDepartmentFromNavigationFile(string ADepartmentName)

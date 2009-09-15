@@ -28,13 +28,19 @@ OpenPetra:
             # Module
             Main:
                 # Sub Module
-                Partners: {Icon=partners.ico}
+                Partners: {Icon=partners.ico, Namespace=Ict.Petra.Client.MPartner.Gui}
                     SearchBoxes: [Partner]
-                    #Skip Task Group?
-                    AddNewPartner:
-                    FindPartner:
+                    NewPartner:
+                        AddNewFamily: {ActionClick=TFrmPartnerMain.NewPartner}
+                        AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson}
+                        AddNewOrganisation: {ActionClick=TFrmPartnerMain.NewOrganisation}
+                    MaintainPartner:
+                        ChangeAddress:
+                        MergePartners:
+                        FindPartner: {ActionClick=TFrmPartnerMain.FindPartner}
                 Extracts:
-                Reports: {Icon=printer.ico}
+                Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
+                    PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
                 MailingSubscriptions: {Label=Mailing&Subscriptions, Icon=mail.ico}
             MoreFunctions:
                 SetupPartnerModule:
@@ -74,8 +80,9 @@ OpenPetra:
                         EditTransactionsInPreviouslyUsedBatch:
                         PostBatch:
                         FindTransaction:
-                Reports:
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
                     AccountDetail:
+                        DefaultReport: {ActionOpenScreen=TFrmAccountDetail}
                     BalanceSheet:
                         CurrentPeriod:
                         EndOfLastYear:
