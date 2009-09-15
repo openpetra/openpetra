@@ -823,6 +823,31 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// converts a string from UpperCamelCase back to a string with spaces; keeps the capital letters
+        /// </summary>
+        public static string ReverseUpperCamelCase(String AStr)
+        {
+            if (AStr.Length == 0)
+            {
+                return "";
+            }
+
+            string newString = AStr.Substring(0, 1);
+
+            for (Int32 counter = 1; counter < AStr.Length; counter++)
+            {
+                if (Char.IsUpper(AStr[counter]))
+                {
+                    newString += " ";
+                }
+
+                newString += AStr[counter];
+            }
+
+            return newString;
+        }
+
+        /// <summary>
         /// A Quote character is inserted at the beginning and end of the string, and each Quote character in the string is doubled.
         /// </summary>
         /// <param name="s">string to be quoted</param>

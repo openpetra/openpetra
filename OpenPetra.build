@@ -518,7 +518,7 @@
 
     <target name="translationTemplate">
         <!-- first collect all Catalog.GetString from all source files in solution; also resolve calls to Table.GetFieldnameHelp etc; result is in solutionName.CollectedGettext.cs -->
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-solution:${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.sln -petraxml:${PetraXML.file}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-solution:${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.sln -petraxml:${PetraXML.file} -UINavigation.File:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml"/>
         <!-- use solutionName.CollectedGettext.cs as input for po file -->
         <property name="collectedGettext.file" value="csharp/ICT/${solutionName}.CollectedGettext.cs"/>
         <if test="${file::exists(collectedGettext.file)}">

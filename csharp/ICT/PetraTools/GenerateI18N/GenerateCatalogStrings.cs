@@ -25,8 +25,10 @@
  ************************************************************************/
 using System;
 using System.IO;
+using System.Xml;
 using System.Text.RegularExpressions;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.CodeGeneration.Winforms;
 using Ict.Tools.DBXML;
@@ -236,6 +238,73 @@ public class TGenerateCatalogStrings
 
             TTable table = store.GetTable(tablename);
             ADbHelpTranslationWriter.WriteLine("Catalog.GetString(\"" + table.GetField(columnname).strHelp + "\");");
+        }
+    }
+
+    private static string GetLabelOrName(XmlNode ANode)
+    {
+        return TYml2Xml.HasAttribute(ANode, "Label") ? TYml2Xml.GetAttribute(ANode, "Label") : StringHelper.ReverseUpperCamelCase(ANode.Name);
+    }
+
+    /// <summary>
+    /// add Catalog.GetString for each label and description in the UINavigation file to the dummy file to prepare the translation files
+    /// </summary>
+    /// <param name="UINavigationFilename">yml file</param>
+    /// <param name="ATranslationWriter">dummy cs file that is used to provide the strings to gettext</param>
+    public static void AddTranslationUINavigation(string UINavigationFilename, StreamWriter ATranslationWriter)
+    {
+        TYml2Xml parser = new TYml2Xml(UINavigationFilename);
+        XmlDocument doc = parser.ParseYML2XML();
+
+        XmlNode OpenPetraNode = doc.FirstChild.NextSibling.FirstChild;
+        XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
+        XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
+        XmlNode DepartmentNode = MainMenuNode.FirstChild;
+
+        while (DepartmentNode != null)
+        {
+            ATranslationWriter.WriteLine("Catalog.GetString(\"" + GetLabelOrName(DepartmentNode) + "\");");
+
+            XmlNode ModuleNode = DepartmentNode.FirstChild;
+
+            while (ModuleNode != null)
+            {
+                ATranslationWriter.WriteLine("Catalog.GetString(\"" + GetLabelOrName(ModuleNode) + "\");");
+
+                XmlNode SubModuleNode = ModuleNode.FirstChild;
+
+                while (SubModuleNode != null)
+                {
+                    ATranslationWriter.WriteLine("Catalog.GetString(\"" + GetLabelOrName(SubModuleNode) + "\");");
+                    XmlNode TaskGroupNode = SubModuleNode.FirstChild;
+
+                    while (TaskGroupNode != null)
+                    {
+                        ATranslationWriter.WriteLine("Catalog.GetString(\"" + GetLabelOrName(TaskGroupNode) + "\");");
+                        XmlNode TaskNode = TaskGroupNode.FirstChild;
+
+                        while (TaskNode != null)
+                        {
+                            ATranslationWriter.WriteLine("Catalog.GetString(\"" + GetLabelOrName(TaskNode) + "\");");
+
+                            if (TYml2Xml.HasAttribute(TaskNode, "description"))
+                            {
+                                ATranslationWriter.WriteLine("Catalog.GetString(\"" + TYml2Xml.GetAttribute(TaskNode, "description") + "\");");
+                            }
+
+                            TaskNode = TaskNode.NextSibling;
+                        }
+
+                        TaskGroupNode = TaskGroupNode.NextSibling;
+                    }
+
+                    SubModuleNode = SubModuleNode.NextSibling;
+                }
+
+                ModuleNode = ModuleNode.NextSibling;
+            }
+
+            DepartmentNode = DepartmentNode.NextSibling;
         }
     }
 }

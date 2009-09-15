@@ -58,6 +58,19 @@ namespace Ict.Petra.Client.App.PetraClient
       // Required for Windows Form Designer support
       //
       InitializeComponent();
+      #region CATALOGI18N
+
+      // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      this.lblNavigationCaption.Text = Catalog.GetString("Caption");
+      this.btnCollapseNavigation.Text = Catalog.GetString("<=");
+      this.rbtMyPetra.Text = Catalog.GetString("My Petra");
+      this.rbtPartner.Text = Catalog.GetString("Partner");
+      this.rbtFinance.Text = Catalog.GetString("Finance");
+      this.rbtPersonnel.Text = Catalog.GetString("Personnel");
+      this.rbtConferenceManagement.Text = Catalog.GetString("ConferenceManagement");
+      this.rbtFinancialDevelopment.Text = Catalog.GetString("FinancialDevelopment");
+      this.rbtSystemManager.Text = Catalog.GetString("SystemManager");
+      #endregion
 
       InitializeManualCode();
     }

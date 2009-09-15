@@ -337,9 +337,9 @@ namespace Ict.Petra.Client.App.PetraClient
                 }
                 catch (Exception e)
                 {
-                	MessageBox.Show(e.Message);
-                	TLogging.Log(e.Message);
-                	TLogging.Log(e.StackTrace);
+                    MessageBox.Show(e.Message);
+                    TLogging.Log(e.Message);
+                    TLogging.Log(e.StackTrace);
                 }
                 finally
                 {

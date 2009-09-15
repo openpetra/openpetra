@@ -72,6 +72,11 @@ class Program
                     }
                 }
 
+                if (settings.GetValue("solution").Contains("Client.sln"))
+                {
+                    TGenerateCatalogStrings.AddTranslationUINavigation(settings.GetValue("UINavigation.File"), writerGettextFile);
+                }
+
                 writerGettextFile.Close();
 
                 // delete the file if it is empty

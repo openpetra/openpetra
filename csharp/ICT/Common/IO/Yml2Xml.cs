@@ -231,7 +231,7 @@ namespace Ict.Common.IO
 
             return 0;
         }
-       
+
         /// <summary>
         /// does not return comment lines
         /// </summary>
