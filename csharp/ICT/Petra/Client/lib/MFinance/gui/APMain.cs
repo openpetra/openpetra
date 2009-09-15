@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       this.btnTagAllPayable.Text = Catalog.GetString("Tag all Paya&ble");
       this.btnUntagAll.Text = Catalog.GetString("&Untag all");
       this.lblSumTagged.Text = Catalog.GetString("Sum of Tagged:");
-      this.tpgOutstandingInvoices.Text = Catalog.GetString("OutstandingInvoices");
+      this.tpgOutstandingInvoices.Text = Catalog.GetString("Outstanding Invoices");
       this.tbbTransactions.ToolTipText = Catalog.GetString("Open the transactions of the supplier");
       this.tbbTransactions.Text = Catalog.GetString("Open Transactions");
       this.tbbEditSupplier.ToolTipText = Catalog.GetString("Change the details and settings of an existing supplier");

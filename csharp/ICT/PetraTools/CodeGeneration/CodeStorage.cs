@@ -578,7 +578,17 @@ namespace Ict.Tools.CodeGeneration
 
     public class TActionHandler
     {
-        public string actionName, actionClick, actionId, actionLabel, actionTooltip, actionImage, activeValidRowInGrid;
+        /// <summary>
+        /// name of the action with leading prefix act
+        /// </summary>
+        public string actionName;
+        public string actionClick;
+
+        /// <summary>
+        /// ActionId eg eHelp, and other default actions that are hardwired
+        /// </summary>
+        public string actionId;
+        public string actionLabel, actionTooltip, actionImage, activeValidRowInGrid;
         public XmlNode actionNode;
         public TActionHandler(XmlNode AActionNode, string AName, string AActionClick, string AActionId, string ALabel, string ATooltip, string AImage)
         {
@@ -654,6 +664,26 @@ namespace Ict.Tools.CodeGeneration
             return "";
         }
 
+        /// get the action for this control;
+        /// this can be directly defined in attribute Action,
+        /// or there is an action with the same name as the control, just different prefix
+        public TActionHandler GetAction()
+        {
+            string ActionToPerform = this.GetAttribute("Action");
+
+            if (!FCodeStorage.FActionList.ContainsKey(ActionToPerform))
+            {
+                ActionToPerform = "act" + this.controlName.Substring(this.controlTypePrefix.Length);
+            }
+
+            if (FCodeStorage.FActionList.ContainsKey(ActionToPerform))
+            {
+                return FCodeStorage.FActionList[ActionToPerform];
+            }
+
+            return null;
+        }
+
         public string Label
         {
             get
@@ -665,7 +695,17 @@ namespace Ict.Tools.CodeGeneration
                     return GetAttribute("Label");
                 }
 
-                return xmlNode.Name.Substring(3);
+                TActionHandler handler = GetAction();
+
+                if (handler != null)
+                {
+                    if (handler.actionLabel.Length > 0)
+                    {
+                        return handler.actionLabel;
+                    }
+                }
+
+                return StringHelper.ReverseUpperCamelCase(xmlNode.Name.Substring(3));
             }
             set
             {

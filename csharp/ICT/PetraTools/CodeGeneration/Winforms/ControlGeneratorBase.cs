@@ -317,16 +317,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl.controlName, "Tag", "\"SuppressChangeDetection\"");
             }
 
-            string ActionToPerform = ctrl.GetAttribute("Action");
-
-            if (ActionToPerform.Length == 0)
+            if (ctrl.GetAction() != null)
             {
-                // try to find an action that matches the control name, eg. mniSomething matches actSomething
-                ActionToPerform = "act" + ctrl.controlName.Substring(ctrl.controlTypePrefix.Length);
-            }
+                string ActionToPerform = ctrl.GetAction().actionName;
 
-            if (writer.CodeStorage.FActionList.ContainsKey(ActionToPerform))
-            {
                 // deal with enabling and disabling of action, affecting the menu item
                 if (!writer.Template.FCodelets.Contains("ENABLEDEPENDINGACTIONS_" + ActionToPerform))
                 {
@@ -346,8 +340,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];
                 SetControlActionProperties(writer, ctrl, ActionHandler);
 
-                // use the label from the action
-                ctrl.Label = ActionHandler.actionLabel;
+                if (FCodeStorage.ManualFileExistsAndContains(" " + ActionHandler.actionName.Substring(3) + "(IntPtr AParentFormHandle)"))
+                {
+                    writer.SetEventHandlerFunction(ActionHandler.actionName.Substring(3), "", ActionHandler.actionName.Substring(
+                            3) + "(this.Handle);");
+                }
             }
             else if (ctrl.HasAttribute("ActionClick"))
             {

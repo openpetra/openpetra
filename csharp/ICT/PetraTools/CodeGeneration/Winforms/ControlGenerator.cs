@@ -1197,7 +1197,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             // deactivate menu items that have no action assigned yet.
-            if (!ctrl.HasAttribute("Action") && !ctrl.HasAttribute("ActionClick") && !ctrl.HasAttribute("ActionOpenScreen")
+            if ((ctrl.GetAction() == null) && !ctrl.HasAttribute("ActionClick") && !ctrl.HasAttribute("ActionOpenScreen")
                 && (ctrl.NumberChildren == 0) && !(this is MenuItemSeparatorGenerator))
             {
                 string ActionEnabling = ctrl.controlName + ".Enabled = false;" + Environment.NewLine;

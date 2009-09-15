@@ -444,7 +444,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.mniAccountDetail.Name = "mniAccountDetail";
             this.mniAccountDetail.AutoSize = true;
             this.mniAccountDetail.Click += new System.EventHandler(this.OpenScreenAccountDetail);
-            this.mniAccountDetail.Text = "AccountDetail";
+            this.mniAccountDetail.Text = "Account Detail";
             //
             // mniGLReports
             //

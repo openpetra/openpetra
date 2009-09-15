@@ -246,13 +246,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         mniReprintRemittanceAdvice.Enabled = false;
         mniReprintCheque.Enabled = false;
         mniReprintPaymentReport.Enabled = false;
-        mniNewInvoice.Enabled = false;
-        mniNewCreditNote.Enabled = false;
-        mniOpenSelected.Enabled = false;
-        mniReverseSelected.Enabled = false;
-        mniApproveTagged.Enabled = false;
-        mniPostTagged.Enabled = false;
-        mniAddTaggedToPayment.Enabled = false;
         mniHelpPetraHelp.Enabled = false;
         mniHelpBugReport.Enabled = false;
         mniHelpAboutPetra.Enabled = false;

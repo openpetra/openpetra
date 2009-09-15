@@ -270,7 +270,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblValueOneDirection.Location = new System.Drawing.Point(2,2);
             this.lblValueOneDirection.Name = "lblValueOneDirection";
             this.lblValueOneDirection.AutoSize = true;
-            this.lblValueOneDirection.Text = "ValueOneDirection:";
+            this.lblValueOneDirection.Text = "Value One Direction:";
             this.lblValueOneDirection.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // lblValueOtherDirection
@@ -278,7 +278,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblValueOtherDirection.Location = new System.Drawing.Point(2,2);
             this.lblValueOtherDirection.Name = "lblValueOtherDirection";
             this.lblValueOtherDirection.AutoSize = true;
-            this.lblValueOtherDirection.Text = "ValueOtherDirection:";
+            this.lblValueOtherDirection.Text = "Value Other Direction:";
             this.lblValueOtherDirection.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

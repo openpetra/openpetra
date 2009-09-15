@@ -481,7 +481,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel7.Controls.Add(this.pnlTaggingOptions, 0, 0);
             this.tableLayoutPanel7.Controls.Add(this.grdInvoiceResult, 0, 1);
-            this.tpgOutstandingInvoices.Text = "OutstandingInvoices";
+            this.tpgOutstandingInvoices.Text = "Outstanding Invoices";
             this.tpgOutstandingInvoices.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tabSearchResult

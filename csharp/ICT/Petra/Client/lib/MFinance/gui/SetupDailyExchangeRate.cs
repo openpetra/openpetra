@@ -76,8 +76,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.lblDetailDateEffectiveFrom.Text = Catalog.GetString("D&ate:");
       this.lblDetailTimeEffectiveFrom.Text = Catalog.GetString("T&ime:");
       this.lblDetailRateOfExchange.Text = Catalog.GetString("&Rate of exchange:");
-      this.lblValueOneDirection.Text = Catalog.GetString("ValueOneDirection:");
-      this.lblValueOtherDirection.Text = Catalog.GetString("ValueOtherDirection:");
+      this.lblValueOneDirection.Text = Catalog.GetString("Value One Direction:");
+      this.lblValueOtherDirection.Text = Catalog.GetString("Value Other Direction:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");

@@ -250,7 +250,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                         mniLoadSettings3,
                         mniLoadSettings4,
                         mniLoadSettings5});
-            this.mniLoadSettings.Text = "RecentSettings";
+            this.mniLoadSettings.Text = "&Load Settings";
             //
             // mniSaveSettings
             //

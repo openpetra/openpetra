@@ -247,7 +247,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblAccountHierarchy.Location = new System.Drawing.Point(2,2);
             this.lblAccountHierarchy.Name = "lblAccountHierarchy";
             this.lblAccountHierarchy.AutoSize = true;
-            this.lblAccountHierarchy.Text = "AccountHierarchy:";
+            this.lblAccountHierarchy.Text = "Account Hierarchy:";
             this.lblAccountHierarchy.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -316,7 +316,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.rbtPeriodRange.Location = new System.Drawing.Point(2,2);
             this.rbtPeriodRange.Name = "rbtPeriodRange";
             this.rbtPeriodRange.AutoSize = true;
-            this.rbtPeriodRange.Text = "PeriodRange";
+            this.rbtPeriodRange.Text = "Period Range";
             this.rbtPeriodRange.Checked = true;
             //
             // tableLayoutPanel4
@@ -389,7 +389,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.rbtDateRange.Location = new System.Drawing.Point(2,2);
             this.rbtDateRange.Name = "rbtDateRange";
             this.rbtDateRange.AutoSize = true;
-            this.rbtDateRange.Text = "DateRange";
+            this.rbtDateRange.Text = "Date Range";
             //
             // tableLayoutPanel5
             //
@@ -471,7 +471,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.rbtSortByReference.Location = new System.Drawing.Point(2,2);
             this.rbtSortByReference.Name = "rbtSortByReference";
             this.rbtSortByReference.AutoSize = true;
-            this.rbtSortByReference.Text = "SortByReference";
+            this.rbtSortByReference.Text = "Sort By Reference";
             //
             // tableLayoutPanel7
             //
@@ -524,7 +524,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.rbtSortByAnalysisType.Location = new System.Drawing.Point(2,2);
             this.rbtSortByAnalysisType.Name = "rbtSortByAnalysisType";
             this.rbtSortByAnalysisType.AutoSize = true;
-            this.rbtSortByAnalysisType.Text = "SortByAnalysisType";
+            this.rbtSortByAnalysisType.Text = "Sort By Analysis Type";
             //
             // tableLayoutPanel8
             //
@@ -622,7 +622,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.rbtAccountRange.Location = new System.Drawing.Point(2,2);
             this.rbtAccountRange.Name = "rbtAccountRange";
             this.rbtAccountRange.AutoSize = true;
-            this.rbtAccountRange.Text = "AccountRange";
+            this.rbtAccountRange.Text = "Account Range";
             this.rbtAccountRange.Checked = true;
             //
             // tableLayoutPanel11
@@ -677,7 +677,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.rbtAccountList.Location = new System.Drawing.Point(2,2);
             this.rbtAccountList.Name = "rbtAccountList";
             this.rbtAccountList.AutoSize = true;
-            this.rbtAccountList.Text = "AccountList";
+            this.rbtAccountList.Text = "Account List";
             //
             // tableLayoutPanel12
             //
@@ -735,7 +735,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.rbtCostCentreRange.Location = new System.Drawing.Point(2,2);
             this.rbtCostCentreRange.Name = "rbtCostCentreRange";
             this.rbtCostCentreRange.AutoSize = true;
-            this.rbtCostCentreRange.Text = "CostCentreRange";
+            this.rbtCostCentreRange.Text = "Cost Centre Range";
             this.rbtCostCentreRange.Checked = true;
             //
             // tableLayoutPanel14
@@ -790,7 +790,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.rbtCostCentreList.Location = new System.Drawing.Point(2,2);
             this.rbtCostCentreList.Name = "rbtCostCentreList";
             this.rbtCostCentreList.AutoSize = true;
-            this.rbtCostCentreList.Text = "CostCentreList";
+            this.rbtCostCentreList.Text = "Cost Centre List";
             //
             // tableLayoutPanel15
             //
@@ -828,7 +828,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.tableLayoutPanel13.Controls.Add(this.rbtCostCentreList, 0, 1);
             this.tableLayoutPanel13.Controls.Add(this.tableLayoutPanel14, 1, 0);
             this.tableLayoutPanel13.Controls.Add(this.tableLayoutPanel15, 1, 1);
-            this.rgrCostCentres.Text = "CostCentres";
+            this.rgrCostCentres.Text = "Cost Centres";
             this.tableLayoutPanel9.ColumnCount = 1;
             this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel9.RowCount = 2;
@@ -942,7 +942,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                         mniLoadSettings3,
                         mniLoadSettings4,
                         mniLoadSettings5});
-            this.mniLoadSettings.Text = "RecentSettings";
+            this.mniLoadSettings.Text = "&Load Settings";
             //
             // mniSaveSettings
             //

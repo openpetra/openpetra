@@ -37,39 +37,22 @@ namespace Ict.Petra.Client.MPartner.Gui
     public partial class TFrmPartnerMain
     {
         /// <summary>
-        /// called by constructor
-        /// </summary>
-        public void InitializeManualCode()
-        {
-        }
-
-        /// <summary>
         /// create a new partner
         /// </summary>
-        public void NewPartner(System.Object sender, EventArgs e)
+        public static void NewPartner(IntPtr AParentFormHandle)
         {
-            TPartnerEditDSWinForm frm = new TPartnerEditDSWinForm(this.Handle);
+            TPartnerEditDSWinForm frm = new TPartnerEditDSWinForm(AParentFormHandle);
 
             frm.SetParameters(TScreenMode.smNew, "FAMILY", -1, -1, "");
             frm.Show();
         }
-
-        /// <summary>
-        /// for the moment just an experiment to show the reports
-        /// </summary>
-        public void PartnerByCityReport(System.Object sender, EventArgs e)
-        {
-            TFrmPartnerByCity frm = new TFrmPartnerByCity(this.Handle);
-
-            frm.Show();
-        }
-
+        
         /// <summary>
         /// open partner find screen
         /// </summary>
-        public void PartnerFind(System.Object sender, EventArgs e)
+        public static void FindPartner(IntPtr AParentFormHandle)
         {
-            TPartnerFindScreen frm = new TPartnerFindScreen(this.Handle);
+            TPartnerFindScreen frm = new TPartnerFindScreen(AParentFormHandle);
 
             frm.SetParameters(false, -1);
             frm.Show();

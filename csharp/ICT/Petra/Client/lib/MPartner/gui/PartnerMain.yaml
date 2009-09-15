@@ -5,6 +5,9 @@ RootNode:
     FormTitle: Partner Module OpenPetra.org 
     Namespace: Ict.Petra.Client.MPartner.Gui
     HasManualCodeInOtherFile: true
+    Actions:
+        actFindPartner: {ShortCut=CTRL-F, ActionClick=FindPartner}
+        actNewPartner: {ShortCut=CTRL-N, ActionClick=NewPartner}
     Controls:
         pnlTODO: {Dock=Fill}
     Menu:
@@ -14,7 +17,7 @@ RootNode:
            mniSeparator: {Label=-}
         mniPartner:
            Label: P&artner
-           mniFindMaintain: {Label=&Find && Maintain..., ShortCut=CTRL-F, ActionClick=PartnerFind}
+           mniFindMaintain: {Label=&Find && Maintain..., Action=actFindPartner}
            mniSeparator: {Label=-}
            mniLastPartner: {Label=Work with &Last Partner..., ShortCut=CTRL-L}
            mniLastPartners: {Label=&Recent Partners...}
@@ -22,9 +25,9 @@ RootNode:
            mniExtracts: {Label=&Extracts...}
            mniReports: 
                Label: &Reports...
-               mniReportPartnerByCity: {Label=&Partner By City Report (experiment), ActionClick=PartnerByCityReport)
+               mniReportPartnerByCity: {Label=&Partner By City Report (experiment), ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPartnerByCity)
            mniSeparator: {Label=-}
-           mniNewPartner: {Label=New &Partner..., ShortCut=CTRL-N, ActionClick=NewPartner}
+           mniNewPartner: {Label=New &Partner...}
            mniNewPartnerAssistant: 
               Label: &New Partner (assistant)
               mniNewPerson: {Label=Add &Person}

@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.mniICHReports.Text = Catalog.GetString("ICH &reports...");
       this.mniClearingHouse.Text = Catalog.GetString("&Clearing House");
       this.mniLedger.Text = Catalog.GetString("&Ledger");
-      this.mniAccountDetail.Text = Catalog.GetString("AccountDetail");
+      this.mniAccountDetail.Text = Catalog.GetString("Account Detail");
       this.mniGLReports.Text = Catalog.GetString("&GL");
       this.mniGiftReports.Text = Catalog.GetString("G&ift");
       this.mniAPReports.Text = Catalog.GetString("Accounts &Payable");

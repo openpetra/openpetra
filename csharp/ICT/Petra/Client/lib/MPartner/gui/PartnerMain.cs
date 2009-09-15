@@ -111,11 +111,20 @@ namespace Ict.Petra.Client.MPartner.Gui
       #endregion
 
       FPetraUtilsObject = new TFrmPetraModuleUtils(AParentFormHandle, this, stbMain);
-      InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
 
+    }
+
+    private void FindPartner(object sender, EventArgs e)
+    {
+        FindPartner(this.Handle);
+    }
+
+    private void NewPartner(object sender, EventArgs e)
+    {
+        NewPartner(this.Handle);
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -185,6 +194,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             mniClose.Enabled = e.Enabled;
         }
+        if (e.ActionName == "actFindPartner")
+        {
+            mniFindMaintain.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actNewPartner")
+        {
+            mniNewPartner.Enabled = e.Enabled;
+        }
         if (e.ActionName == "actMainMenu")
         {
             mniPetraMainMenu.Enabled = e.Enabled;
@@ -237,6 +254,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         mniHelpBugReport.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
+    }
+
+    /// auto generated
+    protected void OpenScreenReportPartnerByCity(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPartnerByCity frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPartnerByCity(this.Handle);
+        frm.Show();
     }
 
     /// auto generated

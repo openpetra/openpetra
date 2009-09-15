@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       this.mniLoadSettings3.Text = Catalog.GetString("RecentSettings");
       this.mniLoadSettings4.Text = Catalog.GetString("RecentSettings");
       this.mniLoadSettings5.Text = Catalog.GetString("RecentSettings");
-      this.mniLoadSettings.Text = Catalog.GetString("RecentSettings");
+      this.mniLoadSettings.Text = Catalog.GetString("&Load Settings");
       this.mniSaveSettings.Text = Catalog.GetString("&Save Settings");
       this.mniSaveSettingsAs.Text = Catalog.GetString("Save Settings &As...");
       this.mniMaintainSettings.Text = Catalog.GetString("&Maintain Settings...");

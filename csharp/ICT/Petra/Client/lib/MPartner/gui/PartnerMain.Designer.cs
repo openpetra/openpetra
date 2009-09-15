@@ -179,7 +179,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.mniFindMaintain.Name = "mniFindMaintain";
             this.mniFindMaintain.AutoSize = true;
-            this.mniFindMaintain.Click += new System.EventHandler(this.PartnerFind);
+            this.mniFindMaintain.Click += new System.EventHandler(this.FindPartner);
             this.mniFindMaintain.Text = "&Find && Maintain...";
             //
             // mniSeparator1
@@ -216,7 +216,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.mniReportPartnerByCity.Name = "mniReportPartnerByCity";
             this.mniReportPartnerByCity.AutoSize = true;
-            this.mniReportPartnerByCity.Click += new System.EventHandler(this.PartnerByCityReport);
+            this.mniReportPartnerByCity.Click += new System.EventHandler(this.OpenScreenReportPartnerByCity);
             this.mniReportPartnerByCity.Text = "&Partner By City Report (experiment)";
             //
             // mniReports
