@@ -40,7 +40,8 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private void InitializeManualCode()
         {
-            rbtMyPetra.Checked = true;
+            LoadNavigationUI();
+
             sptNavigation.Panel1.BackColor = sptNavigation.BackColor;
             sptNavigation.Panel2.BackColor = sptNavigation.BackColor;
             sptNavigation.BackColor = System.Drawing.Color.DarkGray;
@@ -290,13 +291,6 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private XmlNode GetDepartmentFromNavigationFile(string ADepartmentName)
         {
-            if (FUINavigation == null)
-            {
-                TAppSettingsManager opts = new TAppSettingsManager();
-                TYml2Xml parser = new TYml2Xml(opts.GetValue("UINavigation.File"));
-                FUINavigation = parser.ParseYML2XML();
-            }
-
             XmlNode OpenPetraNode = FUINavigation.FirstChild.NextSibling.FirstChild;
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
@@ -409,6 +403,42 @@ namespace Ict.Petra.Client.App.PetraClient
 
                 return pnlDepartment;
             }
+        }
+
+        private void LoadNavigationUI()
+        {
+            if (FUINavigation == null)
+            {
+                TAppSettingsManager opts = new TAppSettingsManager();
+                TYml2Xml parser = new TYml2Xml(opts.GetValue("UINavigation.File"));
+                FUINavigation = parser.ParseYML2XML();
+            }
+
+            XmlNode OpenPetraNode = FUINavigation.FirstChild.NextSibling.FirstChild;
+            XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
+            XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
+            XmlNode DepartmentNode = MainMenuNode.FirstChild;
+
+            while (DepartmentNode != null)
+            {
+                RadioButton rbt = new System.Windows.Forms.RadioButton();
+                this.sptNavigation.Panel2.Controls.Add(rbt);
+                rbt.Appearance = System.Windows.Forms.Appearance.Button;
+                rbt.Dock = System.Windows.Forms.DockStyle.Bottom;
+                rbt.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+
+                //rbt.ImageKey = "{#BUTTONIMAGE}";
+                //rbt.ImageList = this.imageListButtons;
+                rbt.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+                rbt.Name = "rbt" + DepartmentNode.Name;
+                rbt.Text = GetLabel(DepartmentNode);
+                rbt.Size = new System.Drawing.Size(200, 24);
+                rbt.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
+
+                DepartmentNode = DepartmentNode.NextSibling;
+            }
+
+            ((RadioButton) this.sptNavigation.Panel2.Controls[0]).Checked = true;
         }
 
         private void DepartmentCheckedChanged(object sender, EventArgs e)

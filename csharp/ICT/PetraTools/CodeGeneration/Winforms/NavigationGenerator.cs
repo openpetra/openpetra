@@ -54,31 +54,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             while (DepartmentNode != null)
             {
-                // add button for the department
-                string label = DepartmentNode.Name;
-
-                if (TYml2Xml.HasAttribute(DepartmentNode, "Label"))
-                {
-                    label = TYml2Xml.GetAttribute(DepartmentNode, "Label");
-                }
-
-                ProcessTemplate snippet = Template.GetSnippet("BUTTONCONTROLDECLARATION");
-                snippet.SetCodelet("BUTTONNAME", "rbt" + DepartmentNode.Name);
-                Template.InsertSnippet("CONTROLDECLARATION", snippet);
-
-                snippet = Template.GetSnippet("BUTTONCONTROLCREATION");
-                snippet.SetCodelet("BUTTONNAME", "rbt" + DepartmentNode.Name);
-                Template.InsertSnippet("CONTROLCREATION", snippet);
-
-                snippet = Template.GetSnippet("ADDNAVIGATIONBUTTONS");
-                snippet.SetCodelet("BUTTONNAME", "rbt" + DepartmentNode.Name);
-                Template.InsertSnippet("ADDNAVIGATIONBUTTONS", snippet);
-
-                snippet = Template.GetSnippet("BUTTONCONTROLINITIALISATION");
-                snippet.SetCodelet("BUTTONLABEL", label);
-                snippet.SetCodelet("BUTTONNAME", "rbt" + DepartmentNode.Name);
-                snippet.SetCodelet("BUTTONIMAGE", TYml2Xml.GetAttribute(DepartmentNode, "Icon")); // TODO insert image into resource file
-                Template.InsertSnippet("CONTROLINITIALISATION", snippet);
+				Template.AddToCodelet("ADDNAVIGATIONBUTTONS", "");
+				Template.AddToCodelet("CONTROLDECLARATION", "");
+				Template.AddToCodelet("CONTROLCREATION", "");
+				Template.AddToCodelet("CONTROLINITIALISATION", "");
 
                 // TODO IMAGEBUTTONSSETKEYNAME
                 Template.AddToCodelet("IMAGEBUTTONSSETKEYNAME", "");

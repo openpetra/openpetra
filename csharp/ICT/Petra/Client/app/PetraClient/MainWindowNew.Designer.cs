@@ -75,13 +75,6 @@ namespace Ict.Petra.Client.App.PetraClient
         	this.lblNavigationCaption = new System.Windows.Forms.Label();
         	this.btnCollapseNavigation = new System.Windows.Forms.Button();
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
-            this.rbtMyPetra = new System.Windows.Forms.RadioButton();
-            this.rbtPartner = new System.Windows.Forms.RadioButton();
-            this.rbtFinance = new System.Windows.Forms.RadioButton();
-            this.rbtPersonnel = new System.Windows.Forms.RadioButton();
-            this.rbtConferenceManagement = new System.Windows.Forms.RadioButton();
-            this.rbtFinancialDevelopment = new System.Windows.Forms.RadioButton();
-            this.rbtSystemManager = new System.Windows.Forms.RadioButton();
 
             this.stbMain.SuspendLayout();
             this.pnlContent.SuspendLayout();
@@ -165,13 +158,6 @@ namespace Ict.Petra.Client.App.PetraClient
         	//
         	// sptNavigation.Panel2
         	//
-            this.sptNavigation.Panel2.Controls.Add(this.rbtMyPetra);
-            this.sptNavigation.Panel2.Controls.Add(this.rbtPartner);
-            this.sptNavigation.Panel2.Controls.Add(this.rbtFinance);
-            this.sptNavigation.Panel2.Controls.Add(this.rbtPersonnel);
-            this.sptNavigation.Panel2.Controls.Add(this.rbtConferenceManagement);
-            this.sptNavigation.Panel2.Controls.Add(this.rbtFinancialDevelopment);
-            this.sptNavigation.Panel2.Controls.Add(this.rbtSystemManager);
         	this.sptNavigation.Size = new System.Drawing.Size(200, 396);
         	this.sptNavigation.SplitterDistance = 210;
         	this.sptNavigation.TabIndex = 6;
@@ -180,97 +166,6 @@ namespace Ict.Petra.Client.App.PetraClient
         	//
 //        	this.imageListButtons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListButtons.ImageStream")));
 //        	this.imageListButtons.TransparentColor = System.Drawing.Color.Transparent;
-            //
-            // rbtMyPetra
-            //
-            this.rbtMyPetra.Appearance = System.Windows.Forms.Appearance.Button;
-            this.rbtMyPetra.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.rbtMyPetra.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.rbtMyPetra.ImageKey = "Petra.ico";
-            //this.rbtMyPetra.ImageList = this.imageListButtons;
-            this.rbtMyPetra.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.rbtMyPetra.Name = "rbtMyPetra";
-            this.rbtMyPetra.Text = "My Petra";
-            this.rbtMyPetra.Size = new System.Drawing.Size(200, 24);
-            this.rbtMyPetra.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
-            //
-            // rbtPartner
-            //
-            this.rbtPartner.Appearance = System.Windows.Forms.Appearance.Button;
-            this.rbtPartner.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.rbtPartner.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.rbtPartner.ImageKey = "";
-            //this.rbtPartner.ImageList = this.imageListButtons;
-            this.rbtPartner.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.rbtPartner.Name = "rbtPartner";
-            this.rbtPartner.Text = "Partner";
-            this.rbtPartner.Size = new System.Drawing.Size(200, 24);
-            this.rbtPartner.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
-            //
-            // rbtFinance
-            //
-            this.rbtFinance.Appearance = System.Windows.Forms.Appearance.Button;
-            this.rbtFinance.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.rbtFinance.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.rbtFinance.ImageKey = "";
-            //this.rbtFinance.ImageList = this.imageListButtons;
-            this.rbtFinance.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.rbtFinance.Name = "rbtFinance";
-            this.rbtFinance.Text = "Finance";
-            this.rbtFinance.Size = new System.Drawing.Size(200, 24);
-            this.rbtFinance.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
-            //
-            // rbtPersonnel
-            //
-            this.rbtPersonnel.Appearance = System.Windows.Forms.Appearance.Button;
-            this.rbtPersonnel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.rbtPersonnel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.rbtPersonnel.ImageKey = "";
-            //this.rbtPersonnel.ImageList = this.imageListButtons;
-            this.rbtPersonnel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.rbtPersonnel.Name = "rbtPersonnel";
-            this.rbtPersonnel.Text = "Personnel";
-            this.rbtPersonnel.Size = new System.Drawing.Size(200, 24);
-            this.rbtPersonnel.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
-            //
-            // rbtConferenceManagement
-            //
-            this.rbtConferenceManagement.Appearance = System.Windows.Forms.Appearance.Button;
-            this.rbtConferenceManagement.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.rbtConferenceManagement.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.rbtConferenceManagement.ImageKey = "";
-            //this.rbtConferenceManagement.ImageList = this.imageListButtons;
-            this.rbtConferenceManagement.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.rbtConferenceManagement.Name = "rbtConferenceManagement";
-            this.rbtConferenceManagement.Text = "ConferenceManagement";
-            this.rbtConferenceManagement.Size = new System.Drawing.Size(200, 24);
-            this.rbtConferenceManagement.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
-            //
-            // rbtFinancialDevelopment
-            //
-            this.rbtFinancialDevelopment.Appearance = System.Windows.Forms.Appearance.Button;
-            this.rbtFinancialDevelopment.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.rbtFinancialDevelopment.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.rbtFinancialDevelopment.ImageKey = "";
-            //this.rbtFinancialDevelopment.ImageList = this.imageListButtons;
-            this.rbtFinancialDevelopment.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.rbtFinancialDevelopment.Name = "rbtFinancialDevelopment";
-            this.rbtFinancialDevelopment.Text = "FinancialDevelopment";
-            this.rbtFinancialDevelopment.Size = new System.Drawing.Size(200, 24);
-            this.rbtFinancialDevelopment.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
-            //
-            // rbtSystemManager
-            //
-            this.rbtSystemManager.Appearance = System.Windows.Forms.Appearance.Button;
-            this.rbtSystemManager.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.rbtSystemManager.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.rbtSystemManager.ImageKey = "";
-            //this.rbtSystemManager.ImageList = this.imageListButtons;
-            this.rbtSystemManager.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.rbtSystemManager.Name = "rbtSystemManager";
-            this.rbtSystemManager.Text = "SystemManager";
-            this.rbtSystemManager.Size = new System.Drawing.Size(200, 24);
-            this.rbtSystemManager.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
 
             //
             // TFrmMainWindowNew
@@ -302,12 +197,5 @@ namespace Ict.Petra.Client.App.PetraClient
         private System.Windows.Forms.Panel pnlNavigation;
         private System.Windows.Forms.Panel pnlContent;
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;
-        private System.Windows.Forms.RadioButton rbtMyPetra;
-        private System.Windows.Forms.RadioButton rbtPartner;
-        private System.Windows.Forms.RadioButton rbtFinance;
-        private System.Windows.Forms.RadioButton rbtPersonnel;
-        private System.Windows.Forms.RadioButton rbtConferenceManagement;
-        private System.Windows.Forms.RadioButton rbtFinancialDevelopment;
-        private System.Windows.Forms.RadioButton rbtSystemManager;
     }
 }
