@@ -50,6 +50,9 @@
       <HintPath>..\..\..\ThirdParty\DevAge\DevAge.Windows.Forms.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Mono.Posix">
+      <HintPath>..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
+    </Reference>
     <Reference Include="SourceGrid">
       <HintPath>..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -76,9 +79,19 @@
     <Compile Include="grpCollapsible.cs" />
     <Compile Include="Ict.Common.Controls.AssemblyInfo.cs" />
     <Compile Include="lblVarioText.cs" />
+    <Compile Include="lstTask.cs" />
+    <Compile Include="pnlAccordion.cs" />
+    <Compile Include="pnlAccordion.Designer.cs">
+      <DependentUpon>pnlAccordion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="pnlDashboard.cs" />
     <Compile Include="rbtNavigationButton.cs" />
     <Compile Include="rbtNavigationButton.Designer.cs">
       <DependentUpon>rbtNavigationButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="lstFolderNavigation.cs" />
+    <Compile Include="lstFolderNavigation.Designer.cs">
+      <DependentUpon>lstFolderNavigation.cs</DependentUpon>
     </Compile>
     <Compile Include="sgrdDataGrid.Columns.cs" />
     <Compile Include="sgrdDataGrid.cs" />
@@ -128,6 +141,10 @@
     <ProjectReference Include="..\Ict.Common.csproj">
       <Project>{ED73B0A3-AC08-4FB0-A18C-2816C9AC5588}</Project>
       <Name>Ict.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IO\Ict.Common.IO.csproj">
+      <Project>{31A5F128-F78F-4957-AA0E-B0F6005A2614}</Project>
+      <Name>Ict.Common.IO</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
