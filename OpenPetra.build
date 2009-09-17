@@ -745,6 +745,7 @@
         <mkdir dir="${setupDir}/db30"/>
         <mkdir dir="${setupDir}/etc30"/>
         <mkdir dir="${setupDir}/reports30"/>
+        <mkdir dir="${setupDir}/resources30"/>
         <copy todir="${setupDir}/bin30">
             <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/Release/">
                 <include name="*.dll" />
@@ -767,7 +768,13 @@
                     tofile="${setupDir}/bin30/System.Data.SQLite.dll"/>
         <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml"
                     tofile="${setupDir}/bin30/UINavigation.yml"/>
-       
+
+        <copy todir="${setupDir}/resources30">
+            <fileset basedir="${OpenPetraRoot.dir}/resources">
+                <include name="*.ico" />
+            </fileset>
+        </copy>
+
         <copy todir="${setupDir}/bin30/locale/">
            <fileset basedir="${OpenPetraRoot.dir}/setup/petra0300/i18n/locale">
                <include name="**/*.mo" />

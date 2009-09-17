@@ -21,10 +21,33 @@ OpenPetra:
             Label: Search for Task
     MainMenu:
         # Department
-        MyPetra: {Icon=Petra.ico, Label=My Petra}
+        MyPetra: {Icon=petraico-small.ico, Label=My Petra}
+            Demo:
+                Partners: {Namespace=Ict.Petra.Client.MPartner.Gui}
+                    NewPartner:
+                        AddNewFamily: {ActionClick=TFrmPartnerMain.NewPartner}
+                        AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson}
+                        AddNewOrganisation: {ActionClick=TFrmPartnerMain.NewOrganisation}
+                    MaintainPartner:
+                        FindPartner: {ActionClick=TFrmPartnerMain.FindPartner}
+                    Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
+                        PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
+                Ledger43: {Label=German Ledger (43), LedgerNumber=43, Namespace=Ict.Petra.Client.MFinance.Gui}
+                    GL: 
+                        GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=GL.TFrmGLBatch}
+                    Gift:
+                        EnteringGifts: {Description: Just a prototype at the moment, ActionOpenScreen=TFrmBankStatementImport}
+                    AP: {Label=Accounts Payable}
+                        AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=AccountsPayable.TFrmAPMain}
+                    Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
+                        AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
+                    Setup:
+                        SetupCurrencies: {Description: Not functional yet, ActionOpenScreen=Setup.TFrmSetupCurrency}
+                        SetupDailyExchangeRate: {Description=Not functional yet, ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
             Favourites:
             CustomGroup:
-        Partner:
+
+        Partner: {Label=Pa&rtner, Icon=partner_small.ico}
             # Module
             Main:
                 # Sub Module
@@ -41,11 +64,11 @@ OpenPetra:
                 Extracts:
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
-                MailingSubscriptions: {Label=Mailing&Subscriptions, Icon=mail.ico}
+                MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
             MoreFunctions:
                 SetupPartnerModule:
         # Department
-        Finance:
+        Finance: {Icon=accounts_small.ico}
             # Module
             GeneralLedger:
                 # Sub Module
@@ -109,7 +132,7 @@ OpenPetra:
             ICH:
             Reports:
             FinanceModuleSetup:
-        Personnel:
-        ConferenceManagement:
-        FinancialDevelopment:
-        SystemManager:
+        Personnel: {Icon=personel_small.ico}
+        ConferenceManagement: {Icon=conference_small.ico}
+        FinancialDevelopment: {Icon=develope_small.ico}
+        SystemManager: {Icon=sysman_small.ico}

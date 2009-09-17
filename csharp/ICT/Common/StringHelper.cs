@@ -457,6 +457,32 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// try to use different separators; first fitting separator is used
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="separators"></param>
+        /// <returns></returns>
+        public static string GetNextCSV(ref string list, string[] separators)
+        {
+            string result = list;
+            string origList = list;
+
+            foreach (string separator in separators)
+            {
+                result = GetNextCSV(ref list, separator, false);
+
+                if (result != origList)
+                {
+                    return result;
+                }
+
+                list = origList;
+            }
+
+            return origList;
+        }
+
+        /// <summary>
         /// overload for GetNextCSV
         /// this will use the comma as default separator
         /// </summary>
@@ -836,7 +862,7 @@ namespace Ict.Common
 
             for (Int32 counter = 1; counter < AStr.Length; counter++)
             {
-                if (Char.IsUpper(AStr[counter]))
+                if (Char.IsUpper(AStr[counter]) && (counter < AStr.Length - 1) && !Char.IsUpper(AStr[counter + 1]))
                 {
                     newString += " ";
                 }

@@ -21,6 +21,10 @@ Name: {app}/bin30
 Name: {app}/bin30/locale/de/LC_MESSAGES
 Name: {app}/manuals30
 Name: {app}/reports30
+Name: {app}/resources30
+Name: {userappdata}/OpenPetra.org/tmp30
+Name: {userappdata}/OpenPetra.org/reports30
+
 [Files]
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.Extensions.dll; DestDir: {app}/bin30
@@ -51,6 +55,7 @@ Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30
 Source: PetraClientRemote.config; DestDir: {app}; DestName: PetraClient-Remote-3.0.config
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
+Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
 Source: ..\..\..\LICENSE; DestDir: {app}
 [Icons]
 Name: {group}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-Remote-3.0.config"" -AutoLogin:demo"
@@ -164,7 +169,8 @@ var
 begin
   if CurStep=ssPostInstall then
   begin
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'Petra.PathTemp" value="u:\"', 'Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'Petra.PathTemp" value="TOREPLACE"', 'Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', 'Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"', true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'PETRAHOST', strServer, true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'PETRAPORT', IntToStr(NetPort), true);
   end;

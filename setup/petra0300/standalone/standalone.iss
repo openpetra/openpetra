@@ -22,6 +22,9 @@ Name: {app}/bin30/locale/de/LC_MESSAGES
 Name: {app}/manuals30
 Name: {app}/db30
 Name: {app}/reports30
+Name: {app}/resources30
+Name: {userappdata}/OpenPetra.org/tmp30
+Name: {userappdata}/OpenPetra.org/reports30
 [Files]
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.Extensions.dll; DestDir: {app}/bin30
@@ -61,6 +64,7 @@ Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 ; actual db will be copied to the user's userappdata directory
 Source: ..\petra.db; DestDir: {app}/db30; DestName: demo.db
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
+Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
 Source: ..\..\..\LICENSE; DestDir: {app}
 [Icons]
 Name: {group}\{cm:cmIconStandaloneLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconStandaloneComment}; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-3.0.config"" -AutoLogin:demo"
@@ -114,7 +118,8 @@ begin
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'reports30', ExpandConstant('{app}/reports30'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerConsole.exe.config', ExpandConstant('{app}/PetraServerConsole-3.0.config'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerAdminConsole.exe.config', ExpandConstant('{app}/PetraServerAdminConsole-3.0.config'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Petra.PathTemp" value="u:\"', 'Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Petra.PathTemp" value="TOREPLACE"', 'Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', 'Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"', true);
   end;
 
   // allow the .net remoting communication between client and server

@@ -159,7 +159,7 @@ namespace Ict.Common.IO
 
             string line = lines[lineNr];
 
-            if (line.Trim().StartsWith("#"))
+            if (line.Trim().StartsWith("#") || (line.Trim().Length == 0))
             {
                 return -1;
             }
@@ -380,13 +380,7 @@ namespace Ict.Common.IO
                             while (list.Length > 0)
                             {
                                 string mapping = StringHelper.GetNextCSV(ref list, ",");
-                                string mappingName = StringHelper.GetNextCSV(ref mapping, "=").Trim();
-
-                                if (mappingName.Contains(":"))
-                                {
-                                    throw new Exception("Problem: please use = instead colons for value lists; line: " + line.Trim());
-                                }
-
+                                string mappingName = StringHelper.GetNextCSV(ref mapping, new string[] { "=", ":" }).Trim();
                                 string mappingValue = StripQuotes(mapping.Trim());
                                 TYml2Xml.SetAttribute(newElement, mappingName, mappingValue);
                             }
@@ -706,6 +700,42 @@ namespace Ict.Common.IO
 
             // return default empty string
             return TXMLParser.GetAttribute(xmlNode, name);
+        }
+
+        /// <summary>
+        /// if the current node does not have the attribute, try the parent nodes
+        /// </summary>
+        public static string GetAttributeRecursive(XmlNode xmlNode, string name)
+        {
+            if (xmlNode == null)
+            {
+                return "";
+            }
+
+            if (HasAttribute(xmlNode, name))
+            {
+                return GetAttribute(xmlNode, name);
+            }
+
+            return GetAttributeRecursive(xmlNode.ParentNode, name);
+        }
+
+        /// <summary>
+        /// if the current node does not have the attribute, try the parent nodes
+        /// </summary>
+        public static bool HasAttributeRecursive(XmlNode xmlNode, string name)
+        {
+            if (xmlNode == null)
+            {
+                return false;
+            }
+
+            if (HasAttribute(xmlNode, name))
+            {
+                return true;
+            }
+
+            return HasAttributeRecursive(xmlNode.ParentNode, name);
         }
 
         /// <summary>

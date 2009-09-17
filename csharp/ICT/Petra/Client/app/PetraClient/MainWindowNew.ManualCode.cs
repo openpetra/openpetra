@@ -31,16 +31,21 @@ using System.Collections.Generic;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Common.Controls;
 
 namespace Ict.Petra.Client.App.PetraClient
 {
     public partial class TFrmMainWindowNew
     {
         private XmlDocument FUINavigation = null;
+        private string FResourceDirectory = null;
 
         private void InitializeManualCode()
         {
+            FResourceDirectory = TAppSettingsManager.GetValueStatic("Resource.Dir");
+
             LoadNavigationUI();
+            pnlMoreButtons.BorderStyle = BorderStyle.FixedSingle;
 
             sptNavigation.Panel1.BackColor = sptNavigation.BackColor;
             sptNavigation.Panel2.BackColor = sptNavigation.BackColor;
@@ -168,21 +173,6 @@ namespace Ict.Petra.Client.App.PetraClient
             FSelectedTaskItem = info.Item;
         }
 
-        private string GetNamespace(XmlNode node)
-        {
-            if (node == null)
-            {
-                return "";
-            }
-
-            if (TYml2Xml.HasAttribute(node, "Namespace"))
-            {
-                return TYml2Xml.GetAttribute(node, "Namespace");
-            }
-
-            return GetNamespace(node.ParentNode);
-        }
-
         private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
 
         private void TaskListMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -197,7 +187,7 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 XmlNode node = (XmlNode)info.Item.Tag;
 
-                string strNamespace = GetNamespace(node);
+                string strNamespace = TYml2Xml.GetAttributeRecursive(node, "Namespace");
 
                 if (strNamespace.Length == 0)
                 {
@@ -251,6 +241,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 else if (actionOpenScreen.Length > 0)
                 {
                     string className = actionOpenScreen;
+
                     System.Type classType = asm.GetType(strNamespace + "." + className);
 
                     if (classType == null)
@@ -262,7 +253,41 @@ namespace Ict.Petra.Client.App.PetraClient
 
                     System.Object screen = Activator.CreateInstance(classType, new object[] { this.Handle });
 
-                    // TODO: if has property LedgerNumber, assign currently selected ledger???
+                    // check for properties and according attributes; this works for the LedgerNumber at the moment
+                    foreach (PropertyInfo prop in classType.GetProperties())
+                    {
+                        if (TYml2Xml.HasAttributeRecursive(node, prop.Name))
+                        {
+                            Object obj = TYml2Xml.GetAttributeRecursive(node, prop.Name);
+
+                            if (prop.PropertyType == typeof(Int32))
+                            {
+                                obj = Convert.ToInt32(obj);
+                            }
+                            else if (prop.PropertyType == typeof(Int64))
+                            {
+                                obj = Convert.ToInt64(obj);
+                            }
+                            else if (prop.PropertyType == typeof(bool))
+                            {
+                                obj = Convert.ToBoolean(obj);
+                            }
+                            else if (prop.PropertyType == typeof(string))
+                            {
+                                // leave it as string
+                            }
+                            else
+                            {
+                                // to avoid that Icon is set etc, clear obj
+                                obj = null;
+                            }
+
+                            if (obj != null)
+                            {
+                                prop.SetValue(screen, obj, null);
+                            }
+                        }
+                    }
 
                     MethodInfo method = classType.GetMethod("Show", BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.Any,
                         new Type[] { }, null);
@@ -421,35 +446,62 @@ namespace Ict.Petra.Client.App.PetraClient
 
             while (DepartmentNode != null)
             {
-                RadioButton rbt = new System.Windows.Forms.RadioButton();
+                TRbtNavigationButton rbt = new TRbtNavigationButton();
                 this.sptNavigation.Panel2.Controls.Add(rbt);
-                rbt.Appearance = System.Windows.Forms.Appearance.Button;
                 rbt.Dock = System.Windows.Forms.DockStyle.Bottom;
-                rbt.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 
-                //rbt.ImageKey = "{#BUTTONIMAGE}";
-                //rbt.ImageList = this.imageListButtons;
-                rbt.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
                 rbt.Name = "rbt" + DepartmentNode.Name;
                 rbt.Text = GetLabel(DepartmentNode);
-                rbt.Size = new System.Drawing.Size(200, 24);
+
+                // TODO: pick up icon from within the resx file, if it is available?
+                if (TYml2Xml.HasAttribute(DepartmentNode,
+                        "Icon")
+                    && System.IO.File.Exists(FResourceDirectory + System.IO.Path.DirectorySeparatorChar +
+                        TYml2Xml.GetAttribute(DepartmentNode, "Icon")))
+                {
+                    rbt.Icon = FResourceDirectory + System.IO.Path.DirectorySeparatorChar + TYml2Xml.GetAttribute(DepartmentNode, "Icon");
+                }
+
                 rbt.CheckedChanged += new System.EventHandler(this.DepartmentCheckedChanged);
 
                 DepartmentNode = DepartmentNode.NextSibling;
             }
 
-            ((RadioButton) this.sptNavigation.Panel2.Controls[0]).Checked = true;
+            ((TRbtNavigationButton) this.sptNavigation.Panel2.Controls[0]).Checked = true;
         }
 
         private void DepartmentCheckedChanged(object sender, EventArgs e)
         {
-            RadioButton rbtDepartment = (RadioButton)sender;
+            TRbtNavigationButton rbtDepartment = (TRbtNavigationButton)sender;
             Panel pnlDepartment = GetOrCreatePanel(rbtDepartment.Name.Substring(3));
 
             if (rbtDepartment.Checked)
             {
                 lblNavigationCaption.Text = rbtDepartment.Text;
                 pnlDepartment.Show();
+
+                bool validContent = false;
+
+                if (pnlDepartment.Controls.Count > 0)
+                {
+                    Panel pnlModule = (Panel)pnlDepartment.Controls[pnlDepartment.Controls.Count - 1];
+
+                    if (pnlModule.Controls.Count > 1)
+                    {
+                        // first child is module caption
+                        LinkLabel lbl = (LinkLabel)pnlModule.Controls[1];
+                        LinkClicked(lbl, null);
+                        validContent = true;
+                    }
+                }
+
+                if (!validContent)
+                {
+                    if (pnlContent.Controls.Count > 0)
+                    {
+                        pnlContent.Controls.RemoveAt(0);
+                    }
+                }
             }
             else
             {

@@ -76,6 +76,10 @@
     <Compile Include="grpCollapsible.cs" />
     <Compile Include="Ict.Common.Controls.AssemblyInfo.cs" />
     <Compile Include="lblVarioText.cs" />
+    <Compile Include="rbtNavigationButton.cs" />
+    <Compile Include="rbtNavigationButton.Designer.cs">
+      <DependentUpon>rbtNavigationButton.cs</DependentUpon>
+    </Compile>
     <Compile Include="sgrdDataGrid.Columns.cs" />
     <Compile Include="sgrdDataGrid.cs" />
     <Compile Include="sgrdDataGridPaged.cs" />
