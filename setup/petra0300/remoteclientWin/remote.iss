@@ -56,6 +56,7 @@ Source: PetraClientRemote.config; DestDir: {app}; DestName: PetraClient-Remote-3
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
 Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
+Source: ..\..\..\resources\*.png; DestDir: {app}/resources30
 Source: ..\..\..\LICENSE; DestDir: {app}
 [Icons]
 Name: {group}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-Remote-3.0.config"" -AutoLogin:demo"

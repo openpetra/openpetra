@@ -85,6 +85,7 @@
       <DependentUpon>pnlAccordion.cs</DependentUpon>
     </Compile>
     <Compile Include="pnlDashboard.cs" />
+    <Compile Include="pnlGradient.cs" />
     <Compile Include="rbtNavigationButton.cs" />
     <Compile Include="rbtNavigationButton.Designer.cs">
       <DependentUpon>rbtNavigationButton.cs</DependentUpon>

@@ -1,0 +1,6 @@
+the following files are from http://www.icon-king.com/projects/nuvola/
+the icons are licensed under LGPL
+
+2leftarrow.png
+2uparrow.png
+2downarrow.png

@@ -48,12 +48,27 @@ namespace Ict.Common.Controls
         /// </summary>
         private TDashboard FDashboard;
 
+        static System.Drawing.Bitmap UpArrow = null;
+        static System.Drawing.Bitmap DownArrow = null;
+
         /// create an accordion with several items for the given folder, with all sub menus
         public TPnlAccordion(XmlNode AFolderNode, TDashboard ADashboard)
         {
             this.FDashboard = ADashboard;
             this.Name = "pnl" + AFolderNode.Name;
             this.Dock = DockStyle.Top;
+            this.Height = 0;
+
+            if (UpArrow == null)
+            {
+                UpArrow = new System.Drawing.Bitmap(TLstFolderNavigation.ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2uparrow.png");
+            }
+
+            if (DownArrow == null)
+            {
+                DownArrow = new System.Drawing.Bitmap(
+                    TLstFolderNavigation.ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2downarrow.png");
+            }
 
             XmlNode ModuleNode = AFolderNode.LastChild;
 
@@ -62,31 +77,32 @@ namespace Ict.Common.Controls
                 Panel pnlModule = new Panel();
                 pnlModule.Dock = DockStyle.Top;
 
-                Panel pnlModuleCaption = new Panel();
+                TPnlGradient pnlModuleCaption = new TPnlGradient();
+                pnlModuleCaption.GradientColorTop = System.Drawing.Color.FromArgb(0xE7, 0xEF, 0xFF);
+                pnlModuleCaption.GradientColorBottom = System.Drawing.Color.FromArgb(0xD6, 0xE3, 0xFF);
                 pnlModuleCaption.Size = new System.Drawing.Size(this.Width, 27);
                 pnlModuleCaption.Dock = DockStyle.Top;
                 pnlModuleCaption.Click += new System.EventHandler(this.CollapseModuleMenu);
                 pnlModule.Controls.Add(pnlModuleCaption);
 
                 Label lblModule = new Label();
-                lblModule.Font = new System.Drawing.Font("Microsoft Sans Serif",
-                    12F,
-                    System.Drawing.FontStyle.Bold,
-                    System.Drawing.GraphicsUnit.Point,
-                    ((byte)(0)));
-                lblModule.ForeColor = System.Drawing.Color.Blue;
-                lblModule.Location = new System.Drawing.Point(8, 2);
+                lblModule.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+                lblModule.ForeColor = System.Drawing.Color.FromArgb(0x10, 0x41, 0x8c);
+                lblModule.BackColor = System.Drawing.Color.Transparent;
+                lblModule.Location = new System.Drawing.Point(11, 6);
                 lblModule.Name = "lbl" + ModuleNode.Name;
                 lblModule.Size = new System.Drawing.Size(153, 23);
                 lblModule.Text = TLstFolderNavigation.GetLabel(ModuleNode);
                 lblModule.Click += new System.EventHandler(this.CollapseModuleMenu);
 
                 Button btnCollapse = new Button();
-                btnCollapse.Text = "^";
                 btnCollapse.Tag = pnlModule;
+                btnCollapse.Location = new System.Drawing.Point(163, 1);
+                btnCollapse.Size = new System.Drawing.Size(27, 27);
+                btnCollapse.Image = UpArrow;
+                btnCollapse.UseVisualStyleBackColor = true;
+                btnCollapse.Text = "";
                 btnCollapse.Click += new System.EventHandler(this.CollapseModuleMenu);
-                btnCollapse.Size = new System.Drawing.Size(20, 20);
-                btnCollapse.Location = new System.Drawing.Point(163, 4);
 
                 XmlNode SubmoduleNode = ModuleNode.FirstChild;
 
@@ -102,10 +118,18 @@ namespace Ict.Common.Controls
                     {
                         LinkLabel lblSubmodule = new LinkLabel();
                         lblSubmodule.Name = SubmoduleNode.Name;
+                        lblSubmodule.Font = new System.Drawing.Font("Tahoma",
+                            8.25F,
+                            System.Drawing.FontStyle.Bold,
+                            System.Drawing.GraphicsUnit.Point,
+                            0);
                         lblSubmodule.Text = TLstFolderNavigation.GetLabel(SubmoduleNode);
-                        lblSubmodule.Location = new System.Drawing.Point(8, 25 + CounterSubmodules * 20);
+                        lblSubmodule.Location = new System.Drawing.Point(30, pnlModuleCaption.Height + 5 + CounterSubmodules * 20);
                         lblSubmodule.Size = new System.Drawing.Size(153, 20);
+                        lblSubmodule.LinkColor = System.Drawing.Color.FromArgb(0x10, 0x41, 0x8c);
+                        lblSubmodule.LinkBehavior = LinkBehavior.HoverUnderline;
                         lblSubmodule.Tag = SubmoduleNode;
+
                         lblSubmodule.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
                         pnlModule.Controls.Add(lblSubmodule);
 
@@ -115,7 +139,8 @@ namespace Ict.Common.Controls
                     SubmoduleNode = SubmoduleNode.NextSibling;
                 }
 
-                pnlModule.Size = new System.Drawing.Size(this.Width, 5 + CounterSubmodules * 20 + 25);
+                pnlModule.Size = new System.Drawing.Size(this.Width, pnlModuleCaption.Height + CounterSubmodules * 20);
+                pnlModule.BackColor = System.Drawing.Color.FromArgb(0xCE, 0xDB, 0xFF);
                 pnlModuleCaption.Controls.Add(lblModule);
                 pnlModuleCaption.Controls.Add(btnCollapse);
                 this.Controls.Add(pnlModule);
@@ -130,7 +155,7 @@ namespace Ict.Common.Controls
             Button btnModuleCollapse;
             Panel pnlModule;
 
-            if (sender.GetType() == typeof(Panel))
+            if (sender.GetType() == typeof(TPnlGradient))
             {
                 // sender is the module caption panel
                 pnlModule = (Panel)((Control)sender).Parent;
@@ -143,19 +168,19 @@ namespace Ict.Common.Controls
 
             btnModuleCollapse = (Button)pnlModule.Controls[0].Controls[1];
 
-            if (pnlModule.Height == pnlModule.Controls[0].Height)
+            if (btnModuleCollapse.Image == DownArrow)
             {
                 // show the menu in full size again
                 pnlModule.Height = (Int32)pnlModule.Tag;
                 pnlModule.Parent.Height += (Int32)pnlModule.Tag - pnlModule.Controls[0].Height;
-                btnModuleCollapse.Text = "^";
+                btnModuleCollapse.Image = UpArrow;
             }
             else
             {
                 pnlModule.Tag = pnlModule.Height;
                 pnlModule.Parent.Height -= (Int32)pnlModule.Tag - pnlModule.Controls[0].Height;
                 pnlModule.Height = pnlModule.Controls[0].Height;
-                btnModuleCollapse.Text = "v";
+                btnModuleCollapse.Image = DownArrow;
             }
         }
 

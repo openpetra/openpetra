@@ -58,9 +58,14 @@ namespace Ict.Common.Controls
         /// constructor
         public TLstFolderNavigation()
         {
+            ResourceDirectory = TAppSettingsManager.GetValueStatic("Resource.Dir");
+
             InitializeComponent();
 
-            ResourceDirectory = TAppSettingsManager.GetValueStatic("Resource.Dir");
+
+            btnCollapseNavigation.Image = new System.Drawing.Bitmap(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2leftarrow.png");
+            pnlNavigationCaption.GradientColorTop = System.Drawing.Color.FromArgb(0xF7, 0xFB, 0xFF);
+            pnlNavigationCaption.GradientColorBottom = System.Drawing.Color.FromArgb(0xAD, 0xBE, 0xE7);
         }
 
         private TDashboard FDashboard;

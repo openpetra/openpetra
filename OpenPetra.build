@@ -173,14 +173,6 @@
                 <include name="MonoPosixHelper.dll" />
             </fileset>
         </copy>
-        <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/img" failonerror="false"/>
-        <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/img">
-            <fileset basedir="${OpenPetraRoot.dir}/resources">
-                <include name="*.ico" />
-                <include name="*.gif" />
-                <include name="*.jpg" />
-            </fileset>
-        </copy>
         <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
         <if test="${file::exists(language.file)}">
             <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
@@ -772,6 +764,7 @@
         <copy todir="${setupDir}/resources30">
             <fileset basedir="${OpenPetraRoot.dir}/resources">
                 <include name="*.ico" />
+                <include name="*.png" />
             </fileset>
         </copy>
 
