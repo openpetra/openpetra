@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.App.PetraClient
         /// <summary>tells whether the Login was successful, or not</summary>
         private static Boolean FLoginSuccessful;
 
-        private static Boolean FUseNewNavigation = false;
+        private static Boolean FUseNewNavigation = true;
 
         /// <summary>ProcessID (unique) assigned by the PetraServer</summary>
         private static Int32 FProcessID;
@@ -129,8 +129,6 @@ namespace Ict.Petra.Client.App.PetraClient
                 }
                 else
                 {
-                    FUseNewNavigation = AConnectDialog.UseNewNavigation;
-
                     // TODO reset any caches
                     AConnectDialog.GetReturnedParameters(out FProcessID, out FWelcomeMessage, out FSystemEnabled);
 
@@ -325,10 +323,6 @@ namespace Ict.Petra.Client.App.PetraClient
                     {
                         MainWindow = new TFrmMainWindow(IntPtr.Zero);
                     }
-
-                    // leave out 'Revision' and 'Build'
-                    MainWindow.Text = "OpenPetra.org " +
-                                      System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString(3);
 
                     // TODO: user defined constructor with more details
                     //                    FProcessID, FWelcomeMessage, FSystemEnabled);

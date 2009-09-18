@@ -1,8 +1,36 @@
 RootNode:
     BaseClass: System.Windows.Forms.Form
-    Template: windowNavigation
-    DesignerTemplate: windowNavigation.Designer
-    FormType: navigationNew
+    Template: window
+    FormType: navigation
     Namespace: Ict.Petra.Client.App.PetraClient
     Icon: petraico-big.ico
-    UINavigation: ../../../Definitions/UINavigation.yml
+    Actions:
+        actMenuSwitch: {Label=Classic Navigation, ActionClick=SwitchToClassicNavigation}
+    Controls:
+        pnlContent:
+            Controls: [dsbContent, lstFolders]
+            Dock: Fill
+        dsbContent: {Type=Ict.Common.Controls.TDashboard, Dock=Fill}
+        lstFolders: {Type=Ict.Common.Controls.TLstFolderNavigation, Dock=Left, Width=200}
+        mnuMain: 
+        tbrMain:
+        stbMain:
+    Menu:
+        mniFile: 
+            Label: &File
+            Order: AlwaysFirst
+            mniClose: {Action=actClose, Order=AlwaysLast}
+        mniView:
+            mniMenuSwitch:
+        mniHelp: 
+            Label: &Help
+            Order: AlwaysLast
+            mniHelpPetraHelp: {Label=&Petra Help, ActionId=eHelp}
+            mniSeparator: {Label=-}
+            mniHelpBugReport: {Label=Bug &Report, ActionId=eBugReport}
+            mniSeparator: {Label=-}
+            mniHelpAboutPetra: {Label=&About Petra, ActionId=eAHelpbout}
+            mniHelpDevelopmentTeam: {Label=&The Development Team..., ActionId=eHelpDevelopmentTeam}    
+    Toolbar:
+        tbbMenuSwitch: {Order=AlwaysLast}
+    

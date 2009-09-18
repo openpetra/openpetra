@@ -44,7 +44,6 @@ class Program
         // because it uses different controls
         // otherwise, the Template attribute is also quite important, because it determines which code is written
         processor.AddWriter("navigation", typeof(TWinFormsWriter));
-        processor.AddWriter("navigationNew", typeof(TWinFormsWriter));
         processor.AddWriter("edit", typeof(TWinFormsWriter));
         processor.AddWriter("report", typeof(TWinFormsWriter));
         processor.AddWriter("browse", typeof(TWinFormsWriter));

@@ -115,9 +115,8 @@ namespace Ict.Petra.Client.CommonDialogs
             #endregion
 
             this.Text = PETRA_LOGIN_FORMTITLE;
-
-//            this.Height = 142;
-//            pnlLoginControls.Top = 46;
+            this.Height = 142;
+            pnlLoginControls.Top = 46;
         }
 
         private void TxtUserName_Leave(System.Object sender, System.EventArgs e)
@@ -429,15 +428,6 @@ namespace Ict.Petra.Client.CommonDialogs
             }
 
             return FConnectionEstablished;
-        }
-
-        /// should the new navigation window be used for the main screen
-        public Boolean UseNewNavigation
-        {
-            get
-            {
-                return chkNewNavigation.Checked;
-            }
         }
     }
 }

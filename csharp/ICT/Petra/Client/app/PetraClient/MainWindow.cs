@@ -63,9 +63,12 @@ namespace Ict.Petra.Client.App.PetraClient
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      this.tbbMenuSwitch.Text = Catalog.GetString("New Navigation");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
       this.mniFile.Text = Catalog.GetString("&File");
+      this.mniMenuSwitch.Text = Catalog.GetString("New Navigation");
+      this.mniView.Text = Catalog.GetString("View");
       this.mniPetraMainMenu.Text = Catalog.GetString("Petra &Main Menu");
       this.mniPetraPartnerModule.Text = Catalog.GetString("Pa&rtner");
       this.mniPetraFinanceModule.Text = Catalog.GetString("&Finance");
@@ -84,6 +87,7 @@ namespace Ict.Petra.Client.App.PetraClient
       FPetraUtilsObject = new TFrmPetraModuleUtils(AParentFormHandle, this, stbMain);
       ucoMainWindowContent.PetraUtilsObject = FPetraUtilsObject;
       ucoMainWindowContent.InitUserControl();
+      InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
@@ -113,6 +117,7 @@ namespace Ict.Petra.Client.App.PetraClient
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
         // TODO? Save Window position
+        ExitManualCode();
     }
 
 #region Implement interface functions
@@ -153,6 +158,11 @@ namespace Ict.Petra.Client.App.PetraClient
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
+        if (e.ActionName == "actMenuSwitch")
+        {
+            tbbMenuSwitch.Enabled = e.Enabled;
+            mniMenuSwitch.Enabled = e.Enabled;
+        }
         if (e.ActionName == "actClose")
         {
             mniClose.Enabled = e.Enabled;

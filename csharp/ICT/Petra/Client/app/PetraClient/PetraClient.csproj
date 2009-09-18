@@ -114,6 +114,9 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="MainWindow.ManualCode.cs">
+      <DependentUpon>MainWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainWindowContent.cs" />
     <Compile Include="MainWindowContent.Designer.cs">
       <DependentUpon>MainWindowContent.cs</DependentUpon>

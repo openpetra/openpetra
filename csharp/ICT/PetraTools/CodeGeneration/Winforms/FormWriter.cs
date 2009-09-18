@@ -160,6 +160,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (fittingGenerator == null)
             {
+                if (TYml2Xml.HasAttribute(curNode, "Type"))
+                {
+                    return new TControlGenerator(curNode.Name.Substring(0, 3), TYml2Xml.GetAttribute(curNode, "Type"));
+                }
+
                 throw new Exception("Error: cannot find a generator for control with name " + curNode.Name);
             }
 
@@ -712,6 +717,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // init some template variables that can be empty
             FTemplate.AddToCodelet("INITUSERCONTROLS", "");
             FTemplate.AddToCodelet("INITMANUALCODE", "");
+            FTemplate.AddToCodelet("EXITMANUALCODE", "");
             FTemplate.AddToCodelet("INITNEWROWMANUAL", "");
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
             FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "");
@@ -727,6 +733,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("InitializeManualCode"))
             {
                 FTemplate.AddToCodelet("INITMANUALCODE", "InitializeManualCode();" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("ExitManualCode"))
+            {
+                FTemplate.AddToCodelet("EXITMANUALCODE", "ExitManualCode();" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("NewRowManual"))
@@ -842,14 +853,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         "ENABLEDEPENDINGACTIONS_" + TYml2Xml.GetAttribute(handler.actionNode, "Enabled"),
                         "FPetraUtilsObject.EnableAction(\"" + handler.actionName + "\", e.Enabled);" + Environment.NewLine);
                 }
-            }
-
-            if (FCodeStorage.HasAttribute("UINavigation"))
-            {
-                TNavigationGenerator.LoadPanelNavigation(ref FTemplate,
-                    Path.GetDirectoryName(AXAMLFilename) +
-                    Path.DirectorySeparatorChar +
-                    FCodeStorage.GetAttribute("UINavigation"));
             }
 
             FinishUpInitialisingControls();

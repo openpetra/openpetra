@@ -141,6 +141,7 @@ namespace Ict.Common.Controls
             this.sptNavigation.Panel1.BackColor = sptNavigation.BackColor;
             this.sptNavigation.Panel2.BackColor = sptNavigation.BackColor;
             this.sptNavigation.BackColor = System.Drawing.Color.DarkGray;
+            this.sptNavigation.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SptNavigationSplitterMoved);
             this.sptNavigation.SplitterMoving += new System.Windows.Forms.SplitterCancelEventHandler(this.SptNavigationSplitterMoving);
 
             //

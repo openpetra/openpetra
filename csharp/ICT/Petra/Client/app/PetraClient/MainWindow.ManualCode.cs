@@ -33,38 +33,13 @@ using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.App.PetraClient
 {
-    public partial class TFrmMainWindowNew
+    public partial class TFrmMainWindow
     {
         private void InitializeManualCode()
         {
-            LoadNavigationUI();
-
             // leave out 'Revision' and 'Build'
             this.Text = "OpenPetra.org " +
                         System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString(3);
-        }
-
-        private void LoadNavigationUI()
-        {
-            TAppSettingsManager opts = new TAppSettingsManager();
-            TYml2Xml parser = new TYml2Xml(opts.GetValue("UINavigation.File"));
-            XmlDocument UINavigation = parser.ParseYML2XML();
-
-            XmlNode OpenPetraNode = UINavigation.FirstChild.NextSibling.FirstChild;
-            XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
-            XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
-            XmlNode DepartmentNode = MainMenuNode.FirstChild;
-
-            while (DepartmentNode != null)
-            {
-                lstFolders.AddFolder(DepartmentNode);
-
-                DepartmentNode = DepartmentNode.NextSibling;
-            }
-
-            lstFolders.Dashboard = this.dsbContent;
-            lstFolders.Statusbar = this.stbMain;
-            lstFolders.SelectFolder(0);
         }
 
         private void ExitManualCode()
@@ -77,17 +52,17 @@ namespace Ict.Petra.Client.App.PetraClient
         /// the main navigation form
         public static Form MainForm = null;
 
-        private void SwitchToClassicNavigation(object sender, EventArgs e)
+        private void SwitchToNewNavigation(object sender, EventArgs e)
         {
             MainForm = this;
 
-            if (TFrmMainWindow.MainForm == null)
+            if (TFrmMainWindowNew.MainForm == null)
             {
-                TFrmMainWindow.MainForm = new TFrmMainWindow(IntPtr.Zero);
+                TFrmMainWindowNew.MainForm = new TFrmMainWindowNew(IntPtr.Zero);
             }
 
             this.Hide();
-            TFrmMainWindow.MainForm.Show();
+            TFrmMainWindowNew.MainForm.Show();
         }
     }
 }

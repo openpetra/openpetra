@@ -70,9 +70,13 @@ namespace Ict.Petra.Client.App.PetraClient
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmMainWindow));
 
             this.ucoMainWindowContent = new TUcoMainWindowContent();
+            this.tbrMain = new System.Windows.Forms.ToolStrip();
+            this.tbbMenuSwitch = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniClose = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniView = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniMenuSwitch = new System.Windows.Forms.ToolStripMenuItem();
             this.mniPetraModules = new System.Windows.Forms.ToolStripMenuItem();
             this.mniPetraMainMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.mniPetraPartnerModule = new System.Windows.Forms.ToolStripMenuItem();
@@ -90,6 +94,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
 
+            this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
 
@@ -98,6 +103,21 @@ namespace Ict.Petra.Client.App.PetraClient
             //
             this.ucoMainWindowContent.Name = "ucoMainWindowContent";
             this.ucoMainWindowContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            //
+            // tbbMenuSwitch
+            //
+            this.tbbMenuSwitch.Name = "tbbMenuSwitch";
+            this.tbbMenuSwitch.AutoSize = true;
+            this.tbbMenuSwitch.Click += new System.EventHandler(this.SwitchToNewNavigation);
+            this.tbbMenuSwitch.Text = "New Navigation";
+            //
+            // tbrMain
+            //
+            this.tbrMain.Name = "tbrMain";
+            this.tbrMain.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tbrMain.AutoSize = true;
+            this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                           tbbMenuSwitch});
             //
             // mniClose
             //
@@ -115,6 +135,21 @@ namespace Ict.Petra.Client.App.PetraClient
             this.mniFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniClose});
             this.mniFile.Text = "&File";
+            //
+            // mniMenuSwitch
+            //
+            this.mniMenuSwitch.Name = "mniMenuSwitch";
+            this.mniMenuSwitch.AutoSize = true;
+            this.mniMenuSwitch.Click += new System.EventHandler(this.SwitchToNewNavigation);
+            this.mniMenuSwitch.Text = "New Navigation";
+            //
+            // mniView
+            //
+            this.mniView.Name = "mniView";
+            this.mniView.AutoSize = true;
+            this.mniView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                           mniMenuSwitch});
+            this.mniView.Text = "View";
             //
             // mniPetraMainMenu
             //
@@ -235,6 +270,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.mnuMain.AutoSize = true;
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
+                        mniView,
                         mniPetraModules,
                         mniHelp});
             //
@@ -251,6 +287,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.ClientSize = new System.Drawing.Size(510, 476);
             // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
             this.Controls.Add(this.ucoMainWindowContent);
+            this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
@@ -266,13 +303,18 @@ namespace Ict.Petra.Client.App.PetraClient
 	
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
+            this.tbrMain.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
         private TUcoMainWindowContent ucoMainWindowContent;
+        private System.Windows.Forms.ToolStrip tbrMain;
+        private System.Windows.Forms.ToolStripButton tbbMenuSwitch;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniClose;
+        private System.Windows.Forms.ToolStripMenuItem mniView;
+        private System.Windows.Forms.ToolStripMenuItem mniMenuSwitch;
         private System.Windows.Forms.ToolStripMenuItem mniPetraModules;
         private System.Windows.Forms.ToolStripMenuItem mniPetraMainMenu;
         private System.Windows.Forms.ToolStripMenuItem mniPetraPartnerModule;

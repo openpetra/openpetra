@@ -62,7 +62,6 @@ namespace Ict.Common.Controls
 
             InitializeComponent();
 
-
             btnCollapseNavigation.Image = new System.Drawing.Bitmap(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2leftarrow.png");
             pnlNavigationCaption.GradientColorTop = System.Drawing.Color.FromArgb(0xF7, 0xFB, 0xFF);
             pnlNavigationCaption.GradientColorBottom = System.Drawing.Color.FromArgb(0xAD, 0xBE, 0xE7);
@@ -91,6 +90,21 @@ namespace Ict.Common.Controls
             set
             {
                 FStatusbar = value;
+            }
+        }
+
+        // avoid recursion of events on Mono
+        private bool FMovingSplitter = false;
+
+        private void SptNavigationSplitterMoved(object sender, EventArgs e)
+        {
+            // TODO: hide lowest folder radio button, add it to panel pnlMoreButtons
+            if ((sptNavigation.Panel2.Controls.Count > 0) && !FMovingSplitter
+                && (sptNavigation.Height > sptNavigation.Panel2.Controls[0].Height * sptNavigation.Panel2.Controls.Count))
+            {
+                FMovingSplitter = true;
+                sptNavigation.SplitterDistance = sptNavigation.Height - sptNavigation.Panel2.Controls[0].Height * sptNavigation.Panel2.Controls.Count;
+                FMovingSplitter = false;
             }
         }
 
@@ -166,6 +180,9 @@ namespace Ict.Common.Controls
         public void SelectFolder(Int32 AIndex)
         {
             ((TRbtNavigationButton) this.sptNavigation.Panel2.Controls[AIndex]).Checked = true;
+
+            // just make sure the splitter is positioned correctly
+            SptNavigationSplitterMoved(null, null);
         }
     }
 }
