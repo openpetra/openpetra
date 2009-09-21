@@ -590,11 +590,18 @@ namespace Ict.Petra.Client.MCommon
                 ((PLocationRow)FLocationDV[0].Row).CountryCode = cmbCountry.SelectedValue.ToString();
             }
 
-            ((PPartnerLocationRow)FPartnerLocationDV[0].Row).LocationType = cmbLocationType.SelectedValue.ToString();
+            if (cmbLocationType.SelectedValue == null)            
+            {
+            	((PPartnerLocationRow)FPartnerLocationDV[0].Row).SetLocationTypeNull();
+            }
+            else
+            {
+            	((PPartnerLocationRow)FPartnerLocationDV[0].Row).LocationType = cmbLocationType.SelectedValue.ToString();
+            }
         }
 
         /// <summary>
-        /// Switches between 'Read Only Mode' and 'Edit Mode' of t	he UserControl.
+        /// Switches between 'Read Only Mode' and 'Edit Mode' of the UserControl.
         ///
         /// </summary>
         /// <param name="ADataMode">Specify dmBrowse for read-only mode or dmEdit for edit mode.

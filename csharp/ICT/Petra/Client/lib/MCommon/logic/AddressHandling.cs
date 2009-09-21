@@ -1013,6 +1013,30 @@ namespace Ict.Petra.Client.MCommon
             return ReturnValue;
         }
 
+        /// returns the default addressee type for the given Partner class
+        public static String GetDefaultAddresseeType(TPartnerClass APartnerClass)
+        {
+            switch (APartnerClass)
+            {
+                case TPartnerClass.PERSON:
+                case TPartnerClass.FAMILY:
+                    return "FAMILY";
+
+                case TPartnerClass.CHURCH:
+                    return "CHURCH";
+
+                case TPartnerClass.ORGANISATION:
+                case TPartnerClass.BANK:
+                case TPartnerClass.UNIT:
+                    return "ORGANISA";
+
+                case TPartnerClass.VENUE:
+                    return "VENUE";
+            }
+
+            return "";
+        }
+        
         #endregion
     }
 }

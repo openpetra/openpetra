@@ -219,7 +219,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 String tmpString;
                 Boolean miWorkerFamOnly;
 
-                // MessageBox.Show('set_RestrictedPartnerClass called');
                 FRestrictedParterClasses = value;
 
                 // this flag is set to true IF the FIRST item in list will be WORKER-FAM
@@ -1131,6 +1130,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             cmbPartnerClass.DataSource = FPartnerClassDataTable;
             cmbPartnerClass.DisplayMember = "PartnerClass";
             cmbPartnerClass.ValueMember = "PartnerClass";
+            cmbPartnerClass.SelectedIndex = 0;
 
             FShowAllPartnerClasses = true;
         }
