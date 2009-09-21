@@ -33,9 +33,9 @@ using Ict.Common.DB;
 using Ict.Common;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace treasurerEmails
 {
@@ -183,9 +183,7 @@ public class TGetTreasurerData
         TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
         // get the accounting period table to know the month
-        AAccountingPeriodTable periods;
-
-        AAccountingPeriodAccess.LoadAll(out periods, transaction);
+        AAccountingPeriodTable periods = AAccountingPeriodAccess.LoadAll(transaction);
 
         OdbcParameter[] parameters = new OdbcParameter[1];
         parameters[0] = new OdbcParameter("Ledger", ALedgerNumber);
