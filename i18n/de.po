@@ -581,13 +581,13 @@ msgid "New &Partner..."
 msgstr ""
 
 msgid "Add &Person"
-msgstr ""
+msgstr "Neue &Person"
 
 msgid "Add &Family"
-msgstr ""
+msgstr "Neuer &Haushalt"
 
 msgid "Add &Church"
-msgstr ""
+msgstr "Neue &Gemeinde"
 
 msgid "&New Partner (assistant)"
 msgstr ""
@@ -1849,5 +1849,1397 @@ msgid "** restricted **"
 msgstr ""
 
 msgid "99"
+msgstr ""
+
+msgid "Use New Navigation"
+msgstr ""
+
+msgid "Caption"
+msgstr ""
+
+msgid "<="
+msgstr ""
+
+msgid "My Petra"
+msgstr ""
+
+msgid "Partner"
+msgstr ""
+
+msgid "Finance"
+msgstr ""
+
+msgid "Personnel"
+msgstr ""
+
+msgid "ConferenceManagement"
+msgstr ""
+
+msgid "FinancialDevelopment"
+msgstr ""
+
+msgid "SystemManager"
+msgstr ""
+
+msgid "Task"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Settings cannot be loaded"
+msgstr ""
+
+msgid "Settings cannot be saved"
+msgstr ""
+
+msgid "&Generate"
+msgstr ""
+
+msgid "Current Supplier:"
+msgstr ""
+
+msgid "Currency:"
+msgstr ""
+
+msgid "Invoice &Number:"
+msgstr ""
+
+msgid "Invoice"
+msgstr ""
+
+msgid "T&ype:"
+msgstr ""
+
+msgid "&Reference:"
+msgstr ""
+
+msgid "&Date Issued:"
+msgstr ""
+
+msgid "Date D&ue:"
+msgstr ""
+
+msgid "Credit &Terms:"
+msgstr ""
+
+msgid "Discount &Days:"
+msgstr ""
+
+msgid "Discount &Value (%):"
+msgstr ""
+
+msgid "&Amount:"
+msgstr ""
+
+msgid "E&xchange Rate:"
+msgstr ""
+
+msgid "Document Information"
+msgstr ""
+
+msgid "Add De&tail"
+msgstr ""
+
+msgid "&Remove Detail"
+msgstr ""
+
+msgid "Analysis Attri&b."
+msgstr ""
+
+msgid "Narrati&ve:"
+msgstr ""
+
+msgid "Detail &Ref:"
+msgstr ""
+
+msgid "A&mount:"
+msgstr ""
+
+msgid "C&ost Centre:"
+msgstr ""
+
+msgid "Use Ta&x Acct+CC"
+msgstr ""
+
+msgid "Base:"
+msgstr ""
+
+msgid "Accou&nt:"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "AP Document Edit"
+msgstr ""
+
+msgid "The currency code to use for this supplier."
+msgstr ""
+
+msgid "The code given on the document itself (be it invoice or credit note). This will have to be unique for each supplier."
+msgstr ""
+
+msgid "A flag to indicate if this document is an invoice or a credit note."
+msgstr ""
+
+msgid "Some kind of other reference needed."
+msgstr ""
+
+msgid "The date when this document was issued."
+msgstr ""
+
+msgid "Credit Terms is the number of days between date issued and due date"
+msgstr ""
+
+msgid "Credit terms allowed for this invoice."
+msgstr ""
+
+msgid "The number of days that the discount is valid for (0 for none)."
+msgstr ""
+
+msgid "The percentage discount you get for early payment of this document in the case that it is an invoice."
+msgstr ""
+
+msgid "The total amount of money that this document is worth."
+msgstr ""
+
+msgid "The exchange rate to the base currency at the time that the document was issued."
+msgstr ""
+
+msgid "A narrative about what this is."
+msgstr ""
+
+msgid "Some other reference to the item."
+msgstr ""
+
+msgid "The amount of money this detail is worth."
+msgstr ""
+
+msgid "Reference to the cost centre to use for this detail."
+msgstr ""
+
+msgid "Reference to the account to use for this detail"
+msgstr ""
+
+msgid "&Edit Partner info of Supplier"
+msgstr ""
+
+msgid "&Currency:"
+msgstr ""
+
+msgid "Supplier &Type:"
+msgstr ""
+
+msgid "General Information"
+msgstr ""
+
+msgid "Invoice A&ging (in months):"
+msgstr ""
+
+msgid "C&redit Terms (in days):"
+msgstr ""
+
+msgid "Default &Payment Type:"
+msgstr ""
+
+msgid "Number of Days for &Discount (0 for none):"
+msgstr ""
+
+msgid "Misc Defaults"
+msgstr ""
+
+msgid "&AP Account:"
+msgstr ""
+
+msgid "Default &Bank Account:"
+msgstr ""
+
+msgid "Default C&ost Centre:"
+msgstr ""
+
+msgid "Default &Expense Account:"
+msgstr ""
+
+msgid "Account Information"
+msgstr ""
+
+msgid "AP Supplier Edit"
+msgstr ""
+
+msgid "Reference to the partner key for this supplier"
+msgstr ""
+
+msgid "What type of supplier this is - normal, credit card, maybe something else."
+msgstr ""
+
+msgid "Number of months to display invoices and credit notes"
+msgstr ""
+
+msgid "Default credit terms to use for invoices from this supplier."
+msgstr ""
+
+msgid "The default type of payment to use when paying this supplier."
+msgstr ""
+
+msgid "Default number of days in which the discount percentage has effect."
+msgstr ""
+
+msgid "Default percentage discount to receive for early payments."
+msgstr ""
+
+msgid "The default AP Account to use when paying this supplier."
+msgstr ""
+
+msgid "Reference to default bank account to use to pay supplier with."
+msgstr ""
+
+msgid "Reference to the default cost centre to use for invoice details."
+msgstr ""
+
+msgid "Reference to the default expense Account to use for invoice details."
+msgstr ""
+
+msgid "There is already a supplier record for this partner!"
+msgstr ""
+
+msgid "Please select an AP account (eg. 9100)"
+msgstr ""
+
+msgid "S&earch Supplier:"
+msgstr ""
+
+msgid "Due &Today"
+msgstr ""
+
+msgid "&Overdue"
+msgstr ""
+
+msgid "Due &Within Future"
+msgstr ""
+
+msgid "Days"
+msgstr ""
+
+msgid "&Reset Criteria"
+msgstr ""
+
+msgid "Show Outstanding &Amounts"
+msgstr ""
+
+msgid "Hide &Inactive Suppliers"
+msgstr ""
+
+msgid "C&urrency:"
+msgstr ""
+
+msgid "Suppliers"
+msgstr ""
+
+msgid "Tag all Appro&vable"
+msgstr ""
+
+msgid "Tag a&ll Postable"
+msgstr ""
+
+msgid "Tag all Paya&ble"
+msgstr ""
+
+msgid "&Untag all"
+msgstr ""
+
+msgid "Sum of Tagged:"
+msgstr ""
+
+msgid "OutstandingInvoices"
+msgstr ""
+
+msgid "Open the transactions of the supplier"
+msgstr ""
+
+msgid "Open Transactions"
+msgstr ""
+
+msgid "Change the details and settings of an existing supplier"
+msgstr ""
+
+msgid "&Edit Supplier"
+msgstr ""
+
+msgid "Create a new supplier"
+msgstr ""
+
+msgid "&New Supplier"
+msgstr ""
+
+msgid "Create &Invoice"
+msgstr ""
+
+msgid "Create C&redit Note"
+msgstr ""
+
+msgid "Reprint Pa&yment Report"
+msgstr ""
+
+msgid "AP &Defaults"
+msgstr ""
+
+msgid "Supplier"
+msgstr ""
+
+msgid "&Find Invoice..."
+msgstr ""
+
+msgid "Find"
+msgstr ""
+
+msgid "Accounts Payable"
+msgstr ""
+
+msgid "Search by supplier name or partner key"
+msgstr ""
+
+msgid "&Type:"
+msgstr ""
+
+msgid "&Date:"
+msgstr ""
+
+msgid "Date &Field:"
+msgstr ""
+
+msgid "&Status:"
+msgstr ""
+
+msgid "Hide &Aged Transactions"
+msgstr ""
+
+msgid "Tag all P&ostable"
+msgstr ""
+
+msgid "&Untag All"
+msgstr ""
+
+msgid "Displayed Balance:"
+msgstr ""
+
+msgid "New &Invoice"
+msgstr ""
+
+msgid "New &Credit Note"
+msgstr ""
+
+msgid "&Open Selected"
+msgstr ""
+
+msgid "Re&verse Selected"
+msgstr ""
+
+msgid "&Approve Tagged"
+msgstr ""
+
+msgid "&Post Tagged"
+msgstr ""
+
+msgid "Add Tagged to Pa&yment"
+msgstr ""
+
+msgid "Reprint Re&mittance Advice"
+msgstr ""
+
+msgid "Reprint &Cheque"
+msgstr ""
+
+msgid "&New..."
+msgstr ""
+
+msgid "&Action"
+msgstr ""
+
+msgid "Supplier Transactions"
+msgstr ""
+
+msgid "Posting failed"
+msgstr ""
+
+msgid "The AP documents have been posted successfully!"
+msgstr ""
+
+msgid "Unmatched"
+msgstr ""
+
+msgid "Recurring Gifts"
+msgstr ""
+
+msgid "One Time Gifts"
+msgstr ""
+
+msgid "Other (GL, AP, etc)"
+msgstr ""
+
+msgid "Recurring Gift"
+msgstr ""
+
+msgid "One Time Gift"
+msgstr ""
+
+msgid "Gift"
+msgstr ""
+
+msgid "Donor Details"
+msgstr ""
+
+msgid "Create New Partner"
+msgstr ""
+
+msgid "Donor:"
+msgstr ""
+
+msgid "Find Donor by Name"
+msgstr ""
+
+msgid "Find Donor by Bank details"
+msgstr ""
+
+msgid "Edit Donor"
+msgstr ""
+
+msgid "Letter Code:"
+msgstr ""
+
+msgid "Reference:"
+msgstr ""
+
+msgid "Annual Receipt"
+msgstr ""
+
+msgid "Method of Payment:"
+msgstr ""
+
+msgid "Method of Giving:"
+msgstr ""
+
+msgid "Name, Address,  Partner Class"
+msgstr ""
+
+msgid "Gift Details"
+msgstr ""
+
+msgid "Mailing:"
+msgstr ""
+
+msgid "Confidential"
+msgstr ""
+
+msgid "Admin Grants"
+msgstr ""
+
+msgid "Tax deductable"
+msgstr ""
+
+msgid "for:"
+msgstr ""
+
+msgid "Comment 3:"
+msgstr ""
+
+msgid "Comment 2:"
+msgstr ""
+
+msgid "Comment 1:"
+msgstr ""
+
+msgid "Account:"
+msgstr ""
+
+msgid "Cost Centre:"
+msgstr ""
+
+msgid "Motivation Detail:"
+msgstr ""
+
+msgid "Motivation Group:"
+msgstr ""
+
+msgid "EUR"
+msgstr ""
+
+msgid "Amount:"
+msgstr ""
+
+msgid "Key Ministry:"
+msgstr ""
+
+msgid "Field"
+msgstr ""
+
+msgid "Name of Field"
+msgstr ""
+
+msgid "Remove Detail"
+msgstr ""
+
+msgid "Add Gift Detail"
+msgstr ""
+
+msgid "Total:"
+msgstr ""
+
+msgid "Gift Date:"
+msgstr ""
+
+msgid "Recipient"
+msgstr ""
+
+msgid "Name of Recipient"
+msgstr ""
+
+msgid "Select Bank Account"
+msgstr ""
+
+msgid "Add new Bank Account"
+msgstr ""
+
+msgid "Import new bank statement"
+msgstr ""
+
+msgid "Select statement"
+msgstr ""
+
+msgid "Match recurring gifts"
+msgstr ""
+
+msgid "Import &Bank statements"
+msgstr ""
+
+msgid "AccountDetail"
+msgstr ""
+
+msgid "G&ift"
+msgstr ""
+
+#, csharp-format
+msgid "You don't have enough permissions to access {0}."
+msgstr ""
+
+msgid "the finance module"
+msgstr ""
+
+msgid "any ledger"
+msgstr ""
+
+msgid "Batches"
+msgstr ""
+
+msgid "Journals"
+msgstr ""
+
+msgid "Transactions"
+msgstr ""
+
+msgid "GL Batches"
+msgstr ""
+
+msgid "Select a ledger"
+msgstr ""
+
+msgid "&New"
+msgstr ""
+
+msgid "&Delete"
+msgstr ""
+
+msgid "Currency Code:"
+msgstr ""
+
+msgid "Currency Name:"
+msgstr ""
+
+msgid "Currency Symbol:"
+msgstr ""
+
+msgid "Country Code:"
+msgstr ""
+
+msgid "Number of Decimals:"
+msgstr ""
+
+msgid "Currency List"
+msgstr ""
+
+msgid "Enter a currency code"
+msgstr ""
+
+msgid "Enter the currency name"
+msgstr ""
+
+msgid "Enter the symbol which represents this currency"
+msgstr ""
+
+msgid "Enter a valid country code."
+msgstr ""
+
+msgid "The format in which to display and accept input on a currency."
+msgstr ""
+
+msgid "&From Currency Code:"
+msgstr ""
+
+msgid "&To Currency Code:"
+msgstr ""
+
+msgid "D&ate:"
+msgstr ""
+
+msgid "T&ime:"
+msgstr ""
+
+msgid "&Rate of exchange:"
+msgstr ""
+
+msgid "ValueOneDirection:"
+msgstr ""
+
+msgid "ValueOtherDirection:"
+msgstr ""
+
+msgid "Daily Exchange Rate List"
+msgstr ""
+
+msgid "Enter the date which the rate becomes effective"
+msgstr ""
+
+msgid "The date and time"
+msgstr ""
+
+msgid "Enter the rate of exchange"
+msgstr ""
+
+msgid "Ledger:"
+msgstr ""
+
+msgid "Posting"
+msgstr ""
+
+msgid "Editing"
+msgstr ""
+
+msgid "Show batches available for"
+msgstr ""
+
+msgid "&Post Batch"
+msgstr ""
+
+msgid "Batch Description:"
+msgstr ""
+
+msgid "Batch Hash Total:"
+msgstr ""
+
+msgid "Effective Date:"
+msgstr ""
+
+msgid "Date can't be beyond:"
+msgstr ""
+
+msgid "&Batch"
+msgstr ""
+
+msgid "Enter a description for this general ledger batch."
+msgstr ""
+
+msgid "(Optional) Enter the total amount of the batch (hash total)."
+msgstr ""
+
+msgid "Enter the date for which this batch is to take effect."
+msgstr ""
+
+msgid "The batch was not posted due to problems during saving; "
+msgstr ""
+
+msgid "Please first save the batch, and then post it!"
+msgstr ""
+
+msgid "The batch has been posted successfully!"
+msgstr ""
+
+msgid "Batch:"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Journal Description:"
+msgstr ""
+
+msgid "Sub System:"
+msgstr ""
+
+msgid "Transaction Type:"
+msgstr ""
+
+msgid "Exchange Rate to Base:"
+msgstr ""
+
+msgid "Enter a description for this general ledger journal."
+msgstr ""
+
+msgid "The subsystem from which this journal came."
+msgstr ""
+
+msgid "Select the type of journal."
+msgstr ""
+
+msgid "Select a currency code to use for the journal transactions."
+msgstr ""
+
+msgid "Enter the date for the journal to come into effect."
+msgstr ""
+
+msgid "Enter the exchange rate from the transaction currency to base."
+msgstr ""
+
+msgid "Journal:"
+msgstr ""
+
+msgid "Cost Centre Code:"
+msgstr ""
+
+msgid "Account Code:"
+msgstr ""
+
+msgid "Narrative:"
+msgstr ""
+
+msgid "Transaction Date:"
+msgstr ""
+
+msgid "TODOTransactionCurrency:"
+msgstr ""
+
+msgid "TODOBase Currency:"
+msgstr ""
+
+msgid "Dr Amount:"
+msgstr ""
+
+msgid "Cr Amount:"
+msgstr ""
+
+msgid "Debit Total:"
+msgstr ""
+
+msgid "Credit Total:"
+msgstr ""
+
+msgid "Enter a cost centre code (department or fund)."
+msgstr ""
+
+msgid "Enter an account code."
+msgstr ""
+
+msgid "Enter a description of the transaction."
+msgstr ""
+
+msgid "(Optional) Enter a reference code."
+msgstr ""
+
+msgid "The date the transaction is to take effect (same as journal)."
+msgstr ""
+
+msgid "Key ministry to which this transaction applies (just for fund transfers)"
+msgstr ""
+
+#, csharp-format
+msgid "{0} (Base Currency)"
+msgstr ""
+
+#, csharp-format
+msgid "{0} (Transaction Currency)"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Cost Centre Description"
+msgstr ""
+
+msgid "Account Description"
+msgstr ""
+
+msgid "AccountHierarchy:"
+msgstr ""
+
+msgid "Ledger Details"
+msgstr ""
+
+msgid "Currency"
+msgstr ""
+
+msgid "PeriodRange"
+msgstr ""
+
+msgid "from:"
+msgstr ""
+
+msgid "to:"
+msgstr ""
+
+msgid "Year:"
+msgstr ""
+
+msgid "DateRange"
+msgstr ""
+
+msgid "Period"
+msgstr ""
+
+msgid "Sort by Account"
+msgstr ""
+
+msgid "Sort by Cost Centre"
+msgstr ""
+
+msgid "SortByReference"
+msgstr ""
+
+msgid "SortByAnalysisType"
+msgstr ""
+
+msgid "Sorting"
+msgstr ""
+
+msgid "General Settings"
+msgstr ""
+
+msgid "AccountRange"
+msgstr ""
+
+msgid "From:"
+msgstr ""
+
+msgid "To:"
+msgstr ""
+
+msgid "AccountList"
+msgstr ""
+
+msgid "Unselect All"
+msgstr ""
+
+msgid "Accounts"
+msgstr ""
+
+msgid "CostCentreRange"
+msgstr ""
+
+msgid "CostCentreList"
+msgstr ""
+
+msgid "CostCentres"
+msgstr ""
+
+msgid "Account/CostCentre Settings"
+msgstr ""
+
+msgid "Account Detail"
+msgstr ""
+
+msgid "Favourites"
+msgstr ""
+
+msgid "CustomGroup"
+msgstr ""
+
+msgid "Main"
+msgstr ""
+
+msgid "Partners"
+msgstr ""
+
+msgid "SearchBoxes"
+msgstr ""
+
+msgid "Element"
+msgstr ""
+
+msgid "AddNewPartner"
+msgstr ""
+
+msgid "FindPartner"
+msgstr ""
+
+msgid "Extracts"
+msgstr ""
+
+msgid "Reports"
+msgstr ""
+
+msgid "Mailing&Subscriptions"
+msgstr ""
+
+msgid "MoreFunctions"
+msgstr ""
+
+msgid "SetupPartnerModule"
+msgstr ""
+
+msgid "GeneralLedger"
+msgstr ""
+
+msgid "Setup"
+msgstr ""
+
+msgid "ViewAccounts"
+msgstr ""
+
+msgid "AddPostingAccount"
+msgstr ""
+
+msgid "AddForeignCurrencyAccount"
+msgstr ""
+
+msgid "AddSummarisationAccount"
+msgstr ""
+
+msgid "EditAccount"
+msgstr ""
+
+msgid "DeleteAccount"
+msgstr ""
+
+msgid "RenameAccount"
+msgstr ""
+
+msgid "ImportChartOfAccounts"
+msgstr ""
+
+msgid "AddCostCentre"
+msgstr ""
+
+msgid "EditCostCentre"
+msgstr ""
+
+msgid "DeleteCostCentre"
+msgstr ""
+
+msgid "RenameCostCentre"
+msgstr ""
+
+msgid "LinkCostCentreToPartner"
+msgstr ""
+
+msgid "LedgerSetupShepherd"
+msgstr ""
+
+msgid "SetupCalendar"
+msgstr ""
+
+msgid "ChangeNumberOfForwardingPeriods"
+msgstr ""
+
+msgid "General"
+msgstr ""
+
+msgid "EnterTransactions"
+msgstr ""
+
+msgid "ImportTransactions"
+msgstr ""
+
+msgid "EditExistingTransactions"
+msgstr ""
+
+msgid "EditTransactionsInPreviouslyUsedBatch"
+msgstr ""
+
+msgid "PostBatch"
+msgstr ""
+
+msgid "FindTransaction"
+msgstr ""
+
+msgid "BalanceSheet"
+msgstr ""
+
+msgid "CurrentPeriod"
+msgstr ""
+
+msgid "EndOfLastYear"
+msgstr ""
+
+msgid "SpecifyParameters"
+msgstr ""
+
+msgid "RepeatLastReport"
+msgstr ""
+
+msgid "MyFancyBalanceSheetWithCoolGraph"
+msgstr ""
+
+msgid "IncomeExpense"
+msgstr ""
+
+msgid "PeriodEnd"
+msgstr ""
+
+msgid "YearEnd"
+msgstr ""
+
+msgid "ICHProcessing"
+msgstr ""
+
+msgid "GiftProcessing"
+msgstr ""
+
+msgid "GiftEntry"
+msgstr ""
+
+msgid "AddGifts"
+msgstr ""
+
+msgid "ImportGifts"
+msgstr ""
+
+msgid "EditExistingGifts"
+msgstr ""
+
+msgid "EditLastUnpostedGiftBatch"
+msgstr ""
+
+msgid "PostGiftBatch"
+msgstr ""
+
+msgid "GiftReceipting"
+msgstr ""
+
+msgid "PrintSingleReceipt"
+msgstr ""
+
+msgid "PrintAnnualReceipt"
+msgstr ""
+
+msgid "AccountsPayable"
+msgstr ""
+
+msgid "Budgets"
+msgstr ""
+
+msgid "ICH"
+msgstr ""
+
+msgid "FinanceModuleSetup"
+msgstr ""
+
+#, csharp-format
+msgid "Cannot post Batch {0} in Ledger {1}"
+msgstr ""
+
+msgid "The batch does not exist at all."
+msgstr ""
+
+#, csharp-format
+msgid "It has status {0}"
+msgstr ""
+
+#, csharp-format
+msgid "It does not balance: Debit is {0}, Credit is {1}"
+msgstr ""
+
+msgid "It has no monetary value. Please cancel it or add meaningful transactions."
+msgstr ""
+
+#, csharp-format
+msgid "The control total {0} does not fit the Credit/Debit Total {1}."
+msgstr ""
+
+#, csharp-format
+msgid "The Date Effective {0:d-MMM-yyyy} does not fit any open accounting period."
+msgstr ""
+
+#, csharp-format
+msgid "The journal {0} does not balance: Debit is {1}, Credit is {2}"
+msgstr ""
+
+#, csharp-format
+msgid "Transaction {0} in Journal {1} has invalid base transaction amount of 0."
+msgstr ""
+
+msgid "error during posting of AP document"
+msgstr ""
+
+#, csharp-format
+msgid "Document with Number {0} cannot be posted since the status is {1}."
+msgstr ""
+
+#, csharp-format
+msgid "Cannot post the AP documents in Ledger {0}"
+msgstr ""
+
+msgid "Accounts Payable Batch"
+msgstr ""
+
+msgid "Custom Group"
+msgstr ""
+
+msgid "Search Boxes"
+msgstr ""
+
+msgid "Add New Partner"
+msgstr ""
+
+msgid "Find Partner"
+msgstr ""
+
+msgid "More Functions"
+msgstr ""
+
+msgid "Setup Partner Module"
+msgstr ""
+
+msgid "General Ledger"
+msgstr ""
+
+msgid "View Accounts"
+msgstr ""
+
+msgid "Add Posting Account"
+msgstr ""
+
+msgid "Add Foreign Currency Account"
+msgstr ""
+
+msgid "Add Summarisation Account"
+msgstr ""
+
+msgid "Edit Account"
+msgstr ""
+
+msgid "Delete Account"
+msgstr ""
+
+msgid "Rename Account"
+msgstr ""
+
+msgid "Import Chart Of Accounts"
+msgstr ""
+
+msgid "Cost Centres"
+msgstr ""
+
+msgid "Add Cost Centre"
+msgstr ""
+
+msgid "Edit Cost Centre"
+msgstr ""
+
+msgid "Delete Cost Centre"
+msgstr ""
+
+msgid "Rename Cost Centre"
+msgstr ""
+
+msgid "Link Cost Centre To Partner"
+msgstr ""
+
+msgid "Ledger Setup Shepherd"
+msgstr ""
+
+msgid "Setup Calendar"
+msgstr ""
+
+msgid "Change Number Of Forwarding Periods"
+msgstr ""
+
+msgid "Enter Transactions"
+msgstr ""
+
+msgid "Import Transactions"
+msgstr ""
+
+msgid "Edit Existing Transactions"
+msgstr ""
+
+msgid "Edit Transactions In Previously Used Batch"
+msgstr ""
+
+msgid "Post Batch"
+msgstr ""
+
+msgid "Find Transaction"
+msgstr ""
+
+msgid "Balance Sheet"
+msgstr ""
+
+msgid "Current Period"
+msgstr ""
+
+msgid "End Of Last Year"
+msgstr ""
+
+msgid "Specify Parameters"
+msgstr ""
+
+msgid "Repeat Last Report"
+msgstr ""
+
+msgid "My Fancy Balance Sheet With Cool Graph"
+msgstr ""
+
+msgid "Income Expense"
+msgstr ""
+
+msgid "Period End"
+msgstr ""
+
+msgid "Year End"
+msgstr ""
+
+msgid "I C H Processing"
+msgstr ""
+
+msgid "Gift Processing"
+msgstr ""
+
+msgid "Gift Entry"
+msgstr ""
+
+msgid "Add Gifts"
+msgstr ""
+
+msgid "Import Gifts"
+msgstr ""
+
+msgid "Edit Existing Gifts"
+msgstr ""
+
+msgid "Edit Last Unposted Gift Batch"
+msgstr ""
+
+msgid "Post Gift Batch"
+msgstr ""
+
+msgid "Gift Receipting"
+msgstr ""
+
+msgid "Print Single Receipt"
+msgstr ""
+
+msgid "Print Annual Receipt"
+msgstr ""
+
+msgid "I C H"
+msgstr ""
+
+msgid "Finance Module Setup"
+msgstr ""
+
+msgid "Conference Management"
+msgstr ""
+
+msgid "Financial Development"
+msgstr ""
+
+msgid "System Manager"
+msgstr ""
+
+msgid "New Navigation"
+msgstr ""
+
+msgid "Classic Navigation"
+msgstr ""
+
+msgid "Post Document"
+msgstr ""
+
+msgid "The AP document has been posted successfully!"
+msgstr ""
+
+msgid "Outstanding Invoices"
+msgstr ""
+
+msgid "Value One Direction:"
+msgstr ""
+
+msgid "Value Other Direction:"
+msgstr ""
+
+msgid "Account Hierarchy:"
+msgstr ""
+
+msgid "Period Range"
+msgstr ""
+
+msgid "Date Range"
+msgstr ""
+
+msgid "Sort By Reference"
+msgstr ""
+
+msgid "Sort By Analysis Type"
+msgstr ""
+
+msgid "Account Range"
+msgstr ""
+
+msgid "Account List"
+msgstr ""
+
+msgid "Cost Centre Range"
+msgstr ""
+
+msgid "Cost Centre List"
+msgstr ""
+
+msgid "Demo"
+msgstr ""
+
+msgid "Add New Family"
+msgstr "Neue Familie hinzufügen"
+
+msgid "Add New Person"
+msgstr "Neue Person hinzufügen"
+
+msgid "Add New Organisation"
+msgstr "Neue Organisation hinzufügen"
+
+msgid "Maintain Partner"
+msgstr ""
+
+msgid "Partner By City"
+msgstr ""
+
+msgid "German Ledger (43)"
+msgstr ""
+
+msgid "GL"
+msgstr ""
+
+msgid "Entering Gifts"
+msgstr ""
+
+msgid "Account Detail Report"
+msgstr ""
+
+msgid "Setup Currencies"
+msgstr ""
+
+msgid "Setup Daily Exchange Rate"
+msgstr ""
+
+msgid "Change Address"
+msgstr ""
+
+msgid "Merge Partners"
+msgstr ""
+
+msgid "Mailing&&Subscriptions"
+msgstr ""
+
+msgid "Default Report"
+msgstr ""
+
+msgid "ICH Processing"
 msgstr ""
 
