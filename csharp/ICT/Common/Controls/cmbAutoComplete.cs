@@ -1414,8 +1414,8 @@ namespace Ict.Common.Controls
             }
             else if (this.DataSource == null)
             {
-            	// for simple string list
-            	return 1;
+                // for simple string list
+                return 1;
             }
             else
             {
@@ -1515,7 +1515,7 @@ namespace Ict.Common.Controls
 
             if (DataSource == null)
             {
-                if (Items.Count > 0 && this.SelectedIndex != -1)
+                if ((Items.Count > 0) && (this.SelectedIndex != -1))
                 {
                     // use the normal Items values, not the datasource etc
                     return Convert.ToString(Items[this.SelectedIndex]);

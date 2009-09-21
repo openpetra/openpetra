@@ -1036,7 +1036,7 @@ namespace Ict.Petra.Client.MCommon
 
             return "";
         }
-        
+
         #endregion
     }
 }

@@ -590,13 +590,13 @@ namespace Ict.Petra.Client.MCommon
                 ((PLocationRow)FLocationDV[0].Row).CountryCode = cmbCountry.SelectedValue.ToString();
             }
 
-            if (cmbLocationType.SelectedValue == null)            
+            if (cmbLocationType.SelectedValue == null)
             {
-            	((PPartnerLocationRow)FPartnerLocationDV[0].Row).SetLocationTypeNull();
+                ((PPartnerLocationRow)FPartnerLocationDV[0].Row).SetLocationTypeNull();
             }
             else
             {
-            	((PPartnerLocationRow)FPartnerLocationDV[0].Row).LocationType = cmbLocationType.SelectedValue.ToString();
+                ((PPartnerLocationRow)FPartnerLocationDV[0].Row).LocationType = cmbLocationType.SelectedValue.ToString();
             }
         }
 

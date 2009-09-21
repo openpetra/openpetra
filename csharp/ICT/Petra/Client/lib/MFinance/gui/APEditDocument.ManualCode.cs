@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, ARow.LedgerNumber, true, false, ActiveOnly);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
         }
-        
+
         /// <summary>
         /// Post document as a GL Batch
         /// see very similar function in TFrmAPSupplierTransactions
@@ -152,6 +152,5 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 // TODO: refresh/notify other screens as well?
             }
         }
-        
     }
 }
