@@ -123,6 +123,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailAccountCode = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
+            this.tbbPostDocument = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileSave = new System.Windows.Forms.ToolStripMenuItem();
@@ -626,13 +627,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tbbSave.ToolTipText = "Saves changed data";
             this.tbbSave.Text = "&Save";
             //
+            // tbbPostDocument
+            //
+            this.tbbPostDocument.Name = "tbbPostDocument";
+            this.tbbPostDocument.AutoSize = true;
+            this.tbbPostDocument.Click += new System.EventHandler(this.PostDocument);
+            this.tbbPostDocument.Text = "Post Document";
+            //
             // tbrMain
             //
             this.tbrMain.Name = "tbrMain";
             this.tbrMain.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           tbbSave});
+                           tbbSave,
+                        tbbPostDocument});
             //
             // mniFileSave
             //
@@ -874,6 +883,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         private System.Windows.Forms.Label lblDetailAccountCode;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
+        private System.Windows.Forms.ToolStripButton tbbPostDocument;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniFileSave;

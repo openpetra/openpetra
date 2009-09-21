@@ -92,6 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       this.grpDetails.Text = Catalog.GetString("Details");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
+      this.tbbPostDocument.Text = Catalog.GetString("Post Document");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -690,6 +691,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         {
             tbbSave.Enabled = e.Enabled;
             mniFileSave.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actPostDocument")
+        {
+            tbbPostDocument.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {

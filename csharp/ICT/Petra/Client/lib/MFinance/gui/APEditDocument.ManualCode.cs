@@ -26,6 +26,8 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using Mono.Unix;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -99,5 +101,57 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, ARow.LedgerNumber, true, false, ActiveOnly);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
         }
+        
+        /// <summary>
+        /// Post document as a GL Batch
+        /// see very similar function in TFrmAPSupplierTransactions
+        /// </summary>
+        private void PostDocument(object sender, EventArgs e)
+        {
+            List <Int32>TaggedDocuments = new List <Int32>();
+
+            TaggedDocuments.Add(FMainDS.AApDocument[0].ApNumber);
+
+            if (TaggedDocuments.Count == 0)
+            {
+                return;
+            }
+
+            // TODO: make sure that there are uptodate exchange rates
+
+            TVerificationResultCollection Verifications;
+
+            // TODO: message box asking for posting date
+            DateTime PostingDate = new DateTime(2009, 06, 01);
+
+            if (!TRemote.MFinance.AccountsPayable.WebConnectors.PostAPDocuments(
+                    FMainDS.AApDocument[0].LedgerNumber,
+                    TaggedDocuments,
+                    PostingDate,
+                    out Verifications))
+            {
+                string ErrorMessages = String.Empty;
+
+                foreach (TVerificationResult verif in Verifications)
+                {
+                    ErrorMessages += "[" + verif.FResultContext + "] " +
+                                     verif.FResultTextCaption + ": " +
+                                     verif.FResultText + Environment.NewLine;
+                }
+
+                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
+            }
+            else
+            {
+                // TODO: print reports on successfully posted batch
+                MessageBox.Show(Catalog.GetString("The AP document has been posted successfully!"));
+
+                // TODO: show posting register of GL Batch?
+
+                // TODO: refresh the screen, to reflect that the transactions have been posted
+                // TODO: refresh/notify other screens as well?
+            }
+        }
+        
     }
 }

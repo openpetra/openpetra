@@ -139,6 +139,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
         /// <summary>
         /// Post all tagged documents in one GL Batch
+        /// see very similar function in TFrmAPEditDocument
         /// </summary>
         private void PostTaggedDocuments(object sender, EventArgs e)
         {
@@ -189,6 +190,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 // TODO: show posting register of GL Batch?
 
                 // TODO: refresh the grid, to reflect that the transactions have been posted
+                // TODO: somehow the row cannot be tagged anymore, readonly?
                 FMainDS.AApDocument.Clear();
                 LoadSupplier(FLedgerNumber, FPartnerKey);
             }

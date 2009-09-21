@@ -12,6 +12,7 @@ RootNode:
     Actions:
         cndDiscountEnabled: {InitialValue=false}
         actNewDetail: {Label=Add De&tail, ActionClick=NewDetail}
+        actPostDocument: {Label=Post Document, ActionClick=PostDocument}
     Controls:
         pnlContent:
             Controls: [pnlSupplierInfo, grpDocumentInfo, grpDetails]
@@ -114,3 +115,5 @@ RootNode:
 #            Align: Right
 #            Width: 150
 #            Enabled: false
+    Toolbar:
+        tbbPostDocument:
