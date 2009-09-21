@@ -61,8 +61,14 @@ namespace Ict.Common.Controls
             ResourceDirectory = TAppSettingsManager.GetValueStatic("Resource.Dir");
 
             InitializeComponent();
-
-            btnCollapseNavigation.Image = new System.Drawing.Bitmap(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2leftarrow.png");
+	    if (System.IO.File.Exists(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2leftarrow.png"))
+            {
+                btnCollapseNavigation.Image = new System.Drawing.Bitmap(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2leftarrow.png");
+            }
+            else
+            {
+                MessageBox.Show("cannot find file " + ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2leftarrow.png");
+            }
             pnlNavigationCaption.GradientColorTop = System.Drawing.Color.FromArgb(0xF7, 0xFB, 0xFF);
             pnlNavigationCaption.GradientColorBottom = System.Drawing.Color.FromArgb(0xAD, 0xBE, 0xE7);
         }
