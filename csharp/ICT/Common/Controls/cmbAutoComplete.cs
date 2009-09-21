@@ -1412,6 +1412,11 @@ namespace Ict.Common.Controls
             {
                 mDataTable = ((System.Data.DataView)DataSource).Table;
             }
+            else if (this.DataSource == null)
+            {
+            	// for simple string list
+            	return 1;
+            }
             else
             {
                 // if this.DataSource is System.Data.DataSet then
@@ -1510,7 +1515,7 @@ namespace Ict.Common.Controls
 
             if (DataSource == null)
             {
-                if (Items.Count > 0)
+                if (Items.Count > 0 && this.SelectedIndex != -1)
                 {
                     // use the normal Items values, not the datasource etc
                     return Convert.ToString(Items[this.SelectedIndex]);
