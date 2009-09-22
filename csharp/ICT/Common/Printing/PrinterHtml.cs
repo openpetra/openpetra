@@ -360,11 +360,6 @@ namespace Ict.Common.Printing
                 // unrecognised HTML element, text
                 else if (curNode.InnerText.Length > 0)
                 {
-                    if (curNode.InnerText.Contains("nbsp"))
-                    {
-                        TLogging.Log(HtmlToText(curNode.InnerText) + "testnbsp");
-                    }
-
                     string toPrint = HtmlToText(curNode.InnerText);
 
                     // continues text in the same row
