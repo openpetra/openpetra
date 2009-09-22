@@ -64,7 +64,6 @@ public class TGetTreasurerData
         // establish connection to database
         TAppSettingsManager settings = new TAppSettingsManager();
 
-
         TDataBase db = new TDataBase();
 
         TDBType dbtype = CommonTypes.ParseDBType(settings.GetValue("Server.RDBMSType"));
@@ -85,16 +84,11 @@ public class TGetTreasurerData
         //db.DebugLevel = 10;
 
         // calculate the first and the last days of the months range
-        // if last donation date is not the last of the month, go back to the last day of the previous month
-        DateTime EndDate = new DateTime(ALastDonationDate.Year, ALastDonationDate.Month, ALastDonationDate.Day);
+        // last donation date covers the full month
+        DateTime EndDate =
+            new DateTime(ALastDonationDate.Year, ALastDonationDate.Month, DateTime.DaysInMonth(ALastDonationDate.Year, ALastDonationDate.Month));
 
-        if (DateTime.DaysInMonth(EndDate.Year, EndDate.Month) != EndDate.Day)
-        {
-            EndDate = EndDate.AddMonths(-1);
-            EndDate = new DateTime(EndDate.Year, EndDate.Month, DateTime.DaysInMonth(EndDate.Year, EndDate.Month));
-        }
-
-        DateTime StartDate = EndDate.AddMonths(-1 * ANumberMonths);
+        DateTime StartDate = EndDate.AddMonths(-1 * (ANumberMonths - 1));
         StartDate = new DateTime(StartDate.Year, StartDate.Month, 1);
 
         DataTable GiftsTable = GetAllGiftsForRecipientPerMonthByMotivation(ALedgerNumber, AMotivationGroup, AMotivationDetail, StartDate, EndDate);
@@ -113,14 +107,16 @@ public class TGetTreasurerData
         AddRecipientName(ref TreasurerTable);
 
         // use GetBestAddress to get the email address of the treasurer
-        AddTreasurerEmail(ref TreasurerTable);
+        AddTreasurerEmailOrPostalAddress(ref TreasurerTable);
 
         return ResultDataset;
     }
 
     private static string ReadSqlFile(string ASqlFilename)
     {
-        StreamReader reader = new StreamReader(ASqlFilename);
+        string path = TAppSettingsManager.GetValueStatic("SqlFiles.Path", ".");
+
+        StreamReader reader = new StreamReader(path + Path.DirectorySeparatorChar + ASqlFilename);
         string line = null;
         string stmt = "";
 
@@ -197,6 +193,7 @@ public class TGetTreasurerData
         {
             Int32 yearNr = Convert.ToInt32(row[ResultTable.Columns["FinancialYear"].Ordinal]);
             Int32 periodNr = Convert.ToInt32(row[ResultTable.Columns["FinancialPeriod"].Ordinal]);
+
             DateTime monthDate = DateTime.MinValue;
 
             foreach (AAccountingPeriodRow period in periods.Rows)
@@ -278,12 +275,7 @@ public class TGetTreasurerData
                 TREASURERTABLE, transaction,
                 parameters);
 
-            if (TreasurerTable.Rows.Count > 1)
-            {
-                throw new Exception("more than one treasurer for " + row[GiftSumsTable.Columns["RecipientKey"].Ordinal].ToString());
-            }
-
-            if (TreasurerTable.Rows.Count == 1)
+            if (TreasurerTable.Rows.Count >= 1)
             {
                 if (!Result.Tables.Contains(TREASURERTABLE))
                 {
@@ -305,27 +297,84 @@ public class TGetTreasurerData
     }
 
     /// <summary>
-    /// get the email address of the treasurer and add to the table
+    /// get the email address or the postal address of the treasurer and add to the table
     /// </summary>
     /// <param name="ResultTable"></param>
-    private static void AddTreasurerEmail(ref DataTable ResultTable)
+    private static void AddTreasurerEmailOrPostalAddress(ref DataTable ResultTable)
     {
         ResultTable.Columns.Add("TreasurerEmail", typeof(string));
+        ResultTable.Columns.Add("TreasurerLocality", typeof(string));
+        ResultTable.Columns.Add("TreasurerStreetName", typeof(string));
+        ResultTable.Columns.Add("TreasurerBuilding1", typeof(string));
+        ResultTable.Columns.Add("TreasurerBuilding2", typeof(string));
+        ResultTable.Columns.Add("TreasurerAddress3", typeof(string));
+        ResultTable.Columns.Add("TreasurerCountryCode", typeof(string));
+        ResultTable.Columns.Add("TreasurerPostalCode", typeof(string));
+        ResultTable.Columns.Add("TreasurerCity", typeof(string));
 
         foreach (DataRow row in ResultTable.Rows)
         {
             if (row[ResultTable.Columns["TreasurerKey"].Ordinal] != DBNull.Value)
             {
-                string emailAddress = GetBestEmailAddress(Convert.ToInt64(row[ResultTable.Columns["TreasurerKey"].Ordinal]));
-                row[ResultTable.Columns["TreasurerEmail"].Ordinal] = emailAddress;
+                PLocationTable Address;
+                string emailAddress = GetBestEmailAddress(Convert.ToInt64(row[ResultTable.Columns["TreasurerKey"].Ordinal]), out Address);
+
+                if (emailAddress.Length > 0)
+                {
+                    row[ResultTable.Columns["TreasurerEmail"].Ordinal] = emailAddress;
+                }
+                else
+                {
+                    if (!Address[0].IsLocalityNull())
+                    {
+                        row[ResultTable.Columns["TreasurerLocality"].Ordinal] = Address[0].Locality;
+                    }
+
+                    if (!Address[0].IsStreetNameNull())
+                    {
+                        row[ResultTable.Columns["TreasurerStreetName"].Ordinal] = Address[0].StreetName;
+                    }
+
+                    if (!Address[0].IsBuilding1Null())
+                    {
+                        row[ResultTable.Columns["TreasurerBuilding1"].Ordinal] = Address[0].Building1;
+                    }
+
+                    if (!Address[0].IsBuilding2Null())
+                    {
+                        row[ResultTable.Columns["TreasurerBuilding2"].Ordinal] = Address[0].Building2;
+                    }
+
+                    if (!Address[0].IsAddress3Null())
+                    {
+                        row[ResultTable.Columns["TreasurerAddress3"].Ordinal] = Address[0].Address3;
+                    }
+
+                    if (!Address[0].IsCountryCodeNull())
+                    {
+                        row[ResultTable.Columns["TreasurerCountryCode"].Ordinal] = Address[0].CountryCode;
+                    }
+
+                    if (!Address[0].IsPostalCodeNull())
+                    {
+                        row[ResultTable.Columns["TreasurerPostalCode"].Ordinal] = Address[0].PostalCode;
+                    }
+
+                    if (!Address[0].IsCityNull())
+                    {
+                        row[ResultTable.Columns["TreasurerCity"].Ordinal] = Address[0].City;
+                    }
+                }
             }
         }
     }
 
-    private static string GetBestEmailAddress(Int64 APartnerKey)
+    private static string GetBestEmailAddress(Int64 APartnerKey, out PLocationTable AAddress)
     {
         string EmailAddress = "";
         TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+        AAddress = new PLocationTable();
 
         DataSet PartnerLocationsDS = new DataSet();
 
@@ -347,10 +396,13 @@ public class TGetTreasurerData
             // find the row with BestAddress = 1
             if (Convert.ToInt32(row["BestAddress"]) == 1)
             {
-                EmailAddress = row.EmailAddress;
+                if (!row.IsEmailAddressNull())
+                {
+                    EmailAddress = row.EmailAddress;
+                }
 
-                // just if wanted the post address, we would need to load the p_location table:
-                // PLocationAccess.LoadByPrimaryKey(out LocationTable, row.SiteKey, row.LocationKey, Transaction);
+                // we also want the post address, need to load the p_location table:
+                AAddress = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, Transaction);
             }
         }
 
@@ -358,48 +410,105 @@ public class TGetTreasurerData
         return EmailAddress;
     }
 
-    public static List <MailMessage>GenerateEmails(DataSet ATreasurerData, string ASenderEmailAddress)
+    public static List <MailMessage>GenerateEmails(DataSet ATreasurerData, string ASenderEmailAddress, bool AForceLetters)
     {
         List <MailMessage>emails = new List <MailMessage>();
 
         foreach (DataRow row in ATreasurerData.Tables[TREASURERTABLE].Rows)
         {
-            string treasurerEmail = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal].ToString();
-
-            if (treasurerEmail.Length == 0)
+            if (!AForceLetters && (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal] != System.DBNull.Value))
             {
-                // TODO: exclude emails for treasurers without email address
-                treasurerEmail = "todo@example.com";
+                string treasurerEmail = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal].ToString();
+
+                string treasurerName = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerName"].Ordinal].ToString();
+                Int64 recipientKey = Convert.ToInt64(row[ATreasurerData.Tables[TREASURERTABLE].Columns["RecipientKey"].Ordinal]);
+
+                // TODO: message body from HTML template; recognise detail lines automatically; drop title tag, because it is the subject
+                string msg = String.Format(
+                    "<html><body>Hello {0}, <br/> This is a test. <br/> Donations so far: <br/>",
+                    treasurerName);
+                msg += "<table>";
+
+                DataRow[] rows = ATreasurerData.Tables[GIFTSTABLE].Select("RecipientKey = " + recipientKey.ToString(), "MonthDate");
+
+                foreach (DataRow rowGifts in rows)
+                {
+                    DateTime month = Convert.ToDateTime(rowGifts["MonthDate"]);
+                    msg += "<tr><td>" + month.ToString("MMMM yyyy") + "</td>";
+                    msg += "<td align=\"right\">" + String.Format("{0:C}", Convert.ToDouble(rowGifts["MonthAmount"])) + "</td>";
+                    msg += "<td>" + String.Format("  {0}", Convert.ToDouble(rowGifts["MonthCount"])) + "</td>";
+                    msg += "</tr>";
+                }
+
+                msg += "</table><br/>All the best, </body></html>";
+
+                // TODO: subject also from HTML template, title tag
+                MailMessage mail = new MailMessage(ASenderEmailAddress,
+                    treasurerEmail,
+                    "Spendeneingang für " + row["RecipientName"], msg);
+                emails.Add(mail);
             }
-
-            string treasurerName = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerName"].Ordinal].ToString();
-            Int64 recipientKey = Convert.ToInt64(row[ATreasurerData.Tables[TREASURERTABLE].Columns["RecipientKey"].Ordinal]);
-
-            // TODO: message body from HTML template; recognise detail lines automatically; drop title tag, because it is the subject
-            string msg = String.Format(
-                "<html><body>Hello {0}, <br/> This is a test. <br/> Donations so far: <br/>",
-                treasurerName);
-            msg += "<table>";
-
-            DataRow[] rows = ATreasurerData.Tables[GIFTSTABLE].Select("RecipientKey = " + recipientKey.ToString(), "MonthDate");
-
-            foreach (DataRow rowGifts in rows)
-            {
-                DateTime month = Convert.ToDateTime(rowGifts["MonthDate"]);
-                msg += "<tr><td>" + month.ToString("MMMM yyyy") + "</td>";
-                msg += "<td>" + String.Format("{0:C}", Convert.ToDouble(rowGifts["MonthAmount"])) + "</td></tr>";
-            }
-
-            msg += "</table><br/>All the best, </body></html>";
-
-            // TODO: subject also from HTML template, title tag
-            MailMessage mail = new MailMessage(ASenderEmailAddress,
-                treasurerEmail,
-                "Spendeneingang für " + row["RecipientName"], msg);
-            emails.Add(mail);
         }
 
         return emails;
+    }
+
+    /// <summary>
+    /// generate the letters to be printed and to be sent to postal addresses
+    /// </summary>
+    /// <param name="ATreasurerData"></param>
+    /// <returns></returns>
+    public static List <LetterMessage>GenerateLetters(DataSet ATreasurerData, bool AForceLetters)
+    {
+        List <LetterMessage>letters = new List <LetterMessage>();
+
+        foreach (DataRow row in ATreasurerData.Tables[TREASURERTABLE].Rows)
+        {
+            if (AForceLetters || (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal] == System.DBNull.Value))
+            {
+                string treasurerName = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerName"].Ordinal].ToString();
+                Int64 recipientKey = Convert.ToInt64(row[ATreasurerData.Tables[TREASURERTABLE].Columns["RecipientKey"].Ordinal]);
+
+                // TODO: message body from HTML template; recognise detail lines automatically; drop title tag, because it is the subject
+                string msg = String.Format(
+                    "<html><body>Hello {0}, <br/> This is a test. <br/> Donations so far: <br/>",
+                    treasurerName);
+                msg += "<table>";
+
+                DataRow[] rows = ATreasurerData.Tables[GIFTSTABLE].Select("RecipientKey = " + recipientKey.ToString(), "MonthDate");
+
+                foreach (DataRow rowGifts in rows)
+                {
+                    DateTime month = Convert.ToDateTime(rowGifts["MonthDate"]);
+                    msg += "<tr><td>" + month.ToString("MMMM yyyy") + "</td>";
+                    msg += "<td align=\"right\">" + String.Format("{0:C}", Convert.ToDouble(rowGifts["MonthAmount"])) + "</td>";
+                    msg += "<td>" + String.Format("  {0}", Convert.ToDouble(rowGifts["MonthCount"])) + "</td>";
+                    msg += "</tr>";
+                }
+
+                msg += "</table><br/>All the best, </body></html>";
+
+                LetterMessage letter = new LetterMessage(
+                    treasurerName,
+                    "Spendeneingang für " + row["RecipientName"], msg);
+                letters.Add(letter);
+            }
+        }
+
+        return letters;
+    }
+}
+
+public class LetterMessage
+{
+    public string RecipientShortName;
+    public string Subject;
+    public string HtmlMessage;
+    public LetterMessage(string ARecipientShortName, string ASubject, string AHtmlMessage)
+    {
+        RecipientShortName = ARecipientShortName;
+        Subject = ASubject;
+        HtmlMessage = AHtmlMessage;
     }
 }
 }

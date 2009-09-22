@@ -60,7 +60,20 @@ public partial class MainForm : Form
         grdEmails.AllowUserToAddRows = false;
         grdEmails.RowHeadersVisible = false;
 
+        grdLetters.Columns.Add("recipient", "To");
+        grdLetters.Columns.Add("subject", "Subject");
+        grdLetters.Columns[0].Width = 200;
+        grdLetters.Columns[1].Width = 400;
+        grdLetters.ReadOnly = true;
+        grdLetters.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        grdLetters.MultiSelect = false;
+        grdLetters.AllowUserToAddRows = false;
+        grdLetters.RowHeadersVisible = false;
+
+        dtpLastMonth.Value = DateTime.Now.AddMonths(-1);
+
         // TODO: status window with log messages?
+        // TODO: parameter for date, not always this month only
         // TODO: TREASURER2
         // TODO: number of gifts per month
         // TODO: EX-Worker
@@ -68,6 +81,7 @@ public partial class MainForm : Form
     }
 
     private List <MailMessage>FEmails = null;
+    private List <LetterMessage>FLetters = null;
 
     /// <summary>
     /// set the emails that are in the outbox
@@ -76,10 +90,25 @@ public partial class MainForm : Form
     public void SetEmails(List <MailMessage>AEmails)
     {
         FEmails = AEmails;
-        RefreshGrid();
+        RefreshGridEmails();
+
+        if (FEmails.Count == 0)
+        {
+            tabOutput.SelectedTab = tpgLetters;
+        }
     }
 
-    void RefreshGrid()
+    /// <summary>
+    /// set the letters to be printed
+    /// </summary>
+    /// <param name="AEmails"></param>
+    public void SetLetters(List <LetterMessage>ALetters)
+    {
+        FLetters = ALetters;
+        RefreshGridLetters();
+    }
+
+    void RefreshGridEmails()
     {
         grdEmails.Rows.Clear();
 
@@ -90,11 +119,21 @@ public partial class MainForm : Form
         }
     }
 
+    void RefreshGridLetters()
+    {
+        grdLetters.Rows.Clear();
+
+        foreach (LetterMessage letter in FLetters)
+        {
+            grdLetters.Rows.Add(new object[] { letter.RecipientShortName, letter.Subject });
+        }
+    }
+
     /// <summary>
     /// select a row and display the email in the web browser control below the list
     /// </summary>
     /// <param name="ARow"></param>
-    void SelectRow(int ARow)
+    void SelectEmailRow(int ARow)
     {
         if ((FEmails == null) || (ARow < 0) || (ARow >= FEmails.Count))
         {
@@ -142,9 +181,30 @@ public partial class MainForm : Form
         }
     }
 
+    /// <summary>
+    /// select a row and display the letter in the web browser control below the list
+    /// </summary>
+    /// <param name="ARow"></param>
+    void SelectLetterRow(int ARow)
+    {
+        if ((FLetters == null) || (ARow < 0) || (ARow >= FLetters.Count))
+        {
+            // invalid row
+            return;
+        }
+
+        LetterMessage selectedLetter = FLetters[ARow];
+        brwLetterContent.DocumentText = selectedLetter.HtmlMessage;
+    }
+
     void GrdEmailsCellEnter(object sender, DataGridViewCellEventArgs e)
     {
-        SelectRow(e.RowIndex);
+        SelectEmailRow(e.RowIndex);
+    }
+
+    void GrdLettersCellEnter(object sender, DataGridViewCellEventArgs e)
+    {
+        SelectLetterRow(e.RowIndex);
     }
 
     private TSmtpSender CreateConnection()
@@ -160,7 +220,7 @@ public partial class MainForm : Form
         {
             MailMessage selectedMail = FEmails[grdEmails.SelectedRows[0].Index];
             smtp.SendMessage(ref selectedMail);
-            RefreshGrid();
+            RefreshGridEmails();
         }
     }
 
@@ -177,7 +237,7 @@ public partial class MainForm : Form
                 return;
             }
 
-            RefreshGrid();
+            RefreshGridEmails();
         }
     }
 
@@ -193,6 +253,8 @@ public partial class MainForm : Form
 
         DataSet allTreasurerEmails;
 #if DEBUG
+        Cursor = Cursors.WaitCursor;
+
         TAppSettingsManager settings = new TAppSettingsManager();
         allTreasurerEmails = TGetTreasurerData.GetTreasurerData(
             settings.GetValue("odbc.username"),
@@ -200,17 +262,25 @@ public partial class MainForm : Form
             settings.GetInt32("ledger"),
             settings.GetValue("motivationgroup"),
             settings.GetValue("motivationdetail"),
-            DateTime.Now, settings.GetInt16("numberperiods"));
+            dtpLastMonth.Value, Convert.ToInt16(nudNumberMonths.Value));
+
+        Cursor = Cursors.Default;
 #else
         TFrmDBLogin login = new TFrmDBLogin();
 
         if (login.ShowDialog() == DialogResult.OK)
         {
+            Cursor = Cursors.WaitCursor;
+
             // TODO ledger number, motivation group and detail
-            allTreasurerEmails = TGetTreasurerData.GetTreasurerData(login.Username, login.Password, DateTime.Now, 5);
+            allTreasurerEmails = TGetTreasurerData.GetTreasurerData(
+                login.Username, login.Password,
+                dtpLastMonth.Value, nudNumberMonths.Value);
+            Cursor = Cursors.Default;
         }
 #endif
-        SetEmails(TGetTreasurerData.GenerateEmails(allTreasurerEmails, settings.GetValue("senderemailaddress")));
+        SetEmails(TGetTreasurerData.GenerateEmails(allTreasurerEmails, settings.GetValue("senderemailaddress"), chkLettersOnly.Checked));
+        SetLetters(TGetTreasurerData.GenerateLetters(allTreasurerEmails, chkLettersOnly.Checked));
     }
 }
 }
