@@ -28,7 +28,9 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Net.Mail;
+using Mono.Unix;
 using Ict.Common.DB;
 using Ict.Common;
 using Ict.Petra.Shared.MPartner;
@@ -323,47 +325,45 @@ public class TGetTreasurerData
                 {
                     row[ResultTable.Columns["TreasurerEmail"].Ordinal] = emailAddress;
                 }
-                else
+
+                if (!Address[0].IsLocalityNull())
                 {
-                    if (!Address[0].IsLocalityNull())
-                    {
-                        row[ResultTable.Columns["TreasurerLocality"].Ordinal] = Address[0].Locality;
-                    }
+                    row[ResultTable.Columns["TreasurerLocality"].Ordinal] = Address[0].Locality;
+                }
 
-                    if (!Address[0].IsStreetNameNull())
-                    {
-                        row[ResultTable.Columns["TreasurerStreetName"].Ordinal] = Address[0].StreetName;
-                    }
+                if (!Address[0].IsStreetNameNull())
+                {
+                    row[ResultTable.Columns["TreasurerStreetName"].Ordinal] = Address[0].StreetName;
+                }
 
-                    if (!Address[0].IsBuilding1Null())
-                    {
-                        row[ResultTable.Columns["TreasurerBuilding1"].Ordinal] = Address[0].Building1;
-                    }
+                if (!Address[0].IsBuilding1Null())
+                {
+                    row[ResultTable.Columns["TreasurerBuilding1"].Ordinal] = Address[0].Building1;
+                }
 
-                    if (!Address[0].IsBuilding2Null())
-                    {
-                        row[ResultTable.Columns["TreasurerBuilding2"].Ordinal] = Address[0].Building2;
-                    }
+                if (!Address[0].IsBuilding2Null())
+                {
+                    row[ResultTable.Columns["TreasurerBuilding2"].Ordinal] = Address[0].Building2;
+                }
 
-                    if (!Address[0].IsAddress3Null())
-                    {
-                        row[ResultTable.Columns["TreasurerAddress3"].Ordinal] = Address[0].Address3;
-                    }
+                if (!Address[0].IsAddress3Null())
+                {
+                    row[ResultTable.Columns["TreasurerAddress3"].Ordinal] = Address[0].Address3;
+                }
 
-                    if (!Address[0].IsCountryCodeNull())
-                    {
-                        row[ResultTable.Columns["TreasurerCountryCode"].Ordinal] = Address[0].CountryCode;
-                    }
+                if (!Address[0].IsCountryCodeNull())
+                {
+                    row[ResultTable.Columns["TreasurerCountryCode"].Ordinal] = Address[0].CountryCode;
+                }
 
-                    if (!Address[0].IsPostalCodeNull())
-                    {
-                        row[ResultTable.Columns["TreasurerPostalCode"].Ordinal] = Address[0].PostalCode;
-                    }
+                if (!Address[0].IsPostalCodeNull())
+                {
+                    row[ResultTable.Columns["TreasurerPostalCode"].Ordinal] = Address[0].PostalCode;
+                }
 
-                    if (!Address[0].IsCityNull())
-                    {
-                        row[ResultTable.Columns["TreasurerCity"].Ordinal] = Address[0].City;
-                    }
+                if (!Address[0].IsCityNull())
+                {
+                    row[ResultTable.Columns["TreasurerCity"].Ordinal] = Address[0].City;
                 }
             }
         }
@@ -414,8 +414,13 @@ public class TGetTreasurerData
     {
         List <MailMessage>emails = new List <MailMessage>();
 
-        foreach (DataRow row in ATreasurerData.Tables[TREASURERTABLE].Rows)
+        DataView view = ATreasurerData.Tables[TREASURERTABLE].DefaultView;
+        view.Sort = "TreasurerName ASC";
+
+        foreach (DataRowView rowview in view)
         {
+            DataRow row = rowview.Row;
+
             if (!AForceLetters && (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal] != System.DBNull.Value))
             {
                 string treasurerEmail = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal].ToString();
@@ -445,12 +450,102 @@ public class TGetTreasurerData
                 // TODO: subject also from HTML template, title tag
                 MailMessage mail = new MailMessage(ASenderEmailAddress,
                     treasurerEmail,
-                    "Spendeneingang für " + row["RecipientName"], msg);
+                    String.Format(Catalog.GetString("Gifts for {0}"), row["RecipientName"]),
+                    msg);
                 emails.Add(mail);
             }
         }
 
         return emails;
+    }
+
+    private enum eShortNameFormat {
+        eShortname, eReverseShortname, eOnlyTitle, eReverseWithoutTitle
+    };
+
+    /// <summary>
+    /// convert shortname from Lastname, firstname, title to title firstname lastname
+    /// TODO: use partner key to get to the full name, resolve issues with couples that have different family names etc
+    /// TODO: move this function to a central place in Ict.Petra.Shared?
+    /// </summary>
+    private static string FormatShortName(string AShortname, eShortNameFormat AFormat)
+    {
+        StringCollection names = StringHelper.StrSplit(AShortname, ",");
+        string resultValue = "";
+
+        if (AFormat == eShortNameFormat.eShortname)
+        {
+            return AShortname;
+        }
+        else if (AFormat == eShortNameFormat.eReverseShortname)
+        {
+            foreach (string name in names)
+            {
+                if (resultValue.Length > 0)
+                {
+                    resultValue = " " + resultValue;
+                }
+
+                resultValue = name + resultValue;
+            }
+
+            return resultValue;
+        }
+        else if (AFormat == eShortNameFormat.eOnlyTitle)
+        {
+            return names[names.Count - 1];
+        }
+        else if (AFormat == eShortNameFormat.eReverseWithoutTitle)
+        {
+            names.RemoveAt(names.Count - 1);
+
+            foreach (string name in names)
+            {
+                if (resultValue.Length > 0)
+                {
+                    resultValue = " " + resultValue;
+                }
+
+                resultValue = name + resultValue;
+            }
+
+            return resultValue;
+        }
+
+        return "";
+    }
+
+    /// <summary>
+    /// find the &lt;tr&gt; tag that contains the ASearchFor, and return the full tr tag and contents
+    /// </summary>
+    /// <param name="ATemplate"></param>
+    /// <param name="ASearchFor"></param>
+    /// <param name="ATemplateRow">template for one row</param>
+    /// <returns>modified template, replace tr tag with #ROWTEMPLATE</returns>
+    private static string GetTableRow(string ATemplate, string ASearchFor, out string ATemplateRow)
+    {
+        Int32 posSearchText = ATemplate.IndexOf(ASearchFor);
+
+        if (posSearchText == -1)
+        {
+            ATemplateRow = "";
+            return ATemplate;
+        }
+
+        Int32 posTableRowStart = ATemplate.Substring(0, posSearchText).LastIndexOf("<tr");
+        Int32 posTableRowEnd = ATemplate.IndexOf("</tr>", posSearchText) + 5;
+        ATemplateRow = ATemplate.Substring(posTableRowStart, posTableRowEnd - posTableRowStart);
+        return ATemplate.Replace(ATemplateRow, "#ROWTEMPLATE");
+    }
+
+    private static string GetStringFromRow(DataRow ARow, Int32 AOrdinal)
+    {
+        if (ARow[AOrdinal] == System.DBNull.Value)
+        {
+            return "";
+        }
+
+        return ARow[AOrdinal].ToString();
     }
 
     /// <summary>
@@ -462,35 +557,59 @@ public class TGetTreasurerData
     {
         List <LetterMessage>letters = new List <LetterMessage>();
 
-        foreach (DataRow row in ATreasurerData.Tables[TREASURERTABLE].Rows)
+        DataView view = ATreasurerData.Tables[TREASURERTABLE].DefaultView;
+        view.Sort = "TreasurerName ASC";
+
+        foreach (DataRowView rowview in view)
         {
+            DataRow row = rowview.Row;
+
             if (AForceLetters || (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal] == System.DBNull.Value))
             {
                 string treasurerName = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerName"].Ordinal].ToString();
                 Int64 recipientKey = Convert.ToInt64(row[ATreasurerData.Tables[TREASURERTABLE].Columns["RecipientKey"].Ordinal]);
 
-                // TODO: message body from HTML template; recognise detail lines automatically; drop title tag, because it is the subject
-                string msg = String.Format(
-                    "<html><body>Hello {0}, <br/> This is a test. <br/> Donations so far: <br/>",
-                    treasurerName);
-                msg += "<table>";
+                string letterTemplateFilename = TAppSettingsManager.GetValueStatic("LetterTemplate.File");
 
+                // TODO: message body from HTML template; recognise detail lines automatically; drop title tag, because it is the subject
+                StreamReader reader = new StreamReader(letterTemplateFilename);
+
+                string msg = reader.ReadToEnd();
+
+                msg = msg.Replace("#RECIPIENTNAME", FormatShortName(row["RecipientName"].ToString(), eShortNameFormat.eReverseWithoutTitle));
+                msg = msg.Replace("#TREASURERTITLE", FormatShortName(treasurerName, eShortNameFormat.eOnlyTitle));
+                msg = msg.Replace("#TREASURERNAME", FormatShortName(treasurerName, eShortNameFormat.eReverseWithoutTitle));
+                msg = msg.Replace("#STREETNAME", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerStreetName"].Ordinal));
+                msg = msg.Replace("#LOCATION", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerLocality"].Ordinal));
+                msg = msg.Replace("#ADDRESS3", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerAddress3"].Ordinal));
+                msg = msg.Replace("#BUILDING1", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerBuilding1"].Ordinal));
+                msg = msg.Replace("#BUILDING2", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerBuilding2"].Ordinal));
+                msg = msg.Replace("#CITY", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerCity"].Ordinal));
+                msg = msg.Replace("#POSTALCODE", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerPostalCode"].Ordinal));
+                msg = msg.Replace("#COUNTRYCODE", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerCountryCode"].Ordinal));
+                msg = msg.Replace("#DATE", DateTime.Now.ToLongDateString());
+
+                string RowTemplate;
+                msg = GetTableRow(msg, "#MONTH", out RowTemplate);
+                string rowTexts = "";
                 DataRow[] rows = ATreasurerData.Tables[GIFTSTABLE].Select("RecipientKey = " + recipientKey.ToString(), "MonthDate");
 
                 foreach (DataRow rowGifts in rows)
                 {
                     DateTime month = Convert.ToDateTime(rowGifts["MonthDate"]);
-                    msg += "<tr><td>" + month.ToString("MMMM yyyy") + "</td>";
-                    msg += "<td align=\"right\">" + String.Format("{0:C}", Convert.ToDouble(rowGifts["MonthAmount"])) + "</td>";
-                    msg += "<td>" + String.Format("  {0}", Convert.ToDouble(rowGifts["MonthCount"])) + "</td>";
-                    msg += "</tr>";
+
+                    rowTexts += RowTemplate.
+                                Replace("#MONTH", month.ToString("MMMM yyyy")).
+                                Replace("#AMOUNT", String.Format("{0:C}", Convert.ToDouble(rowGifts["MonthAmount"]))).
+                                Replace("#NUMBERGIFTS", rowGifts["MonthCount"].ToString());
                 }
 
-                msg += "</table><br/>All the best, </body></html>";
+                msg = msg.Replace("#ROWTEMPLATE", rowTexts);
 
                 LetterMessage letter = new LetterMessage(
                     treasurerName,
-                    "Spendeneingang für " + row["RecipientName"], msg);
+                    String.Format(Catalog.GetString("Gifts for {0}"), row["RecipientName"]),
+                    msg);
                 letters.Add(letter);
             }
         }

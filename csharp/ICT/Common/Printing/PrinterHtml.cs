@@ -27,6 +27,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Collections.Generic;
+using System.Drawing;
 using Ict.Common.IO;
 
 namespace Ict.Common.Printing
@@ -46,12 +47,6 @@ namespace Ict.Common.Printing
         protected XmlNode FCurrentNodeNextPage;
 
         /// <summary>todoComment</summary>
-        protected eAlignment FCurrentAlignment;
-
-        /// <summary>todoComment</summary>
-        protected eFont FCurrentFont;
-
-        /// <summary>todoComment</summary>
         protected string FPath;
 
         /// <summary>
@@ -65,8 +60,6 @@ namespace Ict.Common.Printing
             FPrinter = APrinter;
             FPath = APath;
             FHtmlDoc = ParseHtml(AHtmlDocument);
-            FCurrentFont = eFont.eDefaultFont;
-            FCurrentAlignment = eAlignment.eLeft;
             FCurrentNodeNextPage = InitHtmlParser(FHtmlDoc);
         }
 
@@ -83,8 +76,6 @@ namespace Ict.Common.Printing
             string htmlDocument = sr.ReadToEnd();
             sr.Close();
             FHtmlDoc = ParseHtml(htmlDocument);
-            FCurrentFont = eFont.eDefaultFont;
-            FCurrentAlignment = eAlignment.eLeft;
             FCurrentNodeNextPage = InitHtmlParser(FHtmlDoc);
         }
 
@@ -93,18 +84,32 @@ namespace Ict.Common.Printing
         {
             XmlDocument result;
 
-            // todo should we first preparse and make sure it is proper XHTML?
+            // TODO should we first preparse and make sure it is proper XHTML?
             // eg. img needs to have closing tag etc
             // see http://www.majestic12.co.uk/projects/html_parser.php
             try
             {
                 result = new XmlDocument();
+
+                if (AHtmlDocument.Trim().StartsWith("<!DOCTYPE"))
+                {
+                    AHtmlDocument = AHtmlDocument.Substring(AHtmlDocument.IndexOf(">") + 1);
+                }
+
+                AHtmlDocument = "<?xml version='1.0' encoding='UTF-16'?>" + Environment.NewLine + AHtmlDocument;
+                AHtmlDocument = AHtmlDocument.Replace("<br>", "<br/>");
+                AHtmlDocument = AHtmlDocument.Replace("&amp;", "&amp;amp;");
+                AHtmlDocument = AHtmlDocument.Replace("&nbsp;", "&amp;nbsp;");
+                AHtmlDocument = AHtmlDocument.Replace("&gt;", "&amp;gt;");
+                AHtmlDocument = AHtmlDocument.Replace("&lt;", "&amp;lt;");
                 result.LoadXml(AHtmlDocument);
             }
             catch (Exception e)
             {
-                TLogging.Log("error parsing HTML text: " + e.Message);
-                result = null;
+                TLogging.Log("error parsing HTML text: " + Environment.NewLine + e.Message + Environment.NewLine + AHtmlDocument);
+                throw new Exception("Error while parsing HTML file " +
+                    Environment.NewLine + "(see log file for details: " + TLogging.GetLogFileName() +
+                    ")" + Environment.NewLine + e.Message);
             }
 
             if (result == null)
@@ -124,6 +129,11 @@ namespace Ict.Common.Printing
 
             XmlNode result = doc.FirstChild; // should be <html>
 
+            while (result != null && result.Name != "html")
+            {
+                result = result.NextSibling;
+            }
+
             if (result != null)
             {
                 result = result.FirstChild; // should be head, body etc
@@ -140,7 +150,7 @@ namespace Ict.Common.Printing
             }
             else
             {
-                result = null;
+                throw new Exception("cannot find the body tag");
             }
 
             return result;
@@ -180,7 +190,11 @@ namespace Ict.Common.Printing
                 //printer.Inch2Twips(printer.Document.PrinterSettings.PaperSizes[0].Width*100);
                 //float edge = printer.Cm2Twips(1.5f);
                 printer.CurrentXPos = printer.LeftMargin;
-                RenderContent(printer.LeftMargin, printer.Width, ref FCurrentNodeNextPage);
+
+                // TODO set the margins and the font sizes in the HTML file???
+                printer.FDefaultFont = new System.Drawing.Font("Arial", 12);
+                printer.FDefaultBoldFont = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
+                RenderContent(printer.LeftMargin + TGfxPrinter.Cm2Inch(1), printer.Width - TGfxPrinter.Cm2Inch(2), ref FCurrentNodeNextPage);
             }
             else
             {
@@ -217,12 +231,14 @@ namespace Ict.Common.Printing
             s = s.Replace("\n", "");
 
             // replace special codes
-            s = s.Replace("&nbsp;", " ");
+            s = s.Replace("&nbsp;", "  ");
             s = s.Replace("&gt;", "<");
             s = s.Replace("&lt;", ">");
-
-            // todo: other special characters? e.g. &uuml; etc
             s = s.Replace("&amp;", "&");
+
+            // other special characters? e.g. &uuml; etc
+            // solution: use UTF-8 in the text editor when editing the template
+
             return s;
         }
 
@@ -253,7 +269,31 @@ namespace Ict.Common.Printing
 
                     // todo: embed image into text flow
                     FPrinter.LineFeed();
-                    FPrinter.DrawBitmap(src, FPrinter.CurrentXPos, FPrinter.CurrentYPos);
+
+                    if (TXMLParser.HasAttribute(curNode, "width") && TXMLParser.HasAttribute(curNode, "height"))
+                    {
+                        float WidthPercentage = 1.0f;
+                        float HeightPercentage = 1.0f;
+
+                        string Width = TXMLParser.GetAttribute(curNode, "width");
+                        string Height = TXMLParser.GetAttribute(curNode, "height");
+
+                        if (Width.EndsWith("%"))
+                        {
+                            WidthPercentage = (float)Convert.ToDouble(Width.Substring(0, Width.Length - 1)) / 100.0f;
+                        }
+
+                        if (Height.EndsWith("%"))
+                        {
+                            HeightPercentage = (float)Convert.ToDouble(Height.Substring(0, Width.Length - 1)) / 100.0f;
+                        }
+
+                        FPrinter.DrawBitmap(src, FPrinter.CurrentXPos, FPrinter.CurrentYPos, WidthPercentage, HeightPercentage);
+                    }
+                    else
+                    {
+                        FPrinter.DrawBitmap(src, FPrinter.CurrentXPos, FPrinter.CurrentYPos);
+                    }
 
                     curNode = curNode.NextSibling;
                 }
@@ -270,11 +310,11 @@ namespace Ict.Common.Printing
                 else if (curNode.Name == "b")
                 {
                     // bold
-                    eFont previousFont = FCurrentFont;
-                    FCurrentFont = eFont.eDefaultBoldFont;
+                    eFont previousFont = FPrinter.CurrentFont;
+                    FPrinter.CurrentFont = eFont.eDefaultBoldFont;
                     XmlNode child = curNode.FirstChild;
                     RenderContent(AXPos, AWidthAvailable, ref child);
-                    FCurrentFont = previousFont;
+                    FPrinter.CurrentFont = previousFont;
                     curNode = curNode.NextSibling;
                 }
                 else if (curNode.Name == "i")
@@ -291,13 +331,44 @@ namespace Ict.Common.Printing
                     FPrinter.CurrentXPos = AXPos;
                     curNode = curNode.NextSibling;
                 }
+                else if (curNode.Name == "p")
+                {
+                    eAlignment origAlignment = FPrinter.CurrentAlignment;
+
+                    if (TXMLParser.GetAttribute(curNode, "align") == "right")
+                    {
+                        FPrinter.CurrentAlignment = eAlignment.eRight;
+                    }
+                    else if (TXMLParser.GetAttribute(curNode, "align") == "center")
+                    {
+                        FPrinter.CurrentAlignment = eAlignment.eCenter;
+                    }
+                    else if (TXMLParser.GetAttribute(curNode, "align") == "left")
+                    {
+                        FPrinter.CurrentAlignment = eAlignment.eLeft;
+                    }
+
+                    XmlNode child = curNode.FirstChild;
+                    FPrinter.LineFeed();
+                    FPrinter.CurrentXPos = AXPos;
+                    RenderContent(AXPos, AWidthAvailable, ref child);
+                    FPrinter.LineFeed();
+                    FPrinter.CurrentXPos = AXPos;
+                    curNode = curNode.NextSibling;
+                    FPrinter.CurrentAlignment = origAlignment;
+                }
                 // unrecognised HTML element, text
                 else if (curNode.InnerText.Length > 0)
                 {
+                    if (curNode.InnerText.Contains("nbsp"))
+                    {
+                        TLogging.Log(HtmlToText(curNode.InnerText) + "testnbsp");
+                    }
+
                     string toPrint = HtmlToText(curNode.InnerText);
 
                     // continues text in the same row
-                    FPrinter.PrintStringWrap(toPrint, FCurrentFont, AXPos, AWidthAvailable, FCurrentAlignment);
+                    FPrinter.PrintStringWrap(toPrint, FPrinter.CurrentFont, AXPos, AWidthAvailable, FPrinter.CurrentAlignment);
                     curNode = curNode.NextSibling;
                 }
 
@@ -326,6 +397,23 @@ namespace Ict.Common.Printing
             FPrinter.LineFeed();
             FPrinter.CurrentXPos = AXPos;
 
+            int border = 1;
+
+            if (TXMLParser.HasAttribute(tableNode, "border"))
+            {
+                border = Convert.ToInt32(TXMLParser.GetAttribute(tableNode, "border"));
+            }
+
+            if (TXMLParser.HasAttribute(tableNode, "width"))
+            {
+                string width = TXMLParser.GetAttribute(tableNode, "width");
+
+                if (width.EndsWith("%"))
+                {
+                    AWidthAvailable *= (float)Convert.ToDouble(width.Substring(0, width.Length - 1)) / 100.0f;
+                }
+            }
+
             // todo: read border value from table attributes
             // todo: read table width from table styles
             curNode = curNode.FirstChild; // should be tbody, or tr
@@ -344,11 +432,21 @@ namespace Ict.Common.Printing
                 XmlNode row = curNode;
                 XmlNode cell = curNode.FirstChild;
 
-                while (cell != null && cell.Name == "td")
+                while (cell != null && (cell.Name == "td" || cell.Name == "th"))
                 {
                     TTableCellGfx preparedCell = new TTableCellGfx();
-                    preparedCell.borderWidth = 1;
+                    preparedCell.borderWidth = border;
                     preparedCell.content = cell.FirstChild;
+                    preparedCell.bold = (cell.Name == "th");
+
+                    if (TXMLParser.GetAttribute(cell, "align") == "right")
+                    {
+                        preparedCell.align = eAlignment.eRight;
+                    }
+                    else if ((TXMLParser.GetAttribute(cell, "align") == "center") || (cell.Name == "th"))
+                    {
+                        preparedCell.align = eAlignment.eCenter;
+                    }
 
                     // todo set preparedCell.columnWidthInPercentage
                     preparedCell.columnWidthInPercentage = -1;

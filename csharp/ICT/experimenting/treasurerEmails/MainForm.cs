@@ -33,6 +33,7 @@ using System.Net.Mail;
 using Mono.Unix;
 using Ict.Common.IO;
 using Ict.Common;
+using Ict.Common.Printing;
 
 namespace treasurerEmails
 {
@@ -48,22 +49,26 @@ public partial class MainForm : Form
         //
         InitializeComponent();
 
+        grdEmails.Columns.Add("id", "ID");
         grdEmails.Columns.Add("sent", "Send Date");
         grdEmails.Columns.Add("recipient", "To");
         grdEmails.Columns.Add("subject", "Subject");
-        grdEmails.Columns[0].Width = 100;
-        grdEmails.Columns[1].Width = 200;
-        grdEmails.Columns[2].Width = 400;
+        grdEmails.Columns[0].Width = 30;
+        grdEmails.Columns[1].Width = 100;
+        grdEmails.Columns[2].Width = 200;
+        grdEmails.Columns[3].Width = 400;
         grdEmails.ReadOnly = true;
         grdEmails.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         grdEmails.MultiSelect = false;
         grdEmails.AllowUserToAddRows = false;
         grdEmails.RowHeadersVisible = false;
 
+        grdLetters.Columns.Add("id", "ID");
         grdLetters.Columns.Add("recipient", "To");
         grdLetters.Columns.Add("subject", "Subject");
-        grdLetters.Columns[0].Width = 200;
-        grdLetters.Columns[1].Width = 400;
+        grdLetters.Columns[0].Width = 30;
+        grdLetters.Columns[1].Width = 200;
+        grdLetters.Columns[2].Width = 400;
         grdLetters.ReadOnly = true;
         grdLetters.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         grdLetters.MultiSelect = false;
@@ -71,13 +76,6 @@ public partial class MainForm : Form
         grdLetters.RowHeadersVisible = false;
 
         dtpLastMonth.Value = DateTime.Now.AddMonths(-1);
-
-        // TODO: status window with log messages?
-        // TODO: parameter for date, not always this month only
-        // TODO: TREASURER2
-        // TODO: number of gifts per month
-        // TODO: EX-Worker
-        // TODO: Mailmerge with Word for Treasurer without Email Address?
     }
 
     private List <MailMessage>FEmails = null;
@@ -114,7 +112,7 @@ public partial class MainForm : Form
 
         foreach (MailMessage email in FEmails)
         {
-            grdEmails.Rows.Add(new object[] { email.Headers.Get("Date-Sent"),
+            grdEmails.Rows.Add(new object[] { grdEmails.Rows.Count + 1, email.Headers.Get("Date-Sent"),
                                               email.To.ToString(), email.Subject });
         }
     }
@@ -125,7 +123,7 @@ public partial class MainForm : Form
 
         foreach (LetterMessage letter in FLetters)
         {
-            grdLetters.Rows.Add(new object[] { letter.RecipientShortName, letter.Subject });
+            grdLetters.Rows.Add(new object[] { grdLetters.Rows.Count + 1, letter.RecipientShortName, letter.Subject });
         }
     }
 
@@ -194,7 +192,29 @@ public partial class MainForm : Form
         }
 
         LetterMessage selectedLetter = FLetters[ARow];
-        brwLetterContent.DocumentText = selectedLetter.HtmlMessage;
+
+        System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
+        bool printerInstalled = printDocument.PrinterSettings.IsValid;
+
+        if (printerInstalled)
+        {
+            string letterTemplateFilename = TAppSettingsManager.GetValueStatic("LetterTemplate.File");
+            TGfxPrinter gfxPrinter = new TGfxPrinter(printDocument);
+            try
+            {
+                TPrinterHtml htmlPrinter = new TPrinterHtml(selectedLetter.HtmlMessage,
+                    System.IO.Path.GetDirectoryName(letterTemplateFilename),
+                    gfxPrinter);
+                gfxPrinter.Init(eOrientation.ePortrait, htmlPrinter);
+                this.preLetter.InvalidatePreview();
+                this.preLetter.Document = gfxPrinter.Document;
+                this.preLetter.Zoom = 1;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
     }
 
     void GrdEmailsCellEnter(object sender, DataGridViewCellEventArgs e)

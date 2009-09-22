@@ -43,11 +43,21 @@ namespace Ict.Common.Printing
     public class TGfxPrinter : TPrinter
     {
         private System.Drawing.Printing.PrintDocument FDocument;
-        private System.Drawing.Font FDefaultFont;
-        private System.Drawing.Font FDefaultBoldFont;
-        private System.Drawing.Font FHeadingFont;
-        private System.Drawing.Font FSmallPrintFont;
-        private System.Drawing.Font FBiggestLastUsedFont;
+
+        /// todoComment
+        public System.Drawing.Font FDefaultFont;
+
+        /// todoComment
+        public System.Drawing.Font FDefaultBoldFont;
+
+        /// todoComment
+        public System.Drawing.Font FHeadingFont;
+
+        /// todoComment
+        public System.Drawing.Font FSmallPrintFont;
+
+        /// todoComment
+        public System.Drawing.Font FBiggestLastUsedFont;
         private StringFormat FLeft;
         private StringFormat FRight;
         private StringFormat FCenter;
@@ -239,13 +249,13 @@ namespace Ict.Common.Printing
         /// <returns>true if something was printed</returns>
         public override Boolean PrintString(String ATxt, eFont AFont, float AXPos, float AWidth, eAlignment AAlign)
         {
-            RectangleF rect;
-
-            rect = new RectangleF(AXPos, FCurrentYPos, AWidth, GetFont(AFont).GetHeight(FEv.Graphics));
+            RectangleF rect = new RectangleF(AXPos, FCurrentYPos, AWidth, GetFont(AFont).GetHeight(FEv.Graphics));
 
             if (FPrintingMode == ePrintingMode.eDoPrint)
             {
-                FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, rect, GetStringFormat(AAlign));
+                StringFormat f = GetStringFormat(AAlign);
+                f.FormatFlags = StringFormatFlags.MeasureTrailingSpaces;
+                FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, rect, f);
             }
 
             return (ATxt != null) && (ATxt.Length != 0);
@@ -268,13 +278,13 @@ namespace Ict.Common.Printing
             char[] whitespace = new char[] {
                 ' ', '\t', '\r', '\n'
             };
-            string previousWhitespace = "";
+            string previousWhitespaces = "";
             Int32 result = 0;
             firstWordLength = 0;
 
             while (GetWidthString(fittingText, AFont) < AWidth)
             {
-                result = fittingText.Length + previousWhitespace.Length;
+                result = fittingText.Length + previousWhitespaces.Length;
 
                 if (buffer.Length == 0)
                 {
@@ -286,24 +296,34 @@ namespace Ict.Common.Printing
                 if (indexWhitespace > 0)
                 {
                     string nextWord = buffer.Substring(0, indexWhitespace);
-                    fittingText += previousWhitespace + nextWord;
-                    previousWhitespace = buffer[indexWhitespace].ToString();
+                    fittingText += previousWhitespaces + nextWord;
+
+                    // sometimes there are forced whitespaces (eg &nbsp; etc)
+                    // consider them as a word
+                    previousWhitespaces = buffer[indexWhitespace].ToString();
+
+                    while (indexWhitespace < buffer.Length && buffer.IndexOfAny(whitespace, indexWhitespace + 1) == indexWhitespace + 1)
+                    {
+                        indexWhitespace++;
+                        previousWhitespaces += buffer[indexWhitespace];
+                    }
+
                     buffer = buffer.Substring(indexWhitespace + 1);
                 }
                 else // no whitespace left
                 {
-                    fittingText += previousWhitespace + buffer;
-                    previousWhitespace = "";
+                    fittingText += previousWhitespaces + buffer;
+                    previousWhitespaces = "";
                     buffer = "";
                 }
 
                 if (firstWordLength == 0)
                 {
-                    firstWordLength = fittingText.Length + previousWhitespace.Length;
+                    firstWordLength = fittingText.Length + previousWhitespaces.Length;
                 }
             }
 
-            return result;
+            return result + previousWhitespaces.Length;
         }
 
         /// <summary>
@@ -341,8 +361,12 @@ namespace Ict.Common.Printing
                         FBiggestLastUsedFont = GetFont(AFont);
                     }
 
-                    PrintString(toPrint, AFont, FCurrentXPos);
-                    FCurrentXPos += GetWidthString(toPrint, AFont);
+                    PrintString(toPrint, AFont, FCurrentXPos, AWidth, AAlign);
+
+                    if (AAlign == eAlignment.eRight)
+                    {
+                        FCurrentXPos += GetWidthString(toPrint, AFont);
+                    }
 
                     if (ATxt.Length > 0)
                     {
@@ -464,6 +488,28 @@ namespace Ict.Common.Printing
             // pixel/inch = dpi <=> inch = pixel/dpi
             FCurrentYPos += img.Size.Height / img.VerticalResolution;
             FCurrentXPos += img.Size.Width / img.HorizontalResolution;
+        }
+
+        /// <summary>
+        /// draw a bitmap at the given position;
+        /// the current position is moved
+        /// </summary>
+        public override void DrawBitmap(string APath,
+            float AXPos,
+            float AYPos,
+            float AWidthPercentage,
+            float AHeightPercentage)
+        {
+            Bitmap img = new System.Drawing.Bitmap(APath);
+            float Height = img.Size.Height / img.VerticalResolution * AHeightPercentage;
+            float Width = img.Size.Width / img.HorizontalResolution * AWidthPercentage;
+
+            FEv.Graphics.DrawImage(img, AXPos, AYPos, Width, Height);
+
+            // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
+            // pixel/inch = dpi <=> inch = pixel/dpi
+            FCurrentYPos += Height;
+            FCurrentXPos += Width;
         }
 
         /// <summary>
@@ -606,7 +652,7 @@ namespace Ict.Common.Printing
         ///
         /// </summary>
         /// <returns>void</returns>
-        public Int32 Cm2Twips(float ACm)
+        public static Int32 Cm2Twips(float ACm)
         {
             return Convert.ToInt32(ACm * 566.93);
         }
@@ -616,7 +662,7 @@ namespace Ict.Common.Printing
         ///
         /// </summary>
         /// <returns>void</returns>
-        public Int32 Inch2Twips(float AInch)
+        public static Int32 Inch2Twips(float AInch)
         {
             return Convert.ToInt32(AInch * 1440);
         }

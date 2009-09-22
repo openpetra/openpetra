@@ -162,6 +162,12 @@ namespace Ict.Common.Printing
         protected float FHeight;
 
         /// <summary>todoComment</summary>
+        protected eFont FCurrentFont;
+
+        /// <summary>todoComment</summary>
+        protected eAlignment FCurrentAlignment = eAlignment.eLeft;
+
+        /// <summary>todoComment</summary>
         protected TPrinterLayout FPrinterLayout;
 
         /// <summary>todoComment</summary>
@@ -225,6 +231,32 @@ namespace Ict.Common.Printing
             get
             {
                 return FRightMargin;
+            }
+        }
+
+        /// <summary>todoComment</summary>
+        public eFont CurrentFont
+        {
+            get
+            {
+                return FCurrentFont;
+            }
+            set
+            {
+                FCurrentFont = value;
+            }
+        }
+
+        /// <summary>todoComment</summary>
+        public eAlignment CurrentAlignment
+        {
+            get
+            {
+                return FCurrentAlignment;
+            }
+            set
+            {
+                FCurrentAlignment = value;
             }
         }
 
@@ -422,6 +454,18 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
+        /// todoComment
+        /// </summary>
+        public virtual void DrawBitmap(string APath,
+            float AXPos,
+            float AYPos,
+            float AWidthPercentage,
+            float AHeightPercentage)
+        {
+            // TTxtPrinter does not need this; so don't force implementation
+        }
+
+        /// <summary>
         /// constructor
         ///
         /// </summary>
@@ -431,7 +475,7 @@ namespace Ict.Common.Printing
             FPrintingMode = ePrintingMode.eDoPrint;
             FCurrentPageNr = 0;
             FNumberOfPages = 0;
-
+            FCurrentFont = eFont.eDefaultFont;
             FPageFooterSpace = 0;
         }
 
@@ -473,7 +517,7 @@ namespace Ict.Common.Printing
         ///
         /// </summary>
         /// <returns>void</returns>
-        public float Cm2Inch(float AValueInCm)
+        static public float Cm2Inch(float AValueInCm)
         {
             return AValueInCm / 2.54f;
         }
@@ -483,7 +527,7 @@ namespace Ict.Common.Printing
         ///
         /// </summary>
         /// <returns>void</returns>
-        public float Inch2Cm(float AValueInInch)
+        static public float Inch2Cm(float AValueInInch)
         {
             return AValueInInch * 2.54f;
         }
@@ -527,6 +571,15 @@ namespace Ict.Common.Printing
                     cell.contentWidth =
                         (AWidthAvailable * cell.columnWidthInPercentage) / 100.0f;
 
+                    eFont origFont = FCurrentFont;
+
+                    if (cell.bold)
+                    {
+                        FCurrentFont = eFont.eDefaultBoldFont;
+                    }
+
+                    eAlignment origAlignment = FCurrentAlignment;
+                    FCurrentAlignment = cell.align;
                     cell.contentHeight = FPrinterLayout.RenderContent(currentXPos, cell.contentWidth, ref cell.content);
                     LineFeed();
                     cell.contentHeight = FCurrentYPos - currentYPos;
@@ -535,6 +588,9 @@ namespace Ict.Common.Printing
                     {
                         row.contentHeight = cell.contentHeight;
                     }
+
+                    FCurrentFont = origFont;
+                    FCurrentAlignment = origAlignment;
 
                     currentXPos += cell.contentWidth;
                 }

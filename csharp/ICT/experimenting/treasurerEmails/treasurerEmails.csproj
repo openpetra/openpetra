@@ -94,5 +94,9 @@
       <Project>{31A5F128-F78F-4957-AA0E-B0F6005A2614}</Project>
       <Name>Ict.Common.IO</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Common\Printing\Ict.Common.Printing.csproj">
+      <Project>{954F91D9-263A-49F3-942D-6D85A2C13DB8}</Project>
+      <Name>Ict.Common.Printing</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

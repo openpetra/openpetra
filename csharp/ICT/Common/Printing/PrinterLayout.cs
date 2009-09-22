@@ -67,6 +67,12 @@ namespace Ict.Common.Printing
         /// <summary>can be html code</summary>
         public XmlNode content;
 
+        /// needed for table headers (th)
+        public bool bold;
+
+        /// align the content of the cell
+        public eAlignment align = eAlignment.eLeft;
+
         /// <summary>todoComment</summary>
         public Int32 borderWidth;
 
