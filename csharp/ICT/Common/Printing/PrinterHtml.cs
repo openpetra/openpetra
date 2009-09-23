@@ -60,7 +60,6 @@ namespace Ict.Common.Printing
             FPrinter = APrinter;
             FPath = APath;
             FHtmlDoc = ParseHtml(AHtmlDocument);
-            FCurrentNodeNextPage = InitHtmlParser(FHtmlDoc);
         }
 
         /// <summary>
@@ -76,7 +75,6 @@ namespace Ict.Common.Printing
             string htmlDocument = sr.ReadToEnd();
             sr.Close();
             FHtmlDoc = ParseHtml(htmlDocument);
-            FCurrentNodeNextPage = InitHtmlParser(FHtmlDoc);
         }
 
         /// try to parse HTML document
@@ -120,14 +118,26 @@ namespace Ict.Common.Printing
             return result;
         }
 
-        private XmlNode InitHtmlParser(XmlDocument doc)
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public override void StartPrintDocument()
         {
-            if (doc == null)
+        }
+
+        /// <summary>
+        /// get the xmlnode for the given page
+        /// </summary>
+        /// <param name="APageNr">starting with 1</param>
+        /// <returns></returns>
+        XmlNode GetPageNode(Int32 APageNr)
+        {
+            if (FHtmlDoc == null)
             {
                 return null;
             }
 
-            XmlNode result = doc.FirstChild; // should be <html>
+            XmlNode result = FHtmlDoc.FirstChild; // should be <html>
 
             while (result != null && result.Name != "html")
             {
@@ -144,23 +154,20 @@ namespace Ict.Common.Printing
                 result = result.NextSibling;
             }
 
-            if ((result != null) && (result.Name == "body"))
+            Int32 counter = 1;
+
+            while ((result != null) && (result.Name == "body"))
             {
-                result = result.FirstChild;
-            }
-            else
-            {
-                throw new Exception("cannot find the body tag");
+                if (counter == APageNr)
+                {
+                    return result;
+                }
+
+                result = result.NextSibling;
+                counter++;
             }
 
-            return result;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public override void StartPrintDocument()
-        {
+            throw new Exception("cannot find the body tag");
         }
 
         /// <summary>
@@ -171,11 +178,14 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
-        /// print one page of the HTML, until div with page break comes up
+        /// print one page of the HTML, one body tag per page???
+        /// TODO: or until div with page break?
         /// </summary>
         /// <returns>void</returns>
         public override void PrintPageBody()
         {
+            FCurrentNodeNextPage = GetPageNode(FPrinter.CurrentPageNr);
+
             if (FCurrentNodeNextPage == null)
             {
                 return;
@@ -194,7 +204,12 @@ namespace Ict.Common.Printing
                 // TODO set the margins and the font sizes in the HTML file???
                 printer.FDefaultFont = new System.Drawing.Font("Arial", 12);
                 printer.FDefaultBoldFont = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
-                RenderContent(printer.LeftMargin + TGfxPrinter.Cm2Inch(1), printer.Width - TGfxPrinter.Cm2Inch(2), ref FCurrentNodeNextPage);
+                XmlNode childNode = FCurrentNodeNextPage.FirstChild;
+                RenderContent(printer.LeftMargin + TGfxPrinter.Cm2Inch(1), printer.Width - TGfxPrinter.Cm2Inch(2), ref childNode);
+
+                // there can be several body blocks, each representing a page
+                FCurrentNodeNextPage = FCurrentNodeNextPage.NextSibling;
+                printer.SetHasMorePages(FCurrentNodeNextPage != null);
             }
             else
             {
@@ -248,7 +263,7 @@ namespace Ict.Common.Printing
         /// <param name="AXPos">the X position to start the content</param>
         /// <param name="AWidthAvailable">AWidthAvailable</param>
         /// <param name="curNode"></param>
-        /// <returns>s the height of the content</returns>
+        /// <returns>the height of the content</returns>
         public override float RenderContent(float AXPos,
             float AWidthAvailable,
             ref XmlNode curNode)

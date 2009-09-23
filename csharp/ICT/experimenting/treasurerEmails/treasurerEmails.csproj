@@ -27,6 +27,15 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="DevAge.Core">
+      <HintPath>..\..\Common\_bin\Debug\DevAge.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevAge.Windows.Forms">
+      <HintPath>..\..\Common\_bin\Debug\DevAge.Windows.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.Controls">
+      <HintPath>..\..\Common\_bin\Debug\Ict.Common.Controls.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common.Data">
       <HintPath>..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -52,6 +61,12 @@
     <Reference Include="Mono.Posix">
       <HintPath>..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="SourceGrid">
+      <HintPath>..\..\Common\_bin\Debug\SourceGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="SourceGrid.Extensions">
+      <HintPath>..\..\Common\_bin\Debug\SourceGrid.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

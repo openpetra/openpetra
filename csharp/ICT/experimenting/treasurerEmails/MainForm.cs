@@ -30,10 +30,12 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Net;
 using System.Net.Mail;
+using System.Drawing.Printing;
 using Mono.Unix;
 using Ict.Common.IO;
 using Ict.Common;
 using Ict.Common.Printing;
+using Ict.Common.Controls;
 
 namespace treasurerEmails
 {
@@ -104,6 +106,7 @@ public partial class MainForm : Form
     {
         FLetters = ALetters;
         RefreshGridLetters();
+        PreparePrintLetters();
     }
 
     void RefreshGridEmails()
@@ -179,36 +182,60 @@ public partial class MainForm : Form
         }
     }
 
+    private Int32 FNumberOfPages = 0;
+    private TGfxPrinter FGfxPrinter = null;
+
     /// <summary>
-    /// select a row and display the letter in the web browser control below the list
+    /// display all letters in the web browser control below the list
     /// </summary>
     /// <param name="ARow"></param>
-    void SelectLetterRow(int ARow)
+    void PreparePrintLetters()
     {
-        if ((FLetters == null) || (ARow < 0) || (ARow >= FLetters.Count))
+        if (FLetters == null)
         {
-            // invalid row
             return;
         }
-
-        LetterMessage selectedLetter = FLetters[ARow];
 
         System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
         bool printerInstalled = printDocument.PrinterSettings.IsValid;
 
         if (printerInstalled)
         {
+            string AllLetters = String.Empty;
+
+            foreach (LetterMessage letter in FLetters)
+            {
+                if (AllLetters.Length > 0)
+                {
+                    // AllLetters += "<div style=\"page-break-before: always;\"/>";
+                    string body = letter.HtmlMessage.Substring(letter.HtmlMessage.IndexOf("<body"));
+                    body = body.Substring(0, body.IndexOf("</html"));
+                    AllLetters += body;
+                }
+                else
+                {
+                    // without closing html
+                    AllLetters += letter.HtmlMessage.Substring(0, letter.HtmlMessage.IndexOf("</html"));
+                }
+            }
+
+            if (AllLetters.Length > 0)
+            {
+                AllLetters += "</html>";
+            }
+
             string letterTemplateFilename = TAppSettingsManager.GetValueStatic("LetterTemplate.File");
-            TGfxPrinter gfxPrinter = new TGfxPrinter(printDocument);
+            FGfxPrinter = new TGfxPrinter(printDocument);
             try
             {
-                TPrinterHtml htmlPrinter = new TPrinterHtml(selectedLetter.HtmlMessage,
+                TPrinterHtml htmlPrinter = new TPrinterHtml(AllLetters,
                     System.IO.Path.GetDirectoryName(letterTemplateFilename),
-                    gfxPrinter);
-                gfxPrinter.Init(eOrientation.ePortrait, htmlPrinter);
+                    FGfxPrinter);
+                FGfxPrinter.Init(eOrientation.ePortrait, htmlPrinter);
                 this.preLetter.InvalidatePreview();
-                this.preLetter.Document = gfxPrinter.Document;
+                this.preLetter.Document = FGfxPrinter.Document;
                 this.preLetter.Zoom = 1;
+                FGfxPrinter.Document.EndPrint += new PrintEventHandler(this.EndPrint);
             }
             catch (Exception e)
             {
@@ -217,14 +244,15 @@ public partial class MainForm : Form
         }
     }
 
+    void EndPrint(object ASender, PrintEventArgs AEv)
+    {
+        FNumberOfPages = FGfxPrinter.NumberOfPages;
+        RefreshPagePosition();
+    }
+
     void GrdEmailsCellEnter(object sender, DataGridViewCellEventArgs e)
     {
         SelectEmailRow(e.RowIndex);
-    }
-
-    void GrdLettersCellEnter(object sender, DataGridViewCellEventArgs e)
-    {
-        SelectLetterRow(e.RowIndex);
     }
 
     private TSmtpSender CreateConnection()
@@ -301,6 +329,81 @@ public partial class MainForm : Form
 #endif
         SetEmails(TGetTreasurerData.GenerateEmails(allTreasurerEmails, settings.GetValue("senderemailaddress"), chkLettersOnly.Checked));
         SetLetters(TGetTreasurerData.GenerateLetters(allTreasurerEmails, chkLettersOnly.Checked));
+    }
+
+    void RefreshPagePosition()
+    {
+        lblTotalNumberPages.Text = String.Format(Catalog.GetString("of {0}"), FNumberOfPages);
+        txtCurrentPage.Text = (this.preLetter.StartPage + 1).ToString();
+    }
+
+    void TbbPrevPageClick(object sender, EventArgs e)
+    {
+        if (this.preLetter.StartPage > 0)
+        {
+            this.preLetter.StartPage = this.preLetter.StartPage - 1;
+            RefreshPagePosition();
+        }
+    }
+
+    void TbbNextPageClick(object sender, EventArgs e)
+    {
+        if (this.preLetter.StartPage + 1 < FNumberOfPages)
+        {
+            this.preLetter.StartPage = this.preLetter.StartPage + 1;
+            RefreshPagePosition();
+        }
+    }
+
+    void TxtCurrentPageTextChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            Int32 NewCurrentPage = Convert.ToInt32(txtCurrentPage.Text);
+
+            if ((NewCurrentPage > 0) && (NewCurrentPage <= FNumberOfPages))
+            {
+                this.preLetter.StartPage = NewCurrentPage - 1;
+                SelectInGrid(NewCurrentPage);
+            }
+        }
+        catch (Exception)
+        {
+        }
+    }
+
+    void GrdLettersSelectionChanged(object sender, System.EventArgs e)
+    {
+        //SelectLetterRow(e.RowIndex);
+        // TODO: get the currently selected row, the appropriate ID, and scroll to the printed page
+    }
+
+    void SelectInGrid(Int32 AId)
+    {
+        // TODO select the appropriate row in the grid
+    }
+
+    Int32 GetIndexFromRow(DataGridViewRow ARow)
+    {
+        return ARow.Index;
+    }
+
+    void TbbPrintCurrentPageClick(object sender, EventArgs e)
+    {
+        PrintDialog dlg = new PrintDialog();
+
+        dlg.Document = FGfxPrinter.Document;
+        dlg.AllowCurrentPage = true;
+        dlg.AllowSomePages = true;
+        dlg.PrinterSettings.PrintRange = PrintRange.SomePages;
+        dlg.PrinterSettings.FromPage = GetIndexFromRow(grdLetters.SelectedRows[0]) + 1;
+        dlg.PrinterSettings.ToPage = dlg.PrinterSettings.FromPage;
+
+        if (dlg.ShowDialog() == DialogResult.OK)
+        {
+            //FGfxPrinter.Document.PrinterSettings = dlg.PrinterSettings;
+            dlg.Document.Print();
+        }
     }
 }
 }

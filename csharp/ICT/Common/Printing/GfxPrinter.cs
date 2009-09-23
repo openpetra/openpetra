@@ -128,8 +128,8 @@ namespace Ict.Common.Printing
             // document's PrintPage event.
             FDocument.PrintPage += new PrintPageEventHandler(this.PrintPage);
             FDocument.BeginPrint += new PrintEventHandler(this.BeginPrint);
+            FDocument.EndPrint += new PrintEventHandler(this.EndPrint);
 
-            // include(FDocument.EndPrint, EndPrint);
             FDocument.DefaultPageSettings.Landscape = (FOrientation == eOrientation.eLandscape);
         }
 
@@ -149,7 +149,7 @@ namespace Ict.Common.Printing
         /// </summary>
         /// <param name="ASender"></param>
         /// <param name="AEv"></param>
-        public void EndPrint(object ASender, PrintEventArgs AEv)
+        private void EndPrint(object ASender, PrintEventArgs AEv)
         {
             if ((FCurrentPageNr != 0) && (FNumberOfPages == 0))
             {
@@ -715,11 +715,29 @@ namespace Ict.Common.Printing
                  */
             }
 
-            FCurrentPageNr = FCurrentPageNr + 1;
+            FCurrentPageNr++;
+
+            if (AEv.PageSettings.PrinterSettings.PrintRange == PrintRange.SomePages)
+            {
+                if (AEv.PageSettings.PrinterSettings.FromPage > FCurrentPageNr)
+                {
+                    FCurrentPageNr = AEv.PageSettings.PrinterSettings.FromPage;
+                }
+            }
+
             FCurrentYPos = FTopMargin;
             FPrinterLayout.PrintPageHeader();
             FPrinterLayout.PrintPageBody();
             FPrinterLayout.PrintPageFooter();
+
+            if (AEv.PageSettings.PrinterSettings.PrintRange == PrintRange.SomePages)
+            {
+                if (FCurrentPageNr == AEv.PageSettings.PrinterSettings.ToPage)
+                {
+                    SetHasMorePages(false);
+                    return;
+                }
+            }
         }
     }
 }

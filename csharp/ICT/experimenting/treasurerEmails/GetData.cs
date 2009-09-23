@@ -459,7 +459,8 @@ public class TGetTreasurerData
         return emails;
     }
 
-    private enum eShortNameFormat {
+    private enum eShortNameFormat
+    {
         eShortname, eReverseShortname, eOnlyTitle, eReverseWithoutTitle
     };
 

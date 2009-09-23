@@ -61,13 +61,19 @@ partial class MainForm
         this.btnGenerateEmails = new System.Windows.Forms.ToolStripButton();
         this.btnSendOneEmail = new System.Windows.Forms.ToolStripButton();
         this.btnSendAllEmails = new System.Windows.Forms.ToolStripButton();
-        this.tbbPrintSelectedLetters = new System.Windows.Forms.ToolStripButton();
-        this.tbbPrintAllLetters = new System.Windows.Forms.ToolStripButton();
         this.tabOutput = new System.Windows.Forms.TabControl();
         this.tpgEmails = new System.Windows.Forms.TabPage();
         this.brwEmailContent = new System.Windows.Forms.WebBrowser();
         this.grdEmails = new System.Windows.Forms.DataGridView();
         this.tpgLetters = new System.Windows.Forms.TabPage();
+        this.preLetter = new System.Windows.Forms.PrintPreviewControl();
+        this.toolStrip2 = new System.Windows.Forms.ToolStrip();
+        this.tbbPrevPage = new System.Windows.Forms.ToolStripButton();
+        this.tbbNextPage = new System.Windows.Forms.ToolStripButton();
+        this.txtCurrentPage = new System.Windows.Forms.ToolStripTextBox();
+        this.lblTotalNumberPages = new System.Windows.Forms.ToolStripLabel();
+        this.tbbPrintCurrentPage = new System.Windows.Forms.ToolStripButton();
+        this.tbbPrintAllPages = new System.Windows.Forms.ToolStripButton();
         this.grdLetters = new System.Windows.Forms.DataGridView();
         this.panel1 = new System.Windows.Forms.Panel();
         this.chkLettersOnly = new System.Windows.Forms.CheckBox();
@@ -75,12 +81,12 @@ partial class MainForm
         this.nudNumberMonths = new System.Windows.Forms.NumericUpDown();
         this.label1 = new System.Windows.Forms.Label();
         this.dtpLastMonth = new System.Windows.Forms.DateTimePicker();
-        this.preLetter = new System.Windows.Forms.PrintPreviewControl();
         this.toolStrip1.SuspendLayout();
         this.tabOutput.SuspendLayout();
         this.tpgEmails.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.grdEmails)).BeginInit();
         this.tpgLetters.SuspendLayout();
+        this.toolStrip2.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.grdLetters)).BeginInit();
         this.panel1.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.nudNumberMonths)).BeginInit();
@@ -92,9 +98,7 @@ partial class MainForm
         this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                 this.btnGenerateEmails,
                 this.btnSendOneEmail,
-                this.btnSendAllEmails,
-                this.tbbPrintSelectedLetters,
-                this.tbbPrintAllLetters
+                this.btnSendAllEmails
             });
         this.toolStrip1.Location = new System.Drawing.Point(0, 0);
         this.toolStrip1.Name = "toolStrip1";
@@ -134,26 +138,6 @@ partial class MainForm
         this.btnSendAllEmails.Size = new System.Drawing.Size(80, 22);
         this.btnSendAllEmails.Text = "Send all Emails";
         this.btnSendAllEmails.Click += new System.EventHandler(this.BtnSendAllEmailsClick);
-
-        //
-        // tbbPrintSelectedLetters
-        //
-        this.tbbPrintSelectedLetters.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-        this.tbbPrintSelectedLetters.Image = ((System.Drawing.Image)(resources.GetObject("tbbPrintSelectedLetters.Image")));
-        this.tbbPrintSelectedLetters.ImageTransparentColor = System.Drawing.Color.Magenta;
-        this.tbbPrintSelectedLetters.Name = "tbbPrintSelectedLetters";
-        this.tbbPrintSelectedLetters.Size = new System.Drawing.Size(113, 22);
-        this.tbbPrintSelectedLetters.Text = "Print selected Letters";
-
-        //
-        // tbbPrintAllLetters
-        //
-        this.tbbPrintAllLetters.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-        this.tbbPrintAllLetters.Image = ((System.Drawing.Image)(resources.GetObject("tbbPrintAllLetters.Image")));
-        this.tbbPrintAllLetters.ImageTransparentColor = System.Drawing.Color.Magenta;
-        this.tbbPrintAllLetters.Name = "tbbPrintAllLetters";
-        this.tbbPrintAllLetters.Size = new System.Drawing.Size(83, 22);
-        this.tbbPrintAllLetters.Text = "Print all Letters";
 
         //
         // tabOutput
@@ -205,6 +189,7 @@ partial class MainForm
         // tpgLetters
         //
         this.tpgLetters.Controls.Add(this.preLetter);
+        this.tpgLetters.Controls.Add(this.toolStrip2);
         this.tpgLetters.Controls.Add(this.grdLetters);
         this.tpgLetters.Location = new System.Drawing.Point(4, 22);
         this.tpgLetters.Name = "tpgLetters";
@@ -215,6 +200,89 @@ partial class MainForm
         this.tpgLetters.UseVisualStyleBackColor = true;
 
         //
+        // preLetter
+        //
+        this.preLetter.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.preLetter.Location = new System.Drawing.Point(3, 178);
+        this.preLetter.Name = "preLetter";
+        this.preLetter.Size = new System.Drawing.Size(587, 120);
+        this.preLetter.TabIndex = 8;
+
+        //
+        // toolStrip2
+        //
+        this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                this.txtCurrentPage,
+                this.lblTotalNumberPages,
+                this.tbbPrevPage,
+                this.tbbNextPage,
+                this.tbbPrintCurrentPage,
+                this.tbbPrintAllPages
+            });
+        this.toolStrip2.Location = new System.Drawing.Point(3, 153);
+        this.toolStrip2.Name = "toolStrip2";
+        this.toolStrip2.Size = new System.Drawing.Size(587, 25);
+        this.toolStrip2.TabIndex = 9;
+        this.toolStrip2.Text = "toolStrip2";
+
+        //
+        // tbbPrevPage
+        //
+        this.tbbPrevPage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+        this.tbbPrevPage.Image = ((System.Drawing.Image)(resources.GetObject("tbbPrevPage.Image")));
+        this.tbbPrevPage.ImageTransparentColor = System.Drawing.Color.Magenta;
+        this.tbbPrevPage.Name = "tbbPrevPage";
+        this.tbbPrevPage.Size = new System.Drawing.Size(79, 22);
+        this.tbbPrevPage.Text = "Previous Page";
+        this.tbbPrevPage.Click += new System.EventHandler(this.TbbPrevPageClick);
+
+        //
+        // tbbNextPage
+        //
+        this.tbbNextPage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+        this.tbbNextPage.Image = ((System.Drawing.Image)(resources.GetObject("tbbNextPage.Image")));
+        this.tbbNextPage.ImageTransparentColor = System.Drawing.Color.Magenta;
+        this.tbbNextPage.Name = "tbbNextPage";
+        this.tbbNextPage.Size = new System.Drawing.Size(61, 22);
+        this.tbbNextPage.Text = "Next Page";
+        this.tbbNextPage.Click += new System.EventHandler(this.TbbNextPageClick);
+
+        //
+        // txtCurrentPage
+        //
+        this.txtCurrentPage.Name = "txtCurrentPage";
+        this.txtCurrentPage.Size = new System.Drawing.Size(50, 25);
+        this.txtCurrentPage.TextChanged += new System.EventHandler(this.TxtCurrentPageTextChanged);
+
+        //
+        // lblTotalNumberPages
+        //
+        this.lblTotalNumberPages.Name = "lblTotalNumberPages";
+        this.lblTotalNumberPages.Size = new System.Drawing.Size(97, 22);
+        this.lblTotalNumberPages.Text = "#Number of pages";
+
+        //
+        // tbbPrintCurrentPage
+        //
+        this.tbbPrintCurrentPage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+        this.tbbPrintCurrentPage.Image = ((System.Drawing.Image)(resources.GetObject("tbbPrintCurrentPage.Image")));
+        this.tbbPrintCurrentPage.ImageTransparentColor = System.Drawing.Color.Magenta;
+        this.tbbPrintCurrentPage.Name = "tbbPrintCurrentPage";
+        this.tbbPrintCurrentPage.Size = new System.Drawing.Size(100, 22);
+        this.tbbPrintCurrentPage.Text = "Print Current Page";
+        this.tbbPrintCurrentPage.Click += new System.EventHandler(this.TbbPrintCurrentPageClick);
+
+        //
+        // tbbPrintAllPages
+        //
+        this.tbbPrintAllPages.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+        this.tbbPrintAllPages.Image = ((System.Drawing.Image)(resources.GetObject("tbbPrintAllPages.Image")));
+        this.tbbPrintAllPages.ImageTransparentColor = System.Drawing.Color.Magenta;
+        this.tbbPrintAllPages.Name = "tbbPrintAllPages";
+        this.tbbPrintAllPages.Size = new System.Drawing.Size(79, 22);
+        this.tbbPrintAllPages.Text = "Print All Pages";
+
+        //
         // grdLetters
         //
         this.grdLetters.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -223,7 +291,7 @@ partial class MainForm
         this.grdLetters.Name = "grdLetters";
         this.grdLetters.Size = new System.Drawing.Size(587, 150);
         this.grdLetters.TabIndex = 7;
-        this.grdLetters.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.GrdLettersCellEnter);
+        this.grdLetters.SelectionChanged += new System.EventHandler(this.GrdLettersSelectionChanged);
 
         //
         // panel1
@@ -294,15 +362,6 @@ partial class MainForm
         this.dtpLastMonth.TabIndex = 8;
 
         //
-        // preLetter
-        //
-        this.preLetter.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.preLetter.Location = new System.Drawing.Point(3, 153);
-        this.preLetter.Name = "preLetter";
-        this.preLetter.Size = new System.Drawing.Size(587, 145);
-        this.preLetter.TabIndex = 8;
-
-        //
         // MainForm
         //
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -319,12 +378,23 @@ partial class MainForm
         this.tpgEmails.ResumeLayout(false);
         ((System.ComponentModel.ISupportInitialize)(this.grdEmails)).EndInit();
         this.tpgLetters.ResumeLayout(false);
+        this.tpgLetters.PerformLayout();
+        this.toolStrip2.ResumeLayout(false);
+        this.toolStrip2.PerformLayout();
         ((System.ComponentModel.ISupportInitialize)(this.grdLetters)).EndInit();
         this.panel1.ResumeLayout(false);
         ((System.ComponentModel.ISupportInitialize)(this.nudNumberMonths)).EndInit();
         this.ResumeLayout(false);
         this.PerformLayout();
     }
+
+    private System.Windows.Forms.ToolStripTextBox txtCurrentPage;
+    private System.Windows.Forms.ToolStripButton tbbPrintAllPages;
+    private System.Windows.Forms.ToolStripButton tbbPrintCurrentPage;
+    private System.Windows.Forms.ToolStripLabel lblTotalNumberPages;
+    private System.Windows.Forms.ToolStripButton tbbNextPage;
+    private System.Windows.Forms.ToolStripButton tbbPrevPage;
+    private System.Windows.Forms.ToolStrip toolStrip2;
 
     private System.Windows.Forms.PrintPreviewControl preLetter;
     private System.Windows.Forms.CheckBox chkLettersOnly;
@@ -335,8 +405,6 @@ partial class MainForm
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.Panel panel1;
     private System.Windows.Forms.DataGridView grdLetters;
-    private System.Windows.Forms.ToolStripButton tbbPrintAllLetters;
-    private System.Windows.Forms.ToolStripButton tbbPrintSelectedLetters;
     private System.Windows.Forms.TabPage tpgLetters;
     private System.Windows.Forms.TabPage tpgEmails;
     private System.Windows.Forms.TabControl tabOutput;
