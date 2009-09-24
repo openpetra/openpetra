@@ -51,14 +51,38 @@ public partial class MainForm : Form
         //
         InitializeComponent();
 
+        grdAllWorkers.Columns.Add("id", "ID");
+        grdAllWorkers.Columns.Add("sendas", "Send As");
+        grdAllWorkers.Columns.Add("treasurer", "Treasurer");
+        grdAllWorkers.Columns.Add("treasurerkey", "Treasurer Key");
+        grdAllWorkers.Columns.Add("worker", "Worker");
+        grdAllWorkers.Columns.Add("workerkey", "Worker Key");
+        grdAllWorkers.Columns.Add("error", "Error");
+        grdAllWorkers.Columns[0].Width = 30;
+        grdAllWorkers.Columns[1].Width = 80;
+        grdAllWorkers.Columns[2].Width = 150;
+        grdAllWorkers.Columns[3].Width = 100;
+        grdAllWorkers.Columns[4].Width = 150;
+        grdAllWorkers.Columns[5].Width = 100;
+        grdAllWorkers.Columns[6].Width = 400;
+        grdAllWorkers.ReadOnly = true;
+        grdAllWorkers.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        grdAllWorkers.MultiSelect = false;
+        grdAllWorkers.AllowUserToAddRows = false;
+        grdAllWorkers.RowHeadersVisible = false;
+
         grdEmails.Columns.Add("id", "ID");
         grdEmails.Columns.Add("sent", "Send Date");
         grdEmails.Columns.Add("recipient", "To");
+        grdEmails.Columns.Add("recipientshortname", "RecipientName");
         grdEmails.Columns.Add("subject", "Subject");
+        grdEmails.Columns.Add("LetterMessagePointer", "LetterMessagePointer");
         grdEmails.Columns[0].Width = 30;
         grdEmails.Columns[1].Width = 100;
         grdEmails.Columns[2].Width = 200;
-        grdEmails.Columns[3].Width = 400;
+        grdEmails.Columns[3].Width = 200;
+        grdEmails.Columns[4].Width = 400;
+        grdEmails.Columns[5].Visible = false;
         grdEmails.ReadOnly = true;
         grdEmails.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         grdEmails.MultiSelect = false;
@@ -80,43 +104,72 @@ public partial class MainForm : Form
         dtpLastMonth.Value = DateTime.Now.AddMonths(-1);
     }
 
-    private List <MailMessage>FEmails = null;
     private List <LetterMessage>FLetters = null;
 
-    /// <summary>
-    /// set the emails that are in the outbox
-    /// </summary>
-    /// <param name="AEmails"></param>
-    public void SetEmails(List <MailMessage>AEmails)
+    void RefreshStatistics()
     {
-        FEmails = AEmails;
-        RefreshGridEmails();
+        List <string>EmailRecipientsUnique = new List <string>();
+        List <Int64>LetterRecipientsUnique = new List <Int64>();
+        List <Int64>WorkersAlltogether = new List <Int64>();
+        Int32 CountInvalidAddressTreasurer = 0;
+        Int32 CountMissingTreasurer = 0;
 
-        if (FEmails.Count == 0)
+        foreach (LetterMessage msg in FLetters)
         {
-            tabOutput.SelectedTab = tpgLetters;
-        }
-    }
+            if (!WorkersAlltogether.Contains(msg.SubjectKey))
+            {
+                WorkersAlltogether.Add(msg.SubjectKey);
+            }
 
-    /// <summary>
-    /// set the letters to be printed
-    /// </summary>
-    /// <param name="AEmails"></param>
-    public void SetLetters(List <LetterMessage>ALetters)
-    {
-        FLetters = ALetters;
-        RefreshGridLetters();
-        PreparePrintLetters();
+            if (msg.ErrorMessage == "NOADDRESS")
+            {
+                CountInvalidAddressTreasurer++;
+            }
+            else if (msg.ErrorMessage == "NOTREASURER")
+            {
+                CountMissingTreasurer++;
+            }
+            else
+            {
+                if (msg.SendAsEmail() && !EmailRecipientsUnique.Contains(msg.MessageRecipientShortName))
+                {
+                    EmailRecipientsUnique.Add(msg.MessageRecipientShortName);
+                }
+
+                if (msg.SendAsLetter() && !LetterRecipientsUnique.Contains(msg.MessageRecipientKey))
+                {
+                    LetterRecipientsUnique.Add(msg.MessageRecipientKey);
+                }
+            }
+        }
+
+        txtTreasurersEmail.Text = EmailRecipientsUnique.Count.ToString();
+        txtTreasurersLetter.Text = LetterRecipientsUnique.Count.ToString();
+
+
+        // TODO
+        txtNumberOfWorkersReceivingDonations.Text = WorkersAlltogether.ToString();
+        txtWorkersWithTreasurer.Text = (WorkersAlltogether.Count - CountMissingTreasurer).ToString();
+        txtNumberOfUniqueTreasurers.Text = (EmailRecipientsUnique.Count + LetterRecipientsUnique.Count).ToString();
+        txtWorkersWithoutTreasurer.Text = CountMissingTreasurer.ToString();
+        txtTreasurerInvalidAddress.Text = CountInvalidAddressTreasurer.ToString();
     }
 
     void RefreshGridEmails()
     {
         grdEmails.Rows.Clear();
 
-        foreach (MailMessage email in FEmails)
+        foreach (LetterMessage email in FLetters)
         {
-            grdEmails.Rows.Add(new object[] { grdEmails.Rows.Count + 1, email.Headers.Get("Date-Sent"),
-                                              email.To.ToString(), email.Subject });
+            if (email.SendAsEmail())
+            {
+                grdEmails.Rows.Add(new object[] { grdEmails.Rows.Count + 1,
+                                                  email.EmailMessage.Headers.Get("Date-Sent"),
+                                                  email.EmailMessage.To.ToString(),
+                                                  email.MessageRecipientShortName,
+                                                  email.EmailMessage.Subject,
+                                                  email });
+            }
         }
     }
 
@@ -126,23 +179,55 @@ public partial class MainForm : Form
 
         foreach (LetterMessage letter in FLetters)
         {
-            grdLetters.Rows.Add(new object[] { grdLetters.Rows.Count + 1, letter.RecipientShortName, letter.Subject });
+            if (letter.SendAsLetter())
+            {
+                grdLetters.Rows.Add(new object[] { grdLetters.Rows.Count + 1, letter.MessageRecipientShortName, letter.Subject });
+            }
+        }
+    }
+
+    void RefreshWorkers()
+    {
+        List <Int64>workers = new List <Int64>();
+
+        grdAllWorkers.Rows.Clear();
+
+        foreach (LetterMessage m in FLetters)
+        {
+            string localisedErrormessage = m.ErrorMessage;
+
+            if (localisedErrormessage == "NOTREASURER")
+            {
+                localisedErrormessage = Catalog.GetString("No treasurer assigned to this worker");
+            }
+            else if (localisedErrormessage == "NOADDRESS")
+            {
+                localisedErrormessage = Catalog.GetString("There is no valid address for the treasurer");
+            }
+
+            grdAllWorkers.Rows.Add(new object[] { grdAllWorkers.Rows.Count + 1,
+                                                  m.ErrorMessage.Length > 0 ? "Nothing" : ((m.EmailMessage != null) ? "Email" : "Letter"),
+                                                  m.MessageRecipientShortName,
+                                                  m.MessageRecipientKey,
+                                                  m.SubjectShortName,
+                                                  m.SubjectKey,
+                                                  localisedErrormessage });
         }
     }
 
     /// <summary>
-    /// select a row and display the email in the web browser control below the list
+    /// display the email in the web browser control below the list
     /// </summary>
-    /// <param name="ARow"></param>
-    void SelectEmailRow(int ARow)
+    void DisplayEmail(LetterMessage ALetterMessage)
     {
-        if ((FEmails == null) || (ARow < 0) || (ARow >= FEmails.Count))
+        MailMessage selectedMail = ALetterMessage.EmailMessage;
+
+        if (selectedMail == null)
         {
-            // invalid row
+            // should not get here
             return;
         }
 
-        MailMessage selectedMail = FEmails[ARow];
         string header = "<html><body>";
         header += String.Format("{0}: {1}<br/>",
             Catalog.GetString("From"),
@@ -205,17 +290,20 @@ public partial class MainForm : Form
 
             foreach (LetterMessage letter in FLetters)
             {
-                if (AllLetters.Length > 0)
+                if (letter.SendAsLetter())
                 {
-                    // AllLetters += "<div style=\"page-break-before: always;\"/>";
-                    string body = letter.HtmlMessage.Substring(letter.HtmlMessage.IndexOf("<body"));
-                    body = body.Substring(0, body.IndexOf("</html"));
-                    AllLetters += body;
-                }
-                else
-                {
-                    // without closing html
-                    AllLetters += letter.HtmlMessage.Substring(0, letter.HtmlMessage.IndexOf("</html"));
+                    if (AllLetters.Length > 0)
+                    {
+                        // AllLetters += "<div style=\"page-break-before: always;\"/>";
+                        string body = letter.HtmlMessage.Substring(letter.HtmlMessage.IndexOf("<body"));
+                        body = body.Substring(0, body.IndexOf("</html"));
+                        AllLetters += body;
+                    }
+                    else
+                    {
+                        // without closing html
+                        AllLetters += letter.HtmlMessage.Substring(0, letter.HtmlMessage.IndexOf("</html"));
+                    }
                 }
             }
 
@@ -252,7 +340,18 @@ public partial class MainForm : Form
 
     void GrdEmailsCellEnter(object sender, DataGridViewCellEventArgs e)
     {
-        SelectEmailRow(e.RowIndex);
+        if (grdEmails.SelectedRows.Count == 0)
+        {
+            grdEmails.Rows[0].Selected = true;
+        }
+
+        if (grdEmails.SelectedRows.Count == 1)
+        {
+            DataGridViewRow row = grdEmails.SelectedRows[0];
+            DataGridViewCell cell = row.Cells["LetterMessagePointer"];
+            LetterMessage msg = (LetterMessage)cell.Value;
+            DisplayEmail(msg);
+        }
     }
 
     private TSmtpSender CreateConnection()
@@ -262,31 +361,35 @@ public partial class MainForm : Form
 
     void BtnSendOneEmailClick(object sender, EventArgs e)
     {
-        TSmtpSender smtp = CreateConnection();
-
-        if (grdEmails.SelectedRows.Count == 1)
-        {
-            MailMessage selectedMail = FEmails[grdEmails.SelectedRows[0].Index];
-            smtp.SendMessage(ref selectedMail);
-            RefreshGridEmails();
-        }
+        /*
+         * TSmtpSender smtp = CreateConnection();
+         *
+         * if (grdEmails.SelectedRows.Count == 1)
+         * {
+         *  MailMessage selectedMail = FEmails[grdEmails.SelectedRows[0].Index];
+         *  smtp.SendMessage(ref selectedMail);
+         *  RefreshGridEmails();
+         * }
+         */
     }
 
     void BtnSendAllEmailsClick(object sender, EventArgs e)
     {
-        TSmtpSender smtp = CreateConnection();
-
-        for (Int16 Count = 0; Count < FEmails.Count; Count++)
-        {
-            MailMessage mail = FEmails[Count];
-
-            if (!smtp.SendMessage(ref mail))
-            {
-                return;
-            }
-
-            RefreshGridEmails();
-        }
+        /*
+         * TSmtpSender smtp = CreateConnection();
+         *
+         * for (Int16 Count = 0; Count < FEmails.Count; Count++)
+         * {
+         *  MailMessage mail = FEmails[Count];
+         *
+         *  if (!smtp.SendMessage(ref mail))
+         *  {
+         *      return;
+         *  }
+         *
+         *  RefreshGridEmails();
+         * }
+         */
     }
 
     void BtnGenerateEmailsClick(object sender, EventArgs e)
@@ -327,8 +430,26 @@ public partial class MainForm : Form
             Cursor = Cursors.Default;
         }
 #endif
-        SetEmails(TGetTreasurerData.GenerateEmails(allTreasurerEmails, settings.GetValue("senderemailaddress"), chkLettersOnly.Checked));
-        SetLetters(TGetTreasurerData.GenerateLetters(allTreasurerEmails, chkLettersOnly.Checked));
+
+        FLetters = TGetTreasurerData.GenerateMessages(allTreasurerEmails, settings.GetValue("senderemailaddress"), chkLettersOnly.Checked);
+
+        RefreshWorkers();
+        RefreshGridLetters();
+        RefreshGridEmails();
+        PreparePrintLetters();
+        RefreshStatistics();
+
+        List <Int64>NumberWorkersWithGifts = new List <Int64>();
+
+        foreach (DataRow row in allTreasurerEmails.Tables[TGetTreasurerData.GIFTSTABLE].Rows)
+        {
+            if (!NumberWorkersWithGifts.Contains(Convert.ToInt64(row["RecipientKey"])))
+            {
+                NumberWorkersWithGifts.Add(Convert.ToInt64(row["RecipientKey"]));
+            }
+        }
+
+        txtNumberOfWorkersReceivingDonations.Text = NumberWorkersWithGifts.Count.ToString();
     }
 
     void RefreshPagePosition()
@@ -372,15 +493,27 @@ public partial class MainForm : Form
         }
     }
 
+    /// get the currently selected row, the appropriate ID, and scroll to the printed page
     void GrdLettersSelectionChanged(object sender, System.EventArgs e)
     {
-        //SelectLetterRow(e.RowIndex);
-        // TODO: get the currently selected row, the appropriate ID, and scroll to the printed page
+        if (grdLetters.SelectedRows.Count > 0)
+        {
+            Int32 Id = Convert.ToInt32(grdLetters.SelectedRows[0].Cells["Id"].Value);
+            preLetter.StartPage = Id - 1;
+            RefreshPagePosition();
+        }
     }
 
+    /// select the appropriate row in the grid
     void SelectInGrid(Int32 AId)
     {
-        // TODO select the appropriate row in the grid
+        foreach (DataGridViewRow rowview in grdLetters.Rows)
+        {
+            if (rowview.Cells["Id"].Value.ToString() == AId.ToString())
+            {
+                rowview.Cells["Id"].Selected = true;
+            }
+        }
     }
 
     Int32 GetIndexFromRow(DataGridViewRow ARow)
@@ -401,7 +534,20 @@ public partial class MainForm : Form
 
         if (dlg.ShowDialog() == DialogResult.OK)
         {
-            //FGfxPrinter.Document.PrinterSettings = dlg.PrinterSettings;
+            dlg.Document.Print();
+        }
+    }
+
+    void TbbPrintClick(object sender, System.EventArgs e)
+    {
+        PrintDialog dlg = new PrintDialog();
+
+        dlg.Document = FGfxPrinter.Document;
+        dlg.AllowCurrentPage = true;
+        dlg.AllowSomePages = true;
+
+        if (dlg.ShowDialog() == DialogResult.OK)
+        {
             dlg.Document.Print();
         }
     }

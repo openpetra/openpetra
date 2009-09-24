@@ -62,19 +62,36 @@ partial class MainForm
         this.btnSendOneEmail = new System.Windows.Forms.ToolStripButton();
         this.btnSendAllEmails = new System.Windows.Forms.ToolStripButton();
         this.tabOutput = new System.Windows.Forms.TabControl();
+        this.tpgAllWorkers = new System.Windows.Forms.TabPage();
+        this.grdAllWorkers = new System.Windows.Forms.DataGridView();
         this.tpgEmails = new System.Windows.Forms.TabPage();
         this.brwEmailContent = new System.Windows.Forms.WebBrowser();
         this.grdEmails = new System.Windows.Forms.DataGridView();
         this.tpgLetters = new System.Windows.Forms.TabPage();
         this.preLetter = new System.Windows.Forms.PrintPreviewControl();
         this.toolStrip2 = new System.Windows.Forms.ToolStrip();
-        this.tbbPrevPage = new System.Windows.Forms.ToolStripButton();
-        this.tbbNextPage = new System.Windows.Forms.ToolStripButton();
         this.txtCurrentPage = new System.Windows.Forms.ToolStripTextBox();
         this.lblTotalNumberPages = new System.Windows.Forms.ToolStripLabel();
+        this.tbbPrevPage = new System.Windows.Forms.ToolStripButton();
+        this.tbbNextPage = new System.Windows.Forms.ToolStripButton();
         this.tbbPrintCurrentPage = new System.Windows.Forms.ToolStripButton();
-        this.tbbPrintAllPages = new System.Windows.Forms.ToolStripButton();
+        this.tbbPrint = new System.Windows.Forms.ToolStripButton();
         this.grdLetters = new System.Windows.Forms.DataGridView();
+        this.tpgStatistics = new System.Windows.Forms.TabPage();
+        this.txtWorkersWithoutTreasurer = new System.Windows.Forms.TextBox();
+        this.label9 = new System.Windows.Forms.Label();
+        this.txtWorkersWithTreasurer = new System.Windows.Forms.TextBox();
+        this.label8 = new System.Windows.Forms.Label();
+        this.txtTreasurerInvalidAddress = new System.Windows.Forms.TextBox();
+        this.label7 = new System.Windows.Forms.Label();
+        this.txtTreasurersLetter = new System.Windows.Forms.TextBox();
+        this.label6 = new System.Windows.Forms.Label();
+        this.txtTreasurersEmail = new System.Windows.Forms.TextBox();
+        this.label5 = new System.Windows.Forms.Label();
+        this.txtNumberOfUniqueTreasurers = new System.Windows.Forms.TextBox();
+        this.label4 = new System.Windows.Forms.Label();
+        this.txtNumberOfWorkersReceivingDonations = new System.Windows.Forms.TextBox();
+        this.label3 = new System.Windows.Forms.Label();
         this.panel1 = new System.Windows.Forms.Panel();
         this.chkLettersOnly = new System.Windows.Forms.CheckBox();
         this.label2 = new System.Windows.Forms.Label();
@@ -83,11 +100,14 @@ partial class MainForm
         this.dtpLastMonth = new System.Windows.Forms.DateTimePicker();
         this.toolStrip1.SuspendLayout();
         this.tabOutput.SuspendLayout();
+        this.tpgAllWorkers.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)(this.grdAllWorkers)).BeginInit();
         this.tpgEmails.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.grdEmails)).BeginInit();
         this.tpgLetters.SuspendLayout();
         this.toolStrip2.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.grdLetters)).BeginInit();
+        this.tpgStatistics.SuspendLayout();
         this.panel1.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.nudNumberMonths)).BeginInit();
         this.SuspendLayout();
@@ -142,14 +162,38 @@ partial class MainForm
         //
         // tabOutput
         //
+        this.tabOutput.Controls.Add(this.tpgAllWorkers);
         this.tabOutput.Controls.Add(this.tpgEmails);
         this.tabOutput.Controls.Add(this.tpgLetters);
+        this.tabOutput.Controls.Add(this.tpgStatistics);
         this.tabOutput.Dock = System.Windows.Forms.DockStyle.Fill;
         this.tabOutput.Location = new System.Drawing.Point(0, 53);
         this.tabOutput.Name = "tabOutput";
         this.tabOutput.SelectedIndex = 0;
         this.tabOutput.Size = new System.Drawing.Size(601, 327);
-        this.tabOutput.TabIndex = 6;
+        this.tabOutput.TabIndex = 0;
+
+        //
+        // tpgAllWorkers
+        //
+        this.tpgAllWorkers.Controls.Add(this.grdAllWorkers);
+        this.tpgAllWorkers.Location = new System.Drawing.Point(4, 22);
+        this.tpgAllWorkers.Name = "tpgAllWorkers";
+        this.tpgAllWorkers.Padding = new System.Windows.Forms.Padding(3);
+        this.tpgAllWorkers.Size = new System.Drawing.Size(593, 301);
+        this.tpgAllWorkers.TabIndex = 4;
+        this.tpgAllWorkers.Text = "All";
+        this.tpgAllWorkers.UseVisualStyleBackColor = true;
+
+        //
+        // grdAllWorkers
+        //
+        this.grdAllWorkers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        this.grdAllWorkers.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.grdAllWorkers.Location = new System.Drawing.Point(3, 3);
+        this.grdAllWorkers.Name = "grdAllWorkers";
+        this.grdAllWorkers.Size = new System.Drawing.Size(587, 295);
+        this.grdAllWorkers.TabIndex = 6;
 
         //
         // tpgEmails
@@ -217,13 +261,27 @@ partial class MainForm
                 this.tbbPrevPage,
                 this.tbbNextPage,
                 this.tbbPrintCurrentPage,
-                this.tbbPrintAllPages
+                this.tbbPrint
             });
         this.toolStrip2.Location = new System.Drawing.Point(3, 153);
         this.toolStrip2.Name = "toolStrip2";
         this.toolStrip2.Size = new System.Drawing.Size(587, 25);
         this.toolStrip2.TabIndex = 9;
         this.toolStrip2.Text = "toolStrip2";
+
+        //
+        // txtCurrentPage
+        //
+        this.txtCurrentPage.Name = "txtCurrentPage";
+        this.txtCurrentPage.Size = new System.Drawing.Size(50, 25);
+        this.txtCurrentPage.TextChanged += new System.EventHandler(this.TxtCurrentPageTextChanged);
+
+        //
+        // lblTotalNumberPages
+        //
+        this.lblTotalNumberPages.Name = "lblTotalNumberPages";
+        this.lblTotalNumberPages.Size = new System.Drawing.Size(97, 22);
+        this.lblTotalNumberPages.Text = "#Number of pages";
 
         //
         // tbbPrevPage
@@ -248,20 +306,6 @@ partial class MainForm
         this.tbbNextPage.Click += new System.EventHandler(this.TbbNextPageClick);
 
         //
-        // txtCurrentPage
-        //
-        this.txtCurrentPage.Name = "txtCurrentPage";
-        this.txtCurrentPage.Size = new System.Drawing.Size(50, 25);
-        this.txtCurrentPage.TextChanged += new System.EventHandler(this.TxtCurrentPageTextChanged);
-
-        //
-        // lblTotalNumberPages
-        //
-        this.lblTotalNumberPages.Name = "lblTotalNumberPages";
-        this.lblTotalNumberPages.Size = new System.Drawing.Size(97, 22);
-        this.lblTotalNumberPages.Text = "#Number of pages";
-
-        //
         // tbbPrintCurrentPage
         //
         this.tbbPrintCurrentPage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -273,14 +317,15 @@ partial class MainForm
         this.tbbPrintCurrentPage.Click += new System.EventHandler(this.TbbPrintCurrentPageClick);
 
         //
-        // tbbPrintAllPages
+        // tbbPrint
         //
-        this.tbbPrintAllPages.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-        this.tbbPrintAllPages.Image = ((System.Drawing.Image)(resources.GetObject("tbbPrintAllPages.Image")));
-        this.tbbPrintAllPages.ImageTransparentColor = System.Drawing.Color.Magenta;
-        this.tbbPrintAllPages.Name = "tbbPrintAllPages";
-        this.tbbPrintAllPages.Size = new System.Drawing.Size(79, 22);
-        this.tbbPrintAllPages.Text = "Print All Pages";
+        this.tbbPrint.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+        this.tbbPrint.Image = ((System.Drawing.Image)(resources.GetObject("tbbPrint.Image")));
+        this.tbbPrint.ImageTransparentColor = System.Drawing.Color.Magenta;
+        this.tbbPrint.Name = "tbbPrint";
+        this.tbbPrint.Size = new System.Drawing.Size(33, 22);
+        this.tbbPrint.Text = "Print";
+        this.tbbPrint.Click += new System.EventHandler(this.TbbPrintClick);
 
         //
         // grdLetters
@@ -292,6 +337,157 @@ partial class MainForm
         this.grdLetters.Size = new System.Drawing.Size(587, 150);
         this.grdLetters.TabIndex = 7;
         this.grdLetters.SelectionChanged += new System.EventHandler(this.GrdLettersSelectionChanged);
+
+        //
+        // tpgStatistics
+        //
+        this.tpgStatistics.Controls.Add(this.txtWorkersWithoutTreasurer);
+        this.tpgStatistics.Controls.Add(this.label9);
+        this.tpgStatistics.Controls.Add(this.txtWorkersWithTreasurer);
+        this.tpgStatistics.Controls.Add(this.label8);
+        this.tpgStatistics.Controls.Add(this.txtTreasurerInvalidAddress);
+        this.tpgStatistics.Controls.Add(this.label7);
+        this.tpgStatistics.Controls.Add(this.txtTreasurersLetter);
+        this.tpgStatistics.Controls.Add(this.label6);
+        this.tpgStatistics.Controls.Add(this.txtTreasurersEmail);
+        this.tpgStatistics.Controls.Add(this.label5);
+        this.tpgStatistics.Controls.Add(this.txtNumberOfUniqueTreasurers);
+        this.tpgStatistics.Controls.Add(this.label4);
+        this.tpgStatistics.Controls.Add(this.txtNumberOfWorkersReceivingDonations);
+        this.tpgStatistics.Controls.Add(this.label3);
+        this.tpgStatistics.Location = new System.Drawing.Point(4, 22);
+        this.tpgStatistics.Name = "tpgStatistics";
+        this.tpgStatistics.Padding = new System.Windows.Forms.Padding(3);
+        this.tpgStatistics.Size = new System.Drawing.Size(593, 301);
+        this.tpgStatistics.TabIndex = 3;
+        this.tpgStatistics.Text = "Statistics";
+        this.tpgStatistics.UseVisualStyleBackColor = true;
+
+        //
+        // txtWorkersWithoutTreasurer
+        //
+        this.txtWorkersWithoutTreasurer.Location = new System.Drawing.Point(24, 77);
+        this.txtWorkersWithoutTreasurer.Name = "txtWorkersWithoutTreasurer";
+        this.txtWorkersWithoutTreasurer.ReadOnly = true;
+        this.txtWorkersWithoutTreasurer.Size = new System.Drawing.Size(100, 20);
+        this.txtWorkersWithoutTreasurer.TabIndex = 13;
+
+        //
+        // label9
+        //
+        this.label9.Location = new System.Drawing.Point(130, 80);
+        this.label9.Name = "label9";
+        this.label9.Size = new System.Drawing.Size(364, 23);
+        this.label9.TabIndex = 12;
+        this.label9.Text = "workers have no treasurer";
+
+        //
+        // txtWorkersWithTreasurer
+        //
+        this.txtWorkersWithTreasurer.Location = new System.Drawing.Point(24, 50);
+        this.txtWorkersWithTreasurer.Name = "txtWorkersWithTreasurer";
+        this.txtWorkersWithTreasurer.ReadOnly = true;
+        this.txtWorkersWithTreasurer.Size = new System.Drawing.Size(100, 20);
+        this.txtWorkersWithTreasurer.TabIndex = 11;
+
+        //
+        // label8
+        //
+        this.label8.Location = new System.Drawing.Point(130, 53);
+        this.label8.Name = "label8";
+        this.label8.Size = new System.Drawing.Size(364, 23);
+        this.label8.TabIndex = 10;
+        this.label8.Text = "workers have at least one treasurer";
+
+        //
+        // txtTreasurerInvalidAddress
+        //
+        this.txtTreasurerInvalidAddress.Location = new System.Drawing.Point(24, 208);
+        this.txtTreasurerInvalidAddress.Name = "txtTreasurerInvalidAddress";
+        this.txtTreasurerInvalidAddress.ReadOnly = true;
+        this.txtTreasurerInvalidAddress.Size = new System.Drawing.Size(100, 20);
+        this.txtTreasurerInvalidAddress.TabIndex = 9;
+
+        //
+        // label7
+        //
+        this.label7.Location = new System.Drawing.Point(130, 211);
+        this.label7.Name = "label7";
+        this.label7.Size = new System.Drawing.Size(364, 23);
+        this.label7.TabIndex = 8;
+        this.label7.Text = "treasurers have invalid address details";
+
+        //
+        // txtTreasurersLetter
+        //
+        this.txtTreasurersLetter.Location = new System.Drawing.Point(24, 182);
+        this.txtTreasurersLetter.Name = "txtTreasurersLetter";
+        this.txtTreasurersLetter.ReadOnly = true;
+        this.txtTreasurersLetter.Size = new System.Drawing.Size(100, 20);
+        this.txtTreasurersLetter.TabIndex = 7;
+
+        //
+        // label6
+        //
+        this.label6.Location = new System.Drawing.Point(130, 185);
+        this.label6.Name = "label6";
+        this.label6.Size = new System.Drawing.Size(364, 23);
+        this.label6.TabIndex = 6;
+        this.label6.Text = "treasurers receive their update via printed letter";
+
+        //
+        // txtTreasurersEmail
+        //
+        this.txtTreasurersEmail.Location = new System.Drawing.Point(24, 156);
+        this.txtTreasurersEmail.Name = "txtTreasurersEmail";
+        this.txtTreasurersEmail.ReadOnly = true;
+        this.txtTreasurersEmail.Size = new System.Drawing.Size(100, 20);
+        this.txtTreasurersEmail.TabIndex = 5;
+
+        //
+        // label5
+        //
+        this.label5.Location = new System.Drawing.Point(130, 159);
+        this.label5.Name = "label5";
+        this.label5.Size = new System.Drawing.Size(364, 23);
+        this.label5.TabIndex = 4;
+        this.label5.Text = "treasurers receive their update via email";
+
+        //
+        // txtNumberOfUniqueTreasurers
+        //
+        this.txtNumberOfUniqueTreasurers.Location = new System.Drawing.Point(24, 130);
+        this.txtNumberOfUniqueTreasurers.Name = "txtNumberOfUniqueTreasurers";
+        this.txtNumberOfUniqueTreasurers.ReadOnly = true;
+        this.txtNumberOfUniqueTreasurers.Size = new System.Drawing.Size(100, 20);
+        this.txtNumberOfUniqueTreasurers.TabIndex = 3;
+
+        //
+        // label4
+        //
+        this.label4.Location = new System.Drawing.Point(130, 133);
+        this.label4.Name = "label4";
+        this.label4.Size = new System.Drawing.Size(364, 23);
+        this.label4.TabIndex = 2;
+        this.label4.Text = "unique treasurers";
+
+        //
+        // txtNumberOfWorkersReceivingDonations
+        //
+        this.txtNumberOfWorkersReceivingDonations.Location = new System.Drawing.Point(24, 21);
+        this.txtNumberOfWorkersReceivingDonations.Name = "txtNumberOfWorkersReceivingDonations";
+        this.txtNumberOfWorkersReceivingDonations.ReadOnly = true;
+        this.txtNumberOfWorkersReceivingDonations.Size = new System.Drawing.Size(100, 20);
+        this.txtNumberOfWorkersReceivingDonations.TabIndex = 1;
+
+        //
+        // label3
+        //
+        this.label3.Location = new System.Drawing.Point(130, 24);
+        this.label3.Name = "label3";
+        this.label3.Size = new System.Drawing.Size(364, 23);
+        this.label3.TabIndex = 0;
+        this.label3.Text = "workers have received gifts in the last months";
 
         //
         // panel1
@@ -310,8 +506,6 @@ partial class MainForm
         //
         // chkLettersOnly
         //
-        this.chkLettersOnly.Checked = true;
-        this.chkLettersOnly.CheckState = System.Windows.Forms.CheckState.Checked;
         this.chkLettersOnly.Location = new System.Drawing.Point(428, 2);
         this.chkLettersOnly.Name = "chkLettersOnly";
         this.chkLettersOnly.Size = new System.Drawing.Size(166, 24);
@@ -375,6 +569,8 @@ partial class MainForm
         this.toolStrip1.ResumeLayout(false);
         this.toolStrip1.PerformLayout();
         this.tabOutput.ResumeLayout(false);
+        this.tpgAllWorkers.ResumeLayout(false);
+        ((System.ComponentModel.ISupportInitialize)(this.grdAllWorkers)).EndInit();
         this.tpgEmails.ResumeLayout(false);
         ((System.ComponentModel.ISupportInitialize)(this.grdEmails)).EndInit();
         this.tpgLetters.ResumeLayout(false);
@@ -382,14 +578,34 @@ partial class MainForm
         this.toolStrip2.ResumeLayout(false);
         this.toolStrip2.PerformLayout();
         ((System.ComponentModel.ISupportInitialize)(this.grdLetters)).EndInit();
+        this.tpgStatistics.ResumeLayout(false);
+        this.tpgStatistics.PerformLayout();
         this.panel1.ResumeLayout(false);
         ((System.ComponentModel.ISupportInitialize)(this.nudNumberMonths)).EndInit();
         this.ResumeLayout(false);
         this.PerformLayout();
     }
 
+    private System.Windows.Forms.DataGridView grdAllWorkers;
+    private System.Windows.Forms.TabPage tpgAllWorkers;
+    private System.Windows.Forms.TextBox txtTreasurersEmail;
+    private System.Windows.Forms.Label label6;
+    private System.Windows.Forms.TextBox txtTreasurersLetter;
+    private System.Windows.Forms.Label label7;
+    private System.Windows.Forms.TextBox txtTreasurerInvalidAddress;
+    private System.Windows.Forms.Label label8;
+    private System.Windows.Forms.TextBox txtWorkersWithTreasurer;
+    private System.Windows.Forms.Label label9;
+    private System.Windows.Forms.TextBox txtWorkersWithoutTreasurer;
+    private System.Windows.Forms.Label label3;
+    private System.Windows.Forms.TextBox txtNumberOfWorkersReceivingDonations;
+    private System.Windows.Forms.Label label4;
+    private System.Windows.Forms.TextBox txtNumberOfUniqueTreasurers;
+    private System.Windows.Forms.Label label5;
+    private System.Windows.Forms.TabPage tpgStatistics;
+
     private System.Windows.Forms.ToolStripTextBox txtCurrentPage;
-    private System.Windows.Forms.ToolStripButton tbbPrintAllPages;
+    private System.Windows.Forms.ToolStripButton tbbPrint;
     private System.Windows.Forms.ToolStripButton tbbPrintCurrentPage;
     private System.Windows.Forms.ToolStripLabel lblTotalNumberPages;
     private System.Windows.Forms.ToolStripButton tbbNextPage;

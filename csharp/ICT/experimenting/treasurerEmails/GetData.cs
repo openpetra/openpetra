@@ -43,8 +43,8 @@ namespace treasurerEmails
 {
 public class TGetTreasurerData
 {
-    const string GIFTSTABLE = "giftsums";
-    const string TREASURERTABLE = "treasurer";
+    public const string GIFTSTABLE = "giftsums";
+    public const string TREASURERTABLE = "treasurer";
 
     /// <summary>
     /// open the db connection, and retrieve all sums of donations for each treasurer for the last x months
@@ -95,15 +95,21 @@ public class TGetTreasurerData
 
         DataTable GiftsTable = GetAllGiftsForRecipientPerMonthByMotivation(ALedgerNumber, AMotivationGroup, AMotivationDetail, StartDate, EndDate);
 
+        DataTable TreasurerTable = new DataTable(TREASURERTABLE);
+        TreasurerTable.Columns.Add(new DataColumn("TreasurerKey", typeof(Int64)));
+        TreasurerTable.Columns.Add(new DataColumn("TreasurerName", typeof(string)));
+        TreasurerTable.Columns.Add(new DataColumn("RecipientKey", typeof(Int64)));
+
         DataSet ResultDataset = new DataSet();
+
         ResultDataset.Tables.Add(GiftsTable);
+        ResultDataset.Tables.Add(TreasurerTable);
 
         // add the last date of the month to the table
         AddMonthDate(ref GiftsTable, ALedgerNumber);
 
         // get the treasurer(s) for each recipient; get their name and partner key
         AddTreasurer(ref ResultDataset);
-        DataTable TreasurerTable = ResultDataset.Tables[TREASURERTABLE];
 
         // get the name of each recipient
         AddRecipientName(ref TreasurerTable);
@@ -279,19 +285,16 @@ public class TGetTreasurerData
 
             if (TreasurerTable.Rows.Count >= 1)
             {
-                if (!Result.Tables.Contains(TREASURERTABLE))
-                {
-                    Result.Tables.Add(TreasurerTable);
-                }
-                else
-                {
-                    Result.Tables[TREASURERTABLE].Merge(TreasurerTable);
-                }
+                Result.Tables[TREASURERTABLE].Merge(TreasurerTable);
             }
             else
             {
                 // cannot find treasurer
                 TLogging.Log("cannot find treasurer for partner " + row[GiftSumsTable.Columns["RecipientKey"].Ordinal].ToString());
+
+                DataRow InvalidTreasurer = Result.Tables[TREASURERTABLE].NewRow();
+                InvalidTreasurer["RecipientKey"] = row[GiftSumsTable.Columns["RecipientKey"].Ordinal];
+                Result.Tables[TREASURERTABLE].Rows.Add(InvalidTreasurer);
             }
         }
 
@@ -305,6 +308,7 @@ public class TGetTreasurerData
     private static void AddTreasurerEmailOrPostalAddress(ref DataTable ResultTable)
     {
         ResultTable.Columns.Add("TreasurerEmail", typeof(string));
+        ResultTable.Columns.Add("ValidAddress", typeof(bool));
         ResultTable.Columns.Add("TreasurerLocality", typeof(string));
         ResultTable.Columns.Add("TreasurerStreetName", typeof(string));
         ResultTable.Columns.Add("TreasurerBuilding1", typeof(string));
@@ -324,6 +328,14 @@ public class TGetTreasurerData
                 if (emailAddress.Length > 0)
                 {
                     row[ResultTable.Columns["TreasurerEmail"].Ordinal] = emailAddress;
+                }
+
+                row[ResultTable.Columns["ValidAddress"].Ordinal] = (Address != null);
+
+                if (Address == null)
+                {
+                    // no best address; only report if emailAddress is empty as well???
+                    continue;
                 }
 
                 if (!Address[0].IsLocalityNull())
@@ -374,7 +386,7 @@ public class TGetTreasurerData
         string EmailAddress = "";
         TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
-        AAddress = new PLocationTable();
+        AAddress = null;
 
         DataSet PartnerLocationsDS = new DataSet();
 
@@ -407,12 +419,13 @@ public class TGetTreasurerData
         }
 
         DBAccess.GDBAccessObj.RollbackTransaction();
+
         return EmailAddress;
     }
 
-    public static List <MailMessage>GenerateEmails(DataSet ATreasurerData, string ASenderEmailAddress, bool AForceLetters)
+    public static List <LetterMessage>GenerateMessages(DataSet ATreasurerData, string ASenderEmailAddress, bool AForceLetters)
     {
-        List <MailMessage>emails = new List <MailMessage>();
+        List <LetterMessage>messages = new List <LetterMessage>();
 
         DataView view = ATreasurerData.Tables[TREASURERTABLE].DefaultView;
         view.Sort = "TreasurerName ASC";
@@ -421,42 +434,55 @@ public class TGetTreasurerData
         {
             DataRow row = rowview.Row;
 
-            if (!AForceLetters && (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal] != System.DBNull.Value))
+            string treasurerName = "";
+            Int64 treasurerKey = -1;
+            string errorMessage = "NOTREASURER";
+
+            if (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerKey"].Ordinal] != System.DBNull.Value)
             {
-                string treasurerEmail = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal].ToString();
+                treasurerName = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerName"].Ordinal].ToString();
+                treasurerKey = Convert.ToInt64(row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerKey"].Ordinal]);
+                errorMessage = String.Empty;
+            }
 
-                string treasurerName = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerName"].Ordinal].ToString();
-                Int64 recipientKey = Convert.ToInt64(row[ATreasurerData.Tables[TREASURERTABLE].Columns["RecipientKey"].Ordinal]);
+            LetterMessage letter;
 
-                // TODO: message body from HTML template; recognise detail lines automatically; drop title tag, because it is the subject
-                string msg = String.Format(
-                    "<html><body>Hello {0}, <br/> This is a test. <br/> Donations so far: <br/>",
-                    treasurerName);
-                msg += "<table>";
-
-                DataRow[] rows = ATreasurerData.Tables[GIFTSTABLE].Select("RecipientKey = " + recipientKey.ToString(), "MonthDate");
-
-                foreach (DataRow rowGifts in rows)
+            if (AForceLetters
+                || (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal] == System.DBNull.Value)
+                || (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerKey"].Ordinal] == System.DBNull.Value))
+            {
+                if ((row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerKey"].Ordinal] != System.DBNull.Value)
+                    && (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerCity"].Ordinal] == System.DBNull.Value))
                 {
-                    DateTime month = Convert.ToDateTime(rowGifts["MonthDate"]);
-                    msg += "<tr><td>" + month.ToString("MMMM yyyy") + "</td>";
-                    msg += "<td align=\"right\">" + String.Format("{0:C}", Convert.ToDouble(rowGifts["MonthAmount"])) + "</td>";
-                    msg += "<td>" + String.Format("  {0}", Convert.ToDouble(rowGifts["MonthCount"])) + "</td>";
-                    msg += "</tr>";
+                    errorMessage = "NOADDRESS";
                 }
 
-                msg += "</table><br/>All the best, </body></html>";
+                string msg = GenerateLetterText(ATreasurerData, row);
 
-                // TODO: subject also from HTML template, title tag
-                MailMessage mail = new MailMessage(ASenderEmailAddress,
-                    treasurerEmail,
+                letter = new LetterMessage(
+                    treasurerName,
                     String.Format(Catalog.GetString("Gifts for {0}"), row["RecipientName"]),
                     msg);
-                emails.Add(mail);
             }
+            else
+            {
+                MailMessage mail = GenerateMailMessage(ATreasurerData, row, ASenderEmailAddress);
+
+                letter = new LetterMessage(
+                    treasurerName,
+                    String.Format(Catalog.GetString("Gifts for {0}"), row["RecipientName"]),
+                    mail);
+            }
+
+            letter.MessageRecipientKey = treasurerKey;
+            letter.MessageRecipientShortName = treasurerName;
+            letter.SubjectShortName = row["RecipientName"].ToString();
+            letter.SubjectKey = Convert.ToInt64(row["RecipientKey"]);
+            letter.ErrorMessage = errorMessage;
+            messages.Add(letter);
         }
 
-        return emails;
+        return messages;
     }
 
     private enum eShortNameFormat
@@ -550,85 +576,125 @@ public class TGetTreasurerData
     }
 
     /// <summary>
-    /// generate the letters to be printed and to be sent to postal addresses
+    /// generate the printed letter for one treasurer, one worker
     /// </summary>
     /// <param name="ATreasurerData"></param>
+    /// <param name="row"></param>
     /// <returns></returns>
-    public static List <LetterMessage>GenerateLetters(DataSet ATreasurerData, bool AForceLetters)
+    private static string GenerateLetterText(DataSet ATreasurerData, DataRow row)
     {
-        List <LetterMessage>letters = new List <LetterMessage>();
+        string treasurerName = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerName"].Ordinal].ToString();
+        Int64 recipientKey = Convert.ToInt64(row[ATreasurerData.Tables[TREASURERTABLE].Columns["RecipientKey"].Ordinal]);
 
-        DataView view = ATreasurerData.Tables[TREASURERTABLE].DefaultView;
-        view.Sort = "TreasurerName ASC";
+        string letterTemplateFilename = TAppSettingsManager.GetValueStatic("LetterTemplate.File");
 
-        foreach (DataRowView rowview in view)
+        // message body from HTML template
+        StreamReader reader = new StreamReader(letterTemplateFilename);
+
+        string msg = reader.ReadToEnd();
+
+        msg = msg.Replace("#RECIPIENTNAME", FormatShortName(row["RecipientName"].ToString(), eShortNameFormat.eReverseWithoutTitle));
+        msg = msg.Replace("#TREASURERTITLE", FormatShortName(treasurerName, eShortNameFormat.eOnlyTitle));
+        msg = msg.Replace("#TREASURERNAME", FormatShortName(treasurerName, eShortNameFormat.eReverseWithoutTitle));
+        msg = msg.Replace("#STREETNAME", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerStreetName"].Ordinal));
+        msg = msg.Replace("#LOCATION", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerLocality"].Ordinal));
+        msg = msg.Replace("#ADDRESS3", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerAddress3"].Ordinal));
+        msg = msg.Replace("#BUILDING1", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerBuilding1"].Ordinal));
+        msg = msg.Replace("#BUILDING2", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerBuilding2"].Ordinal));
+        msg = msg.Replace("#CITY", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerCity"].Ordinal));
+        msg = msg.Replace("#POSTALCODE", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerPostalCode"].Ordinal));
+        msg = msg.Replace("#COUNTRYCODE", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerCountryCode"].Ordinal));
+        msg = msg.Replace("#DATE", DateTime.Now.ToLongDateString());
+
+        // recognise detail lines automatically
+        string RowTemplate;
+        msg = GetTableRow(msg, "#MONTH", out RowTemplate);
+        string rowTexts = "";
+        DataRow[] rows = ATreasurerData.Tables[GIFTSTABLE].Select("RecipientKey = " + recipientKey.ToString(), "MonthDate");
+
+        foreach (DataRow rowGifts in rows)
         {
-            DataRow row = rowview.Row;
+            DateTime month = Convert.ToDateTime(rowGifts["MonthDate"]);
 
-            if (AForceLetters || (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal] == System.DBNull.Value))
-            {
-                string treasurerName = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerName"].Ordinal].ToString();
-                Int64 recipientKey = Convert.ToInt64(row[ATreasurerData.Tables[TREASURERTABLE].Columns["RecipientKey"].Ordinal]);
-
-                string letterTemplateFilename = TAppSettingsManager.GetValueStatic("LetterTemplate.File");
-
-                // TODO: message body from HTML template; recognise detail lines automatically; drop title tag, because it is the subject
-                StreamReader reader = new StreamReader(letterTemplateFilename);
-
-                string msg = reader.ReadToEnd();
-
-                msg = msg.Replace("#RECIPIENTNAME", FormatShortName(row["RecipientName"].ToString(), eShortNameFormat.eReverseWithoutTitle));
-                msg = msg.Replace("#TREASURERTITLE", FormatShortName(treasurerName, eShortNameFormat.eOnlyTitle));
-                msg = msg.Replace("#TREASURERNAME", FormatShortName(treasurerName, eShortNameFormat.eReverseWithoutTitle));
-                msg = msg.Replace("#STREETNAME", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerStreetName"].Ordinal));
-                msg = msg.Replace("#LOCATION", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerLocality"].Ordinal));
-                msg = msg.Replace("#ADDRESS3", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerAddress3"].Ordinal));
-                msg = msg.Replace("#BUILDING1", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerBuilding1"].Ordinal));
-                msg = msg.Replace("#BUILDING2", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerBuilding2"].Ordinal));
-                msg = msg.Replace("#CITY", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerCity"].Ordinal));
-                msg = msg.Replace("#POSTALCODE", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerPostalCode"].Ordinal));
-                msg = msg.Replace("#COUNTRYCODE", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerCountryCode"].Ordinal));
-                msg = msg.Replace("#DATE", DateTime.Now.ToLongDateString());
-
-                string RowTemplate;
-                msg = GetTableRow(msg, "#MONTH", out RowTemplate);
-                string rowTexts = "";
-                DataRow[] rows = ATreasurerData.Tables[GIFTSTABLE].Select("RecipientKey = " + recipientKey.ToString(), "MonthDate");
-
-                foreach (DataRow rowGifts in rows)
-                {
-                    DateTime month = Convert.ToDateTime(rowGifts["MonthDate"]);
-
-                    rowTexts += RowTemplate.
-                                Replace("#MONTH", month.ToString("MMMM yyyy")).
-                                Replace("#AMOUNT", String.Format("{0:C}", Convert.ToDouble(rowGifts["MonthAmount"]))).
-                                Replace("#NUMBERGIFTS", rowGifts["MonthCount"].ToString());
-                }
-
-                msg = msg.Replace("#ROWTEMPLATE", rowTexts);
-
-                LetterMessage letter = new LetterMessage(
-                    treasurerName,
-                    String.Format(Catalog.GetString("Gifts for {0}"), row["RecipientName"]),
-                    msg);
-                letters.Add(letter);
-            }
+            rowTexts += RowTemplate.
+                        Replace("#MONTH", month.ToString("MMMM yyyy")).
+                        Replace("#AMOUNT", String.Format("{0:C}", Convert.ToDouble(rowGifts["MonthAmount"]))).
+                        Replace("#NUMBERGIFTS", rowGifts["MonthCount"].ToString());
         }
 
-        return letters;
+        return msg.Replace("#ROWTEMPLATE", rowTexts);
+    }
+
+    /// <summary>
+    /// generate the email text for one treasurer, one worker
+    /// </summary>
+    private static MailMessage GenerateMailMessage(DataSet ATreasurerData, DataRow row, string ASenderEmailAddress)
+    {
+        string treasurerName = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerName"].Ordinal].ToString();
+        Int64 recipientKey = Convert.ToInt64(row[ATreasurerData.Tables[TREASURERTABLE].Columns["RecipientKey"].Ordinal]);
+
+        // TODO: message body from HTML template; recognise detail lines automatically; drop title tag, because it is the subject
+        string msg = String.Format(
+            "<html><body>Hello {0}, <br/> This is a test. <br/> Donations so far: <br/>",
+            treasurerName);
+
+        msg += "<table>";
+
+        DataRow[] rows = ATreasurerData.Tables[GIFTSTABLE].Select("RecipientKey = " + recipientKey.ToString(), "MonthDate");
+
+        foreach (DataRow rowGifts in rows)
+        {
+            DateTime month = Convert.ToDateTime(rowGifts["MonthDate"]);
+            msg += "<tr><td>" + month.ToString("MMMM yyyy") + "</td>";
+            msg += "<td align=\"right\">" + String.Format("{0:C}", Convert.ToDouble(rowGifts["MonthAmount"])) + "</td>";
+            msg += "<td>" + String.Format("  {0}", Convert.ToDouble(rowGifts["MonthCount"])) + "</td>";
+            msg += "</tr>";
+        }
+
+        msg += "</table><br/>All the best, </body></html>";
+
+        string treasurerEmail = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal].ToString();
+
+        // TODO: subject also from HTML template, title tag
+        return new MailMessage(ASenderEmailAddress,
+            treasurerEmail,
+            String.Format(Catalog.GetString("Gifts for {0}"), row["RecipientName"]),
+            msg);
     }
 }
 
 public class LetterMessage
 {
-    public string RecipientShortName;
+    public string MessageRecipientShortName;
+    public Int64 MessageRecipientKey;
+    public string SubjectShortName;
+    public Int64 SubjectKey;
     public string Subject;
     public string HtmlMessage;
+    public MailMessage EmailMessage;
+    public string ErrorMessage = String.Empty;
     public LetterMessage(string ARecipientShortName, string ASubject, string AHtmlMessage)
     {
-        RecipientShortName = ARecipientShortName;
+        MessageRecipientShortName = ARecipientShortName;
         Subject = ASubject;
         HtmlMessage = AHtmlMessage;
+    }
+
+    public LetterMessage(string ARecipientShortName, string ASubject, MailMessage AEMailMessage)
+    {
+        MessageRecipientShortName = ARecipientShortName;
+        Subject = ASubject;
+        EmailMessage = AEMailMessage;
+    }
+
+    public bool SendAsEmail()
+    {
+        return EmailMessage != null && ErrorMessage == String.Empty;
+    }
+
+    public bool SendAsLetter()
+    {
+        return HtmlMessage != null && ErrorMessage == String.Empty;
     }
 }
 }
