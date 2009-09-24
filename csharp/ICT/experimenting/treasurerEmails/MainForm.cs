@@ -338,22 +338,6 @@ public partial class MainForm : Form
         RefreshPagePosition();
     }
 
-    void GrdEmailsCellEnter(object sender, DataGridViewCellEventArgs e)
-    {
-        if (grdEmails.SelectedRows.Count == 0)
-        {
-            grdEmails.Rows[0].Selected = true;
-        }
-
-        if (grdEmails.SelectedRows.Count == 1)
-        {
-            DataGridViewRow row = grdEmails.SelectedRows[0];
-            DataGridViewCell cell = row.Cells["LetterMessagePointer"];
-            LetterMessage msg = (LetterMessage)cell.Value;
-            DisplayEmail(msg);
-        }
-    }
-
     private TSmtpSender CreateConnection()
     {
         return new TSmtpSender();
@@ -490,6 +474,17 @@ public partial class MainForm : Form
         }
         catch (Exception)
         {
+        }
+    }
+
+    void GrdEmailsSelectionChanged(object sender, System.EventArgs e)
+    {
+        if (grdEmails.SelectedRows.Count > 0)
+        {
+            DataGridViewRow row = grdEmails.SelectedRows[0];
+            DataGridViewCell cell = row.Cells["LetterMessagePointer"];
+            LetterMessage msg = (LetterMessage)cell.Value;
+            DisplayEmail(msg);
         }
     }
 

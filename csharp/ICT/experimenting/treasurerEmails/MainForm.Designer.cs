@@ -65,9 +65,12 @@ partial class MainForm
         this.tpgAllWorkers = new System.Windows.Forms.TabPage();
         this.grdAllWorkers = new System.Windows.Forms.DataGridView();
         this.tpgEmails = new System.Windows.Forms.TabPage();
-        this.brwEmailContent = new System.Windows.Forms.WebBrowser();
+        this.sptEmails = new System.Windows.Forms.SplitContainer();
         this.grdEmails = new System.Windows.Forms.DataGridView();
+        this.brwEmailContent = new System.Windows.Forms.WebBrowser();
         this.tpgLetters = new System.Windows.Forms.TabPage();
+        this.sptLetters = new System.Windows.Forms.SplitContainer();
+        this.grdLetters = new System.Windows.Forms.DataGridView();
         this.preLetter = new System.Windows.Forms.PrintPreviewControl();
         this.toolStrip2 = new System.Windows.Forms.ToolStrip();
         this.txtCurrentPage = new System.Windows.Forms.ToolStripTextBox();
@@ -76,7 +79,6 @@ partial class MainForm
         this.tbbNextPage = new System.Windows.Forms.ToolStripButton();
         this.tbbPrintCurrentPage = new System.Windows.Forms.ToolStripButton();
         this.tbbPrint = new System.Windows.Forms.ToolStripButton();
-        this.grdLetters = new System.Windows.Forms.DataGridView();
         this.tpgStatistics = new System.Windows.Forms.TabPage();
         this.txtWorkersWithoutTreasurer = new System.Windows.Forms.TextBox();
         this.label9 = new System.Windows.Forms.Label();
@@ -103,10 +105,16 @@ partial class MainForm
         this.tpgAllWorkers.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.grdAllWorkers)).BeginInit();
         this.tpgEmails.SuspendLayout();
+        this.sptEmails.Panel1.SuspendLayout();
+        this.sptEmails.Panel2.SuspendLayout();
+        this.sptEmails.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.grdEmails)).BeginInit();
         this.tpgLetters.SuspendLayout();
-        this.toolStrip2.SuspendLayout();
+        this.sptLetters.Panel1.SuspendLayout();
+        this.sptLetters.Panel2.SuspendLayout();
+        this.sptLetters.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.grdLetters)).BeginInit();
+        this.toolStrip2.SuspendLayout();
         this.tpgStatistics.SuspendLayout();
         this.panel1.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.nudNumberMonths)).BeginInit();
@@ -198,8 +206,7 @@ partial class MainForm
         //
         // tpgEmails
         //
-        this.tpgEmails.Controls.Add(this.brwEmailContent);
-        this.tpgEmails.Controls.Add(this.grdEmails);
+        this.tpgEmails.Controls.Add(this.sptEmails);
         this.tpgEmails.Location = new System.Drawing.Point(4, 22);
         this.tpgEmails.Name = "tpgEmails";
         this.tpgEmails.Padding = new System.Windows.Forms.Padding(3);
@@ -209,32 +216,51 @@ partial class MainForm
         this.tpgEmails.UseVisualStyleBackColor = true;
 
         //
-        // brwEmailContent
+        // sptEmails
         //
-        this.brwEmailContent.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.brwEmailContent.Location = new System.Drawing.Point(3, 153);
-        this.brwEmailContent.MinimumSize = new System.Drawing.Size(20, 20);
-        this.brwEmailContent.Name = "brwEmailContent";
-        this.brwEmailContent.Size = new System.Drawing.Size(587, 145);
-        this.brwEmailContent.TabIndex = 6;
+        this.sptEmails.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.sptEmails.Location = new System.Drawing.Point(3, 3);
+        this.sptEmails.Name = "sptEmails";
+        this.sptEmails.Orientation = System.Windows.Forms.Orientation.Horizontal;
+
+        //
+        // sptEmails.Panel1
+        //
+        this.sptEmails.Panel1.Controls.Add(this.grdEmails);
+
+        //
+        // sptEmails.Panel2
+        //
+        this.sptEmails.Panel2.Controls.Add(this.brwEmailContent);
+        this.sptEmails.Size = new System.Drawing.Size(587, 295);
+        this.sptEmails.SplitterDistance = 195;
+        this.sptEmails.TabIndex = 0;
 
         //
         // grdEmails
         //
         this.grdEmails.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        this.grdEmails.Dock = System.Windows.Forms.DockStyle.Top;
-        this.grdEmails.Location = new System.Drawing.Point(3, 3);
+        this.grdEmails.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.grdEmails.Location = new System.Drawing.Point(0, 0);
         this.grdEmails.Name = "grdEmails";
-        this.grdEmails.Size = new System.Drawing.Size(587, 150);
-        this.grdEmails.TabIndex = 5;
-        this.grdEmails.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.GrdEmailsCellEnter);
+        this.grdEmails.Size = new System.Drawing.Size(587, 195);
+        this.grdEmails.TabIndex = 13;
+        this.grdEmails.SelectionChanged += new System.EventHandler(this.GrdEmailsSelectionChanged);
+
+        //
+        // brwEmailContent
+        //
+        this.brwEmailContent.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.brwEmailContent.Location = new System.Drawing.Point(0, 0);
+        this.brwEmailContent.MinimumSize = new System.Drawing.Size(20, 20);
+        this.brwEmailContent.Name = "brwEmailContent";
+        this.brwEmailContent.Size = new System.Drawing.Size(587, 96);
+        this.brwEmailContent.TabIndex = 15;
 
         //
         // tpgLetters
         //
-        this.tpgLetters.Controls.Add(this.preLetter);
-        this.tpgLetters.Controls.Add(this.toolStrip2);
-        this.tpgLetters.Controls.Add(this.grdLetters);
+        this.tpgLetters.Controls.Add(this.sptLetters);
         this.tpgLetters.Location = new System.Drawing.Point(4, 22);
         this.tpgLetters.Name = "tpgLetters";
         this.tpgLetters.Padding = new System.Windows.Forms.Padding(3);
@@ -244,13 +270,46 @@ partial class MainForm
         this.tpgLetters.UseVisualStyleBackColor = true;
 
         //
+        // sptLetters
+        //
+        this.sptLetters.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.sptLetters.Location = new System.Drawing.Point(3, 3);
+        this.sptLetters.Name = "sptLetters";
+        this.sptLetters.Orientation = System.Windows.Forms.Orientation.Horizontal;
+
+        //
+        // sptLetters.Panel1
+        //
+        this.sptLetters.Panel1.Controls.Add(this.grdLetters);
+
+        //
+        // sptLetters.Panel2
+        //
+        this.sptLetters.Panel2.Controls.Add(this.preLetter);
+        this.sptLetters.Panel2.Controls.Add(this.toolStrip2);
+        this.sptLetters.Size = new System.Drawing.Size(587, 295);
+        this.sptLetters.SplitterDistance = 133;
+        this.sptLetters.TabIndex = 0;
+
+        //
+        // grdLetters
+        //
+        this.grdLetters.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        this.grdLetters.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.grdLetters.Location = new System.Drawing.Point(0, 0);
+        this.grdLetters.Name = "grdLetters";
+        this.grdLetters.Size = new System.Drawing.Size(587, 133);
+        this.grdLetters.TabIndex = 13;
+        this.grdLetters.SelectionChanged += new System.EventHandler(this.GrdLettersSelectionChanged);
+
+        //
         // preLetter
         //
         this.preLetter.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.preLetter.Location = new System.Drawing.Point(3, 178);
+        this.preLetter.Location = new System.Drawing.Point(0, 25);
         this.preLetter.Name = "preLetter";
-        this.preLetter.Size = new System.Drawing.Size(587, 120);
-        this.preLetter.TabIndex = 8;
+        this.preLetter.Size = new System.Drawing.Size(587, 133);
+        this.preLetter.TabIndex = 16;
 
         //
         // toolStrip2
@@ -263,10 +322,10 @@ partial class MainForm
                 this.tbbPrintCurrentPage,
                 this.tbbPrint
             });
-        this.toolStrip2.Location = new System.Drawing.Point(3, 153);
+        this.toolStrip2.Location = new System.Drawing.Point(0, 0);
         this.toolStrip2.Name = "toolStrip2";
         this.toolStrip2.Size = new System.Drawing.Size(587, 25);
-        this.toolStrip2.TabIndex = 9;
+        this.toolStrip2.TabIndex = 17;
         this.toolStrip2.Text = "toolStrip2";
 
         //
@@ -274,7 +333,6 @@ partial class MainForm
         //
         this.txtCurrentPage.Name = "txtCurrentPage";
         this.txtCurrentPage.Size = new System.Drawing.Size(50, 25);
-        this.txtCurrentPage.TextChanged += new System.EventHandler(this.TxtCurrentPageTextChanged);
 
         //
         // lblTotalNumberPages
@@ -292,7 +350,6 @@ partial class MainForm
         this.tbbPrevPage.Name = "tbbPrevPage";
         this.tbbPrevPage.Size = new System.Drawing.Size(79, 22);
         this.tbbPrevPage.Text = "Previous Page";
-        this.tbbPrevPage.Click += new System.EventHandler(this.TbbPrevPageClick);
 
         //
         // tbbNextPage
@@ -303,7 +360,6 @@ partial class MainForm
         this.tbbNextPage.Name = "tbbNextPage";
         this.tbbNextPage.Size = new System.Drawing.Size(61, 22);
         this.tbbNextPage.Text = "Next Page";
-        this.tbbNextPage.Click += new System.EventHandler(this.TbbNextPageClick);
 
         //
         // tbbPrintCurrentPage
@@ -314,7 +370,6 @@ partial class MainForm
         this.tbbPrintCurrentPage.Name = "tbbPrintCurrentPage";
         this.tbbPrintCurrentPage.Size = new System.Drawing.Size(100, 22);
         this.tbbPrintCurrentPage.Text = "Print Current Page";
-        this.tbbPrintCurrentPage.Click += new System.EventHandler(this.TbbPrintCurrentPageClick);
 
         //
         // tbbPrint
@@ -325,18 +380,6 @@ partial class MainForm
         this.tbbPrint.Name = "tbbPrint";
         this.tbbPrint.Size = new System.Drawing.Size(33, 22);
         this.tbbPrint.Text = "Print";
-        this.tbbPrint.Click += new System.EventHandler(this.TbbPrintClick);
-
-        //
-        // grdLetters
-        //
-        this.grdLetters.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        this.grdLetters.Dock = System.Windows.Forms.DockStyle.Top;
-        this.grdLetters.Location = new System.Drawing.Point(3, 3);
-        this.grdLetters.Name = "grdLetters";
-        this.grdLetters.Size = new System.Drawing.Size(587, 150);
-        this.grdLetters.TabIndex = 7;
-        this.grdLetters.SelectionChanged += new System.EventHandler(this.GrdLettersSelectionChanged);
 
         //
         // tpgStatistics
@@ -572,12 +615,18 @@ partial class MainForm
         this.tpgAllWorkers.ResumeLayout(false);
         ((System.ComponentModel.ISupportInitialize)(this.grdAllWorkers)).EndInit();
         this.tpgEmails.ResumeLayout(false);
+        this.sptEmails.Panel1.ResumeLayout(false);
+        this.sptEmails.Panel2.ResumeLayout(false);
+        this.sptEmails.ResumeLayout(false);
         ((System.ComponentModel.ISupportInitialize)(this.grdEmails)).EndInit();
         this.tpgLetters.ResumeLayout(false);
-        this.tpgLetters.PerformLayout();
+        this.sptLetters.Panel1.ResumeLayout(false);
+        this.sptLetters.Panel2.ResumeLayout(false);
+        this.sptLetters.Panel2.PerformLayout();
+        this.sptLetters.ResumeLayout(false);
+        ((System.ComponentModel.ISupportInitialize)(this.grdLetters)).EndInit();
         this.toolStrip2.ResumeLayout(false);
         this.toolStrip2.PerformLayout();
-        ((System.ComponentModel.ISupportInitialize)(this.grdLetters)).EndInit();
         this.tpgStatistics.ResumeLayout(false);
         this.tpgStatistics.PerformLayout();
         this.panel1.ResumeLayout(false);
@@ -585,6 +634,9 @@ partial class MainForm
         this.ResumeLayout(false);
         this.PerformLayout();
     }
+
+    private System.Windows.Forms.SplitContainer sptEmails;
+    private System.Windows.Forms.SplitContainer sptLetters;
 
     private System.Windows.Forms.DataGridView grdAllWorkers;
     private System.Windows.Forms.TabPage tpgAllWorkers;
