@@ -14,6 +14,8 @@ WHERE PUB_a_gift_batch.a_ledger_number_i = PUB_a_gift_detail.a_ledger_number_i
    AND PUB_a_gift_batch.a_gl_effective_date_d BETWEEN ? AND ?
 -- make sure that only valid gifts will be processed; it seems there are some gifts without proper a_batch_period_i   
    AND PUB_a_gift_batch.a_batch_period_i > 0
+   -- avoid all workers sent by other fields; we are not the home office for them, so there is no treasurer
+   AND EXISTS(SELECT * FROM PUB_pm_staff_data, PUB_p_person WHERE PUB_pm_staff_data.p_partner_key_n = PUB_p_person.p_partner_key_n AND PUB_p_person.p_family_key_n = PUB_a_gift_detail.p_recipient_key_n AND PUB_pm_staff_data.pm_home_office_n = ?)
 -- for debugging: only one recipient
    AND (PUB_a_gift_detail.p_recipient_key_n = 27061298 OR PUB_a_gift_detail.p_recipient_key_n < 27007000)
 -- YEAR(PUB_a_gift_batch.a_gl_effective_date_d), MONTH(PUB_a_gift_batch.a_gl_effective_date_d) does not work for Progress, you cannot use it in a GROUP BY clause   

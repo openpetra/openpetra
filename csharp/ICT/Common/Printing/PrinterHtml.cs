@@ -78,7 +78,7 @@ namespace Ict.Common.Printing
         }
 
         /// try to parse HTML document
-        protected XmlDocument ParseHtml(string AHtmlDocument)
+        public static XmlDocument ParseHtml(string AHtmlDocument)
         {
             XmlDocument result;
 
@@ -94,7 +94,11 @@ namespace Ict.Common.Printing
                     AHtmlDocument = AHtmlDocument.Substring(AHtmlDocument.IndexOf(">") + 1);
                 }
 
-                AHtmlDocument = "<?xml version='1.0' encoding='UTF-16'?>" + Environment.NewLine + AHtmlDocument;
+                if (!AHtmlDocument.StartsWith("<?xml version="))
+                {
+                    AHtmlDocument = "<?xml version='1.0' encoding='UTF-16'?>" + Environment.NewLine + AHtmlDocument;
+                }
+
                 AHtmlDocument = AHtmlDocument.Replace("<br>", "<br/>");
                 AHtmlDocument = AHtmlDocument.Replace("&amp;", "&amp;amp;");
                 AHtmlDocument = AHtmlDocument.Replace("&nbsp;", "&amp;nbsp;");
@@ -346,6 +350,12 @@ namespace Ict.Common.Printing
                     FPrinter.CurrentXPos = AXPos;
                     curNode = curNode.NextSibling;
                 }
+                else if (curNode.Name == "div")
+                {
+                    XmlNode child = curNode.FirstChild;
+                    RenderContent(AXPos, AWidthAvailable, ref child);
+                    curNode = curNode.NextSibling;
+                }
                 else if (curNode.Name == "p")
                 {
                     eAlignment origAlignment = FPrinter.CurrentAlignment;
@@ -482,6 +492,65 @@ namespace Ict.Common.Printing
 
             curNode = tableNode.NextSibling;
             return FPrinter.CurrentYPos - oldYPos;
+        }
+
+        /// <summary>
+        /// find the &lt;tr&gt; tag that contains the ASearchFor, and return the full tr tag and contents
+        /// </summary>
+        /// <param name="ATemplate"></param>
+        /// <param name="ASearchFor"></param>
+        /// <param name="ATemplateRow">template for one row</param>
+        /// <returns>modified template, replace tr tag with #ROWTEMPLATE</returns>
+        public static string GetTableRow(string ATemplate, string ASearchFor, out string ATemplateRow)
+        {
+            // TODO: use XML tree to avoid problems with whitespaces etc?
+            Int32 posSearchText = ATemplate.IndexOf(ASearchFor);
+
+            if (posSearchText == -1)
+            {
+                ATemplateRow = "";
+                return ATemplate;
+            }
+
+            Int32 posTableRowStart = ATemplate.Substring(0, posSearchText).LastIndexOf("<tr");
+            Int32 posTableRowEnd = ATemplate.IndexOf("</tr>", posSearchText) + 5;
+            ATemplateRow = ATemplate.Substring(posTableRowStart, posTableRowEnd - posTableRowStart);
+            return ATemplate.Replace(ATemplateRow, "#ROWTEMPLATE");
+        }
+
+        private static void FindAllChildren(XmlNode ANode, ref List <XmlNode>AResult, string AElement, string AName)
+        {
+            if ((ANode.Name == AElement) && (TXMLParser.GetAttribute(ANode, "name") == AName))
+            {
+                AResult.Add(ANode);
+            }
+
+            foreach (XmlNode node in ANode.ChildNodes)
+            {
+                FindAllChildren(node, ref AResult, AElement, AName);
+            }
+        }
+
+        /// <summary>
+        /// remove a div with the given name
+        /// </summary>
+        /// <param name="AHtmlMessage"></param>
+        /// <param name="ADivName"></param>
+        /// <returns></returns>
+        public static string RemoveDivWithName(string AHtmlMessage, string ADivName)
+        {
+            // TODO: use xml tree to avoid whitespace differences etc?
+            XmlDocument htmlDoc = Ict.Common.Printing.TPrinterHtml.ParseHtml(AHtmlMessage);
+
+            List <XmlNode>children = new List <XmlNode>();
+            FindAllChildren(htmlDoc.DocumentElement, ref children, "div", ADivName);
+
+            foreach (XmlNode child in children)
+            {
+                child.ParentNode.RemoveChild(child);
+            }
+
+            return htmlDoc.OuterXml.Replace("&amp;", "&");
         }
     }
 }

@@ -57,14 +57,18 @@ public partial class MainForm : Form
         grdAllWorkers.Columns.Add("treasurerkey", "Treasurer Key");
         grdAllWorkers.Columns.Add("worker", "Worker");
         grdAllWorkers.Columns.Add("workerkey", "Worker Key");
+        grdAllWorkers.Columns.Add("transition", "Transition");
         grdAllWorkers.Columns.Add("error", "Error");
+        grdAllWorkers.Columns.Add("LetterMessagePointer", "LetterMessagePointer");
         grdAllWorkers.Columns[0].Width = 30;
         grdAllWorkers.Columns[1].Width = 80;
         grdAllWorkers.Columns[2].Width = 150;
         grdAllWorkers.Columns[3].Width = 100;
         grdAllWorkers.Columns[4].Width = 150;
         grdAllWorkers.Columns[5].Width = 100;
-        grdAllWorkers.Columns[6].Width = 400;
+        grdAllWorkers.Columns[6].Width = 30;
+        grdAllWorkers.Columns[7].Width = 400;
+        grdAllWorkers.Columns[8].Visible = false;
         grdAllWorkers.ReadOnly = true;
         grdAllWorkers.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         grdAllWorkers.MultiSelect = false;
@@ -111,14 +115,22 @@ public partial class MainForm : Form
         List <string>EmailRecipientsUnique = new List <string>();
         List <Int64>LetterRecipientsUnique = new List <Int64>();
         List <Int64>WorkersAlltogether = new List <Int64>();
+        List <Int64>WorkersInTransition = new List <Int64>();
+        List <Int64>ExWorkersWithGifts = new List <Int64>();
         Int32 CountInvalidAddressTreasurer = 0;
         Int32 CountMissingTreasurer = 0;
+        Int32 CountPagesSent = 0;
 
         foreach (LetterMessage msg in FLetters)
         {
             if (!WorkersAlltogether.Contains(msg.SubjectKey))
             {
                 WorkersAlltogether.Add(msg.SubjectKey);
+            }
+
+            if (msg.Transition && !WorkersInTransition.Contains(msg.SubjectKey))
+            {
+                WorkersInTransition.Add(msg.SubjectKey);
             }
 
             if (msg.ErrorMessage == "NOADDRESS")
@@ -128,6 +140,13 @@ public partial class MainForm : Form
             else if (msg.ErrorMessage == "NOTREASURER")
             {
                 CountMissingTreasurer++;
+            }
+            else if (msg.ErrorMessage == "EXWORKER")
+            {
+                if (!ExWorkersWithGifts.Contains(msg.SubjectKey))
+                {
+                    ExWorkersWithGifts.Add(msg.SubjectKey);
+                }
             }
             else
             {
@@ -140,19 +159,24 @@ public partial class MainForm : Form
                 {
                     LetterRecipientsUnique.Add(msg.MessageRecipientKey);
                 }
+
+                if (msg.SendAsLetter() || msg.SendAsEmail())
+                {
+                    CountPagesSent++;
+                }
             }
         }
 
         txtTreasurersEmail.Text = EmailRecipientsUnique.Count.ToString();
         txtTreasurersLetter.Text = LetterRecipientsUnique.Count.ToString();
-
-
-        // TODO
-        txtNumberOfWorkersReceivingDonations.Text = WorkersAlltogether.ToString();
+        txtNumberOfWorkersReceivingDonations.Text = WorkersAlltogether.Count.ToString();
         txtWorkersWithTreasurer.Text = (WorkersAlltogether.Count - CountMissingTreasurer).ToString();
         txtNumberOfUniqueTreasurers.Text = (EmailRecipientsUnique.Count + LetterRecipientsUnique.Count).ToString();
         txtWorkersWithoutTreasurer.Text = CountMissingTreasurer.ToString();
         txtTreasurerInvalidAddress.Text = CountInvalidAddressTreasurer.ToString();
+        txtWorkersInTransition.Text = WorkersInTransition.Count.ToString();
+        txtPagesSent.Text = CountPagesSent.ToString();
+        txtExWorkersWithGifts.Text = ExWorkersWithGifts.Count.ToString();
     }
 
     void RefreshGridEmails()
@@ -204,6 +228,10 @@ public partial class MainForm : Form
             {
                 localisedErrormessage = Catalog.GetString("There is no valid address for the treasurer");
             }
+            else if (localisedErrormessage == "EXWORKER")
+            {
+                localisedErrormessage = Catalog.GetString("The Worker has left the organisation and is not in TRANSITION anymore");
+            }
 
             grdAllWorkers.Rows.Add(new object[] { grdAllWorkers.Rows.Count + 1,
                                                   m.ErrorMessage.Length > 0 ? "Nothing" : ((m.EmailMessage != null) ? "Email" : "Letter"),
@@ -211,7 +239,9 @@ public partial class MainForm : Form
                                                   m.MessageRecipientKey,
                                                   m.SubjectShortName,
                                                   m.SubjectKey,
-                                                  localisedErrormessage });
+                                                  m.Transition,
+                                                  localisedErrormessage,
+                                                  m });
         }
     }
 
@@ -415,25 +445,20 @@ public partial class MainForm : Form
         }
 #endif
 
-        FLetters = TGetTreasurerData.GenerateMessages(allTreasurerEmails, settings.GetValue("senderemailaddress"), chkLettersOnly.Checked);
+        FLetters = TGetTreasurerData.GenerateMessages(allTreasurerEmails, settings.GetValue(
+                "senderemailaddress"), chkLettersOnly.Checked, dtpLastMonth.Value);
+
+        if (FLetters.Count == 0)
+        {
+            MessageBox.Show(Catalog.GetString("There are no gifts in the given period of time"));
+            return;
+        }
 
         RefreshWorkers();
         RefreshGridLetters();
         RefreshGridEmails();
         PreparePrintLetters();
         RefreshStatistics();
-
-        List <Int64>NumberWorkersWithGifts = new List <Int64>();
-
-        foreach (DataRow row in allTreasurerEmails.Tables[TGetTreasurerData.GIFTSTABLE].Rows)
-        {
-            if (!NumberWorkersWithGifts.Contains(Convert.ToInt64(row["RecipientKey"])))
-            {
-                NumberWorkersWithGifts.Add(Convert.ToInt64(row["RecipientKey"]));
-            }
-        }
-
-        txtNumberOfWorkersReceivingDonations.Text = NumberWorkersWithGifts.Count.ToString();
     }
 
     void RefreshPagePosition()
@@ -474,6 +499,17 @@ public partial class MainForm : Form
         }
         catch (Exception)
         {
+        }
+    }
+
+    void GrdAllWorkersDoubleClick(object sender, System.EventArgs e)
+    {
+        if (grdAllWorkers.SelectedRows.Count > 0)
+        {
+            DataGridViewRow row = grdAllWorkers.SelectedRows[0];
+            DataGridViewCell cell = row.Cells["LetterMessagePointer"];
+            LetterMessage msg = (LetterMessage)cell.Value;
+            MessageBox.Show(msg.ToString());
         }
     }
 

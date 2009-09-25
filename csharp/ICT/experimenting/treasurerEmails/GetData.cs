@@ -33,6 +33,7 @@ using System.Net.Mail;
 using Mono.Unix;
 using Ict.Common.DB;
 using Ict.Common;
+using Ict.Common.Printing;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -99,6 +100,8 @@ public class TGetTreasurerData
         TreasurerTable.Columns.Add(new DataColumn("TreasurerKey", typeof(Int64)));
         TreasurerTable.Columns.Add(new DataColumn("TreasurerName", typeof(string)));
         TreasurerTable.Columns.Add(new DataColumn("RecipientKey", typeof(Int64)));
+        TreasurerTable.Columns.Add(new DataColumn("Transition", typeof(bool)));
+        TreasurerTable.Columns.Add(new DataColumn("ExWorker", typeof(bool)));
 
         DataSet ResultDataset = new DataSet();
 
@@ -109,7 +112,7 @@ public class TGetTreasurerData
         AddMonthDate(ref GiftsTable, ALedgerNumber);
 
         // get the treasurer(s) for each recipient; get their name and partner key
-        AddTreasurer(ref ResultDataset);
+        AddTreasurer(ref ResultDataset, EndDate, ALedgerNumber);
 
         // get the name of each recipient
         AddRecipientName(ref TreasurerTable);
@@ -161,12 +164,13 @@ public class TGetTreasurerData
 
         string stmt = ReadSqlFile("GetAllGiftsForRecipientPerMonthByMotivation.sql");
 
-        OdbcParameter[] parameters = new OdbcParameter[5];
+        OdbcParameter[] parameters = new OdbcParameter[6];
         parameters[0] = new OdbcParameter("Ledger", ALedgerNumber);
         parameters[1] = new OdbcParameter("MotivationGroup", AMotivationGroup);
         parameters[2] = new OdbcParameter("MotivationDetail", AMotivationDetail);
         parameters[3] = new OdbcParameter("StartDate", AStartDate);
         parameters[4] = new OdbcParameter("EndDate", AEndDate);
+        parameters[5] = new OdbcParameter("HomeOffice", ALedgerNumber * 1000000L);
         DataTable ResultTable = DBAccess.GDBAccessObj.SelectDT(stmt, GIFTSTABLE, transaction,
             parameters);
 
@@ -199,8 +203,8 @@ public class TGetTreasurerData
 
         foreach (DataRow row in ResultTable.Rows)
         {
-            Int32 yearNr = Convert.ToInt32(row[ResultTable.Columns["FinancialYear"].Ordinal]);
-            Int32 periodNr = Convert.ToInt32(row[ResultTable.Columns["FinancialPeriod"].Ordinal]);
+            Int32 yearNr = Convert.ToInt32(row["FinancialYear"]);
+            Int32 periodNr = Convert.ToInt32(row["FinancialPeriod"]);
 
             DateTime monthDate = DateTime.MinValue;
 
@@ -216,11 +220,11 @@ public class TGetTreasurerData
             {
                 // substract the years to get the right date
                 TLogging.Log("substract year " + yearNr.ToString() + " " + currentFinancialYear.ToString() + " " + monthDate.Year.ToString() + " " +
-                    row[ResultTable.Columns["RecipientKey"].Ordinal].ToString());
+                    row["RecipientKey"].ToString());
                 monthDate = monthDate.AddYears(-1 * (currentFinancialYear - yearNr));
             }
 
-            row[ResultTable.Columns["MonthDate"].Ordinal] = monthDate;
+            row["MonthDate"] = monthDate;
         }
 
         DBAccess.GDBAccessObj.RollbackTransaction();
@@ -239,12 +243,12 @@ public class TGetTreasurerData
         foreach (DataRow row in ResultTable.Rows)
         {
             OdbcParameter[] parameters = new OdbcParameter[1];
-            parameters[0] = new OdbcParameter("PartnerKey", row[ResultTable.Columns["RecipientKey"].Ordinal]);
+            parameters[0] = new OdbcParameter("PartnerKey", row["RecipientKey"]);
             string shortname = DBAccess.GDBAccessObj.ExecuteScalar(
                 "SELECT p_partner_short_name_c FROM PUB_p_partner WHERE p_partner_key_n = ?",
                 transaction, parameters).ToString();
 
-            row[ResultTable.Columns["RecipientName"].Ordinal] = shortname;
+            row["RecipientName"] = shortname;
         }
 
         DBAccess.GDBAccessObj.RollbackTransaction();
@@ -254,30 +258,58 @@ public class TGetTreasurerData
     /// get the treasurer(s) for each recipient;
     /// get their name and partner key
     /// </summary>
-    /// <param name="Result"></param>
-    private static void AddTreasurer(ref DataSet Result)
+    private static void AddTreasurer(ref DataSet Result, DateTime AEndDate, Int32 ALedgerNumber)
     {
         TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
         // to check if the recipient has been processed already
-        SortedList <Int64, Int64>recipients = new SortedList <Int64, Int64>();
+        List <Int64>recipients = new List <Int64>();
 
         DataTable GiftSumsTable = Result.Tables[GIFTSTABLE];
 
         foreach (DataRow row in GiftSumsTable.Rows)
         {
-            Int64 recipientKey = Convert.ToInt64(row[GiftSumsTable.Columns["RecipientKey"].Ordinal]);
+            Int64 recipientKey = Convert.ToInt64(row["RecipientKey"]);
 
-            if (recipients.ContainsKey(recipientKey))
+            if (recipients.Contains(recipientKey))
             {
                 continue;
             }
 
-            recipients.Add(recipientKey, recipientKey);
-            OdbcParameter[] parameters = new OdbcParameter[1];
+            recipients.Add(recipientKey);
+
+            // first check if the worker has a valid commitment period, or is in TRANSITION
+            bool bTransition = false;
+            bool bExWorker = false;
+
+            OdbcParameter[] parameters = new OdbcParameter[4];
+            parameters[0] = new OdbcParameter("PartnerKey", recipientKey);
+            parameters[1] = new OdbcParameter("HomeOffice", ALedgerNumber * 1000000L);
+            parameters[2] = new OdbcParameter("EndOfPeriod", AEndDate);
+            parameters[3] = new OdbcParameter("EndOfPeriod", AEndDate);
+
+            string stmt = ReadSqlFile("CommitmentsOfWorker.sql");
+
+            DataTable CommitmentsTable = DBAccess.GDBAccessObj.SelectDT(stmt,
+                "temp", transaction,
+                parameters);
+
+            if (CommitmentsTable.Rows.Count == 0)
+            {
+                bExWorker = true;
+            }
+            else if (CommitmentsTable.Rows.Count == 1)
+            {
+                if (CommitmentsTable.Rows[0][0].ToString() == "TRANSITION")
+                {
+                    bTransition = true;
+                }
+            }
+
+            parameters = new OdbcParameter[1];
             parameters[0] = new OdbcParameter("PartnerKey", recipientKey);
 
-            string stmt = ReadSqlFile("TreasurerOfWorker.sql");
+            stmt = ReadSqlFile("TreasurerOfWorker.sql");
 
             DataTable TreasurerTable = DBAccess.GDBAccessObj.SelectDT(stmt,
                 TREASURERTABLE, transaction,
@@ -285,15 +317,23 @@ public class TGetTreasurerData
 
             if (TreasurerTable.Rows.Count >= 1)
             {
+                TreasurerTable.Columns.Add(new DataColumn("Transition", typeof(bool)));
+                TreasurerTable.Columns.Add(new DataColumn("ExWorker", typeof(bool)));
+
+                foreach (DataRow r in TreasurerTable.Rows)
+                {
+                    r["Transition"] = bTransition;
+                    r["ExWorker"] = bExWorker;
+                }
+
                 Result.Tables[TREASURERTABLE].Merge(TreasurerTable);
             }
             else
             {
-                // cannot find treasurer
-                TLogging.Log("cannot find treasurer for partner " + row[GiftSumsTable.Columns["RecipientKey"].Ordinal].ToString());
-
                 DataRow InvalidTreasurer = Result.Tables[TREASURERTABLE].NewRow();
-                InvalidTreasurer["RecipientKey"] = row[GiftSumsTable.Columns["RecipientKey"].Ordinal];
+                InvalidTreasurer["RecipientKey"] = row["RecipientKey"];
+                InvalidTreasurer["Transition"] = bTransition;
+                InvalidTreasurer["ExWorker"] = bExWorker;
                 Result.Tables[TREASURERTABLE].Rows.Add(InvalidTreasurer);
             }
         }
@@ -320,17 +360,17 @@ public class TGetTreasurerData
 
         foreach (DataRow row in ResultTable.Rows)
         {
-            if (row[ResultTable.Columns["TreasurerKey"].Ordinal] != DBNull.Value)
+            if (row["TreasurerKey"] != DBNull.Value)
             {
                 PLocationTable Address;
-                string emailAddress = GetBestEmailAddress(Convert.ToInt64(row[ResultTable.Columns["TreasurerKey"].Ordinal]), out Address);
+                string emailAddress = GetBestEmailAddress(Convert.ToInt64(row["TreasurerKey"]), out Address);
 
                 if (emailAddress.Length > 0)
                 {
-                    row[ResultTable.Columns["TreasurerEmail"].Ordinal] = emailAddress;
+                    row["TreasurerEmail"] = emailAddress;
                 }
 
-                row[ResultTable.Columns["ValidAddress"].Ordinal] = (Address != null);
+                row["ValidAddress"] = (Address != null);
 
                 if (Address == null)
                 {
@@ -340,42 +380,42 @@ public class TGetTreasurerData
 
                 if (!Address[0].IsLocalityNull())
                 {
-                    row[ResultTable.Columns["TreasurerLocality"].Ordinal] = Address[0].Locality;
+                    row["TreasurerLocality"] = Address[0].Locality;
                 }
 
                 if (!Address[0].IsStreetNameNull())
                 {
-                    row[ResultTable.Columns["TreasurerStreetName"].Ordinal] = Address[0].StreetName;
+                    row["TreasurerStreetName"] = Address[0].StreetName;
                 }
 
                 if (!Address[0].IsBuilding1Null())
                 {
-                    row[ResultTable.Columns["TreasurerBuilding1"].Ordinal] = Address[0].Building1;
+                    row["TreasurerBuilding1"] = Address[0].Building1;
                 }
 
                 if (!Address[0].IsBuilding2Null())
                 {
-                    row[ResultTable.Columns["TreasurerBuilding2"].Ordinal] = Address[0].Building2;
+                    row["TreasurerBuilding2"] = Address[0].Building2;
                 }
 
                 if (!Address[0].IsAddress3Null())
                 {
-                    row[ResultTable.Columns["TreasurerAddress3"].Ordinal] = Address[0].Address3;
+                    row["TreasurerAddress3"] = Address[0].Address3;
                 }
 
                 if (!Address[0].IsCountryCodeNull())
                 {
-                    row[ResultTable.Columns["TreasurerCountryCode"].Ordinal] = Address[0].CountryCode;
+                    row["TreasurerCountryCode"] = Address[0].CountryCode;
                 }
 
                 if (!Address[0].IsPostalCodeNull())
                 {
-                    row[ResultTable.Columns["TreasurerPostalCode"].Ordinal] = Address[0].PostalCode;
+                    row["TreasurerPostalCode"] = Address[0].PostalCode;
                 }
 
                 if (!Address[0].IsCityNull())
                 {
-                    row[ResultTable.Columns["TreasurerCity"].Ordinal] = Address[0].City;
+                    row["TreasurerCity"] = Address[0].City;
                 }
             }
         }
@@ -423,7 +463,7 @@ public class TGetTreasurerData
         return EmailAddress;
     }
 
-    public static List <LetterMessage>GenerateMessages(DataSet ATreasurerData, string ASenderEmailAddress, bool AForceLetters)
+    public static List <LetterMessage>GenerateMessages(DataSet ATreasurerData, string ASenderEmailAddress, bool AForceLetters, DateTime AEndDate)
     {
         List <LetterMessage>messages = new List <LetterMessage>();
 
@@ -438,40 +478,54 @@ public class TGetTreasurerData
             Int64 treasurerKey = -1;
             string errorMessage = "NOTREASURER";
 
-            if (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerKey"].Ordinal] != System.DBNull.Value)
+            if (row["TreasurerKey"] != System.DBNull.Value)
             {
-                treasurerName = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerName"].Ordinal].ToString();
-                treasurerKey = Convert.ToInt64(row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerKey"].Ordinal]);
+                treasurerName = row["TreasurerName"].ToString();
+                treasurerKey = Convert.ToInt64(row["TreasurerKey"]);
                 errorMessage = String.Empty;
             }
 
-            LetterMessage letter;
+            if (Convert.ToBoolean(row["ExWorker"]) == true)
+            {
+                errorMessage = "EXWORKER";
+                bool bRecentGift = false;
+
+                // check if there has been a gift in the last month of the reporting period
+                DataRow[] rowGifts = ATreasurerData.Tables[GIFTSTABLE].Select("RecipientKey = " + row["RecipientKey"].ToString(), "MonthDate");
+
+                if (rowGifts.Length > 0)
+                {
+                    DateTime month = Convert.ToDateTime(rowGifts[rowGifts.Length - 1]["MonthDate"]);
+                    bRecentGift = (month.Month == AEndDate.Month);
+                }
+
+                if (!bRecentGift)
+                {
+                    continue;
+                }
+            }
+
+            LetterMessage letter = new LetterMessage(
+                treasurerName,
+                String.Format(Catalog.GetString("Gifts for {0}"), row["RecipientName"]),
+                GenerateSimpleDebugString(ATreasurerData, row));
 
             if (AForceLetters
-                || (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal] == System.DBNull.Value)
-                || (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerKey"].Ordinal] == System.DBNull.Value))
+                || (row["TreasurerEmail"] == System.DBNull.Value)
+                || (row["TreasurerKey"] == System.DBNull.Value))
             {
-                if ((row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerKey"].Ordinal] != System.DBNull.Value)
-                    && (row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerCity"].Ordinal] == System.DBNull.Value))
+                if ((row["TreasurerKey"] != System.DBNull.Value)
+                    && (row["TreasurerCity"] == System.DBNull.Value)
+                    && (errorMessage.Length == 0))
                 {
                     errorMessage = "NOADDRESS";
                 }
 
-                string msg = GenerateLetterText(ATreasurerData, row);
-
-                letter = new LetterMessage(
-                    treasurerName,
-                    String.Format(Catalog.GetString("Gifts for {0}"), row["RecipientName"]),
-                    msg);
+                letter.HtmlMessage = GenerateLetterText(ATreasurerData, row);
             }
             else
             {
-                MailMessage mail = GenerateMailMessage(ATreasurerData, row, ASenderEmailAddress);
-
-                letter = new LetterMessage(
-                    treasurerName,
-                    String.Format(Catalog.GetString("Gifts for {0}"), row["RecipientName"]),
-                    mail);
+                letter.EmailMessage = GenerateMailMessage(ATreasurerData, row, ASenderEmailAddress);
             }
 
             letter.MessageRecipientKey = treasurerKey;
@@ -479,6 +533,7 @@ public class TGetTreasurerData
             letter.SubjectShortName = row["RecipientName"].ToString();
             letter.SubjectKey = Convert.ToInt64(row["RecipientKey"]);
             letter.ErrorMessage = errorMessage;
+            letter.Transition = Convert.ToBoolean(row["Transition"]);
             messages.Add(letter);
         }
 
@@ -542,37 +597,14 @@ public class TGetTreasurerData
         return "";
     }
 
-    /// <summary>
-    /// find the &lt;tr&gt; tag that contains the ASearchFor, and return the full tr tag and contents
-    /// </summary>
-    /// <param name="ATemplate"></param>
-    /// <param name="ASearchFor"></param>
-    /// <param name="ATemplateRow">template for one row</param>
-    /// <returns>modified template, replace tr tag with #ROWTEMPLATE</returns>
-    private static string GetTableRow(string ATemplate, string ASearchFor, out string ATemplateRow)
+    private static string GetStringOrEmpty(object obj)
     {
-        Int32 posSearchText = ATemplate.IndexOf(ASearchFor);
-
-        if (posSearchText == -1)
-        {
-            ATemplateRow = "";
-            return ATemplate;
-        }
-
-        Int32 posTableRowStart = ATemplate.Substring(0, posSearchText).LastIndexOf("<tr");
-        Int32 posTableRowEnd = ATemplate.IndexOf("</tr>", posSearchText) + 5;
-        ATemplateRow = ATemplate.Substring(posTableRowStart, posTableRowEnd - posTableRowStart);
-        return ATemplate.Replace(ATemplateRow, "#ROWTEMPLATE");
-    }
-
-    private static string GetStringFromRow(DataRow ARow, Int32 AOrdinal)
-    {
-        if (ARow[AOrdinal] == System.DBNull.Value)
+        if (obj == System.DBNull.Value)
         {
             return "";
         }
 
-        return ARow[AOrdinal].ToString();
+        return obj.ToString();
     }
 
     /// <summary>
@@ -583,8 +615,8 @@ public class TGetTreasurerData
     /// <returns></returns>
     private static string GenerateLetterText(DataSet ATreasurerData, DataRow row)
     {
-        string treasurerName = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerName"].Ordinal].ToString();
-        Int64 recipientKey = Convert.ToInt64(row[ATreasurerData.Tables[TREASURERTABLE].Columns["RecipientKey"].Ordinal]);
+        string treasurerName = row["TreasurerName"].ToString();
+        Int64 recipientKey = Convert.ToInt64(row["RecipientKey"]);
 
         string letterTemplateFilename = TAppSettingsManager.GetValueStatic("LetterTemplate.File");
 
@@ -596,19 +628,30 @@ public class TGetTreasurerData
         msg = msg.Replace("#RECIPIENTNAME", FormatShortName(row["RecipientName"].ToString(), eShortNameFormat.eReverseWithoutTitle));
         msg = msg.Replace("#TREASURERTITLE", FormatShortName(treasurerName, eShortNameFormat.eOnlyTitle));
         msg = msg.Replace("#TREASURERNAME", FormatShortName(treasurerName, eShortNameFormat.eReverseWithoutTitle));
-        msg = msg.Replace("#STREETNAME", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerStreetName"].Ordinal));
-        msg = msg.Replace("#LOCATION", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerLocality"].Ordinal));
-        msg = msg.Replace("#ADDRESS3", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerAddress3"].Ordinal));
-        msg = msg.Replace("#BUILDING1", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerBuilding1"].Ordinal));
-        msg = msg.Replace("#BUILDING2", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerBuilding2"].Ordinal));
-        msg = msg.Replace("#CITY", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerCity"].Ordinal));
-        msg = msg.Replace("#POSTALCODE", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerPostalCode"].Ordinal));
-        msg = msg.Replace("#COUNTRYCODE", GetStringFromRow(row, ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerCountryCode"].Ordinal));
+        msg = msg.Replace("#STREETNAME", GetStringOrEmpty(row["TreasurerStreetName"]));
+        msg = msg.Replace("#LOCATION", GetStringOrEmpty(row["TreasurerLocality"]));
+        msg = msg.Replace("#ADDRESS3", GetStringOrEmpty(row["TreasurerAddress3"]));
+        msg = msg.Replace("#BUILDING1", GetStringOrEmpty(row["TreasurerBuilding1"]));
+        msg = msg.Replace("#BUILDING2", GetStringOrEmpty(row["TreasurerBuilding2"]));
+        msg = msg.Replace("#CITY", GetStringOrEmpty(row["TreasurerCity"]));
+        msg = msg.Replace("#POSTALCODE", GetStringOrEmpty(row["TreasurerPostalCode"]));
+        msg = msg.Replace("#COUNTRYCODE", GetStringOrEmpty(row["TreasurerCountryCode"]));
         msg = msg.Replace("#DATE", DateTime.Now.ToLongDateString());
+
+        bool bTransition = Convert.ToBoolean(row["Transition"]);
+
+        if (bTransition)
+        {
+            msg = TPrinterHtml.RemoveDivWithName(msg, "normal");
+        }
+        else
+        {
+            msg = TPrinterHtml.RemoveDivWithName(msg, "transition");
+        }
 
         // recognise detail lines automatically
         string RowTemplate;
-        msg = GetTableRow(msg, "#MONTH", out RowTemplate);
+        msg = TPrinterHtml.GetTableRow(msg, "#MONTH", out RowTemplate);
         string rowTexts = "";
         DataRow[] rows = ATreasurerData.Tables[GIFTSTABLE].Select("RecipientKey = " + recipientKey.ToString(), "MonthDate");
 
@@ -626,12 +669,43 @@ public class TGetTreasurerData
     }
 
     /// <summary>
+    /// generates a simple string with the list of donations per month, for one treasuer and one worker;
+    /// this is useful for debugging, and looking at data of exworkers etc
+    /// </summary>
+    /// <param name="ATreasurerData"></param>
+    /// <param name="row"></param>
+    /// <returns></returns>
+    private static string GenerateSimpleDebugString(DataSet ATreasurerData, DataRow row)
+    {
+        string result = String.Empty;
+
+        result += "Treasurer: " + row["TreasurerName"].ToString() + Environment.NewLine;
+        result += "Treasurer Key: " + row["TreasurerKey"].ToString() + Environment.NewLine;
+        result += "Recipient: " + row["RecipientName"].ToString() + Environment.NewLine;
+        result += "Recipient Key: " + row["RecipientKey"].ToString() + Environment.NewLine;
+        result += Environment.NewLine;
+
+        DataRow[] rows = ATreasurerData.Tables[GIFTSTABLE].Select("RecipientKey = " + row["RecipientKey"].ToString(), "MonthDate");
+
+        foreach (DataRow rowGifts in rows)
+        {
+            DateTime month = Convert.ToDateTime(rowGifts["MonthDate"]);
+            result += month.ToString("MMMM yyyy") + ": ";
+            result += String.Format("{0:C}", Convert.ToDouble(rowGifts["MonthAmount"])) + "   ";
+            result += String.Format(", Number of Gifts: {0}", Convert.ToDouble(rowGifts["MonthCount"]));
+            result += Environment.NewLine;
+        }
+
+        return result;
+    }
+
+    /// <summary>
     /// generate the email text for one treasurer, one worker
     /// </summary>
     private static MailMessage GenerateMailMessage(DataSet ATreasurerData, DataRow row, string ASenderEmailAddress)
     {
-        string treasurerName = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerName"].Ordinal].ToString();
-        Int64 recipientKey = Convert.ToInt64(row[ATreasurerData.Tables[TREASURERTABLE].Columns["RecipientKey"].Ordinal]);
+        string treasurerName = row["TreasurerName"].ToString();
+        Int64 recipientKey = Convert.ToInt64(row["RecipientKey"]);
 
         // TODO: message body from HTML template; recognise detail lines automatically; drop title tag, because it is the subject
         string msg = String.Format(
@@ -653,7 +727,7 @@ public class TGetTreasurerData
 
         msg += "</table><br/>All the best, </body></html>";
 
-        string treasurerEmail = row[ATreasurerData.Tables[TREASURERTABLE].Columns["TreasurerEmail"].Ordinal].ToString();
+        string treasurerEmail = row["TreasurerEmail"].ToString();
 
         // TODO: subject also from HTML template, title tag
         return new MailMessage(ASenderEmailAddress,
@@ -673,18 +747,17 @@ public class LetterMessage
     public string HtmlMessage;
     public MailMessage EmailMessage;
     public string ErrorMessage = String.Empty;
-    public LetterMessage(string ARecipientShortName, string ASubject, string AHtmlMessage)
-    {
-        MessageRecipientShortName = ARecipientShortName;
-        Subject = ASubject;
-        HtmlMessage = AHtmlMessage;
-    }
+    public string SimpleDebuggingText;
 
-    public LetterMessage(string ARecipientShortName, string ASubject, MailMessage AEMailMessage)
+    /// <summary>
+    ///  Worker has left, but is still in transition, gifts are still coming in
+    /// </summary>
+    public bool Transition = false;
+    public LetterMessage(string ARecipientShortName, string ASubject, string ASimpleText)
     {
         MessageRecipientShortName = ARecipientShortName;
         Subject = ASubject;
-        EmailMessage = AEMailMessage;
+        SimpleDebuggingText = ASimpleText;
     }
 
     public bool SendAsEmail()
@@ -695,6 +768,11 @@ public class LetterMessage
     public bool SendAsLetter()
     {
         return HtmlMessage != null && ErrorMessage == String.Empty;
+    }
+
+    public override string ToString()
+    {
+        return SimpleDebuggingText;
     }
 }
 }
