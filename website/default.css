@@ -1,0 +1,271 @@
+/*#############################################################
+Name: Transparentia
+Date: 2006-08-20
+Description: Simple, lightweight and slightly blue.
+Author: Viktor Persson
+URL: http://templates.arcsin.se
+
+Feel free to use and modify but please provide credits.
+#############################################################*/
+
+/* standard elements */
+* {
+	margin: 0;
+	padding: 0;
+}
+a {
+	color: #36C;
+}
+a:hover {
+	color: #06F;
+}
+body {
+	background: #EEE url(img/bg.gif);
+	color: #444;
+	font: normal 62.5% "Lucida Sans Unicode",sans-serif;
+	margin: 0;
+}
+input {
+	color: #555;
+	font: normal 1.1em "Lucida Sans Unicode",sans-serif;
+}
+p,cite,code,ul {
+	font-size: 1.2em;
+	padding-bottom: 1.2em;
+}
+h1 {
+	font-size: 1.4em;
+	margin-bottom: 4px;
+}
+code {
+	background: url(img/bgcode.gif);
+	border: 1px solid #F0F0F0;
+	border-left: 6px solid #39F;
+	color: #555;
+	display: block;
+	font: normal 1.1em "Lucida Sans Unicode",serif;
+	margin-bottom: 12px;
+	padding: 8px 10px;
+	white-space: pre;
+}
+cite {
+	background: url(img/quote.gif) no-repeat;
+	color: #666;
+	display: block;
+	font: normal 1.3em "Lucida Sans Unicode",serif;
+	padding-left: 28px;
+}
+h1,h2,h3 {
+	color: #367EA6;
+	padding-top: 6px;
+}
+
+/* misc */
+.clearer {
+	clear: both;
+}
+
+/* structure */
+.container {
+	background: url(img/bgcontainer.gif) repeat-y;
+	margin: 0 auto;
+	padding-bottom: 6px;
+	width: 980px;
+}
+.header {
+	background: url(img/header.gif) repeat-x;
+}
+
+/* title */
+.title h1 {
+	color: #FFF;
+	font: normal 3em Verdana,sans-serif;
+	height: 75px;
+	line-height: 75px;
+	margin-bottom: 8px;
+        margin-left: 40px;
+	text-align: left;
+}
+
+.title h2 {
+	color: #FFF;
+	font: normal 2em Verdana,sans-serif;
+	height: 75px;
+	line-height: 75px;
+	margin-bottom: 0px;
+        margin-left: 40px;
+	text-align: left;
+}
+
+/* navigation */
+.navigation {
+	margin-bottom: 4px;
+}
+.navigation a {
+	background-color: #4A91C3;
+	color: #FFF;
+	float: left;
+	font: bold 1.2em "Trebuchet MS",sans-serif;
+	padding: 8px 0;
+	width: 19%;
+	border-right: 1px solid #FFF;
+	text-align: center;
+	text-decoration: none;
+}
+.navigation a:hover {
+	background-color: #000;
+	color: #FFF;
+}
+
+/* main */
+.main {
+	clear: both;
+	padding: 8px 18px;
+}
+
+/* main left */
+.sidenav h1,.sidenav ul,.sidenav2 h1,.sidenav2 ul {
+	padding-left: 12px;
+}
+.sidenav {
+	background: #EEE;
+	border: 1px solid #E5E5E5;
+	float: left;
+	width: 200px;
+}
+.sidenav2 {
+	background: #EEE;
+	border: 1px solid #E5E5E5;
+	float: right;
+/*	margin-left: 760px; */
+	width: 200px;
+}
+.sidenav h1, .sidenav2 h1 {
+	color: #666;
+	font-size: 1.2em;
+	height: 20px;
+	margin-top: 1.2em;
+}
+.sidenav ul,.sidenav2 ul {
+	border-top: 1px solid #FAFAFA;
+	background: url(img/bgul.gif) repeat-x;
+	margin: 0;
+	padding: 0;
+}
+.sidenav li,.sidenav2 li {
+	border: 1px solid #FAFAFA;
+	border-top: none;
+	list-style: none;
+	margin: 0;
+}
+.sidenav li a,.sidenav2 li a {
+	color: #777;
+	display: block;
+	font-size: 0.9em;
+	padding: 3px 6px 3px 14px;
+	text-decoration: none;
+}
+.sidenav li a:hover,.sidenav2 li a:hover {
+	color: #111;
+}
+
+/* content */
+.content {
+        margin-left: 212px;
+	width: 520px;
+}
+.content .item {
+	padding: 6px 12px;
+	border: 1px solid #EEE;
+	background: #FFF;
+	margin-bottom: 8px;
+}
+.content .descr {
+	color: #333;
+	margin-bottom: 6px;
+}
+
+.content li {
+	list-style: url(img/li.gif);
+	margin-left: 18px;
+}
+
+/* search form */
+form {
+	padding: 0 0 6px 8px;
+}
+.styled {
+	border: 1px solid #DDD;
+	padding: 4px;
+}
+.button {
+	background: url(img/search.gif) no-repeat left bottom;
+	border: none;
+	height: 27px;
+	width: 27px;
+}
+
+/* footer */
+.footer {
+	background: #FFF;
+	border: 1px solid #EEE;
+	color: #666;
+	font-size: 1.1em;
+	margin: 0 auto;
+	text-align: center;
+	padding: 6px;
+	width: 930px;
+}
+.footer a {
+	color: #36C;
+	text-decoration: none;
+}
+.footer a:hover {
+	color: #06F;
+	text-decoration: underline;
+}
+
+
+/* added by Timotheus for Wordpress integration */
+.entry {
+	margin-top: 10px;  
+}
+.entry ul {
+	font-size: 1.2em;
+	padding-bottom: 0.0em;
+}
+.entry ul li ul {
+	font-size: 100%;
+}
+
+h1 a, h1 a:hover, h1 a:visited {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.donate {
+    position:absolute;
+    top: 40px;
+    left: 630px;
+}
+
+.flags {
+    position:relative;
+    top: -5px;
+    left: 900px;
+    padding: 0;
+    margin: 0;
+    height: 10px;
+}
+
+.twitter {
+   margin: 10px;
+   padding: 4px;
+}
+.tweettext {
+  font-size: 1.1em;
+  margin-bottom: 5px;
+}
+.tweetdate {
+  font-size: 0.9em;
+}
