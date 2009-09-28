@@ -62,7 +62,7 @@ namespace Ict.Common.Printing
     public class TTableCellGfx
     {
         /// <summary>todoComment</summary>
-        public float columnWidthInPercentage;
+        public float columnWidthInPercentage = -1;
 
         /// <summary>can be html code</summary>
         public XmlNode content;

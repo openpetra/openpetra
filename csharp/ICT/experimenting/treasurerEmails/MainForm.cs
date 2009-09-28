@@ -276,7 +276,7 @@ public partial class MainForm : Form
         if (selectedMail.Bcc.Count > 0)
         {
             header += String.Format("{0}: {1}<br/>",
-                Catalog.GetString("Cc"),
+                Catalog.GetString("Bcc"),
                 selectedMail.Bcc);
         }
 
@@ -389,21 +389,29 @@ public partial class MainForm : Form
 
     void BtnSendAllEmailsClick(object sender, EventArgs e)
     {
-        /*
-         * TSmtpSender smtp = CreateConnection();
-         *
-         * for (Int16 Count = 0; Count < FEmails.Count; Count++)
-         * {
-         *  MailMessage mail = FEmails[Count];
-         *
-         *  if (!smtp.SendMessage(ref mail))
-         *  {
-         *      return;
-         *  }
-         *
-         *  RefreshGridEmails();
-         * }
-         */
+        TSmtpSender smtp = CreateConnection();
+
+        // TODO: allow to cancel???
+        Cursor = Cursors.WaitCursor;
+
+        foreach (LetterMessage mail in FLetters)
+        {
+            if (mail.SendAsEmail())
+            {
+//                mail.EmailMessage.To.Clear();
+//                mail.EmailMessage.To.Add("justfortest@example.org");
+
+                if (!smtp.SendMessage(ref mail.EmailMessage))
+                {
+                    RefreshGridEmails();
+                    return;
+                }
+            }
+        }
+
+        Cursor = Cursors.Default;
+
+        RefreshGridEmails();
     }
 
     void BtnGenerateEmailsClick(object sender, EventArgs e)

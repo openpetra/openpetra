@@ -37,6 +37,8 @@ using Ict.Common.Printing;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 
@@ -107,6 +109,7 @@ public class TGetTreasurerData
 
         ResultDataset.Tables.Add(GiftsTable);
         ResultDataset.Tables.Add(TreasurerTable);
+        ResultDataset.Tables.Add(new ALedgerTable());
 
         // add the last date of the month to the table
         AddMonthDate(ref GiftsTable, ALedgerNumber);
@@ -116,6 +119,9 @@ public class TGetTreasurerData
 
         // get the name of each recipient
         AddRecipientName(ref TreasurerTable);
+
+        // get the country code of the ledger, which is important for printing the address labels
+        AddLedgerDetails(ref ResultDataset, ALedgerNumber);
 
         // use GetBestAddress to get the email address of the treasurer
         AddTreasurerEmailOrPostalAddress(ref TreasurerTable);
@@ -254,6 +260,15 @@ public class TGetTreasurerData
         DBAccess.GDBAccessObj.RollbackTransaction();
     }
 
+    private static void AddLedgerDetails(ref DataSet Result, Int32 ALedgerNumber)
+    {
+        TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+        ALedgerAccess.LoadByPrimaryKey(Result, ALedgerNumber, transaction);
+
+        DBAccess.GDBAccessObj.RollbackTransaction();
+    }
+
     /// <summary>
     /// get the treasurer(s) for each recipient;
     /// get their name and partner key
@@ -355,6 +370,7 @@ public class TGetTreasurerData
         ResultTable.Columns.Add("TreasurerBuilding2", typeof(string));
         ResultTable.Columns.Add("TreasurerAddress3", typeof(string));
         ResultTable.Columns.Add("TreasurerCountryCode", typeof(string));
+        ResultTable.Columns.Add("TreasurerCountryName", typeof(string));
         ResultTable.Columns.Add("TreasurerPostalCode", typeof(string));
         ResultTable.Columns.Add("TreasurerCity", typeof(string));
 
@@ -363,7 +379,8 @@ public class TGetTreasurerData
             if (row["TreasurerKey"] != DBNull.Value)
             {
                 PLocationTable Address;
-                string emailAddress = GetBestEmailAddress(Convert.ToInt64(row["TreasurerKey"]), out Address);
+                string CountryNameLocal;
+                string emailAddress = GetBestEmailAddress(Convert.ToInt64(row["TreasurerKey"]), out Address, out CountryNameLocal);
 
                 if (emailAddress.Length > 0)
                 {
@@ -408,6 +425,8 @@ public class TGetTreasurerData
                     row["TreasurerCountryCode"] = Address[0].CountryCode;
                 }
 
+                row["TreasurerCountryName"] = CountryNameLocal;
+
                 if (!Address[0].IsPostalCodeNull())
                 {
                     row["TreasurerPostalCode"] = Address[0].PostalCode;
@@ -421,17 +440,21 @@ public class TGetTreasurerData
         }
     }
 
-    private static string GetBestEmailAddress(Int64 APartnerKey, out PLocationTable AAddress)
+    private static string GetBestEmailAddress(Int64 APartnerKey, out PLocationTable AAddress, out string ACountryNameLocal)
     {
         string EmailAddress = "";
         TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
         AAddress = null;
+        ACountryNameLocal = "";
 
         DataSet PartnerLocationsDS = new DataSet();
 
         PartnerLocationsDS.Tables.Add(new PPartnerLocationTable());
+        PartnerLocationsDS.Tables.Add(new PCountryTable());
         DataTable PartnerLocationTable = PartnerLocationsDS.Tables[PPartnerLocationTable.GetTableName()];
+        PCountryTable CountryTable = (PCountryTable)PartnerLocationsDS.Tables[PCountryTable.GetTableName()];
+        CountryTable.DefaultView.Sort = PCountryTable.GetCountryCodeDBName();
 
         // add special column BestAddress and Icon
         PartnerLocationTable.Columns.Add(new System.Data.DataColumn("BestAddress", typeof(Boolean)));
@@ -455,6 +478,13 @@ public class TGetTreasurerData
 
                 // we also want the post address, need to load the p_location table:
                 AAddress = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, Transaction);
+
+                if (CountryTable.DefaultView.Find(AAddress[0].CountryCode) == -1)
+                {
+                    CountryTable.Merge(PCountryAccess.LoadByPrimaryKey(AAddress[0].CountryCode, Transaction));
+                }
+
+                ACountryNameLocal = CountryTable[CountryTable.DefaultView.Find(AAddress[0].CountryCode)].CountryNameLocal;
             }
         }
 
@@ -469,6 +499,8 @@ public class TGetTreasurerData
 
         DataView view = ATreasurerData.Tables[TREASURERTABLE].DefaultView;
         view.Sort = "TreasurerName ASC";
+
+        string LedgerCountryCode = ((ALedgerTable)ATreasurerData.Tables[ALedgerTable.GetTableName()])[0].CountryCode;
 
         foreach (DataRowView rowview in view)
         {
@@ -521,7 +553,7 @@ public class TGetTreasurerData
                     errorMessage = "NOADDRESS";
                 }
 
-                letter.HtmlMessage = GenerateLetterText(ATreasurerData, row);
+                letter.HtmlMessage = GenerateLetterText(ATreasurerData, row, LedgerCountryCode, "letter");
             }
             else
             {
@@ -610,10 +642,7 @@ public class TGetTreasurerData
     /// <summary>
     /// generate the printed letter for one treasurer, one worker
     /// </summary>
-    /// <param name="ATreasurerData"></param>
-    /// <param name="row"></param>
-    /// <returns></returns>
-    private static string GenerateLetterText(DataSet ATreasurerData, DataRow row)
+    private static string GenerateLetterText(DataSet ATreasurerData, DataRow row, string ALedgerCountryCode, string ALetterOrEmail)
     {
         string treasurerName = row["TreasurerName"].ToString();
         Int64 recipientKey = Convert.ToInt64(row["RecipientKey"]);
@@ -625,7 +654,10 @@ public class TGetTreasurerData
 
         string msg = reader.ReadToEnd();
 
+        reader.Close();
+
         msg = msg.Replace("#RECIPIENTNAME", FormatShortName(row["RecipientName"].ToString(), eShortNameFormat.eReverseWithoutTitle));
+        msg = msg.Replace("#RECIPIENTEMAIL", GetStringOrEmpty(row["TreasurerEmail"]));
         msg = msg.Replace("#TREASURERTITLE", FormatShortName(treasurerName, eShortNameFormat.eOnlyTitle));
         msg = msg.Replace("#TREASURERNAME", FormatShortName(treasurerName, eShortNameFormat.eReverseWithoutTitle));
         msg = msg.Replace("#STREETNAME", GetStringOrEmpty(row["TreasurerStreetName"]));
@@ -635,18 +667,37 @@ public class TGetTreasurerData
         msg = msg.Replace("#BUILDING2", GetStringOrEmpty(row["TreasurerBuilding2"]));
         msg = msg.Replace("#CITY", GetStringOrEmpty(row["TreasurerCity"]));
         msg = msg.Replace("#POSTALCODE", GetStringOrEmpty(row["TreasurerPostalCode"]));
-        msg = msg.Replace("#COUNTRYCODE", GetStringOrEmpty(row["TreasurerCountryCode"]));
         msg = msg.Replace("#DATE", DateTime.Now.ToLongDateString());
+
+        // according to German Post, there is no country code in front of the post code
+        // if country code is same for the address of the recipient and this office, then COUNTRYNAME is cleared
+        if (GetStringOrEmpty(row["TreasurerCountryCode"]) != ALedgerCountryCode)
+        {
+            msg = msg.Replace("#COUNTRYNAME", GetStringOrEmpty(row["TreasurerCountryName"]));
+        }
+        else
+        {
+            msg = msg.Replace("#COUNTRYNAME", "");
+        }
 
         bool bTransition = Convert.ToBoolean(row["Transition"]);
 
         if (bTransition)
         {
-            msg = TPrinterHtml.RemoveDivWithName(msg, "normal");
+            msg = TPrinterHtml.RemoveDivWithClass(msg, "normal");
         }
         else
         {
-            msg = TPrinterHtml.RemoveDivWithName(msg, "transition");
+            msg = TPrinterHtml.RemoveDivWithClass(msg, "transition");
+        }
+
+        if (ALetterOrEmail == "letter")
+        {
+            msg = TPrinterHtml.RemoveDivWithClass(msg, "email");
+        }
+        else
+        {
+            msg = TPrinterHtml.RemoveDivWithClass(msg, "letter");
         }
 
         // recognise detail lines automatically
@@ -705,35 +756,18 @@ public class TGetTreasurerData
     private static MailMessage GenerateMailMessage(DataSet ATreasurerData, DataRow row, string ASenderEmailAddress)
     {
         string treasurerName = row["TreasurerName"].ToString();
-        Int64 recipientKey = Convert.ToInt64(row["RecipientKey"]);
-
-        // TODO: message body from HTML template; recognise detail lines automatically; drop title tag, because it is the subject
-        string msg = String.Format(
-            "<html><body>Hello {0}, <br/> This is a test. <br/> Donations so far: <br/>",
-            treasurerName);
-
-        msg += "<table>";
-
-        DataRow[] rows = ATreasurerData.Tables[GIFTSTABLE].Select("RecipientKey = " + recipientKey.ToString(), "MonthDate");
-
-        foreach (DataRow rowGifts in rows)
-        {
-            DateTime month = Convert.ToDateTime(rowGifts["MonthDate"]);
-            msg += "<tr><td>" + month.ToString("MMMM yyyy") + "</td>";
-            msg += "<td align=\"right\">" + String.Format("{0:C}", Convert.ToDouble(rowGifts["MonthAmount"])) + "</td>";
-            msg += "<td>" + String.Format("  {0}", Convert.ToDouble(rowGifts["MonthCount"])) + "</td>";
-            msg += "</tr>";
-        }
-
-        msg += "</table><br/>All the best, </body></html>";
-
         string treasurerEmail = row["TreasurerEmail"].ToString();
+        string MessageBody = GenerateLetterText(ATreasurerData, row, "", "email");
 
-        // TODO: subject also from HTML template, title tag
-        return new MailMessage(ASenderEmailAddress,
+        // subject comes from HTML title tag
+        MailMessage msg = new MailMessage(ASenderEmailAddress,
             treasurerEmail,
-            String.Format(Catalog.GetString("Gifts for {0}"), row["RecipientName"]),
-            msg);
+            TPrinterHtml.GetTitle(MessageBody),
+            MessageBody);
+
+        msg.Bcc.Add(ASenderEmailAddress);
+
+        return msg;
     }
 }
 

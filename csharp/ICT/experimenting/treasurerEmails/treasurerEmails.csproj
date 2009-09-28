@@ -40,11 +40,17 @@
       <HintPath>..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Petra.Server.MCommon.DataAccess">
+      <HintPath>..\..\Petra\Server\_bin\Debug\Ict.Petra.Server.MCommon.DataAccess.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Server.MFinance.DataAccess">
       <HintPath>..\..\Petra\Server\_bin\Debug\Ict.Petra.Server.MFinance.DataAccess.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Server.MPartner.DataAccess">
       <HintPath>..\..\Petra\Server\_bin\Debug\Ict.Petra.Server.MPartner.DataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
+      <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
       <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>

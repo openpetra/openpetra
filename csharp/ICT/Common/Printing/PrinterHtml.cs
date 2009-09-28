@@ -438,6 +438,54 @@ namespace Ict.Common.Printing
             // todo: read table width from table styles
             curNode = curNode.FirstChild; // should be tbody, or tr
 
+            // widths of columns defined in colgroup
+            List <Int32>colWidth = new List <Int32>();
+
+            while (curNode != null && curNode.Name != "colgroup"
+                   && curNode.Name != "tbody" && curNode.Name != "tr")
+            {
+                curNode = curNode.NextSibling;
+            }
+
+            if ((curNode != null) && (curNode.Name == "colgroup"))
+            {
+                XmlNode colNode = curNode.FirstChild;
+                Int32 TableWidth = 0;
+
+                while (colNode != null)
+                {
+                    if (TXMLParser.HasAttribute(colNode, "width"))
+                    {
+                        Int32 width = Convert.ToInt32(TXMLParser.GetAttribute(colNode, "width"));
+                        colWidth.Add(width);
+                        TableWidth += width;
+                    }
+
+                    colNode = colNode.NextSibling;
+                }
+
+                // Twips are pixel/20???
+                // full page width is 6.892598, and this should fit for 600 pixel
+                Int32 newTableWidth = Convert.ToInt32(6.892598f * TableWidth / 600.0f);
+
+                if (newTableWidth < AWidthAvailable)
+                {
+                    AWidthAvailable = newTableWidth;
+
+                    for (Int32 counter = 0; counter < colWidth.Count; counter++)
+                    {
+                        colWidth[counter] = Convert.ToInt32((colWidth[counter] * 100.0f / TableWidth));
+                    }
+                }
+
+                curNode = curNode.NextSibling;
+            }
+
+            while (curNode != null && curNode.Name != "tbody" && curNode.Name != "tr")
+            {
+                curNode = curNode.NextSibling;
+            }
+
             if (curNode.Name == "tbody")
             {
                 curNode = curNode.FirstChild;
@@ -468,20 +516,29 @@ namespace Ict.Common.Printing
                         preparedCell.align = eAlignment.eCenter;
                     }
 
-                    // todo set preparedCell.columnWidthInPercentage
-                    preparedCell.columnWidthInPercentage = -1;
                     preparedRow.cells.Add(preparedCell);
                     cell = cell.NextSibling;
                 }
 
                 // make sure the percentages are right;
                 // todo: what if only some columns have a percentage?
+                Int32 counter = 0;
+
                 foreach (TTableCellGfx preparedCell in preparedRow.cells)
                 {
                     if (preparedCell.columnWidthInPercentage == -1)
                     {
-                        preparedCell.columnWidthInPercentage = 100.0f / preparedRow.cells.Count;
+                        if (colWidth.Count > counter)
+                        {
+                            preparedCell.columnWidthInPercentage = colWidth[counter];
+                        }
+                        else
+                        {
+                            preparedCell.columnWidthInPercentage = 100.0f / preparedRow.cells.Count;
+                        }
                     }
+
+                    counter++;
                 }
 
                 preparedRows.Add(preparedRow);
@@ -518,17 +575,37 @@ namespace Ict.Common.Printing
             return ATemplate.Replace(ATemplateRow, "#ROWTEMPLATE");
         }
 
-        private static void FindAllChildren(XmlNode ANode, ref List <XmlNode>AResult, string AElement, string AName)
+        private static void FindAllChildren(XmlNode ANode, ref List <XmlNode>AResult, string AElement, string AAttributeName, string AName)
         {
-            if ((ANode.Name == AElement) && (TXMLParser.GetAttribute(ANode, "name") == AName))
+            if ((ANode.Name == AElement) && (TXMLParser.GetAttribute(ANode, AAttributeName) == AName))
             {
                 AResult.Add(ANode);
             }
 
             foreach (XmlNode node in ANode.ChildNodes)
             {
-                FindAllChildren(node, ref AResult, AElement, AName);
+                FindAllChildren(node, ref AResult, AElement, AAttributeName, AName);
             }
+        }
+
+        /// <summary>
+        /// returns the title of the html document
+        /// </summary>
+        /// <param name="AHtmlMessage"></param>
+        /// <returns></returns>
+        public static string GetTitle(string AHtmlMessage)
+        {
+            XmlDocument htmlDoc = Ict.Common.Printing.TPrinterHtml.ParseHtml(AHtmlMessage);
+
+            List <XmlNode>children = new List <XmlNode>();
+            FindAllChildren(htmlDoc.DocumentElement, ref children, "title", "", "");
+
+            if (children.Count < 1)
+            {
+                return "NO VALID TITLE IN TEMPLATE";
+            }
+
+            return children[0].InnerText;
         }
 
         /// <summary>
@@ -539,11 +616,28 @@ namespace Ict.Common.Printing
         /// <returns></returns>
         public static string RemoveDivWithName(string AHtmlMessage, string ADivName)
         {
-            // TODO: use xml tree to avoid whitespace differences etc?
+            // use xml tree to avoid whitespace differences etc?
             XmlDocument htmlDoc = Ict.Common.Printing.TPrinterHtml.ParseHtml(AHtmlMessage);
 
             List <XmlNode>children = new List <XmlNode>();
-            FindAllChildren(htmlDoc.DocumentElement, ref children, "div", ADivName);
+            FindAllChildren(htmlDoc.DocumentElement, ref children, "div", "name", ADivName);
+
+            foreach (XmlNode child in children)
+            {
+                child.ParentNode.RemoveChild(child);
+            }
+
+            return htmlDoc.OuterXml.Replace("&amp;", "&");
+        }
+
+        /// remove all divs of the given class
+        public static string RemoveDivWithClass(string AHtmlMessage, string ADivClass)
+        {
+            // use xml tree to avoid whitespace differences etc?
+            XmlDocument htmlDoc = Ict.Common.Printing.TPrinterHtml.ParseHtml(AHtmlMessage);
+
+            List <XmlNode>children = new List <XmlNode>();
+            FindAllChildren(htmlDoc.DocumentElement, ref children, "div", "class", ADivClass);
 
             foreach (XmlNode child in children)
             {

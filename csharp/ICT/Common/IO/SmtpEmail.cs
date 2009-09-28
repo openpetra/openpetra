@@ -85,26 +85,10 @@ namespace Ict.Common.IO
             //Attempt to send the email
             try
             {
-                AEmail.IsBodyHtml = AEmail.Body.ToUpper().StartsWith("<HTML>");
-#if DEBUG
-                // in debug mode, make sure emails get send to the sender instead of the recipient
-                string origCC = AEmail.CC.ToString();
-                string origBCC = AEmail.Bcc.ToString();
-                string origTO = AEmail.To.ToString();
-                AEmail.CC.Clear();
-                AEmail.Bcc.Clear();
-                AEmail.To.Clear();
-                AEmail.To.Add(AEmail.From.ToString());
+                AEmail.IsBodyHtml = AEmail.Body.ToLower().Contains("<html>");
+
                 FSmtpClient.Send(AEmail);
-                AEmail.CC.Add(origCC);
-                AEmail.Bcc.Add(origBCC);
-                AEmail.To.Clear();
-                AEmail.To.Add(origTO);
-#else
-#if todo
-                FSmtpClient.Send(AEmail);
-#endif
-#endif
+
                 AEmail.Headers.Add("Date-Sent", DateTime.Now.ToString());
                 return true;
             }

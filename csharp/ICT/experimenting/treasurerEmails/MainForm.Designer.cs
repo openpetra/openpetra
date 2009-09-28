@@ -329,6 +329,7 @@ partial class MainForm
         this.btnSendAllEmails.Name = "btnSendAllEmails";
         this.btnSendAllEmails.Size = new System.Drawing.Size(80, 22);
         this.btnSendAllEmails.Text = "Send all Emails";
+        this.btnSendAllEmails.Click += new System.EventHandler(this.BtnSendAllEmailsClick);
 
         //
         // tpgLetters
