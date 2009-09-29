@@ -164,6 +164,11 @@ namespace Ict.Common.Printing
         /// <summary>todoComment</summary>
         protected eFont FCurrentFont;
 
+        /// <summary>
+        /// relative number; 0 is normal size
+        /// </summary>
+        protected Int32 FCurrentRelativeFontSize = 0;
+
         /// <summary>todoComment</summary>
         protected eAlignment FCurrentAlignment = eAlignment.eLeft;
 
@@ -244,6 +249,21 @@ namespace Ict.Common.Printing
             set
             {
                 FCurrentFont = value;
+            }
+        }
+
+        /// <summary>
+        /// the relative font size; 0 is default size
+        /// </summary>
+        public Int32 CurrentRelativeFontSize
+        {
+            get
+            {
+                return FCurrentRelativeFontSize;
+            }
+            set
+            {
+                FCurrentRelativeFontSize = value;
             }
         }
 

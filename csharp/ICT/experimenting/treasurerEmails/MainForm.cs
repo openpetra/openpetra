@@ -375,6 +375,8 @@ public partial class MainForm : Form
 
     void BtnSendOneEmailClick(object sender, EventArgs e)
     {
+        MessageBox.Show("not implemented at the moment");
+
         /*
          * TSmtpSender smtp = CreateConnection();
          *
@@ -389,9 +391,18 @@ public partial class MainForm : Form
 
     void BtnSendAllEmailsClick(object sender, EventArgs e)
     {
+        if (MessageBox.Show(Catalog.GetString("Do you really want to send the emails?"),
+                Catalog.GetString("Confirm sending emails"),
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Exclamation,
+                MessageBoxDefaultButton.Button2) == DialogResult.Cancel)
+        {
+            return;
+        }
+
         TSmtpSender smtp = CreateConnection();
 
-        // TODO: allow to cancel???
+        // TODO: dialog that allows to cancel???
         Cursor = Cursors.WaitCursor;
 
         foreach (LetterMessage mail in FLetters)
@@ -406,6 +417,9 @@ public partial class MainForm : Form
                     RefreshGridEmails();
                     return;
                 }
+
+                // TODO: add email to p_partner_contact
+                // TODO: add email to sent box???
             }
         }
 

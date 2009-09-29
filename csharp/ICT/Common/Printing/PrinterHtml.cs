@@ -209,7 +209,7 @@ namespace Ict.Common.Printing
                 printer.FDefaultFont = new System.Drawing.Font("Arial", 12);
                 printer.FDefaultBoldFont = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
                 XmlNode childNode = FCurrentNodeNextPage.FirstChild;
-                RenderContent(printer.LeftMargin + TGfxPrinter.Cm2Inch(1), printer.Width - TGfxPrinter.Cm2Inch(2), ref childNode);
+                RenderContent(printer.LeftMargin + TGfxPrinter.Cm2Inch(1.3f), printer.Width - TGfxPrinter.Cm2Inch(2.3f), ref childNode);
 
                 // there can be several body blocks, each representing a page
                 FCurrentNodeNextPage = FCurrentNodeNextPage.NextSibling;
@@ -318,12 +318,20 @@ namespace Ict.Common.Printing
                 }
                 else if (curNode.Name == "font")
                 {
-                    // todo change font name and/or size
-                    // FCurrentFont
+                    // TODO change font name and/or size
+                    Int32 previousFontSize = FPrinter.CurrentRelativeFontSize;
+
+                    if (TXMLParser.HasAttribute(curNode, "size"))
+                    {
+                        FPrinter.CurrentRelativeFontSize += TXMLParser.GetIntAttribute(curNode, "size");
+                    }
+
                     // recursively call RenderContent
-                    // reset FCurrentFont to backed up font
                     XmlNode child = curNode.FirstChild;
                     RenderContent(AXPos, AWidthAvailable, ref child);
+
+                    // reset font
+                    FPrinter.CurrentRelativeFontSize = previousFontSize;
                     curNode = curNode.NextSibling;
                 }
                 else if (curNode.Name == "b")
@@ -418,6 +426,7 @@ namespace Ict.Common.Printing
             FPrinter.CurrentXPos = AXPos;
 
             int border = 1;
+            int height = -1;
 
             if (TXMLParser.HasAttribute(tableNode, "border"))
             {
@@ -432,6 +441,12 @@ namespace Ict.Common.Printing
                 {
                     AWidthAvailable *= (float)Convert.ToDouble(width.Substring(0, width.Length - 1)) / 100.0f;
                 }
+            }
+
+            if (TXMLParser.HasAttribute(tableNode, "height"))
+            {
+                // TODO: convert from html pixel into printing height
+                // height = TXMLParser.GetIntAttribute(tableNode, "height");
             }
 
             // todo: read border value from table attributes
@@ -548,7 +563,14 @@ namespace Ict.Common.Printing
             FPrinter.PrintTable(AXPos, AWidthAvailable, preparedRows);
 
             curNode = tableNode.NextSibling;
-            return FPrinter.CurrentYPos - oldYPos;
+
+            if (height < FPrinter.CurrentYPos - oldYPos)
+            {
+                return FPrinter.CurrentYPos - oldYPos;
+            }
+
+            FPrinter.CurrentYPos = oldYPos + height;
+            return height;
         }
 
         /// <summary>

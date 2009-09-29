@@ -1,30 +1,77 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="content-type">
-  <title>Spendeneingang für #RECIPIENTNAME</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"/>
+  <title>Finanzbericht für #RECIPIENTNAME</title>
+  <!-- todo: CSS for position of address label, font sizes, etc? -->
 </head>
 <body>
-#SALUTATION,<br>
-<br>
-Hier ist eine &Uuml;bersicht &uuml;ber die Spenden, die in den
-vergangenen 12 Monaten f&uuml;r den Missionar #RECIPIENTNAME bei OM
-Deutschland eingegangen sind:<br>
-<br>
-<table style="text-align: left;" border="1" cellpadding="2"
- cellspacing="2">
+<div class="letter">
+<br/><br/><br/><br/><br/><br/><br/><br/>
+#TREASURERTITLE<br/>
+#TREASURERNAME<br/>
+#STREETNAME<br/><br/>
+<b>#POSTALCODE #CITY</b><br/>
+#COUNTRYNAME<br/>
+
+<p align="right">#DATE</p><br/><br/><br/>
+</div>
+
+<b>Finanzbericht für #RECIPIENTNAME</b><br/><br/>
+
+Hiermit senden wir Ihnen die aktuellen Daten.<br/>
+
+<font size="-4">
+<table border="0">
+  <colgroup>
+    <col width="150"/>
+    <col width="120"/>
+    <col width="150"/>
+  </colgroup>
   <tbody>
     <tr>
+    <th></th>
+    <th>Betrag in Euro</th>
+    <th>Anzahl der Spenden</th>
+    </tr>
+    <tr>
       <td>#MONTH</td>
-      <td>#AMOUNT</td>
+      <td align="right">#AMOUNT&nbsp;&nbsp;&nbsp;&nbsp;</td>
+      <td align="center">#NUMBERGIFTS</td>
     </tr>
   </tbody>
 </table>
-<br>
-Vielen Dank, dass Sie hinter #RECIPIENTNAME stehen.<br>
-<br>
-mit freundlichen Gr&uuml;&szlig;en,<br>
-&nbsp; &nbsp;#DONATIONSREPRESENTATIVE<br>
+</font>
+<br/>
+<div class="normal">Aus Datenschutzgründen dürfen wir Ihnen leider keine detaillierte Aufstellung der <br/>
+Einzelspenden liefern.<br/>
+
+<div class="letter"><br/>Seit neuestem versenden wir diesen Brief auch als Email, um Portokosten zu sparen; <br/>
+<b>falls Sie über eine Email Adresse verfügen, teilen Sie uns diese doch bitte mit!</b><br/><br/>
+</div>
+
+Danke für Ihre Mithilfe</div>
+
+
+<div class="transition">Der Einsatz des von Ihnen ausgesandten Mitarbeiters ist nun beendet. Sie erhalten weiterhin (für <br/>
+maximal 3 Monate) Aufstellungen der Spenden des Mitarbeiters, soweit <br/>
+weitere Spenden eingehen.</div>
+
+<br/>
+Viele Grüße aus ...,<br/>
+
+<div class="letter">
+<img src="signature.png" width="60%" height="60%"/><br/>
+Spendenbuchhaltung
+</div>
+<div class="email">
+...<br/>
+Spendenbuchhaltung
+
+<hr/>
+Sie erhalten diese Email, weil Sie mit Ihrer Email Adresse #RECIPIENTEMAIL<br/>
+bei uns als Mitglied des Basisteams von #RECIPIENTNAME eingetragen sind.<br/>
+Bitte melden Sie sich, wenn sich Ihre Email Adresse ändert.
+</div>
 </body>
 </html>

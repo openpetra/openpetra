@@ -181,6 +181,11 @@ namespace Ict.Common.Printing
                     break;
             }
 
+            if (CurrentRelativeFontSize != 0)
+            {
+                ReturnValue = new Font(ReturnValue.FontFamily, ReturnValue.SizeInPoints + CurrentRelativeFontSize / 2.0f, ReturnValue.Style);
+            }
+
             return ReturnValue;
         }
 

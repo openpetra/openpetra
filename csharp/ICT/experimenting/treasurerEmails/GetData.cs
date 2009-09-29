@@ -248,7 +248,7 @@ public class TGetTreasurerData
 
         foreach (DataRow row in ResultTable.Rows)
         {
-        	row["RecipientName"] = GetPartnerShortName(Convert.ToInt64(row["RecipientKey"]), transaction);
+            row["RecipientName"] = GetPartnerShortName(Convert.ToInt64(row["RecipientKey"]), transaction);
         }
 
         DBAccess.GDBAccessObj.RollbackTransaction();
@@ -549,7 +549,6 @@ public class TGetTreasurerData
                 }
 
                 letter.HtmlMessage = GenerateLetterText(ATreasurerData, row, LedgerCountryCode, "letter", out letter.Subject);
-                
             }
             else
             {
@@ -573,10 +572,10 @@ public class TGetTreasurerData
         eShortname, eReverseShortname, eOnlyTitle, eReverseWithoutTitle
     };
 
-   	/// return the short name for a partner;
-   	/// the short name is a comma separated list of title, familyname, firstname
-	private static string GetPartnerShortName(Int64 APartnerKey, TDBTransaction ATransaction)
-	{
+    /// return the short name for a partner;
+    /// the short name is a comma separated list of title, familyname, firstname
+    private static string GetPartnerShortName(Int64 APartnerKey, TDBTransaction ATransaction)
+    {
         OdbcParameter[] parameters = new OdbcParameter[1];
         parameters[0] = new OdbcParameter("PartnerKey", APartnerKey);
         string shortname = DBAccess.GDBAccessObj.ExecuteScalar(
@@ -589,26 +588,26 @@ public class TGetTreasurerData
         parameters[1] = new OdbcParameter("PartnerKey", APartnerKey);
         parameters[2] = new OdbcParameter("PartnerKey", APartnerKey);
         parameters[3] = new OdbcParameter("PartnerKey", APartnerKey);
-        
+
         // TODO: deal with different family names etc
         DataTable NameTable = DBAccess.GDBAccessObj.SelectDT(
-        	"SELECT p_title_c, p_first_name_c, p_family_name_c FROM PUB_p_person WHERE p_partner_key_n = ? " +
-        	"UNION SELECT p_title_c, p_first_name_c, p_family_name_c FROM PUB_p_family WHERE p_partner_key_n = ?" +
-        	"UNION SELECT '', '', p_organisation_name_c FROM PUB_p_organisation WHERE p_partner_key_n = ?" +
-        	"UNION SELECT '', '', p_church_name_c FROM PUB_p_church WHERE p_partner_key_n = ?",
-        	"names",
+            "SELECT p_title_c, p_first_name_c, p_family_name_c FROM PUB_p_person WHERE p_partner_key_n = ? " +
+            "UNION SELECT p_title_c, p_first_name_c, p_family_name_c FROM PUB_p_family WHERE p_partner_key_n = ?" +
+            "UNION SELECT '', '', p_organisation_name_c FROM PUB_p_organisation WHERE p_partner_key_n = ?" +
+            "UNION SELECT '', '', p_church_name_c FROM PUB_p_church WHERE p_partner_key_n = ?",
+            "names",
             ATransaction, parameters);
 
         if (NameTable.Rows.Count > 0)
         {
-        	shortname = NameTable.Rows[0][2].ToString() + ", " + 
-        		NameTable.Rows[0][1].ToString() + ", " +
-        		NameTable.Rows[0][0].ToString();
+            shortname = NameTable.Rows[0][2].ToString() + ", " +
+                        NameTable.Rows[0][1].ToString() + ", " +
+                        NameTable.Rows[0][0].ToString();
         }
 
         return shortname;
-	}	
-    
+    }
+
     /// <summary>
     /// convert shortname from Lastname, firstname, title to title firstname lastname
     /// TODO: use partner key to get to the full name, resolve issues with couples that have different family names etc
@@ -674,7 +673,11 @@ public class TGetTreasurerData
     /// <summary>
     /// generate the printed letter for one treasurer, one worker
     /// </summary>
-    private static string GenerateLetterText(DataSet ATreasurerData, DataRow row, string ALedgerCountryCode, string ALetterOrEmail, out string ASubject)
+    private static string GenerateLetterText(DataSet ATreasurerData,
+        DataRow row,
+        string ALedgerCountryCode,
+        string ALetterOrEmail,
+        out string ASubject)
     {
         string treasurerName = row["TreasurerName"].ToString();
         Int64 recipientKey = Convert.ToInt64(row["RecipientKey"]);
@@ -750,7 +753,7 @@ public class TGetTreasurerData
 
         // subject comes from HTML title tag
         ASubject = TPrinterHtml.GetTitle(msg);
-        
+
         return msg.Replace("#ROWTEMPLATE", rowTexts);
     }
 
@@ -800,7 +803,7 @@ public class TGetTreasurerData
             subject,
             MessageBody);
 
-        msg.Bcc.Add(ASenderEmailAddress);
+        // msg.Bcc.Add(ASenderEmailAddress);
 
         return msg;
     }
