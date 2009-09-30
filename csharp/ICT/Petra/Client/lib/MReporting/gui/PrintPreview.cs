@@ -423,7 +423,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="e"></param>
         protected void PrintDocument_EndPrint(System.Object sender, System.Drawing.Printing.PrintEventArgs e)
         {
-            FGfxPrinter.EndPrint(sender, e);
             EnablePageButtons();
         }
 
