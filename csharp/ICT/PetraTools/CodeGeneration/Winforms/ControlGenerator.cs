@@ -908,7 +908,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 ctrl.SetAttribute("Width", (FCodeStorage.FWidth - 10).ToString());
                 FAutoSize = false;
             }
-            else if (ctrl.HasAttribute("Width"))
+            else if (ctrl.HasAttribute("Width") && (ctrl.GetAttribute("Dock") != "Left") && (ctrl.GetAttribute("Dock") != "Right"))
             {
                 throw new Exception(
                     "Control " + ctrl.controlName + " must have both Width and Height attributes, or just Height, but not Width alone");

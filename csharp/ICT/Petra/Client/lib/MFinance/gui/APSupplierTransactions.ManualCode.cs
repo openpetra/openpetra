@@ -195,5 +195,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 LoadSupplier(FLedgerNumber, FPartnerKey);
             }
         }
+
+        /// add all selected invoices to the payment list and show that list so that the user can make the payment
+        private void AddTaggedToPayment(object sender, EventArgs e)
+        {
+            TFrmAPPayment frm = new TFrmAPPayment(this.Handle);
+
+            frm.Show();
+        }
     }
 }

@@ -16,7 +16,7 @@ RootNode:
         actReverseSelected: {Label=Re&verse Selected, ShortCut=F5}
         actApproveTagged: {Label=&Approve Tagged, ShortCut=F6}
         actPostTagged: {Label=&Post Tagged, ShortCut=F7, ActionClick=PostTaggedDocuments}
-        actAddTaggedToPayment: {Label=Add Tagged to Pa&yment, ShortCut=F8}
+        actAddTaggedToPayment: {Label=Add Tagged to Pa&yment, ShortCut=F8, ActionClick=AddTaggedToPayment}
         actUntagAll: {Label=&Untag All, ActionClick=UntagAll}
     Controls:
         pnlContent:

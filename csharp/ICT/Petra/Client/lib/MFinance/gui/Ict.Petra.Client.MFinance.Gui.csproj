@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{B8226A6F-E8BE-41B3-8509-0FD128B16574}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -171,6 +171,13 @@
     <Compile Include="APMain.ManualCode.cs">
       <DependentUpon>APMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="APPayment.cs" />
+    <Compile Include="APPayment.Designer.cs">
+      <DependentUpon>APPayment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="APPayment.ManualCode.cs">
+      <DependentUpon>APPayment.cs</DependentUpon>
+    </Compile>
     <Compile Include="APSupplierTransactions.cs" />
     <Compile Include="APSupplierTransactions.Designer.cs">
       <DependentUpon>APSupplierTransactions.cs</DependentUpon>
@@ -244,6 +251,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="APMain.resx">
       <DependentUpon>APMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="APPayment.resx">
+      <DependentUpon>APPayment.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="APSupplierTransactions.resx">
       <DependentUpon>APSupplierTransactions.cs</DependentUpon>

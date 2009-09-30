@@ -59,6 +59,8 @@ class Program
         {
             TAppSettingsManager opts = new TAppSettingsManager(false);
 
+            new TLogging("generatewinforms.log");
+
             if (!opts.HasValue("ymlfile"))
             {
                 Console.WriteLine("call: GenerateWinForms -ymlfile:c:\\test.yaml -petraxml:petra.xml -localisation:en");

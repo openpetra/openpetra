@@ -248,7 +248,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return;
             }
 
-            if ((FLocation && !ctrl.HasAttribute("Dock")) || ctrl.HasAttribute("Width") || ctrl.HasAttribute("Height"))
+            if (FLocation && !ctrl.HasAttribute("Dock"))
             {
                 writer.SetControlProperty(ctrl.controlName, "Location", "new System.Drawing.Point(2,2)");
             }
@@ -279,11 +279,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (!ctrl.HasAttribute("Height"))
                 {
-                    ctrl.SetAttribute("Height", FDefaultHeight.ToString());
+                    if ((ctrl.GetAttribute("Dock") == "Left") || (ctrl.GetAttribute("Dock") == "Right"))
+                    {
+                        // this is useful for AP Payments, left dock list of suppliers
+                        writer.SetControlProperty(ctrl.controlName, "Width", ctrl.GetAttribute("Width"));
+                    }
+                    else
+                    {
+                        ctrl.SetAttribute("Height", FDefaultHeight.ToString());
+                    }
                 }
 
-                writer.SetControlProperty(ctrl.controlName, "Size", "new System.Drawing.Size(" +
-                    ctrl.GetAttribute("Width").ToString() + ", " + ctrl.GetAttribute("Height").ToString() + ")");
+                if (ctrl.HasAttribute("Width") && ctrl.HasAttribute("Height"))
+                {
+                    writer.SetControlProperty(ctrl.controlName, "Size", "new System.Drawing.Size(" +
+                        ctrl.GetAttribute("Width").ToString() + ", " + ctrl.GetAttribute("Height").ToString() + ")");
+                }
             }
             else if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock").ToLower() == "fill"))
             {

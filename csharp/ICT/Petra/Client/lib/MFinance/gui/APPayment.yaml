@@ -1,0 +1,69 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: AP Payment
+    Namespace: Ict.Petra.Client.MFinance.Gui.AccountsPayable
+    MasterTable: AApSupplier
+    DetailTable: AApDocumentPayment
+    DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS
+    FormType: browse
+    Template: window
+    WindowWidth: 750
+    WindowHeight: 600
+    Actions:
+        actMakePayment: {Label=&Make Payment, ActionClick=MakePayment}
+    Controls:
+        pnlContent:
+            Controls: [grpSupplierList, pnlSupplierDetails, grpDetails]
+            Dock: Fill
+        grpSupplierList:
+            RowSpan: 2
+            Label: Suppliers to Pay
+            Controls: [grdSuppliers]
+            Dock: Left
+            Width: 200
+        grdSuppliers:
+            Dock: Fill
+        pnlSupplierDetails:
+            Controls: 
+                Row0: [txtCurrency, cmbPaymentType]
+                Row1: [txtTotalAmount, txtExchangeRate]
+                Row2: [cmbBankAccount]
+                Row3: [txtReference]
+                Row4: [chkPrintRemittance, chkPrintLabel]
+                Row5: [chkPrintCheque, txtChequeNumber]
+                # todo: electronic payment; 
+                # todo: pay by transfer (select another supplier; payment will create another invoice with the other supplier, at a given exchange rate, with the given invoice number)
+            Dock:Top
+        chkPrintRemittance:
+        chkPrintLabel:
+        chkPrintCheque:
+        txtChequeNumber:
+        grpDetails:
+            Controls: [grdDetails, pnlDetails]
+            Label: Invoices in this payment
+            Dock: Fill
+        grdDetails:
+            Dock: Fill
+            DetailTable: true
+            #Columns: [AApDocumentPayment.Amount, AApDocumentDetail.Narrative, AApDocumentDetail.ItemRef]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Controls: [rgrAmountToPay, chkClaimDiscount, txtAmountToPay]
+            Dock: Bottom
+        rgrAmountToPay:
+            OptionalValues: [PayFullOutstandingAmount, PayAPartialAmount]
+        chkClaimDiscount:
+        txtAmountToPay:
+        txtCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
+        cmbPaymentType:
+            OptionalValues: [=Cash, Cheque]
+            # TODO: Transfer, Electronic
+            Label: Payment T&ype
+        txtReference: {Label=&Reference, ColSpan=2}
+        cmbBankAccount:
+        txtExchangeRate:
+        txtTotalAmount:
+            Label: &Amount
+    Toolbar:
+        tbbMakePayment:
+        tbbSplitByInvoice:

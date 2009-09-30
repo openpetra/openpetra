@@ -503,6 +503,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.tbbAddTaggedToPayment.Name = "tbbAddTaggedToPayment";
             this.tbbAddTaggedToPayment.AutoSize = true;
+            this.tbbAddTaggedToPayment.Click += new System.EventHandler(this.AddTaggedToPayment);
             this.tbbAddTaggedToPayment.Text = "Add Tagged to Pa&yment";
             //
             // tbrMain
@@ -625,6 +626,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.mniAddTaggedToPayment.Name = "mniAddTaggedToPayment";
             this.mniAddTaggedToPayment.AutoSize = true;
+            this.mniAddTaggedToPayment.Click += new System.EventHandler(this.AddTaggedToPayment);
             this.mniAddTaggedToPayment.Text = "Add Tagged to Pa&yment";
             //
             // mniAction
