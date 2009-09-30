@@ -199,7 +199,25 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         /// add all selected invoices to the payment list and show that list so that the user can make the payment
         private void AddTaggedToPayment(object sender, EventArgs e)
         {
+            List <Int32>TaggedDocuments = new List <Int32>();
+
+            foreach (AccountsPayableTDSAApDocumentRow row in FMainDS.AApDocument.Rows)
+            {
+                if (!row.IsTaggedNull() && row.Tagged)
+                {
+                    // TODO: only use tagged rows that can be paid?
+                    TaggedDocuments.Add(row.ApNumber);
+                }
+            }
+
+            if (TaggedDocuments.Count == 0)
+            {
+                return;
+            }
+
             TFrmAPPayment frm = new TFrmAPPayment(this.Handle);
+
+            frm.AddDocumentsToPayment(FMainDS, TaggedDocuments);
 
             frm.Show();
         }

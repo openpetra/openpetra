@@ -122,6 +122,22 @@ namespace Ict.Petra.Shared.MPartner
         pisFull
     }
 
+    /// different ways to format the shortname of a partner
+    /// used eg by Ict.Petra.Shared.MPartner.Calculations.FormatShortName()
+    public enum eShortNameFormat
+    {
+        /// lastname, firstname, title
+        eShortname,
+
+        /// title firstname lastname
+        eReverseShortname,
+
+        /// title
+        eOnlyTitle,
+
+        /// lastname, firstname
+        eReverseWithoutTitle
+    };
 
     #region TLocationPK
 

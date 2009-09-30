@@ -11,6 +11,14 @@
         <Table sqltable="a_ap_document_payment"/>
         <Table sqltable="a_ap_payment"/>
         <Table sqltable="a_ap_anal_attrib"/>
+        <CustomTable name="SupplierPayments">
+            <CustomField name="Id" type="Int32"/>
+            <CustomField name="SupplierKey" type="Int64"/>
+            <CustomField name="SupplierName" type="string"/>
+            <CustomField name="PaymentType" type="string"/>
+            <CustomField name="DocumentNumberCSV" type="string"/>
+            <CustomField name="ListLabel" type="string"/>
+        </CustomTable>
     </DataSet> 
     
 </PetraDataSets>

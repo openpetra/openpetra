@@ -96,6 +96,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             FinishedCheckThread.Start();
         }
 
+        private delegate void SimpleDelegate();
+
         /// <summary>
         /// Thread for the search operation. Monitor's the Server System.Object's
         /// AsyncExecProgress.ProgressState and invokes UI updates from that.
@@ -114,34 +116,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                     case TAsyncExecProgressState.Aeps_Finished:
                         FKeepUpSearchFinishedCheck = false;
 
-                        // Fetch the first page of data
-                        try
+                        // see also http://stackoverflow.com/questions/6184/how-do-i-make-event-callbacks-into-my-win-forms-thread-safe
+                        if (InvokeRequired)
                         {
-                            FPagedDataTable = grdSupplierResult.LoadFirstDataPage(@GetDataPagedResult);
+                            Invoke(new SimpleDelegate(FinishThread));
                         }
-                        catch (Exception E)
+                        else
                         {
-                            MessageBox.Show(E.ToString());
-                        }
-                        InitialiseGrid();
-                        DataView myDataView = FPagedDataTable.DefaultView;
-                        myDataView.AllowNew = false;
-                        grdSupplierResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-                        grdSupplierResult.AutoSizeCells();
-                        grdSupplierResult.Visible = true;
-
-                        if (grdSupplierResult.TotalPages > 0)
-                        {
-                            grdSupplierResult.BringToFront();
-
-                            // Highlight first Row
-                            grdSupplierResult.Selection.SelectRow(1, true);
-
-                            // Make the Grid respond on updown keys
-                            grdSupplierResult.Focus();
+                            FinishThread();
                         }
 
-                        ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdSupplierResult.TotalPages > 0));
                         break;
 
                     case TAsyncExecProgressState.Aeps_Stopped:
@@ -162,6 +146,39 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             grdSupplierResult.Columns.Clear();
             grdSupplierResult.AddTextColumn("Partner Key", FPagedDataTable.Columns[0]);
             grdSupplierResult.AddTextColumn("Partner Name", FPagedDataTable.Columns[1]);
+        }
+
+        /// make sure that this is called in the normal GUI thread
+        private void FinishThread()
+        {
+            // Fetch the first page of data
+            try
+            {
+                FPagedDataTable = grdSupplierResult.LoadFirstDataPage(@GetDataPagedResult);
+            }
+            catch (Exception E)
+            {
+                MessageBox.Show(E.ToString());
+            }
+            InitialiseGrid();
+            DataView myDataView = FPagedDataTable.DefaultView;
+            myDataView.AllowNew = false;
+            grdSupplierResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            grdSupplierResult.AutoSizeCells();
+            grdSupplierResult.Visible = true;
+
+            if (grdSupplierResult.TotalPages > 0)
+            {
+                grdSupplierResult.BringToFront();
+
+                // Highlight first Row
+                grdSupplierResult.Selection.SelectRow(1, true);
+
+                // Make the Grid respond on updown keys
+                grdSupplierResult.Focus();
+            }
+
+            ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdSupplierResult.TotalPages > 0));
         }
 
         private void EnableDisableUI(bool AEnable)

@@ -567,11 +567,6 @@ public class TGetTreasurerData
         return messages;
     }
 
-    private enum eShortNameFormat
-    {
-        eShortname, eReverseShortname, eOnlyTitle, eReverseWithoutTitle
-    };
-
     /// return the short name for a partner;
     /// the short name is a comma separated list of title, familyname, firstname
     private static string GetPartnerShortName(Int64 APartnerKey, TDBTransaction ATransaction)
@@ -608,58 +603,6 @@ public class TGetTreasurerData
         return shortname;
     }
 
-    /// <summary>
-    /// convert shortname from Lastname, firstname, title to title firstname lastname
-    /// TODO: use partner key to get to the full name, resolve issues with couples that have different family names etc
-    /// TODO: move this function to a central place in Ict.Petra.Shared?
-    /// </summary>
-    private static string FormatShortName(string AShortname, eShortNameFormat AFormat)
-    {
-        StringCollection names = StringHelper.StrSplit(AShortname, ",");
-        string resultValue = "";
-
-        if (AFormat == eShortNameFormat.eShortname)
-        {
-            return AShortname;
-        }
-        else if (AFormat == eShortNameFormat.eReverseShortname)
-        {
-            foreach (string name in names)
-            {
-                if (resultValue.Length > 0)
-                {
-                    resultValue = " " + resultValue;
-                }
-
-                resultValue = name + resultValue;
-            }
-
-            return resultValue;
-        }
-        else if (AFormat == eShortNameFormat.eOnlyTitle)
-        {
-            return names[names.Count - 1];
-        }
-        else if (AFormat == eShortNameFormat.eReverseWithoutTitle)
-        {
-            names.RemoveAt(names.Count - 1);
-
-            foreach (string name in names)
-            {
-                if (resultValue.Length > 0)
-                {
-                    resultValue = " " + resultValue;
-                }
-
-                resultValue = name + resultValue;
-            }
-
-            return resultValue;
-        }
-
-        return "";
-    }
-
     private static string GetStringOrEmpty(object obj)
     {
         if (obj == System.DBNull.Value)
@@ -691,10 +634,10 @@ public class TGetTreasurerData
 
         reader.Close();
 
-        msg = msg.Replace("#RECIPIENTNAME", FormatShortName(row["RecipientName"].ToString(), eShortNameFormat.eReverseWithoutTitle));
+        msg = msg.Replace("#RECIPIENTNAME", Calculations.FormatShortName(row["RecipientName"].ToString(), eShortNameFormat.eReverseWithoutTitle));
         msg = msg.Replace("#RECIPIENTEMAIL", GetStringOrEmpty(row["TreasurerEmail"]));
-        msg = msg.Replace("#TREASURERTITLE", FormatShortName(treasurerName, eShortNameFormat.eOnlyTitle));
-        msg = msg.Replace("#TREASURERNAME", FormatShortName(treasurerName, eShortNameFormat.eReverseWithoutTitle));
+        msg = msg.Replace("#TREASURERTITLE", Calculations.FormatShortName(treasurerName, eShortNameFormat.eOnlyTitle));
+        msg = msg.Replace("#TREASURERNAME", Calculations.FormatShortName(treasurerName, eShortNameFormat.eReverseWithoutTitle));
         msg = msg.Replace("#STREETNAME", GetStringOrEmpty(row["TreasurerStreetName"]));
         msg = msg.Replace("#LOCATION", GetStringOrEmpty(row["TreasurerLocality"]));
         msg = msg.Replace("#ADDRESS3", GetStringOrEmpty(row["TreasurerAddress3"]));

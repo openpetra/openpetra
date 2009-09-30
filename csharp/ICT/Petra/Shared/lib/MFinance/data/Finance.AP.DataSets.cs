@@ -46,6 +46,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         private AApDocumentPaymentTable TableAApDocumentPayment;
         private AApPaymentTable TableAApPayment;
         private AApAnalAttribTable TableAApAnalAttrib;
+        private AccountsPayableTDSSupplierPaymentsTable TableSupplierPayments;
 
         /// auto generated
         public AccountsPayableTDS() :
@@ -120,6 +121,15 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// auto generated
+        public AccountsPayableTDSSupplierPaymentsTable SupplierPayments
+        {
+            get
+            {
+                return this.TableSupplierPayments;
+            }
+        }
+
+        /// auto generated
         public new virtual AccountsPayableTDS GetChangesTyped(bool removeEmptyTables)
         {
             return ((AccountsPayableTDS)(base.GetChangesTyped(removeEmptyTables)));
@@ -134,6 +144,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Tables.Add(new AApDocumentPaymentTable("AApDocumentPayment"));
             this.Tables.Add(new AApPaymentTable("AApPayment"));
             this.Tables.Add(new AApAnalAttribTable("AApAnalAttrib"));
+            this.Tables.Add(new AccountsPayableTDSSupplierPaymentsTable("SupplierPayments"));
         }
 
         /// auto generated
@@ -162,6 +173,10 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             if ((ds.Tables.IndexOf("AApAnalAttrib") != -1))
             {
                 this.Tables.Add(new AApAnalAttribTable("AApAnalAttrib"));
+            }
+            if ((ds.Tables.IndexOf("SupplierPayments") != -1))
+            {
+                this.Tables.Add(new AccountsPayableTDSSupplierPaymentsTable("SupplierPayments"));
             }
         }
 
@@ -194,6 +209,10 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             {
                 this.TableAApAnalAttrib.InitVars();
             }
+            if ((this.TableSupplierPayments != null))
+            {
+                this.TableSupplierPayments.InitVars();
+            }
         }
 
         /// auto generated
@@ -206,6 +225,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.TableAApDocumentPayment = ((AApDocumentPaymentTable)(this.Tables["AApDocumentPayment"]));
             this.TableAApPayment = ((AApPaymentTable)(this.Tables["AApPayment"]));
             this.TableAApAnalAttrib = ((AApAnalAttribTable)(this.Tables["AApAnalAttrib"]));
+            this.TableSupplierPayments = ((AccountsPayableTDSSupplierPaymentsTable)(this.Tables["SupplierPayments"]));
         }
 
         /// auto generated
@@ -574,6 +594,478 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         public void SetDateDueNull()
         {
             this.SetNull(this.myTable.ColumnDateDue);
+        }
+    }
+
+    ///
+    [Serializable()]
+    public class AccountsPayableTDSSupplierPaymentsTable : TTypedDataTable
+    {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 5401;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnIdId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSupplierKeyId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSupplierNameId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPaymentTypeId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDocumentNumberCSVId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnListLabelId = 5;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SupplierPayments", "AccountsPayableTDSSupplierPayments",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "Id", "Id", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(1, "SupplierKey", "SupplierKey", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "SupplierName", "SupplierName", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "PaymentType", "PaymentType", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "DocumentNumberCSV", "DocumentNumberCSV", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "ListLabel", "ListLabel", "", OdbcType.Int, -1, false)
+                },
+                new int[] {
+                }));
+            return true;
+        }
+
+        /// constructor
+        public AccountsPayableTDSSupplierPaymentsTable() :
+                base("SupplierPayments")
+        {
+        }
+
+        /// constructor
+        public AccountsPayableTDSSupplierPaymentsTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public AccountsPayableTDSSupplierPaymentsTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        ///
+        public DataColumn ColumnId;
+        ///
+        public DataColumn ColumnSupplierKey;
+        ///
+        public DataColumn ColumnSupplierName;
+        ///
+        public DataColumn ColumnPaymentType;
+        ///
+        public DataColumn ColumnDocumentNumberCSV;
+        ///
+        public DataColumn ColumnListLabel;
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("Id", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("SupplierKey", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("SupplierName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("PaymentType", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("DocumentNumberCSV", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("ListLabel", typeof(string)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnId = this.Columns["Id"];
+            this.ColumnSupplierKey = this.Columns["SupplierKey"];
+            this.ColumnSupplierName = this.Columns["SupplierName"];
+            this.ColumnPaymentType = this.Columns["PaymentType"];
+            this.ColumnDocumentNumberCSV = this.Columns["DocumentNumberCSV"];
+            this.ColumnListLabel = this.Columns["ListLabel"];
+        }
+
+        /// Access a typed row by index
+        public AccountsPayableTDSSupplierPaymentsRow this[int i]
+        {
+            get
+            {
+                return ((AccountsPayableTDSSupplierPaymentsRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public AccountsPayableTDSSupplierPaymentsRow NewRowTyped(bool AWithDefaultValues)
+        {
+            AccountsPayableTDSSupplierPaymentsRow ret = ((AccountsPayableTDSSupplierPaymentsRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public AccountsPayableTDSSupplierPaymentsRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new AccountsPayableTDSSupplierPaymentsRow(builder);
+        }
+
+        /// get typed set of changes
+        public AccountsPayableTDSSupplierPaymentsTable GetChangesTyped()
+        {
+            return ((AccountsPayableTDSSupplierPaymentsTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "SupplierPayments";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "AccountsPayableTDSSupplierPayments";
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetIdDBName()
+        {
+            return "Id";
+        }
+
+        /// get character length for column
+        public static short GetIdLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetSupplierKeyDBName()
+        {
+            return "SupplierKey";
+        }
+
+        /// get character length for column
+        public static short GetSupplierKeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetSupplierNameDBName()
+        {
+            return "SupplierName";
+        }
+
+        /// get character length for column
+        public static short GetSupplierNameLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPaymentTypeDBName()
+        {
+            return "PaymentType";
+        }
+
+        /// get character length for column
+        public static short GetPaymentTypeLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDocumentNumberCSVDBName()
+        {
+            return "DocumentNumberCSV";
+        }
+
+        /// get character length for column
+        public static short GetDocumentNumberCSVLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetListLabelDBName()
+        {
+            return "ListLabel";
+        }
+
+        /// get character length for column
+        public static short GetListLabelLength()
+        {
+            return -1;
+        }
+
+    }
+
+    ///
+    [Serializable()]
+    public class AccountsPayableTDSSupplierPaymentsRow : System.Data.DataRow
+    {
+        private AccountsPayableTDSSupplierPaymentsTable myTable;
+
+        /// Constructor
+        public AccountsPayableTDSSupplierPaymentsRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((AccountsPayableTDSSupplierPaymentsTable)(this.Table));
+        }
+
+        ///
+        public Int32 Id
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnId.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnId)
+                            || (((Int32)(this[this.myTable.ColumnId])) != value)))
+                {
+                    this[this.myTable.ColumnId] = value;
+                }
+            }
+        }
+
+        ///
+        public Int64 SupplierKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnSupplierKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnSupplierKey)
+                            || (((Int64)(this[this.myTable.ColumnSupplierKey])) != value)))
+                {
+                    this[this.myTable.ColumnSupplierKey] = value;
+                }
+            }
+        }
+
+        ///
+        public string SupplierName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnSupplierName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnSupplierName)
+                            || (((string)(this[this.myTable.ColumnSupplierName])) != value)))
+                {
+                    this[this.myTable.ColumnSupplierName] = value;
+                }
+            }
+        }
+
+        ///
+        public string PaymentType
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPaymentType.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPaymentType)
+                            || (((string)(this[this.myTable.ColumnPaymentType])) != value)))
+                {
+                    this[this.myTable.ColumnPaymentType] = value;
+                }
+            }
+        }
+
+        ///
+        public string DocumentNumberCSV
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDocumentNumberCSV.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDocumentNumberCSV)
+                            || (((string)(this[this.myTable.ColumnDocumentNumberCSV])) != value)))
+                {
+                    this[this.myTable.ColumnDocumentNumberCSV] = value;
+                }
+            }
+        }
+
+        ///
+        public string ListLabel
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnListLabel.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnListLabel)
+                            || (((string)(this[this.myTable.ColumnListLabel])) != value)))
+                {
+                    this[this.myTable.ColumnListLabel] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this.SetNull(this.myTable.ColumnId);
+            this.SetNull(this.myTable.ColumnSupplierKey);
+            this.SetNull(this.myTable.ColumnSupplierName);
+            this.SetNull(this.myTable.ColumnPaymentType);
+            this.SetNull(this.myTable.ColumnDocumentNumberCSV);
+            this.SetNull(this.myTable.ColumnListLabel);
+        }
+
+        /// test for NULL value
+        public bool IsIdNull()
+        {
+            return this.IsNull(this.myTable.ColumnId);
+        }
+
+        /// assign NULL value
+        public void SetIdNull()
+        {
+            this.SetNull(this.myTable.ColumnId);
+        }
+
+        /// test for NULL value
+        public bool IsSupplierKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnSupplierKey);
+        }
+
+        /// assign NULL value
+        public void SetSupplierKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnSupplierKey);
+        }
+
+        /// test for NULL value
+        public bool IsSupplierNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnSupplierName);
+        }
+
+        /// assign NULL value
+        public void SetSupplierNameNull()
+        {
+            this.SetNull(this.myTable.ColumnSupplierName);
+        }
+
+        /// test for NULL value
+        public bool IsPaymentTypeNull()
+        {
+            return this.IsNull(this.myTable.ColumnPaymentType);
+        }
+
+        /// assign NULL value
+        public void SetPaymentTypeNull()
+        {
+            this.SetNull(this.myTable.ColumnPaymentType);
+        }
+
+        /// test for NULL value
+        public bool IsDocumentNumberCSVNull()
+        {
+            return this.IsNull(this.myTable.ColumnDocumentNumberCSV);
+        }
+
+        /// assign NULL value
+        public void SetDocumentNumberCSVNull()
+        {
+            this.SetNull(this.myTable.ColumnDocumentNumberCSV);
+        }
+
+        /// test for NULL value
+        public bool IsListLabelNull()
+        {
+            return this.IsNull(this.myTable.ColumnListLabel);
+        }
+
+        /// assign NULL value
+        public void SetListLabelNull()
+        {
+            this.SetNull(this.myTable.ColumnListLabel);
         }
     }
 }

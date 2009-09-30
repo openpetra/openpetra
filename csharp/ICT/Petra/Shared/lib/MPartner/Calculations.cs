@@ -25,6 +25,7 @@
  ************************************************************************/
 using System;
 using System.Data;
+using System.Collections.Specialized;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -651,6 +652,60 @@ namespace Ict.Petra.Shared.MPartner
                 PSubscriptionTable.GetSubscriptionStatusDBName() + " <> '" + MPartnerConstants.SUBSCRIPTIONS_STATUS_CANCELLED + "' AND " +
                 PSubscriptionTable.GetSubscriptionStatusDBName() + " <> '" + MPartnerConstants.SUBSCRIPTIONS_STATUS_EXPIRED + "'", "",
                 DataViewRowState.CurrentRows).Count;
+        }
+
+        /// <summary>
+        /// convert shortname from Lastname, firstname, title to another shortname format
+        /// TODO: use partner key to get to the full name, resolve issues with couples that have different family names etc
+        /// </summary>
+        public static string FormatShortName(string AShortname, eShortNameFormat AFormat)
+        {
+            StringCollection names = StringHelper.StrSplit(AShortname, ",");
+            string resultValue = "";
+
+            if (AFormat == eShortNameFormat.eShortname)
+            {
+                return AShortname;
+            }
+            else if (AFormat == eShortNameFormat.eReverseShortname)
+            {
+                foreach (string name in names)
+                {
+                    if (resultValue.Length > 0)
+                    {
+                        resultValue = " " + resultValue;
+                    }
+
+                    resultValue = name + resultValue;
+                }
+
+                return resultValue;
+            }
+            else if (AFormat == eShortNameFormat.eOnlyTitle)
+            {
+                return names[names.Count - 1];
+            }
+            else if (AFormat == eShortNameFormat.eReverseWithoutTitle)
+            {
+                if (names.Count > 1)
+                {
+                    names.RemoveAt(names.Count - 1);
+                }
+
+                foreach (string name in names)
+                {
+                    if (resultValue.Length > 0)
+                    {
+                        resultValue = ", " + resultValue;
+                    }
+
+                    resultValue = name + resultValue;
+                }
+
+                return resultValue;
+            }
+
+            return "";
         }
     }
 }
