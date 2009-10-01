@@ -23,6 +23,7 @@ RootNode:
             Width: 200
         grdSuppliers:
             Dock: Fill
+            ActionFocusRow: FocusedRowChanged
         pnlSupplierDetails:
             Controls: 
                 Row0: [txtCurrency, cmbPaymentType]
@@ -46,24 +47,29 @@ RootNode:
             Dock: Fill
             DetailTable: true
             #Columns: [AApDocumentPayment.Amount, AApDocumentDetail.Narrative, AApDocumentDetail.ItemRef]
-            ActionFocusRow: FocusedRowChanged
+            ActionFocusRow: FocusedRowChangedDetails
         pnlDetails:
             Controls: [rgrAmountToPay, chkClaimDiscount, txtAmountToPay]
             Dock: Bottom
         rgrAmountToPay:
             OptionalValues: [PayFullOutstandingAmount, PayAPartialAmount]
         chkClaimDiscount:
+            # TODO: allow discounts
+            ReadOnly: true
         txtAmountToPay:
+            # TODO: allow partial payments
+            ReadOnly: true
         txtCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
         cmbPaymentType:
             OptionalValues: [=Cash, Cheque]
             # TODO: Transfer, Electronic
             Label: Payment T&ype
         txtReference: {Label=&Reference, ColSpan=2}
-        cmbBankAccount:
+        cmbBankAccount: {List=UserDefinedList, ColSpan=2}
         txtExchangeRate:
         txtTotalAmount:
             Label: &Amount
+            ReadOnly: true
     Toolbar:
         tbbMakePayment:
         tbbSplitByInvoice:

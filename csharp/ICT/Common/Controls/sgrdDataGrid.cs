@@ -813,7 +813,7 @@ namespace Ict.Common.Controls
                     this.Selection.SelectRow(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, true);
                 }
 
-                this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 1), true);
+                this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 0), true);
             }
 
             // MessageBox.Show('TSgrdDataGrid.OnSortedRangeRows');

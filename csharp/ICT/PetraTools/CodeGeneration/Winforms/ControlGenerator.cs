@@ -169,14 +169,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
-
-            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ReadOnly")
-                && (TYml2Xml.GetAttribute(ctrl.xmlNode, "ReadOnly").ToLower() == "true"))
-            {
-                writer.SetControlProperty(ctrl.controlName,
-                    "Enabled",
-                    "false");
-            }
         }
     }
     public class TcmbAutoCompleteGenerator : ComboBoxGenerator
@@ -397,6 +389,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("txt", typeof(TextBox))
         {
             FChangeEventName = "TextChanged";
+            FHasReadOnlyProperty = true;
         }
 
         public override bool ControlFitsNode(XmlNode curNode)
@@ -463,14 +456,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
-
-            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ReadOnly")
-                && (TYml2Xml.GetAttribute(ctrl.xmlNode, "ReadOnly").ToLower() == "true"))
-            {
-                writer.SetControlProperty(ctrl.controlName,
-                    "ReadOnly",
-                    "true");
-            }
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "DefaultValue"))
             {

@@ -15,9 +15,19 @@
             <CustomField name="Id" type="Int32"/>
             <CustomField name="SupplierKey" type="Int64"/>
             <CustomField name="SupplierName" type="string"/>
+            <CustomField name="BankAccount" type="string"/>
             <CustomField name="PaymentType" type="string"/>
             <CustomField name="DocumentNumberCSV" type="string"/>
             <CustomField name="ListLabel" type="string"/>
+        </CustomTable>
+        <CustomTable name="PaymentDetails">
+            <CustomField name="ApNumber" type="Int32"/>
+            <CustomField name="Amount" type="Double"/>
+            <CustomField name="TotalAmountToPay" type="Double"/>
+            <CustomField name="UseDiscount" type="Boolean"/>
+            <CustomField name="PayFullInvoice" type="Boolean"/>
+            <CustomField name="HasValidDiscount" type="Boolean"/>
+            <CustomField name="DiscountPercentage" type="Double"/>
         </CustomTable>
     </DataSet> 
     

@@ -27,6 +27,7 @@ using System;
 using System.Data;
 using System.Collections.Generic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -79,18 +80,37 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
                     if (supplier != null)
                     {
-                        AccountsPayableTDSSupplierPaymentsRow supplierPaymentsRow = FMainDS.SupplierPayments.NewRowTyped();
-                        supplierPaymentsRow.Id = FMainDS.SupplierPayments.Count;
-                        supplierPaymentsRow.SupplierKey = supplier.PartnerKey;
+                        AccountsPayableTDSSupplierPaymentsRow supplierPaymentsRow = null;
 
-                        TPartnerClass partnerClass;
-                        string partnerShortName;
-                        TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
-                            supplier.PartnerKey,
-                            out partnerShortName,
-                            out partnerClass);
-                        supplierPaymentsRow.SupplierName = Ict.Petra.Shared.MPartner.Calculations.FormatShortName(partnerShortName,
-                            eShortNameFormat.eReverseWithoutTitle);
+                        FMainDS.SupplierPayments.DefaultView.Sort = AccountsPayableTDSSupplierPaymentsTable.GetSupplierKeyDBName();
+                        int indexSupplierPayments = FMainDS.SupplierPayments.DefaultView.Find(supplier.PartnerKey);
+
+                        if (indexSupplierPayments != -1)
+                        {
+                            supplierPaymentsRow =
+                                (AccountsPayableTDSSupplierPaymentsRow)FMainDS.SupplierPayments.DefaultView[indexSupplierPayments].Row;
+                        }
+                        else
+                        {
+                            supplierPaymentsRow = FMainDS.SupplierPayments.NewRowTyped();
+                            supplierPaymentsRow.Id = FMainDS.SupplierPayments.Count;
+                            supplierPaymentsRow.SupplierKey = supplier.PartnerKey;
+                            supplierPaymentsRow.PaymentType = supplier.PaymentType;
+                            supplierPaymentsRow.BankAccount = supplier.DefaultBankAccount;
+
+                            TPartnerClass partnerClass;
+                            string partnerShortName;
+                            TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
+                                supplier.PartnerKey,
+                                out partnerShortName,
+                                out partnerClass);
+                            supplierPaymentsRow.SupplierName = Ict.Petra.Shared.MPartner.Calculations.FormatShortName(partnerShortName,
+                                eShortNameFormat.eReverseWithoutTitle);
+
+                            supplierPaymentsRow.ListLabel = supplierPaymentsRow.SupplierName + " (" + supplierPaymentsRow.PaymentType + ")";
+
+                            FMainDS.SupplierPayments.Rows.Add(supplierPaymentsRow);
+                        }
 
                         if (supplierPaymentsRow.DocumentNumberCSV.Length > 0)
                         {
@@ -98,28 +118,50 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                         }
 
                         supplierPaymentsRow.DocumentNumberCSV += apnumber.ToString();
-                        supplierPaymentsRow.PaymentType = supplier.PaymentType;
-                        supplierPaymentsRow.ListLabel = supplierPaymentsRow.SupplierName + " (" + supplierPaymentsRow.PaymentType + ")";
 
-                        FMainDS.SupplierPayments.Rows.Add(supplierPaymentsRow);
+                        FMainDS.AApDocument.DefaultView.Sort = AApDocumentTable.GetApNumberDBName();
+
+                        AccountsPayableTDSPaymentDetailsRow paymentdetails = FMainDS.PaymentDetails.NewRowTyped();
+                        paymentdetails.ApNumber = apnumber;
+                        paymentdetails.PayFullInvoice = true;
+
+                        // outstanding amount (TODO: consider partial payments!)
+                        paymentdetails.TotalAmountToPay = apdocument.TotalAmount;
+                        paymentdetails.Amount = paymentdetails.TotalAmountToPay;
+
+                        // TODO: discounts
+                        paymentdetails.HasValidDiscount = false;
+                        paymentdetails.DiscountPercentage = 0;
+                        paymentdetails.UseDiscount = false;
+                        FMainDS.PaymentDetails.Rows.Add(paymentdetails);
                     }
                 }
             }
 
-            grdSuppliers.Columns.Clear();
+            TFinanceControls.InitialiseAccountList(ref cmbBankAccount, FMainDS.AApDocument[0].LedgerNumber, true, false, true, true);
+
+            grdDetails.AddTextColumn("AP No", FMainDS.PaymentDetails.ColumnApNumber);
+
+            // TODO grdDetails.AddTextColumn("Invoice No", );
+            // TODO grdDetails.AddTextColumn("Type", ); // invoice or credit note
+            grdDetails.AddCheckBoxColumn("Discount used", FMainDS.PaymentDetails.ColumnUseDiscount);
+            grdDetails.AddTextColumn("Amount", FMainDS.PaymentDetails.ColumnAmount);
+            FMainDS.PaymentDetails.DefaultView.AllowNew = false;
+            FMainDS.PaymentDetails.DefaultView.AllowEdit = false;
+
             grdSuppliers.AddTextColumn("Supplier", FMainDS.SupplierPayments.ColumnListLabel);
+            FMainDS.SupplierPayments.DefaultView.AllowNew = false;
             grdSuppliers.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.SupplierPayments.DefaultView);
             grdSuppliers.Refresh();
-        }
-
-        private void MakePayment(object sender, EventArgs e)
-        {
-            // TODO create gl batches, and post them
+            grdSuppliers.Selection.SelectRow(1, true);
+            FocusedRowChanged(null, null);
         }
 
         private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
         {
             DataRowView[] SelectedGridRow = grdSuppliers.SelectedDataRowsAsDataRowView;
+
+            // TODO: store values in previously selected item???
 
             if (SelectedGridRow.Length >= 1)
             {
@@ -128,7 +170,26 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 AApSupplierRow supplier = GetSupplier(row.SupplierKey);
 
                 txtCurrency.Text = supplier.CurrencyCode;
+                cmbBankAccount.SetSelectedString(row.BankAccount);
+
+                FMainDS.PaymentDetails.DefaultView.RowFilter = AccountsPayableTDSPaymentDetailsTable.GetApNumberDBName() +
+                                                               " IN (" + row.DocumentNumberCSV + ")";
+
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PaymentDetails.DefaultView);
+                grdDetails.Refresh();
+                grdDetails.Selection.SelectRow(1, true);
             }
+        }
+
+        private void FocusedRowChangedDetails(System.Object sender, SourceGrid.RowEventArgs e)
+        {
+            // TODO
+        }
+
+        private void MakePayment(object sender, EventArgs e)
+        {
+            // TODO get data from controls into typed dataset
+            // TODO create gl batches, and post them
         }
     }
 }

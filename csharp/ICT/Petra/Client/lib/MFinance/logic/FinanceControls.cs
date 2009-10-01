@@ -94,7 +94,8 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="APostingOnly"></param>
         /// <param name="AExcludePosting"></param>
         /// <param name="AActiveOnly"></param>
-        private static string PrepareAccountFilter(bool APostingOnly, bool AExcludePosting, bool AActiveOnly)
+        /// <param name="ABankAccountOnly"></param>
+        private static string PrepareAccountFilter(bool APostingOnly, bool AExcludePosting, bool AActiveOnly, bool ABankAccountOnly)
         {
             string Filter = "";
 
@@ -116,6 +117,10 @@ namespace Ict.Petra.Client.MFinance.Logic
 
                 Filter += AAccountTable.GetAccountActiveFlagDBName() + " = true";
             }
+
+            // TODO: limit to bank accounts? how? AAccountProperty: ACC_PROP_BANK_ACCOUNT
+            // https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=76
+            // easiest solution: GetCacheableFinanceTable should return a DataTable with a bank flag?
 
             return Filter;
         }
@@ -163,11 +168,13 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="APostingOnly"></param>
         /// <param name="AExcludePosting"></param>
         /// <param name="AActiveOnly"></param>
+        /// <param name="ABankAccountOnly"></param>
         public static void InitialiseAccountList(ref TClbVersatile AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
             bool AExcludePosting,
-            bool AActiveOnly)
+            bool AActiveOnly,
+            bool ABankAccountOnly)
         {
             string CheckedMember = "CHECKED";
             string DisplayMember = AAccountTable.GetAccountCodeShortDescDBName();
@@ -176,7 +183,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
             DataView view = new DataView(Table);
 
-            view.RowFilter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly);
+            view.RowFilter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly, ABankAccountOnly);
 
             DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
@@ -223,11 +230,13 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="APostingOnly"></param>
         /// <param name="AExcludePosting"></param>
         /// <param name="AActiveOnly"></param>
+        /// <param name="ABankAccountOnly"></param>
         public static void InitialiseAccountList(ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
             bool AExcludePosting,
-            bool AActiveOnly)
+            bool AActiveOnly,
+            bool ABankAccountOnly)
         {
             DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
 
@@ -237,7 +246,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 null);
             AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
 
-            AControl.Filter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly);
+            AControl.Filter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly, ABankAccountOnly);
         }
 
         /// <summary>

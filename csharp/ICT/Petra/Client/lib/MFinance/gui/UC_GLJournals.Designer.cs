@@ -252,6 +252,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.cmbDetailSubSystemCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailSubSystemCode.Name = "cmbDetailSubSystemCode";
             this.cmbDetailSubSystemCode.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailSubSystemCode.Enabled = false;
             //
             // lblDetailSubSystemCode
             //

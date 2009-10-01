@@ -42,6 +42,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public bool FAutoSize = false;
         public bool FLocation = true;
         public bool FGenerateLabel = true;
+
+        /// the readonly property eg of Textbox still allows tooltips and copy to clipboard, which enable=false would not allow
+        public bool FHasReadOnlyProperty = false;
         public bool FAddControlToContainer = true;
         public bool FRequiresChildren = false;
         public Int32 FDefaultWidth = 150;
@@ -236,17 +239,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             writer.Template.AddToCodelet("CONTROLINITIALISATION",
                 "//" + Environment.NewLine + "// " + ctrl.controlName + Environment.NewLine + "//" + Environment.NewLine);
-
-            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "Location"))
-            {
-                // this control has already been there in the designer file, it is not defined in yaml
-                writer.SetControlProperty(ctrl, "Location");
-                writer.SetControlProperty(ctrl.controlName, "Name", "\"" + ctrl.controlName + "\"");
-                writer.SetControlProperty(ctrl, "Size");
-                writer.SetControlProperty(ctrl, "TabIndex");
-                writer.SetControlProperty(ctrl, "Dock");
-                return;
-            }
 
             if (FLocation && !ctrl.HasAttribute("Dock"))
             {
@@ -447,6 +439,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (ctrl.controlTypePrefix == "uco")
             {
                 writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
+            }
+
+            /// the readonly property eg of Textbox still allows tooltips and copy to clipboard, which enable=false would not allow
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ReadOnly")
+                && (TYml2Xml.GetAttribute(ctrl.xmlNode, "ReadOnly").ToLower() == "true"))
+            {
+                if (FHasReadOnlyProperty)
+                {
+                    writer.SetControlProperty(ctrl.controlName,
+                        "ReadOnly",
+                        "true");
+                }
+                else
+                {
+                    writer.SetControlProperty(ctrl.controlName,
+                        "Enabled",
+                        "false");
+                }
             }
         }
 

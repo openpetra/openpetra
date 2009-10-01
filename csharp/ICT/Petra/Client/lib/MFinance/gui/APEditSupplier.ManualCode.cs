@@ -69,12 +69,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             {
                 FLedgerNumber = value;
 
-                TFinanceControls.InitialiseAccountList(ref cmbAPAccount, FLedgerNumber, true, false, false);
-
-                // TODO: limit to bank accounts? how? AAccountProperty: ACC_PROP_BANK_ACCOUNT
-                // https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=76
-                //TFinanceControls.InitialiseAccountList(ref cmbDefaultBankAccount, FLedgerNumber, true, false, false);
-                TFinanceControls.InitialiseAccountList(ref cmbExpenseAccount, FLedgerNumber, true, false, false);
+                TFinanceControls.InitialiseAccountList(ref cmbAPAccount, FLedgerNumber, true, false, false, false);
+                TFinanceControls.InitialiseAccountList(ref cmbDefaultBankAccount, FLedgerNumber, true, false, false, true);
+                TFinanceControls.InitialiseAccountList(ref cmbExpenseAccount, FLedgerNumber, true, false, false, false);
                 TFinanceControls.InitialiseCostCentreList(ref cmbCostCentre, FLedgerNumber, true, false, false, false);
             }
         }

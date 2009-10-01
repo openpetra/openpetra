@@ -47,6 +47,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         private AApPaymentTable TableAApPayment;
         private AApAnalAttribTable TableAApAnalAttrib;
         private AccountsPayableTDSSupplierPaymentsTable TableSupplierPayments;
+        private AccountsPayableTDSPaymentDetailsTable TablePaymentDetails;
 
         /// auto generated
         public AccountsPayableTDS() :
@@ -130,6 +131,15 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// auto generated
+        public AccountsPayableTDSPaymentDetailsTable PaymentDetails
+        {
+            get
+            {
+                return this.TablePaymentDetails;
+            }
+        }
+
+        /// auto generated
         public new virtual AccountsPayableTDS GetChangesTyped(bool removeEmptyTables)
         {
             return ((AccountsPayableTDS)(base.GetChangesTyped(removeEmptyTables)));
@@ -145,6 +155,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Tables.Add(new AApPaymentTable("AApPayment"));
             this.Tables.Add(new AApAnalAttribTable("AApAnalAttrib"));
             this.Tables.Add(new AccountsPayableTDSSupplierPaymentsTable("SupplierPayments"));
+            this.Tables.Add(new AccountsPayableTDSPaymentDetailsTable("PaymentDetails"));
         }
 
         /// auto generated
@@ -177,6 +188,10 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             if ((ds.Tables.IndexOf("SupplierPayments") != -1))
             {
                 this.Tables.Add(new AccountsPayableTDSSupplierPaymentsTable("SupplierPayments"));
+            }
+            if ((ds.Tables.IndexOf("PaymentDetails") != -1))
+            {
+                this.Tables.Add(new AccountsPayableTDSPaymentDetailsTable("PaymentDetails"));
             }
         }
 
@@ -213,6 +228,10 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             {
                 this.TableSupplierPayments.InitVars();
             }
+            if ((this.TablePaymentDetails != null))
+            {
+                this.TablePaymentDetails.InitVars();
+            }
         }
 
         /// auto generated
@@ -226,6 +245,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.TableAApPayment = ((AApPaymentTable)(this.Tables["AApPayment"]));
             this.TableAApAnalAttrib = ((AApAnalAttribTable)(this.Tables["AApAnalAttrib"]));
             this.TableSupplierPayments = ((AccountsPayableTDSSupplierPaymentsTable)(this.Tables["SupplierPayments"]));
+            this.TablePaymentDetails = ((AccountsPayableTDSPaymentDetailsTable)(this.Tables["PaymentDetails"]));
         }
 
         /// auto generated
@@ -610,11 +630,13 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnSupplierNameId = 2;
         /// used for generic TTypedDataTable functions
-        public static short ColumnPaymentTypeId = 3;
+        public static short ColumnBankAccountId = 3;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDocumentNumberCSVId = 4;
+        public static short ColumnPaymentTypeId = 4;
         /// used for generic TTypedDataTable functions
-        public static short ColumnListLabelId = 5;
+        public static short ColumnDocumentNumberCSVId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnListLabelId = 6;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -624,9 +646,10 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                     new TTypedColumnInfo(0, "Id", "Id", "", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(1, "SupplierKey", "SupplierKey", "", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(2, "SupplierName", "SupplierName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "PaymentType", "PaymentType", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(4, "DocumentNumberCSV", "DocumentNumberCSV", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "ListLabel", "ListLabel", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(3, "BankAccount", "BankAccount", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "PaymentType", "PaymentType", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "DocumentNumberCSV", "DocumentNumberCSV", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "ListLabel", "ListLabel", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
                 }));
@@ -658,6 +681,8 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         ///
         public DataColumn ColumnSupplierName;
         ///
+        public DataColumn ColumnBankAccount;
+        ///
         public DataColumn ColumnPaymentType;
         ///
         public DataColumn ColumnDocumentNumberCSV;
@@ -670,6 +695,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("Id", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("SupplierKey", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("SupplierName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("BankAccount", typeof(string)));
             this.Columns.Add(new System.Data.DataColumn("PaymentType", typeof(string)));
             this.Columns.Add(new System.Data.DataColumn("DocumentNumberCSV", typeof(string)));
             this.Columns.Add(new System.Data.DataColumn("ListLabel", typeof(string)));
@@ -681,6 +707,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.ColumnId = this.Columns["Id"];
             this.ColumnSupplierKey = this.Columns["SupplierKey"];
             this.ColumnSupplierName = this.Columns["SupplierName"];
+            this.ColumnBankAccount = this.Columns["BankAccount"];
             this.ColumnPaymentType = this.Columns["PaymentType"];
             this.ColumnDocumentNumberCSV = this.Columns["DocumentNumberCSV"];
             this.ColumnListLabel = this.Columns["ListLabel"];
@@ -774,6 +801,18 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
 
         /// get character length for column
         public static short GetSupplierNameLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetBankAccountDBName()
+        {
+            return "BankAccount";
+        }
+
+        /// get character length for column
+        public static short GetBankAccountLength()
         {
             return -1;
         }
@@ -908,6 +947,32 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         ///
+        public string BankAccount
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnBankAccount.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnBankAccount)
+                            || (((string)(this[this.myTable.ColumnBankAccount])) != value)))
+                {
+                    this[this.myTable.ColumnBankAccount] = value;
+                }
+            }
+        }
+
+        ///
         public string PaymentType
         {
             get
@@ -991,6 +1056,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.SetNull(this.myTable.ColumnId);
             this.SetNull(this.myTable.ColumnSupplierKey);
             this.SetNull(this.myTable.ColumnSupplierName);
+            this.SetNull(this.myTable.ColumnBankAccount);
             this.SetNull(this.myTable.ColumnPaymentType);
             this.SetNull(this.myTable.ColumnDocumentNumberCSV);
             this.SetNull(this.myTable.ColumnListLabel);
@@ -1033,6 +1099,18 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// test for NULL value
+        public bool IsBankAccountNull()
+        {
+            return this.IsNull(this.myTable.ColumnBankAccount);
+        }
+
+        /// assign NULL value
+        public void SetBankAccountNull()
+        {
+            this.SetNull(this.myTable.ColumnBankAccount);
+        }
+
+        /// test for NULL value
         public bool IsPaymentTypeNull()
         {
             return this.IsNull(this.myTable.ColumnPaymentType);
@@ -1066,6 +1144,536 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         public void SetListLabelNull()
         {
             this.SetNull(this.myTable.ColumnListLabel);
+        }
+    }
+
+    ///
+    [Serializable()]
+    public class AccountsPayableTDSPaymentDetailsTable : TTypedDataTable
+    {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 5402;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnApNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAmountId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTotalAmountToPayId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUseDiscountId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPayFullInvoiceId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnHasValidDiscountId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDiscountPercentageId = 6;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PaymentDetails", "AccountsPayableTDSPaymentDetails",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "ApNumber", "ApNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(1, "Amount", "Amount", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "TotalAmountToPay", "TotalAmountToPay", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "UseDiscount", "UseDiscount", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "PayFullInvoice", "PayFullInvoice", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "HasValidDiscount", "HasValidDiscount", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "DiscountPercentage", "DiscountPercentage", "", OdbcType.Int, -1, false)
+                },
+                new int[] {
+                }));
+            return true;
+        }
+
+        /// constructor
+        public AccountsPayableTDSPaymentDetailsTable() :
+                base("PaymentDetails")
+        {
+        }
+
+        /// constructor
+        public AccountsPayableTDSPaymentDetailsTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public AccountsPayableTDSPaymentDetailsTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        ///
+        public DataColumn ColumnApNumber;
+        ///
+        public DataColumn ColumnAmount;
+        ///
+        public DataColumn ColumnTotalAmountToPay;
+        ///
+        public DataColumn ColumnUseDiscount;
+        ///
+        public DataColumn ColumnPayFullInvoice;
+        ///
+        public DataColumn ColumnHasValidDiscount;
+        ///
+        public DataColumn ColumnDiscountPercentage;
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("ApNumber", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("Amount", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("TotalAmountToPay", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("UseDiscount", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("PayFullInvoice", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("HasValidDiscount", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("DiscountPercentage", typeof(Double)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnApNumber = this.Columns["ApNumber"];
+            this.ColumnAmount = this.Columns["Amount"];
+            this.ColumnTotalAmountToPay = this.Columns["TotalAmountToPay"];
+            this.ColumnUseDiscount = this.Columns["UseDiscount"];
+            this.ColumnPayFullInvoice = this.Columns["PayFullInvoice"];
+            this.ColumnHasValidDiscount = this.Columns["HasValidDiscount"];
+            this.ColumnDiscountPercentage = this.Columns["DiscountPercentage"];
+        }
+
+        /// Access a typed row by index
+        public AccountsPayableTDSPaymentDetailsRow this[int i]
+        {
+            get
+            {
+                return ((AccountsPayableTDSPaymentDetailsRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public AccountsPayableTDSPaymentDetailsRow NewRowTyped(bool AWithDefaultValues)
+        {
+            AccountsPayableTDSPaymentDetailsRow ret = ((AccountsPayableTDSPaymentDetailsRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public AccountsPayableTDSPaymentDetailsRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new AccountsPayableTDSPaymentDetailsRow(builder);
+        }
+
+        /// get typed set of changes
+        public AccountsPayableTDSPaymentDetailsTable GetChangesTyped()
+        {
+            return ((AccountsPayableTDSPaymentDetailsTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "PaymentDetails";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "AccountsPayableTDSPaymentDetails";
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetApNumberDBName()
+        {
+            return "ApNumber";
+        }
+
+        /// get character length for column
+        public static short GetApNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAmountDBName()
+        {
+            return "Amount";
+        }
+
+        /// get character length for column
+        public static short GetAmountLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetTotalAmountToPayDBName()
+        {
+            return "TotalAmountToPay";
+        }
+
+        /// get character length for column
+        public static short GetTotalAmountToPayLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetUseDiscountDBName()
+        {
+            return "UseDiscount";
+        }
+
+        /// get character length for column
+        public static short GetUseDiscountLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPayFullInvoiceDBName()
+        {
+            return "PayFullInvoice";
+        }
+
+        /// get character length for column
+        public static short GetPayFullInvoiceLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetHasValidDiscountDBName()
+        {
+            return "HasValidDiscount";
+        }
+
+        /// get character length for column
+        public static short GetHasValidDiscountLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDiscountPercentageDBName()
+        {
+            return "DiscountPercentage";
+        }
+
+        /// get character length for column
+        public static short GetDiscountPercentageLength()
+        {
+            return -1;
+        }
+
+    }
+
+    ///
+    [Serializable()]
+    public class AccountsPayableTDSPaymentDetailsRow : System.Data.DataRow
+    {
+        private AccountsPayableTDSPaymentDetailsTable myTable;
+
+        /// Constructor
+        public AccountsPayableTDSPaymentDetailsRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((AccountsPayableTDSPaymentDetailsTable)(this.Table));
+        }
+
+        ///
+        public Int32 ApNumber
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnApNumber.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnApNumber)
+                            || (((Int32)(this[this.myTable.ColumnApNumber])) != value)))
+                {
+                    this[this.myTable.ColumnApNumber] = value;
+                }
+            }
+        }
+
+        ///
+        public Double Amount
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAmount.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Double)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAmount)
+                            || (((Double)(this[this.myTable.ColumnAmount])) != value)))
+                {
+                    this[this.myTable.ColumnAmount] = value;
+                }
+            }
+        }
+
+        ///
+        public Double TotalAmountToPay
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnTotalAmountToPay.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Double)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnTotalAmountToPay)
+                            || (((Double)(this[this.myTable.ColumnTotalAmountToPay])) != value)))
+                {
+                    this[this.myTable.ColumnTotalAmountToPay] = value;
+                }
+            }
+        }
+
+        ///
+        public Boolean UseDiscount
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnUseDiscount.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnUseDiscount)
+                            || (((Boolean)(this[this.myTable.ColumnUseDiscount])) != value)))
+                {
+                    this[this.myTable.ColumnUseDiscount] = value;
+                }
+            }
+        }
+
+        ///
+        public Boolean PayFullInvoice
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPayFullInvoice.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPayFullInvoice)
+                            || (((Boolean)(this[this.myTable.ColumnPayFullInvoice])) != value)))
+                {
+                    this[this.myTable.ColumnPayFullInvoice] = value;
+                }
+            }
+        }
+
+        ///
+        public Boolean HasValidDiscount
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnHasValidDiscount.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnHasValidDiscount)
+                            || (((Boolean)(this[this.myTable.ColumnHasValidDiscount])) != value)))
+                {
+                    this[this.myTable.ColumnHasValidDiscount] = value;
+                }
+            }
+        }
+
+        ///
+        public Double DiscountPercentage
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDiscountPercentage.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Double)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDiscountPercentage)
+                            || (((Double)(this[this.myTable.ColumnDiscountPercentage])) != value)))
+                {
+                    this[this.myTable.ColumnDiscountPercentage] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this.SetNull(this.myTable.ColumnApNumber);
+            this.SetNull(this.myTable.ColumnAmount);
+            this.SetNull(this.myTable.ColumnTotalAmountToPay);
+            this.SetNull(this.myTable.ColumnUseDiscount);
+            this.SetNull(this.myTable.ColumnPayFullInvoice);
+            this.SetNull(this.myTable.ColumnHasValidDiscount);
+            this.SetNull(this.myTable.ColumnDiscountPercentage);
+        }
+
+        /// test for NULL value
+        public bool IsApNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnApNumber);
+        }
+
+        /// assign NULL value
+        public void SetApNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnApNumber);
+        }
+
+        /// test for NULL value
+        public bool IsAmountNull()
+        {
+            return this.IsNull(this.myTable.ColumnAmount);
+        }
+
+        /// assign NULL value
+        public void SetAmountNull()
+        {
+            this.SetNull(this.myTable.ColumnAmount);
+        }
+
+        /// test for NULL value
+        public bool IsTotalAmountToPayNull()
+        {
+            return this.IsNull(this.myTable.ColumnTotalAmountToPay);
+        }
+
+        /// assign NULL value
+        public void SetTotalAmountToPayNull()
+        {
+            this.SetNull(this.myTable.ColumnTotalAmountToPay);
+        }
+
+        /// test for NULL value
+        public bool IsUseDiscountNull()
+        {
+            return this.IsNull(this.myTable.ColumnUseDiscount);
+        }
+
+        /// assign NULL value
+        public void SetUseDiscountNull()
+        {
+            this.SetNull(this.myTable.ColumnUseDiscount);
+        }
+
+        /// test for NULL value
+        public bool IsPayFullInvoiceNull()
+        {
+            return this.IsNull(this.myTable.ColumnPayFullInvoice);
+        }
+
+        /// assign NULL value
+        public void SetPayFullInvoiceNull()
+        {
+            this.SetNull(this.myTable.ColumnPayFullInvoice);
+        }
+
+        /// test for NULL value
+        public bool IsHasValidDiscountNull()
+        {
+            return this.IsNull(this.myTable.ColumnHasValidDiscount);
+        }
+
+        /// assign NULL value
+        public void SetHasValidDiscountNull()
+        {
+            this.SetNull(this.myTable.ColumnHasValidDiscount);
+        }
+
+        /// test for NULL value
+        public bool IsDiscountPercentageNull()
+        {
+            return this.IsNull(this.myTable.ColumnDiscountPercentage);
+        }
+
+        /// assign NULL value
+        public void SetDiscountPercentageNull()
+        {
+            this.SetNull(this.myTable.ColumnDiscountPercentage);
         }
     }
 }

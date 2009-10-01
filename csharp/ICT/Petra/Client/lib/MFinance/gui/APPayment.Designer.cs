@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblTotalAmount = new System.Windows.Forms.Label();
             this.txtExchangeRate = new System.Windows.Forms.TextBox();
             this.lblExchangeRate = new System.Windows.Forms.Label();
-            this.cmbBankAccount = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbBankAccount = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblBankAccount = new System.Windows.Forms.Label();
             this.txtReference = new System.Windows.Forms.TextBox();
             this.lblReference = new System.Windows.Forms.Label();
@@ -151,6 +151,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.grdSuppliers.Name = "grdSuppliers";
             this.grdSuppliers.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdSuppliers.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
             this.grpSupplierList.Text = "Suppliers to Pay";
             //
             // pnlSupplierDetails
@@ -202,6 +203,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtTotalAmount.Location = new System.Drawing.Point(2,2);
             this.txtTotalAmount.Name = "txtTotalAmount";
             this.txtTotalAmount.Size = new System.Drawing.Size(150, 28);
+            this.txtTotalAmount.ReadOnly = true;
             //
             // lblTotalAmount
             //
@@ -229,7 +231,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.cmbBankAccount.Location = new System.Drawing.Point(2,2);
             this.cmbBankAccount.Name = "cmbBankAccount";
-            this.cmbBankAccount.Size = new System.Drawing.Size(150, 28);
+            this.cmbBankAccount.Size = new System.Drawing.Size(300, 28);
+            this.cmbBankAccount.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblBankAccount
             //
@@ -312,6 +315,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel1.Controls.Add(this.chkPrintCheque, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.txtCurrency, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtTotalAmount, 1, 1);
+            this.tableLayoutPanel1.SetColumnSpan(this.cmbBankAccount, 2);
             this.tableLayoutPanel1.Controls.Add(this.cmbBankAccount, 1, 2);
             this.tableLayoutPanel1.SetColumnSpan(this.txtReference, 2);
             this.tableLayoutPanel1.Controls.Add(this.txtReference, 1, 3);
@@ -336,7 +340,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.grdDetails.Name = "grdDetails";
             this.grdDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grdDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
+            this.grdDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChangedDetails);
             //
             // pnlDetails
             //
@@ -392,6 +396,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.chkClaimDiscount.Location = new System.Drawing.Point(2,2);
             this.chkClaimDiscount.Name = "chkClaimDiscount";
             this.chkClaimDiscount.AutoSize = true;
+            this.chkClaimDiscount.Enabled = false;
             this.chkClaimDiscount.Text = "Claim Discount";
             this.chkClaimDiscount.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
             //
@@ -400,6 +405,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtAmountToPay.Location = new System.Drawing.Point(2,2);
             this.txtAmountToPay.Name = "txtAmountToPay";
             this.txtAmountToPay.Size = new System.Drawing.Size(150, 28);
+            this.txtAmountToPay.ReadOnly = true;
             //
             // lblAmountToPay
             //
@@ -575,7 +581,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         private System.Windows.Forms.Label lblTotalAmount;
         private System.Windows.Forms.TextBox txtExchangeRate;
         private System.Windows.Forms.Label lblExchangeRate;
-        private Ict.Common.Controls.TCmbAutoComplete cmbBankAccount;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbBankAccount;
         private System.Windows.Forms.Label lblBankAccount;
         private System.Windows.Forms.TextBox txtReference;
         private System.Windows.Forms.Label lblReference;
