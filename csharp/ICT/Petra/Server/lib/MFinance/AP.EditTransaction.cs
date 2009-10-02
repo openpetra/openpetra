@@ -498,7 +498,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
 
             batch.LastJournal = CounterJournals - 1;
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            DBAccess.GDBAccessObj.CommitTransaction();
 
             return GLDataset;
         }
@@ -607,19 +607,16 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
             foreach (AccountsPayableTDSAApPaymentRow row in APDataset.AApPayment.Rows)
             {
                 // get the currency from the supplier, from the first documentpayment of this payment; we need the currency
-                string sql = TDataBase.ReadSqlFile("Finance.AP.EditTransaction.GetCurrencyForPayment.sql");
-                OdbcParameter[] parameters = new OdbcParameter[2];
-                parameters[0] = new OdbcParameter("Ledger", row.LedgerNumber);
-                parameters[1] = new OdbcParameter("PaymentNumber", row.PaymentNumber);
-                DataTable SupplierInfo = DBAccess.GDBAccessObj.SelectDT(sql, "supplierInfo", Transaction, parameters);
+                APDataset.AApDocumentPayment.DefaultView.RowFilter = AApDocumentPaymentTable.GetPaymentNumberDBName() + " = " +
+                                                                     row.PaymentNumber.ToString();
+                APDataset.AApDocument.DefaultView.RowFilter = AApDocumentTable.GetApNumberDBName() + " = " +
+                                                              ((AApDocumentPaymentRow)APDataset.AApDocumentPayment.DefaultView[0].Row).ApNumber.
+                                                              ToString();
+                row.SupplierKey = ((AApDocumentRow)APDataset.AApDocument.DefaultView[0].Row).PartnerKey;
+                AApSupplierAccess.LoadByPrimaryKey(APDataset, row.SupplierKey, Transaction);
+                APDataset.AApSupplier.DefaultView.RowFilter = AApSupplierTable.GetPartnerKeyDBName() + " = " + row.SupplierKey.ToString();
+                string CurrencyCode = ((AApSupplierRow)APDataset.AApSupplier.DefaultView[0].Row).CurrencyCode;
 
-                if (SupplierInfo.Rows.Count != 1)
-                {
-                    throw new Exception("There has to be exactly one supplier per payment");
-                }
-
-                string CurrencyCode = SupplierInfo.Rows[0]["CurrencyCode"].ToString();
-                row.SupplierKey = Convert.ToInt64(SupplierInfo.Rows[0]["SupplierKey"]);
                 TPartnerClass SupplierPartnerClass;
                 string supplierName;
                 TPartnerServerLookups.GetPartnerShortName(row.SupplierKey, out supplierName, out SupplierPartnerClass);
@@ -732,7 +729,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
 
             batch.LastJournal = CounterJournals - 1;
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            DBAccess.GDBAccessObj.CommitTransaction();
 
             return GLDataset;
         }
@@ -777,12 +774,11 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
             // get max payment number for this ledger
             // PROBLEM: what if two payments are happening at the same time? do we need locking?
             // see also http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=50
-            Int32 maxPaymentNumberInLedger =
-                Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
-                        "SELECT MAX(PUB_a_ap_payment.a_payment_number_i) FROM PUB_a_ap_payment WHERE PUB_a_ap_payment.a_ledger_number_i = "
-                        +
-                        MainDS.AApDocumentPayment[0].LedgerNumber.ToString(),
-                        ReadTransaction));
+            object maxPaymentCanBeNull = DBAccess.GDBAccessObj.ExecuteScalar(
+                "SELECT MAX(PUB_a_ap_payment.a_payment_number_i) FROM PUB_a_ap_payment WHERE PUB_a_ap_payment.a_ledger_number_i = " +
+                MainDS.AApDocumentPayment[0].LedgerNumber.ToString(),
+                ReadTransaction);
+            Int32 maxPaymentNumberInLedger = (maxPaymentCanBeNull == System.DBNull.Value ? 1 : Convert.ToInt32(maxPaymentCanBeNull));
 
             DBAccess.GDBAccessObj.CommitTransaction();
 
@@ -804,38 +800,38 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                 paymentRow.PaymentNumber = maxPaymentNumberInLedger + (-1 * paymentRow.PaymentNumber);
             }
 
-            TDBTransaction SubmitChangesTransaction;
+            TDBTransaction SubmitChangesTransaction = null;
 
             try
             {
-                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                // create GL batch
+                GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPaying(MainDS.AApPayment[0].LedgerNumber,
+                    APostingDate,
+                    ref MainDS);
 
-                // store ApPayment and ApDocumentPayment to database
-                if (AApPaymentAccess.SubmitChanges(MainDS.AApPayment, SubmitChangesTransaction,
-                        out AVerifications))
+                ABatchRow batch = GLDataset.ABatch[0];
+
+                // save the batch
+                if (Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
+                        out AVerifications) == TSubmitChangesResult.scrOK)
                 {
-                    if (AApDocumentPaymentAccess.SubmitChanges(MainDS.AApDocumentPayment, SubmitChangesTransaction,
+                    // post the batch
+                    if (!Ict.Petra.Server.MFinance.GL.TGLPosting.PostGLBatch(MainDS.AApPayment[0].LedgerNumber, batch.BatchNumber,
                             out AVerifications))
                     {
-                        // create GL batch
-                        GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPaying(MainDS.AApPayment[0].LedgerNumber,
-                            APostingDate,
-                            ref MainDS);
+                        // TODO: what if posting fails? do we have an orphaned batch lying around? can this be put into one single transaction? probably not
+                        // TODO: we should cancel that batch
+                    }
+                    else
+                    {
+                        SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-                        ABatchRow batch = GLDataset.ABatch[0];
-
-                        // save the batch
-                        if (Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
-                                out AVerifications) == TSubmitChangesResult.scrOK)
+                        // store ApPayment and ApDocumentPayment to database
+                        if (AApPaymentAccess.SubmitChanges(MainDS.AApPayment, SubmitChangesTransaction,
+                                out AVerifications))
                         {
-                            // post the batch
-                            if (!Ict.Petra.Server.MFinance.GL.TGLPosting.PostGLBatch(MainDS.AApPayment[0].LedgerNumber, batch.BatchNumber,
+                            if (AApDocumentPaymentAccess.SubmitChanges(MainDS.AApDocumentPayment, SubmitChangesTransaction,
                                     out AVerifications))
-                            {
-                                // TODO: what if posting fails? do we have an orphaned batch lying around? can this be put into one single transaction? probably not
-                                // TODO: we should cancel that batch
-                            }
-                            else
                             {
                                 // save changed status of AP documents to database
                                 if (AApDocumentAccess.SubmitChanges(MainDS.AApDocument, SubmitChangesTransaction, out AVerifications))
@@ -854,7 +850,10 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
 
                 TLogging.Log("after submitchanges: exception " + e.Message);
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (SubmitChangesTransaction != null)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
 
                 throw new Exception(e.ToString() + " " + e.Message);
             }
