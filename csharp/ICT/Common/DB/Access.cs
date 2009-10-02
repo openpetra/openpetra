@@ -30,7 +30,7 @@ using System.Data.Odbc;
 using System.Data.Common;
 using System.Text;
 using System.Threading;
-
+using System.IO;
 using Ict.Common.DB.DBCaching;
 
 namespace Ict.Common.DB
@@ -1987,6 +1987,39 @@ namespace Ict.Common.DB
         }
 
         #endregion
+
+        /// <summary>
+        /// read an sql statement from file and remove the comments
+        /// </summary>
+        /// <param name="ASqlFilename"></param>
+        /// <returns></returns>
+        public static string ReadSqlFile(string ASqlFilename)
+        {
+            ASqlFilename = TAppSettingsManager.GetValueStatic("SqlFiles.Path", ".") +
+                           Path.DirectorySeparatorChar +
+                           ASqlFilename;
+
+            // Console.WriteLine("reading " + ASqlFilename);
+            StreamReader reader = new StreamReader(ASqlFilename);
+            string line = null;
+            string stmt = "";
+
+            if (reader == null)
+            {
+                throw new Exception("cannot open file " + ASqlFilename);
+            }
+
+            while ((line = reader.ReadLine()) != null)
+            {
+                if (!line.Trim().StartsWith("--"))
+                {
+                    stmt += line.Trim() + " ";
+                }
+            }
+
+            reader.Close();
+            return stmt;
+        }
 
         private bool FConnectionReady = false;
 

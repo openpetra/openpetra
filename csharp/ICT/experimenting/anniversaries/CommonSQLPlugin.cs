@@ -32,41 +32,12 @@ using Ict.Common.DB;
 using Ict.Common;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 
 namespace Ict.Petra.Plugins.SQL
 {
     public class TSQLTools
     {
-        /// <summary>
-        /// TODO ReadSqlFile should go to Ict.Common.IO?
-        /// </summary>
-        /// <param name="ASqlFilename"></param>
-        /// <returns></returns>
-        public static string ReadSqlFile(string ASqlFilename)
-        {
-            // Console.WriteLine("reading " + ASqlFilename);
-            StreamReader reader = new StreamReader(ASqlFilename);
-            string line = null;
-            string stmt = "";
-
-            if (reader == null)
-            {
-                throw new Exception("cannot open file " + ASqlFilename);
-            }
-
-            while ((line = reader.ReadLine()) != null)
-            {
-                if (!line.Trim().StartsWith("--"))
-                {
-                    stmt += line.Trim() + " ";
-                }
-            }
-
-            reader.Close();
-            return stmt;
-        }
-
         public static string GetBestEmailAddress(Int64 APartnerKey)
         {
             string EmailAddress = "";

@@ -23,6 +23,7 @@ Name: {app}/manuals30
 Name: {app}/db30
 Name: {app}/reports30
 Name: {app}/resources30
+Name: {app}/sql30
 Name: {userappdata}/OpenPetra.org/tmp30
 Name: {userappdata}/OpenPetra.org/reports30
 [Files]
@@ -57,6 +58,7 @@ Source: ..\..\..\csharp\ICT\Petra\Definitions\UINavigation.yml; DestDir: {app}/b
 Source: ..\i18n\*.mo; DestDir: {app}/bin30/locale/de/LC_MESSAGES; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\XmlReports\reports.dtd; DestDir: {app}/reports30
 Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30
+Source: ..\..\..\csharp\ICT\Petra\Server\sql\*.sql; DestDir: {app}/sql30
 Source: PetraServerAdminConsole.config; DestDir: {app}; DestName: PetraServerAdminConsole-3.0.config
 Source: PetraClient.config; DestDir: {app}; DestName: PetraClient-3.0.config
 Source: PetraServerConsole-Sqlite.config; DestDir: {app}; DestName: PetraServerConsole-3.0.config
@@ -117,6 +119,7 @@ begin
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'U:/OpenPetra/setup/petra0300/petra.db', '{userappdata}/OpenPetra.org/db30/petra.db', true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'U:/OpenPetra/setup/petra0300/base.db', ExpandConstant('{app}/db30/demo.db'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'reports30', ExpandConstant('{app}/reports30'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'sql30', ExpandConstant('{app}/sql30'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerConsole.exe.config', ExpandConstant('{app}/PetraServerConsole-3.0.config'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerAdminConsole.exe.config', ExpandConstant('{app}/PetraServerAdminConsole-3.0.config'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Petra.PathTemp" value="TOREPLACE"', 'Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);

@@ -8,27 +8,20 @@
             <CustomField name="DateDue" type="DateTime"/>
         </Table>
         <Table sqltable="a_ap_document_detail"/>
-        <Table sqltable="a_ap_document_payment"/>
-        <Table sqltable="a_ap_payment"/>
-        <Table sqltable="a_ap_anal_attrib"/>
-        <CustomTable name="SupplierPayments">
-            <CustomField name="Id" type="Int32"/>
-            <CustomField name="SupplierKey" type="Int64"/>
-            <CustomField name="SupplierName" type="string"/>
-            <CustomField name="BankAccount" type="string"/>
-            <CustomField name="PaymentType" type="string"/>
-            <CustomField name="DocumentNumberCSV" type="string"/>
-            <CustomField name="ListLabel" type="string"/>
-        </CustomTable>
-        <CustomTable name="PaymentDetails">
-            <CustomField name="ApNumber" type="Int32"/>
-            <CustomField name="Amount" type="Double"/>
+        <Table sqltable="a_ap_document_payment">
             <CustomField name="TotalAmountToPay" type="Double"/>
             <CustomField name="UseDiscount" type="Boolean"/>
             <CustomField name="PayFullInvoice" type="Boolean"/>
             <CustomField name="HasValidDiscount" type="Boolean"/>
             <CustomField name="DiscountPercentage" type="Double"/>
-        </CustomTable>
+        </Table>
+        <Table sqltable="a_ap_payment">
+            <CustomField name="SupplierKey" type="Int64"/>
+            <CustomField name="SupplierName" type="string"/>
+            <CustomField name="CurrencyCode" type="string"/>
+            <CustomField name="ListLabel" type="string"/>
+        </Table>
+        <Table sqltable="a_ap_anal_attrib"/>
     </DataSet> 
     
 </PetraDataSets>

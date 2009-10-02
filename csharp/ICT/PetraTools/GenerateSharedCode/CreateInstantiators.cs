@@ -342,6 +342,11 @@ class CreateInstantiators : AutoGenerationWriter
                     returnType = "void";
                 }
 
+                if ((m.Modifiers & Modifier.Public) == 0)
+                {
+                    continue;
+                }
+
                 WriteLine("/// generated method from connector");
 
                 int align = (returnType + " " + MethodName).Length + 1 + ("public ").Length;

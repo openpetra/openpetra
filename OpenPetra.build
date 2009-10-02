@@ -3,6 +3,7 @@
     <sysinfo />
     <include buildfile="OpenPetra.build.config" />
     <include buildfile="OpenPetra.build.utils" />
+    <include buildfile="setup/petra0300/linuxserver/LinuxRelease.build" />
     <property name="Output.dir" value="Debug" unless="${property::exists('Output.dir')}"/>
     <property name="Configuration" value="DEBUG" unless="${property::exists('Configuration')}"/>
     <property name="ReleaseID" value="0.0.0.99" unless="${property::exists('ReleaseID')}"/>
@@ -716,117 +717,6 @@
     <target name="setupRemote">
         <property name="SetupOriginal.File" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin/remote.iss"/>
         <call target="setupTemplate"/>
-    </target>
-    <target name="setupLinuxServer">
-        <!-- for the moment, just create a tar.gz file, with sub directories 
-        manuals30 containing the release notes, 
-        bin30 with just the server binaries,
-        db30 with the demo sqlite database,
-        reports30,
-        etc30 with the 2 config files;
-        start and maintain script in the root
-        LICENSE file in the root, 
-        INSTALL file with instructions, required packages, firewall etc?
-        -->
-        <property name="setupDir" value="${OpenPetraRoot.dir}/tmp/openpetraorg-${ReleaseVersion}"/>
-        <delete dir="${setupDir}" failonerror="false"/>
-        <mkdir dir="${setupDir}"/>
-        <mkdir dir="${setupDir}/manuals30"/>
-        <mkdir dir="${setupDir}/bin30"/>
-        <mkdir dir="${setupDir}/bin30/locale/"/>
-        <mkdir dir="${setupDir}/db30"/>
-        <mkdir dir="${setupDir}/etc30"/>
-        <mkdir dir="${setupDir}/reports30"/>
-        <mkdir dir="${setupDir}/resources30"/>
-        <copy todir="${setupDir}/bin30">
-            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/Release/">
-                <include name="*.dll" />
-                <include name="*.exe" />
-            </fileset>
-        </copy>
-        <copy todir="${setupDir}/bin30">
-            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Release/">
-                <include name="*.dll" />
-                <include name="*.exe" />
-            </fileset>
-        </copy>
-        <copy todir="${setupDir}/bin30">
-            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/Release/">
-                <include name="*.dll" />
-                <include name="*.exe" />
-            </fileset>
-        </copy>
-        <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll"
-                    tofile="${setupDir}/bin30/System.Data.SQLite.dll"/>
-        <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml"
-                    tofile="${setupDir}/bin30/UINavigation.yml"/>
-
-        <copy todir="${setupDir}/resources30">
-            <fileset basedir="${OpenPetraRoot.dir}/resources">
-                <include name="*.ico" />
-                <include name="*.png" />
-            </fileset>
-        </copy>
-
-        <copy todir="${setupDir}/bin30/locale/">
-           <fileset basedir="${OpenPetraRoot.dir}/setup/petra0300/i18n/locale">
-               <include name="**/*.mo" />
-           </fileset> 
-        </copy>
-        
-        <copy todir="${setupDir}/etc30">
-            <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/">
-                <include name="*.config" />
-            </fileset>
-        </copy>
-
-        <copy todir="${setupDir}/manuals30">
-            <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/releasenotes/">
-                <include name="*.html" />
-            </fileset>
-        </copy>
-
-        <copy todir="${setupDir}/reports30">
-            <fileset basedir="${OpenPetraRoot.dir}/XmlReports/">
-                <include name="*.dtd" />
-                <include name="*.xml" />
-            </fileset>
-        </copy>
-        
-        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db"
-                    tofile="${setupDir}/db30/demo.db"/>
-        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo-pg.bak"
-                    tofile="${setupDir}/db30/demo-pg.bak"/>
-
-        <copy file="${OpenPetraRoot.dir}/LICENSE"
-                    tofile="${setupDir}/LICENSE"/>
-        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/INSTALL"
-                    tofile="${setupDir}/INSTALL"/>
-        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/startClient.sh"
-                    tofile="${setupDir}/startClient.sh"/>
-        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/start.sh"
-                    tofile="${setupDir}/start.sh"/>
-        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/menu.sh"
-                    tofile="${setupDir}/menu.sh"/>
-        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/stop.sh"
-                    tofile="${setupDir}/stop.sh"/>
-        <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/initpg.sh"
-                    tofile="${setupDir}/initpg.sh"/>
-
-        <!-- change the executable flag -->
-        <ExecCmd program="sh" commandline="/C &quot;chmod a+x ${setupDir}/*.sh&quot;"/>
-        <!-- make sure that the script files are in unix format -->
-        <ExecCmd program="sh" commandline="/C &quot;for f in ${setupDir}/*.sh; do dos2unix -o $f; done;&quot;"/>
-        
-        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}; cd ..; tar czpf openpetraorg-${ReleaseVersion}.tar.gz *; mv openpetraorg-${ReleaseVersion}.tar.gz ..&quot;"/>
-<!-- this does not keep the executable flag
-        <tar destfile="openpetraorg-${ReleaseVersion}.tar.gz" compression="GZip">
-            <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseVersion}">
-                <include name="**/*" />
-            </fileset>
-        </tar>
---> 
-        <delete dir="${setupDir}"/>
     </target>
 
     <target name="createSQLiteDB">

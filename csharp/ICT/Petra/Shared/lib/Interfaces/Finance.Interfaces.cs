@@ -206,6 +206,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors
                              List <Int32> AAPDocumentNumbers,
                              DateTime APostingDate,
                              out TVerificationResultCollection AVerifications);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
+        bool PostAPPayments(AccountsPayableTDSAApPaymentTable APayments,
+                            AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
+                            DateTime APostingDate,
+                            out TVerificationResultCollection AVerifications);
     }
 
 }
@@ -349,6 +354,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         bool PostGLBatch(Int32 ALedgerNumber,
                          Int32 ABatchNumber,
                          out TVerificationResultCollection AVerifications);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
+        string GetStandardCostCentre(Int32 ALedgerNumber);
     }
 
 }

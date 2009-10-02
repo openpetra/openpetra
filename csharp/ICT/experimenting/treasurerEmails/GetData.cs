@@ -129,26 +129,6 @@ public class TGetTreasurerData
         return ResultDataset;
     }
 
-    private static string ReadSqlFile(string ASqlFilename)
-    {
-        string path = TAppSettingsManager.GetValueStatic("SqlFiles.Path", ".");
-
-        StreamReader reader = new StreamReader(path + Path.DirectorySeparatorChar + ASqlFilename);
-        string line = null;
-        string stmt = "";
-
-        while ((line = reader.ReadLine()) != null)
-        {
-            if (!line.Trim().StartsWith("--"))
-            {
-                stmt += line.Trim() + " ";
-            }
-        }
-
-        reader.Close();
-        return stmt;
-    }
-
     /// <summary>
     /// Get the sum of all gifts per recipient per month, by specified motivation and time span
     /// </summary>
@@ -168,7 +148,7 @@ public class TGetTreasurerData
     {
         TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
-        string stmt = ReadSqlFile("GetAllGiftsForRecipientPerMonthByMotivation.sql");
+        string stmt = TDataBase.ReadSqlFile("GetAllGiftsForRecipientPerMonthByMotivation.sql");
 
         OdbcParameter[] parameters = new OdbcParameter[6];
         parameters[0] = new OdbcParameter("Ledger", ALedgerNumber);
@@ -297,7 +277,7 @@ public class TGetTreasurerData
             parameters[2] = new OdbcParameter("EndOfPeriod", AEndDate);
             parameters[3] = new OdbcParameter("EndOfPeriod", AEndDate);
 
-            string stmt = ReadSqlFile("CommitmentsOfWorker.sql");
+            string stmt = TDataBase.ReadSqlFile("CommitmentsOfWorker.sql");
 
             DataTable CommitmentsTable = DBAccess.GDBAccessObj.SelectDT(stmt,
                 "temp", transaction,
@@ -318,7 +298,7 @@ public class TGetTreasurerData
             parameters = new OdbcParameter[1];
             parameters[0] = new OdbcParameter("PartnerKey", recipientKey);
 
-            stmt = ReadSqlFile("TreasurerOfWorker.sql");
+            stmt = TDataBase.ReadSqlFile("TreasurerOfWorker.sql");
 
             DataTable TreasurerTable = DBAccess.GDBAccessObj.SelectDT(stmt,
                 TREASURERTABLE, transaction,

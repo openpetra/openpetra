@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.grpSupplierList.Text = Catalog.GetString("Suppliers to Pay");
+      this.grpPaymentList.Text = Catalog.GetString("Suppliers to Pay");
       this.lblCurrency.Text = Catalog.GetString("Currency:");
       this.cmbPaymentType.Text = Catalog.GetString("Cash");
       this.lblPaymentType.Text = Catalog.GetString("Payment T&ype:");

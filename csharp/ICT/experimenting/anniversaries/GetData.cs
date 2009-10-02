@@ -33,9 +33,9 @@ using Ict.Common;
 using Ict.Petra.Plugins.SQL;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-using Ict.Petra.Shared.MPersonnel.Personnel.Data.Access;
+using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 
 namespace anniversaries
 {
@@ -239,7 +239,7 @@ public class TDataAnniversaries
 
                     PPersonTable PersonTable;
                     TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
-                    PPersonAccess.LoadByPrimaryKey(out PersonTable, WorkerPartnerKey, transaction);
+                    PersonTable = PPersonAccess.LoadByPrimaryKey(WorkerPartnerKey, transaction);
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
                     newAnniversary["Surname"] = PersonTable[0].FamilyName;
@@ -268,7 +268,7 @@ public class TDataAnniversaries
     {
         TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
-        string stmt = TSQLTools.ReadSqlFile("CurrentWorkersFamilies.sql");
+        string stmt = TDataBase.ReadSqlFile("CurrentWorkersFamilies.sql");
 
         OdbcParameter[] parameters = new OdbcParameter[5];
         parameters[0] = new OdbcParameter("StaffCurrentDate", OdbcType.Date);
@@ -307,7 +307,7 @@ public class TDataAnniversaries
     {
         TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
-        string stmt = TSQLTools.ReadSqlFile("CurrentWorkers.sql");
+        string stmt = TDataBase.ReadSqlFile("CurrentWorkers.sql");
 
         OdbcParameter[] parameters = new OdbcParameter[10];
         parameters[0] = new OdbcParameter("ReportStartDate", OdbcType.Date);
@@ -356,7 +356,7 @@ public class TDataAnniversaries
 
         PmStaffDataTable stafftable;
 
-        PmStaffDataAccess.LoadViaPPerson(out stafftable, APartnerKey, null, transaction,
+        stafftable = PmStaffDataAccess.LoadViaPPerson(APartnerKey, null, transaction,
             StringHelper.StrSplit("ORDER BY pm_start_of_commitment_d ASC", ","), 0, 0);
 
         DBAccess.GDBAccessObj.RollbackTransaction();
@@ -373,7 +373,7 @@ public class TDataAnniversaries
     {
         TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
-        string stmt = TSQLTools.ReadSqlFile("BirthdaysOfFamilyMembers.sql");
+        string stmt = TDataBase.ReadSqlFile("BirthdaysOfFamilyMembers.sql");
 
         OdbcParameter[] parameters = new OdbcParameter[1];
 

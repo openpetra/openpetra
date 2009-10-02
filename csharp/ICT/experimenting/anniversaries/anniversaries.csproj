@@ -39,26 +39,20 @@
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MCommon.DataAccess">
-      <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataAccess.dll</HintPath>
+    <Reference Include="Ict.Petra.Server.MPartner.DataAccess">
+      <HintPath>..\..\Petra\Server\_bin\Debug\Ict.Petra.Server.MPartner.DataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Server.MPersonnel.DataAccess">
+      <HintPath>..\..\Petra\Server\_bin\Debug\Ict.Petra.Server.MPersonnel.DataAccess.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
       <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MConference.DataAccess">
-      <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MConference.DataAccess.dll</HintPath>
-    </Reference>
     <Reference Include="Ict.Petra.Shared.MConference.DataTables">
       <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MConference.DataTables.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MFinance.DataAccess">
-      <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataAccess.dll</HintPath>
-    </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
       <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.MHospitality.DataAccess">
-      <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MHospitality.DataAccess.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MHospitality.DataTables">
       <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MHospitality.DataTables.dll</HintPath>
@@ -66,20 +60,11 @@
     <Reference Include="Ict.Petra.Shared.MPartner">
       <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MPartner.DataAccess">
-      <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataAccess.dll</HintPath>
-    </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
       <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MPersonnel.DataAccess">
-      <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.DataAccess.dll</HintPath>
-    </Reference>
     <Reference Include="Ict.Petra.Shared.MPersonnel.DataTables">
       <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.DataTables.dll</HintPath>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.MSysMan.DataAccess">
-      <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.DataAccess.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MSysMan.DataTables">
       <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.DataTables.dll</HintPath>

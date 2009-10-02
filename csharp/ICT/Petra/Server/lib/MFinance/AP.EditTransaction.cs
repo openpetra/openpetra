@@ -25,6 +25,7 @@
  ************************************************************************/
 using System;
 using System.Data;
+using System.Data.Odbc;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using Mono.Unix;
@@ -33,6 +34,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MFinance;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Shared.MFinance;
@@ -347,7 +349,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         /// <param name="APostingDate"></param>
         /// <param name="APDataset"></param>
         /// <returns></returns>
-        private static GLBatchTDS CreateGLBatchAndTransactions(Int32 ALedgerNumber, DateTime APostingDate, ref AccountsPayableTDS APDataset)
+        private static GLBatchTDS CreateGLBatchAndTransactionsForPosting(Int32 ALedgerNumber, DateTime APostingDate, ref AccountsPayableTDS APDataset)
         {
             // create one GL batch
             GLBatchTDS GLDataset = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
@@ -374,7 +376,11 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
 
                 string CurrencyCode = ((AApSupplierRow)findSupplier[0].Row).CurrencyCode;
 
-                DocumentsByCurrency.Add(CurrencyCode, new List <AApDocumentRow>());
+                if (!DocumentsByCurrency.ContainsKey(CurrencyCode))
+                {
+                    DocumentsByCurrency.Add(CurrencyCode, new List <AApDocumentRow>());
+                }
+
                 DocumentsByCurrency[CurrencyCode].Add(row);
             }
 
@@ -425,20 +431,20 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                         transaction.TransactionNumber = TransactionCounter++;
                         transaction.TransactionAmount = documentDetail.Amount;
 
-                        // TODO: support foreign currencies
-                        transaction.AmountInBaseCurrency = documentDetail.Amount;
-
                         if (document.CreditNoteFlag)
                         {
-                            transaction.AmountInBaseCurrency *= -1;
+                            transaction.TransactionAmount *= -1;
                         }
 
-                        transaction.DebitCreditIndicator = (transaction.AmountInBaseCurrency > 0);
+                        transaction.DebitCreditIndicator = (transaction.TransactionAmount > 0);
 
-                        if (transaction.AmountInBaseCurrency < 0)
+                        if (transaction.TransactionAmount < 0)
                         {
-                            transaction.AmountInBaseCurrency *= -1;
+                            transaction.TransactionAmount *= -1;
                         }
+
+                        // TODO: support foreign currencies
+                        transaction.AmountInBaseCurrency = transaction.TransactionAmount;
 
                         transaction.AccountCode = documentDetail.AccountCode;
                         transaction.CostCentreCode = documentDetail.CostCentreCode;
@@ -519,7 +525,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                 return false;
             }
 
-            GLBatchTDS GLDataset = CreateGLBatchAndTransactions(ALedgerNumber, APostingDate, ref MainDS);
+            GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPosting(ALedgerNumber, APostingDate, ref MainDS);
 
             ABatchRow batch = GLDataset.ABatch[0];
 
@@ -573,6 +579,296 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// creates the GL batch needed for paying the AP Documents
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APostingDate"></param>
+        /// <param name="APDataset"></param>
+        /// <returns></returns>
+        private static GLBatchTDS CreateGLBatchAndTransactionsForPaying(Int32 ALedgerNumber, DateTime APostingDate, ref AccountsPayableTDS APDataset)
+        {
+            // create one GL batch
+            GLBatchTDS GLDataset = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
+
+            ABatchRow batch = GLDataset.ABatch[0];
+
+            batch.BatchDescription = Catalog.GetString("Accounts Payable Payment Batch");
+            batch.DateEffective = APostingDate;
+            batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
+
+            // since the AP documents can be for several suppliers, the currency might be different; group by currency first
+            SortedList <string,
+                        List <AccountsPayableTDSAApPaymentRow>>DocumentsByCurrency = new SortedList <string, List <AccountsPayableTDSAApPaymentRow>>();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            foreach (AccountsPayableTDSAApPaymentRow row in APDataset.AApPayment.Rows)
+            {
+                // get the currency from the supplier, from the first documentpayment of this payment; we need the currency
+                string sql = TDataBase.ReadSqlFile("Finance.AP.EditTransaction.GetCurrencyForPayment.sql");
+                OdbcParameter[] parameters = new OdbcParameter[2];
+                parameters[0] = new OdbcParameter("Ledger", row.LedgerNumber);
+                parameters[1] = new OdbcParameter("PaymentNumber", row.PaymentNumber);
+                DataTable SupplierInfo = DBAccess.GDBAccessObj.SelectDT(sql, "supplierInfo", Transaction, parameters);
+
+                if (SupplierInfo.Rows.Count != 1)
+                {
+                    throw new Exception("There has to be exactly one supplier per payment");
+                }
+
+                string CurrencyCode = SupplierInfo.Rows[0]["CurrencyCode"].ToString();
+                row.SupplierKey = Convert.ToInt64(SupplierInfo.Rows[0]["SupplierKey"]);
+                TPartnerClass SupplierPartnerClass;
+                string supplierName;
+                TPartnerServerLookups.GetPartnerShortName(row.SupplierKey, out supplierName, out SupplierPartnerClass);
+                row.SupplierName = supplierName;
+
+                if (!DocumentsByCurrency.ContainsKey(CurrencyCode))
+                {
+                    DocumentsByCurrency.Add(CurrencyCode, new List <AccountsPayableTDSAApPaymentRow>());
+                }
+
+                DocumentsByCurrency[CurrencyCode].Add(row);
+            }
+
+            Int32 CounterJournals = 1;
+
+            // add journal for each currency and the transactions
+            foreach (string CurrencyCode in DocumentsByCurrency.Keys)
+            {
+                AJournalRow journal = GLDataset.AJournal.NewRowTyped();
+                journal.LedgerNumber = batch.LedgerNumber;
+                journal.BatchNumber = batch.BatchNumber;
+                journal.JournalNumber = CounterJournals++;
+                journal.DateEffective = batch.DateEffective;
+                journal.TransactionCurrency = CurrencyCode;
+                journal.JournalDescription = "TODO"; // TODO: journal description for posting AP documents
+                journal.TransactionTypeCode = MFinanceConstants.TRANSACTION_STD;
+                journal.SubSystemCode = MFinanceConstants.SUB_SYSTEM_AP;
+                journal.DateOfEntry = DateTime.Now;
+
+                // TODO journal.ExchangeRateToBase
+                journal.ExchangeRateToBase = 1.0;
+
+                // TODO journal.ExchangeRateTime
+                GLDataset.AJournal.Rows.Add(journal);
+
+                Int32 TransactionCounter = 1;
+
+                foreach (AccountsPayableTDSAApPaymentRow payment in DocumentsByCurrency[CurrencyCode])
+                {
+                    ATransactionRow transaction = null;
+                    DataView DocumentPaymentView = APDataset.AApDocumentPayment.DefaultView;
+                    DocumentPaymentView.RowFilter = AApDocumentPaymentTable.GetPaymentNumberDBName() + " = " + payment.PaymentNumber.ToString();
+
+                    // at the moment, we create 2 transactions for each document; no summarising of documents with same AP account etc
+                    foreach (DataRowView rowview in DocumentPaymentView)
+                    {
+                        AApDocumentPaymentRow documentPayment = (AApDocumentPaymentRow)rowview.Row;
+                        APDataset.AApDocument.DefaultView.RowFilter = AApDocumentTable.GetApNumberDBName() + " = " +
+                                                                      documentPayment.ApNumber.ToString();
+                        AApDocumentRow document = (AApDocumentRow)APDataset.AApDocument.DefaultView[0].Row;
+
+                        // TODO: analysis attributes
+
+                        transaction = GLDataset.ATransaction.NewRowTyped();
+                        transaction.LedgerNumber = journal.LedgerNumber;
+                        transaction.BatchNumber = journal.BatchNumber;
+                        transaction.JournalNumber = journal.JournalNumber;
+                        transaction.TransactionNumber = TransactionCounter++;
+                        transaction.TransactionAmount = documentPayment.Amount;
+
+                        transaction.DebitCreditIndicator = (transaction.TransactionAmount > 0);
+
+                        if (transaction.TransactionAmount < 0)
+                        {
+                            transaction.TransactionAmount *= -1;
+                        }
+
+                        // TODO: support foreign currencies
+                        transaction.AmountInBaseCurrency = transaction.TransactionAmount;
+
+                        transaction.AccountCode = payment.BankAccount;
+                        transaction.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
+                            payment.LedgerNumber);
+                        transaction.Narrative = "AP Payment:" + payment.PaymentNumber.ToString() + " - " +
+                                                Ict.Petra.Shared.MPartner.Calculations.FormatShortName(payment.SupplierName,
+                            eShortNameFormat.eReverseWithoutTitle);
+                        transaction.Reference = payment.Reference;
+
+                        // TODO transaction.DetailNumber
+
+                        GLDataset.ATransaction.Rows.Add(transaction);
+
+                        // at the moment: no summarising of documents with same AP account etc
+                        // create one transaction for the AP account
+                        ATransactionRow transactionAPAccount = GLDataset.ATransaction.NewRowTyped();
+                        transactionAPAccount.LedgerNumber = journal.LedgerNumber;
+                        transactionAPAccount.BatchNumber = journal.BatchNumber;
+                        transactionAPAccount.JournalNumber = journal.JournalNumber;
+                        transactionAPAccount.TransactionNumber = TransactionCounter++;
+                        transactionAPAccount.DebitCreditIndicator = !transaction.DebitCreditIndicator;
+                        transactionAPAccount.TransactionAmount = transaction.TransactionAmount;
+                        transactionAPAccount.AmountInBaseCurrency = transaction.AmountInBaseCurrency;
+                        transactionAPAccount.AccountCode = document.ApAccount;
+                        transactionAPAccount.CostCentreCode =
+                            Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(payment.LedgerNumber);
+                        transactionAPAccount.Narrative = "AP Payment:" + payment.PaymentNumber.ToString() + " AP: " +
+                                                         documentPayment.ApNumber.ToString();
+                        transactionAPAccount.Reference = payment.Reference;
+
+                        // TODO transactionAPAccount.DetailNumber
+
+                        GLDataset.ATransaction.Rows.Add(transactionAPAccount);
+
+                        // TODO: for other currencies a post to a_ledger.a_forex_gains_losses_account_c (AP REVAL)
+                    }
+                }
+
+                journal.LastTransactionNumber = TransactionCounter - 1;
+            }
+
+            batch.LastJournal = CounterJournals - 1;
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return GLDataset;
+        }
+
+        /// <summary>
+        /// store payments in the database, and post the payment to GL
+        /// </summary>
+        /// <param name="APayments"></param>
+        /// <param name="ADocumentPayments"></param>
+        /// <param name="APostingDate"></param>
+        /// <param name="AVerifications"></param>
+        /// <returns></returns>
+        public static bool PostAPPayments(
+            AccountsPayableTDSAApPaymentTable APayments,
+            AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
+            DateTime APostingDate,
+            out TVerificationResultCollection AVerifications)
+        {
+            AVerifications = null;
+            bool ResultValue = false;
+
+            AccountsPayableTDS MainDS = new AccountsPayableTDS();
+            MainDS.AApPayment.Merge(APayments);
+            MainDS.AApDocumentPayment.Merge(ADocumentPayments);
+
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            foreach (AccountsPayableTDSAApDocumentPaymentRow row in MainDS.AApDocumentPayment.Rows)
+            {
+                AApDocumentAccess.LoadByPrimaryKey(MainDS, row.LedgerNumber, row.ApNumber, ReadTransaction);
+
+                // TODO: once partial payments are implemented, check for total amount
+                // TODO: check that documents have not been paid already
+
+                // TODO: modify the ap documents and mark as paid or partially paid
+                MainDS.AApDocument.DefaultView.Sort = AApDocumentTable.GetApNumberDBName();
+                AApDocumentRow documentRow = (AApDocumentRow)MainDS.AApDocument.DefaultView[
+                    MainDS.AApDocument.DefaultView.Find(row.ApNumber)].Row;
+                documentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_PAID;
+            }
+
+            // get max payment number for this ledger
+            // PROBLEM: what if two payments are happening at the same time? do we need locking?
+            // see also http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=50
+            Int32 maxPaymentNumberInLedger =
+                Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                        "SELECT MAX(PUB_a_ap_payment.a_payment_number_i) FROM PUB_a_ap_payment WHERE PUB_a_ap_payment.a_ledger_number_i = "
+                        +
+                        MainDS.AApDocumentPayment[0].LedgerNumber.ToString(),
+                        ReadTransaction));
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+
+            foreach (AccountsPayableTDSAApPaymentRow paymentRow in MainDS.AApPayment.Rows)
+            {
+                paymentRow.PaymentDate = APostingDate;
+
+                paymentRow.Amount = 0.0;
+
+                foreach (AccountsPayableTDSAApDocumentPaymentRow docPaymentRow in MainDS.AApDocumentPayment.Rows)
+                {
+                    if (docPaymentRow.PaymentNumber == paymentRow.PaymentNumber)
+                    {
+                        paymentRow.Amount += docPaymentRow.Amount;
+                        docPaymentRow.PaymentNumber = maxPaymentNumberInLedger + (-1 * paymentRow.PaymentNumber);
+                    }
+                }
+
+                paymentRow.PaymentNumber = maxPaymentNumberInLedger + (-1 * paymentRow.PaymentNumber);
+            }
+
+            TDBTransaction SubmitChangesTransaction;
+
+            try
+            {
+                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                // store ApPayment and ApDocumentPayment to database
+                if (AApPaymentAccess.SubmitChanges(MainDS.AApPayment, SubmitChangesTransaction,
+                        out AVerifications))
+                {
+                    if (AApDocumentPaymentAccess.SubmitChanges(MainDS.AApDocumentPayment, SubmitChangesTransaction,
+                            out AVerifications))
+                    {
+                        // create GL batch
+                        GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPaying(MainDS.AApPayment[0].LedgerNumber,
+                            APostingDate,
+                            ref MainDS);
+
+                        ABatchRow batch = GLDataset.ABatch[0];
+
+                        // save the batch
+                        if (Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
+                                out AVerifications) == TSubmitChangesResult.scrOK)
+                        {
+                            // post the batch
+                            if (!Ict.Petra.Server.MFinance.GL.TGLPosting.PostGLBatch(MainDS.AApPayment[0].LedgerNumber, batch.BatchNumber,
+                                    out AVerifications))
+                            {
+                                // TODO: what if posting fails? do we have an orphaned batch lying around? can this be put into one single transaction? probably not
+                                // TODO: we should cancel that batch
+                            }
+                            else
+                            {
+                                // save changed status of AP documents to database
+                                if (AApDocumentAccess.SubmitChanges(MainDS.AApDocument, SubmitChangesTransaction, out AVerifications))
+                                {
+                                    ResultValue = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                // we should not get here; how would the database get broken?
+                // TODO do we need a bigger transaction around everything?
+
+                TLogging.Log("after submitchanges: exception " + e.Message);
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw new Exception(e.ToString() + " " + e.Message);
+            }
+
+            if (ResultValue)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return ResultValue;
         }
     }
 }

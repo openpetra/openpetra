@@ -91,6 +91,10 @@
       <Project>{B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1}</Project>
       <Name>Ict.Petra.Shared.MFinance.DataSets</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MFinance\data\Ict.Petra.Shared.MFinance.DataTables.csproj">
+      <Project>{17586D04-2FFF-478C-A1AD-7DCDA49FB1FA}</Project>
+      <Name>Ict.Petra.Shared.MFinance.DataTables</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MFinance\Ict.Petra.Shared.MFinance.csproj">
       <Project>{57C9A0FC-CCA5-4E4B-9A8A-A0F267466849}</Project>
       <Name>Ict.Petra.Shared.MFinance</Name>

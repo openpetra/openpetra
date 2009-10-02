@@ -932,6 +932,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
             return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.PostAPDocuments(ALedgerNumber, AAPDocumentNumbers, APostingDate, out AVerifications);
         }
 
+        /// generated method from connector
+        public bool PostAPPayments(AccountsPayableTDSAApPaymentTable APayments,
+                                   AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
+                                   DateTime APostingDate,
+                                   out TVerificationResultCollection AVerifications)
+        {
+            return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.PostAPPayments(APayments, ADocumentPayments, APostingDate, out AVerifications);
+        }
+
     }
 }
 
@@ -1919,6 +1928,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
                                 out TVerificationResultCollection AVerifications)
         {
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.PostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
+        /// generated method from connector
+        public string GetStandardCostCentre(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
         }
 
     }

@@ -13,15 +13,15 @@ RootNode:
         actMakePayment: {Label=&Make Payment, ActionClick=MakePayment}
     Controls:
         pnlContent:
-            Controls: [grpSupplierList, pnlSupplierDetails, grpDetails]
+            Controls: [grpPaymentList, pnlSupplierDetails, grpDetails]
             Dock: Fill
-        grpSupplierList:
+        grpPaymentList:
             RowSpan: 2
             Label: Suppliers to Pay
-            Controls: [grdSuppliers]
+            Controls: [grdPayments]
             Dock: Left
             Width: 200
-        grdSuppliers:
+        grdPayments:
             Dock: Fill
             ActionFocusRow: FocusedRowChanged
         pnlSupplierDetails:

@@ -70,8 +70,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAPPayment));
 
             this.pnlContent = new System.Windows.Forms.Panel();
-            this.grpSupplierList = new System.Windows.Forms.GroupBox();
-            this.grdSuppliers = new Ict.Common.Controls.TSgrdDataGridPaged();
+            this.grpPaymentList = new System.Windows.Forms.GroupBox();
+            this.grdPayments = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlSupplierDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.txtCurrency = new System.Windows.Forms.TextBox();
@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
 
             this.pnlContent.SuspendLayout();
-            this.grpSupplierList.SuspendLayout();
+            this.grpPaymentList.SuspendLayout();
             this.pnlSupplierDetails.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.grpDetails.SuspendLayout();
@@ -138,21 +138,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.pnlContent.AutoSize = true;
             this.pnlContent.Controls.Add(this.grpDetails);
             this.pnlContent.Controls.Add(this.pnlSupplierDetails);
-            this.pnlContent.Controls.Add(this.grpSupplierList);
+            this.pnlContent.Controls.Add(this.grpPaymentList);
             //
-            // grpSupplierList
+            // grpPaymentList
             //
-            this.grpSupplierList.Name = "grpSupplierList";
-            this.grpSupplierList.Dock = System.Windows.Forms.DockStyle.Left;
-            this.grpSupplierList.Width = 200;
-            this.grpSupplierList.Controls.Add(this.grdSuppliers);
+            this.grpPaymentList.Name = "grpPaymentList";
+            this.grpPaymentList.Dock = System.Windows.Forms.DockStyle.Left;
+            this.grpPaymentList.Width = 200;
+            this.grpPaymentList.Controls.Add(this.grdPayments);
             //
-            // grdSuppliers
+            // grdPayments
             //
-            this.grdSuppliers.Name = "grdSuppliers";
-            this.grdSuppliers.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grdSuppliers.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
-            this.grpSupplierList.Text = "Suppliers to Pay";
+            this.grdPayments.Name = "grdPayments";
+            this.grdPayments.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdPayments.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
+            this.grpPaymentList.Text = "Suppliers to Pay";
             //
             // pnlSupplierDetails
             //
@@ -563,14 +563,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.grpDetails.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlSupplierDetails.ResumeLayout(false);
-            this.grpSupplierList.ResumeLayout(false);
+            this.grpPaymentList.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
         private System.Windows.Forms.Panel pnlContent;
-        private System.Windows.Forms.GroupBox grpSupplierList;
-        private Ict.Common.Controls.TSgrdDataGridPaged grdSuppliers;
+        private System.Windows.Forms.GroupBox grpPaymentList;
+        private Ict.Common.Controls.TSgrdDataGridPaged grdPayments;
         private System.Windows.Forms.Panel pnlSupplierDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TextBox txtCurrency;
