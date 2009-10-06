@@ -109,10 +109,9 @@ namespace Ict.Petra.Client.App.PetraClient
             //
             // lstFolders
             //
-            this.lstFolders.Location = new System.Drawing.Point(2,2);
             this.lstFolders.Name = "lstFolders";
             this.lstFolders.Dock = System.Windows.Forms.DockStyle.Left;
-            this.lstFolders.Size = new System.Drawing.Size(200, 28);
+            this.lstFolders.Width = 200;
             //
             // tbbMenuSwitch
             //
@@ -133,7 +132,10 @@ namespace Ict.Petra.Client.App.PetraClient
             //
             this.mniClose.Name = "mniClose";
             this.mniClose.AutoSize = true;
-            this.mniClose.Text = "Close";
+            this.mniClose.Click += new System.EventHandler(this.actClose);
+            this.mniClose.Image = ((System.Drawing.Bitmap)resources.GetObject("mniClose.Glyph"));
+            this.mniClose.ToolTipText = "Closes this window";
+            this.mniClose.Text = "&Close";
             //
             // mniFile
             //

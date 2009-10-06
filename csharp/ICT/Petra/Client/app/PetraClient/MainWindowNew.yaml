@@ -6,6 +6,7 @@ RootNode:
     Icon: petraico-big.ico
     Actions:
         actMenuSwitch: {Label=Classic Navigation, ActionClick=SwitchToClassicNavigation}
+        actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}
     Controls:
         pnlContent:
             Controls: [dsbContent, lstFolders]
@@ -19,7 +20,7 @@ RootNode:
         mniFile: 
             Label: &File
             Order: AlwaysFirst
-            mniClose: {Action=actClose, Order=AlwaysLast}
+            mniClose: {Order=AlwaysLast}
         mniView:
             mniMenuSwitch:
         mniHelp: 
