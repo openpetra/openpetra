@@ -1889,6 +1889,19 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
 
 
         /// generated method from connector
+        public GLSetupTDS LoadAccountHierarchies(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.LoadAccountHierarchies(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AMainDS,
+                                                   out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.SaveGLSetupTDS(ref AMainDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
         public GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);

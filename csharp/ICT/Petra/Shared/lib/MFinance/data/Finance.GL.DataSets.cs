@@ -729,4 +729,680 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.SetNull(this.myTable.ColumnAnalysisAttributes);
         }
     }
+
+     /// auto generated
+    [Serializable()]
+    public class GLSetupTDS : TTypedDataSet
+    {
+
+        private ALedgerTable TableALedger;
+        private ALedgerInitFlagTable TableALedgerInitFlag;
+        private AAccountingSystemParameterTable TableAAccountingSystemParameter;
+        private AAccountingPeriodTable TableAAccountingPeriod;
+        private AAccountTable TableAAccount;
+        private AAccountHierarchyTable TableAAccountHierarchy;
+        private AAccountHierarchyDetailTable TableAAccountHierarchyDetail;
+        private AAccountPropertyTable TableAAccountProperty;
+        private AAccountPropertyCodeTable TableAAccountPropertyCode;
+        private AAnalysisAttributeTable TableAAnalysisAttribute;
+        private AAnalysisStoreTableTable TableAAnalysisStoreTable;
+        private AAnalysisTypeTable TableAAnalysisType;
+        private AFreeformAnalysisTable TableAFreeformAnalysis;
+        private ABudgetTable TableABudget;
+        private ABudgetPeriodTable TableABudgetPeriod;
+        private ABudgetRevisionTable TableABudgetRevision;
+        private ABudgetTypeTable TableABudgetType;
+        private ACostCentreTable TableACostCentre;
+        private ACostCentreTypesTable TableACostCentreTypes;
+        private AGeneralLedgerMasterTable TableAGeneralLedgerMaster;
+        private AGeneralLedgerMasterPeriodTable TableAGeneralLedgerMasterPeriod;
+
+        /// auto generated
+        public GLSetupTDS() :
+                base("GLSetupTDS")
+        {
+        }
+
+        /// auto generated for serialization
+        public GLSetupTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// auto generated
+        public GLSetupTDS(string ADatasetName) :
+                base(ADatasetName)
+        {
+        }
+
+        /// auto generated
+        public ALedgerTable ALedger
+        {
+            get
+            {
+                return this.TableALedger;
+            }
+        }
+
+        /// auto generated
+        public ALedgerInitFlagTable ALedgerInitFlag
+        {
+            get
+            {
+                return this.TableALedgerInitFlag;
+            }
+        }
+
+        /// auto generated
+        public AAccountingSystemParameterTable AAccountingSystemParameter
+        {
+            get
+            {
+                return this.TableAAccountingSystemParameter;
+            }
+        }
+
+        /// auto generated
+        public AAccountingPeriodTable AAccountingPeriod
+        {
+            get
+            {
+                return this.TableAAccountingPeriod;
+            }
+        }
+
+        /// auto generated
+        public AAccountTable AAccount
+        {
+            get
+            {
+                return this.TableAAccount;
+            }
+        }
+
+        /// auto generated
+        public AAccountHierarchyTable AAccountHierarchy
+        {
+            get
+            {
+                return this.TableAAccountHierarchy;
+            }
+        }
+
+        /// auto generated
+        public AAccountHierarchyDetailTable AAccountHierarchyDetail
+        {
+            get
+            {
+                return this.TableAAccountHierarchyDetail;
+            }
+        }
+
+        /// auto generated
+        public AAccountPropertyTable AAccountProperty
+        {
+            get
+            {
+                return this.TableAAccountProperty;
+            }
+        }
+
+        /// auto generated
+        public AAccountPropertyCodeTable AAccountPropertyCode
+        {
+            get
+            {
+                return this.TableAAccountPropertyCode;
+            }
+        }
+
+        /// auto generated
+        public AAnalysisAttributeTable AAnalysisAttribute
+        {
+            get
+            {
+                return this.TableAAnalysisAttribute;
+            }
+        }
+
+        /// auto generated
+        public AAnalysisStoreTableTable AAnalysisStoreTable
+        {
+            get
+            {
+                return this.TableAAnalysisStoreTable;
+            }
+        }
+
+        /// auto generated
+        public AAnalysisTypeTable AAnalysisType
+        {
+            get
+            {
+                return this.TableAAnalysisType;
+            }
+        }
+
+        /// auto generated
+        public AFreeformAnalysisTable AFreeformAnalysis
+        {
+            get
+            {
+                return this.TableAFreeformAnalysis;
+            }
+        }
+
+        /// auto generated
+        public ABudgetTable ABudget
+        {
+            get
+            {
+                return this.TableABudget;
+            }
+        }
+
+        /// auto generated
+        public ABudgetPeriodTable ABudgetPeriod
+        {
+            get
+            {
+                return this.TableABudgetPeriod;
+            }
+        }
+
+        /// auto generated
+        public ABudgetRevisionTable ABudgetRevision
+        {
+            get
+            {
+                return this.TableABudgetRevision;
+            }
+        }
+
+        /// auto generated
+        public ABudgetTypeTable ABudgetType
+        {
+            get
+            {
+                return this.TableABudgetType;
+            }
+        }
+
+        /// auto generated
+        public ACostCentreTable ACostCentre
+        {
+            get
+            {
+                return this.TableACostCentre;
+            }
+        }
+
+        /// auto generated
+        public ACostCentreTypesTable ACostCentreTypes
+        {
+            get
+            {
+                return this.TableACostCentreTypes;
+            }
+        }
+
+        /// auto generated
+        public AGeneralLedgerMasterTable AGeneralLedgerMaster
+        {
+            get
+            {
+                return this.TableAGeneralLedgerMaster;
+            }
+        }
+
+        /// auto generated
+        public AGeneralLedgerMasterPeriodTable AGeneralLedgerMasterPeriod
+        {
+            get
+            {
+                return this.TableAGeneralLedgerMasterPeriod;
+            }
+        }
+
+        /// auto generated
+        public new virtual GLSetupTDS GetChangesTyped(bool removeEmptyTables)
+        {
+            return ((GLSetupTDS)(base.GetChangesTyped(removeEmptyTables)));
+        }
+
+        /// auto generated
+        protected override void InitTables()
+        {
+            this.Tables.Add(new ALedgerTable("ALedger"));
+            this.Tables.Add(new ALedgerInitFlagTable("ALedgerInitFlag"));
+            this.Tables.Add(new AAccountingSystemParameterTable("AAccountingSystemParameter"));
+            this.Tables.Add(new AAccountingPeriodTable("AAccountingPeriod"));
+            this.Tables.Add(new AAccountTable("AAccount"));
+            this.Tables.Add(new AAccountHierarchyTable("AAccountHierarchy"));
+            this.Tables.Add(new AAccountHierarchyDetailTable("AAccountHierarchyDetail"));
+            this.Tables.Add(new AAccountPropertyTable("AAccountProperty"));
+            this.Tables.Add(new AAccountPropertyCodeTable("AAccountPropertyCode"));
+            this.Tables.Add(new AAnalysisAttributeTable("AAnalysisAttribute"));
+            this.Tables.Add(new AAnalysisStoreTableTable("AAnalysisStoreTable"));
+            this.Tables.Add(new AAnalysisTypeTable("AAnalysisType"));
+            this.Tables.Add(new AFreeformAnalysisTable("AFreeformAnalysis"));
+            this.Tables.Add(new ABudgetTable("ABudget"));
+            this.Tables.Add(new ABudgetPeriodTable("ABudgetPeriod"));
+            this.Tables.Add(new ABudgetRevisionTable("ABudgetRevision"));
+            this.Tables.Add(new ABudgetTypeTable("ABudgetType"));
+            this.Tables.Add(new ACostCentreTable("ACostCentre"));
+            this.Tables.Add(new ACostCentreTypesTable("ACostCentreTypes"));
+            this.Tables.Add(new AGeneralLedgerMasterTable("AGeneralLedgerMaster"));
+            this.Tables.Add(new AGeneralLedgerMasterPeriodTable("AGeneralLedgerMasterPeriod"));
+        }
+
+        /// auto generated
+        protected override void InitTables(System.Data.DataSet ds)
+        {
+            if ((ds.Tables.IndexOf("ALedger") != -1))
+            {
+                this.Tables.Add(new ALedgerTable("ALedger"));
+            }
+            if ((ds.Tables.IndexOf("ALedgerInitFlag") != -1))
+            {
+                this.Tables.Add(new ALedgerInitFlagTable("ALedgerInitFlag"));
+            }
+            if ((ds.Tables.IndexOf("AAccountingSystemParameter") != -1))
+            {
+                this.Tables.Add(new AAccountingSystemParameterTable("AAccountingSystemParameter"));
+            }
+            if ((ds.Tables.IndexOf("AAccountingPeriod") != -1))
+            {
+                this.Tables.Add(new AAccountingPeriodTable("AAccountingPeriod"));
+            }
+            if ((ds.Tables.IndexOf("AAccount") != -1))
+            {
+                this.Tables.Add(new AAccountTable("AAccount"));
+            }
+            if ((ds.Tables.IndexOf("AAccountHierarchy") != -1))
+            {
+                this.Tables.Add(new AAccountHierarchyTable("AAccountHierarchy"));
+            }
+            if ((ds.Tables.IndexOf("AAccountHierarchyDetail") != -1))
+            {
+                this.Tables.Add(new AAccountHierarchyDetailTable("AAccountHierarchyDetail"));
+            }
+            if ((ds.Tables.IndexOf("AAccountProperty") != -1))
+            {
+                this.Tables.Add(new AAccountPropertyTable("AAccountProperty"));
+            }
+            if ((ds.Tables.IndexOf("AAccountPropertyCode") != -1))
+            {
+                this.Tables.Add(new AAccountPropertyCodeTable("AAccountPropertyCode"));
+            }
+            if ((ds.Tables.IndexOf("AAnalysisAttribute") != -1))
+            {
+                this.Tables.Add(new AAnalysisAttributeTable("AAnalysisAttribute"));
+            }
+            if ((ds.Tables.IndexOf("AAnalysisStoreTable") != -1))
+            {
+                this.Tables.Add(new AAnalysisStoreTableTable("AAnalysisStoreTable"));
+            }
+            if ((ds.Tables.IndexOf("AAnalysisType") != -1))
+            {
+                this.Tables.Add(new AAnalysisTypeTable("AAnalysisType"));
+            }
+            if ((ds.Tables.IndexOf("AFreeformAnalysis") != -1))
+            {
+                this.Tables.Add(new AFreeformAnalysisTable("AFreeformAnalysis"));
+            }
+            if ((ds.Tables.IndexOf("ABudget") != -1))
+            {
+                this.Tables.Add(new ABudgetTable("ABudget"));
+            }
+            if ((ds.Tables.IndexOf("ABudgetPeriod") != -1))
+            {
+                this.Tables.Add(new ABudgetPeriodTable("ABudgetPeriod"));
+            }
+            if ((ds.Tables.IndexOf("ABudgetRevision") != -1))
+            {
+                this.Tables.Add(new ABudgetRevisionTable("ABudgetRevision"));
+            }
+            if ((ds.Tables.IndexOf("ABudgetType") != -1))
+            {
+                this.Tables.Add(new ABudgetTypeTable("ABudgetType"));
+            }
+            if ((ds.Tables.IndexOf("ACostCentre") != -1))
+            {
+                this.Tables.Add(new ACostCentreTable("ACostCentre"));
+            }
+            if ((ds.Tables.IndexOf("ACostCentreTypes") != -1))
+            {
+                this.Tables.Add(new ACostCentreTypesTable("ACostCentreTypes"));
+            }
+            if ((ds.Tables.IndexOf("AGeneralLedgerMaster") != -1))
+            {
+                this.Tables.Add(new AGeneralLedgerMasterTable("AGeneralLedgerMaster"));
+            }
+            if ((ds.Tables.IndexOf("AGeneralLedgerMasterPeriod") != -1))
+            {
+                this.Tables.Add(new AGeneralLedgerMasterPeriodTable("AGeneralLedgerMasterPeriod"));
+            }
+        }
+
+        /// auto generated
+        protected override void MapTables()
+        {
+            this.InitVars();
+            base.MapTables();
+            if ((this.TableALedger != null))
+            {
+                this.TableALedger.InitVars();
+            }
+            if ((this.TableALedgerInitFlag != null))
+            {
+                this.TableALedgerInitFlag.InitVars();
+            }
+            if ((this.TableAAccountingSystemParameter != null))
+            {
+                this.TableAAccountingSystemParameter.InitVars();
+            }
+            if ((this.TableAAccountingPeriod != null))
+            {
+                this.TableAAccountingPeriod.InitVars();
+            }
+            if ((this.TableAAccount != null))
+            {
+                this.TableAAccount.InitVars();
+            }
+            if ((this.TableAAccountHierarchy != null))
+            {
+                this.TableAAccountHierarchy.InitVars();
+            }
+            if ((this.TableAAccountHierarchyDetail != null))
+            {
+                this.TableAAccountHierarchyDetail.InitVars();
+            }
+            if ((this.TableAAccountProperty != null))
+            {
+                this.TableAAccountProperty.InitVars();
+            }
+            if ((this.TableAAccountPropertyCode != null))
+            {
+                this.TableAAccountPropertyCode.InitVars();
+            }
+            if ((this.TableAAnalysisAttribute != null))
+            {
+                this.TableAAnalysisAttribute.InitVars();
+            }
+            if ((this.TableAAnalysisStoreTable != null))
+            {
+                this.TableAAnalysisStoreTable.InitVars();
+            }
+            if ((this.TableAAnalysisType != null))
+            {
+                this.TableAAnalysisType.InitVars();
+            }
+            if ((this.TableAFreeformAnalysis != null))
+            {
+                this.TableAFreeformAnalysis.InitVars();
+            }
+            if ((this.TableABudget != null))
+            {
+                this.TableABudget.InitVars();
+            }
+            if ((this.TableABudgetPeriod != null))
+            {
+                this.TableABudgetPeriod.InitVars();
+            }
+            if ((this.TableABudgetRevision != null))
+            {
+                this.TableABudgetRevision.InitVars();
+            }
+            if ((this.TableABudgetType != null))
+            {
+                this.TableABudgetType.InitVars();
+            }
+            if ((this.TableACostCentre != null))
+            {
+                this.TableACostCentre.InitVars();
+            }
+            if ((this.TableACostCentreTypes != null))
+            {
+                this.TableACostCentreTypes.InitVars();
+            }
+            if ((this.TableAGeneralLedgerMaster != null))
+            {
+                this.TableAGeneralLedgerMaster.InitVars();
+            }
+            if ((this.TableAGeneralLedgerMasterPeriod != null))
+            {
+                this.TableAGeneralLedgerMasterPeriod.InitVars();
+            }
+        }
+
+        /// auto generated
+        public override void InitVars()
+        {
+            this.DataSetName = "GLSetupTDS";
+            this.TableALedger = ((ALedgerTable)(this.Tables["ALedger"]));
+            this.TableALedgerInitFlag = ((ALedgerInitFlagTable)(this.Tables["ALedgerInitFlag"]));
+            this.TableAAccountingSystemParameter = ((AAccountingSystemParameterTable)(this.Tables["AAccountingSystemParameter"]));
+            this.TableAAccountingPeriod = ((AAccountingPeriodTable)(this.Tables["AAccountingPeriod"]));
+            this.TableAAccount = ((AAccountTable)(this.Tables["AAccount"]));
+            this.TableAAccountHierarchy = ((AAccountHierarchyTable)(this.Tables["AAccountHierarchy"]));
+            this.TableAAccountHierarchyDetail = ((AAccountHierarchyDetailTable)(this.Tables["AAccountHierarchyDetail"]));
+            this.TableAAccountProperty = ((AAccountPropertyTable)(this.Tables["AAccountProperty"]));
+            this.TableAAccountPropertyCode = ((AAccountPropertyCodeTable)(this.Tables["AAccountPropertyCode"]));
+            this.TableAAnalysisAttribute = ((AAnalysisAttributeTable)(this.Tables["AAnalysisAttribute"]));
+            this.TableAAnalysisStoreTable = ((AAnalysisStoreTableTable)(this.Tables["AAnalysisStoreTable"]));
+            this.TableAAnalysisType = ((AAnalysisTypeTable)(this.Tables["AAnalysisType"]));
+            this.TableAFreeformAnalysis = ((AFreeformAnalysisTable)(this.Tables["AFreeformAnalysis"]));
+            this.TableABudget = ((ABudgetTable)(this.Tables["ABudget"]));
+            this.TableABudgetPeriod = ((ABudgetPeriodTable)(this.Tables["ABudgetPeriod"]));
+            this.TableABudgetRevision = ((ABudgetRevisionTable)(this.Tables["ABudgetRevision"]));
+            this.TableABudgetType = ((ABudgetTypeTable)(this.Tables["ABudgetType"]));
+            this.TableACostCentre = ((ACostCentreTable)(this.Tables["ACostCentre"]));
+            this.TableACostCentreTypes = ((ACostCentreTypesTable)(this.Tables["ACostCentreTypes"]));
+            this.TableAGeneralLedgerMaster = ((AGeneralLedgerMasterTable)(this.Tables["AGeneralLedgerMaster"]));
+            this.TableAGeneralLedgerMasterPeriod = ((AGeneralLedgerMasterPeriodTable)(this.Tables["AGeneralLedgerMasterPeriod"]));
+        }
+
+        /// auto generated
+        protected override void InitConstraints()
+        {
+
+            if (((this.TableALedger != null)
+                        && (this.TableAAccount != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccount1", "ALedger", new string[] {
+                                "a_ledger_number_i"}, "AAccount", new string[] {
+                                "a_ledger_number_i"}));
+            }
+            if (((this.TableABudgetType != null)
+                        && (this.TableAAccount != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccount2", "ABudgetType", new string[] {
+                                "a_budget_type_code_c"}, "AAccount", new string[] {
+                                "a_budget_type_code_c"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableAAccountHierarchy != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccountHierarchy1", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "AAccountHierarchy", new string[] {
+                                "a_ledger_number_i", "a_root_account_code_c"}));
+            }
+            if (((this.TableAAccountHierarchy != null)
+                        && (this.TableAAccountHierarchyDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccountHierarchyDetail1", "AAccountHierarchy", new string[] {
+                                "a_ledger_number_i", "a_account_hierarchy_code_c"}, "AAccountHierarchyDetail", new string[] {
+                                "a_ledger_number_i", "a_account_hierarchy_code_c"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableAAccountHierarchyDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccountHierarchyDetail2", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "AAccountHierarchyDetail", new string[] {
+                                "a_ledger_number_i", "a_reporting_account_code_c"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableAAccountHierarchyDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccountHierarchyDetail3", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "AAccountHierarchyDetail", new string[] {
+                                "a_ledger_number_i", "a_account_code_to_report_to_c"}));
+            }
+            if (((this.TableALedger != null)
+                        && (this.TableAAccountProperty != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccountProperty1", "ALedger", new string[] {
+                                "a_ledger_number_i"}, "AAccountProperty", new string[] {
+                                "a_ledger_number_i"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableAAccountProperty != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccountProperty2", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "AAccountProperty", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}));
+            }
+            if (((this.TableAAccountPropertyCode != null)
+                        && (this.TableAAccountProperty != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccountProperty3", "AAccountPropertyCode", new string[] {
+                                "a_property_code_c"}, "AAccountProperty", new string[] {
+                                "a_property_code_c"}));
+            }
+            if (((this.TableALedger != null)
+                        && (this.TableAAccountingPeriod != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccountingPeriod1", "ALedger", new string[] {
+                                "a_ledger_number_i"}, "AAccountingPeriod", new string[] {
+                                "a_ledger_number_i"}));
+            }
+            if (((this.TableALedger != null)
+                        && (this.TableAAccountingSystemParameter != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAccountingSystemParam1", "ALedger", new string[] {
+                                "a_ledger_number_i"}, "AAccountingSystemParameter", new string[] {
+                                "a_ledger_number_i"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableAAnalysisAttribute != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAnalysisAttribute1", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "AAnalysisAttribute", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}));
+            }
+            if (((this.TableAAnalysisType != null)
+                        && (this.TableAAnalysisAttribute != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAnalysisAttribute2", "AAnalysisType", new string[] {
+                                "a_analysis_type_code_c"}, "AAnalysisAttribute", new string[] {
+                                "a_analysis_type_code_c"}));
+            }
+            if (((this.TableACostCentre != null)
+                        && (this.TableAAnalysisAttribute != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKAnalysisAttribute3", "ACostCentre", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}, "AAnalysisAttribute", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}));
+            }
+            if (((this.TableACostCentre != null)
+                        && (this.TableABudget != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKBudget1", "ACostCentre", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}, "ABudget", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableABudget != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKBudget2", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "ABudget", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}));
+            }
+            if (((this.TableABudgetType != null)
+                        && (this.TableABudget != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKBudget3", "ABudgetType", new string[] {
+                                "a_budget_type_code_c"}, "ABudget", new string[] {
+                                "a_budget_type_code_c"}));
+            }
+            if (((this.TableABudgetRevision != null)
+                        && (this.TableABudget != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKBudget4", "ABudgetRevision", new string[] {
+                                "a_ledger_number_i", "a_year_i", "a_revision_i"}, "ABudget", new string[] {
+                                "a_ledger_number_i", "a_year_i", "a_revision_i"}));
+            }
+            if (((this.TableABudget != null)
+                        && (this.TableABudgetPeriod != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKBudgetPeriod1", "ABudget", new string[] {
+                                "a_budget_sequence_i"}, "ABudgetPeriod", new string[] {
+                                "a_budget_sequence_i"}));
+            }
+            if (((this.TableALedger != null)
+                        && (this.TableACostCentre != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKCostCentre1", "ALedger", new string[] {
+                                "a_ledger_number_i"}, "ACostCentre", new string[] {
+                                "a_ledger_number_i"}));
+            }
+            if (((this.TableACostCentreTypes != null)
+                        && (this.TableACostCentre != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKCostCentre2", "ACostCentreTypes", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_type_c"}, "ACostCentre", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_type_c"}));
+            }
+            if (((this.TableALedger != null)
+                        && (this.TableACostCentreTypes != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKCostCentreTypes1", "ALedger", new string[] {
+                                "a_ledger_number_i"}, "ACostCentreTypes", new string[] {
+                                "a_ledger_number_i"}));
+            }
+            if (((this.TableALedger != null)
+                        && (this.TableAFreeformAnalysis != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKFreeformAnalysis1", "ALedger", new string[] {
+                                "a_ledger_number_i"}, "AFreeformAnalysis", new string[] {
+                                "a_ledger_number_i"}));
+            }
+            if (((this.TableAAnalysisType != null)
+                        && (this.TableAFreeformAnalysis != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKFreeformAnalysis2", "AAnalysisType", new string[] {
+                                "a_analysis_type_code_c"}, "AFreeformAnalysis", new string[] {
+                                "a_analysis_type_code_c"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableAGeneralLedgerMaster != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKGeneralLedgerMaster1", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "AGeneralLedgerMaster", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}));
+            }
+            if (((this.TableACostCentre != null)
+                        && (this.TableAGeneralLedgerMaster != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKGeneralLedgerMaster2", "ACostCentre", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}, "AGeneralLedgerMaster", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}));
+            }
+            if (((this.TableAGeneralLedgerMaster != null)
+                        && (this.TableAGeneralLedgerMasterPeriod != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKGlmPeriod1", "AGeneralLedgerMaster", new string[] {
+                                "a_glm_sequence_i"}, "AGeneralLedgerMasterPeriod", new string[] {
+                                "a_glm_sequence_i"}));
+            }
+            if (((this.TableALedger != null)
+                        && (this.TableALedgerInitFlag != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKLedgerInitFlag1", "ALedger", new string[] {
+                                "a_ledger_number_i"}, "ALedgerInitFlag", new string[] {
+                                "a_ledger_number_i"}));
+            }
+        }
+    }
 }

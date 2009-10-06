@@ -15,5 +15,34 @@
         <Table sqltable="a_general_ledger_master"/>
         <Table sqltable="a_general_ledger_master_period"/>
     </DataSet> 
-    
+
+    <DataSet name="GLSetupTDS">
+        <Table sqltable="a_ledger"/>
+        <Table sqltable="a_ledger_init_flag"/>
+        <Table sqltable="a_accounting_system_parameter"/>
+        <Table sqltable="a_accounting_period"/>
+
+        <Table sqltable="a_account"/>
+        <Table sqltable="a_account_hierarchy"/>
+        <Table sqltable="a_account_hierarchy_detail"/>
+        <Table sqltable="a_account_property"/>
+        <Table sqltable="a_account_property_code"/>
+
+        <Table sqltable="a_analysis_attribute"/>
+        <Table sqltable="a_analysis_store_table"/>
+        <Table sqltable="a_analysis_type"/>
+        <Table sqltable="a_freeform_analysis"/>
+
+        <Table sqltable="a_budget"/>
+        <Table sqltable="a_budget_period"/>
+        <Table sqltable="a_budget_revision"/>
+        <Table sqltable="a_budget_type"/>
+
+        <Table sqltable="a_cost_centre"/>
+        <Table sqltable="a_cost_centre_types"/>
+
+        <Table sqltable="a_general_ledger_master"/>
+        <Table sqltable="a_general_ledger_master_period"/>
+    </DataSet> 
+
 </PetraDataSets>

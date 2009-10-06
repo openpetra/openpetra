@@ -260,6 +260,7 @@ namespace Ict.Petra.Client.CommonForms
                          || (ctrl.GetType() == typeof(Ict.Common.Controls.TExtStatusBarHelp))
                          || (ctrl.GetType() == typeof(GroupBox))
                          || (ctrl.GetType() == typeof(TbtnVarioText))
+                         || (ctrl.GetType() == typeof(TreeView))
                          || (ctrl.GetType() == typeof(TbtnCreated)))
                 {
                     // nothing to do

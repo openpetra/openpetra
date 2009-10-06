@@ -1,0 +1,46 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: GL Account Hierarchy
+    Namespace: Ict.Petra.Client.MFinance.Gui.GL
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
+    DetailTable: AAccount
+    FormType: edit
+    Template: windowTDS
+    WindowWidth: 660
+    WindowHeight: 700
+    Actions:
+        actAddNewAccount: {Label=Add Account, ActionClick=AddNewAccount}
+    Controls:
+        pnlContent:
+            Controls: [sptAccountSplitter]
+            Dock: Fill
+        sptAccountSplitter:
+            Panel1: trvAccounts
+            Panel2: pnlDetails
+            SplitterDistance: 50
+            SplitterOrientation: vertical
+            Dock: Fill
+        trvAccounts: {Dock=Fill}
+        pnlDetails: {Dock=Fill}
+            Controls: 
+                Row0: [txtDetailAccountCode]
+                Row1: [cmbDetailAccountType]
+                Row3: [txtDetailAccountCodeLongDesc]
+                Row4: [txtDetailAccountCodeShortDesc]
+                Row5: [cmbDetailValidCcCombo]
+                Row6: [chkDetailAccountActiveFlag]
+        txtDetailAccountCode:
+        cmbDetailAccountType:
+            OptionalValues: [Income, Expense, Asset, Equity, Liability]
+        # TODO: still need english and local description? easier to use different account hierarchies?
+        txtDetailAccountCodeLongDesc: {Label=Description Long}
+        txtDetailAccountCodeShortDesc: {Label=Description Short}
+        cmbDetailValidCcCombo: {Label=Valid Cost Centres}
+            OptionalValues: [All, Foreign, Local]
+        # TODO: budget type, budget control
+        # TODO: analysis attributes
+        # TODO: bank account
+        # TODO: system account, standard account
+        chkDetailAccountActiveFlag: {Label=Active}
+    Toolbar:
+        tbbAddNewAccount:

@@ -94,11 +94,28 @@ namespace {#NAMESPACE}
     }
 {#ENDIF SHOWDATA}
 
+{#IFDEF SHOWDETAILS}
+    private void ShowDetails(Int32 ACurrentDetailIndex)
+    {
+        {#SHOWDETAILS}
+    }
+{#ENDIF SHOWDETAILS}
+
     private void GetDataFromControls()
     {
         {#SAVEDATA}
     }
 
+{#IFDEF SAVEDETAILS}
+    private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
+    {
+        if (ACurrentDetailIndex != -1)
+        {
+            {#SAVEDETAILS}
+        }
+    }
+{#ENDIF SAVEDETAILS}
+    
 #region Implement interface functions
 
     /// auto generated

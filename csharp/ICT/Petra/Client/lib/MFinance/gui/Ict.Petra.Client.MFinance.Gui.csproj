@@ -197,6 +197,13 @@
     <Compile Include="FinanceMain.ManualCode.cs">
       <DependentUpon>FinanceMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="GLAccountHierarchy.cs" />
+    <Compile Include="GLAccountHierarchy.Designer.cs">
+      <DependentUpon>GLAccountHierarchy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GLAccountHierarchy.ManualCode.cs">
+      <DependentUpon>GLAccountHierarchy.cs</DependentUpon>
+    </Compile>
     <Compile Include="GLBatch.cs" />
     <Compile Include="GLBatch.Designer.cs">
       <DependentUpon>GLBatch.cs</DependentUpon>
@@ -263,6 +270,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FinanceMain.resx">
       <DependentUpon>FinanceMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GLAccountHierarchy.resx">
+      <DependentUpon>GLAccountHierarchy.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GLBatch.resx">
       <DependentUpon>GLBatch.cs</DependentUpon>

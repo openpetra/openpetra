@@ -98,17 +98,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new ToolbarButtonGenerator());
                 AvailableControlGenerators.Add(new ToolbarSeparatorGenerator());
                 AvailableControlGenerators.Add(new StatusBarGenerator());
-
-                //			AvailableControlGenerators.Add(new StatusBarTextGenerator());
                 AvailableControlGenerators.Add(new ToolBarGenerator());
                 AvailableControlGenerators.Add(new GroupBoxGenerator());
                 AvailableControlGenerators.Add(new RangeGenerator());
                 AvailableControlGenerators.Add(new PanelGenerator());
+                AvailableControlGenerators.Add(new SplitContainerGenerator());
                 AvailableControlGenerators.Add(new UserControlGenerator());
                 AvailableControlGenerators.Add(new LabelGenerator());
                 AvailableControlGenerators.Add(new ButtonGenerator());
                 AvailableControlGenerators.Add(new CheckBoxGenerator());
                 AvailableControlGenerators.Add(new DateTimePickerGenerator());
+                AvailableControlGenerators.Add(new TreeViewGenerator());
                 AvailableControlGenerators.Add(new TextBoxGenerator());
                 AvailableControlGenerators.Add(new TTxtAutoPopulatedButtonLabelGenerator());
                 AvailableControlGenerators.Add(new ComboBoxGenerator());

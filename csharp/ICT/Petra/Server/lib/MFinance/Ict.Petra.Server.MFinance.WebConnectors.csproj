@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AP.EditTransaction.cs" />
+    <Compile Include="GL.Setup.cs" />
     <Compile Include="GL.Transactions.cs" />
     <Compile Include="WebConnectors.AssemblyInfo.cs" />
   </ItemGroup>
