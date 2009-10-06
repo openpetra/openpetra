@@ -114,6 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       grdResult.AddCheckBoxColumn("", FMainDS.AApDocument.ColumnTagged);
       grdResult.AddTextColumn("AP Number", FMainDS.AApDocument.ColumnApNumber);
       grdResult.AddTextColumn("Invoice Number", FMainDS.AApDocument.ColumnDocumentCode);
+      grdResult.AddTextColumn("Document Status", FMainDS.AApDocument.ColumnDocumentStatus);
       grdResult.AddTextColumn("Date Issued", FMainDS.AApDocument.ColumnDateIssued);
       grdResult.AddTextColumn("Total Amount", FMainDS.AApDocument.ColumnTotalAmount);
       grdResult.AddTextColumn("Date Due", FMainDS.AApDocument.ColumnDateDue);

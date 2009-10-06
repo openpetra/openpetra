@@ -149,7 +149,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
             // TODO grdDetails.AddTextColumn("Invoice No", );
             // TODO grdDetails.AddTextColumn("Type", ); // invoice or credit note
-            grdDetails.AddCheckBoxColumn("Discount used", FMainDS.AApDocumentPayment.ColumnUseDiscount);
+            grdDetails.AddTextColumn("Discount used", FMainDS.AApDocumentPayment.ColumnUseDiscount);
             grdDetails.AddTextColumn("Amount", FMainDS.AApDocumentPayment.ColumnAmount);
             FMainDS.AApDocumentPayment.DefaultView.AllowNew = false;
             FMainDS.AApDocumentPayment.DefaultView.AllowEdit = false;

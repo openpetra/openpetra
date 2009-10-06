@@ -58,7 +58,7 @@ RootNode:
             Dock: Fill
             TableName: AApDocument
             ActionDoubleClick: actOpenSelected
-            Columns: [Tagged, ApNumber, DocumentCode, DateIssued, TotalAmount, DateDue]
+            Columns: [Tagged, ApNumber, DocumentCode, DocumentStatus, DateIssued, TotalAmount, DateDue]
             CustomColumns:
                 Tagged: {Label=, Type=Boolean}
                 DateDue: {Label=Date Due, Type=DateTime}
