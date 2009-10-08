@@ -181,7 +181,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     private void GetDataFromControls()
     {
-        GetDataFromControlsManual(ARow);
+        GetDataFromControlsManual();
     }
 
     private void GetDetailsFromControls(AAccountRow ARow)
@@ -221,14 +221,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ARow.ValidCcCombo = cmbDetailValidCcCombo.GetSelectedString();
             }
-            if (chkDetailAccountActiveFlag.Checked)
-            {
-                ARow.SetAccountActiveFlagNull();
-            }
-            else
-            {
-                ARow.AccountActiveFlag = chkDetailAccountActiveFlag.Checked;
-            }
+            ARow.AccountActiveFlag = chkDetailAccountActiveFlag.Checked;
         }
     }
 

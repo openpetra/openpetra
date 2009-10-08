@@ -339,7 +339,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
         GLSetupTDS LoadAccountHierarchies(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
-        TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AMainDS,
+        TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
                                             out TVerificationResultCollection AVerificationResult);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
         GLBatchTDS CreateABatch(Int32 ALedgerNumber);

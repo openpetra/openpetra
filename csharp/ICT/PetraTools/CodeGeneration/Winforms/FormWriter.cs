@@ -881,7 +881,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "ShowDetailsManual(ARow);" + Environment.NewLine);
             }
 
-            if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsManual"))
+            if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsManual()"))
+            {
+                FTemplate.AddToCodelet("SAVEDATA", "GetDataFromControlsManual();" + Environment.NewLine);
+            }
+            else if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsManual("))
             {
                 FTemplate.AddToCodelet("SAVEDATA", "GetDataFromControlsManual(ARow);" + Environment.NewLine);
             }

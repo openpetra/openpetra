@@ -1895,10 +1895,10 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
-        public TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AMainDS,
+        public TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
                                                    out TVerificationResultCollection AVerificationResult)
         {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.SaveGLSetupTDS(ref AMainDS, out AVerificationResult);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.SaveGLSetupTDS(ref AInspectDS, out AVerificationResult);
         }
 
         /// generated method from connector

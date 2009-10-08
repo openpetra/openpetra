@@ -66,13 +66,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             trvAccounts.Nodes.Clear();
 
             // TODO: select account hierarchy
-            FMainDS.AAccountHierarchy.DefaultView.RowFilter =
-                AAccountHierarchyTable.GetAccountHierarchyCodeDBName() + " = '" + FSelectedHierarchy + "'";
+            AAccountHierarchyRow accountHierarchy = (AAccountHierarchyRow)FMainDS.AAccountHierarchy.Rows.Find(new object[] { FLedgerNumber,
+                                                                                                                             FSelectedHierarchy });
 
-            if (FMainDS.AAccountHierarchy.DefaultView.Count == 1)
+            if (accountHierarchy != null)
             {
-                InsertNodeIntoTreeView(trvAccounts.Nodes, FSelectedHierarchy,
-                    ((AAccountHierarchyRow)FMainDS.AAccountHierarchy.DefaultView[0].Row).RootAccountCode);
+                // find the BALSHT account that is reporting to the root account
+                FMainDS.AAccountHierarchyDetail.DefaultView.RowFilter =
+                    AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + FSelectedHierarchy + "' AND " +
+                    AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + accountHierarchy.RootAccountCode + "'";
+
+                InsertNodeIntoTreeView(trvAccounts.Nodes,
+                    (AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.DefaultView[0].Row);
             }
 
             // reset filter so that the defaultview can be used for finding accounts (eg. when adding new account)
@@ -83,21 +88,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.trvAccounts.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeViewAfterSelect);
         }
 
-        private void InsertNodeIntoTreeView(TreeNodeCollection AParentNodes, string AAccountHierarchyCode, string AAccountCode)
+        private void InsertNodeIntoTreeView(TreeNodeCollection AParentNodes, AAccountHierarchyDetailRow ADetailRow)
         {
-            TreeNode newNode = AParentNodes.Add(AAccountCode);
+            AAccountRow currentAccount = (AAccountRow)FMainDS.AAccount.Rows.Find(
+                new object[] { FLedgerNumber, ADetailRow.ReportingAccountCode });
 
-            newNode.Tag = AAccountCode;
+            string nodeLabel = ADetailRow.ReportingAccountCode;
+
+            if (!currentAccount.IsAccountCodeShortDescNull())
+            {
+                nodeLabel += " (" + currentAccount.AccountCodeShortDesc + ")";
+            }
+
+            TreeNode newNode = AParentNodes.Add(nodeLabel);
+
+            newNode.Tag = ADetailRow;
 
             FMainDS.AAccountHierarchyDetail.DefaultView.Sort = AAccountHierarchyDetailTable.GetReportOrderDBName();
             FMainDS.AAccountHierarchyDetail.DefaultView.RowFilter =
-                AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + AAccountHierarchyCode + "' AND " +
-                AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + AAccountCode + "'";
+                AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + ADetailRow.AccountHierarchyCode + "' AND " +
+                AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + ADetailRow.ReportingAccountCode + "'";
 
             foreach (DataRowView rowView in FMainDS.AAccountHierarchyDetail.DefaultView)
             {
                 AAccountHierarchyDetailRow accountDetail = (AAccountHierarchyDetailRow)rowView.Row;
-                InsertNodeIntoTreeView(newNode.Nodes, AAccountHierarchyCode, accountDetail.ReportingAccountCode);
+                InsertNodeIntoTreeView(newNode.Nodes, accountDetail);
             }
         }
 
@@ -109,35 +124,41 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((FCurrentNode != null) && (FCurrentNode != e.Node))
             {
                 FMainDS.AAccountHierarchyDetail.DefaultView.Sort = AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
-                GetDetailsFromControls((AAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber, FCurrentNode.Tag.ToString() }));
+                AAccountRow currentAccount = (AAccountRow)FMainDS.AAccount.Rows.Find(
+                    new object[] { FLedgerNumber, ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
+                string oldName = currentAccount.AccountCode;
+                GetDetailsFromControls(currentAccount);
 
                 // this only works for new rows; old rows have the primary key fields readonly
-                if (FCurrentNode.Tag.ToString() != txtDetailAccountCode.Text)
+                if (currentAccount.AccountCode != oldName)
                 {
-                    // account has been renamed
-                    string oldName = FCurrentNode.Tag.ToString();
-                    FCurrentNode.Tag = txtDetailAccountCode.Text;
-                    FCurrentNode.Text = txtDetailAccountCode.Text;
-
                     // there are no references to this new row yet, apart from children nodes
 
                     // change name in the account hierarchy
-                    Int32 AccountHierarchyDetailIndex = FMainDS.AAccountHierarchyDetail.DefaultView.Find(oldName);
-                    FMainDS.AAccountHierarchyDetail[AccountHierarchyDetailIndex].ReportingAccountCode = txtDetailAccountCode.Text;
+                    ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode = currentAccount.AccountCode;
 
                     // fix children nodes, account hierarchy
                     foreach (TreeNode childnode in FCurrentNode.Nodes)
                     {
-                        AccountHierarchyDetailIndex = FMainDS.AAccountHierarchyDetail.DefaultView.Find(childnode.Tag.ToString());
-                        FMainDS.AAccountHierarchyDetail[AccountHierarchyDetailIndex].AccountCodeToReportTo = txtDetailAccountCode.Text;
+                        ((AAccountHierarchyDetailRow)childnode.Tag).AccountCodeToReportTo = currentAccount.AccountCode;
                     }
                 }
+
+                string nodeLabel = currentAccount.AccountCode;
+
+                if (!currentAccount.IsAccountCodeShortDescNull())
+                {
+                    nodeLabel += " (" + currentAccount.AccountCodeShortDesc + ")";
+                }
+
+                FCurrentNode.Text = nodeLabel;
             }
 
             FCurrentNode = e.Node;
 
             // update detail panel
-            ShowDetails((AAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber, e.Node.Tag.ToString() }));
+            ShowDetails((AAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber,
+                                                                               ((AAccountHierarchyDetailRow)e.Node.Tag).ReportingAccountCode }));
         }
 
         private void AddNewAccount(Object sender, EventArgs e)
@@ -148,13 +169,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            trvAccounts.BeginUpdate();
-            string newName = "NewAccount";
+            string newName = Catalog.GetString("NewAccount");
             Int32 countNewAccount = 0;
 
-            if (FCurrentNode.Nodes.ContainsKey(newName))
+            if (FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber, newName }) != null)
             {
-                while (FCurrentNode.Nodes.ContainsKey(newName + countNewAccount.ToString()))
+                while (FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber, newName + countNewAccount.ToString() }) != null)
                 {
                     countNewAccount++;
                 }
@@ -162,11 +182,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 newName += countNewAccount.ToString();
             }
 
-            TreeNode newNode = FCurrentNode.Nodes.Add(newName);
-            newNode.Tag = newName;
-            trvAccounts.EndUpdate();
-
-            AAccountRow parentAccount = (AAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber, FCurrentNode.Tag.ToString() });
+            AAccountRow parentAccount =
+                (AAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber,
+                                                                       ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
 
             AAccountRow newAccount = FMainDS.AAccount.NewRowTyped();
             newAccount.AccountCode = newName;
@@ -184,7 +202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             hierarchyDetailRow.AccountCodeToReportTo = parentAccount.AccountCode;
             hierarchyDetailRow.ReportingAccountCode = newName;
 
-            if (FCurrentNode.Nodes.Count == 1)
+            if (FCurrentNode.Nodes.Count == 0)
             {
                 // change posting/summary flag of parent account if it was a leaf
                 parentAccount.PostingStatus = false;
@@ -192,15 +210,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                FMainDS.AAccountHierarchyDetail.DefaultView.Sort = AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
-                Int32 PreviousSiblingAccountIndex = FMainDS.AAccountHierarchyDetail.DefaultView.Find(
-                    FCurrentNode.Nodes[FCurrentNode.Nodes.Count - 2].Tag.ToString());
-                AAccountHierarchyDetailRow siblingRow =
-                    (AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.DefaultView[PreviousSiblingAccountIndex].Row;
+                AAccountHierarchyDetailRow siblingRow = (AAccountHierarchyDetailRow)FCurrentNode.Nodes[FCurrentNode.Nodes.Count - 1].Tag;
                 hierarchyDetailRow.ReportOrder = siblingRow.ReportOrder + 1;
             }
 
             FMainDS.AAccountHierarchyDetail.Rows.Add(hierarchyDetailRow);
+
+            trvAccounts.BeginUpdate();
+            TreeNode newNode = FCurrentNode.Nodes.Add(newName);
+            newNode.Tag = hierarchyDetailRow;
+            trvAccounts.EndUpdate();
 
             trvAccounts.SelectedNode = newNode;
         }

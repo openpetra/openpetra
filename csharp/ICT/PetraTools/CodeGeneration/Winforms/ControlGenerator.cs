@@ -388,6 +388,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
         {
+            if (AFieldTypeDotNet == null)
+            {
+                return null;
+            }
+
             return ctrl.controlName + ".Checked";
         }
     }
