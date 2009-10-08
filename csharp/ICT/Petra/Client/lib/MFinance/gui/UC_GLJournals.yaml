@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     DetailTable: AJournal
-    DatatableType: Ict.Petra.Shared.MFinance.Account.Data.AJournal
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
     FormType: edit
     Template: controlMaintainTable
     Actions:

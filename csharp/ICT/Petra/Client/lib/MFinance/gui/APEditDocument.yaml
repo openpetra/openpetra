@@ -4,7 +4,8 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.AccountsPayable
     MasterTable: AApDocument
     DetailTable: AApDocumentDetail
-    DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS
+    DatasetType: AccountsPayableTDS
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data]
     FormType: edit
     Template: windowEditWebConnectorMasterDetail
     WindowWidth: 750

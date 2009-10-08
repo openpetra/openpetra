@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             GetDataFromControls();
 
-            FCurrentDetailIndex = -1;
+            FPreviouslySelectedDetailRow = null;
 
             DataView view = new DataView(FMainDS.AJournal);
 
@@ -76,18 +76,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtBatchNumber.Text = FBatchNumber.ToString();
         }
 
-        private void ShowDetailsManual(Int32 ACurrentDetailIndex)
+        private void ShowDetailsManual(AJournalRow ARow)
         {
-            if (ACurrentDetailIndex == -1)
+            if (ARow == null)
             {
                 ((TFrmGLBatch)ParentForm).DisableTransactions();
             }
             else
             {
                 ((TFrmGLBatch)ParentForm).LoadTransactions(
-                    FMainDS.AJournal[ACurrentDetailIndex].LedgerNumber,
-                    FMainDS.AJournal[ACurrentDetailIndex].BatchNumber,
-                    FMainDS.AJournal[ACurrentDetailIndex].JournalNumber);
+                    ARow.LedgerNumber,
+                    ARow.BatchNumber,
+                    ARow.JournalNumber);
             }
         }
 

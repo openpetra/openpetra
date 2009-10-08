@@ -44,6 +44,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -54,8 +55,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     private TFrmPetraEditUtils FPetraUtilsObject;
 
     private Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS FMainDS;
-
-	private Int32 FCurrentDetailIndex = -1;
 
     /// constructor
     public TUC_GLTransactions() : base()
@@ -147,7 +146,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public bool CreateNewATransaction()
     {
         // we create the table locally, no dataset
-        Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDSATransactionRow NewRow = FMainDS.ATransaction.NewRowTyped(true);
+        ATransactionRow NewRow = FMainDS.ATransaction.NewRowTyped(true);
         NewRowManual(ref NewRow);
         FMainDS.ATransaction.Rows.Add(NewRow);
 
@@ -188,37 +187,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
     }
 
-    /// return the index in the detail datatable of the selected row, not the index in the datagrid
-    private Int32 GetSelectedDetailDataTableIndex()
+    /// return the selected row
+    private ATransactionRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            // this would return the index in the grid: return grdDetails.DataSource.IndexOf(SelectedGridRow[0]);
-            // we could keep track of the order in the datatable ourselves: return Convert.ToInt32(SelectedGridRow[0][ORIGINALINDEX]);
-            // does not seem to work: return grdDetails.DataSourceRowToIndex2(SelectedGridRow[0]);
-
-            for (int Counter = 0; Counter < FMainDS.ATransaction.Rows.Count; Counter++)
-            {
-                bool found = true;
-                foreach (DataColumn myColumn in FMainDS.ATransaction.PrimaryKey)
-                {
-                    if (FMainDS.ATransaction.Rows[Counter][myColumn].ToString() !=
-                        SelectedGridRow[0][myColumn.Ordinal].ToString())
-                    {
-                        found = false;
-                    }
-
-                }
-                if (found)
-                {
-                    return Counter;
-                }
-            }
+            return (ATransactionRow)SelectedGridRow[0].Row;
         }
 
-        return -1;
+        return null;
     }
 
     private void ShowData()
@@ -238,108 +217,110 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 grdDetails.Selection.ResetSelection(false);
                 grdDetails.Selection.SelectRow(1, true);
-                ShowDetails(GetSelectedDetailDataTableIndex());
+                FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
                 pnlDetails.Enabled = true;
             }
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private void ShowDetails(Int32 ACurrentDetailIndex)
+    private void ShowDetails(ATransactionRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
-        if (ACurrentDetailIndex == -1)
+        if (ARow == null)
         {
             pnlDetails.Enabled = false;
-            ShowDetailsManual(ACurrentDetailIndex);
+            ShowDetailsManual(ARow);
         }
         else
         {
             pnlDetails.Enabled = true;
-            FCurrentDetailIndex = ACurrentDetailIndex;
-            cmbDetailCostCentreCode.SetSelectedString(FMainDS.ATransaction[ACurrentDetailIndex].CostCentreCode);
-            cmbDetailAccountCode.SetSelectedString(FMainDS.ATransaction[ACurrentDetailIndex].AccountCode);
-            if (FMainDS.ATransaction[ACurrentDetailIndex].IsNarrativeNull())
+            FPreviouslySelectedDetailRow = ARow;
+            cmbDetailCostCentreCode.SetSelectedString(ARow.CostCentreCode);
+            cmbDetailAccountCode.SetSelectedString(ARow.AccountCode);
+            if (ARow.IsNarrativeNull())
             {
                 txtDetailNarrative.Text = String.Empty;
             }
             else
             {
-                txtDetailNarrative.Text = FMainDS.ATransaction[ACurrentDetailIndex].Narrative;
+                txtDetailNarrative.Text = ARow.Narrative;
             }
-            if (FMainDS.ATransaction[ACurrentDetailIndex].IsReferenceNull())
+            if (ARow.IsReferenceNull())
             {
                 txtDetailReference.Text = String.Empty;
             }
             else
             {
-                txtDetailReference.Text = FMainDS.ATransaction[ACurrentDetailIndex].Reference;
+                txtDetailReference.Text = ARow.Reference;
             }
-            dtpDetailTransactionDate.Value = FMainDS.ATransaction[ACurrentDetailIndex].TransactionDate;
-            if (FMainDS.ATransaction[ACurrentDetailIndex].IsKeyMinistryKeyNull())
+            dtpDetailTransactionDate.Value = ARow.TransactionDate;
+            if (ARow.IsKeyMinistryKeyNull())
             {
                 cmbDetailKeyMinistryKey.SelectedIndex = -1;
             }
             else
             {
-                cmbDetailKeyMinistryKey.SetSelectedInt64(FMainDS.ATransaction[ACurrentDetailIndex].KeyMinistryKey);
+                cmbDetailKeyMinistryKey.SetSelectedInt64(ARow.KeyMinistryKey);
             }
-            ShowDetailsManual(ACurrentDetailIndex);
+            ShowDetailsManual(ARow);
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
+    private ATransactionRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
         // get the details from the previously selected row
-        if (FCurrentDetailIndex != -1)
+        if (FPreviouslySelectedDetailRow != null)
         {
-            GetDetailsFromControls(FCurrentDetailIndex);
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
         // display the details of the currently selected row
-        ShowDetails(GetSelectedDetailDataTableIndex());
+        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+        ShowDetails(FPreviouslySelectedDetailRow);
     }
 
     /// get the data from the controls and store in the currently selected detail row
     public void GetDataFromControls()
     {
-        GetDetailsFromControls(FCurrentDetailIndex);
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
-    private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
+    private void GetDetailsFromControls(ATransactionRow ARow)
     {
-        if (ACurrentDetailIndex != -1)
+        if (ARow != null)
         {
-            FMainDS.ATransaction.Rows[ACurrentDetailIndex].BeginEdit();
-            FMainDS.ATransaction[ACurrentDetailIndex].CostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
-            FMainDS.ATransaction[ACurrentDetailIndex].AccountCode = cmbDetailAccountCode.GetSelectedString();
+            ARow.BeginEdit();
+            ARow.CostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
+            ARow.AccountCode = cmbDetailAccountCode.GetSelectedString();
             if (txtDetailNarrative.Text.Length == 0)
             {
-                FMainDS.ATransaction[ACurrentDetailIndex].SetNarrativeNull();
+                ARow.SetNarrativeNull();
             }
             else
             {
-                FMainDS.ATransaction[ACurrentDetailIndex].Narrative = txtDetailNarrative.Text;
+                ARow.Narrative = txtDetailNarrative.Text;
             }
             if (txtDetailReference.Text.Length == 0)
             {
-                FMainDS.ATransaction[ACurrentDetailIndex].SetReferenceNull();
+                ARow.SetReferenceNull();
             }
             else
             {
-                FMainDS.ATransaction[ACurrentDetailIndex].Reference = txtDetailReference.Text;
+                ARow.Reference = txtDetailReference.Text;
             }
-            FMainDS.ATransaction[ACurrentDetailIndex].TransactionDate = dtpDetailTransactionDate.Value;
+            ARow.TransactionDate = dtpDetailTransactionDate.Value;
             if (cmbDetailKeyMinistryKey.SelectedIndex == -1)
             {
-                FMainDS.ATransaction[ACurrentDetailIndex].SetKeyMinistryKeyNull();
+                ARow.SetKeyMinistryKeyNull();
             }
             else
             {
-                FMainDS.ATransaction[ACurrentDetailIndex].KeyMinistryKey = cmbDetailKeyMinistryKey.GetSelectedInt64();
+                ARow.KeyMinistryKey = cmbDetailKeyMinistryKey.GetSelectedInt64();
             }
-            GetDetailDataFromControlsManual(ACurrentDetailIndex);
-            FMainDS.ATransaction.Rows[ACurrentDetailIndex].EndEdit();
+            GetDetailDataFromControlsManual(ARow);
+            ARow.EndEdit();
         }
     }
 

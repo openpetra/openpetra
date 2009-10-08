@@ -21,6 +21,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+{#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
 {
@@ -88,28 +89,37 @@ namespace {#NAMESPACE}
     }
 
 {#IFDEF SHOWDATA}
-    private void ShowData()
+    private void ShowData({#MASTERTABLE}Row ARow)
     {
         {#SHOWDATA}
     }
 {#ENDIF SHOWDATA}
 
 {#IFDEF SHOWDETAILS}
-    private void ShowDetails(Int32 ACurrentDetailIndex)
+    private void ShowDetails({#DETAILTABLE}Row ARow)
     {
         {#SHOWDETAILS}
     }
 {#ENDIF SHOWDETAILS}
+{#IFDEF MASTERTABLE}
+
+    private void GetDataFromControls({#MASTERTABLE}Row ARow)
+    {
+        {#SAVEDATA}
+    }
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}
 
     private void GetDataFromControls()
     {
         {#SAVEDATA}
     }
-
+{#ENDIFN MASTERTABLE}
 {#IFDEF SAVEDETAILS}
-    private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
+
+    private void GetDetailsFromControls({#DETAILTABLE}Row ARow)
     {
-        if (ACurrentDetailIndex != -1)
+        if (ARow != null)
         {
             {#SAVEDETAILS}
         }
@@ -165,7 +175,12 @@ namespace {#NAMESPACE}
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
 //TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
+{#IFDEF MASTERTABLE}
+        GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}
         GetDataFromControls();
+{#ENDIFN MASTERTABLE}
 
         // TODO: verification
 

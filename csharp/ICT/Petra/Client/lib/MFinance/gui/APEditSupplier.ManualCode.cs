@@ -104,7 +104,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             row.CurrencyCode = "EUR";
             FMainDS.AApSupplier.Rows.Add(row);
 
-            ShowData();
+            ShowData(row);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         public void EditSupplier(Int64 APartnerKey)
         {
             FMainDS = FUIConnector.GetData(APartnerKey);
-            ShowData();
+            ShowData(FMainDS.AApSupplier[0]);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             }
 
             FMainDS.AApSupplier.Rows[0].BeginEdit();
-            GetDataFromControls();
+            GetDataFromControls(FMainDS.AApSupplier[0]);
 
             // TODO: enforce AP account
             if (FMainDS.AApSupplier[0].IsDefaultApAccountNull())

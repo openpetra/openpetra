@@ -45,6 +45,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -132,100 +133,101 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     }
 
-    private void ShowDetails(Int32 ACurrentDetailIndex)
+    private void ShowDetails(AAccountRow ARow)
     {
-        txtDetailAccountCode.Text = FMainDS.AAccount[ACurrentDetailIndex].AccountCode;
-        if (FMainDS.AAccount[ACurrentDetailIndex].IsAccountTypeNull())
+        txtDetailAccountCode.Text = ARow.AccountCode;
+        txtDetailAccountCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+        if (ARow.IsAccountTypeNull())
         {
             cmbDetailAccountType.SelectedIndex = -1;
         }
         else
         {
-            cmbDetailAccountType.SetSelectedString(FMainDS.AAccount[ACurrentDetailIndex].AccountType);
+            cmbDetailAccountType.SetSelectedString(ARow.AccountType);
         }
-        if (FMainDS.AAccount[ACurrentDetailIndex].IsAccountCodeLongDescNull())
+        if (ARow.IsAccountCodeLongDescNull())
         {
             txtDetailAccountCodeLongDesc.Text = String.Empty;
         }
         else
         {
-            txtDetailAccountCodeLongDesc.Text = FMainDS.AAccount[ACurrentDetailIndex].AccountCodeLongDesc;
+            txtDetailAccountCodeLongDesc.Text = ARow.AccountCodeLongDesc;
         }
-        if (FMainDS.AAccount[ACurrentDetailIndex].IsAccountCodeShortDescNull())
+        if (ARow.IsAccountCodeShortDescNull())
         {
             txtDetailAccountCodeShortDesc.Text = String.Empty;
         }
         else
         {
-            txtDetailAccountCodeShortDesc.Text = FMainDS.AAccount[ACurrentDetailIndex].AccountCodeShortDesc;
+            txtDetailAccountCodeShortDesc.Text = ARow.AccountCodeShortDesc;
         }
-        if (FMainDS.AAccount[ACurrentDetailIndex].IsValidCcComboNull())
+        if (ARow.IsValidCcComboNull())
         {
             cmbDetailValidCcCombo.SelectedIndex = -1;
         }
         else
         {
-            cmbDetailValidCcCombo.SetSelectedString(FMainDS.AAccount[ACurrentDetailIndex].ValidCcCombo);
+            cmbDetailValidCcCombo.SetSelectedString(ARow.ValidCcCombo);
         }
-        if (FMainDS.AAccount[ACurrentDetailIndex].IsAccountActiveFlagNull())
+        if (ARow.IsAccountActiveFlagNull())
         {
             chkDetailAccountActiveFlag.Checked = false;
         }
         else
         {
-            chkDetailAccountActiveFlag.Checked = FMainDS.AAccount[ACurrentDetailIndex].AccountActiveFlag;
+            chkDetailAccountActiveFlag.Checked = ARow.AccountActiveFlag;
         }
     }
 
     private void GetDataFromControls()
     {
-        GetDataFromControlsManual();
+        GetDataFromControlsManual(ARow);
     }
 
-    private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
+    private void GetDetailsFromControls(AAccountRow ARow)
     {
-        if (ACurrentDetailIndex != -1)
+        if (ARow != null)
         {
-            FMainDS.AAccount[ACurrentDetailIndex].AccountCode = txtDetailAccountCode.Text;
+            ARow.AccountCode = txtDetailAccountCode.Text;
             if (cmbDetailAccountType.SelectedIndex == -1)
             {
-                FMainDS.AAccount[ACurrentDetailIndex].SetAccountTypeNull();
+                ARow.SetAccountTypeNull();
             }
             else
             {
-                FMainDS.AAccount[ACurrentDetailIndex].AccountType = cmbDetailAccountType.GetSelectedString();
+                ARow.AccountType = cmbDetailAccountType.GetSelectedString();
             }
             if (txtDetailAccountCodeLongDesc.Text.Length == 0)
             {
-                FMainDS.AAccount[ACurrentDetailIndex].SetAccountCodeLongDescNull();
+                ARow.SetAccountCodeLongDescNull();
             }
             else
             {
-                FMainDS.AAccount[ACurrentDetailIndex].AccountCodeLongDesc = txtDetailAccountCodeLongDesc.Text;
+                ARow.AccountCodeLongDesc = txtDetailAccountCodeLongDesc.Text;
             }
             if (txtDetailAccountCodeShortDesc.Text.Length == 0)
             {
-                FMainDS.AAccount[ACurrentDetailIndex].SetAccountCodeShortDescNull();
+                ARow.SetAccountCodeShortDescNull();
             }
             else
             {
-                FMainDS.AAccount[ACurrentDetailIndex].AccountCodeShortDesc = txtDetailAccountCodeShortDesc.Text;
+                ARow.AccountCodeShortDesc = txtDetailAccountCodeShortDesc.Text;
             }
             if (cmbDetailValidCcCombo.SelectedIndex == -1)
             {
-                FMainDS.AAccount[ACurrentDetailIndex].SetValidCcComboNull();
+                ARow.SetValidCcComboNull();
             }
             else
             {
-                FMainDS.AAccount[ACurrentDetailIndex].ValidCcCombo = cmbDetailValidCcCombo.GetSelectedString();
+                ARow.ValidCcCombo = cmbDetailValidCcCombo.GetSelectedString();
             }
             if (chkDetailAccountActiveFlag.Checked)
             {
-                FMainDS.AAccount[ACurrentDetailIndex].SetAccountActiveFlagNull();
+                ARow.SetAccountActiveFlagNull();
             }
             else
             {
-                FMainDS.AAccount[ACurrentDetailIndex].AccountActiveFlag = chkDetailAccountActiveFlag.Checked;
+                ARow.AccountActiveFlag = chkDetailAccountActiveFlag.Checked;
             }
         }
     }

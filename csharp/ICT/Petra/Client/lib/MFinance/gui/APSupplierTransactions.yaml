@@ -5,6 +5,7 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS
     MasterTable: AApSupplier
     DetailTable: AApDocument
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data]
     FormType: browse
     Template: windowFind
     WindowWidth: 754

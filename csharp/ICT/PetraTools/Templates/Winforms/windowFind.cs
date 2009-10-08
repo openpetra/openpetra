@@ -20,6 +20,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+{#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
 {
@@ -87,7 +88,7 @@ namespace {#NAMESPACE}
     }
 
 {#IFDEF SHOWDATA}
-    private void ShowData()
+    private void ShowData({#MASTERTABLE}Row ARow)
     {
         {#SHOWDATA}
     }

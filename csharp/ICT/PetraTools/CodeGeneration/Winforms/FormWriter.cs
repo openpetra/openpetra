@@ -725,7 +725,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))
             {
-                FTemplate.AddToCodelet("SHOWDETAILS", "BeforeShowDetailsManual(FMainDS.{#DETAILTABLE}[ACurrentDetailIndex]);" + Environment.NewLine);
+                FTemplate.AddToCodelet("SHOWDETAILS", "BeforeShowDetailsManual(ARow);" + Environment.NewLine);
             }
 
             FTemplate.AddToCodelet("INITACTIONSTATE", "FPetraUtilsObject.InitActionState();" + Environment.NewLine);
@@ -753,10 +753,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.SetCodelet("MANAGEDDATASETORTYPE", "true");
             }
 
-            if (FCodeStorage.HasAttribute("DatatableType"))
+//    FTemplate.SetCodelet("MANAGEDDATASETORTYPE", "true");
+
+            XmlNode UsingNamespacesNode = TYml2Xml.GetChild(FCodeStorage.FRootNode, "UsingNamespaces");
+
+            if (UsingNamespacesNode != null)
             {
-                FTemplate.AddToCodelet("DATATABLETYPE", FCodeStorage.GetAttribute("DatatableType"));
-                FTemplate.SetCodelet("MANAGEDDATASETORTYPE", "true");
+                foreach (string s in TYml2Xml.GetElements(FCodeStorage.FRootNode, "UsingNamespaces"))
+                {
+                    FTemplate.AddToCodelet("USINGNAMESPACES", "using " + s + ";" + Environment.NewLine);
+                }
+            }
+            else
+            {
+                FTemplate.AddToCodelet("USINGNAMESPACES", "");
             }
 
             if (FCodeStorage.HasAttribute("MasterTable"))
@@ -857,24 +867,28 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             FinishUpInitialisingControls();
 
-            if (FCodeStorage.ManualFileExistsAndContains("void ShowDataManual"))
+            if (FCodeStorage.ManualFileExistsAndContains("void ShowDataManual()"))
             {
                 FTemplate.AddToCodelet("SHOWDATA", "ShowDataManual();" + Environment.NewLine);
+            }
+            else if (FCodeStorage.ManualFileExistsAndContains("void ShowDataManual("))
+            {
+                FTemplate.AddToCodelet("SHOWDATA", "ShowDataManual(ARow);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("void ShowDetailsManual"))
             {
-                FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "ShowDetailsManual(ACurrentDetailIndex);" + Environment.NewLine);
+                FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "ShowDetailsManual(ARow);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsManual"))
             {
-                FTemplate.AddToCodelet("SAVEDATA", "GetDataFromControlsManual();" + Environment.NewLine);
+                FTemplate.AddToCodelet("SAVEDATA", "GetDataFromControlsManual(ARow);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("GetDetailDataFromControlsManual"))
             {
-                FTemplate.AddToCodelet("SAVEDETAILS", "GetDetailDataFromControlsManual(ACurrentDetailIndex);" + Environment.NewLine);
+                FTemplate.AddToCodelet("SAVEDETAILS", "GetDetailDataFromControlsManual(ARow);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("void ReadControlsManual"))

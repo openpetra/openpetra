@@ -21,6 +21,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+{#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
 {
@@ -73,49 +74,49 @@ namespace {#NAMESPACE}
     }
 
 {#IFDEF SHOWDATA}
-    private void ShowData()
+    private void ShowData({#MASTERTABLE}Row ARow)
     {
         {#SHOWDATA}
     }
 {#ENDIF SHOWDATA}
 
 {#IFDEF SHOWDETAILS}
-    private void ShowDetails(Int32 ACurrentDetailIndex)
+    private void ShowDetails({#DETAILTABLE}Row ARow)
     {
         {#SHOWDETAILS}
     }
 
-    private Int32 FPreviouslySelectedDetailRow = -1;
+    private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
 {#IFDEF SAVEDETAILS}
         // get the details from the previously selected row
-        if (FPreviouslySelectedDetailRow != -1)
+        if (FPreviouslySelectedDetailRow != null)
         {
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
 {#ENDIF SAVEDETAILS}
-        // display the details of the currently selected row; e.Row: first row has number 1
-        ShowDetails(GetSelectedDetailDataTableIndex());
-        FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
+        // display the details of the currently selected row
+        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+        ShowDetails(FPreviouslySelectedDetailRow);
         pnlDetails.Enabled = true;
     }
 {#ENDIF SHOWDETAILS}
     
 {#IFDEF SAVEDATA}
-    private void GetDataFromControls()
+    private void GetDataFromControls({#MASTERTABLE}Row ARow)
     {
         {#SAVEDATA}
 {#IFDEF SAVEDETAILS}
-        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
 {#ENDIF SAVEDETAILS}
     }
 {#ENDIF SAVEDATA}
 
 {#IFDEF SAVEDETAILS}
-    private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
+    private void GetDetailsFromControls({#DETAILTABLE}Row ARow)
     {
-        if (ACurrentDetailIndex != -1)
+        if (ARow != null)
         {
             {#SAVEDETAILS}
         }

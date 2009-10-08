@@ -45,6 +45,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.MFinance.AP.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
@@ -53,7 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
   public partial class TFrmAPEditDocument: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
-    private Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS FMainDS;
+    private AccountsPayableTDS FMainDS;
 
     /// constructor
     public TFrmAPEditDocument(IntPtr AParentFormHandle) : base()
@@ -128,7 +129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       FPetraUtilsObject.SetStatusBarText(txtDetailAmount, Catalog.GetString("The amount of money this detail is worth."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailCostCentreCode, Catalog.GetString("Reference to the cost centre to use for this detail."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailAccountCode, Catalog.GetString("Reference to the account to use for this detail"));
-      FMainDS = new Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS();
+      FMainDS = new AccountsPayableTDS();
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Amount", FMainDS.AApDocumentDetail.ColumnAmount);
       grdDetails.AddTextColumn("Narrative", FMainDS.AApDocumentDetail.ColumnNarrative);
@@ -178,7 +179,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
         FPetraUtilsObject.SetChangedFlag();
 
-        ShowData();
+        ShowData(FMainDS.AApDocument[0]);
 
         return true;
     }
@@ -227,37 +228,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
     }
 
-    /// return the index in the detail datatable of the selected row, not the index in the datagrid
-    private Int32 GetSelectedDetailDataTableIndex()
+    /// return the selected row
+    private AApDocumentDetailRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            // this would return the index in the grid: return grdDetails.DataSource.IndexOf(SelectedGridRow[0]);
-            // we could keep track of the order in the datatable ourselves: return Convert.ToInt32(SelectedGridRow[0][ORIGINALINDEX]);
-            // does not seem to work: return grdDetails.DataSourceRowToIndex2(SelectedGridRow[0]);
-
-            for (int Counter = 0; Counter < FMainDS.AApDocumentDetail.Rows.Count; Counter++)
-            {
-                bool found = true;
-                foreach (DataColumn myColumn in FMainDS.AApDocumentDetail.PrimaryKey)
-                {
-                    if (FMainDS.AApDocumentDetail.Rows[Counter][myColumn].ToString() !=
-                        SelectedGridRow[0][myColumn.Ordinal].ToString())
-                    {
-                        found = false;
-                    }
-
-                }
-                if (found)
-                {
-                    return Counter;
-                }
-            }
+            return (AApDocumentDetailRow)SelectedGridRow[0].Row;
         }
 
-        return -1;
+        return null;
     }
 
     /// automatically generated function from webconnector
@@ -265,72 +246,72 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     {
         FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.LoadAApDocument(ALedgerNumber, AAPNumber));
 
-        ShowData();
+        ShowData(FMainDS.AApDocument[0]);
 
         return true;
     }
 
-    private void ShowData()
+    private void ShowData(AApDocumentRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
         TPartnerClass partnerClass;
         string partnerShortName;
         TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
-            FMainDS.AApDocument[0].PartnerKey,
+            ARow.PartnerKey,
             out partnerShortName,
             out partnerClass);
         txtSupplierName.Text = partnerShortName;
         txtSupplierCurrency.Text = FMainDS.AApSupplier[0].CurrencyCode;
-        if (FMainDS.AApDocument[0].IsDocumentCodeNull())
+        if (ARow.IsDocumentCodeNull())
         {
             txtDocumentCode.Text = String.Empty;
         }
         else
         {
-            txtDocumentCode.Text = FMainDS.AApDocument[0].DocumentCode;
+            txtDocumentCode.Text = ARow.DocumentCode;
         }
-        cmbDocumentType.SelectedIndex = (FMainDS.AApDocument[0].CreditNoteFlag?1:0);
-        if (FMainDS.AApDocument[0].IsReferenceNull())
+        cmbDocumentType.SelectedIndex = (ARow.CreditNoteFlag?1:0);
+        if (ARow.IsReferenceNull())
         {
             txtReference.Text = String.Empty;
         }
         else
         {
-            txtReference.Text = FMainDS.AApDocument[0].Reference;
+            txtReference.Text = ARow.Reference;
         }
-        dtpDateIssued.Value = FMainDS.AApDocument[0].DateIssued;
-        if (FMainDS.AApDocument[0].IsCreditTermsNull())
+        dtpDateIssued.Value = ARow.DateIssued;
+        if (ARow.IsCreditTermsNull())
         {
             nudCreditTerms.Value = 0;
         }
         else
         {
-            nudCreditTerms.Value = FMainDS.AApDocument[0].CreditTerms;
+            nudCreditTerms.Value = ARow.CreditTerms;
         }
-        if (FMainDS.AApDocument[0].IsDiscountDaysNull())
+        if (ARow.IsDiscountDaysNull())
         {
             nudDiscountDays.Value = 0;
         }
         else
         {
-            nudDiscountDays.Value = FMainDS.AApDocument[0].DiscountDays;
+            nudDiscountDays.Value = ARow.DiscountDays;
         }
-        if (FMainDS.AApDocument[0].IsDiscountPercentageNull())
+        if (ARow.IsDiscountPercentageNull())
         {
             txtDiscountPercentage.Text = String.Empty;
         }
         else
         {
-            txtDiscountPercentage.Text = FMainDS.AApDocument[0].DiscountPercentage.ToString();
+            txtDiscountPercentage.Text = ARow.DiscountPercentage.ToString();
         }
-        txtTotalAmount.Text = FMainDS.AApDocument[0].TotalAmount.ToString();
-        if (FMainDS.AApDocument[0].IsExchangeRateToBaseNull())
+        txtTotalAmount.Text = ARow.TotalAmount.ToString();
+        if (ARow.IsExchangeRateToBaseNull())
         {
             txtExchangeRateToBase.Text = String.Empty;
         }
         else
         {
-            txtExchangeRateToBase.Text = FMainDS.AApDocument[0].ExchangeRateToBase.ToString();
+            txtExchangeRateToBase.Text = ARow.ExchangeRateToBase.ToString();
         }
         pnlDetails.Enabled = false;
         if (FMainDS.AApDocumentDetail != null)
@@ -343,159 +324,159 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             {
                 grdDetails.Selection.ResetSelection(false);
                 grdDetails.Selection.SelectRow(1, true);
-                ShowDetails(GetSelectedDetailDataTableIndex());
+                FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
                 pnlDetails.Enabled = true;
             }
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private void ShowDetails(Int32 ACurrentDetailIndex)
+    private void ShowDetails(AApDocumentDetailRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
-        BeforeShowDetailsManual(FMainDS.AApDocumentDetail[ACurrentDetailIndex]);
-        if (FMainDS.AApDocumentDetail[ACurrentDetailIndex].IsNarrativeNull())
+        BeforeShowDetailsManual(ARow);
+        if (ARow.IsNarrativeNull())
         {
             txtDetailNarrative.Text = String.Empty;
         }
         else
         {
-            txtDetailNarrative.Text = FMainDS.AApDocumentDetail[ACurrentDetailIndex].Narrative;
+            txtDetailNarrative.Text = ARow.Narrative;
         }
-        if (FMainDS.AApDocumentDetail[ACurrentDetailIndex].IsItemRefNull())
+        if (ARow.IsItemRefNull())
         {
             txtDetailItemRef.Text = String.Empty;
         }
         else
         {
-            txtDetailItemRef.Text = FMainDS.AApDocumentDetail[ACurrentDetailIndex].ItemRef;
+            txtDetailItemRef.Text = ARow.ItemRef;
         }
-        if (FMainDS.AApDocumentDetail[ACurrentDetailIndex].IsAmountNull())
+        if (ARow.IsAmountNull())
         {
             txtDetailAmount.Text = String.Empty;
         }
         else
         {
-            txtDetailAmount.Text = FMainDS.AApDocumentDetail[ACurrentDetailIndex].Amount.ToString();
+            txtDetailAmount.Text = ARow.Amount.ToString();
         }
-        if (FMainDS.AApDocumentDetail[ACurrentDetailIndex].IsCostCentreCodeNull())
+        if (ARow.IsCostCentreCodeNull())
         {
             cmbDetailCostCentreCode.SelectedIndex = -1;
         }
         else
         {
-            cmbDetailCostCentreCode.SetSelectedString(FMainDS.AApDocumentDetail[ACurrentDetailIndex].CostCentreCode);
+            cmbDetailCostCentreCode.SetSelectedString(ARow.CostCentreCode);
         }
-        if (FMainDS.AApDocumentDetail[ACurrentDetailIndex].IsAccountCodeNull())
+        if (ARow.IsAccountCodeNull())
         {
             cmbDetailAccountCode.SelectedIndex = -1;
         }
         else
         {
-            cmbDetailAccountCode.SetSelectedString(FMainDS.AApDocumentDetail[ACurrentDetailIndex].AccountCode);
+            cmbDetailAccountCode.SetSelectedString(ARow.AccountCode);
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private Int32 FPreviouslySelectedDetailRow = -1;
+    private AApDocumentDetailRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
         // get the details from the previously selected row
-        if (FPreviouslySelectedDetailRow != -1)
+        if (FPreviouslySelectedDetailRow != null)
         {
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
-        // display the details of the currently selected row; e.Row: first row has number 1
-        ShowDetails(GetSelectedDetailDataTableIndex());
-        FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
+        // display the details of the currently selected row
+        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+        ShowDetails(FPreviouslySelectedDetailRow);
         pnlDetails.Enabled = true;
     }
 
-    private void GetDataFromControls()
+    private void GetDataFromControls(AApDocumentRow ARow)
     {
         if (txtDocumentCode.Text.Length == 0)
         {
-            FMainDS.AApDocument[0].SetDocumentCodeNull();
+            ARow.SetDocumentCodeNull();
         }
         else
         {
-            FMainDS.AApDocument[0].DocumentCode = txtDocumentCode.Text;
+            ARow.DocumentCode = txtDocumentCode.Text;
         }
-        FMainDS.AApDocument[0].CreditNoteFlag = cmbDocumentType.SelectedIndex == 1;
+        ARow.CreditNoteFlag = cmbDocumentType.SelectedIndex == 1;
         if (txtReference.Text.Length == 0)
         {
-            FMainDS.AApDocument[0].SetReferenceNull();
+            ARow.SetReferenceNull();
         }
         else
         {
-            FMainDS.AApDocument[0].Reference = txtReference.Text;
+            ARow.Reference = txtReference.Text;
         }
-        FMainDS.AApDocument[0].DateIssued = dtpDateIssued.Value;
-        FMainDS.AApDocument[0].CreditTerms = (Int32)nudCreditTerms.Value;
-        FMainDS.AApDocument[0].DiscountDays = (Int32)nudDiscountDays.Value;
+        ARow.DateIssued = dtpDateIssued.Value;
+        ARow.CreditTerms = (Int32)nudCreditTerms.Value;
+        ARow.DiscountDays = (Int32)nudDiscountDays.Value;
         if (txtDiscountPercentage.Text.Length == 0)
         {
-            FMainDS.AApDocument[0].SetDiscountPercentageNull();
+            ARow.SetDiscountPercentageNull();
         }
         else
         {
-            FMainDS.AApDocument[0].DiscountPercentage = Convert.ToDouble(txtDiscountPercentage.Text);
+            ARow.DiscountPercentage = Convert.ToDouble(txtDiscountPercentage.Text);
         }
-        FMainDS.AApDocument[0].TotalAmount = Convert.ToDouble(txtTotalAmount.Text);
+        ARow.TotalAmount = Convert.ToDouble(txtTotalAmount.Text);
         if (txtExchangeRateToBase.Text.Length == 0)
         {
-            FMainDS.AApDocument[0].SetExchangeRateToBaseNull();
+            ARow.SetExchangeRateToBaseNull();
         }
         else
         {
-            FMainDS.AApDocument[0].ExchangeRateToBase = Convert.ToDouble(txtExchangeRateToBase.Text);
+            ARow.ExchangeRateToBase = Convert.ToDouble(txtExchangeRateToBase.Text);
         }
-        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
-    private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
+    private void GetDetailsFromControls(AApDocumentDetailRow ARow)
     {
-        if (ACurrentDetailIndex != -1)
+        if (ARow != null)
         {
             if (txtDetailNarrative.Text.Length == 0)
             {
-                FMainDS.AApDocumentDetail[ACurrentDetailIndex].SetNarrativeNull();
+                ARow.SetNarrativeNull();
             }
             else
             {
-                FMainDS.AApDocumentDetail[ACurrentDetailIndex].Narrative = txtDetailNarrative.Text;
+                ARow.Narrative = txtDetailNarrative.Text;
             }
             if (txtDetailItemRef.Text.Length == 0)
             {
-                FMainDS.AApDocumentDetail[ACurrentDetailIndex].SetItemRefNull();
+                ARow.SetItemRefNull();
             }
             else
             {
-                FMainDS.AApDocumentDetail[ACurrentDetailIndex].ItemRef = txtDetailItemRef.Text;
+                ARow.ItemRef = txtDetailItemRef.Text;
             }
             if (txtDetailAmount.Text.Length == 0)
             {
-                FMainDS.AApDocumentDetail[ACurrentDetailIndex].SetAmountNull();
+                ARow.SetAmountNull();
             }
             else
             {
-                FMainDS.AApDocumentDetail[ACurrentDetailIndex].Amount = Convert.ToDouble(txtDetailAmount.Text);
+                ARow.Amount = Convert.ToDouble(txtDetailAmount.Text);
             }
             if (cmbDetailCostCentreCode.SelectedIndex == -1)
             {
-                FMainDS.AApDocumentDetail[ACurrentDetailIndex].SetCostCentreCodeNull();
+                ARow.SetCostCentreCodeNull();
             }
             else
             {
-                FMainDS.AApDocumentDetail[ACurrentDetailIndex].CostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
+                ARow.CostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
             }
             if (cmbDetailAccountCode.SelectedIndex == -1)
             {
-                FMainDS.AApDocumentDetail[ACurrentDetailIndex].SetAccountCodeNull();
+                ARow.SetAccountCodeNull();
             }
             else
             {
-                FMainDS.AApDocumentDetail[ACurrentDetailIndex].AccountCode = cmbDetailAccountCode.GetSelectedString();
+                ARow.AccountCode = cmbDetailAccountCode.GetSelectedString();
             }
         }
     }
@@ -547,7 +528,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
 //TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
-        GetDataFromControls();
+        GetDataFromControls(FMainDS.AApDocument[0]);
 
         // TODO: verification
 
@@ -569,7 +550,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
 
-                Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS SubmitDS = FMainDS.GetChangesTyped(true);
+                AccountsPayableTDS SubmitDS = FMainDS.GetChangesTyped(true);
 
                 // Submit changes to the PETRAServer
                 try

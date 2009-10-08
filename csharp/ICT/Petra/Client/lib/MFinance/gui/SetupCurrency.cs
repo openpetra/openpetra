@@ -45,6 +45,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -56,7 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
     private class FMainDS
     {
-        public static Ict.Petra.Shared.MCommon.Data.ACurrencyTable ACurrency;
+        public static ACurrencyTable ACurrency;
     }
 
     /// constructor
@@ -103,9 +104,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       FPetraUtilsObject.SetStatusBarText(cmbDetailCountryCode, Catalog.GetString("Enter a valid country code."));
       cmbDetailCountryCode.InitialiseUserControl();
       FPetraUtilsObject.SetStatusBarText(txtDetailDisplayFormat, Catalog.GetString("The format in which to display and accept input on a currency."));
-      FMainDS.ACurrency = new Ict.Petra.Shared.MCommon.Data.ACurrencyTable();
+      FMainDS.ACurrency = new ACurrencyTable();
       Ict.Common.Data.TTypedDataTable TypedTable;
-      TRemote.MCommon.DataReader.GetData(Ict.Petra.Shared.MCommon.Data.ACurrencyTable.GetTableDBName(), null, out TypedTable);
+      TRemote.MCommon.DataReader.GetData(ACurrencyTable.GetTableDBName(), null, out TypedTable);
       FMainDS.ACurrency.Merge(TypedTable);
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Currency Code", FMainDS.ACurrency.ColumnCurrencyCode);
@@ -153,7 +154,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     /// we create the table locally, no dataset
     public bool CreateNewACurrency()
     {
-        Ict.Petra.Shared.MCommon.Data.ACurrencyRow NewRow = FMainDS.ACurrency.NewRowTyped();
+        ACurrencyRow NewRow = FMainDS.ACurrency.NewRowTyped();
         FMainDS.ACurrency.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
@@ -193,71 +194,52 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
     }
 
-    /// return the index in the detail datatable of the selected row, not the index in the datagrid
-    private Int32 GetSelectedDetailDataTableIndex()
+    /// return the selected row
+    private ACurrencyRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            // this would return the index in the grid: return grdDetails.DataSource.IndexOf(SelectedGridRow[0]);
-            // we could keep track of the order in the datatable ourselves: return Convert.ToInt32(SelectedGridRow[0][ORIGINALINDEX]);
-            // does not seem to work: return grdDetails.DataSourceRowToIndex2(SelectedGridRow[0]);
-
-            for (int Counter = 0; Counter < FMainDS.ACurrency.Rows.Count; Counter++)
-            {
-                bool found = true;
-                foreach (DataColumn myColumn in FMainDS.ACurrency.PrimaryKey)
-                {
-                    if (FMainDS.ACurrency.Rows[Counter][myColumn].ToString() !=
-                        SelectedGridRow[0][myColumn.Ordinal].ToString())
-                    {
-                        found = false;
-                    }
-
-                }
-                if (found)
-                {
-                    return Counter;
-                }
-            }
+            return (ACurrencyRow)SelectedGridRow[0].Row;
         }
 
-        return -1;
+        return null;
     }
 
-    private void ShowDetails(Int32 ACurrentDetailIndex)
+    private void ShowDetails(ACurrencyRow ARow)
     {
-        txtDetailCurrencyCode.Text = FMainDS.ACurrency[ACurrentDetailIndex].CurrencyCode;
-        txtDetailCurrencyName.Text = FMainDS.ACurrency[ACurrentDetailIndex].CurrencyName;
-        txtDetailCurrencySymbol.Text = FMainDS.ACurrency[ACurrentDetailIndex].CurrencySymbol;
-        cmbDetailCountryCode.SetSelectedString(FMainDS.ACurrency[ACurrentDetailIndex].CountryCode);
-        txtDetailDisplayFormat.Text = FMainDS.ACurrency[ACurrentDetailIndex].DisplayFormat;
+        txtDetailCurrencyCode.Text = ARow.CurrencyCode;
+        txtDetailCurrencyCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+        txtDetailCurrencyName.Text = ARow.CurrencyName;
+        txtDetailCurrencySymbol.Text = ARow.CurrencySymbol;
+        cmbDetailCountryCode.SetSelectedString(ARow.CountryCode);
+        txtDetailDisplayFormat.Text = ARow.DisplayFormat;
     }
 
-    private Int32 FPreviouslySelectedDetailRow = -1;
+    private ACurrencyRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
         // get the details from the previously selected row
-        if (FPreviouslySelectedDetailRow != -1)
+        if (FPreviouslySelectedDetailRow != null)
         {
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
-        // display the details of the currently selected row; e.Row: first row has number 1
-        ShowDetails(GetSelectedDetailDataTableIndex());
-        FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
+        // display the details of the currently selected row
+        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+        ShowDetails(FPreviouslySelectedDetailRow);
         pnlDetails.Enabled = true;
     }
 
-    private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
+    private void GetDetailsFromControls(ACurrencyRow ARow)
     {
-        if (ACurrentDetailIndex != -1)
+        if (ARow != null)
         {
-            FMainDS.ACurrency[ACurrentDetailIndex].CurrencyCode = txtDetailCurrencyCode.Text;
-            FMainDS.ACurrency[ACurrentDetailIndex].CurrencyName = txtDetailCurrencyName.Text;
-            FMainDS.ACurrency[ACurrentDetailIndex].CurrencySymbol = txtDetailCurrencySymbol.Text;
-            FMainDS.ACurrency[ACurrentDetailIndex].CountryCode = cmbDetailCountryCode.GetSelectedString();
-            FMainDS.ACurrency[ACurrentDetailIndex].DisplayFormat = txtDetailDisplayFormat.Text;
+            ARow.CurrencyCode = txtDetailCurrencyCode.Text;
+            ARow.CurrencyName = txtDetailCurrencyName.Text;
+            ARow.CurrencySymbol = txtDetailCurrencySymbol.Text;
+            ARow.CountryCode = cmbDetailCountryCode.GetSelectedString();
+            ARow.DisplayFormat = txtDetailDisplayFormat.Text;
         }
     }
 
@@ -308,7 +290,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
 //TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
-        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
 
         // TODO: verification
 
@@ -332,7 +314,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TRemote.MCommon.DataReader.SaveData(Ict.Petra.Shared.MCommon.Data.ACurrencyTable.GetTableDBName(), ref SubmitDT, out VerificationResult);
+                    SubmissionResult = TRemote.MCommon.DataReader.SaveData(ACurrencyTable.GetTableDBName(), ref SubmitDT, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {

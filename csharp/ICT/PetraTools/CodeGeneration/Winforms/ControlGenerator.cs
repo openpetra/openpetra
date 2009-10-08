@@ -375,7 +375,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
             writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 5, 3, 0)");
         }
-        
+
         protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
         {
             if (AFieldOrNull == null)
@@ -1167,24 +1167,25 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("spt", typeof(SplitContainer))
         {
         }
-        
+
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
-        	writer.AddContainer(ctrl.controlName + ".Panel1");
-        	writer.AddContainer(ctrl.controlName + ".Panel2");        	
-            
+            writer.AddContainer(ctrl.controlName + ".Panel1");
+            writer.AddContainer(ctrl.controlName + ".Panel2");
+
             base.SetControlProperties(writer, ctrl);
-            
+
             if (ctrl.HasAttribute("SplitterDistance"))
             {
-            	writer.SetControlProperty(ctrl, "SplitterDistance");
+                writer.SetControlProperty(ctrl, "SplitterDistance");
             }
 
             if (ctrl.HasAttribute("SplitterOrientation"))
             {
-            	writer.SetControlProperty(ctrl.controlName, "Orientation", "System.Windows.Forms.Orientation." + StringHelper.UpperCamelCase(ctrl.GetAttribute("SplitterOrientation")));
+                writer.SetControlProperty(ctrl.controlName, "Orientation", "System.Windows.Forms.Orientation." +
+                    StringHelper.UpperCamelCase(ctrl.GetAttribute("SplitterOrientation")));
             }
-            
+
             // add one control for panel1, and one other control for panel2
             // at the moment, only one control is supported per panel of the splitcontainer
             writer.CallControlFunction(ctrl.controlName,
@@ -1193,7 +1194,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.CallControlFunction(ctrl.controlName,
                 "Panel2.Controls.Add(this." +
                 ctrl.GetAttribute("Panel2") + ")");
-            
+
             TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(ctrl.GetAttribute("Panel1"));
             IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl.xmlNode);
             ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
@@ -1203,10 +1204,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             ChildGenerator = writer.FindControlGenerator(ChildCtrl.xmlNode);
             ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
             ChildGenerator.SetControlProperties(writer, ChildCtrl);
-            
         }
     }
-    
+
     public class MenuItemGenerator : TControlGenerator
     {
         public MenuItemGenerator(string APrefix, System.Type AType)

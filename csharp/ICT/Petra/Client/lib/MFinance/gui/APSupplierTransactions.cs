@@ -44,6 +44,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.MFinance.AP.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
@@ -150,17 +151,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
     }
 
-    private void ShowData()
+    private void ShowData(AApSupplierRow ARow)
     {
         TPartnerClass partnerClass;
         string partnerShortName;
         TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
-            FMainDS.AApSupplier[0].PartnerKey,
+            ARow.PartnerKey,
             out partnerShortName,
             out partnerClass);
         txtCurrentSupplierName.Text = partnerShortName;
-        txtCurrentSupplierCurrency.Text = FMainDS.AApSupplier[0].CurrencyCode;
-        ShowDataManual();
+        txtCurrentSupplierCurrency.Text = ARow.CurrencyCode;
+        ShowDataManual(ARow);
     }
 
 #region Implement interface functions

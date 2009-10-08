@@ -21,6 +21,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+{#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
 {
@@ -32,7 +33,7 @@ namespace {#NAMESPACE}
 
     private class FMainDS
     {
-        public static {#DATATABLETYPE}Table {#DETAILTABLE};
+        public static {#DETAILTABLE}Table {#DETAILTABLE};
     }
 
     /// constructor
@@ -50,9 +51,9 @@ namespace {#NAMESPACE}
 
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
       {#INITUSERCONTROLS}
-      FMainDS.{#DETAILTABLE} = new {#DATATABLETYPE}Table();
+      FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();
       Ict.Common.Data.TTypedDataTable TypedTable;
-      TRemote.MCommon.DataReader.GetData({#DATATABLETYPE}Table.GetTableDBName(), null, out TypedTable);
+      TRemote.MCommon.DataReader.GetData({#DETAILTABLE}Table.GetTableDBName(), null, out TypedTable);
       FMainDS.{#DETAILTABLE}.Merge(TypedTable);
       {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
@@ -77,7 +78,7 @@ namespace {#NAMESPACE}
     /// we create the table locally, no dataset
     public bool CreateNew{#DETAILTABLE}()
     {
-        {#DATATABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
+        {#DETAILTABLE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
         FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
         
         FPetraUtilsObject.SetChangedFlag();
@@ -117,73 +118,53 @@ namespace {#NAMESPACE}
         FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
     }
 
-    /// return the index in the detail datatable of the selected row, not the index in the datagrid
-    private Int32 GetSelectedDetailDataTableIndex()
+    /// return the selected row
+    private {#DETAILTABLE}Row GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            // this would return the index in the grid: return grdDetails.DataSource.IndexOf(SelectedGridRow[0]);
-            // we could keep track of the order in the datatable ourselves: return Convert.ToInt32(SelectedGridRow[0][ORIGINALINDEX]);
-            // does not seem to work: return grdDetails.DataSourceRowToIndex2(SelectedGridRow[0]);
-
-            for (int Counter = 0; Counter < FMainDS.{#DETAILTABLE}.Rows.Count; Counter++)
-            {
-                bool found = true;
-                foreach (DataColumn myColumn in FMainDS.{#DETAILTABLE}.PrimaryKey)
-                {
-                    if (FMainDS.{#DETAILTABLE}.Rows[Counter][myColumn].ToString() != 
-                        SelectedGridRow[0][myColumn.Ordinal].ToString())
-                    {
-                        found = false;
-                    }
-                    
-                }
-                if (found)
-                {
-                    return Counter;
-                }
-            }
+            return ({#DETAILTABLE}Row)SelectedGridRow[0].Row;
         }
 
-        return -1;
+        return null;
     }
 
 {#IFDEF SHOWDATA}
-    private void ShowData()
+    private void ShowData({#MASTERTABLE}Row ARow)
     {
         {#SHOWDATA}
     }
 {#ENDIF SHOWDATA}
 
 {#IFDEF SHOWDETAILS}
-    private void ShowDetails(Int32 ACurrentDetailIndex)
+    private void ShowDetails({#DETAILTABLE}Row ARow)
     {
         {#SHOWDETAILS}
     }
 
-    private Int32 FPreviouslySelectedDetailRow = -1;
+    private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
 {#IFDEF SAVEDETAILS}
         // get the details from the previously selected row
-        if (FPreviouslySelectedDetailRow != -1)
+        if (FPreviouslySelectedDetailRow != null)
         {
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
 {#ENDIF SAVEDETAILS}
-        // display the details of the currently selected row; e.Row: first row has number 1
-        ShowDetails(GetSelectedDetailDataTableIndex());
-        FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
+        // display the details of the currently selected row
+        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+        ShowDetails(FPreviouslySelectedDetailRow);
         pnlDetails.Enabled = true;
     }
 {#ENDIF SHOWDETAILS}
     
 {#IFDEF SAVEDETAILS}
-    private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
+    private void GetDetailsFromControls({#DETAILTABLE}Row ARow)
     {
-        if (ACurrentDetailIndex != -1)
+        if (ARow != null)
         {
             {#SAVEDETAILS}
         }
@@ -239,7 +220,7 @@ namespace {#NAMESPACE}
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
 //TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
-        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
 
         // TODO: verification
 
@@ -263,7 +244,7 @@ namespace {#NAMESPACE}
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TRemote.MCommon.DataReader.SaveData({#DATATABLETYPE}Table.GetTableDBName(), ref SubmitDT, out VerificationResult);
+                    SubmissionResult = TRemote.MCommon.DataReader.SaveData({#DETAILTABLE}Table.GetTableDBName(), ref SubmitDT, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {

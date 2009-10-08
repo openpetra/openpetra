@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             GetDataFromControls();
 
-            FCurrentDetailIndex = -1;
+            FPreviouslySelectedDetailRow = null;
 
             DataView view = new DataView(FMainDS.ATransaction);
 
@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// make sure the correct transaction number is assigned and the journal.lastTransactionNumber is updated
         /// </summary>
         /// <param name="ANewRow"></param>
-        private void NewRowManual(ref GLBatchTDSATransactionRow ANewRow)
+        private void NewRowManual(ref ATransactionRow ANewRow)
         {
             AJournalRow row = GetJournalRow();
 
@@ -130,45 +130,41 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void ShowDetailsManual(Int32 ACurrentDetailIndex)
+        private void ShowDetailsManual(ATransactionRow ARow)
         {
-            ATransactionRow row = FMainDS.ATransaction[ACurrentDetailIndex];
-
-            if (row.DebitCreditIndicator)
+            if (ARow.DebitCreditIndicator)
             {
-                txtDebitAmountBase.Text = row.AmountInBaseCurrency.ToString();
+                txtDebitAmountBase.Text = ARow.AmountInBaseCurrency.ToString();
                 txtCreditAmountBase.Text = "0";
-                txtDebitAmount.Text = row.TransactionAmount.ToString();
+                txtDebitAmount.Text = ARow.TransactionAmount.ToString();
                 txtCreditAmount.Text = "0";
             }
             else
             {
                 txtDebitAmountBase.Text = "0";
-                txtCreditAmountBase.Text = row.AmountInBaseCurrency.ToString();
+                txtCreditAmountBase.Text = ARow.AmountInBaseCurrency.ToString();
                 txtDebitAmount.Text = "0";
-                txtCreditAmount.Text = row.TransactionAmount.ToString();
+                txtCreditAmount.Text = ARow.TransactionAmount.ToString();
             }
         }
 
-        private void GetDetailDataFromControlsManual(Int32 ACurrentDetailIndex)
+        private void GetDetailDataFromControlsManual(ATransactionRow ARow)
         {
-            ATransactionRow row = FMainDS.ATransaction[ACurrentDetailIndex];
+            ARow.DebitCreditIndicator = (txtDebitAmount.Text.Length > 0 && Convert.ToDouble(txtDebitAmount.Text) > 0);
 
-            row.DebitCreditIndicator = (txtDebitAmount.Text.Length > 0 && Convert.ToDouble(txtDebitAmount.Text) > 0);
-
-            if (row.DebitCreditIndicator)
+            if (ARow.DebitCreditIndicator)
             {
-                row.TransactionAmount = Convert.ToDouble(txtDebitAmount.Text);
+                ARow.TransactionAmount = Convert.ToDouble(txtDebitAmount.Text);
             }
             else
             {
-                row.TransactionAmount = Convert.ToDouble(txtCreditAmount.Text);
+                ARow.TransactionAmount = Convert.ToDouble(txtCreditAmount.Text);
             }
 
             // TODO: use the current exchange rate (corporate or daily?); use cache
             // TODO: or create a daily exchange rate, download from the web?
-            row.AmountInBaseCurrency = 1 * row.TransactionAmount;
-            row.AmountInIntlCurrency = 1.5 * row.TransactionAmount;
+            ARow.AmountInBaseCurrency = 1 * ARow.TransactionAmount;
+            ARow.AmountInIntlCurrency = 1.5 * ARow.TransactionAmount;
         }
 
         // TODO: verification: currency: must be double; check decimal point; only positive

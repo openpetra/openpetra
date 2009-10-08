@@ -3,7 +3,7 @@ RootNode:
     FormTitle: Currency List
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DetailTable: ACurrency
-    DatatableType: Ict.Petra.Shared.MCommon.Data.ACurrency
+    UsingNamespaces: [Ict.Petra.Shared.MCommon.Data]
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 660

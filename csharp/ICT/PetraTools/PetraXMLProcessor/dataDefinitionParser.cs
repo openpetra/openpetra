@@ -299,6 +299,14 @@ namespace Ict.Tools.DBXML
                 cur = GetNextEntity(cur);
             }
 
+            if (table.HasPrimaryKey())
+            {
+                foreach (string primKeyField in table.GetPrimaryKey().strThisFields)
+                {
+                    table.GetField(primKeyField).bPartOfPrimKey = true;
+                }
+            }
+
             return table;
         }
 

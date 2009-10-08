@@ -477,7 +477,7 @@ namespace Ict.Common.DB
         {
             // TODO problem: sequence should be committed? separate transaction?
             // see also http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=44
-			// or use locking? see also http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=50
+            // or use locking? see also http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=50
             return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT NEXTVAL('" + ASequenceName + "')", ATransaction, false));
         }
 

@@ -4,6 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
     DetailTable: AAccount
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
     FormType: edit
     Template: windowTDS
     WindowWidth: 660

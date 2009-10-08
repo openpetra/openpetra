@@ -44,6 +44,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -54,8 +55,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     private TFrmPetraEditUtils FPetraUtilsObject;
 
     private Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS FMainDS;
-
-	private Int32 FCurrentDetailIndex = -1;
 
     /// constructor
     public TUC_GLJournals() : base()
@@ -132,7 +131,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public bool CreateNewAJournal()
     {
         // we create the table locally, no dataset
-        Ict.Petra.Shared.MFinance.Account.Data.AJournalRow NewRow = FMainDS.AJournal.NewRowTyped(true);
+        AJournalRow NewRow = FMainDS.AJournal.NewRowTyped(true);
         NewRowManual(ref NewRow);
         FMainDS.AJournal.Rows.Add(NewRow);
 
@@ -173,37 +172,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
     }
 
-    /// return the index in the detail datatable of the selected row, not the index in the datagrid
-    private Int32 GetSelectedDetailDataTableIndex()
+    /// return the selected row
+    private AJournalRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            // this would return the index in the grid: return grdDetails.DataSource.IndexOf(SelectedGridRow[0]);
-            // we could keep track of the order in the datatable ourselves: return Convert.ToInt32(SelectedGridRow[0][ORIGINALINDEX]);
-            // does not seem to work: return grdDetails.DataSourceRowToIndex2(SelectedGridRow[0]);
-
-            for (int Counter = 0; Counter < FMainDS.AJournal.Rows.Count; Counter++)
-            {
-                bool found = true;
-                foreach (DataColumn myColumn in FMainDS.AJournal.PrimaryKey)
-                {
-                    if (FMainDS.AJournal.Rows[Counter][myColumn].ToString() !=
-                        SelectedGridRow[0][myColumn.Ordinal].ToString())
-                    {
-                        found = false;
-                    }
-
-                }
-                if (found)
-                {
-                    return Counter;
-                }
-            }
+            return (AJournalRow)SelectedGridRow[0].Row;
         }
 
-        return -1;
+        return null;
     }
 
     private void ShowData()
@@ -223,78 +202,80 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 grdDetails.Selection.ResetSelection(false);
                 grdDetails.Selection.SelectRow(1, true);
-                ShowDetails(GetSelectedDetailDataTableIndex());
+                FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
                 pnlDetails.Enabled = true;
             }
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private void ShowDetails(Int32 ACurrentDetailIndex)
+    private void ShowDetails(AJournalRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
-        if (ACurrentDetailIndex == -1)
+        if (ARow == null)
         {
             pnlDetails.Enabled = false;
-            ShowDetailsManual(ACurrentDetailIndex);
+            ShowDetailsManual(ARow);
         }
         else
         {
             pnlDetails.Enabled = true;
-            FCurrentDetailIndex = ACurrentDetailIndex;
-            BeforeShowDetailsManual(FMainDS.AJournal[ACurrentDetailIndex]);
-            txtDetailJournalDescription.Text = FMainDS.AJournal[ACurrentDetailIndex].JournalDescription;
-            cmbDetailSubSystemCode.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].SubSystemCode);
-            if (FMainDS.AJournal[ACurrentDetailIndex].IsTransactionTypeCodeNull())
+            FPreviouslySelectedDetailRow = ARow;
+            BeforeShowDetailsManual(ARow);
+            txtDetailJournalDescription.Text = ARow.JournalDescription;
+            cmbDetailSubSystemCode.SetSelectedString(ARow.SubSystemCode);
+            if (ARow.IsTransactionTypeCodeNull())
             {
                 cmbDetailTransactionTypeCode.SelectedIndex = -1;
             }
             else
             {
-                cmbDetailTransactionTypeCode.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].TransactionTypeCode);
+                cmbDetailTransactionTypeCode.SetSelectedString(ARow.TransactionTypeCode);
             }
-            cmbDetailTransactionCurrency.SetSelectedString(FMainDS.AJournal[ACurrentDetailIndex].TransactionCurrency);
-            dtpDetailDateEffective.Value = FMainDS.AJournal[ACurrentDetailIndex].DateEffective;
-            txtDetailExchangeRateToBase.Text = FMainDS.AJournal[ACurrentDetailIndex].ExchangeRateToBase.ToString();
-            ShowDetailsManual(ACurrentDetailIndex);
+            cmbDetailTransactionCurrency.SetSelectedString(ARow.TransactionCurrency);
+            dtpDetailDateEffective.Value = ARow.DateEffective;
+            txtDetailExchangeRateToBase.Text = ARow.ExchangeRateToBase.ToString();
+            ShowDetailsManual(ARow);
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
+    private AJournalRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
         // get the details from the previously selected row
-        if (FCurrentDetailIndex != -1)
+        if (FPreviouslySelectedDetailRow != null)
         {
-            GetDetailsFromControls(FCurrentDetailIndex);
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
         // display the details of the currently selected row
-        ShowDetails(GetSelectedDetailDataTableIndex());
+        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+        ShowDetails(FPreviouslySelectedDetailRow);
     }
 
     /// get the data from the controls and store in the currently selected detail row
     public void GetDataFromControls()
     {
-        GetDetailsFromControls(FCurrentDetailIndex);
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
-    private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
+    private void GetDetailsFromControls(AJournalRow ARow)
     {
-        if (ACurrentDetailIndex != -1)
+        if (ARow != null)
         {
-            FMainDS.AJournal.Rows[ACurrentDetailIndex].BeginEdit();
-            FMainDS.AJournal[ACurrentDetailIndex].JournalDescription = txtDetailJournalDescription.Text;
+            ARow.BeginEdit();
+            ARow.JournalDescription = txtDetailJournalDescription.Text;
             if (cmbDetailTransactionTypeCode.SelectedIndex == -1)
             {
-                FMainDS.AJournal[ACurrentDetailIndex].SetTransactionTypeCodeNull();
+                ARow.SetTransactionTypeCodeNull();
             }
             else
             {
-                FMainDS.AJournal[ACurrentDetailIndex].TransactionTypeCode = cmbDetailTransactionTypeCode.GetSelectedString();
+                ARow.TransactionTypeCode = cmbDetailTransactionTypeCode.GetSelectedString();
             }
-            FMainDS.AJournal[ACurrentDetailIndex].TransactionCurrency = cmbDetailTransactionCurrency.GetSelectedString();
-            FMainDS.AJournal[ACurrentDetailIndex].ExchangeRateToBase = Convert.ToDouble(txtDetailExchangeRateToBase.Text);
-            FMainDS.AJournal.Rows[ACurrentDetailIndex].EndEdit();
+            ARow.TransactionCurrency = cmbDetailTransactionCurrency.GetSelectedString();
+            ARow.ExchangeRateToBase = Convert.ToDouble(txtDetailExchangeRateToBase.Text);
+            ARow.EndEdit();
         }
     }
 

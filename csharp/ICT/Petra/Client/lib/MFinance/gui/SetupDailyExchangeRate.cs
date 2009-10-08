@@ -45,6 +45,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -56,7 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
     private class FMainDS
     {
-        public static Ict.Petra.Shared.MFinance.Account.Data.ADailyExchangeRateTable ADailyExchangeRate;
+        public static ADailyExchangeRateTable ADailyExchangeRate;
     }
 
     /// constructor
@@ -104,9 +105,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       FPetraUtilsObject.SetStatusBarText(dtpDetailDateEffectiveFrom, Catalog.GetString("Enter the date which the rate becomes effective"));
       FPetraUtilsObject.SetStatusBarText(txtDetailTimeEffectiveFrom, Catalog.GetString("The date and time"));
       FPetraUtilsObject.SetStatusBarText(txtDetailRateOfExchange, Catalog.GetString("Enter the rate of exchange"));
-      FMainDS.ADailyExchangeRate = new Ict.Petra.Shared.MFinance.Account.Data.ADailyExchangeRateTable();
+      FMainDS.ADailyExchangeRate = new ADailyExchangeRateTable();
       Ict.Common.Data.TTypedDataTable TypedTable;
-      TRemote.MCommon.DataReader.GetData(Ict.Petra.Shared.MFinance.Account.Data.ADailyExchangeRateTable.GetTableDBName(), null, out TypedTable);
+      TRemote.MCommon.DataReader.GetData(ADailyExchangeRateTable.GetTableDBName(), null, out TypedTable);
       FMainDS.ADailyExchangeRate.Merge(TypedTable);
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("From Currency Code", FMainDS.ADailyExchangeRate.ColumnFromCurrencyCode);
@@ -154,7 +155,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     /// we create the table locally, no dataset
     public bool CreateNewADailyExchangeRate()
     {
-        Ict.Petra.Shared.MFinance.Account.Data.ADailyExchangeRateRow NewRow = FMainDS.ADailyExchangeRate.NewRowTyped();
+        ADailyExchangeRateRow NewRow = FMainDS.ADailyExchangeRate.NewRowTyped();
         FMainDS.ADailyExchangeRate.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
@@ -194,71 +195,55 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
     }
 
-    /// return the index in the detail datatable of the selected row, not the index in the datagrid
-    private Int32 GetSelectedDetailDataTableIndex()
+    /// return the selected row
+    private ADailyExchangeRateRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            // this would return the index in the grid: return grdDetails.DataSource.IndexOf(SelectedGridRow[0]);
-            // we could keep track of the order in the datatable ourselves: return Convert.ToInt32(SelectedGridRow[0][ORIGINALINDEX]);
-            // does not seem to work: return grdDetails.DataSourceRowToIndex2(SelectedGridRow[0]);
-
-            for (int Counter = 0; Counter < FMainDS.ADailyExchangeRate.Rows.Count; Counter++)
-            {
-                bool found = true;
-                foreach (DataColumn myColumn in FMainDS.ADailyExchangeRate.PrimaryKey)
-                {
-                    if (FMainDS.ADailyExchangeRate.Rows[Counter][myColumn].ToString() !=
-                        SelectedGridRow[0][myColumn.Ordinal].ToString())
-                    {
-                        found = false;
-                    }
-
-                }
-                if (found)
-                {
-                    return Counter;
-                }
-            }
+            return (ADailyExchangeRateRow)SelectedGridRow[0].Row;
         }
 
-        return -1;
+        return null;
     }
 
-    private void ShowDetails(Int32 ACurrentDetailIndex)
+    private void ShowDetails(ADailyExchangeRateRow ARow)
     {
-        cmbDetailFromCurrencyCode.SetSelectedString(FMainDS.ADailyExchangeRate[ACurrentDetailIndex].FromCurrencyCode);
-        cmbDetailToCurrencyCode.SetSelectedString(FMainDS.ADailyExchangeRate[ACurrentDetailIndex].ToCurrencyCode);
-        dtpDetailDateEffectiveFrom.Value = FMainDS.ADailyExchangeRate[ACurrentDetailIndex].DateEffectiveFrom;
-        txtDetailTimeEffectiveFrom.Text = FMainDS.ADailyExchangeRate[ACurrentDetailIndex].TimeEffectiveFrom.ToString();
-        txtDetailRateOfExchange.Text = FMainDS.ADailyExchangeRate[ACurrentDetailIndex].RateOfExchange.ToString();
+        cmbDetailFromCurrencyCode.SetSelectedString(ARow.FromCurrencyCode);
+        cmbDetailFromCurrencyCode.Enabled = (ARow.RowState == DataRowState.Added);
+        cmbDetailToCurrencyCode.SetSelectedString(ARow.ToCurrencyCode);
+        cmbDetailToCurrencyCode.Enabled = (ARow.RowState == DataRowState.Added);
+        dtpDetailDateEffectiveFrom.Value = ARow.DateEffectiveFrom;
+        dtpDetailDateEffectiveFrom.Enabled = (ARow.RowState == DataRowState.Added);
+        txtDetailTimeEffectiveFrom.Text = ARow.TimeEffectiveFrom.ToString();
+        txtDetailTimeEffectiveFrom.ReadOnly = (ARow.RowState != DataRowState.Added);
+        txtDetailRateOfExchange.Text = ARow.RateOfExchange.ToString();
     }
 
-    private Int32 FPreviouslySelectedDetailRow = -1;
+    private ADailyExchangeRateRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
         // get the details from the previously selected row
-        if (FPreviouslySelectedDetailRow != -1)
+        if (FPreviouslySelectedDetailRow != null)
         {
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
-        // display the details of the currently selected row; e.Row: first row has number 1
-        ShowDetails(GetSelectedDetailDataTableIndex());
-        FPreviouslySelectedDetailRow = GetSelectedDetailDataTableIndex();
+        // display the details of the currently selected row
+        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+        ShowDetails(FPreviouslySelectedDetailRow);
         pnlDetails.Enabled = true;
     }
 
-    private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
+    private void GetDetailsFromControls(ADailyExchangeRateRow ARow)
     {
-        if (ACurrentDetailIndex != -1)
+        if (ARow != null)
         {
-            FMainDS.ADailyExchangeRate[ACurrentDetailIndex].FromCurrencyCode = cmbDetailFromCurrencyCode.GetSelectedString();
-            FMainDS.ADailyExchangeRate[ACurrentDetailIndex].ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
-            FMainDS.ADailyExchangeRate[ACurrentDetailIndex].DateEffectiveFrom = dtpDetailDateEffectiveFrom.Value;
-            FMainDS.ADailyExchangeRate[ACurrentDetailIndex].TimeEffectiveFrom = Convert.ToInt32(txtDetailTimeEffectiveFrom.Text);
-            FMainDS.ADailyExchangeRate[ACurrentDetailIndex].RateOfExchange = Convert.ToDouble(txtDetailRateOfExchange.Text);
+            ARow.FromCurrencyCode = cmbDetailFromCurrencyCode.GetSelectedString();
+            ARow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
+            ARow.DateEffectiveFrom = dtpDetailDateEffectiveFrom.Value;
+            ARow.TimeEffectiveFrom = Convert.ToInt32(txtDetailTimeEffectiveFrom.Text);
+            ARow.RateOfExchange = Convert.ToDouble(txtDetailRateOfExchange.Text);
         }
     }
 
@@ -309,7 +294,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
 //TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
-        GetDetailsFromControls(GetSelectedDetailDataTableIndex());
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
 
         // TODO: verification
 
@@ -333,7 +318,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TRemote.MCommon.DataReader.SaveData(Ict.Petra.Shared.MFinance.Account.Data.ADailyExchangeRateTable.GetTableDBName(), ref SubmitDT, out VerificationResult);
+                    SubmissionResult = TRemote.MCommon.DataReader.SaveData(ADailyExchangeRateTable.GetTableDBName(), ref SubmitDT, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {

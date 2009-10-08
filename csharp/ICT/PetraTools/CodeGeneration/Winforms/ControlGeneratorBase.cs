@@ -517,10 +517,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
             TTableField field = FCodeStorage.GetTableField(ctrl, PartnerShortNameLookup, out IsDetailNotMaster, true);
 
             string showData = "TPartnerClass partnerClass;" + Environment.NewLine;
+            string RowName = "FMainDS." + TTable.NiceTableName(field.strTableName) + "[0]";
+
+            if ((TTable.NiceTableName(field.strTableName) == writer.CodeStorage.GetAttribute("DetailTable"))
+                || (TTable.NiceTableName(field.strTableName) == writer.CodeStorage.GetAttribute("MasterTable")))
+            {
+                RowName = "ARow";
+            }
 
             showData += "string partnerShortName;" + Environment.NewLine;
             showData += "TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(" + Environment.NewLine;
-            showData += "    FMainDS." + TTable.NiceTableName(field.strTableName) + "[0]." + TTable.NiceFieldName(field.strName) + "," +
+            showData += "    " + RowName + "." + TTable.NiceFieldName(field.strName) + "," +
                         Environment.NewLine;
             showData += "    out partnerShortName," + Environment.NewLine;
             showData += "    out partnerClass);" + Environment.NewLine;
@@ -534,28 +541,40 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string AssignValue = "";
             string tablename = TTable.NiceTableName(AField.strTableName);
             string fieldname = TTable.NiceFieldName(AField);
+            string RowName = "FMainDS." + tablename + "[0]";
+
+            if ((tablename == writer.CodeStorage.GetAttribute("DetailTable")) || (tablename == writer.CodeStorage.GetAttribute("MasterTable")))
+            {
+                RowName = "ARow";
+            }
 
             if (!AField.bNotNull)
             {
                 // need to check for IsNull
-                AssignValue += "if (FMainDS." + tablename + "[0].Is" + fieldname + "Null())" + Environment.NewLine;
+                AssignValue += "if (" + RowName + ".Is" + fieldname + "Null())" + Environment.NewLine;
                 AssignValue += "{" + Environment.NewLine;
                 AssignValue += "    " + this.AssignValue(ctrl, null, null) + Environment.NewLine;
                 AssignValue += "}" + Environment.NewLine;
                 AssignValue += "else" + Environment.NewLine;
                 AssignValue += "{" + Environment.NewLine;
                 AssignValue += "    " +
-                               this.AssignValue(ctrl, "FMainDS." + tablename + "[0]." + fieldname, AField.GetDotNetType()) + Environment.NewLine;
+                               this.AssignValue(ctrl, RowName + "." + fieldname, AField.GetDotNetType()) + Environment.NewLine;
                 AssignValue += "}" + Environment.NewLine;
             }
             else
             {
-                AssignValue += this.AssignValue(ctrl, "FMainDS." + tablename + "[0]." + fieldname, AField.GetDotNetType()) + Environment.NewLine;
+                AssignValue += this.AssignValue(ctrl, RowName + "." + fieldname, AField.GetDotNetType()) + Environment.NewLine;
+            }
+
+            if (AField.bPartOfPrimKey)
+            {
+                // check if the current row is new; then allow changing the primary key; otherwise make the control readonly
+                AssignValue += ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = " +
+                               "(" + RowName + ".RowState " + (FHasReadOnlyProperty ? "!=" : "==") + " DataRowState.Added);" + Environment.NewLine;
             }
 
             if (tablename == writer.CodeStorage.GetAttribute("DetailTable"))
             {
-                AssignValue = AssignValue.Replace("FMainDS." + tablename + "[0]", "FMainDS." + tablename + "[ACurrentDetailIndex]");
                 writer.Template.AddToCodelet("SHOWDETAILS", AssignValue);
             }
             else
@@ -572,23 +591,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     // need to check for IsNull
                     GetValue += "if (" + this.GetControlValue(ctrl, null) + ")" + Environment.NewLine;
                     GetValue += "{" + Environment.NewLine;
-                    GetValue += "    FMainDS." + tablename + "[0].Set" + fieldname + "Null();" + Environment.NewLine;
+                    GetValue += "    " + RowName + ".Set" + fieldname + "Null();" + Environment.NewLine;
                     GetValue += "}" + Environment.NewLine;
                     GetValue += "else" + Environment.NewLine;
                     GetValue += "{" + Environment.NewLine;
-                    GetValue += "    FMainDS." + tablename + "[0]." + fieldname + " = " +
+                    GetValue += "    " + RowName + "." + fieldname + " = " +
                                 this.GetControlValue(ctrl, AField.GetDotNetType()) + ";" + Environment.NewLine;
                     GetValue += "}" + Environment.NewLine;
                 }
                 else
                 {
-                    GetValue += "FMainDS." + tablename + "[0]." + fieldname + " = " +
+                    GetValue += RowName + "." + fieldname + " = " +
                                 this.GetControlValue(ctrl, AField.GetDotNetType()) + ";" + Environment.NewLine;
                 }
 
                 if (tablename == writer.CodeStorage.GetAttribute("DetailTable"))
                 {
-                    GetValue = GetValue.Replace("FMainDS." + tablename + "[0]", "FMainDS." + tablename + "[ACurrentDetailIndex]");
                     writer.Template.AddToCodelet("SAVEDETAILS", GetValue);
                 }
                 else

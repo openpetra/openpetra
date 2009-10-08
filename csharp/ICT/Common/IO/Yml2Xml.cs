@@ -774,16 +774,25 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// get the child node with the given name
-        /// TODO: consider base nodes as well
+        /// get the child node with the given name;
+        /// considers base nodes as well
         /// </summary>
         /// <param name="node"></param>
         /// <param name="childName"></param>
         /// <returns></returns>
         public static XmlNode GetChild(XmlNode node, string childName)
         {
-            // TODO: check for base node
             XmlNode child = TXMLParser.GetChild(node, childName);
+
+            if (child == null)
+            {
+                XmlNode baseNode = TXMLParser.GetChild(node, "base");
+
+                if (baseNode != null)
+                {
+                    return TXMLParser.GetChild(baseNode, childName);
+                }
+            }
 
             return child;
         }
@@ -796,7 +805,6 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public static StringCollection GetElements(XmlNode node, string childName)
         {
-            // TODO: GetChild: check for base node?
             XmlNode child = GetChild(node, childName);
 
             if (child == null)

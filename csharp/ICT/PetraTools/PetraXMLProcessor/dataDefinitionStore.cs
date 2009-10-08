@@ -862,6 +862,9 @@ namespace Ict.Tools.DBXML
         /// the order of this field in the table
         public Int32 iOrder;
 
+        /// is this field part of the primary key of the table
+        public bool bPartOfPrimKey = false;
+
         /// name of the sequence that is used to fill this field
         public string strSequence;
 

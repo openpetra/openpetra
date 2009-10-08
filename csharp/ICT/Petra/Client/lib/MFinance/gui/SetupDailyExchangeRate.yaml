@@ -3,7 +3,7 @@ RootNode:
     FormTitle: Daily Exchange Rate List
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DetailTable: ADailyExchangeRate
-    DatatableType: Ict.Petra.Shared.MFinance.Account.Data.ADailyExchangeRate
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 660

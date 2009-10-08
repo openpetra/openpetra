@@ -44,6 +44,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -54,8 +55,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     private TFrmPetraEditUtils FPetraUtilsObject;
 
     private Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS FMainDS;
-
-	private Int32 FCurrentDetailIndex = -1;
 
     /// constructor
     public TUC_GLBatches() : base()
@@ -170,37 +169,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
     }
 
-    /// return the index in the detail datatable of the selected row, not the index in the datagrid
-    private Int32 GetSelectedDetailDataTableIndex()
+    /// return the selected row
+    private ABatchRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            // this would return the index in the grid: return grdDetails.DataSource.IndexOf(SelectedGridRow[0]);
-            // we could keep track of the order in the datatable ourselves: return Convert.ToInt32(SelectedGridRow[0][ORIGINALINDEX]);
-            // does not seem to work: return grdDetails.DataSourceRowToIndex2(SelectedGridRow[0]);
-
-            for (int Counter = 0; Counter < FMainDS.ABatch.Rows.Count; Counter++)
-            {
-                bool found = true;
-                foreach (DataColumn myColumn in FMainDS.ABatch.PrimaryKey)
-                {
-                    if (FMainDS.ABatch.Rows[Counter][myColumn].ToString() !=
-                        SelectedGridRow[0][myColumn.Ordinal].ToString())
-                    {
-                        found = false;
-                    }
-
-                }
-                if (found)
-                {
-                    return Counter;
-                }
-            }
+            return (ABatchRow)SelectedGridRow[0].Row;
         }
 
-        return -1;
+        return null;
     }
 
     private void ShowData()
@@ -219,87 +198,89 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 grdDetails.Selection.ResetSelection(false);
                 grdDetails.Selection.SelectRow(1, true);
-                ShowDetails(GetSelectedDetailDataTableIndex());
+                FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
                 pnlDetails.Enabled = true;
             }
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private void ShowDetails(Int32 ACurrentDetailIndex)
+    private void ShowDetails(ABatchRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
-        if (ACurrentDetailIndex == -1)
+        if (ARow == null)
         {
             pnlDetails.Enabled = false;
-            ShowDetailsManual(ACurrentDetailIndex);
+            ShowDetailsManual(ARow);
         }
         else
         {
             pnlDetails.Enabled = true;
-            FCurrentDetailIndex = ACurrentDetailIndex;
-            if (FMainDS.ABatch[ACurrentDetailIndex].IsBatchDescriptionNull())
+            FPreviouslySelectedDetailRow = ARow;
+            if (ARow.IsBatchDescriptionNull())
             {
                 txtDetailBatchDescription.Text = String.Empty;
             }
             else
             {
-                txtDetailBatchDescription.Text = FMainDS.ABatch[ACurrentDetailIndex].BatchDescription;
+                txtDetailBatchDescription.Text = ARow.BatchDescription;
             }
-            if (FMainDS.ABatch[ACurrentDetailIndex].IsBatchControlTotalNull())
+            if (ARow.IsBatchControlTotalNull())
             {
                 txtDetailBatchControlTotal.Text = String.Empty;
             }
             else
             {
-                txtDetailBatchControlTotal.Text = FMainDS.ABatch[ACurrentDetailIndex].BatchControlTotal.ToString();
+                txtDetailBatchControlTotal.Text = ARow.BatchControlTotal.ToString();
             }
-            dtpDetailDateEffective.Value = FMainDS.ABatch[ACurrentDetailIndex].DateEffective;
-            ShowDetailsManual(ACurrentDetailIndex);
+            dtpDetailDateEffective.Value = ARow.DateEffective;
+            ShowDetailsManual(ARow);
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
+    private ABatchRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
         // get the details from the previously selected row
-        if (FCurrentDetailIndex != -1)
+        if (FPreviouslySelectedDetailRow != null)
         {
-            GetDetailsFromControls(FCurrentDetailIndex);
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
         // display the details of the currently selected row
-        ShowDetails(GetSelectedDetailDataTableIndex());
+        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+        ShowDetails(FPreviouslySelectedDetailRow);
     }
 
     /// get the data from the controls and store in the currently selected detail row
     public void GetDataFromControls()
     {
-        GetDetailsFromControls(FCurrentDetailIndex);
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
-    private void GetDetailsFromControls(Int32 ACurrentDetailIndex)
+    private void GetDetailsFromControls(ABatchRow ARow)
     {
-        if (ACurrentDetailIndex != -1)
+        if (ARow != null)
         {
-            FMainDS.ABatch.Rows[ACurrentDetailIndex].BeginEdit();
+            ARow.BeginEdit();
             if (txtDetailBatchDescription.Text.Length == 0)
             {
-                FMainDS.ABatch[ACurrentDetailIndex].SetBatchDescriptionNull();
+                ARow.SetBatchDescriptionNull();
             }
             else
             {
-                FMainDS.ABatch[ACurrentDetailIndex].BatchDescription = txtDetailBatchDescription.Text;
+                ARow.BatchDescription = txtDetailBatchDescription.Text;
             }
             if (txtDetailBatchControlTotal.Text.Length == 0)
             {
-                FMainDS.ABatch[ACurrentDetailIndex].SetBatchControlTotalNull();
+                ARow.SetBatchControlTotalNull();
             }
             else
             {
-                FMainDS.ABatch[ACurrentDetailIndex].BatchControlTotal = Convert.ToDouble(txtDetailBatchControlTotal.Text);
+                ARow.BatchControlTotal = Convert.ToDouble(txtDetailBatchControlTotal.Text);
             }
-            FMainDS.ABatch[ACurrentDetailIndex].DateEffective = dtpDetailDateEffective.Value;
-            FMainDS.ABatch.Rows[ACurrentDetailIndex].EndEdit();
+            ARow.DateEffective = dtpDetailDateEffective.Value;
+            ARow.EndEdit();
         }
     }
 

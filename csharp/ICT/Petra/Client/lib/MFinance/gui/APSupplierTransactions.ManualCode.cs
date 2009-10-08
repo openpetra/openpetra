@@ -73,13 +73,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 row.Tagged = false;
             }
 
-            ShowData();
+            ShowData(FMainDS.AApSupplier[0]);
         }
 
         /// <summary>
         /// needed for generated code
         /// </summary>
-        void ShowDataManual()
+        void ShowDataManual(AApSupplierRow ARow)
         {
             DataView myDataView = FMainDS.AApDocument.DefaultView;
 

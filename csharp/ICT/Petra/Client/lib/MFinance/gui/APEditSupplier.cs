@@ -45,6 +45,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.MFinance.AP.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 {
@@ -166,160 +167,161 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         }
     }
 
-    private void ShowData()
+    private void ShowData(AApSupplierRow ARow)
     {
-        txtPartnerKey.Text = String.Format("{0:0000000000}", FMainDS.AApSupplier[0].PartnerKey);
+        txtPartnerKey.Text = String.Format("{0:0000000000}", ARow.PartnerKey);
+        txtPartnerKey.ReadOnly = (ARow.RowState != DataRowState.Added);
         TPartnerClass partnerClass;
         string partnerShortName;
         TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
-            FMainDS.AApSupplier[0].PartnerKey,
+            ARow.PartnerKey,
             out partnerShortName,
             out partnerClass);
         txtPartnerName.Text = partnerShortName;
-        cmbCurrency.SetSelectedString(FMainDS.AApSupplier[0].CurrencyCode);
-        if (FMainDS.AApSupplier[0].IsSupplierTypeNull())
+        cmbCurrency.SetSelectedString(ARow.CurrencyCode);
+        if (ARow.IsSupplierTypeNull())
         {
             cmbSupplierType.SelectedIndex = -1;
         }
         else
         {
-            cmbSupplierType.SetSelectedString(FMainDS.AApSupplier[0].SupplierType);
+            cmbSupplierType.SetSelectedString(ARow.SupplierType);
         }
-        if (FMainDS.AApSupplier[0].IsPreferredScreenDisplayNull())
+        if (ARow.IsPreferredScreenDisplayNull())
         {
             nudInvoiceAging.Value = 0;
         }
         else
         {
-            nudInvoiceAging.Value = FMainDS.AApSupplier[0].PreferredScreenDisplay;
+            nudInvoiceAging.Value = ARow.PreferredScreenDisplay;
         }
-        if (FMainDS.AApSupplier[0].IsDefaultCreditTermsNull())
+        if (ARow.IsDefaultCreditTermsNull())
         {
             nudCreditTerms.Value = 0;
         }
         else
         {
-            nudCreditTerms.Value = FMainDS.AApSupplier[0].DefaultCreditTerms;
+            nudCreditTerms.Value = ARow.DefaultCreditTerms;
         }
-        if (FMainDS.AApSupplier[0].IsPaymentTypeNull())
+        if (ARow.IsPaymentTypeNull())
         {
             cmbDefaultPaymentType.SelectedIndex = -1;
         }
         else
         {
-            cmbDefaultPaymentType.SetSelectedString(FMainDS.AApSupplier[0].PaymentType);
+            cmbDefaultPaymentType.SetSelectedString(ARow.PaymentType);
         }
-        if (FMainDS.AApSupplier[0].IsDefaultDiscountDaysNull())
+        if (ARow.IsDefaultDiscountDaysNull())
         {
             nudDiscountDays.Value = 0;
         }
         else
         {
-            nudDiscountDays.Value = FMainDS.AApSupplier[0].DefaultDiscountDays;
+            nudDiscountDays.Value = ARow.DefaultDiscountDays;
         }
-        if (FMainDS.AApSupplier[0].IsDefaultDiscountPercentageNull())
+        if (ARow.IsDefaultDiscountPercentageNull())
         {
             txtDiscountValue.Text = String.Empty;
         }
         else
         {
-            txtDiscountValue.Text = FMainDS.AApSupplier[0].DefaultDiscountPercentage.ToString();
+            txtDiscountValue.Text = ARow.DefaultDiscountPercentage.ToString();
         }
-        if (FMainDS.AApSupplier[0].IsDefaultApAccountNull())
+        if (ARow.IsDefaultApAccountNull())
         {
             cmbAPAccount.SelectedIndex = -1;
         }
         else
         {
-            cmbAPAccount.SetSelectedString(FMainDS.AApSupplier[0].DefaultApAccount);
+            cmbAPAccount.SetSelectedString(ARow.DefaultApAccount);
         }
-        if (FMainDS.AApSupplier[0].IsDefaultBankAccountNull())
+        if (ARow.IsDefaultBankAccountNull())
         {
             cmbDefaultBankAccount.SelectedIndex = -1;
         }
         else
         {
-            cmbDefaultBankAccount.SetSelectedString(FMainDS.AApSupplier[0].DefaultBankAccount);
+            cmbDefaultBankAccount.SetSelectedString(ARow.DefaultBankAccount);
         }
-        if (FMainDS.AApSupplier[0].IsDefaultCostCentreNull())
+        if (ARow.IsDefaultCostCentreNull())
         {
             cmbCostCentre.SelectedIndex = -1;
         }
         else
         {
-            cmbCostCentre.SetSelectedString(FMainDS.AApSupplier[0].DefaultCostCentre);
+            cmbCostCentre.SetSelectedString(ARow.DefaultCostCentre);
         }
-        if (FMainDS.AApSupplier[0].IsDefaultExpAccountNull())
+        if (ARow.IsDefaultExpAccountNull())
         {
             cmbExpenseAccount.SelectedIndex = -1;
         }
         else
         {
-            cmbExpenseAccount.SetSelectedString(FMainDS.AApSupplier[0].DefaultExpAccount);
+            cmbExpenseAccount.SetSelectedString(ARow.DefaultExpAccount);
         }
     }
 
-    private void GetDataFromControls()
+    private void GetDataFromControls(AApSupplierRow ARow)
     {
-        FMainDS.AApSupplier[0].CurrencyCode = cmbCurrency.GetSelectedString();
+        ARow.CurrencyCode = cmbCurrency.GetSelectedString();
         if (cmbSupplierType.SelectedIndex == -1)
         {
-            FMainDS.AApSupplier[0].SetSupplierTypeNull();
+            ARow.SetSupplierTypeNull();
         }
         else
         {
-            FMainDS.AApSupplier[0].SupplierType = cmbSupplierType.GetSelectedString();
+            ARow.SupplierType = cmbSupplierType.GetSelectedString();
         }
-        FMainDS.AApSupplier[0].PreferredScreenDisplay = (Int32)nudInvoiceAging.Value;
-        FMainDS.AApSupplier[0].DefaultCreditTerms = (Int32)nudCreditTerms.Value;
+        ARow.PreferredScreenDisplay = (Int32)nudInvoiceAging.Value;
+        ARow.DefaultCreditTerms = (Int32)nudCreditTerms.Value;
         if (cmbDefaultPaymentType.SelectedIndex == -1)
         {
-            FMainDS.AApSupplier[0].SetPaymentTypeNull();
+            ARow.SetPaymentTypeNull();
         }
         else
         {
-            FMainDS.AApSupplier[0].PaymentType = cmbDefaultPaymentType.GetSelectedString();
+            ARow.PaymentType = cmbDefaultPaymentType.GetSelectedString();
         }
-        FMainDS.AApSupplier[0].DefaultDiscountDays = (Int32)nudDiscountDays.Value;
+        ARow.DefaultDiscountDays = (Int32)nudDiscountDays.Value;
         if (txtDiscountValue.Text.Length == 0)
         {
-            FMainDS.AApSupplier[0].SetDefaultDiscountPercentageNull();
+            ARow.SetDefaultDiscountPercentageNull();
         }
         else
         {
-            FMainDS.AApSupplier[0].DefaultDiscountPercentage = Convert.ToDouble(txtDiscountValue.Text);
+            ARow.DefaultDiscountPercentage = Convert.ToDouble(txtDiscountValue.Text);
         }
         if (cmbAPAccount.SelectedIndex == -1)
         {
-            FMainDS.AApSupplier[0].SetDefaultApAccountNull();
+            ARow.SetDefaultApAccountNull();
         }
         else
         {
-            FMainDS.AApSupplier[0].DefaultApAccount = cmbAPAccount.GetSelectedString();
+            ARow.DefaultApAccount = cmbAPAccount.GetSelectedString();
         }
         if (cmbDefaultBankAccount.SelectedIndex == -1)
         {
-            FMainDS.AApSupplier[0].SetDefaultBankAccountNull();
+            ARow.SetDefaultBankAccountNull();
         }
         else
         {
-            FMainDS.AApSupplier[0].DefaultBankAccount = cmbDefaultBankAccount.GetSelectedString();
+            ARow.DefaultBankAccount = cmbDefaultBankAccount.GetSelectedString();
         }
         if (cmbCostCentre.SelectedIndex == -1)
         {
-            FMainDS.AApSupplier[0].SetDefaultCostCentreNull();
+            ARow.SetDefaultCostCentreNull();
         }
         else
         {
-            FMainDS.AApSupplier[0].DefaultCostCentre = cmbCostCentre.GetSelectedString();
+            ARow.DefaultCostCentre = cmbCostCentre.GetSelectedString();
         }
         if (cmbExpenseAccount.SelectedIndex == -1)
         {
-            FMainDS.AApSupplier[0].SetDefaultExpAccountNull();
+            ARow.SetDefaultExpAccountNull();
         }
         else
         {
-            FMainDS.AApSupplier[0].DefaultExpAccount = cmbExpenseAccount.GetSelectedString();
+            ARow.DefaultExpAccount = cmbExpenseAccount.GetSelectedString();
         }
     }
 

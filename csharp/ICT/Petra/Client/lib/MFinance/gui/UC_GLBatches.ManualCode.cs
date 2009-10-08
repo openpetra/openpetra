@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -60,12 +61,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
         }
 
-        private void ShowDetailsManual(Int32 ACurrentDetailIndex)
+        private void ShowDetailsManual(ABatchRow ARow)
         {
             ((TFrmGLBatch)ParentForm).LoadJournals(
-                FMainDS.ABatch[ACurrentDetailIndex].LedgerNumber,
-                FMainDS.ABatch[ACurrentDetailIndex].BatchNumber);
-            FSelectedBatchNumber = FMainDS.ABatch[ACurrentDetailIndex].BatchNumber;
+                ARow.LedgerNumber,
+                ARow.BatchNumber);
+            FSelectedBatchNumber = ARow.BatchNumber;
         }
 
         private void ShowJournalTab(Object sender, EventArgs e)
