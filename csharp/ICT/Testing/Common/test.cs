@@ -267,6 +267,10 @@ namespace Ict.Common.Testing
                 "Actual vs Budget with % Variance (Month)";
             Assert.AreEqual(5, StringHelper.StrSplit(longStringBug672, ",").Count, "Test bug 672, strsplit, number of elements");
             Assert.AreEqual(159, StringHelper.StrSplit(longStringBug672, ",")[0].Length, "Test bug 672, strsplit, length of first element");
+
+            string testAccountCodeLeadingZero = StringHelper.AddCSV("test", "0100");
+            Assert.AreEqual("0100", StringHelper.GetCSVValue(testAccountCodeLeadingZero,
+                    1), "Integers with leading zero should be treated as string; for account codes");
         }
 
         [Test]

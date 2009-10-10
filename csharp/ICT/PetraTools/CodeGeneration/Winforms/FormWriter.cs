@@ -809,7 +809,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 SetEventHandlerForForm(handler);
             }
 
-            XmlNode rootNode = (XmlNode)FCodeStorage.FXmlNodes["RootNode"];
+            XmlNode rootNode = (XmlNode)FCodeStorage.FXmlNodes[TParseXAML.ROOTNODEYML];
 
             if (TYml2Xml.HasAttribute(rootNode, "UIConnectorType") && TYml2Xml.HasAttribute(rootNode, "UIConnectorCreate"))
             {

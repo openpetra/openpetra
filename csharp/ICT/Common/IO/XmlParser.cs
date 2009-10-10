@@ -237,6 +237,73 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// print an xml document to string;
+        /// this can be necessary for transmitting between server and client, since XmlDocument is not serializable
+        /// </summary>
+        /// <param name="ADoc"></param>
+        /// <returns></returns>
+        public static string XmlToString(XmlDocument ADoc)
+        {
+            StringWriter sw = new StringWriter();
+            XmlTextWriter xw = new XmlTextWriter(sw);
+
+            ADoc.WriteTo(xw);
+            return sw.ToString();
+        }
+
+        /// used by XmlToString
+        private static void MoveElementNameToAttribute(XmlNode AOldNode, XmlNode ANewNode)
+        {
+            // create name attribute
+            if ((AOldNode.Name != TYml2Xml.XMLELEMENT) && (AOldNode.Name != TYml2Xml.ROOTNODEINTERNAL))
+            {
+                XmlAttribute attr = ANewNode.OwnerDocument.CreateAttribute("name");
+                attr.Value = AOldNode.Name;
+                ANewNode.Attributes.Append(attr);
+            }
+
+            // copy all attributes, apart from depth == 0
+            foreach (XmlAttribute attrOld in AOldNode.Attributes)
+            {
+                if (!((attrOld.Name == "depth") && (attrOld.Value == "0")))
+                {
+                    XmlAttribute attrNew = ANewNode.OwnerDocument.CreateAttribute(attrOld.Name);
+                    attrNew.Value = attrOld.Value;
+                    ANewNode.Attributes.Append(attrNew);
+                }
+            }
+
+            // create node for each child, and call recursively
+            foreach (XmlNode child in AOldNode.ChildNodes)
+            {
+                XmlElement newChildNode = ANewNode.OwnerDocument.CreateElement(TYml2Xml.XMLELEMENT);
+                ANewNode.AppendChild(newChildNode);
+
+                MoveElementNameToAttribute(child, newChildNode);
+            }
+        }
+
+        /// <summary>
+        /// this is necessary to be able to store XML files that can be parsed by DTD/Schema mechanisms;
+        /// for YML, we have the name of an element not as an attribute, but the element name itself;
+        /// this would never work for validating xml; therefore all Elements are called XmlElement, with attribute name
+        /// </summary>
+        /// <param name="ADoc"></param>
+        /// <param name="AMoveElementNamesToAttribute"></param>
+        /// <returns></returns>
+        public static string XmlToString(XmlDocument ADoc, bool AMoveElementNamesToAttribute)
+        {
+            XmlDocument tempDoc = TYml2Xml.CreateXmlDocument();
+
+            MoveElementNameToAttribute(ADoc.DocumentElement, tempDoc.DocumentElement);
+
+            StringWriter sw = new StringWriter();
+            XmlTextWriter xw = new XmlTextWriter(sw);
+            tempDoc.WriteTo(xw);
+            return sw.ToString();
+        }
+
+        /// <summary>
         /// test the given node, if it is a comment or is empty; if it is empty, try the next nodes.
         /// </summary>
         /// <param name="cur2">the current node</param>
@@ -314,6 +381,32 @@ namespace Ict.Common.IO
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// find a node somewhere in the xml document by its name
+        /// </summary>
+        /// <param name="AParentNode"></param>
+        /// <param name="ANodeNameToSearch"></param>
+        /// <returns></returns>
+        public static XmlNode FindNodeRecursive(XmlNode AParentNode, string ANodeNameToSearch)
+        {
+            XmlNode ResultNode = GetChild(AParentNode, ANodeNameToSearch);
+
+            if (ResultNode == null)
+            {
+                foreach (XmlNode childNode in AParentNode.ChildNodes)
+                {
+                    ResultNode = FindNodeRecursive(childNode, ANodeNameToSearch);
+
+                    if (ResultNode != null)
+                    {
+                        return ResultNode;
+                    }
+                }
+            }
+
+            return ResultNode;
         }
 
         /// <summary>

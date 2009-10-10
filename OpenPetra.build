@@ -66,14 +66,34 @@
                 tofile="${appconfigfile}"/>
             <!-- app.config is part of the Tests.Reporting project and will be copied to _bin/${Output.dir}/Tests.Reporting.dll.config -->
         </if>
+        <property name="appconfigfileIO" value="${OpenPetraRoot.dir}/csharp/ICT/Testing/Common/IO/app.config"/>
+        <if test="${not file::exists(appconfigfileIO)}">
+            <copy file="${OpenPetraRoot.dir}/csharp/ICT/Testing/Common/IO/app-sample.config"
+                tofile="${appconfigfileIO}"/>
+            <!-- app.config is part of the Tests.Common.IO project and will be copied to _bin/${Output.dir}/Tests.Common.IO.dll.config -->
+        </if>
     
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Testing.sln"/>
         <call target="compileTemplate"/>
 
+        <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/${Output.dir}">
+            <fileset basedir="${ThirdParty.dir}/Mono">
+                <include name="intl.dll" />
+                <include name="MonoPosixHelper.dll" />
+                <include name="Mono.Security.dll" />
+            </fileset>
+        </copy>
+        
         <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/${Output.dir}/Tests.Reporting.dll.config"/>
         <if test="${not file::exists(appconfigfileBin)}">
             <!-- mdbuild does not seem to copy the app file -->
             <copy file="${appconfigfile}"
+                tofile="${appconfigfileBin}"/>
+        </if>
+        <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/${Output.dir}/Tests.Common.IO.dll.config"/>
+        <if test="${not file::exists(appconfigfileBin)}">
+            <!-- mdbuild does not seem to copy the app file -->
+            <copy file="${appconfigfileIO}"
                 tofile="${appconfigfileBin}"/>
         </if>
     </target>

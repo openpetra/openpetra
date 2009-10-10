@@ -75,6 +75,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.tbbAddNewAccount.Text = Catalog.GetString("Add Account");
+      this.tbbExportHierarchy.Text = Catalog.GetString("Export Hierarchy");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -415,6 +416,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         if (e.ActionName == "actAddNewAccount")
         {
             tbbAddNewAccount.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actExportHierarchy")
+        {
+            tbbExportHierarchy.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {

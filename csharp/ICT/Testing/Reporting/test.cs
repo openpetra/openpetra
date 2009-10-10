@@ -65,11 +65,8 @@ namespace Tests.Reporting
             Thread.CurrentThread.CurrentCulture = OrigCulture;
             TPetraConnector.Connect("Tests.Reporting.dll.config");
             FCalculator = new TRptCalculator();
-            PathToTestData = ".." + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + "Reporting" +
-                             System.IO.Path.DirectorySeparatorChar + "TestData" + System.IO.Path.DirectorySeparatorChar;
-            PathToSettingsData = ".." + System.IO.Path.DirectorySeparatorChar + ".." + System.IO.Path.DirectorySeparatorChar + ".." +
-                                 System.IO.Path.DirectorySeparatorChar + "XMLReports" + System.IO.Path.DirectorySeparatorChar + "Settings" +
-                                 System.IO.Path.DirectorySeparatorChar;
+            PathToTestData = "../../Reporting/TestData/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
+            PathToSettingsData = "../../../XMLReports/Settings/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
         }
 
         [TearDown]

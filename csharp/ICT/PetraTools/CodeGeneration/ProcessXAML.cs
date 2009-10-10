@@ -147,7 +147,7 @@ namespace Ict.Tools.CodeGeneration
                 IFormWriter writer = null;
 
                 // get the appropriate derived class from IFormWriter (e.g. TFrmReportWriter)
-                XmlNode rootNode = (XmlNode)yamlParser.FCodeStorage.FXmlNodes["RootNode"];
+                XmlNode rootNode = (XmlNode)yamlParser.FCodeStorage.FXmlNodes[TParseXAML.ROOTNODEYML];
                 string formType = TYml2Xml.GetAttribute(rootNode, "FormType");
 
                 // the Template attribute is also quite important, because it determines which code is written

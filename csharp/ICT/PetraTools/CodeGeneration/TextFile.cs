@@ -91,19 +91,28 @@ namespace Ict.Tools.CodeGeneration
                 line = sr1.ReadLine();
                 line2 = sr2.ReadLine();
 
-                // test for end of file
-                if ((sr1.Peek() < 0) && (sr2.Peek() < 0))
-                {
-                    sr1.Close();
-                    sr2.Close();
-                    return true;
-                }
-
-                if (((sr1.Peek() < 0) && (sr2.Peek() >= 0)) || ((sr1.Peek() >= 0) && (sr2.Peek() < 0)) || (line.CompareTo(line2) != 0))
+                if (line.CompareTo(line2) != 0)
                 {
                     sr1.Close();
                     sr2.Close();
                     return false;
+                }
+
+                // test for end of file
+                if (sr1.EndOfStream || sr2.EndOfStream)
+                {
+                    if (sr1.EndOfStream == sr2.EndOfStream)
+                    {
+                        sr1.Close();
+                        sr2.Close();
+                        return true;
+                    }
+                    else
+                    {
+                        sr1.Close();
+                        sr2.Close();
+                        return false;
+                    }
                 }
             }
         }

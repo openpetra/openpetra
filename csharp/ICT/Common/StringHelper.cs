@@ -581,10 +581,13 @@ namespace Ict.Common
             value = value.Replace("\"", "\"\"");
             containsSeparator = (value.IndexOf(separator) != -1);
 
+            // force quotes for integers that have leading 0; this is needed for account codes etc
+            // unfortunately, Excel still does not treat the column as text
+            bool forceQuotes = value.StartsWith("0") && StringHelper.IsStringPositiveInteger(value);
+
             // only use quotes if the value contains the separator or it contains double quotes
-            // todo: allow option to always use quotes, or define to use single or double quotes
-            // see bug http://bugs.om.org/petra/show_bug.cgi?id=542
-            if ((containsSeparator == false) && (value.IndexOf('"') == -1))
+            // TODO: allow option to always use quotes, or define to use single or double quotes
+            if ((containsSeparator == false) && (value.IndexOf('"') == -1) && !forceQuotes)
             {
                 ReturnValue = ReturnValue + value;
             }

@@ -82,6 +82,7 @@ using Ict.Petra.Server.MFinance.GL.WebConnectors;
 
 
 #region ManualCode
+using System.Xml;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MFinance.AP.Data;
@@ -1899,6 +1900,30 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
                                                    out TVerificationResultCollection AVerificationResult)
         {
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.SaveGLSetupTDS(ref AInspectDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public string ExportAccountHierarchy(Int32 ALedgerNumber,
+                                             string AAccountHierarchyName)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ExportAccountHierarchy(ALedgerNumber, AAccountHierarchyName);
+        }
+
+        /// generated method from connector
+        public bool ImportAccountHierarchy(Int32 ALedgerNumber,
+                                           string AHierarchyName,
+                                           string AXmlAccountHierarchy)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ImportAccountHierarchy(ALedgerNumber, AHierarchyName, AXmlAccountHierarchy);
+        }
+
+        /// generated method from connector
+        public bool ImportNewLedger(Int32 ALedgerNumber,
+                                    string AXmlAccountHierarchy,
+                                    string AXmlCostCentreHierarchy,
+                                    string AXmlInitialBalances)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ImportNewLedger(ALedgerNumber, AXmlAccountHierarchy, AXmlCostCentreHierarchy, AXmlInitialBalances);
         }
 
         /// generated method from connector

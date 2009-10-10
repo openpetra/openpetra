@@ -166,7 +166,7 @@ namespace Ict.Tools.CodeGeneration
             if ((depth == 0) && (FCodeStorage.FXmlNodes != null))
             {
                 // apply the tag, so that we know which things have been changed by the last yml file
-                TYml2Xml.Tag((XmlNode)FCodeStorage.FXmlNodes["RootNode"]);
+                TYml2Xml.Tag((XmlNode)FCodeStorage.FXmlNodes[TParseXAML.ROOTNODEYML]);
             }
 
             TYml2Xml yml2xml = new TYml2Xml(localisedFile);
@@ -176,16 +176,16 @@ namespace Ict.Tools.CodeGeneration
             FCodeStorage.FXmlDocument.Save(localisedFile + ".xml");
 
             FCodeStorage.FXmlNodes = TYml2Xml.ReferenceNodes(FCodeStorage.FXmlDocument);
-            FCodeStorage.FRootNode = (XmlNode)FCodeStorage.FXmlNodes["RootNode"];
+            FCodeStorage.FRootNode = (XmlNode)FCodeStorage.FXmlNodes[TParseXAML.ROOTNODEYML];
 
             if (baseyaml.Length == 0)
             {
-                if (FCodeStorage.FXmlNodes["RootNode"] == null)
+                if (FCodeStorage.FXmlNodes[TYml2Xml.ROOTNODEINTERNAL] == null)
                 {
                     throw new Exception("TParseXAML.LoadRecursively: YML Document could not be properly parsed");
                 }
 
-                if (TXMLParser.GetAttribute((XmlNode)FCodeStorage.FXmlNodes["RootNode"], "BaseYaml").Length > 0)
+                if (TXMLParser.GetAttribute((XmlNode)FCodeStorage.FXmlNodes[TParseXAML.ROOTNODEYML], "BaseYaml").Length > 0)
                 {
                     throw new Exception("The BaseYaml attribute must come first!");
                 }
@@ -200,9 +200,12 @@ namespace Ict.Tools.CodeGeneration
             return true;
         }
 
+        /// the name used for root node in yml code
+        public static string ROOTNODEYML = "RootNode";
+
         protected void LoadData(SortedList nodes)
         {
-            LoadFormProperties((XmlNode)nodes["RootNode"]);
+            LoadFormProperties((XmlNode)nodes[TParseXAML.ROOTNODEYML]);
             LoadTemplateParameters((XmlNode)nodes["TemplateParameters"]);
             LoadSecurity((XmlNode)nodes["Security"]);
             LoadControls((XmlNode)nodes["Controls"]);
@@ -236,7 +239,7 @@ namespace Ict.Tools.CodeGeneration
                 FMenuSeparatorCount++;
             }
 
-            if (curNode.ParentNode.Name == "RootNode")
+            if (curNode.ParentNode.Name == TParseXAML.ROOTNODEYML)
             {
                 // add each menu, but obviously not the "Menu" tag
                 XmlNode menuNode = curNode;

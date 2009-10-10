@@ -29,6 +29,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
 #region ManualCode
+using System.Xml;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
@@ -341,6 +342,18 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
         TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
                                             out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
+        string ExportAccountHierarchy(Int32 ALedgerNumber,
+                                      string AAccountHierarchyName);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
+        bool ImportAccountHierarchy(Int32 ALedgerNumber,
+                                    string AHierarchyName,
+                                    string AXmlAccountHierarchy);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
+        bool ImportNewLedger(Int32 ALedgerNumber,
+                             string AXmlAccountHierarchy,
+                             string AXmlCostCentreHierarchy,
+                             string AXmlInitialBalances);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
         GLBatchTDS CreateABatch(Int32 ALedgerNumber);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>

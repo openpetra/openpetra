@@ -48,6 +48,9 @@
     <Reference Include="Ict.Common.Data">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Common.IO">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common.Verification">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
     </Reference>

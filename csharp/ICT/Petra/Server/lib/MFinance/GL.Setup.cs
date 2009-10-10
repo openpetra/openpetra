@@ -26,7 +26,10 @@
 using System;
 using System.Collections.Specialized;
 using System.Data;
+using System.Xml;
+using System.IO;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -122,5 +125,107 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             return SubmissionResult;
         }
+        
+        /// <summary>
+        /// helper function for ExportAccountHierarchy
+        /// </summary>
+        private static void InsertNodeIntoXmlDocument(GLSetupTDS AMainDS, 
+                                              XmlDocument ADoc,
+                                              XmlNode AParentNode,
+                                              AAccountHierarchyDetailRow ADetailRow)
+        {
+			AAccountRow account = (AAccountRow) AMainDS.AAccount.Rows.Find(new object[] {ADetailRow.LedgerNumber, ADetailRow.ReportingAccountCode});
+    	    XmlElement accountNode  = ADoc.CreateElement("Account");
+    	    
+    	    // AccountCodeToReportTo and ReportOrder are encoded implicitly
+    	    accountNode.SetAttribute("name", ADetailRow.ReportingAccountCode);
+			accountNode.SetAttribute("active", account.AccountActiveFlag.ToString());
+			accountNode.SetAttribute("type", account.AccountType.ToString());
+			accountNode.SetAttribute("debitcredit", account.DebitCreditIndicator?"debit":"credit");
+			accountNode.SetAttribute("validcc", account.ValidCcCombo);
+			accountNode.SetAttribute("shortdesc", account.AccountCodeShortDesc);
+			if (account.AccountCodeLongDesc != account.AccountCodeShortDesc)
+			{
+				accountNode.SetAttribute("longdesc", account.AccountCodeLongDesc);
+			}
+    	    AParentNode.AppendChild(accountNode);
+            
+            AMainDS.AAccountHierarchyDetail.DefaultView.Sort = AAccountHierarchyDetailTable.GetReportOrderDBName();
+            AMainDS.AAccountHierarchyDetail.DefaultView.RowFilter =
+                AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + ADetailRow.AccountHierarchyCode + "' AND " +
+                AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + ADetailRow.ReportingAccountCode + "'";
+
+            foreach (DataRowView rowView in AMainDS.AAccountHierarchyDetail.DefaultView)
+            {
+                AAccountHierarchyDetailRow accountDetail = (AAccountHierarchyDetailRow)rowView.Row;
+                InsertNodeIntoXmlDocument(AMainDS, ADoc, accountNode, accountDetail);
+            }
+        }
+        
+        /// <summary>
+        /// return a simple XMLDocument (encoded into a string) with the account hierarchy and account details;
+        /// root account can be calculated (find which account is reporting nowhere)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAccountHierarchyName"></param>
+        /// <returns></returns>
+		public static string ExportAccountHierarchy(Int32 ALedgerNumber, string AAccountHierarchyName)
+		{
+            GLSetupTDS MainDS = new GLSetupTDS();
+
+            AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+
+            XmlDocument doc = TYml2Xml.CreateXmlDocument();
+
+            AAccountHierarchyRow accountHierarchy = (AAccountHierarchyRow)MainDS.AAccountHierarchy.Rows.Find(new object[] { ALedgerNumber,
+                                                                                                                             AAccountHierarchyName });
+
+            if (accountHierarchy != null)
+            {
+                // find the BALSHT account that is reporting to the root account
+                MainDS.AAccountHierarchyDetail.DefaultView.RowFilter =
+                    AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + AAccountHierarchyName + "' AND " +
+                    AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + accountHierarchy.RootAccountCode + "'";
+
+                InsertNodeIntoXmlDocument(MainDS, doc, doc.DocumentElement,
+                    (AAccountHierarchyDetailRow)MainDS.AAccountHierarchyDetail.DefaultView[0].Row);
+            }
+        	
+            // XmlDocument is not serializable, therefore print it to string and return the string
+            return TXMLParser.XmlToString(doc);
+		}
+		
+		/// <summary>
+		/// only works if there are no balances/transactions yet for the accounts that are deleted
+		/// </summary>
+		/// <param name="ALedgerNumber"></param>
+		/// <param name="AHierarchyName"></param>
+		/// <param name="AXmlAccountHierarchy"></param>
+		/// <returns></returns>
+		public static bool ImportAccountHierarchy(Int32 ALedgerNumber, string AHierarchyName, string AXmlAccountHierarchy)
+		{
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(AXmlAccountHierarchy);
+			
+			GLSetupTDS MainDS = LoadAccountHierarchies(ALedgerNumber);
+			XmlNode root = myDoc.FirstChild.NextSibling;
+			
+			
+			// TODO: delete accounts that don't exist anymore in the new hierarchy 
+			// (check if their balance is empty and no transactions exist, or catch database constraint violation)
+			
+			return false;
+		}
+		
+		/// <summary>
+		/// import basic data for new ledger
+		/// </summary>
+		public static bool ImportNewLedger(Int32 ALedgerNumber, string AXmlAccountHierarchy, string AXmlCostCentreHierarchy, string AXmlInitialBalances)
+		{
+			// TODO ImportNewLedger
+			return false;
+		}
     }
 }

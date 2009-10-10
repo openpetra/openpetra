@@ -27,9 +27,11 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Xml;
 using Mono.Unix;
 using Ict.Common.Verification;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -222,6 +224,35 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             trvAccounts.EndUpdate();
 
             trvAccounts.SelectedNode = newNode;
+        }
+
+        private void ExportHierarchy(object sender, EventArgs e)
+        {
+        	XmlDocument doc = new XmlDocument();
+	    	doc.LoadXml(TRemote.MFinance.GL.WebConnectors.ExportAccountHierarchy(FLedgerNumber, FSelectedHierarchy));
+
+	    	TImportExportDialogs.ExportWithDialog(doc, Catalog.GetString("Save Account Hierarchy to file"));
+        }
+        
+        private void ImportHierarchy(object sender, EventArgs e)
+        {
+        	// TODO: open file; only will work if there are no GLM records and transactions yet
+	    	XmlDocument doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Load Account Hierarchy from file"));
+	    	
+	    	if (!TRemote.MFinance.GL.WebConnectors.ImportAccountHierarchy(FLedgerNumber, FSelectedHierarchy, TXMLParser.XmlToString(doc)))
+	    	{
+	    		MessageBox.Show(Catalog.GetString("Import of new Account Hierarchy failed; perhaps there were already balances? Try with a new ledger!")),
+	    			Catalog.GetString("Error"), MessageBoxIcon.Error);
+	    	}
+	    	else
+	    	{
+	    		// refresh the screen
+                FMainDS = TRemote.MFinance.GL.WebConnectors.LoadAccountHierarchies(FLedgerNumber);
+                PopulateTreeView();
+                
+                MessageBox.Show("Import of new Account Hierarchy has been successful",
+                               Catalog.GetString("Success"), MessageBoxIcon.Information);
+	    	}
         }
 
         private void GetDataFromControlsManual()
