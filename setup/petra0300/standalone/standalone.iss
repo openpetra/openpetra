@@ -58,7 +58,7 @@ Source: ..\..\..\csharp\ICT\Petra\Definitions\UINavigation.yml; DestDir: {app}/b
 Source: ..\i18n\*.mo; DestDir: {app}/bin30/locale/de/LC_MESSAGES; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\XmlReports\reports.dtd; DestDir: {app}/reports30
 Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30
-Source: ..\..\..\csharp\ICT\Petra\Server\sql\*.sql; DestDir: {app}/sql30
+; Source: ..\..\..\csharp\ICT\Petra\Server\sql\*.sql; DestDir: {app}/sql30
 Source: PetraServerAdminConsole.config; DestDir: {app}; DestName: PetraServerAdminConsole-3.0.config
 Source: PetraClient.config; DestDir: {app}; DestName: PetraClient-3.0.config
 Source: PetraServerConsole-Sqlite.config; DestDir: {app}; DestName: PetraServerConsole-3.0.config
