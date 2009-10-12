@@ -214,6 +214,13 @@
     <Compile Include="GLBatch.ManualCode.cs">
       <DependentUpon>GLBatch.cs</DependentUpon>
     </Compile>
+    <Compile Include="GLCostCentreHierarchy.cs" />
+    <Compile Include="GLCostCentreHierarchy.Designer.cs">
+      <DependentUpon>GLCostCentreHierarchy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GLCostCentreHierarchy.ManualCode.cs">
+      <DependentUpon>GLCostCentreHierarchy.cs</DependentUpon>
+    </Compile>
     <Compile Include="LedgerSelection.cs" />
     <Compile Include="LedgerSelection.Designer.cs">
       <DependentUpon>LedgerSelection.cs</DependentUpon>
@@ -279,6 +286,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GLBatch.resx">
       <DependentUpon>GLBatch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GLCostCentreHierarchy.resx">
+      <DependentUpon>GLCostCentreHierarchy.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LedgerSelection.resx">
       <DependentUpon>LedgerSelection.cs</DependentUpon>

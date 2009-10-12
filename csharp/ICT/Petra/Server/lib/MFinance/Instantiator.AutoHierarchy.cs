@@ -1896,6 +1896,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public GLSetupTDS LoadCostCentreHierarchy(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.LoadCostCentreHierarchy(ALedgerNumber);
+        }
+
+        /// generated method from connector
         public TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
                                                    out TVerificationResultCollection AVerificationResult)
         {
@@ -1910,11 +1916,24 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public string ExportCostCentreHierarchy(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ExportCostCentreHierarchy(ALedgerNumber);
+        }
+
+        /// generated method from connector
         public bool ImportAccountHierarchy(Int32 ALedgerNumber,
                                            string AHierarchyName,
                                            string AXmlAccountHierarchy)
         {
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ImportAccountHierarchy(ALedgerNumber, AHierarchyName, AXmlAccountHierarchy);
+        }
+
+        /// generated method from connector
+        public bool ImportCostCentreHierarchy(Int32 ALedgerNumber,
+                                              string AXmlHierarchy)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ImportCostCentreHierarchy(ALedgerNumber, AXmlHierarchy);
         }
 
         /// generated method from connector

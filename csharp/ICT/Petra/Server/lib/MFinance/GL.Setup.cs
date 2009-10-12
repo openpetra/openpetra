@@ -66,7 +66,28 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
-        /// save modified account hierarchy etc; does not support moving accounts
+        /// returns cost centre hierarchy and cost centre details for this ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        public static GLSetupTDS LoadCostCentreHierarchy(Int32 ALedgerNumber)
+        {
+            GLSetupTDS MainDS = new GLSetupTDS();
+
+            ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+
+            // Accept row changes here so that the Client gets 'unmodified' rows
+            MainDS.AcceptChanges();
+
+            // Remove all Tables that were not filled with data before remoting them.
+            MainDS.RemoveEmptyTables();
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// save modified account hierarchy etc; does not support moving accounts;
+        /// also used for saving cost centre hierarchy and cost centre details
         /// </summary>
         /// <param name="AInspectDS"></param>
         /// <param name="AVerificationResult"></param>
@@ -85,11 +106,31 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 try
                 {
-                    // this only supports adding new accounts, and modifying details; but not renaming accounts
-                    if (AAccountAccess.SubmitChanges(AInspectDS.AAccount, SubmitChangesTransaction,
-                            out AVerificationResult))
+                    if ((AInspectDS.AAccount.Count > 0) || (AInspectDS.AAccountHierarchyDetail.Count > 0))
                     {
-                        if (AAccountHierarchyDetailAccess.SubmitChanges(AInspectDS.AAccountHierarchyDetail, SubmitChangesTransaction,
+                        // this only supports adding new accounts, and modifying details; but not renaming accounts
+                        if (AAccountAccess.SubmitChanges(AInspectDS.AAccount, SubmitChangesTransaction,
+                                out AVerificationResult))
+                        {
+                            if (AAccountHierarchyDetailAccess.SubmitChanges(AInspectDS.AAccountHierarchyDetail, SubmitChangesTransaction,
+                                    out AVerificationResult))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            else
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrError;
+                            }
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (AInspectDS.ACostCentre.Count > 0)
+                    {
+                        // this only supports adding new cost centres, and modifying details; but not renaming cost centres
+                        if (ACostCentreAccess.SubmitChanges(AInspectDS.ACostCentre, SubmitChangesTransaction,
                                 out AVerificationResult))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
@@ -98,10 +139,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         {
                             SubmissionResult = TSubmitChangesResult.scrError;
                         }
-                    }
-                    else
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
                     }
 
                     if (SubmissionResult == TSubmitChangesResult.scrOK)
@@ -125,31 +162,33 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             return SubmissionResult;
         }
-        
+
         /// <summary>
         /// helper function for ExportAccountHierarchy
         /// </summary>
-        private static void InsertNodeIntoXmlDocument(GLSetupTDS AMainDS, 
-                                              XmlDocument ADoc,
-                                              XmlNode AParentNode,
-                                              AAccountHierarchyDetailRow ADetailRow)
+        private static void InsertNodeIntoXmlDocument(GLSetupTDS AMainDS,
+            XmlDocument ADoc,
+            XmlNode AParentNode,
+            AAccountHierarchyDetailRow ADetailRow)
         {
-			AAccountRow account = (AAccountRow) AMainDS.AAccount.Rows.Find(new object[] {ADetailRow.LedgerNumber, ADetailRow.ReportingAccountCode});
-    	    XmlElement accountNode  = ADoc.CreateElement("Account");
-    	    
-    	    // AccountCodeToReportTo and ReportOrder are encoded implicitly
-    	    accountNode.SetAttribute("name", ADetailRow.ReportingAccountCode);
-			accountNode.SetAttribute("active", account.AccountActiveFlag.ToString());
-			accountNode.SetAttribute("type", account.AccountType.ToString());
-			accountNode.SetAttribute("debitcredit", account.DebitCreditIndicator?"debit":"credit");
-			accountNode.SetAttribute("validcc", account.ValidCcCombo);
-			accountNode.SetAttribute("shortdesc", account.AccountCodeShortDesc);
-			if (account.AccountCodeLongDesc != account.AccountCodeShortDesc)
-			{
-				accountNode.SetAttribute("longdesc", account.AccountCodeLongDesc);
-			}
-    	    AParentNode.AppendChild(accountNode);
-            
+            AAccountRow account = (AAccountRow)AMainDS.AAccount.Rows.Find(new object[] { ADetailRow.LedgerNumber, ADetailRow.ReportingAccountCode });
+            XmlElement accountNode = ADoc.CreateElement("Account");
+
+            // AccountCodeToReportTo and ReportOrder are encoded implicitly
+            accountNode.SetAttribute("name", ADetailRow.ReportingAccountCode);
+            accountNode.SetAttribute("active", account.AccountActiveFlag.ToString());
+            accountNode.SetAttribute("type", account.AccountType.ToString());
+            accountNode.SetAttribute("debitcredit", account.DebitCreditIndicator ? "debit" : "credit");
+            accountNode.SetAttribute("validcc", account.ValidCcCombo);
+            accountNode.SetAttribute("shortdesc", account.AccountCodeShortDesc);
+
+            if (account.AccountCodeLongDesc != account.AccountCodeShortDesc)
+            {
+                accountNode.SetAttribute("longdesc", account.AccountCodeLongDesc);
+            }
+
+            AParentNode.AppendChild(accountNode);
+
             AMainDS.AAccountHierarchyDetail.DefaultView.Sort = AAccountHierarchyDetailTable.GetReportOrderDBName();
             AMainDS.AAccountHierarchyDetail.DefaultView.RowFilter =
                 AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + ADetailRow.AccountHierarchyCode + "' AND " +
@@ -161,7 +200,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 InsertNodeIntoXmlDocument(AMainDS, ADoc, accountNode, accountDetail);
             }
         }
-        
+
         /// <summary>
         /// return a simple XMLDocument (encoded into a string) with the account hierarchy and account details;
         /// root account can be calculated (find which account is reporting nowhere)
@@ -169,8 +208,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AAccountHierarchyName"></param>
         /// <returns></returns>
-		public static string ExportAccountHierarchy(Int32 ALedgerNumber, string AAccountHierarchyName)
-		{
+        public static string ExportAccountHierarchy(Int32 ALedgerNumber, string AAccountHierarchyName)
+        {
             GLSetupTDS MainDS = new GLSetupTDS();
 
             AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
@@ -180,7 +219,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             XmlDocument doc = TYml2Xml.CreateXmlDocument();
 
             AAccountHierarchyRow accountHierarchy = (AAccountHierarchyRow)MainDS.AAccountHierarchy.Rows.Find(new object[] { ALedgerNumber,
-                                                                                                                             AAccountHierarchyName });
+                                                                                                                            AAccountHierarchyName });
 
             if (accountHierarchy != null)
             {
@@ -192,40 +231,102 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 InsertNodeIntoXmlDocument(MainDS, doc, doc.DocumentElement,
                     (AAccountHierarchyDetailRow)MainDS.AAccountHierarchyDetail.DefaultView[0].Row);
             }
-        	
+
             // XmlDocument is not serializable, therefore print it to string and return the string
             return TXMLParser.XmlToString(doc);
-		}
-		
-		/// <summary>
-		/// only works if there are no balances/transactions yet for the accounts that are deleted
-		/// </summary>
-		/// <param name="ALedgerNumber"></param>
-		/// <param name="AHierarchyName"></param>
-		/// <param name="AXmlAccountHierarchy"></param>
-		/// <returns></returns>
-		public static bool ImportAccountHierarchy(Int32 ALedgerNumber, string AHierarchyName, string AXmlAccountHierarchy)
-		{
-			XmlDocument doc = new XmlDocument();
-			doc.LoadXml(AXmlAccountHierarchy);
-			
-			GLSetupTDS MainDS = LoadAccountHierarchies(ALedgerNumber);
-			XmlNode root = doc.FirstChild.NextSibling;
-			
-			
-			// TODO: delete accounts that don't exist anymore in the new hierarchy 
-			// (check if their balance is empty and no transactions exist, or catch database constraint violation)
-			
-			return false;
-		}
-		
-		/// <summary>
-		/// import basic data for new ledger
-		/// </summary>
-		public static bool ImportNewLedger(Int32 ALedgerNumber, string AXmlAccountHierarchy, string AXmlCostCentreHierarchy, string AXmlInitialBalances)
-		{
-			// TODO ImportNewLedger
-			return false;
-		}
+        }
+
+        /// <summary>
+        /// helper function for ExportCostCentreHierarchy
+        /// </summary>
+        private static void InsertNodeIntoXmlDocument(GLSetupTDS AMainDS,
+            XmlDocument ADoc,
+            XmlNode AParentNode,
+            ACostCentreRow ADetailRow)
+        {
+            XmlElement costCentreNode = ADoc.CreateElement("CostCentre");
+
+            // CostCentreToReportTo is encoded implicitly
+            costCentreNode.SetAttribute("code", ADetailRow.CostCentreCode);
+            costCentreNode.SetAttribute("active", ADetailRow.CostCentreActiveFlag.ToString());
+            costCentreNode.SetAttribute("type", ADetailRow.CostCentreType.ToString());
+            costCentreNode.SetAttribute("name", ADetailRow.CostCentreName);
+            AParentNode.AppendChild(costCentreNode);
+
+            AMainDS.ACostCentre.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+            AMainDS.ACostCentre.DefaultView.RowFilter =
+                ACostCentreTable.GetCostCentreToReportToDBName() + " = '" + ADetailRow.CostCentreCode + "'";
+
+            foreach (DataRowView rowView in AMainDS.ACostCentre.DefaultView)
+            {
+                InsertNodeIntoXmlDocument(AMainDS, ADoc, costCentreNode, (ACostCentreRow)rowView.Row);
+            }
+        }
+
+        /// <summary>
+        /// return a simple XMLDocument (encoded into a string) with the cost centre hierarchy and cost centre details;
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        public static string ExportCostCentreHierarchy(Int32 ALedgerNumber)
+        {
+            GLSetupTDS MainDS = new GLSetupTDS();
+
+            ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+
+            XmlDocument doc = TYml2Xml.CreateXmlDocument();
+
+            MainDS.ACostCentre.DefaultView.RowFilter =
+                ACostCentreTable.GetCostCentreToReportToDBName() + " IS NULL";
+
+            InsertNodeIntoXmlDocument(MainDS, doc, doc.DocumentElement,
+                (ACostCentreRow)MainDS.ACostCentre.DefaultView[0].Row);
+
+            // XmlDocument is not serializable, therefore print it to string and return the string
+            return TXMLParser.XmlToString(doc);
+        }
+
+        /// <summary>
+        /// only works if there are no balances/transactions yet for the accounts that are deleted
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AHierarchyName"></param>
+        /// <param name="AXmlAccountHierarchy"></param>
+        /// <returns></returns>
+        public static bool ImportAccountHierarchy(Int32 ALedgerNumber, string AHierarchyName, string AXmlAccountHierarchy)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            doc.LoadXml(AXmlAccountHierarchy);
+
+            GLSetupTDS MainDS = LoadAccountHierarchies(ALedgerNumber);
+            XmlNode root = doc.FirstChild.NextSibling;
+
+
+            // TODO: delete accounts that don't exist anymore in the new hierarchy
+            // (check if their balance is empty and no transactions exist, or catch database constraint violation)
+
+            return false;
+        }
+
+        /// <summary>
+        /// TODO import cost centre hierarchy
+        /// </summary>
+        public static bool ImportCostCentreHierarchy(Int32 ALedgerNumber, string AXmlHierarchy)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// import basic data for new ledger
+        /// </summary>
+        public static bool ImportNewLedger(Int32 ALedgerNumber,
+            string AXmlAccountHierarchy,
+            string AXmlCostCentreHierarchy,
+            string AXmlInitialBalances)
+        {
+            // TODO ImportNewLedger
+            return false;
+        }
     }
 }
