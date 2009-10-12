@@ -210,7 +210,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 			doc.LoadXml(AXmlAccountHierarchy);
 			
 			GLSetupTDS MainDS = LoadAccountHierarchies(ALedgerNumber);
-			XmlNode root = myDoc.FirstChild.NextSibling;
+			XmlNode root = doc.FirstChild.NextSibling;
 			
 			
 			// TODO: delete accounts that don't exist anymore in the new hierarchy 

@@ -241,8 +241,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 	    	
 	    	if (!TRemote.MFinance.GL.WebConnectors.ImportAccountHierarchy(FLedgerNumber, FSelectedHierarchy, TXMLParser.XmlToString(doc)))
 	    	{
-	    		MessageBox.Show(Catalog.GetString("Import of new Account Hierarchy failed; perhaps there were already balances? Try with a new ledger!")),
-	    			Catalog.GetString("Error"), MessageBoxIcon.Error);
+	    		MessageBox.Show(Catalog.GetString("Import of new Account Hierarchy failed; perhaps there were already balances? Try with a new ledger!"),
+	    			Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
 	    	}
 	    	else
 	    	{
@@ -251,7 +251,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 PopulateTreeView();
                 
                 MessageBox.Show("Import of new Account Hierarchy has been successful",
-                               Catalog.GetString("Success"), MessageBoxIcon.Information);
+                               Catalog.GetString("Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
 	    	}
         }
 
