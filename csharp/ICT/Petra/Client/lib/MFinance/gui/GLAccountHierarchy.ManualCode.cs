@@ -228,31 +228,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ExportHierarchy(object sender, EventArgs e)
         {
-        	XmlDocument doc = new XmlDocument();
-	    	doc.LoadXml(TRemote.MFinance.GL.WebConnectors.ExportAccountHierarchy(FLedgerNumber, FSelectedHierarchy));
+            XmlDocument doc = new XmlDocument();
 
-	    	TImportExportDialogs.ExportWithDialog(doc, Catalog.GetString("Save Account Hierarchy to file"));
+            doc.LoadXml(TRemote.MFinance.GL.WebConnectors.ExportAccountHierarchy(FLedgerNumber, FSelectedHierarchy));
+
+            TImportExportDialogs.ExportWithDialog(doc, Catalog.GetString("Save Account Hierarchy to file"));
         }
-        
+
         private void ImportHierarchy(object sender, EventArgs e)
         {
-        	// TODO: open file; only will work if there are no GLM records and transactions yet
-	    	XmlDocument doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Load Account Hierarchy from file"));
-	    	
-	    	if (!TRemote.MFinance.GL.WebConnectors.ImportAccountHierarchy(FLedgerNumber, FSelectedHierarchy, TXMLParser.XmlToString(doc)))
-	    	{
-	    		MessageBox.Show(Catalog.GetString("Import of new Account Hierarchy failed; perhaps there were already balances? Try with a new ledger!"),
-	    			Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-	    	}
-	    	else
-	    	{
-	    		// refresh the screen
+            // TODO: open file; only will work if there are no GLM records and transactions yet
+            XmlDocument doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Load Account Hierarchy from file"));
+
+            if (!TRemote.MFinance.GL.WebConnectors.ImportAccountHierarchy(FLedgerNumber, FSelectedHierarchy, TXMLParser.XmlToString(doc)))
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "Import of new Account Hierarchy failed; perhaps there were already balances? Try with a new ledger!"),
+                    Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                // refresh the screen
                 FMainDS = TRemote.MFinance.GL.WebConnectors.LoadAccountHierarchies(FLedgerNumber);
                 PopulateTreeView();
-                
+
                 MessageBox.Show("Import of new Account Hierarchy has been successful",
-                               Catalog.GetString("Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
-	    	}
+                    Catalog.GetString("Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         private void GetDataFromControlsManual()
@@ -260,6 +262,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // TODO: report to (drag/drop)
             // TODO: report order (drag/drop)
             // TODO: posting/summary (new/delete)
+
+            if (FCurrentNode != null)
+            {
+                FMainDS.AAccountHierarchyDetail.DefaultView.Sort = AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
+                AAccountRow currentAccount = (AAccountRow)FMainDS.AAccount.Rows.Find(
+                    new object[] { FLedgerNumber, ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
+                GetDetailsFromControls(currentAccount);
+            }
         }
     }
 }

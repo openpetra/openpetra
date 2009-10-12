@@ -106,7 +106,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 try
                 {
-                    if ((AInspectDS.AAccount.Count > 0) || (AInspectDS.AAccountHierarchyDetail.Count > 0))
+                    if ((AInspectDS.AAccount != null) || (AInspectDS.AAccountHierarchyDetail != null))
                     {
                         // this only supports adding new accounts, and modifying details; but not renaming accounts
                         if (AAccountAccess.SubmitChanges(AInspectDS.AAccount, SubmitChangesTransaction,

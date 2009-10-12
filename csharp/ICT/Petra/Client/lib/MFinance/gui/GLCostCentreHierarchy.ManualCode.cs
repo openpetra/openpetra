@@ -159,7 +159,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ACostCentreRow parentCostCentre =
                 (ACostCentreRow)FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber,
-                                                                             ((ACostCentreRow)FCurrentNode.Tag).CostCentreToReportTo });
+                                                                             ((ACostCentreRow)FCurrentNode.Tag).CostCentreCode });
 
             ACostCentreRow newCostCentre = FMainDS.ACostCentre.NewRowTyped();
             newCostCentre.CostCentreCode = newName;
@@ -167,6 +167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             newCostCentre.CostCentreActiveFlag = true;
             newCostCentre.CostCentreType = parentCostCentre.CostCentreType;
             newCostCentre.PostingCostCentreFlag = true;
+            newCostCentre.CostCentreToReportTo = parentCostCentre.CostCentreCode;
             FMainDS.ACostCentre.Rows.Add(newCostCentre);
 
             // TODO: what if the parent cost centre already had a posting balance? do we have to move costcentres around, insert a dummy parent?
@@ -216,6 +217,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // TODO: report to (drag/drop)
             // TODO: report order (drag/drop)
             // TODO: posting/summary (new/delete)
+
+            if (FCurrentNode != null)
+            {
+                ACostCentreRow currentCostCentre = (ACostCentreRow)FCurrentNode.Tag;
+                GetDetailsFromControls(currentCostCentre);
+            }
         }
     }
 }
