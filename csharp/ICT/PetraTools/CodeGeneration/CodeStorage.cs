@@ -48,6 +48,8 @@ namespace Ict.Tools.CodeGeneration
     {
         /// contains all controls, ie also menus etc; this is a sorted list for easily finding values, but also keep them ordered
         public Dictionary <string, TControlDef>FControlList = new Dictionary <string, TControlDef>();
+        /// it seems, on Mono the Dictionary gets sorted differently, therefore it is not useful for getting the RootControl etc; so we use a specific SortedList for this
+        public SortedList <int, TControlDef>FSortedControlList = new SortedList<int, TControlDef>();
         public Dictionary <string, TEventHandler>FEventList = new Dictionary <string, TEventHandler>();
         public Dictionary <string, TActionHandler>FActionList = new Dictionary <string, TActionHandler>();
 
@@ -183,7 +185,7 @@ namespace Ict.Tools.CodeGeneration
         {
             TControlDef firstControl = null;
 
-            foreach (TControlDef ctrl in FControlList.Values)
+            foreach (TControlDef ctrl in FSortedControlList.Values)
             {
                 if (ctrl.controlTypePrefix == APrefix)
                 {
@@ -228,7 +230,7 @@ namespace Ict.Tools.CodeGeneration
 
         public bool HasRootControl(string APrefix)
         {
-            foreach (TControlDef ctrl in FControlList.Values)
+            foreach (TControlDef ctrl in FSortedControlList.Values)
             {
                 if (ctrl.controlTypePrefix == APrefix)
                 {
@@ -408,6 +410,7 @@ namespace Ict.Tools.CodeGeneration
 
             result = new TControlDef(AParsedNode, this);
             FControlList.Add(parsedNodeName, result);
+            FSortedControlList.Add(FSortedControlList.Count, result);
             return result;
         }
 
@@ -429,6 +432,7 @@ namespace Ict.Tools.CodeGeneration
             result = new TControlDef(newNode, this);
             result.parentName = AParentName;
             FControlList.Add(AControlName, result);
+            FSortedControlList.Add(FSortedControlList.Count, result);
             TControlDef parentCtrl = GetControl(AParentName);
 
             if (parentCtrl != null)
@@ -461,7 +465,7 @@ namespace Ict.Tools.CodeGeneration
         {
             List <TControlDef>result = new List <TControlDef>();
 
-            foreach (TControlDef item in this.FControlList.Values)
+            foreach (TControlDef item in this.FSortedControlList.Values)
             {
                 if (item.parentName == AParent.controlName)
                 {

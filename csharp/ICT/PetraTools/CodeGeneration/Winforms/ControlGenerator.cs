@@ -831,7 +831,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             // need to save tab pages in a temporary list,
             // because TableLayoutPanelGenerator.CreateLayout will add to the FControlList
-            foreach (TControlDef ctrl in ATabControl.FCodeStorage.FControlList.Values)
+            foreach (TControlDef ctrl in ATabControl.FCodeStorage.FSortedControlList.Values)
             {
                 if (ctrl.controlTypePrefix == "tpg")
                 {

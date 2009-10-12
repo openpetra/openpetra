@@ -753,7 +753,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // add all the children
             List <TControlDef>children = new List <TControlDef>();
 
-            foreach (TControlDef child in container.FCodeStorage.FControlList.Values)
+            foreach (TControlDef child in container.FCodeStorage.FSortedControlList.Values)
             {
                 if (child.parentName == container.controlName)
                 {
