@@ -67,7 +67,6 @@ RootNode:
             Controls: [btnAddDetail, btnRemoveDetail, btnAnalysisAttributes]
         grdDetails:
             Dock: Fill
-            DetailTable: true
             Columns: [AApDocumentDetail.Amount, AApDocumentDetail.Narrative, AApDocumentDetail.ItemRef]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:

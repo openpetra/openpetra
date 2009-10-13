@@ -1,0 +1,26 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Gift Batches
+    Namespace: Ict.Petra.Client.MFinance.Gui.Gift
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
+    FormType: browse
+    Template: windowTDS
+    WindowWidth: 660
+    WindowHeight: 700
+    Controls:
+        pnlContent:
+            Controls: [tabGiftBatch]
+            Dock: Fill
+        tabGiftBatch: {Dock=Fill, DragTabPageEnabled=false}
+        tpgBatches:
+            Label: Batches
+            Controls: [ucoBatches]
+        tpgTransactions:
+            Label: Transactions
+            Controls: [ucoTransactions]
+        ucoBatches:
+            Type: Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftBatches
+            Dock: Fill
+        ucoTransactions:
+            Type: Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftTransactions
+            Dock: Fill

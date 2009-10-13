@@ -200,6 +200,13 @@
     <Compile Include="FinanceMain.ManualCode.cs">
       <DependentUpon>FinanceMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="GiftBatch.cs" />
+    <Compile Include="GiftBatch.Designer.cs">
+      <DependentUpon>GiftBatch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GiftBatch.ManualCode.cs">
+      <DependentUpon>GiftBatch.cs</DependentUpon>
+    </Compile>
     <Compile Include="GLAccountHierarchy.cs" />
     <Compile Include="GLAccountHierarchy.Designer.cs">
       <DependentUpon>GLAccountHierarchy.cs</DependentUpon>
@@ -238,6 +245,20 @@
     </Compile>
     <Compile Include="SetupDailyExchangeRate.ManualCode.cs">
       <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_GiftBatches.cs" />
+    <Compile Include="UC_GiftBatches.Designer.cs">
+      <DependentUpon>UC_GiftBatches.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_GiftBatches.ManualCode.cs">
+      <DependentUpon>UC_GiftBatches.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_GiftTransactions.cs" />
+    <Compile Include="UC_GiftTransactions.Designer.cs">
+      <DependentUpon>UC_GiftTransactions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_GiftTransactions.ManualCode.cs">
+      <DependentUpon>UC_GiftTransactions.cs</DependentUpon>
     </Compile>
     <Compile Include="UC_GLBatches.cs" />
     <Compile Include="UC_GLBatches.Designer.cs">
@@ -281,6 +302,9 @@
     <EmbeddedResource Include="FinanceMain.resx">
       <DependentUpon>FinanceMain.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GiftBatch.resx">
+      <DependentUpon>GiftBatch.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GLAccountHierarchy.resx">
       <DependentUpon>GLAccountHierarchy.cs</DependentUpon>
     </EmbeddedResource>
@@ -298,6 +322,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SetupDailyExchangeRate.resx">
       <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_GiftBatches.resx">
+      <DependentUpon>UC_GiftBatches.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_GiftTransactions.resx">
+      <DependentUpon>UC_GiftTransactions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_GLBatches.resx">
       <DependentUpon>UC_GLBatches.cs</DependentUpon>

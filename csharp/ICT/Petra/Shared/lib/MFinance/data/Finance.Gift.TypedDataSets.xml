@@ -1,0 +1,18 @@
+<PetraDataSets>
+  <ImportUnit name="Ict.Petra.Shared.MFinance.Gift.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+  
+    <DataSet name="GiftBatchTDS">
+        <Table sqltable="a_ledger"/>
+        <Table sqltable="a_gift_batch"/>
+        <Table sqltable="a_gift"/>
+        <Table sqltable="a_gift_detail">
+            <CustomField name="DonorKey" type="Int64"/>
+            <CustomField name="DonorName" type="string"/>
+            <CustomField name="RecipientDescription" type="string"/>
+        </Table>
+        <Table sqltable="a_motivation_detail"/>
+        <Table sqltable="a_motivation_group"/>
+    </DataSet> 
+
+</PetraDataSets>

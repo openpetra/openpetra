@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Finance.AP.DataSets.cs" />
     <Compile Include="DataSets.AssemblyInfo.cs" />
+    <Compile Include="Finance.Gift.DataSets.cs" />
     <Compile Include="Finance.GL.DataSets.cs" />
   </ItemGroup>
   <ItemGroup>

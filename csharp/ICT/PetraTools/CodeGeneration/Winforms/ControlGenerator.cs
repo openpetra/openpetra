@@ -166,6 +166,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
+        protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldOrNull == null)
+            {
+                // Date never can be null; cause compiler error to tell the developer to mark field in database as NOT NULL
+                return ctrl.controlName + ".Value = " + "Please use NOT NULL in petra.xml" + ";";
+            }
+
+            return ctrl.controlName + ".Value = " + AFieldOrNull + ";";
+        }
+
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
@@ -664,12 +675,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     foreach (string SortOrderPart in SortOrder.Split(','))
                     {
                         bool temp;
-                        string columnName =
-                            writer.CodeStorage.GetTableField(
-                                null,
-                                SortOrderPart.Split(' ')[0],
-                                out temp, true).strName;
-                        SortOrder = SortOrder.Replace(SortOrderPart.Split(' ')[0], columnName);
+                        TTableField field = null;
+
+                        if ((SortOrderPart.Split(' ')[0].IndexOf(".") == -1) && ctrl.HasAttribute("TableName"))
+                        {
+                            field = FCodeStorage.GetTableField(null, ctrl.GetAttribute("TableName") + "." + SortOrderPart.Split(
+                                    ' ')[0], out temp, true);
+                        }
+                        else
+                        {
+                            field =
+                                writer.CodeStorage.GetTableField(
+                                    null,
+                                    SortOrderPart.Split(' ')[0],
+                                    out temp, true);
+                        }
+
+                        if (field != null)
+                        {
+                            SortOrder = SortOrder.Replace(SortOrderPart.Split(' ')[0], field.strName);
+                        }
                     }
 
                     writer.Template.AddToCodelet("DETAILTABLESORT", SortOrder);
@@ -746,15 +771,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".Text = String.Empty;";
             }
 
-            if (AFieldTypeDotNet.ToLower().Contains("int"))
-            {
-                return "Convert.ToInt32(" + ctrl.controlName + ".Text)";
-            }
-            else if (AFieldTypeDotNet.ToLower().Contains("double"))
-            {
-                return "Convert.ToDouble(" + ctrl.controlName + ".Text)";
-            }
-
             return ctrl.controlName + ".Text = String.Format(\"{0:0000000000}\", " + AFieldOrNull + ");";
         }
 
@@ -763,6 +779,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (AFieldTypeDotNet == null)
             {
                 return ctrl.controlName + ".Text.Length == 0";
+            }
+
+            if (AFieldTypeDotNet.ToLower().Contains("int"))
+            {
+                return "Convert.ToInt32(" + ctrl.controlName + ".Text)";
+            }
+            else if (AFieldTypeDotNet.ToLower().Contains("double"))
+            {
+                return "Convert.ToDouble(" + ctrl.controlName + ".Text)";
             }
 
             return ctrl.controlName + ".Text";
@@ -822,7 +847,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("INITMANUALCODE", "TabSelectionChanged(null, null);" + Environment.NewLine);
             }
 
-            writer.Template.SetCodelet("TABPAGES", "true");
+            writer.Template.SetCodelet("TABPAGECTRL", ctrl.controlName);
         }
 
         protected void CreateCode(IFormWriter writer, TControlDef ATabControl)
@@ -1053,8 +1078,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (TXMLParser.HasAttribute(curNode, "DefaultValue"))
             {
-                // TODO implement DefaultValue with = sign before control name?
                 DefaultValue = TXMLParser.GetAttribute(curNode, "DefaultValue");
+            }
+            else
+            {
+                // DefaultValue with = sign before control name
+                for (int counter = 0; counter < optionalValues.Count; counter++)
+                {
+                    if (optionalValues[counter].StartsWith("="))
+                    {
+                        optionalValues[counter] = optionalValues[counter].Substring(1).Trim();
+                        DefaultValue = optionalValues[counter];
+                    }
+                }
             }
 
             // add the radiobuttons on the fly

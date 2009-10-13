@@ -12822,6 +12822,7 @@
                 format="99/99/9999"
                 label="GL Effective Date"
                 help="Effective date to be used when posted to the general ledger."
+                notnull="yes"
                 initial="today">
     </tablefield>
     <tablefield name="a_currency_code_c"

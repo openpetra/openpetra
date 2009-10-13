@@ -48,8 +48,9 @@ namespace Ict.Tools.CodeGeneration
     {
         /// contains all controls, ie also menus etc; this is a sorted list for easily finding values, but also keep them ordered
         public Dictionary <string, TControlDef>FControlList = new Dictionary <string, TControlDef>();
+
         /// it seems, on Mono the Dictionary gets sorted differently, therefore it is not useful for getting the RootControl etc; so we use a specific SortedList for this
-        public SortedList <int, TControlDef>FSortedControlList = new SortedList<int, TControlDef>();
+        public SortedList <int, TControlDef>FSortedControlList = new SortedList <int, TControlDef>();
         public Dictionary <string, TEventHandler>FEventList = new Dictionary <string, TEventHandler>();
         public Dictionary <string, TActionHandler>FActionList = new Dictionary <string, TActionHandler>();
 
@@ -350,6 +351,14 @@ namespace Ict.Tools.CodeGeneration
             string fieldname = ADataField.Split('.')[1];
 
             AIsDetailNotMaster = GetAttribute("DetailTable") == tablename;
+
+            if (tablename.Contains("TDS"))
+            {
+                // eg. GiftBatchTDSAGiftDetailTable
+                // this is a derived data table;
+                // petra.xml only contains the original base tables
+                tablename = tablename.Substring(tablename.IndexOf("TDS") + 3);
+            }
 
             if (tablename.Length == 0)
             {

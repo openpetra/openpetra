@@ -39,6 +39,7 @@ OpenPetra:
                         GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=GL.TFrmGLBatch}
                     Gift:
                         EnteringGifts: {Description: Just a prototype at the moment, ActionOpenScreen=TFrmBankStatementImport}
+                        GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=GL.TFrmGiftBatch}
                     AP: {Label=Accounts Payable}
                         AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=AccountsPayable.TFrmAPMain}
                     Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}

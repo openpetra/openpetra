@@ -1,0 +1,52 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MFinance.Gui.Gift
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
+    DetailTable: AGiftDetail
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&Add, ActionClick=NewRow}
+    Controls:
+        pnlContent:
+            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+            Dock: Fill
+        pnlInfo:
+            Controls:
+                Row0: [txtLedgerNumber, txtBatchNumber]
+            Dock: Top
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger}
+        txtBatchNumber: {ReadOnly=true, Label=Gift Batch}
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnNew, btnRemove]
+        btnNew: {Action=actNew}
+        btnRemove: {TODO=true}
+        grdDetails:
+            #TODO: support split gifts, and deal with gift details properly
+            TableName: AGiftDetail
+            Dock: Fill
+            Columns: [GiftTransactionNumber, DetailNumber, DonorKey, DonorName, GiftAmount, RecipientDescription, MotivationGroupCode, MotivationDetailCode]
+            CustomColumns:
+                DonorKey: {Label=Donor Key, Type=PartnerKey}
+                DonorName: {Label=Donor Name, Type=String}
+                RecipientDescription: {Label=Recipient, Type=String}
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: GiftTransactionNumber ASC
+            RowFilter: AGiftDetail.BatchNumber
+        pnlDetails:
+            Dock: Bottom
+            # TODO: many more details: confidential, comment, key ministry, etc
+            # TODO: split gifts
+            Controls: [txtDetailDonorKey, txtDetailGiftTransactionAmount, cmbDetailMotivationGroup, cmbDetailMotivationDetail, txtDetailRecipientKey]
+        #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
+        txtDetailDonorKey: {Label=Donor, Type=PartnerKey}
+        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey}
+        cmbDetailMotivationGroup: {List=UserDefinedList}
+        cmbDetailMotivationDetail: {List=UserDefinedList}
+        txtDetailGiftTransactionAmount: {Label=Amount}

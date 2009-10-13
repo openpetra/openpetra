@@ -35,6 +35,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
@@ -54,6 +55,7 @@ using Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Budget.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors;
+using Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors;
@@ -73,6 +75,7 @@ using Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors;
 using Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors;
 //using Ict.Petra.Server.MFinance.Budget.UIConnectors;
 //using Ict.Petra.Server.MFinance.Gift.UIConnectors;
+using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 //using Ict.Petra.Server.MFinance.GL.UIConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 //using Ict.Petra.Server.MFinance.ICH.UIConnectors;
@@ -87,6 +90,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
 #endregion ManualCode
 namespace Ict.Petra.Server.MFinance.Instantiator
@@ -1415,6 +1419,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift
         private DateTime FStartTime;
 #endif
         private TGiftUIConnectorsNamespace FGiftUIConnectorsSubNamespace;
+        private TGiftWebConnectorsNamespace FGiftWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TGiftNamespace()
@@ -1512,6 +1517,37 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift
         }
 
 
+        /// <summary>The 'GiftWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IGiftWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'Gift.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'Gift.WebConnectors' sub-namespace
+                //
+
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FGiftWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.Gift.Instantiator.WebConnectors') should be automatically contructable.
+                    FGiftWebConnectorsSubNamespace = new TGiftWebConnectorsNamespace();
+                }
+
+
+                return (IGiftWebConnectorsNamespace)FGiftWebConnectorsSubNamespace;
+            }
+
+        }
+
+
     }
 }
 
@@ -1589,6 +1625,118 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors
             return null; // make sure that the TGiftUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
+
+    }
+}
+
+
+namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
+{
+
+    /// <summary>auto generated class </summary>
+    public class TGiftWebConnectorsNamespace : MarshalByRefObject, IGiftWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TGiftWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TGiftWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TGiftWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+
+        /// generated method from connector
+        public GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadAGiftBatch(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public GiftBatchTDS LoadTransactions(Int32 ALedgerNumber,
+                                             Int32 ABatchNumber)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadTransactions(ALedgerNumber, ABatchNumber);
+        }
+
+        /// generated method from connector
+        public TSubmitChangesResult SaveGiftBatchTDS(ref GiftBatchTDS AInspectDS,
+                                                     out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SaveGiftBatchTDS(ref AInspectDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public bool PostGiftBatch(Int32 ALedgerNumber,
+                                  Int32 ABatchNumber,
+                                  out TVerificationResultCollection AVerifications)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.PostGiftBatch(ALedgerNumber, ABatchNumber, out AVerifications);
+        }
 
     }
 }
