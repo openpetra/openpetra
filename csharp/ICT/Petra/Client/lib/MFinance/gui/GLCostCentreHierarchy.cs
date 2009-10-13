@@ -66,9 +66,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblDetailCostCentreCode.Text = Catalog.GetString("Detail Cost Centre Code:");
-      this.lblDetailCostCentreType.Text = Catalog.GetString("Detail Cost Centre Type:");
-      this.lblDetailCostCentreName.Text = Catalog.GetString("Detail Cost Centre Name:");
+      this.lblDetailCostCentreCode.Text = Catalog.GetString("Cost Centre Code:");
+      this.lblDetailCostCentreType.Text = Catalog.GetString("Cost Centre Type:");
+      this.lblDetailCostCentreName.Text = Catalog.GetString("Cost Centre Name:");
       this.chkDetailCostCentreActiveFlag.Text = Catalog.GetString("Active");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");

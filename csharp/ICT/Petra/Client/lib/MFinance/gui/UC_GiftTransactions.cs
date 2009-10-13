@@ -73,8 +73,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.txtDetailDonorKey.ButtonText = Catalog.GetString("Find");
       this.lblDetailDonorKey.Text = Catalog.GetString("Donor:");
       this.lblDetailGiftTransactionAmount.Text = Catalog.GetString("Amount:");
-      this.lblDetailMotivationGroup.Text = Catalog.GetString("Detail Motivation Group:");
-      this.lblDetailMotivationDetail.Text = Catalog.GetString("Detail Motivation Detail:");
+      this.lblDetailMotivationGroup.Text = Catalog.GetString("Motivation Group:");
+      this.lblDetailMotivationDetail.Text = Catalog.GetString("Motivation Detail:");
       this.txtDetailRecipientKey.ButtonText = Catalog.GetString("Find");
       this.lblDetailRecipientKey.Text = Catalog.GetString("Recipient:");
       #endregion

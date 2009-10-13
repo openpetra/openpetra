@@ -53,16 +53,17 @@ RootNode:
                 Row5: [txtDetailExchangeRateToBase]
                 Row6: [cmbDetailMethodOfPayment]
                 Row7: [rgrDetailGiftType]
-        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2}
+        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=3}
         cmbDetailBankCostCentre: {Label=Cost Centre}
         cmbDetailBankAccountCode: {Label=Bank Account}
         dtpDetailGlEffectiveDate: {Label=GL Effective Date}
         txtDetailBatchHashTotal: {Label=Hash Total, Type=Currency}
         cmbDetailCurrencyCode:
         txtDetailExchangeRateToBase:
-        cmbDetailMethodOfPayment:
+        cmbDetailMethodOfPayment: {Label=Method of Payment}
         rgrDetailGiftType:
             OptionalValues: [=Gift, GiftInKind, Other]
+            ControlsOrientation: Horizontal
         tbrTabPage:
         mnuTabPage:
     Menu:

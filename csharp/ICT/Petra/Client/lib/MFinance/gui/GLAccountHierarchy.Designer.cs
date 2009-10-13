@@ -166,7 +166,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountCode.Location = new System.Drawing.Point(2,2);
             this.lblDetailAccountCode.Name = "lblDetailAccountCode";
             this.lblDetailAccountCode.AutoSize = true;
-            this.lblDetailAccountCode.Text = "Detail Account Code:";
+            this.lblDetailAccountCode.Text = "Account Code:";
             this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // cmbDetailAccountType
@@ -181,7 +181,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountType.Location = new System.Drawing.Point(2,2);
             this.lblDetailAccountType.Name = "lblDetailAccountType";
             this.lblDetailAccountType.AutoSize = true;
-            this.lblDetailAccountType.Text = "Detail Account Type:";
+            this.lblDetailAccountType.Text = "Account Type:";
             this.lblDetailAccountType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // txtDetailAccountCodeLongDesc

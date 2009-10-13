@@ -162,7 +162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailCostCentreCode.Location = new System.Drawing.Point(2,2);
             this.lblDetailCostCentreCode.Name = "lblDetailCostCentreCode";
             this.lblDetailCostCentreCode.AutoSize = true;
-            this.lblDetailCostCentreCode.Text = "Detail Cost Centre Code:";
+            this.lblDetailCostCentreCode.Text = "Cost Centre Code:";
             this.lblDetailCostCentreCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // cmbDetailCostCentreType
@@ -177,7 +177,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailCostCentreType.Location = new System.Drawing.Point(2,2);
             this.lblDetailCostCentreType.Name = "lblDetailCostCentreType";
             this.lblDetailCostCentreType.AutoSize = true;
-            this.lblDetailCostCentreType.Text = "Detail Cost Centre Type:";
+            this.lblDetailCostCentreType.Text = "Cost Centre Type:";
             this.lblDetailCostCentreType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // txtDetailCostCentreName
@@ -191,7 +191,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailCostCentreName.Location = new System.Drawing.Point(2,2);
             this.lblDetailCostCentreName.Name = "lblDetailCostCentreName";
             this.lblDetailCostCentreName.AutoSize = true;
-            this.lblDetailCostCentreName.Text = "Detail Cost Centre Name:";
+            this.lblDetailCostCentreName.Text = "Cost Centre Name:";
             this.lblDetailCostCentreName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // chkDetailCostCentreActiveFlag

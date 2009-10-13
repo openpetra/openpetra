@@ -66,8 +66,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblDetailAccountCode.Text = Catalog.GetString("Detail Account Code:");
-      this.lblDetailAccountType.Text = Catalog.GetString("Detail Account Type:");
+      this.lblDetailAccountCode.Text = Catalog.GetString("Account Code:");
+      this.lblDetailAccountType.Text = Catalog.GetString("Account Type:");
       this.lblDetailAccountCodeLongDesc.Text = Catalog.GetString("Description Long:");
       this.lblDetailAccountCodeShortDesc.Text = Catalog.GetString("Description Short:");
       this.lblDetailValidCcCombo.Text = Catalog.GetString("Valid Cost Centres:");

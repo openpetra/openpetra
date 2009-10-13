@@ -79,13 +79,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.lblDetailBankAccountCode.Text = Catalog.GetString("Bank Account:");
       this.lblDetailGlEffectiveDate.Text = Catalog.GetString("GL Effective Date:");
       this.lblDetailBatchHashTotal.Text = Catalog.GetString("Hash Total:");
-      this.lblDetailCurrencyCode.Text = Catalog.GetString("Detail Currency Code:");
-      this.lblDetailExchangeRateToBase.Text = Catalog.GetString("Detail Exchange Rate To Base:");
-      this.lblDetailMethodOfPayment.Text = Catalog.GetString("Detail Method Of Payment:");
+      this.lblDetailCurrencyCode.Text = Catalog.GetString("Currency Code:");
+      this.lblDetailExchangeRateToBase.Text = Catalog.GetString("Exchange Rate To Base:");
+      this.lblDetailMethodOfPayment.Text = Catalog.GetString("Method of Payment:");
       this.rbtGift.Text = Catalog.GetString("Gift");
       this.rbtGiftInKind.Text = Catalog.GetString("GiftInKind");
       this.rbtOther.Text = Catalog.GetString("Other");
-      this.rgrDetailGiftType.Text = Catalog.GetString("Detail Gift Type");
+      this.rgrDetailGiftType.Text = Catalog.GetString("Gift Type");
       this.tbbPostBatch.Text = Catalog.GetString("&Post Batch");
       this.mniPost.Text = Catalog.GetString("&Post Batch");
       this.mniBatch.Text = Catalog.GetString("&Batch");

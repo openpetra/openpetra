@@ -281,7 +281,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMotivationGroup.Location = new System.Drawing.Point(2,2);
             this.lblDetailMotivationGroup.Name = "lblDetailMotivationGroup";
             this.lblDetailMotivationGroup.AutoSize = true;
-            this.lblDetailMotivationGroup.Text = "Detail Motivation Group:";
+            this.lblDetailMotivationGroup.Text = "Motivation Group:";
             this.lblDetailMotivationGroup.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // cmbDetailMotivationDetail
@@ -296,7 +296,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMotivationDetail.Location = new System.Drawing.Point(2,2);
             this.lblDetailMotivationDetail.Name = "lblDetailMotivationDetail";
             this.lblDetailMotivationDetail.AutoSize = true;
-            this.lblDetailMotivationDetail.Text = "Detail Motivation Detail:";
+            this.lblDetailMotivationDetail.Text = "Motivation Detail:";
             this.lblDetailMotivationDetail.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // txtDetailRecipientKey

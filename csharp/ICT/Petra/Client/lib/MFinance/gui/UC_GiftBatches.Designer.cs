@@ -403,7 +403,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailCurrencyCode.Location = new System.Drawing.Point(2,2);
             this.lblDetailCurrencyCode.Name = "lblDetailCurrencyCode";
             this.lblDetailCurrencyCode.AutoSize = true;
-            this.lblDetailCurrencyCode.Text = "Detail Currency Code:";
+            this.lblDetailCurrencyCode.Text = "Currency Code:";
             this.lblDetailCurrencyCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // txtDetailExchangeRateToBase
@@ -417,7 +417,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailExchangeRateToBase.Location = new System.Drawing.Point(2,2);
             this.lblDetailExchangeRateToBase.Name = "lblDetailExchangeRateToBase";
             this.lblDetailExchangeRateToBase.AutoSize = true;
-            this.lblDetailExchangeRateToBase.Text = "Detail Exchange Rate To Base:";
+            this.lblDetailExchangeRateToBase.Text = "Exchange Rate To Base:";
             this.lblDetailExchangeRateToBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // cmbDetailMethodOfPayment
@@ -431,7 +431,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMethodOfPayment.Location = new System.Drawing.Point(2,2);
             this.lblDetailMethodOfPayment.Name = "lblDetailMethodOfPayment";
             this.lblDetailMethodOfPayment.AutoSize = true;
-            this.lblDetailMethodOfPayment.Text = "Detail Method Of Payment:";
+            this.lblDetailMethodOfPayment.Text = "Method of Payment:";
             this.lblDetailMethodOfPayment.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // rgrDetailGiftType
@@ -468,16 +468,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.rbtOther.Name = "rbtOther";
             this.rbtOther.AutoSize = true;
             this.rbtOther.Text = "Other";
-            this.tableLayoutPanel6.ColumnCount = 1;
+            this.tableLayoutPanel6.ColumnCount = 3;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel6.RowCount = 3;
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel6.RowCount = 1;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel6.Controls.Add(this.rbtGift, 0, 0);
-            this.tableLayoutPanel6.Controls.Add(this.rbtGiftInKind, 0, 1);
-            this.tableLayoutPanel6.Controls.Add(this.rbtOther, 0, 2);
-            this.rgrDetailGiftType.Text = "Detail Gift Type";
+            this.tableLayoutPanel6.Controls.Add(this.rbtGiftInKind, 1, 0);
+            this.tableLayoutPanel6.Controls.Add(this.rbtOther, 2, 0);
+            this.rgrDetailGiftType.Text = "Gift Type";
             this.tableLayoutPanel5.ColumnCount = 4;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -501,7 +501,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel5.Controls.Add(this.lblDetailMethodOfPayment, 0, 6);
             this.tableLayoutPanel5.SetColumnSpan(this.rgrDetailGiftType, 2);
             this.tableLayoutPanel5.Controls.Add(this.rgrDetailGiftType, 0, 7);
-            this.tableLayoutPanel5.SetColumnSpan(this.txtDetailBatchDescription, 2);
+            this.tableLayoutPanel5.SetColumnSpan(this.txtDetailBatchDescription, 3);
             this.tableLayoutPanel5.Controls.Add(this.txtDetailBatchDescription, 1, 0);
             this.tableLayoutPanel5.Controls.Add(this.cmbDetailBankCostCentre, 1, 1);
             this.tableLayoutPanel5.Controls.Add(this.cmbDetailBankAccountCode, 1, 2);

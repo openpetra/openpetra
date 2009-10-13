@@ -718,7 +718,15 @@ namespace Ict.Tools.CodeGeneration
                     }
                 }
 
-                return StringHelper.ReverseUpperCamelCase(xmlNode.Name.Substring(3));
+                string controlName = xmlNode.Name.Substring(3);
+
+                if (controlName.StartsWith("Detail"))
+                {
+                    // this is for controls that belong to the detail table by convention
+                    controlName = controlName.Substring("Detail".Length);
+                }
+
+                return StringHelper.ReverseUpperCamelCase(controlName);
             }
             set
             {
