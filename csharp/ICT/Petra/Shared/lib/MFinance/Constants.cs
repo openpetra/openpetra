@@ -53,6 +53,12 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>GL Batch</summary>
         public const String TRANSACTION_REALLOC = "REALLOC";
 
+        /// <summary>GL Batch</summary>
+        public const String TRANSACTION_GIFT = "GR";
+
+        /// <summary>GL Batch</summary>
+        public const String TRANSACTION_AP = "INV";
+        
         /// <summary>General Ledger</summary>
         public const String ACCOUNT_HIERARCHY_STANDARD = "STANDARD";
 

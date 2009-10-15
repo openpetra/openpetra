@@ -642,7 +642,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                 journal.DateEffective = batch.DateEffective;
                 journal.TransactionCurrency = CurrencyCode;
                 journal.JournalDescription = "TODO"; // TODO: journal description for posting AP documents
-                journal.TransactionTypeCode = MFinanceConstants.TRANSACTION_STD;
+                journal.TransactionTypeCode = MFinanceConstants.TRANSACTION_AP;
                 journal.SubSystemCode = MFinanceConstants.SUB_SYSTEM_AP;
                 journal.DateOfEntry = DateTime.Now;
 

@@ -270,6 +270,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public static short ColumnDonorNameId = 30;
         /// used for generic TTypedDataTable functions
         public static short ColumnRecipientDescriptionId = 31;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAccountCodeId = 32;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -307,7 +309,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(28, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
                     new TTypedColumnInfo(29, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(30, "DonorName", "DonorName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(31, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(31, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(32, "AccountCode", "AccountCode", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
                     0, 1, 2, 3
@@ -339,6 +342,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public DataColumn ColumnDonorName;
         ///
         public DataColumn ColumnRecipientDescription;
+        ///
+        public DataColumn ColumnAccountCode;
 
         /// create the columns
         protected override void InitClass()
@@ -375,6 +380,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("DonorKey", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("DonorName", typeof(string)));
             this.Columns.Add(new System.Data.DataColumn("RecipientDescription", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("AccountCode", typeof(string)));
         }
 
         /// assign columns to properties, set primary key
@@ -412,6 +418,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.ColumnDonorKey = this.Columns["DonorKey"];
             this.ColumnDonorName = this.Columns["DonorName"];
             this.ColumnRecipientDescription = this.Columns["RecipientDescription"];
+            this.ColumnAccountCode = this.Columns["AccountCode"];
             this.PrimaryKey = new System.Data.DataColumn[4] {
                     ColumnLedgerNumber,ColumnBatchNumber,ColumnGiftTransactionNumber,ColumnDetailNumber};
         }
@@ -504,6 +511,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
 
         /// get character length for column
         public static short GetRecipientDescriptionLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAccountCodeDBName()
+        {
+            return "AccountCode";
+        }
+
+        /// get character length for column
+        public static short GetAccountCodeLength()
         {
             return -1;
         }
@@ -601,6 +620,32 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             }
         }
 
+        ///
+        public string AccountCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAccountCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAccountCode)
+                            || (((string)(this[this.myTable.ColumnAccountCode])) != value)))
+                {
+                    this[this.myTable.ColumnAccountCode] = value;
+                }
+            }
+        }
+
         /// set default values
         public override void InitValues()
         {
@@ -636,6 +681,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.SetNull(this.myTable.ColumnDonorKey);
             this.SetNull(this.myTable.ColumnDonorName);
             this.SetNull(this.myTable.ColumnRecipientDescription);
+            this.SetNull(this.myTable.ColumnAccountCode);
         }
 
         /// test for NULL value
@@ -672,6 +718,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public void SetRecipientDescriptionNull()
         {
             this.SetNull(this.myTable.ColumnRecipientDescription);
+        }
+
+        /// test for NULL value
+        public bool IsAccountCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnAccountCode);
+        }
+
+        /// assign NULL value
+        public void SetAccountCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnAccountCode);
         }
     }
 }

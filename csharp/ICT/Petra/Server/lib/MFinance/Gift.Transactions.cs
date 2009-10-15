@@ -26,6 +26,7 @@
 using System;
 using System.Data;
 using System.Collections.Specialized;
+using Mono.Unix;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
@@ -35,6 +36,7 @@ using Ict.Petra.Server.MFinance;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
@@ -214,6 +216,118 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// creates the GL batch needed for posting the gift batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AGiftDataset"></param>
+        /// <returns></returns>
+        private static GLBatchTDS CreateGLBatchAndTransactionsForPostingGifts(Int32 ALedgerNumber, ref GiftBatchTDS AGiftDataset)
+        {
+            // create one GL batch
+            GLBatchTDS GLDataset = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
+
+            ABatchRow batch = GLDataset.ABatch[0];
+
+            AGiftBatchRow giftbatch = AGiftDataset.AGiftBatch[0];
+
+            batch.BatchDescription = Catalog.GetString("Gift Batch " + giftbatch.BatchNumber.ToString());
+            batch.DateEffective = giftbatch.GlEffectiveDate;
+            batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
+
+            // one gift batch only has one currency, create only one journal
+            AJournalRow journal = GLDataset.AJournal.NewRowTyped();
+            journal.LedgerNumber = batch.LedgerNumber;
+            journal.BatchNumber = batch.BatchNumber;
+            journal.JournalNumber = 1;
+            journal.DateEffective = batch.DateEffective;
+            journal.TransactionCurrency = giftbatch.CurrencyCode;
+            journal.JournalDescription = batch.BatchDescription;
+            journal.TransactionTypeCode = MFinanceConstants.TRANSACTION_GIFT;
+            journal.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GR;
+            journal.DateOfEntry = DateTime.Now;
+
+            // TODO journal.ExchangeRateToBase and journal.ExchangeRateTime
+            journal.ExchangeRateToBase = 1.0;
+            GLDataset.AJournal.Rows.Add(journal);
+
+            Int32 TransactionCounter = 1;
+
+            foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
+            {
+                ATransactionRow transaction = null;
+
+                // at the moment, we create 2 transactions for each gift detail; no summarising of gift transactions etc
+
+                transaction = GLDataset.ATransaction.NewRowTyped();
+                transaction.LedgerNumber = journal.LedgerNumber;
+                transaction.BatchNumber = journal.BatchNumber;
+                transaction.JournalNumber = journal.JournalNumber;
+                transaction.TransactionNumber = TransactionCounter++;
+                transaction.TransactionAmount = giftdetail.GiftTransactionAmount;
+
+                transaction.DebitCreditIndicator = (transaction.TransactionAmount > 0);
+
+                if (transaction.TransactionAmount < 0)
+                {
+                    transaction.TransactionAmount *= -1;
+                }
+
+                // TODO: support foreign currencies
+                transaction.AmountInBaseCurrency = transaction.TransactionAmount;
+
+                transaction.AccountCode = giftbatch.BankAccountCode;
+                transaction.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
+                    ALedgerNumber);
+                transaction.Narrative = "Deposit from receipts - Gift Batch " + giftbatch.BatchNumber.ToString();
+                transaction.Reference = "GB" + giftbatch.BatchNumber.ToString();
+
+                // TODO transaction.DetailNumber
+
+                GLDataset.ATransaction.Rows.Add(transaction);
+
+                // at the moment: no summarising of gift details of same gift transaction etc
+                // create one transaction for the gift destination account (income)
+                ATransactionRow transactionGiftAccount = GLDataset.ATransaction.NewRowTyped();
+                transactionGiftAccount.LedgerNumber = journal.LedgerNumber;
+                transactionGiftAccount.BatchNumber = journal.BatchNumber;
+                transactionGiftAccount.JournalNumber = journal.JournalNumber;
+                transactionGiftAccount.TransactionNumber = TransactionCounter++;
+                transactionGiftAccount.DebitCreditIndicator = !transaction.DebitCreditIndicator;
+                transactionGiftAccount.TransactionAmount = transaction.TransactionAmount;
+                transactionGiftAccount.AmountInBaseCurrency = transaction.AmountInBaseCurrency;
+                transactionGiftAccount.AccountCode = giftdetail.AccountCode;
+                transactionGiftAccount.CostCentreCode = giftdetail.CostCentreCode;
+                transactionGiftAccount.Narrative = "GB - Gift Batch " + giftbatch.BatchNumber.ToString();
+                transactionGiftAccount.Reference = "GB" + giftbatch.BatchNumber.ToString();
+
+                // TODO transactionGiftAccount.DetailNumber
+
+                GLDataset.ATransaction.Rows.Add(transactionGiftAccount);
+
+                // TODO: for other currencies a post to a_ledger.a_forex_gains_losses_account_c ???
+            }
+
+            journal.LastTransactionNumber = TransactionCounter - 1;
+
+            batch.LastJournal = 1;
+
+            return GLDataset;
+        }
+
+        /// create GiftBatchTDS with the gift batch to post, and all gift transactions and details, and motivation details
+        private static GiftBatchTDS LoadGiftBatchForPosting(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GiftBatchTDS MainDS = LoadTransactions(ALedgerNumber, ABatchNumber);
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+
+            return MainDS;
+        }
+
+        /// <summary>
         /// post a Gift Batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -221,9 +335,98 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AVerifications"></param>
         public static bool PostGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
-            // TODO return TGiftPosting.PostGiftBatch(ALedgerNumber, ABatchNumber, out AVerifications);
             AVerifications = null;
-            return false;
+            bool ResultValue = false;
+
+            GiftBatchTDS MainDS = LoadGiftBatchForPosting(ALedgerNumber, ABatchNumber);
+
+            foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+            {
+                // find motivation detail
+                AMotivationDetailRow motivationRow =
+                    (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(new object[] { ALedgerNumber, giftDetail.MotivationGroupCode,
+                                                                                            giftDetail.MotivationDetailCode });
+
+                // TODO: make sure the correct costcentres and accounts are used (check pm_staff_data for commitment period, and motivation details, etc)
+                // set custom column giftdetail.AccountCode motivation
+                giftDetail.AccountCode = motivationRow.AccountCode;
+
+                // TODO deal with different currencies; at the moment assuming base currency
+                giftDetail.GiftAmount = giftDetail.GiftTransactionAmount;
+            }
+
+            // TODO if already posted, fail
+            // TODO: set bank account and costcentre on screen
+            MainDS.AGiftBatch[0].BankAccountCode = "6000";
+            MainDS.AGiftBatch[0].BankCostCentre = "4300";
+            MainDS.AGiftBatch[0].BatchStatus = MFinanceConstants.BATCH_POSTED;
+
+            TDBTransaction SubmitChangesTransaction = null;
+
+            try
+            {
+                // create GL batch
+                GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPostingGifts(ALedgerNumber, ref MainDS);
+
+                ABatchRow batch = GLDataset.ABatch[0];
+
+                // save the batch
+                if (Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
+                        out AVerifications) == TSubmitChangesResult.scrOK)
+                {
+                    // post the batch
+                    if (!Ict.Petra.Server.MFinance.GL.TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber,
+                            out AVerifications))
+                    {
+                        // TODO: what if posting fails? do we have an orphaned GL batch lying around? can this be put into one single transaction? probably not
+                        // TODO: we should cancel that GL batch
+                    }
+                    else
+                    {
+                        SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                        // store GiftBatch and GiftDetails to database
+                        if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, SubmitChangesTransaction,
+                                out AVerifications))
+                        {
+                            if (AGiftAccess.SubmitChanges(MainDS.AGift, SubmitChangesTransaction,
+                                    out AVerifications))
+                            {
+                                // save changed motivation details, costcentre etc to database
+                                if (AGiftDetailAccess.SubmitChanges(MainDS.AGiftDetail, SubmitChangesTransaction, out AVerifications))
+                                {
+                                    ResultValue = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                // we should not get here; how would the database get broken?
+                // TODO do we need a bigger transaction around everything?
+
+                TLogging.Log("after submitchanges: exception " + e.Message);
+
+                if (SubmitChangesTransaction != null)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                throw new Exception(e.ToString() + " " + e.Message);
+            }
+
+            if (ResultValue)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return ResultValue;
         }
     }
 }

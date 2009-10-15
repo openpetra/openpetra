@@ -10,6 +10,7 @@
             <CustomField name="DonorKey" type="Int64"/>
             <CustomField name="DonorName" type="string"/>
             <CustomField name="RecipientDescription" type="string"/>
+            <CustomField name="AccountCode" type="string"/>
         </Table>
         <Table sqltable="a_motivation_detail"/>
         <Table sqltable="a_motivation_group"/>
