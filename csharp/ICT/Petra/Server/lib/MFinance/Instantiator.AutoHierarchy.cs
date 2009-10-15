@@ -1320,9 +1320,9 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
                     // Standard Cacheable DataTables (with LedgerNumber)
                     ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, ALedgerNumber, out AType);
 
-                    // Unknown Cacheable DataTable
                     break;
 
+                // Unknown Cacheable DataTable
                 default:
                     throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable (with LedgerNumber) '" +
                     Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable) + "' is not (yet) implemented in the PetraServer");

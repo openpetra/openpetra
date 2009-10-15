@@ -1,3 +1,5 @@
+DELETE FROM a_motivation_detail;
+DELETE FROM a_motivation_group;
 DELETE FROM a_transaction;
 DELETE FROM a_journal;
 DELETE FROM a_batch;
@@ -10,5 +12,7 @@ DELETE FROM a_transaction_type;
 DELETE FROM a_valid_ledger_number;
 DELETE FROM a_cost_centre;
 DELETE FROM a_cost_centre_types;
+DELETE FROM a_account_property;
+DELETE FROM a_account_property_code;
 DELETE FROM a_account;
 DELETE FROM a_ledger;

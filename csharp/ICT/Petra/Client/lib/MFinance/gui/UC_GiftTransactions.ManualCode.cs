@@ -58,20 +58,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // only load from server if there are no transactions loaded yet for this batch
             // otherwise we would overwrite transactions that have already been modified
-            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(AGiftDetailTable.TableId), ",");
+            view.RowFilter = AGiftDetailTable.GetBatchNumberDBName() + "=" + FBatchNumber.ToString();
 
-            if (view.Find(new object[] { FLedgerNumber, FBatchNumber }) == -1)
+            if (view.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
             }
 
-            // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
+            // if this form is readonly, then we need all codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
+
+            TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, ActiveOnly);
+            TFinanceControls.InitialiseMotivationDetailList(ref cmbDetailMotivationDetailCode, FLedgerNumber, ActiveOnly);
 
 //TODO            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
 //TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
 
             ShowData();
+        }
+
+        private void FilterMotivationDetail(object sender, EventArgs e)
+        {
+            TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, cmbDetailMotivationGroupCode.GetSelectedString());
         }
 
         /// <summary>

@@ -70,6 +70,10 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>Accounts Payable</summary>
         public const String AP_DOCUMENT_PAID = "PAID";
+        
+        /// <summary>Account Property</summary>
+        public const String ACCOUNT_PROPERTY_BANK_ACCOUNT = "Bank Account";
+        
 
         /// <summary>Sub Systems, General Ledger</summary>
         public const String SUB_SYSTEM_GL = "GL";

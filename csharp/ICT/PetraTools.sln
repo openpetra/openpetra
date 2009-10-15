@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Tools.NAntTasks", "Petr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteConsole", "PetraTools\SQLiteConsole\SQLiteConsole.csproj", "{5B5E5F94-433F-4515-9266-1284817C4229}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportDataProgress", "PetraTools\ExportDataProgress\ExportDataProgress.csproj", "{0F8388BB-C776-43B9-B43E-58C7E5EE3BF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -92,5 +94,9 @@ Global
 		{5B5E5F94-433F-4515-9266-1284817C4229}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B5E5F94-433F-4515-9266-1284817C4229}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B5E5F94-433F-4515-9266-1284817C4229}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F8388BB-C776-43B9-B43E-58C7E5EE3BF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F8388BB-C776-43B9-B43E-58C7E5EE3BF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F8388BB-C776-43B9-B43E-58C7E5EE3BF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F8388BB-C776-43B9-B43E-58C7E5EE3BF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

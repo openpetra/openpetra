@@ -472,7 +472,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     tipMain.SetToolTip(this.txtPersonFamilyName, PPersonTable.GetFamilyNameHelp());
 #endif
                     FMainDS.PPerson.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
-                    this.cmbPersonGender.SelectedValueChanged += new TSelectedValueChangedEventHandler(this.CmbPersonGender_SelectedValueChanged);
+                    this.cmbPersonGender.SelectedValueChanged += new System.EventHandler(this.CmbPersonGender_SelectedValueChanged);
                     break;
 
                 case TPartnerClass.FAMILY:

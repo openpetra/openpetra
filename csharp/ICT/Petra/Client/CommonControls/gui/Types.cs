@@ -36,7 +36,4 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>todoComment</summary>
         fccRight
     };
-
-    /// <summary>Event handler declaration</summary>
-    public delegate void TSelectedValueChangedEventHandler(System.Object Sender, EventArgs e);
 }

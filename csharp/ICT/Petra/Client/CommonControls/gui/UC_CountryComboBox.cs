@@ -76,7 +76,7 @@ namespace Ict.Petra.Client.CommonControls
         /// This Event is thrown when the internal ComboBox throws the SelectedValueChanged Event.
         ///
         /// </summary>
-        public event TSelectedValueChangedEventHandler SelectedValueChanged;
+        public event System.EventHandler SelectedValueChanged;
 
         private void CmbCombobox_SelectedValueChanged(System.Object sender, EventArgs e)
         {

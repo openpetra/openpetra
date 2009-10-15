@@ -322,6 +322,7 @@ namespace Ict.Petra.Server.MFinance
                             FieldList.Add(AMotivationDetailTable.GetMotivationGroupCodeDBName());
                             FieldList.Add(AMotivationDetailTable.GetMotivationDetailCodeDBName());
                             FieldList.Add(AMotivationDetailTable.GetMotivationStatusDBName());
+                            FieldList.Add(AMotivationDetailTable.GetMotivationDetailDescDBName());
                             TmpAMotivationDetailDT = AMotivationDetailAccess.LoadViaALedger(ALedgerNumber, FieldList, ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpAMotivationDetailDT, DomainManager.GClientID,
                             (object)ALedgerNumber);

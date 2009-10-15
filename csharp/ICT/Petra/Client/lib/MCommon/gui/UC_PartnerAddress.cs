@@ -536,7 +536,7 @@ namespace Ict.Petra.Client.MCommon
             lblCounty.Text = LocalisedCountyLabel;
 
             // Hook up data change events
-            cmbCountry.SelectedValueChanged += new TSelectedValueChangedEventHandler(this.CmbCountry_SelectedValueChanged);
+            cmbCountry.SelectedValueChanged += new System.EventHandler(this.CmbCountry_SelectedValueChanged);
         }
 
         /// <summary>

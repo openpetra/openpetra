@@ -73,8 +73,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.txtDetailDonorKey.ButtonText = Catalog.GetString("Find");
       this.lblDetailDonorKey.Text = Catalog.GetString("Donor:");
       this.lblDetailGiftTransactionAmount.Text = Catalog.GetString("Amount:");
-      this.lblDetailMotivationGroup.Text = Catalog.GetString("Motivation Group:");
-      this.lblDetailMotivationDetail.Text = Catalog.GetString("Motivation Detail:");
+      this.lblDetailMotivationGroupCode.Text = Catalog.GetString("Motivation Group:");
+      this.lblDetailMotivationDetailCode.Text = Catalog.GetString("Motivation Detail:");
       this.txtDetailRecipientKey.ButtonText = Catalog.GetString("Find");
       this.lblDetailRecipientKey.Text = Catalog.GetString("Recipient:");
       #endregion
@@ -103,6 +103,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public void InitUserControl()
     {
       FPetraUtilsObject.SetStatusBarText(txtDetailGiftTransactionAmount, Catalog.GetString("Enter Your Currency Amount"));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailMotivationGroupCode, Catalog.GetString("Enter a motivation group code"));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailMotivationDetailCode, Catalog.GetString("Enter a motivation detail code"));
       FPetraUtilsObject.SetStatusBarText(txtDetailRecipientKey, Catalog.GetString("Enter the partner key"));
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Gift Transaction Number", FMainDS.AGiftDetail.ColumnGiftTransactionNumber);
@@ -218,6 +220,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enabled = true;
             FPreviouslySelectedDetailRow = ARow;
             txtDetailGiftTransactionAmount.Text = ARow.GiftTransactionAmount.ToString();
+            cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode);
+            cmbDetailMotivationDetailCode.SetSelectedString(ARow.MotivationDetailCode);
             txtDetailRecipientKey.Text = String.Format("{0:0000000000}", ARow.RecipientKey);
             ShowDetailsManual(ARow);
         }
@@ -249,6 +253,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ARow.BeginEdit();
             ARow.GiftTransactionAmount = Convert.ToDouble(txtDetailGiftTransactionAmount.Text);
+            ARow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
+            ARow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();
             ARow.RecipientKey = Convert.ToInt32(txtDetailRecipientKey.Text);
             GetDetailDataFromControlsManual(ARow);
             ARow.EndEdit();

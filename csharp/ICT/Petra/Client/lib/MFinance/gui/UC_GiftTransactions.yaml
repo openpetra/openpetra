@@ -43,10 +43,10 @@ RootNode:
             Dock: Bottom
             # TODO: many more details: confidential, comment, key ministry, etc
             # TODO: split gifts
-            Controls: [txtDetailDonorKey, txtDetailGiftTransactionAmount, cmbDetailMotivationGroup, cmbDetailMotivationDetail, txtDetailRecipientKey]
+            Controls: [txtDetailDonorKey, txtDetailGiftTransactionAmount, cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode, txtDetailRecipientKey]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey}
         txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey}
-        cmbDetailMotivationGroup: {List=UserDefinedList}
-        cmbDetailMotivationDetail: {List=UserDefinedList}
+        cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail}
+        cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList}
         txtDetailGiftTransactionAmount: {Label=Amount}

@@ -220,7 +220,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.cmbPartnerClass.SelectedValue = null;
             this.cmbPartnerClass.Size = new System.Drawing.Size(132, 22);
             this.cmbPartnerClass.TabIndex = 5;
-            this.cmbPartnerClass.SelectedValueChanged += new TSelectedValueChangedEventHandler(this.CmbPartnerClass_SelectedValueChanged);
+            this.cmbPartnerClass.SelectedValueChanged += new System.EventHandler(this.CmbPartnerClass_SelectedValueChanged);
 
             //
             // chkPrivatePartner

@@ -253,7 +253,7 @@ namespace Ict.Petra.Client.CommonControls
          Browsable(true),
          RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
          Description("Occurs when when the internal ComboBox throws the SelectedValueChanged Event.")]
-        public event TSelectedValueChangedEventHandler SelectedValueChanged;
+        public event System.EventHandler SelectedValueChanged;
 
         private void CmbCombobox_SelectedValueChanged(System.Object sender, EventArgs e)
         {

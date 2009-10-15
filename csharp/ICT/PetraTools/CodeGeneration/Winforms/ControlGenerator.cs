@@ -229,6 +229,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("cmb", "Ict.Petra.Client.CommonControls.TCmbAutoPopulated")
         {
             this.FDefaultWidth = 300;
+            this.FChangeEventName = "SelectedValueChanged";
         }
 
         public override bool ControlFitsNode(XmlNode curNode)

@@ -25,6 +25,7 @@
  ************************************************************************/
 using System;
 using System.Data;
+using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Data;
@@ -32,6 +33,7 @@ using Ict.Common.Controls;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -276,6 +278,92 @@ namespace Ict.Petra.Client.MFinance.Logic
                 null);
 
             AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+        }
+
+        /// <summary>
+        /// fill combobox values with motivation group list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AActiveOnly"></param>
+        public static void InitialiseMotivationGroupList(ref TCmbAutoPopulated AControl,
+            Int32 ALedgerNumber,
+            bool AActiveOnly)
+        {
+            AMotivationGroupTable groupTable = new AMotivationGroupTable();
+
+            DataTable detailTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, ALedgerNumber);
+
+            // since we get the details, we have duplicates for group; remove the duplicates
+            StringCollection groups = new StringCollection();
+
+            foreach (AMotivationDetailRow detail in detailTable.Rows)
+            {
+                if (((AActiveOnly && detail.MotivationStatus) || !AActiveOnly)
+                    && !groups.Contains(detail.MotivationGroupCode))
+                {
+                    groups.Add(detail.MotivationGroupCode);
+                    AMotivationGroupRow newGroup = groupTable.NewRowTyped(true);
+                    newGroup.MotivationGroupCode = detail.MotivationGroupCode;
+
+                    // also assign: description for group?
+
+                    groupTable.Rows.Add(newGroup);
+                }
+            }
+
+            AControl.InitialiseUserControl(groupTable,
+                AMotivationGroupTable.GetMotivationGroupCodeDBName(),
+                AMotivationGroupTable.GetMotivationGroupCodeDBName(),
+                null);
+            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+        }
+
+        /// <summary>
+        /// fill combobox values with motivation detail list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AActiveOnly"></param>
+        public static void InitialiseMotivationDetailList(ref TCmbAutoPopulated AControl,
+            Int32 ALedgerNumber,
+            bool AActiveOnly)
+        {
+            DataTable detailTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, ALedgerNumber);
+
+            AControl.InitialiseUserControl(detailTable,
+                AMotivationDetailTable.GetMotivationDetailCodeDBName(),
+                AMotivationDetailTable.GetMotivationDetailDescDBName(),
+                null);
+            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+
+            if (AActiveOnly)
+            {
+                AControl.Filter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true";
+            }
+            else
+            {
+                AControl.Filter = "";
+            }
+        }
+
+        /// <summary>
+        /// change the filter of the motivation detail combobox when a different motivation group gets selected
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="AMotivationGroup"></param>
+        public static void ChangeFilterMotivationDetailList(ref TCmbAutoPopulated AControl, String AMotivationGroup)
+        {
+            string newFilter = String.Empty;
+
+            if ((AControl.Filter != null) && AControl.Filter.StartsWith(AMotivationDetailTable.GetMotivationStatusDBName() + " = true"))
+            {
+                newFilter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true and ";
+            }
+
+            newFilter += AMotivationDetailTable.GetMotivationGroupCodeDBName() + " = '" + AMotivationGroup + "'";
+
+            AControl.Filter = newFilter;
         }
 
         /// <summary>

@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.App.ClientDomain;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -65,6 +66,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             LedgerTable[0].LastGiftBatchNumber++;
             NewRow.BatchNumber = LedgerTable[0].LastGiftBatchNumber;
             NewRow.BatchPeriod = LedgerTable[0].CurrentPeriod;
+            NewRow.BatchYear = LedgerTable[0].CurrentFinancialYear;
+            NewRow.BankAccountCode = DomainManager.GSystemDefaultsCache.GetStringDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
+            if (NewRow.BankAccountCode.Length == 0)
+            {
+            	// use the first bank account
+            	AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, Transaction);
+            	accountProperties.DefaultView.RowFilter = AAccountPropertyTable.GetPropertyCodeDBName() + " = '" + MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' and " + AAccountPropertyTable.GetPropertyValueDBName() + " = 'true'";
+            	if (accountProperties.DefaultView.Count > 0)
+            	{
+            		NewRow.BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
+            	}
+            	// TODO? DomainManager.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
+            }
+            NewRow.BankCostCentre = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
+            NewRow.CurrencyCode = LedgerTable[0].BaseCurrency;
             MainDS.AGiftBatch.Rows.Add(NewRow);
 
             TVerificationResultCollection VerificationResult;
