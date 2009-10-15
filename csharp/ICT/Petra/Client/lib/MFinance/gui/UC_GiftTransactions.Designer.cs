@@ -88,12 +88,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailDonorKey = new System.Windows.Forms.Label();
             this.txtDetailGiftTransactionAmount = new System.Windows.Forms.TextBox();
             this.lblDetailGiftTransactionAmount = new System.Windows.Forms.Label();
+            this.txtCurrencyCode = new System.Windows.Forms.TextBox();
+            this.txtDetailRecipientKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
+            this.lblDetailRecipientKey = new System.Windows.Forms.Label();
             this.cmbDetailMotivationGroupCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailMotivationGroupCode = new System.Windows.Forms.Label();
             this.cmbDetailMotivationDetailCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailMotivationDetailCode = new System.Windows.Forms.Label();
-            this.txtDetailRecipientKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
-            this.lblDetailRecipientKey = new System.Windows.Forms.Label();
+            this.txtDetailCostCentreCode = new System.Windows.Forms.TextBox();
+            this.lblDetailCostCentreCode = new System.Windows.Forms.Label();
+            this.txtDetailAccountCode = new System.Windows.Forms.TextBox();
+            this.lblDetailAccountCode = new System.Windows.Forms.Label();
 
             this.pnlContent.SuspendLayout();
             this.pnlInfo.SuspendLayout();
@@ -269,36 +274,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailGiftTransactionAmount.Text = "Amount:";
             this.lblDetailGiftTransactionAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
-            // cmbDetailMotivationGroupCode
+            // txtCurrencyCode
             //
-            this.cmbDetailMotivationGroupCode.Location = new System.Drawing.Point(2,2);
-            this.cmbDetailMotivationGroupCode.Name = "cmbDetailMotivationGroupCode";
-            this.cmbDetailMotivationGroupCode.Size = new System.Drawing.Size(300, 28);
-            this.cmbDetailMotivationGroupCode.SelectedValueChanged += new System.EventHandler(this.FilterMotivationDetail);
-            this.cmbDetailMotivationGroupCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
-            //
-            // lblDetailMotivationGroupCode
-            //
-            this.lblDetailMotivationGroupCode.Location = new System.Drawing.Point(2,2);
-            this.lblDetailMotivationGroupCode.Name = "lblDetailMotivationGroupCode";
-            this.lblDetailMotivationGroupCode.AutoSize = true;
-            this.lblDetailMotivationGroupCode.Text = "Motivation Group:";
-            this.lblDetailMotivationGroupCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            //
-            // cmbDetailMotivationDetailCode
-            //
-            this.cmbDetailMotivationDetailCode.Location = new System.Drawing.Point(2,2);
-            this.cmbDetailMotivationDetailCode.Name = "cmbDetailMotivationDetailCode";
-            this.cmbDetailMotivationDetailCode.Size = new System.Drawing.Size(300, 28);
-            this.cmbDetailMotivationDetailCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
-            //
-            // lblDetailMotivationDetailCode
-            //
-            this.lblDetailMotivationDetailCode.Location = new System.Drawing.Point(2,2);
-            this.lblDetailMotivationDetailCode.Name = "lblDetailMotivationDetailCode";
-            this.lblDetailMotivationDetailCode.AutoSize = true;
-            this.lblDetailMotivationDetailCode.Text = "Motivation Detail:";
-            this.lblDetailMotivationDetailCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.txtCurrencyCode.Location = new System.Drawing.Point(2,2);
+            this.txtCurrencyCode.Name = "txtCurrencyCode";
+            this.txtCurrencyCode.Size = new System.Drawing.Size(150, 28);
+            this.txtCurrencyCode.ReadOnly = true;
             //
             // txtDetailRecipientKey
             //
@@ -324,10 +305,75 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailRecipientKey.AutoSize = true;
             this.lblDetailRecipientKey.Text = "Recipient:";
             this.lblDetailRecipientKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel3.ColumnCount = 2;
+            //
+            // cmbDetailMotivationGroupCode
+            //
+            this.cmbDetailMotivationGroupCode.Location = new System.Drawing.Point(2,2);
+            this.cmbDetailMotivationGroupCode.Name = "cmbDetailMotivationGroupCode";
+            this.cmbDetailMotivationGroupCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailMotivationGroupCode.SelectedValueChanged += new System.EventHandler(this.FilterMotivationDetail);
+            this.cmbDetailMotivationGroupCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
+            //
+            // lblDetailMotivationGroupCode
+            //
+            this.lblDetailMotivationGroupCode.Location = new System.Drawing.Point(2,2);
+            this.lblDetailMotivationGroupCode.Name = "lblDetailMotivationGroupCode";
+            this.lblDetailMotivationGroupCode.AutoSize = true;
+            this.lblDetailMotivationGroupCode.Text = "Motivation Group:";
+            this.lblDetailMotivationGroupCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // cmbDetailMotivationDetailCode
+            //
+            this.cmbDetailMotivationDetailCode.Location = new System.Drawing.Point(2,2);
+            this.cmbDetailMotivationDetailCode.Name = "cmbDetailMotivationDetailCode";
+            this.cmbDetailMotivationDetailCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailMotivationDetailCode.SelectedValueChanged += new System.EventHandler(this.MotivationDetailChanged);
+            this.cmbDetailMotivationDetailCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
+            //
+            // lblDetailMotivationDetailCode
+            //
+            this.lblDetailMotivationDetailCode.Location = new System.Drawing.Point(2,2);
+            this.lblDetailMotivationDetailCode.Name = "lblDetailMotivationDetailCode";
+            this.lblDetailMotivationDetailCode.AutoSize = true;
+            this.lblDetailMotivationDetailCode.Text = "Motivation Detail:";
+            this.lblDetailMotivationDetailCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // txtDetailCostCentreCode
+            //
+            this.txtDetailCostCentreCode.Location = new System.Drawing.Point(2,2);
+            this.txtDetailCostCentreCode.Name = "txtDetailCostCentreCode";
+            this.txtDetailCostCentreCode.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailCostCentreCode.ReadOnly = true;
+            //
+            // lblDetailCostCentreCode
+            //
+            this.lblDetailCostCentreCode.Location = new System.Drawing.Point(2,2);
+            this.lblDetailCostCentreCode.Name = "lblDetailCostCentreCode";
+            this.lblDetailCostCentreCode.AutoSize = true;
+            this.lblDetailCostCentreCode.Text = "Cost Centre:";
+            this.lblDetailCostCentreCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // txtDetailAccountCode
+            //
+            this.txtDetailAccountCode.Location = new System.Drawing.Point(2,2);
+            this.txtDetailAccountCode.Name = "txtDetailAccountCode";
+            this.txtDetailAccountCode.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailAccountCode.ReadOnly = true;
+            //
+            // lblDetailAccountCode
+            //
+            this.lblDetailAccountCode.Location = new System.Drawing.Point(2,2);
+            this.lblDetailAccountCode.Name = "lblDetailAccountCode";
+            this.lblDetailAccountCode.AutoSize = true;
+            this.lblDetailAccountCode.Text = "Account:";
+            this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel3.ColumnCount = 4;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 5;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 6;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -335,14 +381,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.Controls.Add(this.lblDetailDonorKey, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailGiftTransactionAmount, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.lblDetailMotivationGroupCode, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.lblDetailMotivationDetailCode, 0, 3);
-            this.tableLayoutPanel3.Controls.Add(this.lblDetailRecipientKey, 0, 4);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailRecipientKey, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailMotivationGroupCode, 0, 3);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailMotivationDetailCode, 0, 4);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailCostCentreCode, 0, 5);
+            this.tableLayoutPanel3.SetColumnSpan(this.txtDetailDonorKey, 3);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailDonorKey, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailGiftTransactionAmount, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.cmbDetailMotivationGroupCode, 1, 2);
-            this.tableLayoutPanel3.Controls.Add(this.cmbDetailMotivationDetailCode, 1, 3);
-            this.tableLayoutPanel3.Controls.Add(this.txtDetailRecipientKey, 1, 4);
+            this.tableLayoutPanel3.SetColumnSpan(this.txtDetailRecipientKey, 3);
+            this.tableLayoutPanel3.Controls.Add(this.txtDetailRecipientKey, 1, 2);
+            this.tableLayoutPanel3.Controls.Add(this.cmbDetailMotivationGroupCode, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.cmbDetailMotivationDetailCode, 1, 4);
+            this.tableLayoutPanel3.Controls.Add(this.txtDetailCostCentreCode, 1, 5);
+            this.tableLayoutPanel3.SetColumnSpan(this.txtCurrencyCode, 2);
+            this.tableLayoutPanel3.Controls.Add(this.txtCurrencyCode, 2, 1);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailAccountCode, 2, 5);
+            this.tableLayoutPanel3.Controls.Add(this.txtDetailAccountCode, 3, 5);
 
             //
             // TUC_GiftTransactions
@@ -385,11 +439,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.Label lblDetailDonorKey;
         private System.Windows.Forms.TextBox txtDetailGiftTransactionAmount;
         private System.Windows.Forms.Label lblDetailGiftTransactionAmount;
+        private System.Windows.Forms.TextBox txtCurrencyCode;
+        private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtDetailRecipientKey;
+        private System.Windows.Forms.Label lblDetailRecipientKey;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailMotivationGroupCode;
         private System.Windows.Forms.Label lblDetailMotivationGroupCode;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailMotivationDetailCode;
         private System.Windows.Forms.Label lblDetailMotivationDetailCode;
-        private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtDetailRecipientKey;
-        private System.Windows.Forms.Label lblDetailRecipientKey;
+        private System.Windows.Forms.TextBox txtDetailCostCentreCode;
+        private System.Windows.Forms.Label lblDetailCostCentreCode;
+        private System.Windows.Forms.TextBox txtDetailAccountCode;
+        private System.Windows.Forms.Label lblDetailAccountCode;
     }
 }

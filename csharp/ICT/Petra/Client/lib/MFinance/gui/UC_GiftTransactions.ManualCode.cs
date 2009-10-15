@@ -82,16 +82,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, cmbDetailMotivationGroupCode.GetSelectedString());
         }
 
+        private void MotivationDetailChanged(object sender, EventArgs e)
+        {
+            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                new object[] { FLedgerNumber, cmbDetailMotivationGroupCode.GetSelectedString(), cmbDetailMotivationDetailCode.GetSelectedString() });
+
+            if (motivationDetail != null)
+            {
+                txtDetailAccountCode.Text = motivationDetail.AccountCode;
+
+                // TODO: calculation of cost centre also depends on the recipient partner key; can be a field key or ministry key, or determined by pm_staff_data: foreign cost centre
+                txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
+            }
+        }
+
         /// <summary>
         /// get the details of the current batch
         /// </summary>
         /// <returns></returns>
         private AGiftBatchRow GetBatchRow()
         {
-            DataView view = new DataView(FMainDS.AGiftBatch);
-
-            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(AGiftBatchTable.TableId), ",");
-            return (AGiftBatchRow)view.FindRows(new object[] { FLedgerNumber, FBatchNumber })[0].Row;
+            return (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FBatchNumber });
         }
 
         /// <summary>
@@ -115,6 +126,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ANewRow.LedgerNumber = row.LedgerNumber;
             ANewRow.BatchNumber = row.BatchNumber;
             ANewRow.GiftTransactionNumber = row.LastGiftNumber + 1;
+
+            // TODO: use previous gifts of donor?
+            // ANewRow.MotivationGroupCode = "GIFT";
+            // ANewRow.MotivationDetailCode = "SUPPORT";
             row.LastGiftNumber++;
         }
 
@@ -125,14 +140,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             txtBatchNumber.Text = FBatchNumber.ToString();
+
+            if (GetBatchRow() != null)
+            {
+                txtCurrencyCode.Text = GetBatchRow().CurrencyCode;
+            }
         }
 
         private void ShowDetailsManual(AGiftDetailRow ARow)
         {
+            // show cost centre
+            MotivationDetailChanged(null, null);
         }
 
         private void GetDetailDataFromControlsManual(AGiftDetailRow ARow)
         {
+            ARow.CostCentreCode = txtDetailCostCentreCode.Text;
         }
     }
 }

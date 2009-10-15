@@ -317,20 +317,14 @@ namespace Ict.Petra.Server.MFinance
                             break;
 
                         case TCacheableFinanceTablesEnum.MotivationList:
-                            FieldList = new StringCollection();
-                            FieldList.Add(AMotivationDetailTable.GetLedgerNumberDBName());
-                            FieldList.Add(AMotivationDetailTable.GetMotivationGroupCodeDBName());
-                            FieldList.Add(AMotivationDetailTable.GetMotivationDetailCodeDBName());
-                            FieldList.Add(AMotivationDetailTable.GetMotivationStatusDBName());
-                            FieldList.Add(AMotivationDetailTable.GetMotivationDetailDescDBName());
-                            TmpAMotivationDetailDT = AMotivationDetailAccess.LoadViaALedger(ALedgerNumber, FieldList, ReadTransaction);
+                            TmpAMotivationDetailDT = AMotivationDetailAccess.LoadViaALedger(ALedgerNumber, ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpAMotivationDetailDT, DomainManager.GClientID,
                             (object)ALedgerNumber);
-
-                            // Unknown Standard Cacheable DataTable
                             break;
 
                         default:
+
+                            // Unknown Standard Cacheable DataTable
                             throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
                             Enum.GetName(typeof(TCacheableFinanceTablesEnum),
                                 ACacheableTable) + "' is not available as a Standard Cacheable Table (with ALedgerNumber as an Argument)");

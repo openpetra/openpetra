@@ -29,7 +29,9 @@ using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
@@ -50,6 +52,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // TODO: more criteria: state of batch, period, etc
             FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(ALedgerNumber));
+
+            // Load Motivation detail in this central place; it will be used by UC_GiftTransactions
+            AMotivationDetailTable motivationDetail = (AMotivationDetailTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                TCacheableFinanceTablesEnum.MotivationList,
+                FLedgerNumber);
+            motivationDetail.TableName = FMainDS.AMotivationDetail.TableName;
+            FMainDS.Merge(motivationDetail);
 
             ShowData();
         }
