@@ -62,6 +62,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
         }
 
+        /// <summary>
+        /// this should be called when all data is reloaded after posting
+        /// </summary>
+        public void ClearCurrentSelections()
+        {
+            this.ucoBatches.ClearCurrentSelection();
+            this.ucoTransactions.ClearCurrentSelection();
+        }
+
         /// this window contains 2 tabs
         public enum eGiftTabs
         {

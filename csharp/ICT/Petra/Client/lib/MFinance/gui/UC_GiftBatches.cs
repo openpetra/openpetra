@@ -119,6 +119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       FPetraUtilsObject.SetStatusBarText(cmbDetailBankAccountCode, Catalog.GetString("Enter the bank account which this batch is for."));
       FPetraUtilsObject.SetStatusBarText(dtpDetailGlEffectiveDate, Catalog.GetString("Effective date to be used when posted to the general ledger."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailCurrencyCode, Catalog.GetString("Select a currency code to use for the journal transactions."));
+      cmbDetailCurrencyCode.InitialiseUserControl();
       FPetraUtilsObject.SetStatusBarText(txtDetailExchangeRateToBase, Catalog.GetString("Enter the exchange rate from the transaction currency to base."));
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Batch Number", FMainDS.AGiftBatch.ColumnBatchNumber);

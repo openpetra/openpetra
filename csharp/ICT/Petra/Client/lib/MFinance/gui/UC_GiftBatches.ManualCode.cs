@@ -50,6 +50,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FLedgerNumber = ALedgerNumber;
 
+            ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
+
             // TODO: more criteria: state of batch, period, etc
             FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(ALedgerNumber));
 
@@ -60,7 +62,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             motivationDetail.TableName = FMainDS.AMotivationDetail.TableName;
             FMainDS.Merge(motivationDetail);
 
+            FMainDS.AcceptChanges();
+
+            // if this form is readonly, then we need all codes, because old codes might have been used
+            bool ActiveOnly = this.Enabled;
+
+            TFinanceControls.InitialiseAccountList(ref cmbDetailBankAccountCode, FLedgerNumber, true, false, ActiveOnly, true);
+            TFinanceControls.InitialiseCostCentreList(ref cmbDetailBankCostCentre, FLedgerNumber, true, false, ActiveOnly, true);
+
             ShowData();
+        }
+
+        /// reset the control
+        public void ClearCurrentSelection()
+        {
+            this.FPreviouslySelectedDetailRow = null;
         }
 
         /// <summary>
@@ -142,6 +158,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 // TODO: refresh the grid, to reflect that the batch has been posted
                 LoadBatches(FLedgerNumber);
+
+                FPetraUtilsObject.DisableSaveButton();
             }
         }
     }

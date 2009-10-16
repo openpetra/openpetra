@@ -92,15 +92,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailBatchDescription = new System.Windows.Forms.TextBox();
             this.lblDetailBatchDescription = new System.Windows.Forms.Label();
-            this.cmbDetailBankCostCentre = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbDetailBankCostCentre = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailBankCostCentre = new System.Windows.Forms.Label();
-            this.cmbDetailBankAccountCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbDetailBankAccountCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailBankAccountCode = new System.Windows.Forms.Label();
             this.dtpDetailGlEffectiveDate = new System.Windows.Forms.DateTimePicker();
             this.lblDetailGlEffectiveDate = new System.Windows.Forms.Label();
             this.txtDetailBatchHashTotal = new System.Windows.Forms.TextBox();
             this.lblDetailBatchHashTotal = new System.Windows.Forms.Label();
-            this.cmbDetailCurrencyCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbDetailCurrencyCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailCurrencyCode = new System.Windows.Forms.Label();
             this.txtDetailExchangeRateToBase = new System.Windows.Forms.TextBox();
             this.lblDetailExchangeRateToBase = new System.Windows.Forms.Label();
@@ -340,7 +340,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.cmbDetailBankCostCentre.Location = new System.Drawing.Point(2,2);
             this.cmbDetailBankCostCentre.Name = "cmbDetailBankCostCentre";
-            this.cmbDetailBankCostCentre.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailBankCostCentre.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailBankCostCentre.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblDetailBankCostCentre
             //
@@ -354,7 +355,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.cmbDetailBankAccountCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailBankAccountCode.Name = "cmbDetailBankAccountCode";
-            this.cmbDetailBankAccountCode.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailBankAccountCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailBankAccountCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblDetailBankAccountCode
             //
@@ -396,7 +398,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.cmbDetailCurrencyCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailCurrencyCode.Name = "cmbDetailCurrencyCode";
-            this.cmbDetailCurrencyCode.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailCurrencyCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailCurrencyCode.ListTable = TCmbAutoPopulated.TListTableEnum.CurrencyCodeList;
             //
             // lblDetailCurrencyCode
             //
@@ -605,15 +608,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.TextBox txtDetailBatchDescription;
         private System.Windows.Forms.Label lblDetailBatchDescription;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDetailBankCostCentre;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailBankCostCentre;
         private System.Windows.Forms.Label lblDetailBankCostCentre;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDetailBankAccountCode;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailBankAccountCode;
         private System.Windows.Forms.Label lblDetailBankAccountCode;
         private System.Windows.Forms.DateTimePicker dtpDetailGlEffectiveDate;
         private System.Windows.Forms.Label lblDetailGlEffectiveDate;
         private System.Windows.Forms.TextBox txtDetailBatchHashTotal;
         private System.Windows.Forms.Label lblDetailBatchHashTotal;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDetailCurrencyCode;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailCurrencyCode;
         private System.Windows.Forms.Label lblDetailCurrencyCode;
         private System.Windows.Forms.TextBox txtDetailExchangeRateToBase;
         private System.Windows.Forms.Label lblDetailExchangeRateToBase;

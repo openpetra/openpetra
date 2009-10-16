@@ -54,11 +54,11 @@ RootNode:
                 Row6: [cmbDetailMethodOfPayment]
                 Row7: [rgrDetailGiftType]
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=3}
-        cmbDetailBankCostCentre: {Label=Cost Centre}
-        cmbDetailBankAccountCode: {Label=Bank Account}
+        cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList}
+        cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList}
         dtpDetailGlEffectiveDate: {Label=GL Effective Date}
         txtDetailBatchHashTotal: {Label=Hash Total, Type=Currency}
-        cmbDetailCurrencyCode:
+        cmbDetailCurrencyCode: {List=CurrencyCodeList}
         txtDetailExchangeRateToBase:
         cmbDetailMethodOfPayment: {Label=Method of Payment}
         rgrDetailGiftType:

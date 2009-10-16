@@ -232,6 +232,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             batch.BatchDescription = Catalog.GetString("Gift Batch " + giftbatch.BatchNumber.ToString());
             batch.DateEffective = giftbatch.GlEffectiveDate;
+
+            // TODO batchperiod depending on date effective; or fix that when posting?
+            // batch.BatchPeriod =
             batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
 
             // one gift batch only has one currency, create only one journal
@@ -240,6 +243,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             journal.BatchNumber = batch.BatchNumber;
             journal.JournalNumber = 1;
             journal.DateEffective = batch.DateEffective;
+            journal.JournalPeriod = giftbatch.BatchPeriod;
             journal.TransactionCurrency = giftbatch.CurrencyCode;
             journal.JournalDescription = batch.BatchDescription;
             journal.TransactionTypeCode = MFinanceConstants.TRANSACTION_GIFT;
@@ -324,6 +328,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
             AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
 
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
             return MainDS;
         }
 
@@ -356,9 +362,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             // TODO if already posted, fail
-            // TODO: set bank account and costcentre on screen
-            MainDS.AGiftBatch[0].BankAccountCode = "6000";
-            MainDS.AGiftBatch[0].BankCostCentre = "4300";
             MainDS.AGiftBatch[0].BatchStatus = MFinanceConstants.BATCH_POSTED;
 
             TDBTransaction SubmitChangesTransaction = null;

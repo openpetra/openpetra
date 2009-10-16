@@ -84,7 +84,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                     Filter += " AND ";
                 }
 
-                Filter += ACostCentreTable.GetCostCentreTypeDBName() + " = \"Local\"";
+                Filter += ACostCentreTable.GetCostCentreTypeDBName() + " = 'Local'";
             }
 
             return Filter;

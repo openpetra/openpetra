@@ -96,6 +96,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// reset the control
+        public void ClearCurrentSelection()
+        {
+            this.FPreviouslySelectedDetailRow = null;
+        }
+
         /// <summary>
         /// get the details of the current batch
         /// </summary>
@@ -121,16 +127,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ANewRow"></param>
         private void NewRowManual(ref AGiftDetailRow ANewRow)
         {
-            AGiftBatchRow row = GetBatchRow();
+            AGiftBatchRow batchRow = GetBatchRow();
 
-            ANewRow.LedgerNumber = row.LedgerNumber;
-            ANewRow.BatchNumber = row.BatchNumber;
-            ANewRow.GiftTransactionNumber = row.LastGiftNumber + 1;
+            // TODO: deal properly with gift details and split gifts etc
+            AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
+            giftRow.LedgerNumber = batchRow.LedgerNumber;
+            giftRow.BatchNumber = batchRow.BatchNumber;
+            giftRow.GiftTransactionNumber = batchRow.LastGiftNumber + 1;
+            FMainDS.AGift.Rows.Add(giftRow);
+
+            ANewRow.LedgerNumber = batchRow.LedgerNumber;
+            ANewRow.BatchNumber = batchRow.BatchNumber;
+            ANewRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
 
             // TODO: use previous gifts of donor?
             // ANewRow.MotivationGroupCode = "GIFT";
             // ANewRow.MotivationDetailCode = "SUPPORT";
-            row.LastGiftNumber++;
+            batchRow.LastGiftNumber++;
         }
 
         /// <summary>
@@ -156,6 +169,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void GetDetailDataFromControlsManual(AGiftDetailRow ARow)
         {
             ARow.CostCentreCode = txtDetailCostCentreCode.Text;
+
+            // TODO: GetGiftRow(); set donor key
         }
     }
 }
