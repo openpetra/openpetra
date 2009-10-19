@@ -1,0 +1,45 @@
+RootNode:
+    BaseYaml: ../../Petra/Client/CommonForms/PetraForm.yaml
+    FormTitle: Bank import
+    Namespace: Ict.Petra.Client.MFinance.Gui.BankImport
+    FormType: browse
+    Template: windowFind
+    WindowWidth: 754
+    WindowHeight: 623
+    Actions:
+        actImportStatement: {Label=&Import Statement, ActionClick=ImportStatement}
+        actExportGiftBatch:
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlInfoStatement, rgrFilter, grdResult]
+        pnlInfoStatement:
+            Controls: 
+                Row0: [txtBankName, txtDateStatement]
+                Row1: [txtValueAltogether, txtNumberAltogether]
+                Row2: [txtValueMatchedGifts, txtNumberMatched]
+                Row3: [txtValueUnmatchedGifts, txtNumberUnmatched]
+                Row4: [txtValueOther, txtNumberOther]
+        txtBankName: {ReadOnly=true}
+        txtDateStatement: {ReadOnly=true}
+        txtValueAltogether: {ReadOnly=true}
+        txtValueMatchedGifts: {ReadOnly=true}
+        txtValueUnmatchedGifts: {ReadOnly=true}
+        txtValueOther: {ReadOnly=true}
+        txtNumberAltogether: {ReadOnly=true}
+        txtNumberMatched: {ReadOnly=true}
+        txtNumberUnmatched: {ReadOnly=true}
+        txtNumberOther: {ReadOnly=true}
+        rgrFilter:
+            OptionalValues: [AllTransactions, MatchedGifts, UnmatchedGifts, Other]
+            ControlsOrientation: Horizontal
+            OnChange:FilterChanged
+        grdResult:
+            Dock: Fill
+            TableName: AEpTransaction
+            Columns: [TransactionTypeCode, AccountName, BankAccountNumber, Description, TransactionAmount]
+    Menu:
+    Toolbar:
+        tbbImportStatement:
+        tbbExportGiftBatch:
+        tbbExportUnmatchedDonors:

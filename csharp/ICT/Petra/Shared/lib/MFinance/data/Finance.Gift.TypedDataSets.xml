@@ -16,4 +16,13 @@
         <Table sqltable="a_motivation_group"/>
     </DataSet> 
 
+    <DataSet name="BankImportTDS">
+        <Table sqltable="a_gift_detail">
+            <CustomField name="DonorKey" type="Int64"/>
+            <CustomField name="BankAccountNumber" type="string"/>
+        </Table>
+        <Table sqltable="a_ep_transaction"/>
+        <Table sqltable="a_ep_match"/>
+    </DataSet> 
+    
 </PetraDataSets>

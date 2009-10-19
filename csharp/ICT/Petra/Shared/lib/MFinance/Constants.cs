@@ -79,7 +79,9 @@ namespace Ict.Petra.Shared.MFinance
         
         /// <summary>Account Property</summary>
         public const String ACCOUNT_PROPERTY_BANK_ACCOUNT = "Bank Account";
-        
+
+        /// <summary>Bank statements</summary>
+        public const String BANK_STMT_STATUS_MATCHED = "MATCHED";
 
         /// <summary>Sub Systems, General Ledger</summary>
         public const String SUB_SYSTEM_GL = "GL";

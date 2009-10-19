@@ -31,7 +31,9 @@ using System.Data.Common;
 using System.Text;
 using System.Threading;
 using System.IO;
+using System.Xml;
 using Ict.Common.DB.DBCaching;
+using Ict.Common.IO;
 
 namespace Ict.Common.DB
 {
@@ -2071,6 +2073,30 @@ namespace Ict.Common.DB
                     FConnectionReady = false;
                     break;
             }
+        }
+
+        /// <summary>
+        /// for debugging, export data table to xml (which can be saved as xml, yml, csv)
+        /// </summary>
+        /// <param name="ATable"></param>
+        /// <returns></returns>
+        public static XmlDocument DataTableToXml(DataTable ATable)
+        {
+            XmlDocument doc = TYml2Xml.CreateXmlDocument();
+
+            foreach (DataRow row in ATable.Rows)
+            {
+                XmlElement node = doc.CreateElement(TYml2Xml.XMLELEMENT);
+
+                foreach (DataColumn column in ATable.Columns)
+                {
+                    node.SetAttribute(column.ColumnName, row[column].ToString());
+                }
+
+                doc.DocumentElement.AppendChild(node);
+            }
+
+            return doc;
         }
 
         /// <summary>

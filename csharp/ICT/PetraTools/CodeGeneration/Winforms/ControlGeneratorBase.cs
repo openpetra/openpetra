@@ -178,6 +178,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public void AssignEventHandlerToControl(IFormWriter writer, TControlDef ctrl, string AEvent, string AEventHandlerType, string ActionToPerform)
         {
+        	if (AEvent == null || AEvent.Length == 0)
+        	{
+        		return;
+        	}
+        	
             if (ActionToPerform.StartsWith("act"))
             {
                 TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];

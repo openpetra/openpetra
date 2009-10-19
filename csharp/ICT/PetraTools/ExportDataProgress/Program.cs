@@ -45,7 +45,7 @@ class Program
             if (!settings.IsFlagSet("Server.ODBC_DSN"))
             {
                 Console.WriteLine("sample call: " +
-                    "ExportDataProgress.exe -Server.ODBC_DSN:Petra2_2sa -username:demo_sql -password:demo -sql:\"SELECT * from pub.a_account\"");
+                    "ExportDataProgress.exe -Server.ODBC_DSN:Petra2_2sa -username:demo_sql -password:demo -sql:\"SELECT * from pub.a_account\" -output:test.xml");
                 Environment.Exit(-1);
             }
 
@@ -81,7 +81,7 @@ class Program
 
                 while (!sqlText.Trim().EndsWith(";"))
                 {
-                    sqlText += Console.ReadLine();
+                    sqlText += " " + Console.ReadLine();
                 }
 
                 sqlText = sqlText.Substring(0, sqlText.Length - 1);
@@ -96,7 +96,7 @@ class Program
 
             DataTable table = db.SelectDT(sqlText, "temp", transaction);
 
-            XmlDocument doc = DataTableToXml(table);
+            XmlDocument doc = TDataBase.DataTableToXml(table);
 
             if (settings.IsFlagSet("output"))
             {
@@ -131,25 +131,6 @@ class Program
             Console.WriteLine(e.Message);
             Console.WriteLine(e.StackTrace);
         }
-    }
-
-    static private XmlDocument DataTableToXml(DataTable ATable)
-    {
-        XmlDocument doc = TYml2Xml.CreateXmlDocument();
-
-        foreach (DataRow row in ATable.Rows)
-        {
-            XmlElement node = doc.CreateElement(TYml2Xml.XMLELEMENT);
-
-            foreach (DataColumn column in ATable.Columns)
-            {
-                node.SetAttribute(column.ColumnName, row[column].ToString());
-            }
-
-            doc.DocumentElement.AppendChild(node);
-        }
-
-        return doc;
     }
 }
 }

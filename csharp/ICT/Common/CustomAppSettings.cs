@@ -463,7 +463,7 @@ namespace Ict.Common
                 Config = new TAppSettingsManager();
                 ReturnValue = Config.GetValue(AKey, (ADefaultValue == UNDEFINEDVALUE));
 
-                if ((ReturnValue == "") && (ADefaultValue != UNDEFINEDVALUE))
+                if ((ReturnValue.Length == 0) && (ADefaultValue != UNDEFINEDVALUE))
                 {
                     ReturnValue = ADefaultValue;
                 }
@@ -474,6 +474,10 @@ namespace Ict.Common
                 {
                     TLogging.Log(e.Message, TLoggingType.ToLogfile);
                     ReturnValue = "EXCEPTION";
+                }
+                else
+                {
+                    ReturnValue = ADefaultValue;
                 }
             }
             return ReturnValue;
