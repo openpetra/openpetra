@@ -26,6 +26,7 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Plugins.Finance.SwiftParser;
@@ -71,6 +72,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     grdResult.Columns.Clear();
                     grdResult.AddTextColumn("transaction type", FMainDS.AEpTransaction.ColumnTransactionTypeCode);
                     grdResult.AddTextColumn("Account Name", FMainDS.AEpTransaction.ColumnAccountName);
+                    grdResult.AddTextColumn("DonorKey", FMainDS.AEpTransaction.ColumnDonorKey);
+                    grdResult.AddTextColumn("DonorShortName", FMainDS.AEpTransaction.ColumnDonorShortName);
                     grdResult.AddTextColumn("Account Number", FMainDS.AEpTransaction.ColumnBankAccountNumber);
                     grdResult.AddTextColumn("description", FMainDS.AEpTransaction.ColumnDescription);
                     grdResult.AddTextColumn("Transaction Amount", FMainDS.AEpTransaction.ColumnTransactionAmount);
@@ -161,25 +164,96 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             // Get all gifts at given date
             TGetData.GetGiftsByDate(ref FMainDS, FMainDS.AEpTransaction[0].DateEffective);
 
-            foreach (AEpTransactionRow row in FMainDS.AEpTransaction.Rows)
+            foreach (BankImportTDSAEpTransactionRow stmtRow in FMainDS.AEpTransaction.Rows)
             {
-                if (row.MatchingStatus != Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED)
+                if (stmtRow.MatchingStatus != Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED)
                 {
                     FMainDS.AGiftDetail.DefaultView.RowFilter = AGiftDetailTable.GetGiftAmountDBName() + " = " +
-                                                                row.TransactionAmount.ToString(System.Globalization.CultureInfo.InvariantCulture) +
+                                                                stmtRow.TransactionAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                                                +
                                                                 " AND " + BankImportTDSAGiftDetailTable.GetBankAccountNumberDBName() + " = '" +
-                                                                row.BankAccountNumber + "'";
+                                                                stmtRow.BankAccountNumber + "'";
 
                     if (FMainDS.AGiftDetail.DefaultView.Count == 1)
                     {
                         // found a match
-                        row.MatchingStatus = Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED;
+                        stmtRow.MatchingStatus = Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED;
+                    }
+                    else if (FMainDS.AGiftDetail.DefaultView.Count > 1)
+                    {
+                        // TODO: donor has several gifts with same amount?
                     }
                     else
                     {
                         // TODO: split gifts
                         // check if total amount of gift details of same gift transaction is equal the transaction amount,
                         // or one gift is equal the transaction amount
+
+                        // get all gifts with that bank account number
+                        FMainDS.AGiftDetail.DefaultView.RowFilter = BankImportTDSAGiftDetailTable.GetBankAccountNumberDBName() + " = '" +
+                                                                    stmtRow.BankAccountNumber + "'";
+
+                        if (FMainDS.AGiftDetail.DefaultView.Count > 1)
+                        {
+                            // key is the gift transaction number, double is the total amount
+                            SortedList <Int32, double>TotalGifts = new SortedList <int, double>();
+
+                            foreach (DataRowView rv in FMainDS.AGiftDetail.DefaultView)
+                            {
+                                BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)rv.Row;
+
+                                if (TotalGifts.ContainsKey(detailrow.GiftTransactionNumber))
+                                {
+                                    TotalGifts[detailrow.GiftTransactionNumber] += detailrow.GiftAmount;
+                                }
+                                else
+                                {
+                                    TotalGifts.Add(detailrow.GiftTransactionNumber, detailrow.GiftAmount);
+                                }
+                            }
+
+                            Int32 successTransactionNumber = -1;
+
+                            foreach (Int32 key in TotalGifts.Keys)
+                            {
+                                if (TotalGifts[key] == stmtRow.TransactionAmount)
+                                {
+                                    if (successTransactionNumber > -1)
+                                    {
+                                        // TODO several gifts match this amount
+                                        successTransactionNumber = -2;
+                                    }
+                                    else
+                                    {
+                                        successTransactionNumber = key;
+                                    }
+                                }
+                            }
+
+                            if (successTransactionNumber > -1)
+                            {
+                                // found a match
+                                stmtRow.MatchingStatus = Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED;
+                            }
+                        }
+                    }
+
+                    if (FMainDS.AGiftDetail.DefaultView.Count > 0)
+                    {
+                        stmtRow.DonorKey = ((BankImportTDSAGiftDetailRow)FMainDS.AGiftDetail.DefaultView[0].Row).DonorKey;
+                        stmtRow.DonorShortName = ((BankImportTDSAGiftDetailRow)FMainDS.AGiftDetail.DefaultView[0].Row).DonorShortName;
+                    }
+                    else
+                    {
+                        // try to find the donor by account number
+                        string shortname;
+                        Int64 donorkey = TGetData.GetDonorByAccountNumber(stmtRow.BankAccountNumber, out shortname);
+                        stmtRow.DonorShortName = shortname;
+
+                        if (donorkey != -1)
+                        {
+                            stmtRow.DonorKey = donorkey;
+                        }
                     }
                 }
             }

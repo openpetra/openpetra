@@ -19,9 +19,14 @@
     <DataSet name="BankImportTDS">
         <Table sqltable="a_gift_detail">
             <CustomField name="DonorKey" type="Int64"/>
+            <CustomField name="DonorShortName" type="string"/>
+            <CustomField name="RecipientDescription" type="string"/>
             <CustomField name="BankAccountNumber" type="string"/>
         </Table>
-        <Table sqltable="a_ep_transaction"/>
+        <Table sqltable="a_ep_transaction">
+            <CustomField name="DonorKey" type="Int64"/>
+            <CustomField name="DonorShortName" type="string"/>
+        </Table>
         <Table sqltable="a_ep_match"/>
     </DataSet> 
     

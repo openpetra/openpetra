@@ -739,7 +739,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     {
 
         private BankImportTDSAGiftDetailTable TableAGiftDetail;
-        private AEpTransactionTable TableAEpTransaction;
+        private BankImportTDSAEpTransactionTable TableAEpTransaction;
         private AEpMatchTable TableAEpMatch;
 
         /// auto generated
@@ -770,7 +770,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// auto generated
-        public AEpTransactionTable AEpTransaction
+        public BankImportTDSAEpTransactionTable AEpTransaction
         {
             get
             {
@@ -797,7 +797,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         protected override void InitTables()
         {
             this.Tables.Add(new BankImportTDSAGiftDetailTable("AGiftDetail"));
-            this.Tables.Add(new AEpTransactionTable("AEpTransaction"));
+            this.Tables.Add(new BankImportTDSAEpTransactionTable("AEpTransaction"));
             this.Tables.Add(new AEpMatchTable("AEpMatch"));
         }
 
@@ -810,7 +810,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             }
             if ((ds.Tables.IndexOf("AEpTransaction") != -1))
             {
-                this.Tables.Add(new AEpTransactionTable("AEpTransaction"));
+                this.Tables.Add(new BankImportTDSAEpTransactionTable("AEpTransaction"));
             }
             if ((ds.Tables.IndexOf("AEpMatch") != -1))
             {
@@ -842,7 +842,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         {
             this.DataSetName = "BankImportTDS";
             this.TableAGiftDetail = ((BankImportTDSAGiftDetailTable)(this.Tables["AGiftDetail"]));
-            this.TableAEpTransaction = ((AEpTransactionTable)(this.Tables["AEpTransaction"]));
+            this.TableAEpTransaction = ((BankImportTDSAEpTransactionTable)(this.Tables["AEpTransaction"]));
             this.TableAEpMatch = ((AEpMatchTable)(this.Tables["AEpMatch"]));
         }
 
@@ -869,7 +869,11 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnDonorKeyId = 29;
         /// used for generic TTypedDataTable functions
-        public static short ColumnBankAccountNumberId = 30;
+        public static short ColumnDonorShortNameId = 30;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRecipientDescriptionId = 31;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBankAccountNumberId = 32;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -906,7 +910,9 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(27, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(28, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
                     new TTypedColumnInfo(29, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(30, "BankAccountNumber", "BankAccountNumber", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(30, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(31, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(32, "BankAccountNumber", "BankAccountNumber", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
                     0, 1, 2, 3
@@ -934,6 +940,10 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
 
         ///
         public DataColumn ColumnDonorKey;
+        ///
+        public DataColumn ColumnDonorShortName;
+        ///
+        public DataColumn ColumnRecipientDescription;
         ///
         public DataColumn ColumnBankAccountNumber;
 
@@ -970,6 +980,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("DonorKey", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("DonorShortName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("RecipientDescription", typeof(string)));
             this.Columns.Add(new System.Data.DataColumn("BankAccountNumber", typeof(string)));
         }
 
@@ -1006,6 +1018,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
             this.ColumnDonorKey = this.Columns["DonorKey"];
+            this.ColumnDonorShortName = this.Columns["DonorShortName"];
+            this.ColumnRecipientDescription = this.Columns["RecipientDescription"];
             this.ColumnBankAccountNumber = this.Columns["BankAccountNumber"];
             this.PrimaryKey = new System.Data.DataColumn[4] {
                     ColumnLedgerNumber,ColumnBatchNumber,ColumnGiftTransactionNumber,ColumnDetailNumber};
@@ -1080,6 +1094,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
+        public static string GetDonorShortNameDBName()
+        {
+            return "DonorShortName";
+        }
+
+        /// get character length for column
+        public static short GetDonorShortNameLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetRecipientDescriptionDBName()
+        {
+            return "RecipientDescription";
+        }
+
+        /// get character length for column
+        public static short GetRecipientDescriptionLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
         public static string GetBankAccountNumberDBName()
         {
             return "BankAccountNumber";
@@ -1128,6 +1166,58 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                             || (((Int64)(this[this.myTable.ColumnDonorKey])) != value)))
                 {
                     this[this.myTable.ColumnDonorKey] = value;
+                }
+            }
+        }
+
+        ///
+        public string DonorShortName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDonorShortName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDonorShortName)
+                            || (((string)(this[this.myTable.ColumnDonorShortName])) != value)))
+                {
+                    this[this.myTable.ColumnDonorShortName] = value;
+                }
+            }
+        }
+
+        ///
+        public string RecipientDescription
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnRecipientDescription.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnRecipientDescription)
+                            || (((string)(this[this.myTable.ColumnRecipientDescription])) != value)))
+                {
+                    this[this.myTable.ColumnRecipientDescription] = value;
                 }
             }
         }
@@ -1191,6 +1281,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.SetNull(this.myTable.ColumnModifiedBy);
             this.SetNull(this.myTable.ColumnModificationId);
             this.SetNull(this.myTable.ColumnDonorKey);
+            this.SetNull(this.myTable.ColumnDonorShortName);
+            this.SetNull(this.myTable.ColumnRecipientDescription);
             this.SetNull(this.myTable.ColumnBankAccountNumber);
         }
 
@@ -1207,6 +1299,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// test for NULL value
+        public bool IsDonorShortNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnDonorShortName);
+        }
+
+        /// assign NULL value
+        public void SetDonorShortNameNull()
+        {
+            this.SetNull(this.myTable.ColumnDonorShortName);
+        }
+
+        /// test for NULL value
+        public bool IsRecipientDescriptionNull()
+        {
+            return this.IsNull(this.myTable.ColumnRecipientDescription);
+        }
+
+        /// assign NULL value
+        public void SetRecipientDescriptionNull()
+        {
+            this.SetNull(this.myTable.ColumnRecipientDescription);
+        }
+
+        /// test for NULL value
         public bool IsBankAccountNumberNull()
         {
             return this.IsNull(this.myTable.ColumnBankAccountNumber);
@@ -1216,6 +1332,341 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public void SetBankAccountNumberNull()
         {
             this.SetNull(this.myTable.ColumnBankAccountNumber);
+        }
+    }
+
+    /// the transactions from the recently imported bank statements; they should help to identify the other party of the transaction (donor, etc) and the purpose of the transaction
+    [Serializable()]
+    public class BankImportTDSAEpTransactionTable : AEpTransactionTable
+    {
+        /// TableId for Ict.Common.Data generic functions
+        public new static short TableId = 5602;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDonorKeyId = 23;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDonorShortNameId = 24;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AEpTransaction", "a_ep_transaction",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "StatementKey", "a_statement_key_i", "Bank statement", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "Order", "a_order_i", "order", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "StatementBankAccountKey", "a_statement_bank_account_key_i", "banking details", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "AccountName", "a_account_name_c", "Account Name", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(4, "Title", "a_title_c", "Title", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(5, "FirstName", "a_first_name_c", "First Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(6, "MiddleName", "a_middle_name_c", "Middle Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(7, "LastName", "a_last_name_c", "Last Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(8, "BranchCode", "p_branch_code_c", "Bank/Branch Code", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "Bic", "p_bic_c", "BIC/SWIFT Code", OdbcType.VarChar, 22, false),
+                    new TTypedColumnInfo(10, "BankAccountNumber", "a_bank_account_number_c", "Account Number", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(11, "Iban", "a_iban_c", "IBAN", OdbcType.VarChar, 128, false),
+                    new TTypedColumnInfo(12, "TransactionTypeCode", "a_transaction_type_code_c", "transaction type", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(13, "TransactionAmount", "a_transaction_amount_n", "Transaction Amount", OdbcType.Decimal, 24, true),
+                    new TTypedColumnInfo(14, "Description", "a_description_c", "description", OdbcType.VarChar, 512, false),
+                    new TTypedColumnInfo(15, "DateEffective", "a_date_effective_d", "Date", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(16, "EpMatchKey", "a_ep_match_key_i", "a_ep_match_key_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(17, "MatchingStatus", "a_matching_status_c", "a_matching_status_c", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
+                    new TTypedColumnInfo(23, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(24, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false)
+                },
+                new int[] {
+                    0, 1
+                }));
+            return true;
+        }
+
+        /// constructor
+        public BankImportTDSAEpTransactionTable() :
+                base("AEpTransaction")
+        {
+        }
+
+        /// constructor
+        public BankImportTDSAEpTransactionTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public BankImportTDSAEpTransactionTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        ///
+        public DataColumn ColumnDonorKey;
+        ///
+        public DataColumn ColumnDonorShortName;
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("a_statement_key_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_order_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_statement_bank_account_key_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_account_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_title_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_first_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_middle_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_last_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_branch_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_bic_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_bank_account_number_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_iban_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_transaction_type_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_transaction_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_description_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_date_effective_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("a_ep_match_key_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_matching_status_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("DonorKey", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("DonorShortName", typeof(string)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnStatementKey = this.Columns["a_statement_key_i"];
+            this.ColumnOrder = this.Columns["a_order_i"];
+            this.ColumnStatementBankAccountKey = this.Columns["a_statement_bank_account_key_i"];
+            this.ColumnAccountName = this.Columns["a_account_name_c"];
+            this.ColumnTitle = this.Columns["a_title_c"];
+            this.ColumnFirstName = this.Columns["a_first_name_c"];
+            this.ColumnMiddleName = this.Columns["a_middle_name_c"];
+            this.ColumnLastName = this.Columns["a_last_name_c"];
+            this.ColumnBranchCode = this.Columns["p_branch_code_c"];
+            this.ColumnBic = this.Columns["p_bic_c"];
+            this.ColumnBankAccountNumber = this.Columns["a_bank_account_number_c"];
+            this.ColumnIban = this.Columns["a_iban_c"];
+            this.ColumnTransactionTypeCode = this.Columns["a_transaction_type_code_c"];
+            this.ColumnTransactionAmount = this.Columns["a_transaction_amount_n"];
+            this.ColumnDescription = this.Columns["a_description_c"];
+            this.ColumnDateEffective = this.Columns["a_date_effective_d"];
+            this.ColumnEpMatchKey = this.Columns["a_ep_match_key_i"];
+            this.ColumnMatchingStatus = this.Columns["a_matching_status_c"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.ColumnDonorKey = this.Columns["DonorKey"];
+            this.ColumnDonorShortName = this.Columns["DonorShortName"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnStatementKey,ColumnOrder};
+        }
+
+        /// Access a typed row by index
+        public new BankImportTDSAEpTransactionRow this[int i]
+        {
+            get
+            {
+                return ((BankImportTDSAEpTransactionRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public new BankImportTDSAEpTransactionRow NewRowTyped(bool AWithDefaultValues)
+        {
+            BankImportTDSAEpTransactionRow ret = ((BankImportTDSAEpTransactionRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public new BankImportTDSAEpTransactionRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new BankImportTDSAEpTransactionRow(builder);
+        }
+
+        /// get typed set of changes
+        public new BankImportTDSAEpTransactionTable GetChangesTyped()
+        {
+            return ((BankImportTDSAEpTransactionTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static new string GetTableName()
+        {
+            return "AEpTransaction";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static new string GetTableDBName()
+        {
+            return "a_ep_transaction";
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDonorKeyDBName()
+        {
+            return "DonorKey";
+        }
+
+        /// get character length for column
+        public static short GetDonorKeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDonorShortNameDBName()
+        {
+            return "DonorShortName";
+        }
+
+        /// get character length for column
+        public static short GetDonorShortNameLength()
+        {
+            return -1;
+        }
+
+    }
+
+    /// the transactions from the recently imported bank statements; they should help to identify the other party of the transaction (donor, etc) and the purpose of the transaction
+    [Serializable()]
+    public class BankImportTDSAEpTransactionRow : AEpTransactionRow
+    {
+        private BankImportTDSAEpTransactionTable myTable;
+
+        /// Constructor
+        public BankImportTDSAEpTransactionRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((BankImportTDSAEpTransactionTable)(this.Table));
+        }
+
+        ///
+        public Int64 DonorKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDonorKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDonorKey)
+                            || (((Int64)(this[this.myTable.ColumnDonorKey])) != value)))
+                {
+                    this[this.myTable.ColumnDonorKey] = value;
+                }
+            }
+        }
+
+        ///
+        public string DonorShortName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDonorShortName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDonorShortName)
+                            || (((string)(this[this.myTable.ColumnDonorShortName])) != value)))
+                {
+                    this[this.myTable.ColumnDonorShortName] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public override void InitValues()
+        {
+            this.SetNull(this.myTable.ColumnStatementKey);
+            this.SetNull(this.myTable.ColumnOrder);
+            this.SetNull(this.myTable.ColumnStatementBankAccountKey);
+            this.SetNull(this.myTable.ColumnAccountName);
+            this.SetNull(this.myTable.ColumnTitle);
+            this.SetNull(this.myTable.ColumnFirstName);
+            this.SetNull(this.myTable.ColumnMiddleName);
+            this.SetNull(this.myTable.ColumnLastName);
+            this.SetNull(this.myTable.ColumnBranchCode);
+            this.SetNull(this.myTable.ColumnBic);
+            this.SetNull(this.myTable.ColumnBankAccountNumber);
+            this.SetNull(this.myTable.ColumnIban);
+            this.SetNull(this.myTable.ColumnTransactionTypeCode);
+            this[this.myTable.ColumnTransactionAmount.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnDescription);
+            this[this.myTable.ColumnDateEffective.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnEpMatchKey);
+            this.SetNull(this.myTable.ColumnMatchingStatus);
+            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnCreatedBy);
+            this.SetNull(this.myTable.ColumnDateModified);
+            this.SetNull(this.myTable.ColumnModifiedBy);
+            this.SetNull(this.myTable.ColumnModificationId);
+            this.SetNull(this.myTable.ColumnDonorKey);
+            this.SetNull(this.myTable.ColumnDonorShortName);
+        }
+
+        /// test for NULL value
+        public bool IsDonorKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnDonorKey);
+        }
+
+        /// assign NULL value
+        public void SetDonorKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnDonorKey);
+        }
+
+        /// test for NULL value
+        public bool IsDonorShortNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnDonorShortName);
+        }
+
+        /// assign NULL value
+        public void SetDonorShortNameNull()
+        {
+            this.SetNull(this.myTable.ColumnDonorShortName);
         }
     }
 }

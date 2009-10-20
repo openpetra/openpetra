@@ -93,5 +93,34 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 //            XmlDocument doc = TDataBase.DataTableToXml(AMainDS.AGiftDetail);
 //            TCsv2Xml.Xml2Csv(doc, "test.csv");
         }
+
+        /// get the donor key and shortname by the bank account number
+        public static Int64 GetDonorByAccountNumber(string ABankAccountNumber, out string ADonorShortName)
+        {
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+            string stmt = TDataBase.ReadSqlFile("GetDonorByBankAccount.sql");
+
+            OdbcParameter[] parameters = new OdbcParameter[1];
+            parameters[0] = new OdbcParameter("ABankAccountNumber", OdbcType.VarChar);
+            parameters[0].Value = ABankAccountNumber;
+            DataTable donorTable = DBAccess.GDBAccessObj.SelectDT(stmt, "donor", transaction, parameters);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            ADonorShortName = "UNKNOWN";
+
+            if (donorTable.Rows.Count == 1)
+            {
+                ADonorShortName = donorTable.Rows[0].ItemArray[donorTable.Columns["DonorShortName"].Ordinal].ToString();
+                return Convert.ToInt64(donorTable.Rows[0].ItemArray[donorTable.Columns["DonorKey"].Ordinal]);
+            }
+            else if (donorTable.Rows.Count > 1)
+            {
+                ADonorShortName = "DUPLICATE_DONORS_BANKACCOUNT";
+            }
+
+            return -1;
+        }
     }
 }
