@@ -22,10 +22,15 @@
             <CustomField name="DonorShortName" type="string"/>
             <CustomField name="RecipientDescription" type="string"/>
             <CustomField name="BankAccountNumber" type="string"/>
+            <CustomField name="AlreadyMatched" type="Boolean"/>
         </Table>
         <Table sqltable="a_ep_transaction">
+            <CustomField name="GiftLedgerNumber" type="Int32"/>
+            <CustomField name="GiftBatchNumber" type="Int32"/>
+            <CustomField name="GiftTransactionNumber" type="Int32"/>
             <CustomField name="DonorKey" type="Int64"/>
             <CustomField name="DonorShortName" type="string"/>
+            <CustomField name="RecipientDescription" type="string"/>
         </Table>
         <Table sqltable="a_ep_match"/>
     </DataSet> 

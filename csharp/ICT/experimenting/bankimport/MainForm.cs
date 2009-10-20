@@ -105,6 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
       grdResult.AddTextColumn("DonorShortName", FMainDS.AEpTransaction.ColumnDonorShortName);
       grdResult.AddTextColumn("Account Number", FMainDS.AEpTransaction.ColumnBankAccountNumber);
       grdResult.AddTextColumn("description", FMainDS.AEpTransaction.ColumnDescription);
+      grdResult.AddTextColumn("Recipient", FMainDS.AEpTransaction.ColumnRecipientDescription);
       grdResult.AddTextColumn("Transaction Amount", FMainDS.AEpTransaction.ColumnTransactionAmount);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 

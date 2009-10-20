@@ -27,11 +27,13 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Plugins.Finance.SwiftParser;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner;
 
 namespace Ict.Petra.Client.MFinance.Gui.BankImport
 {
@@ -76,6 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     grdResult.AddTextColumn("DonorShortName", FMainDS.AEpTransaction.ColumnDonorShortName);
                     grdResult.AddTextColumn("Account Number", FMainDS.AEpTransaction.ColumnBankAccountNumber);
                     grdResult.AddTextColumn("description", FMainDS.AEpTransaction.ColumnDescription);
+                    grdResult.AddTextColumn("Recipient", FMainDS.AEpTransaction.ColumnRecipientDescription);
                     grdResult.AddTextColumn("Transaction Amount", FMainDS.AEpTransaction.ColumnTransactionAmount);
 
                     FMainDS.AEpTransaction.Rows.Clear();
@@ -154,6 +157,41 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //MessageBox.Show(FMainDS.AEpTransaction.DefaultView.RowFilter);
         }
 
+        // determine the one gift batch that was posted for this bank statement
+        private Int32 FSelectedGiftBatch = -1;
+
+        private void MarkTransactionMatched(ref BankImportTDSAEpTransactionRow stmtRow, Int32 AGiftTransactionNumber)
+        {
+            stmtRow.MatchingStatus = Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED;
+
+            foreach (DataRowView rv in FMainDS.AGiftDetail.DefaultView)
+            {
+                BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)rv.Row;
+
+                if ((detailrow.GiftTransactionNumber == AGiftTransactionNumber) && (detailrow.BatchNumber == FSelectedGiftBatch))
+                {
+                    stmtRow.GiftLedgerNumber = detailrow.LedgerNumber;
+                    stmtRow.GiftBatchNumber = detailrow.BatchNumber;
+                    stmtRow.GiftTransactionNumber = detailrow.GiftTransactionNumber;
+
+                    if (detailrow.RecipientDescription.Length == 0)
+                    {
+                        detailrow.RecipientDescription = detailrow.MotivationGroupCode + "/" + detailrow.MotivationDetailCode;
+                    }
+
+                    if (stmtRow.RecipientDescription.Length > 0)
+                    {
+                        stmtRow.RecipientDescription += "; ";
+                    }
+
+                    stmtRow.RecipientDescription += detailrow.RecipientDescription + " (" + detailrow.GiftTransactionAmount.ToString() + ")";
+                    stmtRow.DonorKey = detailrow.DonorKey;
+                    stmtRow.DonorShortName = detailrow.DonorShortName;
+                    detailrow.AlreadyMatched = true;
+                }
+            }
+        }
+
         private bool AutoMatchGiftsAgainstPetraDB()
         {
             // first stage: collect historic matches from Petra database
@@ -164,8 +202,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             // Get all gifts at given date
             TGetData.GetGiftsByDate(ref FMainDS, FMainDS.AEpTransaction[0].DateEffective);
 
-            foreach (BankImportTDSAEpTransactionRow stmtRow in FMainDS.AEpTransaction.Rows)
+            // simple matching; no split gifts, bank account number fits and amount fits
+            for (Int32 TransactionsCounter = 0; TransactionsCounter < FMainDS.AEpTransaction.Rows.Count; TransactionsCounter++)
             {
+                BankImportTDSAEpTransactionRow stmtRow = FMainDS.AEpTransaction[TransactionsCounter];
+
                 if (stmtRow.MatchingStatus != Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED)
                 {
                     FMainDS.AGiftDetail.DefaultView.RowFilter = AGiftDetailTable.GetGiftAmountDBName() + " = " +
@@ -177,11 +218,85 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     if (FMainDS.AGiftDetail.DefaultView.Count == 1)
                     {
                         // found a match
-                        stmtRow.MatchingStatus = Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED;
+                        BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)FMainDS.AGiftDetail.DefaultView[0].Row;
+                        FSelectedGiftBatch = detailrow.BatchNumber;
+                        MarkTransactionMatched(ref stmtRow, detailrow.GiftTransactionNumber);
                     }
-                    else if (FMainDS.AGiftDetail.DefaultView.Count > 1)
+                }
+            }
+
+            if (FSelectedGiftBatch == -1)
+            {
+                MessageBox.Show("TODO: there is no gift batch yet in Petra for this bank statement");
+                return false;
+            }
+
+            for (Int32 TransactionsCounter = 0; TransactionsCounter < FMainDS.AEpTransaction.Rows.Count; TransactionsCounter++)
+            {
+                BankImportTDSAEpTransactionRow stmtRow = FMainDS.AEpTransaction[TransactionsCounter];
+
+                if (stmtRow.MatchingStatus != Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED)
+                {
+                    FMainDS.AGiftDetail.DefaultView.RowFilter = AGiftDetailTable.GetGiftAmountDBName() + " = " +
+                                                                stmtRow.TransactionAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                                                +
+                                                                " AND " + BankImportTDSAGiftDetailTable.GetBankAccountNumberDBName() + " = '" +
+                                                                stmtRow.BankAccountNumber + "' AND " +
+                                                                BankImportTDSAGiftDetailTable.GetBatchNumberDBName() + " = " +
+                                                                FSelectedGiftBatch.ToString() +
+                                                                " AND AlreadyMatched = false";
+
+                    if (FMainDS.AGiftDetail.DefaultView.Count > 1)
                     {
                         // TODO: donor has several gifts with same amount?
+                        // look for fitting words in description
+                        // gift transaction number, number of words
+                        SortedList <Int32, Int32>NumberWordsMatching = new SortedList <Int32, Int32>();
+
+                        foreach (DataRowView rv in FMainDS.AGiftDetail.DefaultView)
+                        {
+                            BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)rv.Row;
+
+                            if (NumberWordsMatching.ContainsKey(detailrow.GiftTransactionNumber))
+                            {
+                                // either this is a split gift, or the donor has several bank accounts
+                                // NumberWordsMatching[detailrow.GiftTransactionNumber] = -1000;
+                            }
+                            else
+                            {
+                                NumberWordsMatching.Add(detailrow.GiftTransactionNumber, 0);
+                            }
+
+                            StringCollection words =
+                                StringHelper.StrSplit(Calculations.FormatShortName(detailrow.RecipientDescription,
+                                        eShortNameFormat.eReverseWithoutTitle).Replace(", ", ",").Replace(" ", ","), ",");
+
+                            foreach (string s in words)
+                            {
+                                if (stmtRow.Description.ToUpper().IndexOf(s.Trim().ToUpper()) > -1)
+                                {
+                                    NumberWordsMatching[detailrow.GiftTransactionNumber]++;
+                                }
+                            }
+                        }
+
+                        int MaxGiftNumber = -1;
+                        int MaxCount = -1;
+
+                        foreach (int key in NumberWordsMatching.Keys)
+                        {
+                            if (NumberWordsMatching[key] > MaxCount)
+                            {
+                                MaxCount = NumberWordsMatching[key];
+                                MaxGiftNumber = key;
+                            }
+                        }
+
+                        if (MaxCount > 0)
+                        {
+                            // found a match
+                            MarkTransactionMatched(ref stmtRow, MaxGiftNumber);
+                        }
                     }
                     else
                     {
@@ -191,7 +306,10 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                         // get all gifts with that bank account number
                         FMainDS.AGiftDetail.DefaultView.RowFilter = BankImportTDSAGiftDetailTable.GetBankAccountNumberDBName() + " = '" +
-                                                                    stmtRow.BankAccountNumber + "'";
+                                                                    stmtRow.BankAccountNumber + "' AND " +
+                                                                    BankImportTDSAGiftDetailTable.GetBatchNumberDBName() + " = " +
+                                                                    FSelectedGiftBatch.ToString() +
+                                                                    " AND AlreadyMatched = false";
 
                         if (FMainDS.AGiftDetail.DefaultView.Count > 1)
                         {
@@ -233,19 +351,15 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                             if (successTransactionNumber > -1)
                             {
                                 // found a match
-                                stmtRow.MatchingStatus = Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED;
+                                MarkTransactionMatched(ref stmtRow, successTransactionNumber);
                             }
                         }
                     }
 
-                    if (FMainDS.AGiftDetail.DefaultView.Count > 0)
-                    {
-                        stmtRow.DonorKey = ((BankImportTDSAGiftDetailRow)FMainDS.AGiftDetail.DefaultView[0].Row).DonorKey;
-                        stmtRow.DonorShortName = ((BankImportTDSAGiftDetailRow)FMainDS.AGiftDetail.DefaultView[0].Row).DonorShortName;
-                    }
-                    else
+                    if (FMainDS.AGiftDetail.DefaultView.Count == 0)
                     {
                         // try to find the donor by account number
+                        // TODO: this should not be necessary anymore
                         string shortname;
                         Int64 donorkey = TGetData.GetDonorByAccountNumber(stmtRow.BankAccountNumber, out shortname);
                         stmtRow.DonorShortName = shortname;
@@ -257,6 +371,10 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     }
                 }
             }
+
+            // TODO: checksum of SelectedGiftBatch and matched transactions; move other transactions to Other state?
+
+            // TODO: export a list of mismatching account numbers
 
             // second stage: use saved matches to find new matches in this statement
             // don't store them, but export them???

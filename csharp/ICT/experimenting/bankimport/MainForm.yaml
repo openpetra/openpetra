@@ -42,10 +42,11 @@ RootNode:
         grdResult:
             Dock: Fill
             TableName: AEpTransaction
-            Columns: [TransactionTypeCode, AccountName, DonorKey, DonorShortName, BankAccountNumber, Description, TransactionAmount]
+            Columns: [TransactionTypeCode, AccountName, DonorKey, DonorShortName, BankAccountNumber, Description, RecipientDescription, TransactionAmount]
             CustomColumns:
                 DonorKey: {Label=DonorKey, Type=PartnerKey}
                 DonorShortName: {Label=DonorShortName, Type=String}
+                RecipientDescription: {Label=Recipient, Type=String}
     Menu:
     Toolbar:
         tbbImportStatement:
