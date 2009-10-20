@@ -65,14 +65,18 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblBankName.Text = Catalog.GetString("Bank Name:");
       this.lblDateStatement.Text = Catalog.GetString("Date Statement:");
-      this.lblValueAltogether.Text = Catalog.GetString("Value Altogether:");
-      this.lblNumberAltogether.Text = Catalog.GetString("Number Altogether:");
-      this.lblValueMatchedGifts.Text = Catalog.GetString("Value Matched Gifts:");
+      this.lblStartBalance.Text = Catalog.GetString("Start Balance:");
+      this.lblEndBalance.Text = Catalog.GetString("End Balance:");
       this.lblNumberMatched.Text = Catalog.GetString("Number Matched:");
-      this.lblValueUnmatchedGifts.Text = Catalog.GetString("Value Unmatched Gifts:");
+      this.lblValueMatchedGifts.Text = Catalog.GetString("Value Matched Gifts:");
       this.lblNumberUnmatched.Text = Catalog.GetString("Number Unmatched:");
-      this.lblValueOther.Text = Catalog.GetString("Value Other:");
+      this.lblValueUnmatchedGifts.Text = Catalog.GetString("Value Unmatched Gifts:");
       this.lblNumberOther.Text = Catalog.GetString("Number Other:");
+      this.lblValueOtherCredit.Text = Catalog.GetString("Value Other Credit:");
+      this.lblValueOtherDebit.Text = Catalog.GetString("Value Other Debit:");
+      this.lblNumberAltogether.Text = Catalog.GetString("Number Altogether:");
+      this.lblSumCredit.Text = Catalog.GetString("Sum Credit:");
+      this.lblSumDebit.Text = Catalog.GetString("Sum Debit:");
       this.rbtAllTransactions.Text = Catalog.GetString("AllTransactions");
       this.rbtMatchedGifts.Text = Catalog.GetString("MatchedGifts");
       this.rbtUnmatchedGifts.Text = Catalog.GetString("UnmatchedGifts");

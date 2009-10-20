@@ -39,10 +39,13 @@ namespace Ict.Plugins.Finance.SwiftParser
     /// </summary>
     public class TSwiftParser
     {
+        /// <summary>
+        /// the parsed bank statements
+        /// </summary>
         public List <TStatement>statements;
-        public TStatement currentStatement = null;
+        private TStatement currentStatement = null;
 
-        public void HandleSwiftData(string swiftTag, string swiftData)
+        private void HandleSwiftData(string swiftTag, string swiftData)
         {
             if (currentStatement != null)
             {
@@ -279,6 +282,10 @@ namespace Ict.Plugins.Finance.SwiftParser
             }
         }
 
+        /// <summary>
+        /// processing MT940 file
+        /// </summary>
+        /// <param name="filename"></param>
         public void ProcessFile(string filename)
         {
             Console.WriteLine("Read file " + filename);
@@ -326,6 +333,10 @@ namespace Ict.Plugins.Finance.SwiftParser
             }
         }
 
+        /// <summary>
+        /// write xml file with data imported from MT940 file
+        /// </summary>
+        /// <param name="filename"></param>
         public void ExportToXML(string filename)
         {
             XmlTextWriter textWriter = new XmlTextWriter(filename, Encoding.UTF8);
@@ -367,41 +378,82 @@ namespace Ict.Plugins.Finance.SwiftParser
         }
     }
 
+    /// todoComment
     public class TTransaction
     {
+        /// todoComment
         public DateTime valueDate;
+
+        /// todoComment
         public DateTime inputDate;
+
+        /// todoComment
         public double amount;
+
+        /// todoComment
         public string text;
+
+        /// todoComment
         public string typecode;
+
+        /// todoComment
         public string description;
+
+        /// todoComment
         public string bankCode;
+
+        /// todoComment
         public string accountCode;
+
+        /// todoComment
         public string partnerName;
     }
 
+    /// todoComment
     public class TStatement
     {
+        /// todoComment
         public string id;
+
+        /// todoComment
         public string bankCode;
+
+        /// todoComment
         public string accountCode;
+
+        /// todoComment
         public string currency;
+
+        /// todoComment
         public double startBalance;
+
+        /// todoComment
         public double endBalance;
+
+        /// todoComment
         public string date;
+
+        /// todoComment
         public List <TTransaction>transactions = new List <TTransaction>();
+
+        /// todoComment
         public List <TLine>lines = new List <TLine>();
     }
 
+    /// todoComment
     public class TLine
     {
+        /// todoComment
         public TLine(string ATag, string AData)
         {
             swiftTag = ATag;
             swiftData = AData;
         }
 
+        /// todoComment
         public string swiftTag;
+
+        /// todoComment
         public string swiftData;
     }
 }

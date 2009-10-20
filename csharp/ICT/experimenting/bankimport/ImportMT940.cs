@@ -28,6 +28,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.MFinance.Gui.BankImport;
 using Ict.Plugins.Finance.SwiftParser;
+using Mono.Unix;
 
 namespace Ict.Plugins.Finance.SwiftParser
 {
@@ -45,16 +46,34 @@ namespace Ict.Plugins.Finance.SwiftParser
         }
 
         /// <summary>
+        /// should return the text for the filter for AEpTransactionTable to get all the gifts, by transaction type
+        /// </summary>
+        /// <returns></returns>
+        public string GetFilterGifts()
+        {
+            string typeName = AEpTransactionTable.GetTransactionTypeCodeDBName();
+
+            return typeName + " = '052' OR " + typeName + " = '051' OR " + typeName + " = '053' OR " + typeName + " = '067' OR " + typeName +
+                   " = '068' OR " + typeName + " = '069'";
+        }
+
+        /// <summary>
         /// open the file and return a typed datatable
         /// </summary>
-        public bool ImportFromFile(string AFilename, ref BankImportTDS AMainDS, out double ATotalAmountStatement, out Int32 ANumberAllTransactions)
+        public bool ImportFromFile(string AFilename,
+            ref BankImportTDS AMainDS,
+            out double AStartBalance,
+            out double AEndBalance,
+            out string ABankName)
         {
             TSwiftParser parser = new TSwiftParser();
 
+            AStartBalance = -1;
+            AEndBalance = -1;
+            ABankName = "";
+
             parser.ProcessFile(AFilename);
 
-            ATotalAmountStatement = 0.0;
-            ANumberAllTransactions = -1;
             Int32 statementCounter = 0;
 
             // TODO: support several statements per file?
@@ -100,10 +119,38 @@ namespace Ict.Plugins.Finance.SwiftParser
                     transactionCounter++;
                 }
 
-                ATotalAmountStatement = stmt.endBalance - stmt.startBalance;
-                ANumberAllTransactions = stmt.transactions.Count;
+                ABankName = stmt.bankCode;
+
+                // TODO; use BLZ List?
+                // see http://www.bundesbank.de/zahlungsverkehr/zahlungsverkehr_bankleitzahlen_download.php
+                if (ABankName == "52060410")
+                {
+                    ABankName += " (EKK)";
+                }
+                else if (ABankName == "67450048")
+                {
+                    ABankName += " (SPK)";
+                }
+
+                if (statementCounter == 0)
+                {
+                    AStartBalance = stmt.startBalance;
+                }
+
+                if (statementCounter == parser.statements.Count - 1)
+                {
+                    AEndBalance = stmt.endBalance;
+                }
 
                 statementCounter++;
+
+                // TODO: don't support several bank statements per file at the moment
+                break;
+            }
+
+            if (parser.statements.Count > 1)
+            {
+                System.Windows.Forms.MessageBox.Show(Catalog.GetString("We don't support several bank statements per file at the moment"));
             }
 
             return true;

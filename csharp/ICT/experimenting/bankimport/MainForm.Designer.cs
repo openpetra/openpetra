@@ -77,22 +77,30 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.lblBankName = new System.Windows.Forms.Label();
             this.txtDateStatement = new System.Windows.Forms.TextBox();
             this.lblDateStatement = new System.Windows.Forms.Label();
-            this.txtValueAltogether = new System.Windows.Forms.TextBox();
-            this.lblValueAltogether = new System.Windows.Forms.Label();
-            this.txtNumberAltogether = new System.Windows.Forms.TextBox();
-            this.lblNumberAltogether = new System.Windows.Forms.Label();
-            this.txtValueMatchedGifts = new System.Windows.Forms.TextBox();
-            this.lblValueMatchedGifts = new System.Windows.Forms.Label();
+            this.txtStartBalance = new System.Windows.Forms.TextBox();
+            this.lblStartBalance = new System.Windows.Forms.Label();
+            this.txtEndBalance = new System.Windows.Forms.TextBox();
+            this.lblEndBalance = new System.Windows.Forms.Label();
             this.txtNumberMatched = new System.Windows.Forms.TextBox();
             this.lblNumberMatched = new System.Windows.Forms.Label();
-            this.txtValueUnmatchedGifts = new System.Windows.Forms.TextBox();
-            this.lblValueUnmatchedGifts = new System.Windows.Forms.Label();
+            this.txtValueMatchedGifts = new System.Windows.Forms.TextBox();
+            this.lblValueMatchedGifts = new System.Windows.Forms.Label();
             this.txtNumberUnmatched = new System.Windows.Forms.TextBox();
             this.lblNumberUnmatched = new System.Windows.Forms.Label();
-            this.txtValueOther = new System.Windows.Forms.TextBox();
-            this.lblValueOther = new System.Windows.Forms.Label();
+            this.txtValueUnmatchedGifts = new System.Windows.Forms.TextBox();
+            this.lblValueUnmatchedGifts = new System.Windows.Forms.Label();
             this.txtNumberOther = new System.Windows.Forms.TextBox();
             this.lblNumberOther = new System.Windows.Forms.Label();
+            this.txtValueOtherCredit = new System.Windows.Forms.TextBox();
+            this.lblValueOtherCredit = new System.Windows.Forms.Label();
+            this.txtValueOtherDebit = new System.Windows.Forms.TextBox();
+            this.lblValueOtherDebit = new System.Windows.Forms.Label();
+            this.txtNumberAltogether = new System.Windows.Forms.TextBox();
+            this.lblNumberAltogether = new System.Windows.Forms.Label();
+            this.txtSumCredit = new System.Windows.Forms.TextBox();
+            this.lblSumCredit = new System.Windows.Forms.Label();
+            this.txtSumDebit = new System.Windows.Forms.TextBox();
+            this.lblSumDebit = new System.Windows.Forms.Label();
             this.rgrFilter = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtAllTransactions = new System.Windows.Forms.RadioButton();
@@ -183,50 +191,35 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.lblDateStatement.Text = "Date Statement:";
             this.lblDateStatement.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
-            // txtValueAltogether
+            // txtStartBalance
             //
-            this.txtValueAltogether.Location = new System.Drawing.Point(2,2);
-            this.txtValueAltogether.Name = "txtValueAltogether";
-            this.txtValueAltogether.Size = new System.Drawing.Size(150, 28);
-            this.txtValueAltogether.ReadOnly = true;
+            this.txtStartBalance.Location = new System.Drawing.Point(2,2);
+            this.txtStartBalance.Name = "txtStartBalance";
+            this.txtStartBalance.Size = new System.Drawing.Size(150, 28);
+            this.txtStartBalance.ReadOnly = true;
             //
-            // lblValueAltogether
+            // lblStartBalance
             //
-            this.lblValueAltogether.Location = new System.Drawing.Point(2,2);
-            this.lblValueAltogether.Name = "lblValueAltogether";
-            this.lblValueAltogether.AutoSize = true;
-            this.lblValueAltogether.Text = "Value Altogether:";
-            this.lblValueAltogether.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblStartBalance.Location = new System.Drawing.Point(2,2);
+            this.lblStartBalance.Name = "lblStartBalance";
+            this.lblStartBalance.AutoSize = true;
+            this.lblStartBalance.Text = "Start Balance:";
+            this.lblStartBalance.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
-            // txtNumberAltogether
+            // txtEndBalance
             //
-            this.txtNumberAltogether.Location = new System.Drawing.Point(2,2);
-            this.txtNumberAltogether.Name = "txtNumberAltogether";
-            this.txtNumberAltogether.Size = new System.Drawing.Size(150, 28);
-            this.txtNumberAltogether.ReadOnly = true;
+            this.txtEndBalance.Location = new System.Drawing.Point(2,2);
+            this.txtEndBalance.Name = "txtEndBalance";
+            this.txtEndBalance.Size = new System.Drawing.Size(150, 28);
+            this.txtEndBalance.ReadOnly = true;
             //
-            // lblNumberAltogether
+            // lblEndBalance
             //
-            this.lblNumberAltogether.Location = new System.Drawing.Point(2,2);
-            this.lblNumberAltogether.Name = "lblNumberAltogether";
-            this.lblNumberAltogether.AutoSize = true;
-            this.lblNumberAltogether.Text = "Number Altogether:";
-            this.lblNumberAltogether.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            //
-            // txtValueMatchedGifts
-            //
-            this.txtValueMatchedGifts.Location = new System.Drawing.Point(2,2);
-            this.txtValueMatchedGifts.Name = "txtValueMatchedGifts";
-            this.txtValueMatchedGifts.Size = new System.Drawing.Size(150, 28);
-            this.txtValueMatchedGifts.ReadOnly = true;
-            //
-            // lblValueMatchedGifts
-            //
-            this.lblValueMatchedGifts.Location = new System.Drawing.Point(2,2);
-            this.lblValueMatchedGifts.Name = "lblValueMatchedGifts";
-            this.lblValueMatchedGifts.AutoSize = true;
-            this.lblValueMatchedGifts.Text = "Value Matched Gifts:";
-            this.lblValueMatchedGifts.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblEndBalance.Location = new System.Drawing.Point(2,2);
+            this.lblEndBalance.Name = "lblEndBalance";
+            this.lblEndBalance.AutoSize = true;
+            this.lblEndBalance.Text = "End Balance:";
+            this.lblEndBalance.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // txtNumberMatched
             //
@@ -243,20 +236,20 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.lblNumberMatched.Text = "Number Matched:";
             this.lblNumberMatched.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
-            // txtValueUnmatchedGifts
+            // txtValueMatchedGifts
             //
-            this.txtValueUnmatchedGifts.Location = new System.Drawing.Point(2,2);
-            this.txtValueUnmatchedGifts.Name = "txtValueUnmatchedGifts";
-            this.txtValueUnmatchedGifts.Size = new System.Drawing.Size(150, 28);
-            this.txtValueUnmatchedGifts.ReadOnly = true;
+            this.txtValueMatchedGifts.Location = new System.Drawing.Point(2,2);
+            this.txtValueMatchedGifts.Name = "txtValueMatchedGifts";
+            this.txtValueMatchedGifts.Size = new System.Drawing.Size(150, 28);
+            this.txtValueMatchedGifts.ReadOnly = true;
             //
-            // lblValueUnmatchedGifts
+            // lblValueMatchedGifts
             //
-            this.lblValueUnmatchedGifts.Location = new System.Drawing.Point(2,2);
-            this.lblValueUnmatchedGifts.Name = "lblValueUnmatchedGifts";
-            this.lblValueUnmatchedGifts.AutoSize = true;
-            this.lblValueUnmatchedGifts.Text = "Value Unmatched Gifts:";
-            this.lblValueUnmatchedGifts.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblValueMatchedGifts.Location = new System.Drawing.Point(2,2);
+            this.lblValueMatchedGifts.Name = "lblValueMatchedGifts";
+            this.lblValueMatchedGifts.AutoSize = true;
+            this.lblValueMatchedGifts.Text = "Value Matched Gifts:";
+            this.lblValueMatchedGifts.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // txtNumberUnmatched
             //
@@ -273,20 +266,20 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.lblNumberUnmatched.Text = "Number Unmatched:";
             this.lblNumberUnmatched.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
-            // txtValueOther
+            // txtValueUnmatchedGifts
             //
-            this.txtValueOther.Location = new System.Drawing.Point(2,2);
-            this.txtValueOther.Name = "txtValueOther";
-            this.txtValueOther.Size = new System.Drawing.Size(150, 28);
-            this.txtValueOther.ReadOnly = true;
+            this.txtValueUnmatchedGifts.Location = new System.Drawing.Point(2,2);
+            this.txtValueUnmatchedGifts.Name = "txtValueUnmatchedGifts";
+            this.txtValueUnmatchedGifts.Size = new System.Drawing.Size(150, 28);
+            this.txtValueUnmatchedGifts.ReadOnly = true;
             //
-            // lblValueOther
+            // lblValueUnmatchedGifts
             //
-            this.lblValueOther.Location = new System.Drawing.Point(2,2);
-            this.lblValueOther.Name = "lblValueOther";
-            this.lblValueOther.AutoSize = true;
-            this.lblValueOther.Text = "Value Other:";
-            this.lblValueOther.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblValueUnmatchedGifts.Location = new System.Drawing.Point(2,2);
+            this.lblValueUnmatchedGifts.Name = "lblValueUnmatchedGifts";
+            this.lblValueUnmatchedGifts.AutoSize = true;
+            this.lblValueUnmatchedGifts.Text = "Value Unmatched Gifts:";
+            this.lblValueUnmatchedGifts.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // txtNumberOther
             //
@@ -302,37 +295,123 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.lblNumberOther.AutoSize = true;
             this.lblNumberOther.Text = "Number Other:";
             this.lblNumberOther.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.ColumnCount = 4;
+            //
+            // txtValueOtherCredit
+            //
+            this.txtValueOtherCredit.Location = new System.Drawing.Point(2,2);
+            this.txtValueOtherCredit.Name = "txtValueOtherCredit";
+            this.txtValueOtherCredit.Size = new System.Drawing.Size(150, 28);
+            this.txtValueOtherCredit.ReadOnly = true;
+            //
+            // lblValueOtherCredit
+            //
+            this.lblValueOtherCredit.Location = new System.Drawing.Point(2,2);
+            this.lblValueOtherCredit.Name = "lblValueOtherCredit";
+            this.lblValueOtherCredit.AutoSize = true;
+            this.lblValueOtherCredit.Text = "Value Other Credit:";
+            this.lblValueOtherCredit.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // txtValueOtherDebit
+            //
+            this.txtValueOtherDebit.Location = new System.Drawing.Point(2,2);
+            this.txtValueOtherDebit.Name = "txtValueOtherDebit";
+            this.txtValueOtherDebit.Size = new System.Drawing.Size(150, 28);
+            this.txtValueOtherDebit.ReadOnly = true;
+            //
+            // lblValueOtherDebit
+            //
+            this.lblValueOtherDebit.Location = new System.Drawing.Point(2,2);
+            this.lblValueOtherDebit.Name = "lblValueOtherDebit";
+            this.lblValueOtherDebit.AutoSize = true;
+            this.lblValueOtherDebit.Text = "Value Other Debit:";
+            this.lblValueOtherDebit.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // txtNumberAltogether
+            //
+            this.txtNumberAltogether.Location = new System.Drawing.Point(2,2);
+            this.txtNumberAltogether.Name = "txtNumberAltogether";
+            this.txtNumberAltogether.Size = new System.Drawing.Size(150, 28);
+            this.txtNumberAltogether.ReadOnly = true;
+            //
+            // lblNumberAltogether
+            //
+            this.lblNumberAltogether.Location = new System.Drawing.Point(2,2);
+            this.lblNumberAltogether.Name = "lblNumberAltogether";
+            this.lblNumberAltogether.AutoSize = true;
+            this.lblNumberAltogether.Text = "Number Altogether:";
+            this.lblNumberAltogether.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // txtSumCredit
+            //
+            this.txtSumCredit.Location = new System.Drawing.Point(2,2);
+            this.txtSumCredit.Name = "txtSumCredit";
+            this.txtSumCredit.Size = new System.Drawing.Size(150, 28);
+            this.txtSumCredit.ReadOnly = true;
+            //
+            // lblSumCredit
+            //
+            this.lblSumCredit.Location = new System.Drawing.Point(2,2);
+            this.lblSumCredit.Name = "lblSumCredit";
+            this.lblSumCredit.AutoSize = true;
+            this.lblSumCredit.Text = "Sum Credit:";
+            this.lblSumCredit.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // txtSumDebit
+            //
+            this.txtSumDebit.Location = new System.Drawing.Point(2,2);
+            this.txtSumDebit.Name = "txtSumDebit";
+            this.txtSumDebit.Size = new System.Drawing.Size(150, 28);
+            this.txtSumDebit.ReadOnly = true;
+            //
+            // lblSumDebit
+            //
+            this.lblSumDebit.Location = new System.Drawing.Point(2,2);
+            this.lblSumDebit.Name = "lblSumDebit";
+            this.lblSumDebit.AutoSize = true;
+            this.lblSumDebit.Text = "Sum Debit:";
+            this.lblSumDebit.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel2.ColumnCount = 6;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 5;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 6;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblBankName, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblValueAltogether, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblValueMatchedGifts, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblValueUnmatchedGifts, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.lblValueOther, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this.lblStartBalance, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblNumberMatched, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblNumberUnmatched, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.lblNumberOther, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this.lblNumberAltogether, 0, 5);
             this.tableLayoutPanel2.Controls.Add(this.txtBankName, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtValueAltogether, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtValueMatchedGifts, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.txtValueUnmatchedGifts, 1, 3);
-            this.tableLayoutPanel2.Controls.Add(this.txtValueOther, 1, 4);
+            this.tableLayoutPanel2.Controls.Add(this.txtStartBalance, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtNumberMatched, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.txtNumberUnmatched, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.txtNumberOther, 1, 4);
+            this.tableLayoutPanel2.Controls.Add(this.txtNumberAltogether, 1, 5);
             this.tableLayoutPanel2.Controls.Add(this.lblDateStatement, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblNumberAltogether, 2, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblNumberMatched, 2, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblNumberUnmatched, 2, 3);
-            this.tableLayoutPanel2.Controls.Add(this.lblNumberOther, 2, 4);
+            this.tableLayoutPanel2.Controls.Add(this.lblEndBalance, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblValueMatchedGifts, 2, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblValueUnmatchedGifts, 2, 3);
+            this.tableLayoutPanel2.Controls.Add(this.lblValueOtherCredit, 2, 4);
+            this.tableLayoutPanel2.Controls.Add(this.lblSumCredit, 2, 5);
             this.tableLayoutPanel2.Controls.Add(this.txtDateStatement, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtNumberAltogether, 3, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtNumberMatched, 3, 2);
-            this.tableLayoutPanel2.Controls.Add(this.txtNumberUnmatched, 3, 3);
-            this.tableLayoutPanel2.Controls.Add(this.txtNumberOther, 3, 4);
+            this.tableLayoutPanel2.Controls.Add(this.txtEndBalance, 3, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtValueMatchedGifts, 3, 2);
+            this.tableLayoutPanel2.Controls.Add(this.txtValueUnmatchedGifts, 3, 3);
+            this.tableLayoutPanel2.Controls.Add(this.txtValueOtherCredit, 3, 4);
+            this.tableLayoutPanel2.Controls.Add(this.txtSumCredit, 3, 5);
+            this.tableLayoutPanel2.Controls.Add(this.lblValueOtherDebit, 4, 4);
+            this.tableLayoutPanel2.Controls.Add(this.lblSumDebit, 4, 5);
+            this.tableLayoutPanel2.Controls.Add(this.txtValueOtherDebit, 5, 4);
+            this.tableLayoutPanel2.Controls.Add(this.txtSumDebit, 5, 5);
             //
             // rgrFilter
             //
@@ -557,22 +636,30 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         private System.Windows.Forms.Label lblBankName;
         private System.Windows.Forms.TextBox txtDateStatement;
         private System.Windows.Forms.Label lblDateStatement;
-        private System.Windows.Forms.TextBox txtValueAltogether;
-        private System.Windows.Forms.Label lblValueAltogether;
-        private System.Windows.Forms.TextBox txtNumberAltogether;
-        private System.Windows.Forms.Label lblNumberAltogether;
-        private System.Windows.Forms.TextBox txtValueMatchedGifts;
-        private System.Windows.Forms.Label lblValueMatchedGifts;
+        private System.Windows.Forms.TextBox txtStartBalance;
+        private System.Windows.Forms.Label lblStartBalance;
+        private System.Windows.Forms.TextBox txtEndBalance;
+        private System.Windows.Forms.Label lblEndBalance;
         private System.Windows.Forms.TextBox txtNumberMatched;
         private System.Windows.Forms.Label lblNumberMatched;
-        private System.Windows.Forms.TextBox txtValueUnmatchedGifts;
-        private System.Windows.Forms.Label lblValueUnmatchedGifts;
+        private System.Windows.Forms.TextBox txtValueMatchedGifts;
+        private System.Windows.Forms.Label lblValueMatchedGifts;
         private System.Windows.Forms.TextBox txtNumberUnmatched;
         private System.Windows.Forms.Label lblNumberUnmatched;
-        private System.Windows.Forms.TextBox txtValueOther;
-        private System.Windows.Forms.Label lblValueOther;
+        private System.Windows.Forms.TextBox txtValueUnmatchedGifts;
+        private System.Windows.Forms.Label lblValueUnmatchedGifts;
         private System.Windows.Forms.TextBox txtNumberOther;
         private System.Windows.Forms.Label lblNumberOther;
+        private System.Windows.Forms.TextBox txtValueOtherCredit;
+        private System.Windows.Forms.Label lblValueOtherCredit;
+        private System.Windows.Forms.TextBox txtValueOtherDebit;
+        private System.Windows.Forms.Label lblValueOtherDebit;
+        private System.Windows.Forms.TextBox txtNumberAltogether;
+        private System.Windows.Forms.Label lblNumberAltogether;
+        private System.Windows.Forms.TextBox txtSumCredit;
+        private System.Windows.Forms.Label lblSumCredit;
+        private System.Windows.Forms.TextBox txtSumDebit;
+        private System.Windows.Forms.Label lblSumDebit;
         private System.Windows.Forms.GroupBox rgrFilter;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.RadioButton rbtAllTransactions;

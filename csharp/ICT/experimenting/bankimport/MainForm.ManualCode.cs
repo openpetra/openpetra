@@ -38,8 +38,6 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
     {
         private IImportBankStatement FBankStatementImporter;
         private BankImportTDS FMainDS;
-        private double FTotalAmountStatement;
-        private Int32 FNumberAllTransactions;
 
         private void InitializeManualCode()
         {
@@ -77,12 +75,17 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     grdResult.AddTextColumn("description", FMainDS.AEpTransaction.ColumnDescription);
                     grdResult.AddTextColumn("Transaction Amount", FMainDS.AEpTransaction.ColumnTransactionAmount);
 
+                    FMainDS.AEpTransaction.Rows.Clear();
+                    FMainDS.AGiftDetail.Rows.Clear();
+
                     // TODO: at the moment only support one statement by file?
-                    FBankStatementImporter.ImportFromFile(DialogOpen.FileName, ref FMainDS, out FTotalAmountStatement, out FNumberAllTransactions);
+                    double startBalance, endBalance;
+                    string bankName;
+                    FBankStatementImporter.ImportFromFile(DialogOpen.FileName, ref FMainDS, out startBalance, out endBalance, out bankName);
 
                     AutoMatchGiftsAgainstPetraDB();
 
-                    FillPanelInfo();
+                    FillPanelInfo(startBalance, endBalance, bankName);
 
                     rbtAllTransactions.Checked = true;
 
@@ -95,6 +98,30 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     MessageBox.Show(exp.Message + Environment.NewLine + exp.StackTrace, Catalog.GetString("Error importing bank statement"));
                 }
             }
+        }
+
+        private void SetFilterMatchingGifts()
+        {
+            FMainDS.AEpTransaction.DefaultView.RowFilter = AEpTransactionTable.GetMatchingStatusDBName() + "= '" +
+                                                           Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED + "' AND " +
+                                                           AEpTransactionTable.GetTransactionAmountDBName().ToString(
+                System.Globalization.CultureInfo.InvariantCulture) + " > 0";
+        }
+
+        private void SetFilterUnmatchedGifts()
+        {
+            FMainDS.AEpTransaction.DefaultView.RowFilter = AEpTransactionTable.GetMatchingStatusDBName() + " IS NULL AND " +
+                                                           AEpTransactionTable.GetTransactionAmountDBName().ToString(
+                System.Globalization.CultureInfo.InvariantCulture) + " > 0 AND (" +
+                                                           FBankStatementImporter.GetFilterGifts() + ")";
+        }
+
+        private void SetFilterOther()
+        {
+            FMainDS.AEpTransaction.DefaultView.RowFilter = AEpTransactionTable.GetMatchingStatusDBName() + " IS NULL AND (" +
+                                                           AEpTransactionTable.GetTransactionAmountDBName().ToString(
+                System.Globalization.CultureInfo.InvariantCulture) + " < 0 OR NOT (" +
+                                                           FBankStatementImporter.GetFilterGifts() + "))";
         }
 
         private void FilterChanged(Object sender, EventArgs e)
@@ -110,17 +137,18 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             }
             else if (rbtMatchedGifts.Checked)
             {
-                FMainDS.AEpTransaction.DefaultView.RowFilter = AEpTransactionTable.GetMatchingStatusDBName() + "= '" +
-                                                               Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED + "'";
+                SetFilterMatchingGifts();
             }
             else if (rbtUnmatchedGifts.Checked)
             {
-                FMainDS.AEpTransaction.DefaultView.RowFilter = AEpTransactionTable.GetMatchingStatusDBName() + " IS NULL";
+                SetFilterUnmatchedGifts();
             }
             else if (rbtOther.Checked)
             {
-                // AEpTransactionTable.GetTransactionTypeCodeDBName() + " = '052'";
+                SetFilterOther();
             }
+
+            //MessageBox.Show(FMainDS.AEpTransaction.DefaultView.RowFilter);
         }
 
         private bool AutoMatchGiftsAgainstPetraDB()
@@ -137,9 +165,6 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             {
                 if (row.MatchingStatus != Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED)
                 {
-                    TLogging.Log(AGiftDetailTable.GetGiftAmountDBName() + " = " + row.TransactionAmount.ToString() +
-                        " AND " + BankImportTDSAGiftDetailTable.GetBankAccountNumberDBName() + " = '" + row.BankAccountNumber + "'");
-
                     FMainDS.AGiftDetail.DefaultView.RowFilter = AGiftDetailTable.GetGiftAmountDBName() + " = " +
                                                                 row.TransactionAmount.ToString(System.Globalization.CultureInfo.InvariantCulture) +
                                                                 " AND " + BankImportTDSAGiftDetailTable.GetBankAccountNumberDBName() + " = '" +
@@ -165,43 +190,87 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             return true;
         }
 
-        private void FillPanelInfo()
+        private void CalculateSumsFromTransactionView(out double ASumCredit, out double ASumDebit, out Int32 ACount)
         {
-            double sumMatched = 0.0;
+            ASumCredit = 0.0;
+            ASumDebit = 0.0;
 
-            FMainDS.AEpTransaction.DefaultView.RowFilter = AEpTransactionTable.GetMatchingStatusDBName() + "= '" +
-                                                           Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED + "'";
-            txtNumberMatched.Text = FMainDS.AEpTransaction.DefaultView.Count.ToString();
-
-            foreach (DataRowView rv in FMainDS.AEpTransaction.DefaultView)
-            {
-                sumMatched += Math.Abs(((AEpTransactionRow)rv.Row).TransactionAmount);
-            }
-
-            txtValueMatchedGifts.Text = sumMatched.ToString();
-
-            double sumUnmatched = 0.0;
-            FMainDS.AEpTransaction.DefaultView.RowFilter = AEpTransactionTable.GetMatchingStatusDBName() + " IS NULL";
-            txtNumberUnmatched.Text = FMainDS.AEpTransaction.DefaultView.Count.ToString();
+            ACount = FMainDS.AEpTransaction.DefaultView.Count;
 
             foreach (DataRowView rv in FMainDS.AEpTransaction.DefaultView)
             {
-                sumUnmatched += Math.Abs(((AEpTransactionRow)rv.Row).TransactionAmount);
+                double amount = ((AEpTransactionRow)rv.Row).TransactionAmount;
+
+                if (amount > 0)
+                {
+                    ASumCredit += amount;
+                }
+                else
+                {
+                    ASumDebit += amount;
+                }
+            }
+        }
+
+        private void FillPanelInfo(double startBalance, double endBalance, string ABankName)
+        {
+            Int32 countRows;
+
+            txtBankName.Text = ABankName;
+            txtDateStatement.Text = FMainDS.AEpTransaction[0].DateEffective.ToShortDateString();
+            txtStartBalance.Text = startBalance.ToString();
+            txtEndBalance.Text = endBalance.ToString();
+
+            SetFilterMatchingGifts();
+            double sumCreditMatched, sumDebitMatched;
+            CalculateSumsFromTransactionView(out sumCreditMatched, out sumDebitMatched, out countRows);
+            txtNumberMatched.Text = countRows.ToString();
+            txtValueMatchedGifts.Text = sumCreditMatched.ToString();
+
+            if (sumDebitMatched > 0)
+            {
+                MessageBox.Show(Catalog.GetString("Problems with import, there should be no debits in gifts"));
             }
 
-            txtValueUnmatchedGifts.Text = sumUnmatched.ToString();
+            SetFilterUnmatchedGifts();
+            double sumCreditUnmatched, sumDebitUnmatched;
+            CalculateSumsFromTransactionView(out sumCreditUnmatched, out sumDebitUnmatched, out countRows);
+            txtNumberUnmatched.Text = countRows.ToString();
+            txtValueUnmatchedGifts.Text = sumCreditUnmatched.ToString();
+
+            if (sumDebitUnmatched > 0)
+            {
+                MessageBox.Show(Catalog.GetString("Problems with import, there should be no debits in gifts"));
+            }
+
+            SetFilterOther();
+            double sumCreditOther, sumDebitOther;
+            CalculateSumsFromTransactionView(out sumCreditOther, out sumDebitOther, out countRows);
+            txtNumberOther.Text = countRows.ToString();
+            txtValueOtherCredit.Text = sumCreditOther.ToString();
+            txtValueOtherDebit.Text = sumDebitOther.ToString();
 
             FMainDS.AEpTransaction.DefaultView.RowFilter = "";
+            double sumCreditAll, sumDebitAll;
+            CalculateSumsFromTransactionView(out sumCreditAll, out sumDebitAll, out countRows);
+            txtNumberAltogether.Text = countRows.ToString();
+            txtSumCredit.Text = sumCreditAll.ToString();
+            txtSumDebit.Text = sumDebitAll.ToString();
 
-            double sumAll = 0.0;
-            txtNumberAltogether.Text = FMainDS.AEpTransaction.DefaultView.Count.ToString();
-
-            foreach (DataRowView rv in FMainDS.AEpTransaction.DefaultView)
+            if (Convert.ToDecimal(startBalance + sumCreditAll + sumDebitAll) != Convert.ToDecimal(endBalance))
             {
-                sumAll += Math.Abs(((AEpTransactionRow)rv.Row).TransactionAmount);
+                MessageBox.Show(Catalog.GetString("the startbalance, credit/debit all and endbalance don't add up"));
             }
 
-            txtValueAltogether.Text = sumAll.ToString();
+            if (Convert.ToDecimal(sumCreditAll) != Convert.ToDecimal(sumCreditMatched + sumCreditUnmatched + sumCreditOther))
+            {
+                MessageBox.Show(Catalog.GetString("the credits don't add up"));
+            }
+
+            if (Convert.ToDecimal(sumDebitAll) != Convert.ToDecimal(sumDebitMatched + sumDebitUnmatched + sumDebitOther))
+            {
+                MessageBox.Show(Catalog.GetString("the debits don't add up"));
+            }
         }
     }
 }

@@ -39,8 +39,14 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         string GetFileFilter();
 
         /// <summary>
+        /// should return the text for the filter for AEpTransactionTable to get all the gifts, by transaction type
+        /// </summary>
+        /// <returns></returns>
+        string GetFilterGifts();
+
+        /// <summary>
         /// open the file and return a typed datatable
         /// </summary>
-        bool ImportFromFile(string AFilename, ref BankImportTDS AMainDS, out double ATotalAmountStatement, out Int32 ANumberAllTransactions);
+        bool ImportFromFile(string AFilename, ref BankImportTDS AMainDS, out double AStartBalance, out double AEndBalance, out string ABankName);
     }
 }

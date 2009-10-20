@@ -16,16 +16,21 @@ RootNode:
         pnlInfoStatement:
             Controls: 
                 Row0: [txtBankName, txtDateStatement]
-                Row1: [txtValueAltogether, txtNumberAltogether]
-                Row2: [txtValueMatchedGifts, txtNumberMatched]
-                Row3: [txtValueUnmatchedGifts, txtNumberUnmatched]
-                Row4: [txtValueOther, txtNumberOther]
+                Row1: [txtStartBalance, txtEndBalance]
+                Row3: [txtNumberMatched, txtValueMatchedGifts]
+                Row4: [txtNumberUnmatched, txtValueUnmatchedGifts]
+                Row5: [txtNumberOther, txtValueOtherCredit, txtValueOtherDebit]
+                Row2: [txtNumberAltogether, txtSumCredit, txtSumDebit]
         txtBankName: {ReadOnly=true}
         txtDateStatement: {ReadOnly=true}
-        txtValueAltogether: {ReadOnly=true}
+        txtStartBalance: {ReadOnly=true}
+        txtEndBalance: {ReadOnly=true}
+        txtSumCredit: {ReadOnly=true}
+        txtSumDebit: {ReadOnly=true}
         txtValueMatchedGifts: {ReadOnly=true}
         txtValueUnmatchedGifts: {ReadOnly=true}
-        txtValueOther: {ReadOnly=true}
+        txtValueOtherCredit: {ReadOnly=true}
+        txtValueOtherDebit: {ReadOnly=true}
         txtNumberAltogether: {ReadOnly=true}
         txtNumberMatched: {ReadOnly=true}
         txtNumberUnmatched: {ReadOnly=true}
