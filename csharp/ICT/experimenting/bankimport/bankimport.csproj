@@ -96,6 +96,9 @@
     <Reference Include="Ict.Petra.Shared.MPartner">
       <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
+      <HintPath>..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Posix">
       <HintPath>..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
     </Reference>

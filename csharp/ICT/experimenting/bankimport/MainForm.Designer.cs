@@ -85,6 +85,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.lblNumberMatched = new System.Windows.Forms.Label();
             this.txtValueMatchedGifts = new System.Windows.Forms.TextBox();
             this.lblValueMatchedGifts = new System.Windows.Forms.Label();
+            this.txtValueMatchedGiftBatch = new System.Windows.Forms.TextBox();
+            this.lblValueMatchedGiftBatch = new System.Windows.Forms.Label();
             this.txtNumberUnmatched = new System.Windows.Forms.TextBox();
             this.lblNumberUnmatched = new System.Windows.Forms.Label();
             this.txtValueUnmatchedGifts = new System.Windows.Forms.TextBox();
@@ -165,7 +167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.txtBankName.Location = new System.Drawing.Point(2,2);
             this.txtBankName.Name = "txtBankName";
-            this.txtBankName.Size = new System.Drawing.Size(150, 28);
+            this.txtBankName.Size = new System.Drawing.Size(100, 28);
             this.txtBankName.ReadOnly = true;
             //
             // lblBankName
@@ -180,7 +182,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.txtDateStatement.Location = new System.Drawing.Point(2,2);
             this.txtDateStatement.Name = "txtDateStatement";
-            this.txtDateStatement.Size = new System.Drawing.Size(150, 28);
+            this.txtDateStatement.Size = new System.Drawing.Size(100, 28);
             this.txtDateStatement.ReadOnly = true;
             //
             // lblDateStatement
@@ -195,7 +197,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.txtStartBalance.Location = new System.Drawing.Point(2,2);
             this.txtStartBalance.Name = "txtStartBalance";
-            this.txtStartBalance.Size = new System.Drawing.Size(150, 28);
+            this.txtStartBalance.Size = new System.Drawing.Size(100, 28);
             this.txtStartBalance.ReadOnly = true;
             //
             // lblStartBalance
@@ -210,7 +212,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.txtEndBalance.Location = new System.Drawing.Point(2,2);
             this.txtEndBalance.Name = "txtEndBalance";
-            this.txtEndBalance.Size = new System.Drawing.Size(150, 28);
+            this.txtEndBalance.Size = new System.Drawing.Size(100, 28);
             this.txtEndBalance.ReadOnly = true;
             //
             // lblEndBalance
@@ -225,7 +227,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.txtNumberMatched.Location = new System.Drawing.Point(2,2);
             this.txtNumberMatched.Name = "txtNumberMatched";
-            this.txtNumberMatched.Size = new System.Drawing.Size(150, 28);
+            this.txtNumberMatched.Size = new System.Drawing.Size(100, 28);
             this.txtNumberMatched.ReadOnly = true;
             //
             // lblNumberMatched
@@ -240,7 +242,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.txtValueMatchedGifts.Location = new System.Drawing.Point(2,2);
             this.txtValueMatchedGifts.Name = "txtValueMatchedGifts";
-            this.txtValueMatchedGifts.Size = new System.Drawing.Size(150, 28);
+            this.txtValueMatchedGifts.Size = new System.Drawing.Size(100, 28);
             this.txtValueMatchedGifts.ReadOnly = true;
             //
             // lblValueMatchedGifts
@@ -251,11 +253,26 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.lblValueMatchedGifts.Text = "Value Matched Gifts:";
             this.lblValueMatchedGifts.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
+            // txtValueMatchedGiftBatch
+            //
+            this.txtValueMatchedGiftBatch.Location = new System.Drawing.Point(2,2);
+            this.txtValueMatchedGiftBatch.Name = "txtValueMatchedGiftBatch";
+            this.txtValueMatchedGiftBatch.Size = new System.Drawing.Size(100, 28);
+            this.txtValueMatchedGiftBatch.ReadOnly = true;
+            //
+            // lblValueMatchedGiftBatch
+            //
+            this.lblValueMatchedGiftBatch.Location = new System.Drawing.Point(2,2);
+            this.lblValueMatchedGiftBatch.Name = "lblValueMatchedGiftBatch";
+            this.lblValueMatchedGiftBatch.AutoSize = true;
+            this.lblValueMatchedGiftBatch.Text = "Value Matched Gift Batch:";
+            this.lblValueMatchedGiftBatch.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
             // txtNumberUnmatched
             //
             this.txtNumberUnmatched.Location = new System.Drawing.Point(2,2);
             this.txtNumberUnmatched.Name = "txtNumberUnmatched";
-            this.txtNumberUnmatched.Size = new System.Drawing.Size(150, 28);
+            this.txtNumberUnmatched.Size = new System.Drawing.Size(100, 28);
             this.txtNumberUnmatched.ReadOnly = true;
             //
             // lblNumberUnmatched
@@ -270,7 +287,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.txtValueUnmatchedGifts.Location = new System.Drawing.Point(2,2);
             this.txtValueUnmatchedGifts.Name = "txtValueUnmatchedGifts";
-            this.txtValueUnmatchedGifts.Size = new System.Drawing.Size(150, 28);
+            this.txtValueUnmatchedGifts.Size = new System.Drawing.Size(100, 28);
             this.txtValueUnmatchedGifts.ReadOnly = true;
             //
             // lblValueUnmatchedGifts
@@ -285,7 +302,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.txtNumberOther.Location = new System.Drawing.Point(2,2);
             this.txtNumberOther.Name = "txtNumberOther";
-            this.txtNumberOther.Size = new System.Drawing.Size(150, 28);
+            this.txtNumberOther.Size = new System.Drawing.Size(100, 28);
             this.txtNumberOther.ReadOnly = true;
             //
             // lblNumberOther
@@ -300,7 +317,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.txtValueOtherCredit.Location = new System.Drawing.Point(2,2);
             this.txtValueOtherCredit.Name = "txtValueOtherCredit";
-            this.txtValueOtherCredit.Size = new System.Drawing.Size(150, 28);
+            this.txtValueOtherCredit.Size = new System.Drawing.Size(100, 28);
             this.txtValueOtherCredit.ReadOnly = true;
             //
             // lblValueOtherCredit
@@ -315,7 +332,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.txtValueOtherDebit.Location = new System.Drawing.Point(2,2);
             this.txtValueOtherDebit.Name = "txtValueOtherDebit";
-            this.txtValueOtherDebit.Size = new System.Drawing.Size(150, 28);
+            this.txtValueOtherDebit.Size = new System.Drawing.Size(100, 28);
             this.txtValueOtherDebit.ReadOnly = true;
             //
             // lblValueOtherDebit
@@ -330,7 +347,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.txtNumberAltogether.Location = new System.Drawing.Point(2,2);
             this.txtNumberAltogether.Name = "txtNumberAltogether";
-            this.txtNumberAltogether.Size = new System.Drawing.Size(150, 28);
+            this.txtNumberAltogether.Size = new System.Drawing.Size(100, 28);
             this.txtNumberAltogether.ReadOnly = true;
             //
             // lblNumberAltogether
@@ -345,7 +362,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.txtSumCredit.Location = new System.Drawing.Point(2,2);
             this.txtSumCredit.Name = "txtSumCredit";
-            this.txtSumCredit.Size = new System.Drawing.Size(150, 28);
+            this.txtSumCredit.Size = new System.Drawing.Size(100, 28);
             this.txtSumCredit.ReadOnly = true;
             //
             // lblSumCredit
@@ -360,7 +377,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.txtSumDebit.Location = new System.Drawing.Point(2,2);
             this.txtSumDebit.Name = "txtSumDebit";
-            this.txtSumDebit.Size = new System.Drawing.Size(150, 28);
+            this.txtSumDebit.Size = new System.Drawing.Size(100, 28);
             this.txtSumDebit.ReadOnly = true;
             //
             // lblSumDebit
@@ -408,8 +425,10 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tableLayoutPanel2.Controls.Add(this.txtValueUnmatchedGifts, 3, 3);
             this.tableLayoutPanel2.Controls.Add(this.txtValueOtherCredit, 3, 4);
             this.tableLayoutPanel2.Controls.Add(this.txtSumCredit, 3, 5);
+            this.tableLayoutPanel2.Controls.Add(this.lblValueMatchedGiftBatch, 4, 2);
             this.tableLayoutPanel2.Controls.Add(this.lblValueOtherDebit, 4, 4);
             this.tableLayoutPanel2.Controls.Add(this.lblSumDebit, 4, 5);
+            this.tableLayoutPanel2.Controls.Add(this.txtValueMatchedGiftBatch, 5, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtValueOtherDebit, 5, 4);
             this.tableLayoutPanel2.Controls.Add(this.txtSumDebit, 5, 5);
             //
@@ -496,6 +515,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             //
             this.tbbExportGiftBatch.Name = "tbbExportGiftBatch";
             this.tbbExportGiftBatch.AutoSize = true;
+            this.tbbExportGiftBatch.Click += new System.EventHandler(this.ExportGiftBatch);
             this.tbbExportGiftBatch.Text = "Export Gift Batch";
             //
             // tbbExportUnmatchedDonors
@@ -644,6 +664,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         private System.Windows.Forms.Label lblNumberMatched;
         private System.Windows.Forms.TextBox txtValueMatchedGifts;
         private System.Windows.Forms.Label lblValueMatchedGifts;
+        private System.Windows.Forms.TextBox txtValueMatchedGiftBatch;
+        private System.Windows.Forms.Label lblValueMatchedGiftBatch;
         private System.Windows.Forms.TextBox txtNumberUnmatched;
         private System.Windows.Forms.Label lblNumberUnmatched;
         private System.Windows.Forms.TextBox txtValueUnmatchedGifts;

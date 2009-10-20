@@ -8,7 +8,7 @@ RootNode:
     WindowHeight: 623
     Actions:
         actImportStatement: {Label=&Import Statement, ActionClick=ImportStatement}
-        actExportGiftBatch:
+        actExportGiftBatch: {ActionClick=ExportGiftBatch}
     Controls:
         pnlContent:
             Dock: Fill
@@ -17,24 +17,25 @@ RootNode:
             Controls: 
                 Row0: [txtBankName, txtDateStatement]
                 Row1: [txtStartBalance, txtEndBalance]
-                Row3: [txtNumberMatched, txtValueMatchedGifts]
+                Row3: [txtNumberMatched, txtValueMatchedGifts, txtValueMatchedGiftBatch]
                 Row4: [txtNumberUnmatched, txtValueUnmatchedGifts]
                 Row5: [txtNumberOther, txtValueOtherCredit, txtValueOtherDebit]
                 Row2: [txtNumberAltogether, txtSumCredit, txtSumDebit]
-        txtBankName: {ReadOnly=true}
-        txtDateStatement: {ReadOnly=true}
-        txtStartBalance: {ReadOnly=true}
-        txtEndBalance: {ReadOnly=true}
-        txtSumCredit: {ReadOnly=true}
-        txtSumDebit: {ReadOnly=true}
-        txtValueMatchedGifts: {ReadOnly=true}
-        txtValueUnmatchedGifts: {ReadOnly=true}
-        txtValueOtherCredit: {ReadOnly=true}
-        txtValueOtherDebit: {ReadOnly=true}
-        txtNumberAltogether: {ReadOnly=true}
-        txtNumberMatched: {ReadOnly=true}
-        txtNumberUnmatched: {ReadOnly=true}
-        txtNumberOther: {ReadOnly=true}
+        txtBankName: {ReadOnly=true, Width=100}
+        txtDateStatement: {ReadOnly=true, Width=100}
+        txtStartBalance: {ReadOnly=true, Width=100}
+        txtEndBalance: {ReadOnly=true, Width=100}
+        txtSumCredit: {ReadOnly=true, Width=100}
+        txtSumDebit: {ReadOnly=true, Width=100}
+        txtValueMatchedGifts: {ReadOnly=true, Width=100}
+        txtValueMatchedGiftBatch: {ReadOnly=true, Width=100}
+        txtValueUnmatchedGifts: {ReadOnly=true, Width=100}
+        txtValueOtherCredit: {ReadOnly=true, Width=100}
+        txtValueOtherDebit: {ReadOnly=true, Width=100}
+        txtNumberAltogether: {ReadOnly=true, Width=100}
+        txtNumberMatched: {ReadOnly=true, Width=100}
+        txtNumberUnmatched: {ReadOnly=true, Width=100}
+        txtNumberOther: {ReadOnly=true, Width=100}
         rgrFilter:
             OptionalValues: [AllTransactions, MatchedGifts, UnmatchedGifts, Other]
             ControlsOrientation: Horizontal

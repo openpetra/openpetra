@@ -69,6 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
       this.lblEndBalance.Text = Catalog.GetString("End Balance:");
       this.lblNumberMatched.Text = Catalog.GetString("Number Matched:");
       this.lblValueMatchedGifts.Text = Catalog.GetString("Value Matched Gifts:");
+      this.lblValueMatchedGiftBatch.Text = Catalog.GetString("Value Matched Gift Batch:");
       this.lblNumberUnmatched.Text = Catalog.GetString("Number Unmatched:");
       this.lblValueUnmatchedGifts.Text = Catalog.GetString("Value Unmatched Gifts:");
       this.lblNumberOther.Text = Catalog.GetString("Number Other:");

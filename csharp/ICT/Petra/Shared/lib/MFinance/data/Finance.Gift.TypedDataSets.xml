@@ -1,6 +1,7 @@
 <PetraDataSets>
   <ImportUnit name="Ict.Petra.Shared.MFinance.Gift.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
   
     <DataSet name="GiftBatchTDS">
         <Table sqltable="a_ledger"/>
@@ -21,13 +22,16 @@
             <CustomField name="DonorKey" type="Int64"/>
             <CustomField name="DonorShortName" type="string"/>
             <CustomField name="RecipientDescription" type="string"/>
-            <CustomField name="BankAccountNumber" type="string"/>
             <CustomField name="AlreadyMatched" type="Boolean"/>
         </Table>
+        <Table sqltable="p_banking_details">
+            <CustomField name="PartnerKey" type="Int64"/>
+        </Table>
         <Table sqltable="a_ep_transaction">
-            <CustomField name="GiftLedgerNumber" type="Int32"/>
-            <CustomField name="GiftBatchNumber" type="Int32"/>
-            <CustomField name="GiftTransactionNumber" type="Int32"/>
+            <CustomField name="GiftLedgerNumber" type="string"/>
+            <CustomField name="GiftBatchNumber" type="string"/>
+            <CustomField name="GiftTransactionNumber" type="string"/>
+            <CustomField name="GiftDetailNumber" type="string"/>
             <CustomField name="DonorKey" type="Int64"/>
             <CustomField name="DonorShortName" type="string"/>
             <CustomField name="RecipientDescription" type="string"/>

@@ -79,14 +79,24 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
-            // returns several rows if there are more than one banking detail
-            AMainDS.AGiftDetail.Constraints.Clear();
-
+            // first get all gifts, even those that have no bank account associated
             string stmt = TDataBase.ReadSqlFile("GetDonationsByDate.sql");
+
             OdbcParameter[] parameters = new OdbcParameter[1];
             parameters[0] = new OdbcParameter("ADateEffective", OdbcType.Date);
             parameters[0].Value = ADateEffective;
             DBAccess.GDBAccessObj.Select(AMainDS, stmt, AMainDS.AGiftDetail.TableName, transaction, parameters);
+
+            // get PartnerKey and banking details (most important BankAccountNumber) for all donations on the given date
+            stmt = TDataBase.ReadSqlFile("GetBankAccountByDate.sql");
+            parameters = new OdbcParameter[1];
+            parameters[0] = new OdbcParameter("ADateEffective", OdbcType.Date);
+            parameters[0].Value = ADateEffective;
+
+            // There can be several donors with the same banking details
+            AMainDS.PBankingDetails.Constraints.Clear();
+
+            DBAccess.GDBAccessObj.Select(AMainDS, stmt, AMainDS.PBankingDetails.TableName, transaction, parameters);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
