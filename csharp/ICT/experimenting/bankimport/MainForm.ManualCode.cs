@@ -165,11 +165,19 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         {
             stmtRow.MatchingStatus = Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED;
 
+//            if (stmtRow.AccountName.Contains("TEST"))
+//            {
+//                TLogging.Log(AGiftDetailNumber.ToString());
+//                TLogging.LogStackTrace(TLoggingType.ToLogfile);
+//            }
+
             foreach (DataRowView rv in FMainDS.AGiftDetail.DefaultView)
             {
                 BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)rv.Row;
 
-                if ((detailrow.GiftTransactionNumber == AGiftTransactionNumber) && (detailrow.BatchNumber == FSelectedGiftBatch)
+                // check again for AlreadyMatched, the details might have been matched in a previous iteration of this loop
+                if ((detailrow.AlreadyMatched == false) && (detailrow.GiftTransactionNumber == AGiftTransactionNumber)
+                    && (detailrow.BatchNumber == FSelectedGiftBatch)
                     && ((AGiftDetailNumber == -1) || (AGiftDetailNumber == detailrow.DetailNumber)))
                 {
                     if (stmtRow.IsGiftBatchNumberNull())
@@ -187,20 +195,43 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                         stmtRow.GiftDetailNumber += "," + AGiftDetailNumber.ToString();
                     }
 
-                    if (detailrow.RecipientDescription.Length == 0)
-                    {
-                        detailrow.RecipientDescription = detailrow.MotivationGroupCode + "/" + detailrow.MotivationDetailCode;
-                    }
+//                    if ((stmtRow.GiftDetailNumber.IndexOf("-1,") != -1) || (stmtRow.GiftDetailNumber.IndexOf(",-1") != -1))
+//                    {
+//                        TLogging.Log(stmtRow.GiftDetailNumber + " " + stmtRow.DonorShortName);
+//                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
+//                    }
 
-                    if (stmtRow.RecipientDescription.Length > 0)
-                    {
-                        stmtRow.RecipientDescription += "; ";
-                    }
-
-                    stmtRow.RecipientDescription += detailrow.RecipientDescription + " (" + detailrow.GiftTransactionAmount.ToString() + ")";
                     stmtRow.DonorKey = detailrow.DonorKey;
                     stmtRow.DonorShortName = detailrow.DonorShortName;
-                    detailrow.AlreadyMatched = true;
+
+                    // find other details of this gift transaction and mark them as matched too
+                    DataView v2 = new DataView(FMainDS.AGiftDetail);
+                    v2.RowFilter = AGiftDetailTable.GetBatchNumberDBName() + " = " + detailrow.BatchNumber.ToString() +
+                                   " AND " + AGiftDetailTable.GetGiftTransactionNumberDBName() + " = " + detailrow.GiftTransactionNumber.ToString() +
+                                   " AND AlreadyMatched = false";
+
+                    if (AGiftDetailNumber != -1)
+                    {
+                        v2.RowFilter += " AND " + AGiftDetailTable.GetDetailNumberDBName() + " = " + AGiftDetailNumber.ToString();
+                    }
+
+                    foreach (DataRowView rv2 in v2)
+                    {
+                        BankImportTDSAGiftDetailRow detailrow2 = (BankImportTDSAGiftDetailRow)rv2.Row;
+
+                        if (detailrow2.RecipientDescription.Length == 0)
+                        {
+                            detailrow2.RecipientDescription = detailrow2.MotivationGroupCode + "/" + detailrow2.MotivationDetailCode;
+                        }
+
+                        if (stmtRow.RecipientDescription.Length > 0)
+                        {
+                            stmtRow.RecipientDescription += "; ";
+                        }
+
+                        stmtRow.RecipientDescription += detailrow2.RecipientDescription + " (" + detailrow2.GiftTransactionAmount.ToString() + ")";
+                        detailrow2.AlreadyMatched = true;
+                    }
                 }
             }
         }
@@ -238,14 +269,17 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         {
             Decimal Result = 0.0m;
 
-            foreach (DataRowView rv in FMainDS.AGiftDetail.DefaultView)
+            // attention: this does check even for already matched gift details
+            DataView v = new DataView(FMainDS.AGiftDetail);
+
+            v.RowFilter = AGiftDetailTable.GetBatchNumberDBName() + " = " + FSelectedGiftBatch.ToString() +
+                          " AND " + AGiftDetailTable.GetGiftTransactionNumberDBName() + " = " + AGiftTransactionNumber.ToString();
+
+            foreach (DataRowView rv in v)
             {
                 BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)rv.Row;
 
-                if ((detailrow.GiftTransactionNumber == AGiftTransactionNumber) && (detailrow.BatchNumber == FSelectedGiftBatch))
-                {
-                    Result += Convert.ToDecimal(detailrow.GiftTransactionAmount);
-                }
+                Result += Convert.ToDecimal(detailrow.GiftTransactionAmount);
             }
 
             return Result;
@@ -289,7 +323,14 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                                                                 stmtRow.TransactionAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)
                                                                 +
                                                                 " AND " + BankImportTDSAGiftDetailTable.GetDonorKeyDBName() + " = " +
-                                                                DonorKey.ToString();
+                                                                DonorKey.ToString() +
+                                                                " AND AlreadyMatched = false";
+
+                    if (FSelectedGiftBatch != -1)
+                    {
+                        FMainDS.AGiftDetail.DefaultView.RowFilter += " AND " + AGiftDetailTable.GetBatchNumberDBName() + " = " +
+                                                                     FSelectedGiftBatch.ToString();
+                    }
 
                     if (FMainDS.AGiftDetail.DefaultView.Count == 1)
                     {
@@ -377,45 +418,40 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                         if (FMainDS.AGiftDetail.DefaultView.Count > 1)
                         {
-                            // key is the gift transaction number, double is the total amount
-                            SortedList <Int32, double>TotalGifts = new SortedList <int, double>();
+                            BankImportTDSAGiftDetailRow matchingGiftDetail = null;
+                            bool duplicateMatches = false;
 
                             foreach (DataRowView rv in FMainDS.AGiftDetail.DefaultView)
                             {
                                 BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)rv.Row;
 
-                                if (TotalGifts.ContainsKey(detailrow.GiftTransactionNumber))
+                                if ((matchingGiftDetail == null) || (detailrow.GiftTransactionNumber != matchingGiftDetail.GiftTransactionNumber))
                                 {
-                                    TotalGifts[detailrow.GiftTransactionNumber] += detailrow.GiftAmount;
+                                    if ((SumAmounts(detailrow.GiftTransactionNumber) == Convert.ToDecimal(stmtRow.TransactionAmount))
+                                        || (Convert.ToDecimal(detailrow.GiftTransactionAmount) == Convert.ToDecimal(stmtRow.TransactionAmount)))
+                                    {
+                                        if (matchingGiftDetail != null)
+                                        {
+                                            duplicateMatches = true;
+                                        }
+
+                                        matchingGiftDetail = detailrow;
+                                    }
+                                }
+                            }
+
+                            // TODO several gifts match this amount
+                            if (!duplicateMatches && (matchingGiftDetail != null))
+                            {
+                                // found a match
+                                if (Convert.ToDecimal(matchingGiftDetail.GiftTransactionAmount) == Convert.ToDecimal(stmtRow.TransactionAmount))
+                                {
+                                    MarkTransactionMatched(ref stmtRow, matchingGiftDetail.GiftTransactionNumber, matchingGiftDetail.DetailNumber);
                                 }
                                 else
                                 {
-                                    TotalGifts.Add(detailrow.GiftTransactionNumber, detailrow.GiftAmount);
+                                    MarkTransactionMatched(ref stmtRow, matchingGiftDetail.GiftTransactionNumber);
                                 }
-                            }
-
-                            Int32 successTransactionNumber = -1;
-
-                            foreach (Int32 key in TotalGifts.Keys)
-                            {
-                                if (TotalGifts[key] == stmtRow.TransactionAmount)
-                                {
-                                    if (successTransactionNumber > -1)
-                                    {
-                                        // TODO several gifts match this amount
-                                        successTransactionNumber = -2;
-                                    }
-                                    else
-                                    {
-                                        successTransactionNumber = key;
-                                    }
-                                }
-                            }
-
-                            if (successTransactionNumber > -1)
-                            {
-                                // found a match
-                                MarkTransactionMatched(ref stmtRow, successTransactionNumber);
                             }
                         }
                     }
@@ -447,7 +483,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     FMainDS.AGiftDetail.DefaultView.RowFilter = BankImportTDSAGiftDetailTable.GetBatchNumberDBName() + " = " +
                                                                 FSelectedGiftBatch.ToString() +
                                                                 " AND AlreadyMatched = false";
-                    Int32 BestMatchTransactionNumber = -1;
+                    BankImportTDSAGiftDetailRow BestMatch = null;
                     int BestMatchNumber = 0;
 
                     foreach (DataRowView rv in FMainDS.AGiftDetail.DefaultView)
@@ -458,16 +494,26 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                                           MatchingWords(detailrow.RecipientDescription, stmtRow.Description);
 
                         if ((matchNumber > BestMatchNumber)
-                            && (SumAmounts(detailrow.GiftTransactionNumber) == Convert.ToDecimal(stmtRow.TransactionAmount)))
+                            && ((SumAmounts(detailrow.GiftTransactionNumber) == Convert.ToDecimal(stmtRow.TransactionAmount))
+                                || (Convert.ToDecimal(detailrow.GiftTransactionAmount) == Convert.ToDecimal(stmtRow.TransactionAmount))))
                         {
                             BestMatchNumber = matchNumber;
-                            BestMatchTransactionNumber = detailrow.GiftTransactionNumber;
+                            BestMatch = detailrow;
                         }
                     }
 
                     if (BestMatchNumber > 0)
                     {
-                        MarkTransactionMatched(ref stmtRow, BestMatchTransactionNumber);
+                        if (Convert.ToDecimal(BestMatch.GiftTransactionAmount) == Convert.ToDecimal(stmtRow.TransactionAmount))
+                        {
+                            // only matches part of the gift
+                            MarkTransactionMatched(ref stmtRow, BestMatch.GiftTransactionNumber, BestMatch.DetailNumber);
+                        }
+                        else
+                        {
+                            // match full gift
+                            MarkTransactionMatched(ref stmtRow, BestMatch.GiftTransactionNumber);
+                        }
                     }
                 }
             }
@@ -639,15 +685,26 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     "\"B\";\"" + txtBankName.Text + " " + row.DateEffective.ToShortDateString() + "\";\"6205\";0;" +
                     row.DateEffective.ToString("dd/MM/yyyy") + ";\"EUR\";1;\"2700\";\"Gift\"");
                 sw.WriteLine();
-#if DISABLED
+
+//#if DISABLED
+                FMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetDonorShortNameDBName() + "," +
+                                                          BankImportTDSAEpTransactionTable.GetRecipientDescriptionDBName();
+
                 foreach (DataRowView rv in FMainDS.AEpTransaction.DefaultView)
                 {
                     row = (BankImportTDSAEpTransactionRow)rv.Row;
+
+                    if (row.GiftTransactionNumber.Length == 0)
+                    {
+                        continue;
+                    }
 
                     string[] TransactionNumbers = row.GiftTransactionNumber.Split(',');
 
                     foreach (string TransactionNumber in TransactionNumbers)
                     {
+//                      if (row.GiftDetailNumber.IndexOf("-1,") != -1 || row.GiftDetailNumber.IndexOf(",-1") != -1 || row.GiftDetailNumber.IndexOf(", -1") != -1)
+//                              TLogging.Log(row.GiftDetailNumber + " " + row.DonorShortName);
                         string[] DetailNumbers = row.GiftDetailNumber.Split(',');
 
                         foreach (string DetailNumber in DetailNumbers)
@@ -674,28 +731,43 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                                     " AND AlreadyMatched = true";
                             }
 
+                            Decimal sumExport = 0.0m;
+
                             foreach (DataRowView gv in FMainDS.AGiftDetail.DefaultView)
                             {
                                 BankImportTDSAGiftDetailRow giftRow = (BankImportTDSAGiftDetailRow)gv.Row;
 
                                 sw.WriteLine("\"T\";" + giftRow.DonorKey.ToString() +
-                                    ";\"" + giftRow.DonorShortName + "\";\"\";\"\";\"EKK 090909\";\"<none>\";" +
+                                    ";\"" + giftRow.DonorShortName + "\";\"\";\"\";\"" + txtBankName.Text + " " +
+                                    row.DateEffective.ToString("dd/MM/yyyy") +
+                                    "\";\"<none>\";" +
                                     giftRow.RecipientKey.ToString() + ";\"" +
                                     giftRow.RecipientDescription + "\";" +
                                     giftRow.GiftTransactionAmount.ToString() +
                                     ";no;\"" + giftRow.MotivationGroupCode + "\";\"" +
                                     giftRow.MotivationDetailCode +
                                     "\";\"\";\"Both\";\"\";\"\";\"\";\"\";\"\";yes");
+                                sumExport += Convert.ToDecimal(giftRow.GiftTransactionAmount);
+                            }
+
+                            if (sumExport != Convert.ToDecimal(row.TransactionAmount))
+                            {
+                                TLogging.Log(
+                                    "problem " + row.DonorShortName + " " + row.RecipientDescription + " " + sumExport.ToString() + " " +
+                                    row.TransactionAmount.ToString());
                             }
                         }
                     }
                 }
-#endif
+
+//#endif
+//#if DISABLED
                 FMainDS.AGiftDetail.DefaultView.RowFilter =
                     BankImportTDSAGiftDetailTable.GetBatchNumberDBName() + " = " +
                     FSelectedGiftBatch.ToString() +
                     " AND AlreadyMatched = true";
-                FMainDS.AGiftDetail.DefaultView.Sort = BankImportTDSAGiftDetailTable.GetDonorShortNameDBName();
+                FMainDS.AGiftDetail.DefaultView.Sort = BankImportTDSAGiftDetailTable.GetDonorShortNameDBName() + "," +
+                                                       BankImportTDSAGiftDetailTable.GetRecipientDescriptionDBName();
 
                 foreach (DataRowView gv in FMainDS.AGiftDetail.DefaultView)
                 {
@@ -710,6 +782,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                         giftRow.MotivationDetailCode +
                         "\";\"\";\"Both\";\"\";\"\";\"\";\"\";\"\";yes");
                 }
+
+//#endif
 
                 sw.Close();
             }
