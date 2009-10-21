@@ -239,11 +239,19 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         /// <summary>
         /// mark all gift details of the transaction as matched
         /// </summary>
-        /// <param name="stmtRow"></param>
-        /// <param name="AGiftTransactionNumber"></param>
-        private void MarkTransactionMatched(ref BankImportTDSAEpTransactionRow stmtRow, Int32 AGiftTransactionNumber)
+        private void MarkTransactionMatched(ref BankImportTDSAEpTransactionRow stmtRow, BankImportTDSAGiftDetailRow giftDetail)
         {
-            MarkTransactionMatched(ref stmtRow, AGiftTransactionNumber, -1);
+            if (SumAmounts(giftDetail.GiftTransactionNumber) != Convert.ToDecimal(stmtRow.TransactionAmount))
+            {
+                // it seems that there are several different transactions treated as a split gift
+                // don't mark the whole transactions as matched
+                MarkTransactionMatched(ref stmtRow, giftDetail.GiftTransactionNumber, giftDetail.DetailNumber);
+            }
+            else
+            {
+                // found a match
+                MarkTransactionMatched(ref stmtRow, giftDetail.GiftTransactionNumber, -1);
+            }
         }
 
         private Int32 MatchingWords(string AShortname, string AFreeText)
@@ -307,6 +315,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             // and see if you can find a donation on that date with the same amount from the same bank account
             // store this as a match
 
+            FSelectedGiftBatch = -1;
+
             // Get all gifts at given date
             TGetData.GetGiftsByDate(ref FMainDS, FMainDS.AEpTransaction[0].DateEffective);
 
@@ -337,7 +347,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                         // found a match
                         BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)FMainDS.AGiftDetail.DefaultView[0].Row;
                         FSelectedGiftBatch = detailrow.BatchNumber;
-                        MarkTransactionMatched(ref stmtRow, detailrow.GiftTransactionNumber);
+                        MarkTransactionMatched(ref stmtRow, detailrow);
                     }
                 }
             }
@@ -357,6 +367,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 {
                     Int64 DonorKey = GetDonorByBankAccountNumber(stmtRow.BankAccountNumber);
 
+                    // look for gifts that match the donor (identified by account number) and the transaction amount
                     FMainDS.AGiftDetail.DefaultView.RowFilter = AGiftDetailTable.GetGiftAmountDBName() + " = " +
                                                                 stmtRow.TransactionAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)
                                                                 +
@@ -388,20 +399,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                         if (MaxCount > 0)
                         {
-                            if (SumAmounts(MaxRow.GiftTransactionNumber) != Convert.ToDecimal(stmtRow.TransactionAmount))
-                            {
-                                // it seems that there are several different transactions treated as a split gift
-                                // don't mark the whole transactions as matched
-                                MarkTransactionMatched(ref stmtRow, MaxRow.GiftTransactionNumber, MaxRow.DetailNumber);
-                            }
-                            else
-                            {
-                                // found a match
-                                MarkTransactionMatched(ref stmtRow, MaxRow.GiftTransactionNumber);
-                            }
+                            // found a match
+                            MarkTransactionMatched(ref stmtRow, MaxRow);
                         }
                     }
-                    else
+                    else if (FMainDS.AGiftDetail.DefaultView.Count == 0)
                     {
                         // split gifts
                         // check if total amount of gift details of same gift transaction is equal the transaction amount,
@@ -450,7 +452,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                                 }
                                 else
                                 {
-                                    MarkTransactionMatched(ref stmtRow, matchingGiftDetail.GiftTransactionNumber);
+                                    MarkTransactionMatched(ref stmtRow, matchingGiftDetail.GiftTransactionNumber, -1);
                                 }
                             }
                         }
@@ -512,7 +514,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                         else
                         {
                             // match full gift
-                            MarkTransactionMatched(ref stmtRow, BestMatch.GiftTransactionNumber);
+                            MarkTransactionMatched(ref stmtRow, BestMatch.GiftTransactionNumber, -1);
                         }
                     }
                 }
@@ -556,6 +558,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             SetFilterMatchingGifts();
             double sumCreditMatched, sumDebitMatched;
             CalculateSumsFromTransactionView(out sumCreditMatched, out sumDebitMatched, out countRows);
+
+            txtValueMatchedGiftBatch.Visible = false;
 
             if (Convert.ToDecimal(sumCreditMatched) != Convert.ToDecimal(SumMatched))
             {

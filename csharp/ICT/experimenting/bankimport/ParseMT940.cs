@@ -98,7 +98,7 @@ namespace Ict.Plugins.Finance.SwiftParser
                 {
                     // check if the balance inside the statement is ok
                     // ie it fits the balance of the previous page
-                    if (Convert.ToDecimal(currentStatement.endBalance) != Convert.ToDecimal(balance))
+                    if (Convert.ToDecimal(Math.Round(currentStatement.endBalance, 2)) != Convert.ToDecimal(balance))
                     {
                         throw new Exception("start balance does not match current balance");
                     }
@@ -253,7 +253,7 @@ namespace Ict.Plugins.Finance.SwiftParser
                 double shouldBeBalance = debitCreditIndicator * Convert.ToDouble(swiftData.Replace(",",
                         Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator));
 
-                if (Convert.ToDecimal(currentStatement.endBalance) != Convert.ToDecimal(shouldBeBalance))
+                if (Convert.ToDecimal(Math.Round(currentStatement.endBalance, 2)) != Convert.ToDecimal(shouldBeBalance))
                 {
                     throw new Exception("end balance does not match" +
                         " last transaction was: " + currentStatement.transactions[currentStatement.transactions.Count - 1].partnerName +
