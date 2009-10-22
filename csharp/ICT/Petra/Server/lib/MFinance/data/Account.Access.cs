@@ -2341,6 +2341,447 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaAMethodOfGiving(DataSet ADataSet, String AMethodOfGivingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, AMethodOfGivingTable.TableId, ADataSet, new string[1]{"a_method_of_giving_code_c"},
+                new System.Object[1]{AMethodOfGivingCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfGiving(DataSet AData, String AMethodOfGivingCode, TDBTransaction ATransaction)
+        {
+            LoadViaAMethodOfGiving(AData, AMethodOfGivingCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfGiving(DataSet AData, String AMethodOfGivingCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAMethodOfGiving(AData, AMethodOfGivingCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfGiving(String AMethodOfGivingCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, AMethodOfGivingTable.TableId, Data, new string[1]{"a_method_of_giving_code_c"},
+                new System.Object[1]{AMethodOfGivingCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfGiving(String AMethodOfGivingCode, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfGiving(AMethodOfGivingCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfGiving(String AMethodOfGivingCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfGiving(AMethodOfGivingCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfGivingTemplate(DataSet ADataSet, AMethodOfGivingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, AMethodOfGivingTable.TableId, ADataSet, new string[1]{"a_method_of_giving_code_c"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfGivingTemplate(DataSet AData, AMethodOfGivingRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaAMethodOfGivingTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfGivingTemplate(DataSet AData, AMethodOfGivingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAMethodOfGivingTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfGivingTemplate(AMethodOfGivingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, AMethodOfGivingTable.TableId, Data, new string[1]{"a_method_of_giving_code_c"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfGivingTemplate(AMethodOfGivingRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfGivingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfGivingTemplate(AMethodOfGivingRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfGivingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfGivingTemplate(AMethodOfGivingRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfGivingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfGivingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, AMethodOfGivingTable.TableId, ADataSet, new string[1]{"a_method_of_giving_code_c"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfGivingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAMethodOfGivingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfGivingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAMethodOfGivingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfGivingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, AMethodOfGivingTable.TableId, Data, new string[1]{"a_method_of_giving_code_c"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfGivingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfGivingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfGivingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfGivingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaAMethodOfGiving(String AMethodOfGivingCode, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, AMethodOfGivingTable.TableId, new string[1]{"a_method_of_giving_code_c"},
+                new System.Object[1]{AMethodOfGivingCode}, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaAMethodOfGivingTemplate(AMethodOfGivingRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, AMethodOfGivingTable.TableId, new string[1]{"a_method_of_giving_code_c"},
+                ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaAMethodOfGivingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, AMethodOfGivingTable.TableId, new string[1]{"a_method_of_giving_code_c"},
+                ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfPayment(DataSet ADataSet, String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, AMethodOfPaymentTable.TableId, ADataSet, new string[1]{"a_method_of_payment_code_c"},
+                new System.Object[1]{AMethodOfPaymentCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfPayment(DataSet AData, String AMethodOfPaymentCode, TDBTransaction ATransaction)
+        {
+            LoadViaAMethodOfPayment(AData, AMethodOfPaymentCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfPayment(DataSet AData, String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAMethodOfPayment(AData, AMethodOfPaymentCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfPayment(String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, AMethodOfPaymentTable.TableId, Data, new string[1]{"a_method_of_payment_code_c"},
+                new System.Object[1]{AMethodOfPaymentCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfPayment(String AMethodOfPaymentCode, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfPayment(AMethodOfPaymentCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfPayment(String AMethodOfPaymentCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfPayment(AMethodOfPaymentCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfPaymentTemplate(DataSet ADataSet, AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, AMethodOfPaymentTable.TableId, ADataSet, new string[1]{"a_method_of_payment_code_c"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfPaymentTemplate(DataSet AData, AMethodOfPaymentRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaAMethodOfPaymentTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfPaymentTemplate(DataSet AData, AMethodOfPaymentRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAMethodOfPaymentTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfPaymentTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, AMethodOfPaymentTable.TableId, Data, new string[1]{"a_method_of_payment_code_c"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfPaymentTemplate(AMethodOfPaymentRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfPaymentTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfPaymentTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfPaymentTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfPaymentTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfPaymentTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfPaymentTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, AMethodOfPaymentTable.TableId, ADataSet, new string[1]{"a_method_of_payment_code_c"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfPaymentTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAMethodOfPaymentTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAMethodOfPaymentTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAMethodOfPaymentTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfPaymentTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, AMethodOfPaymentTable.TableId, Data, new string[1]{"a_method_of_payment_code_c"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfPaymentTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfPaymentTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAMethodOfPaymentTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAMethodOfPaymentTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaAMethodOfPayment(String AMethodOfPaymentCode, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, AMethodOfPaymentTable.TableId, new string[1]{"a_method_of_payment_code_c"},
+                new System.Object[1]{AMethodOfPaymentCode}, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaAMethodOfPaymentTemplate(AMethodOfPaymentRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, AMethodOfPaymentTable.TableId, new string[1]{"a_method_of_payment_code_c"},
+                ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaAMethodOfPaymentTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, AMethodOfPaymentTable.TableId, new string[1]{"a_method_of_payment_code_c"},
+                ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerDonorKey(DataSet ADataSet, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, PPartnerTable.TableId, ADataSet, new string[1]{"p_donor_key_n"},
+                new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerDonorKey(DataSet AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerDonorKey(AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerDonorKey(DataSet AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerDonorKey(AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPPartnerDonorKey(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_donor_key_n"},
+                new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPPartnerDonorKey(Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            return LoadViaPPartnerDonorKey(APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPPartnerDonorKey(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaPPartnerDonorKey(APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerDonorKeyTemplate(DataSet ADataSet, PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, PPartnerTable.TableId, ADataSet, new string[1]{"p_donor_key_n"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerDonorKeyTemplate(DataSet AData, PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerDonorKeyTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerDonorKeyTemplate(DataSet AData, PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerDonorKeyTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPPartnerDonorKeyTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_donor_key_n"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPPartnerDonorKeyTemplate(PPartnerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadViaPPartnerDonorKeyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPPartnerDonorKeyTemplate(PPartnerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaPPartnerDonorKeyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPPartnerDonorKeyTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaPPartnerDonorKeyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerDonorKeyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, PPartnerTable.TableId, ADataSet, new string[1]{"p_donor_key_n"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerDonorKeyTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerDonorKeyTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPPartnerDonorKeyTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPPartnerDonorKeyTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPPartnerDonorKeyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, PPartnerTable.TableId, Data, new string[1]{"p_donor_key_n"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPPartnerDonorKeyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadViaPPartnerDonorKeyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPPartnerDonorKeyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaPPartnerDonorKeyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerDonorKey(Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, PPartnerTable.TableId, new string[1]{"p_donor_key_n"},
+                new System.Object[1]{APartnerKey}, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerDonorKeyTemplate(PPartnerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, PPartnerTable.TableId, new string[1]{"p_donor_key_n"},
+                ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaPPartnerDonorKeyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, PPartnerTable.TableId, new string[1]{"p_donor_key_n"},
+                ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(Int32 AEpMatchKey, TDBTransaction ATransaction)
         {
             DeleteByPrimaryKey(AEpMatchTable.TableId, new System.Object[1]{AEpMatchKey}, ATransaction);

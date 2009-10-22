@@ -1907,15 +1907,35 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnGiftCommentThreeId = 20;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 21;
+        public static short ColumnGiftTransactionAmountId = 21;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 22;
+        public static short ColumnHomeAdminChargesFlagId = 22;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 23;
+        public static short ColumnIltAdminChargesFlagId = 23;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 24;
+        public static short ColumnReceiptLetterCodeId = 24;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 25;
+        public static short ColumnMethodOfGivingCodeId = 25;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMethodOfPaymentCodeId = 26;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDonorKeyId = 27;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAdminChargeId = 28;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReferenceId = 29;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRestrictedId = 30;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 31;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 32;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 33;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 34;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 35;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1943,11 +1963,21 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(18, "GiftCommentTwo", "a_gift_comment_two_c", "Comment Two", OdbcType.VarChar, 160, false),
                     new TTypedColumnInfo(19, "CommentThreeType", "a_comment_three_type_c", "Comment Type", OdbcType.VarChar, 24, false),
                     new TTypedColumnInfo(20, "GiftCommentThree", "a_gift_comment_three_c", "Comment Three", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(21, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(22, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(23, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(24, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(25, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(21, "GiftTransactionAmount", "a_gift_transaction_amount_n", "Transaction Gift Amount", OdbcType.Decimal, 24, true),
+                    new TTypedColumnInfo(22, "HomeAdminChargesFlag", "a_home_admin_charges_flag_l", "Local Admin Charges", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(23, "IltAdminChargesFlag", "a_ilt_admin_charges_flag_l", "IT Admin Charges", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(24, "ReceiptLetterCode", "a_receipt_letter_code_c", "Receipt Letter Code", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(25, "MethodOfGivingCode", "a_method_of_giving_code_c", "Method Of Giving", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(26, "MethodOfPaymentCode", "a_method_of_payment_code_c", "Method of Payment", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(27, "DonorKey", "p_donor_key_n", "Donor", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(28, "AdminCharge", "a_admin_charge_l", "Admin Charge", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(29, "Reference", "a_reference_c", "Reference", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(30, "Restricted", "a_restricted_l", "Gift Restricted", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(31, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(32, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(33, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(34, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(35, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -2017,6 +2047,26 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public DataColumn ColumnCommentThreeType;
         /// This is a long description and is 80 characters long.
         public DataColumn ColumnGiftCommentThree;
+        /// This is a number of currency units in the entered Currency
+        public DataColumn ColumnGiftTransactionAmount;
+        /// Used to get a yes no response from the user
+        public DataColumn ColumnHomeAdminChargesFlag;
+        /// Used to get a yes no response from the user
+        public DataColumn ColumnIltAdminChargesFlag;
+        ///
+        public DataColumn ColumnReceiptLetterCode;
+        /// Defines how a gift is given.
+        public DataColumn ColumnMethodOfGivingCode;
+        /// This is how the partner paid. Eg cash, Cheque etc
+        public DataColumn ColumnMethodOfPaymentCode;
+        /// This is the partner key of the donor.
+        public DataColumn ColumnDonorKey;
+        /// NOT USED AT ALL
+        public DataColumn ColumnAdminCharge;
+        /// Reference number/code for the transaction
+        public DataColumn ColumnReference;
+        /// Indicates whether or not the gift has restricted access. If it does then the access will be controlled by s_group_gift
+        public DataColumn ColumnRestricted;
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
         /// User ID of who created this record.
@@ -2052,6 +2102,16 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_gift_comment_two_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_comment_three_type_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_gift_comment_three_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_home_admin_charges_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_ilt_admin_charges_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_receipt_letter_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_method_of_giving_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_method_of_payment_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_donor_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("a_admin_charge_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_reference_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_restricted_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -2083,6 +2143,16 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.ColumnGiftCommentTwo = this.Columns["a_gift_comment_two_c"];
             this.ColumnCommentThreeType = this.Columns["a_comment_three_type_c"];
             this.ColumnGiftCommentThree = this.Columns["a_gift_comment_three_c"];
+            this.ColumnGiftTransactionAmount = this.Columns["a_gift_transaction_amount_n"];
+            this.ColumnHomeAdminChargesFlag = this.Columns["a_home_admin_charges_flag_l"];
+            this.ColumnIltAdminChargesFlag = this.Columns["a_ilt_admin_charges_flag_l"];
+            this.ColumnReceiptLetterCode = this.Columns["a_receipt_letter_code_c"];
+            this.ColumnMethodOfGivingCode = this.Columns["a_method_of_giving_code_c"];
+            this.ColumnMethodOfPaymentCode = this.Columns["a_method_of_payment_code_c"];
+            this.ColumnDonorKey = this.Columns["p_donor_key_n"];
+            this.ColumnAdminCharge = this.Columns["a_admin_charge_l"];
+            this.ColumnReference = this.Columns["a_reference_c"];
+            this.ColumnRestricted = this.Columns["a_restricted_l"];
             this.ColumnDateCreated = this.Columns["s_date_created_d"];
             this.ColumnCreatedBy = this.Columns["s_created_by_c"];
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
@@ -2398,6 +2468,126 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public static short GetGiftCommentThreeLength()
         {
             return 160;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetGiftTransactionAmountDBName()
+        {
+            return "a_gift_transaction_amount_n";
+        }
+
+        /// get character length for column
+        public static short GetGiftTransactionAmountLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetHomeAdminChargesFlagDBName()
+        {
+            return "a_home_admin_charges_flag_l";
+        }
+
+        /// get character length for column
+        public static short GetHomeAdminChargesFlagLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetIltAdminChargesFlagDBName()
+        {
+            return "a_ilt_admin_charges_flag_l";
+        }
+
+        /// get character length for column
+        public static short GetIltAdminChargesFlagLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetReceiptLetterCodeDBName()
+        {
+            return "a_receipt_letter_code_c";
+        }
+
+        /// get character length for column
+        public static short GetReceiptLetterCodeLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMethodOfGivingCodeDBName()
+        {
+            return "a_method_of_giving_code_c";
+        }
+
+        /// get character length for column
+        public static short GetMethodOfGivingCodeLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMethodOfPaymentCodeDBName()
+        {
+            return "a_method_of_payment_code_c";
+        }
+
+        /// get character length for column
+        public static short GetMethodOfPaymentCodeLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDonorKeyDBName()
+        {
+            return "p_donor_key_n";
+        }
+
+        /// get character length for column
+        public static short GetDonorKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAdminChargeDBName()
+        {
+            return "a_admin_charge_l";
+        }
+
+        /// get character length for column
+        public static short GetAdminChargeLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetReferenceDBName()
+        {
+            return "a_reference_c";
+        }
+
+        /// get character length for column
+        public static short GetReferenceLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetRestrictedDBName()
+        {
+            return "a_restricted_l";
+        }
+
+        /// get character length for column
+        public static short GetRestrictedLength()
+        {
+            return -1;
         }
 
         /// get the name of the field in the database for this column
@@ -3021,6 +3211,266 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             }
         }
 
+        /// This is a number of currency units in the entered Currency
+        public Double GiftTransactionAmount
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnGiftTransactionAmount.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Double)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnGiftTransactionAmount)
+                            || (((Double)(this[this.myTable.ColumnGiftTransactionAmount])) != value)))
+                {
+                    this[this.myTable.ColumnGiftTransactionAmount] = value;
+                }
+            }
+        }
+
+        /// Used to get a yes no response from the user
+        public Boolean HomeAdminChargesFlag
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnHomeAdminChargesFlag.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnHomeAdminChargesFlag)
+                            || (((Boolean)(this[this.myTable.ColumnHomeAdminChargesFlag])) != value)))
+                {
+                    this[this.myTable.ColumnHomeAdminChargesFlag] = value;
+                }
+            }
+        }
+
+        /// Used to get a yes no response from the user
+        public Boolean IltAdminChargesFlag
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnIltAdminChargesFlag.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnIltAdminChargesFlag)
+                            || (((Boolean)(this[this.myTable.ColumnIltAdminChargesFlag])) != value)))
+                {
+                    this[this.myTable.ColumnIltAdminChargesFlag] = value;
+                }
+            }
+        }
+
+        ///
+        public String ReceiptLetterCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnReceiptLetterCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnReceiptLetterCode)
+                            || (((String)(this[this.myTable.ColumnReceiptLetterCode])) != value)))
+                {
+                    this[this.myTable.ColumnReceiptLetterCode] = value;
+                }
+            }
+        }
+
+        /// Defines how a gift is given.
+        public String MethodOfGivingCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMethodOfGivingCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMethodOfGivingCode)
+                            || (((String)(this[this.myTable.ColumnMethodOfGivingCode])) != value)))
+                {
+                    this[this.myTable.ColumnMethodOfGivingCode] = value;
+                }
+            }
+        }
+
+        /// This is how the partner paid. Eg cash, Cheque etc
+        public String MethodOfPaymentCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMethodOfPaymentCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMethodOfPaymentCode)
+                            || (((String)(this[this.myTable.ColumnMethodOfPaymentCode])) != value)))
+                {
+                    this[this.myTable.ColumnMethodOfPaymentCode] = value;
+                }
+            }
+        }
+
+        /// This is the partner key of the donor.
+        public Int64 DonorKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDonorKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDonorKey)
+                            || (((Int64)(this[this.myTable.ColumnDonorKey])) != value)))
+                {
+                    this[this.myTable.ColumnDonorKey] = value;
+                }
+            }
+        }
+
+        /// NOT USED AT ALL
+        public Boolean AdminCharge
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAdminCharge.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAdminCharge)
+                            || (((Boolean)(this[this.myTable.ColumnAdminCharge])) != value)))
+                {
+                    this[this.myTable.ColumnAdminCharge] = value;
+                }
+            }
+        }
+
+        /// Reference number/code for the transaction
+        public String Reference
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnReference.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnReference)
+                            || (((String)(this[this.myTable.ColumnReference])) != value)))
+                {
+                    this[this.myTable.ColumnReference] = value;
+                }
+            }
+        }
+
+        /// Indicates whether or not the gift has restricted access. If it does then the access will be controlled by s_group_gift
+        public Boolean Restricted
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnRestricted.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnRestricted)
+                            || (((Boolean)(this[this.myTable.ColumnRestricted])) != value)))
+                {
+                    this[this.myTable.ColumnRestricted] = value;
+                }
+            }
+        }
+
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -3175,6 +3625,16 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.SetNull(this.myTable.ColumnGiftCommentTwo);
             this.SetNull(this.myTable.ColumnCommentThreeType);
             this.SetNull(this.myTable.ColumnGiftCommentThree);
+            this[this.myTable.ColumnGiftTransactionAmount.Ordinal] = 0;
+            this[this.myTable.ColumnHomeAdminChargesFlag.Ordinal] = true;
+            this[this.myTable.ColumnIltAdminChargesFlag.Ordinal] = true;
+            this.SetNull(this.myTable.ColumnReceiptLetterCode);
+            this.SetNull(this.myTable.ColumnMethodOfGivingCode);
+            this.SetNull(this.myTable.ColumnMethodOfPaymentCode);
+            this[this.myTable.ColumnDonorKey.Ordinal] = 0;
+            this[this.myTable.ColumnAdminCharge.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnReference);
+            this[this.myTable.ColumnRestricted.Ordinal] = false;
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnCreatedBy);
             this.SetNull(this.myTable.ColumnDateModified);
@@ -3432,6 +3892,126 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public void SetGiftCommentThreeNull()
         {
             this.SetNull(this.myTable.ColumnGiftCommentThree);
+        }
+
+        /// test for NULL value
+        public bool IsGiftTransactionAmountNull()
+        {
+            return this.IsNull(this.myTable.ColumnGiftTransactionAmount);
+        }
+
+        /// assign NULL value
+        public void SetGiftTransactionAmountNull()
+        {
+            this.SetNull(this.myTable.ColumnGiftTransactionAmount);
+        }
+
+        /// test for NULL value
+        public bool IsHomeAdminChargesFlagNull()
+        {
+            return this.IsNull(this.myTable.ColumnHomeAdminChargesFlag);
+        }
+
+        /// assign NULL value
+        public void SetHomeAdminChargesFlagNull()
+        {
+            this.SetNull(this.myTable.ColumnHomeAdminChargesFlag);
+        }
+
+        /// test for NULL value
+        public bool IsIltAdminChargesFlagNull()
+        {
+            return this.IsNull(this.myTable.ColumnIltAdminChargesFlag);
+        }
+
+        /// assign NULL value
+        public void SetIltAdminChargesFlagNull()
+        {
+            this.SetNull(this.myTable.ColumnIltAdminChargesFlag);
+        }
+
+        /// test for NULL value
+        public bool IsReceiptLetterCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnReceiptLetterCode);
+        }
+
+        /// assign NULL value
+        public void SetReceiptLetterCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnReceiptLetterCode);
+        }
+
+        /// test for NULL value
+        public bool IsMethodOfGivingCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnMethodOfGivingCode);
+        }
+
+        /// assign NULL value
+        public void SetMethodOfGivingCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnMethodOfGivingCode);
+        }
+
+        /// test for NULL value
+        public bool IsMethodOfPaymentCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnMethodOfPaymentCode);
+        }
+
+        /// assign NULL value
+        public void SetMethodOfPaymentCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnMethodOfPaymentCode);
+        }
+
+        /// test for NULL value
+        public bool IsDonorKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnDonorKey);
+        }
+
+        /// assign NULL value
+        public void SetDonorKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnDonorKey);
+        }
+
+        /// test for NULL value
+        public bool IsAdminChargeNull()
+        {
+            return this.IsNull(this.myTable.ColumnAdminCharge);
+        }
+
+        /// assign NULL value
+        public void SetAdminChargeNull()
+        {
+            this.SetNull(this.myTable.ColumnAdminCharge);
+        }
+
+        /// test for NULL value
+        public bool IsReferenceNull()
+        {
+            return this.IsNull(this.myTable.ColumnReference);
+        }
+
+        /// assign NULL value
+        public void SetReferenceNull()
+        {
+            this.SetNull(this.myTable.ColumnReference);
+        }
+
+        /// test for NULL value
+        public bool IsRestrictedNull()
+        {
+            return this.IsNull(this.myTable.ColumnRestricted);
+        }
+
+        /// assign NULL value
+        public void SetRestrictedNull()
+        {
+            this.SetNull(this.myTable.ColumnRestricted);
         }
 
         /// test for NULL value

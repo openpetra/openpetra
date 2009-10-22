@@ -3857,6 +3857,11 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
             int countRow;
             if ((AWithCascDelete == true))
             {
+                AEpMatchTable MyAEpMatchTable = AEpMatchAccess.LoadViaAMethodOfGiving(AMethodOfGivingCode, StringHelper.StrSplit("a_ep_match_key_i", ","), ATransaction);
+                for (countRow = 0; (countRow != MyAEpMatchTable.Rows.Count); countRow = (countRow + 1))
+                {
+                    AEpMatchCascading.DeleteUsingTemplate(MyAEpMatchTable[countRow], null, ATransaction, AWithCascDelete);
+                }
                 ARecurringGiftTable MyARecurringGiftTable = ARecurringGiftAccess.LoadViaAMethodOfGiving(AMethodOfGivingCode, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_gift_transaction_number_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyARecurringGiftTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -3877,6 +3882,11 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
             int countRow;
             if ((AWithCascDelete == true))
             {
+                AEpMatchTable MyAEpMatchTable = AEpMatchAccess.LoadViaAMethodOfGivingTemplate(ATemplateRow, StringHelper.StrSplit("a_ep_match_key_i", ","), ATransaction);
+                for (countRow = 0; (countRow != MyAEpMatchTable.Rows.Count); countRow = (countRow + 1))
+                {
+                    AEpMatchCascading.DeleteUsingTemplate(MyAEpMatchTable[countRow], null, ATransaction, AWithCascDelete);
+                }
                 ARecurringGiftTable MyARecurringGiftTable = ARecurringGiftAccess.LoadViaAMethodOfGivingTemplate(ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_gift_transaction_number_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyARecurringGiftTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -3901,6 +3911,11 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
             int countRow;
             if ((AWithCascDelete == true))
             {
+                AEpMatchTable MyAEpMatchTable = AEpMatchAccess.LoadViaAMethodOfPayment(AMethodOfPaymentCode, StringHelper.StrSplit("a_ep_match_key_i", ","), ATransaction);
+                for (countRow = 0; (countRow != MyAEpMatchTable.Rows.Count); countRow = (countRow + 1))
+                {
+                    AEpMatchCascading.DeleteUsingTemplate(MyAEpMatchTable[countRow], null, ATransaction, AWithCascDelete);
+                }
                 ARecurringJournalTable MyARecurringJournalTable = ARecurringJournalAccess.LoadViaAMethodOfPayment(AMethodOfPaymentCode, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyARecurringJournalTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -3931,6 +3946,11 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
             int countRow;
             if ((AWithCascDelete == true))
             {
+                AEpMatchTable MyAEpMatchTable = AEpMatchAccess.LoadViaAMethodOfPaymentTemplate(ATemplateRow, StringHelper.StrSplit("a_ep_match_key_i", ","), ATransaction);
+                for (countRow = 0; (countRow != MyAEpMatchTable.Rows.Count); countRow = (countRow + 1))
+                {
+                    AEpMatchCascading.DeleteUsingTemplate(MyAEpMatchTable[countRow], null, ATransaction, AWithCascDelete);
+                }
                 ARecurringJournalTable MyARecurringJournalTable = ARecurringJournalAccess.LoadViaAMethodOfPaymentTemplate(ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_journal_number_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyARecurringJournalTable.Rows.Count); countRow = (countRow + 1))
                 {

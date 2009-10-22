@@ -8070,7 +8070,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(8, "BatchStatus", "a_batch_status_c", "Batch Status", OdbcType.VarChar, 16, false),
                     new TTypedColumnInfo(9, "BatchPeriod", "a_batch_period_i", "Batch Period Number", OdbcType.Int, -1, true),
                     new TTypedColumnInfo(10, "BatchYear", "a_batch_year_i", "a_batch_year_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(11, "GlEffectiveDate", "a_gl_effective_date_d", "GL Effective Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "GlEffectiveDate", "a_gl_effective_date_d", "GL Effective Date", OdbcType.Date, -1, true),
                     new TTypedColumnInfo(12, "CurrencyCode", "a_currency_code_c", "Gift Transaction Currency", OdbcType.VarChar, 16, true),
                     new TTypedColumnInfo(13, "ExchangeRateToBase", "a_exchange_rate_to_base_n", "Exchange Rate to Base", OdbcType.Decimal, 24, true),
                     new TTypedColumnInfo(14, "BankCostCentre", "a_bank_cost_centre_c", "Cost Centre Code", OdbcType.VarChar, 24, true),
