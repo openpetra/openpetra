@@ -27,6 +27,8 @@ using System;
 using System.IO;
 using System.Data.SQLite;
 using System.Data;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -55,6 +57,9 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 cmd.ExecuteNonQuery();
                 conn.Close();
             }
+
+            UserInfo.GUserInfo = new TPetraPrincipal(new TPetraIdentity("TEMP", "", "", "", "", DateTime.Now, DateTime.Now, DateTime.Now,
+                    -1, -1, -1, false, false), null);
 
             TDataBase db = new TDataBase();
             db.EstablishDBConnection(TDBType.SQLite, ADBFilename, "", "", "", "");
@@ -123,6 +128,9 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         private static string CalculateMatchText(AEpTransactionRow tr)
         {
             string matchtext = tr.AccountName + tr.Description + tr.TransactionAmount;
+
+            matchtext = matchtext.Replace(",", "").Replace("/", "").Replace("-", "").Replace(";", "");
+
             string oldMatchText = String.Empty;
 
             while (oldMatchText != matchtext)
@@ -160,6 +168,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 AEpMatchRow matchRow = (AEpMatchRow)AMatchDS.AEpMatch.DefaultView[Counter].Row;
 
                 bool sameData = true;
+                sameData = sameData && matchRow.Action == "GIFT";
                 sameData = sameData && matchRow.RecipientKey == giftRow.RecipientKey;
                 sameData = sameData && matchRow.RecipientLedgerNumber == giftRow.RecipientLedgerNumber;
                 sameData = sameData && matchRow.DonorKey == giftRow.DonorKey;
@@ -200,8 +209,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 BankImportTDSAGiftDetailRow giftRow = (BankImportTDSAGiftDetailRow)gv.Row;
                 AEpMatchRow newMatch = AMatchDS.AEpMatch.NewRowTyped();
 
+                // matchkey will be set properly on save, by sequence
+                newMatch.EpMatchKey = -1 * (AMatchDS.AEpMatch.Count + 1);
                 newMatch.MatchText = AMatchText;
                 newMatch.Detail = countDetail;
+                newMatch.Action = "GIFT";
 
                 newMatch.RecipientKey = giftRow.RecipientKey;
                 newMatch.RecipientLedgerNumber = giftRow.RecipientLedgerNumber;
@@ -235,6 +247,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             {
                 FSqliteDatabase = ConnectDatabase("tempMatching.db");
             }
+
+            TDBTransaction dbtransaction = FSqliteDatabase.BeginTransaction();
 
             // for all matched FMainDS.AEpTransactions
             AMainDS.AEpTransaction.DefaultView.RowFilter = AEpTransactionTable.GetMatchingStatusDBName() + " = '" +
@@ -281,8 +295,13 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 CreateNewMatches(AMainDS, MatchDS, MatchText);
 
                 TVerificationResultCollection Verification;
-                AEpMatchAccess.SubmitChanges(MatchDS.AEpMatch, null, out Verification);
+                TDataBase backupDB = DBAccess.GDBAccessObj;
+                DBAccess.GDBAccessObj = FSqliteDatabase;
+                AEpMatchAccess.SubmitChanges(MatchDS.AEpMatch, dbtransaction, out Verification);
+                DBAccess.GDBAccessObj = backupDB;
             }
+
+            FSqliteDatabase.CommitTransaction();
         }
     }
 }

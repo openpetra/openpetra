@@ -79,8 +79,31 @@ CREATE TABLE a_ep_match (
     UNIQUE (a_match_text_c,a_detail_i)
 );
 
-CREATE SEQUENCE "seq_match_number"
-  INCREMENT BY 1
-  MINVALUE 0
-  MAXVALUE 999999999
-  START WITH 0;
+-- CREATE SEQUENCE "seq_match_number"
+--   INCREMENT BY 1
+--  MINVALUE 0
+--   MAXVALUE 999999999
+--   START WITH 0;
+
+-- workaround for sqlite which does not support sequences natively
+CREATE TABLE seq_match_number
+(
+    sequence INTEGER PRIMARY KEY AUTOINCREMENT, 
+    dummy INTEGER
+);
+
+INSERT INTO seq_match_number VALUES(NULL, -1);
+
+CREATE TABLE seq_modification1
+(
+    sequence INTEGER PRIMARY KEY AUTOINCREMENT, 
+    dummy INTEGER
+);
+INSERT INTO seq_modification1 VALUES(NULL, -1);
+
+CREATE TABLE seq_modification2
+(
+    sequence INTEGER PRIMARY KEY AUTOINCREMENT, 
+    dummy INTEGER
+);
+INSERT INTO seq_modification2 VALUES(NULL, -1);
