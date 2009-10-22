@@ -4600,6 +4600,14 @@
                 format="X(10)"
                 label="Reference"
                 help="Enter a reference code."/>
+     <tablefield name="p_donor_short_name_c"
+                type="varchar"
+                descr="short name of the donor; will be used for generating export files"
+                format="X(250)"/>
+     <tablefield name="p_recipient_short_name_c"
+                type="varchar"
+                descr="short name of recipient"
+                format="X(250)"/>
     <tablefield name="a_restricted_l"
                 type="bit"
                 descr="Indicates whether or not the gift has restricted access. If it does then the access will be controlled by s_group_gift"

@@ -129,7 +129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         {
             string matchtext = tr.AccountName + tr.Description + tr.TransactionAmount;
 
-            matchtext = matchtext.Replace(",", "").Replace("/", "").Replace("-", "").Replace(";", "");
+            matchtext = matchtext.Replace(",", "").Replace("/", "").Replace("-", "").Replace(";", "").Replace(".", "");
 
             string oldMatchText = String.Empty;
 
@@ -168,6 +168,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 AEpMatchRow matchRow = (AEpMatchRow)AMatchDS.AEpMatch.DefaultView[Counter].Row;
 
                 bool sameData = true;
+
+                // TODO use constant for GIFT
                 sameData = sameData && matchRow.Action == "GIFT";
                 sameData = sameData && matchRow.RecipientKey == giftRow.RecipientKey;
                 sameData = sameData && matchRow.RecipientLedgerNumber == giftRow.RecipientLedgerNumber;
@@ -213,11 +215,13 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 newMatch.EpMatchKey = -1 * (AMatchDS.AEpMatch.Count + 1);
                 newMatch.MatchText = AMatchText;
                 newMatch.Detail = countDetail;
-                newMatch.Action = "GIFT";
+                newMatch.Action = "GIFT"; // TODO: use constant for GIFT
 
                 newMatch.RecipientKey = giftRow.RecipientKey;
                 newMatch.RecipientLedgerNumber = giftRow.RecipientLedgerNumber;
                 newMatch.DonorKey = giftRow.DonorKey;
+                newMatch.DonorShortName = giftRow.DonorShortName;
+                newMatch.RecipientShortName = giftRow.RecipientDescription;
                 newMatch.MotivationGroupCode = giftRow.MotivationGroupCode;
                 newMatch.MotivationDetailCode = giftRow.MotivationDetailCode;
                 newMatch.GiftCommentOne = giftRow.GiftCommentOne;
@@ -253,6 +257,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             // for all matched FMainDS.AEpTransactions
             AMainDS.AEpTransaction.DefaultView.RowFilter = AEpTransactionTable.GetMatchingStatusDBName() + " = '" +
                                                            Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED + "'";
+            BankImportTDS MatchDS = new BankImportTDS();
 
             foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
             {
@@ -274,7 +279,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 // can return several matches, for split gifts
                 string checkForMatch = "SELECT * FROM " + AEpMatchTable.GetTableDBName() + " WHERE " + AEpMatchTable.GetMatchTextDBName() + " = '" +
                                        MatchText + "'";
-                BankImportTDS MatchDS = new BankImportTDS();
+                MatchDS.AEpMatch.Rows.Clear();
                 FSqliteDatabase.Select(MatchDS, checkForMatch, AEpMatchTable.GetTableName(), null);
 
                 bool newMatch = IdenticalMatchAlreadyExists(AMainDS, MatchDS);
@@ -302,6 +307,124 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             }
 
             FSqliteDatabase.CommitTransaction();
+
+            FSqliteDatabase.CloseDBConnection();
+
+            FSqliteDatabase = null;
+        }
+
+        /// <summary>
+        /// match loaded bank statement transactions to saved matches
+        /// </summary>
+        public bool FindMatches(ref BankImportTDS AMainDS)
+        {
+            // first connect to the database
+            if (FSqliteDatabase == null)
+            {
+                FSqliteDatabase = ConnectDatabase("tempMatching.db");
+            }
+
+            AMainDS.AEpTransaction.DefaultView.RowFilter = AEpTransactionTable.GetMatchingStatusDBName() + " IS NULL";
+
+            BankImportTDS MatchDS = new BankImportTDS();
+
+            foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
+            {
+                BankImportTDSAEpTransactionRow tr = (BankImportTDSAEpTransactionRow)rv.Row;
+
+                // create a match text which uniquely identifies this transaction
+                string MatchText = CalculateMatchText(tr);
+
+                // check if such a match text already exists
+                // can return several matches, for split gifts
+                MatchDS.AEpMatch.Rows.Clear();
+                string checkForMatch = "SELECT * FROM " + AEpMatchTable.GetTableDBName() + " WHERE " + AEpMatchTable.GetMatchTextDBName() + " = '" +
+                                       MatchText + "'";
+                FSqliteDatabase.Select(MatchDS, checkForMatch, AEpMatchTable.GetTableName(), null);
+
+                if (MatchDS.AEpMatch.Rows.Count > 0)
+                {
+                    // there is a match
+                    tr.MatchingStatus = Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED;
+                    tr.EpMatchKey = MatchDS.AEpMatch[0].EpMatchKey;
+
+                    // TODO: store donor short name in the match?
+                    tr.DonorKey = MatchDS.AEpMatch[0].DonorKey;
+                    tr.DonorShortName = MatchDS.AEpMatch[0].DonorShortName;
+
+                    foreach (AEpMatchRow match in MatchDS.AEpMatch.Rows)
+                    {
+                        if (tr.RecipientDescription.Length > 0)
+                        {
+                            tr.RecipientDescription += "; ";
+                        }
+
+                        if (match.RecipientKey > 0)
+                        {
+                            tr.RecipientDescription += match.RecipientShortName.ToString();
+                        }
+                        else
+                        {
+                            tr.RecipientDescription += match.MotivationGroupCode + "/" + match.MotivationDetailCode;
+                        }
+
+                        tr.RecipientDescription += " (" + match.GiftTransactionAmount.ToString() + ")";
+                    }
+                }
+            }
+
+            FSqliteDatabase.CloseDBConnection();
+
+            FSqliteDatabase = null;
+
+            return true;
+        }
+
+        /// <summary>
+        /// store matched gifts to a text file which can be imported into Petra 2.x
+        /// </summary>
+        public void WritePetraImportFile(ref BankImportTDS AMainDS, StreamWriter sw, string ABankName)
+        {
+            // first connect to the database
+            if (FSqliteDatabase == null)
+            {
+                FSqliteDatabase = ConnectDatabase("tempMatching.db");
+
+                // FSqliteDatabase.DebugLevel = 10;
+            }
+
+            BankImportTDS MatchDS = new BankImportTDS();
+
+            foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
+            {
+                BankImportTDSAEpTransactionRow tr = (BankImportTDSAEpTransactionRow)rv.Row;
+
+                // find the match
+                // can return several matches, for split gifts
+                MatchDS.AEpMatch.Rows.Clear();
+                string checkForMatch = "SELECT p_recipient_short_name_c FROM " + AEpMatchTable.GetTableDBName() + " WHERE " +
+                                       AEpMatchTable.GetEpMatchKeyDBName() + " = " +
+                                       tr.EpMatchKey.ToString();
+                FSqliteDatabase.Select(MatchDS, checkForMatch, AEpMatchTable.GetTableName(), null);
+
+                foreach (AEpMatchRow match in MatchDS.AEpMatch.Rows)
+                {
+                    sw.WriteLine("\"T\";" + match.DonorKey.ToString() +
+                        ";\"" + tr.DonorShortName + "\";\"\";\"\";\"" + ABankName + " " +
+                        tr.DateEffective.ToString("dd/MM/yyyy") +
+                        "\";\"<none>\";" +
+                        match.RecipientKey.ToString() + ";\"" +
+                        match.RecipientShortName + "\";" +
+                        match.GiftTransactionAmount.ToString() +
+                        ";no;\"" + match.MotivationGroupCode + "\";\"" +
+                        match.MotivationDetailCode +
+                        "\";\"\";\"Both\";\"\";\"\";\"\";\"\";\"\";yes");
+                }
+            }
+
+            FSqliteDatabase.CloseDBConnection();
+
+            FSqliteDatabase = null;
         }
     }
 }

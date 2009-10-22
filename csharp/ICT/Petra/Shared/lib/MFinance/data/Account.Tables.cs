@@ -1925,17 +1925,21 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnReferenceId = 29;
         /// used for generic TTypedDataTable functions
-        public static short ColumnRestrictedId = 30;
+        public static short ColumnDonorShortNameId = 30;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 31;
+        public static short ColumnRecipientShortNameId = 31;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 32;
+        public static short ColumnRestrictedId = 32;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 33;
+        public static short ColumnDateCreatedId = 33;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 34;
+        public static short ColumnCreatedById = 34;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 35;
+        public static short ColumnDateModifiedId = 35;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 36;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 37;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1972,12 +1976,14 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(27, "DonorKey", "p_donor_key_n", "Donor", OdbcType.Decimal, 10, true),
                     new TTypedColumnInfo(28, "AdminCharge", "a_admin_charge_l", "Admin Charge", OdbcType.Bit, -1, false),
                     new TTypedColumnInfo(29, "Reference", "a_reference_c", "Reference", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(30, "Restricted", "a_restricted_l", "Gift Restricted", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(31, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(32, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(33, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(34, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(35, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(30, "DonorShortName", "p_donor_short_name_c", "p_donor_short_name_c", OdbcType.VarChar, 500, false),
+                    new TTypedColumnInfo(31, "RecipientShortName", "p_recipient_short_name_c", "p_recipient_short_name_c", OdbcType.VarChar, 500, false),
+                    new TTypedColumnInfo(32, "Restricted", "a_restricted_l", "Gift Restricted", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(33, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(34, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(35, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(36, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(37, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -2065,6 +2071,10 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public DataColumn ColumnAdminCharge;
         /// Reference number/code for the transaction
         public DataColumn ColumnReference;
+        /// short name of the donor; will be used for generating export files
+        public DataColumn ColumnDonorShortName;
+        /// short name of recipient
+        public DataColumn ColumnRecipientShortName;
         /// Indicates whether or not the gift has restricted access. If it does then the access will be controlled by s_group_gift
         public DataColumn ColumnRestricted;
         /// The date the record was created.
@@ -2111,6 +2121,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("p_donor_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("a_admin_charge_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_reference_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_donor_short_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_recipient_short_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_restricted_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
@@ -2152,6 +2164,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.ColumnDonorKey = this.Columns["p_donor_key_n"];
             this.ColumnAdminCharge = this.Columns["a_admin_charge_l"];
             this.ColumnReference = this.Columns["a_reference_c"];
+            this.ColumnDonorShortName = this.Columns["p_donor_short_name_c"];
+            this.ColumnRecipientShortName = this.Columns["p_recipient_short_name_c"];
             this.ColumnRestricted = this.Columns["a_restricted_l"];
             this.ColumnDateCreated = this.Columns["s_date_created_d"];
             this.ColumnCreatedBy = this.Columns["s_created_by_c"];
@@ -2576,6 +2590,30 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public static short GetReferenceLength()
         {
             return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDonorShortNameDBName()
+        {
+            return "p_donor_short_name_c";
+        }
+
+        /// get character length for column
+        public static short GetDonorShortNameLength()
+        {
+            return 500;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetRecipientShortNameDBName()
+        {
+            return "p_recipient_short_name_c";
+        }
+
+        /// get character length for column
+        public static short GetRecipientShortNameLength()
+        {
+            return 500;
         }
 
         /// get the name of the field in the database for this column
@@ -3445,6 +3483,58 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             }
         }
 
+        /// short name of the donor; will be used for generating export files
+        public String DonorShortName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDonorShortName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDonorShortName)
+                            || (((String)(this[this.myTable.ColumnDonorShortName])) != value)))
+                {
+                    this[this.myTable.ColumnDonorShortName] = value;
+                }
+            }
+        }
+
+        /// short name of recipient
+        public String RecipientShortName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnRecipientShortName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnRecipientShortName)
+                            || (((String)(this[this.myTable.ColumnRecipientShortName])) != value)))
+                {
+                    this[this.myTable.ColumnRecipientShortName] = value;
+                }
+            }
+        }
+
         /// Indicates whether or not the gift has restricted access. If it does then the access will be controlled by s_group_gift
         public Boolean Restricted
         {
@@ -3634,6 +3724,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this[this.myTable.ColumnDonorKey.Ordinal] = 0;
             this[this.myTable.ColumnAdminCharge.Ordinal] = false;
             this.SetNull(this.myTable.ColumnReference);
+            this.SetNull(this.myTable.ColumnDonorShortName);
+            this.SetNull(this.myTable.ColumnRecipientShortName);
             this[this.myTable.ColumnRestricted.Ordinal] = false;
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnCreatedBy);
@@ -4000,6 +4092,30 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public void SetReferenceNull()
         {
             this.SetNull(this.myTable.ColumnReference);
+        }
+
+        /// test for NULL value
+        public bool IsDonorShortNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnDonorShortName);
+        }
+
+        /// assign NULL value
+        public void SetDonorShortNameNull()
+        {
+            this.SetNull(this.myTable.ColumnDonorShortName);
+        }
+
+        /// test for NULL value
+        public bool IsRecipientShortNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnRecipientShortName);
+        }
+
+        /// assign NULL value
+        public void SetRecipientShortNameNull()
+        {
+            this.SetNull(this.myTable.ColumnRecipientShortName);
         }
 
         /// test for NULL value

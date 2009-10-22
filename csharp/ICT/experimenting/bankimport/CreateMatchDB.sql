@@ -61,6 +61,8 @@ CREATE TABLE a_ep_match (
   a_admin_charge_l boolean DEFAULT '0',
     -- Reference number/code for the transaction
   a_reference_c varchar(20),
+  p_donor_short_name_c varchar(250),
+  p_recipient_short_name_c varchar(250),
     -- Indicates whether or not the gift has restricted access. If it does then the access will be controlled by s_group_gift
   a_restricted_l boolean DEFAULT '0',
     -- The date the record was created.
