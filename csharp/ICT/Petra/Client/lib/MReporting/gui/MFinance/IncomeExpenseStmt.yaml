@@ -1,0 +1,60 @@
+﻿RootNode:
+    BaseYaml: ../ReportingForm.yaml
+    FormType: report
+    FormTitle: Income Expense Statement
+    WindowWidth: 650
+    WindowHeight: 600
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        XMLFILES: [incomeexpensestatement.xml,finance.xml,common.xml]
+        REPORTNAME: Income Expense Statement
+        CURRENTREPORT: Income Expense Statement
+        SETAVAILABLEFUNCTIONS: BLANK
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Controls:
+        tpgReportSpecific:
+            Label: General Settings
+            Controls: [grpLedger, grpCurrency, grpPeriodRange]
+        grpLedger:
+            Label: Ledger Details
+            Dock: Top
+            Controls: [txtLedger, cmbAccountHierarchy]
+            ControlsOrientation: horizontal
+        grpCurrency:
+            Controls: [cmbCurrency]
+            Dock: Top
+        txtLedger: {ReadOnly=true, NoParameter=true}
+        cmbAccountHierarchy:
+            List: UserDefinedList
+            ParameterName: param_account_hierarchy_c
+        cmbCurrency:
+            ParameterName: param_currency
+            OptionalValues: [Base, International, Transaction]
+        grpPeriodRange:
+            Controls: [txtStartPeriod, txtEndPeriod, cmbPeriodYear]
+            ControlsOrientation: horizontal
+        txtStartPeriod: {Label=from, ParameterName=param_start_period_i, Width=30}
+        txtEndPeriod: {Label=to, ParameterName=param_end_period_i, Width=30}
+        cmbPeriodYear: {Label=Year, List=UserDefinedList, ParameterName=param_year_i}
+        tpgCostCentres:
+            Label: CostCentre Settings
+            Controls: [rgrCostCentreOptions, chkCostCentreBreakdown, rgrDepth]
+        rgrCostCentreOptions: {ParameterName=param_costcentreoptions}
+            Controls: [rbtSelectedCostCentres, rbtAllCostCentres, rbtAllActiveCostCentres, rbtAccountLevel]
+        rbtSelectedCostCentres:
+            Controls: [clbCostCentres, btnUnselectAllCostCentres]
+            ControlsOrientation: horizontal
+        rbtAllCostCentres:
+        rbtAllActiveCostCentres:
+        rbtAccountLevel:
+        clbCostCentres: {List=UserDefinedList, NoLabel=true, Dock=Fill, ParameterName=param_cost_centre_codes}
+        btnUnselectAllCostCentres: {Label=Unselect All}
+        chkCostCentreBreakdown: {ParameterName=param_cost_centre_breakdown, Help=group not by costcentre but by account}
+        rgrDepth: {ParameterName=param_depth}
+            OptionalValues: [detail, standard, summary]

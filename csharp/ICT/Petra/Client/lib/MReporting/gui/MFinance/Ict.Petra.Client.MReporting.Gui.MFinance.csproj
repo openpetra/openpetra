@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{5669E7C8-72A2-47D5-BEBE-C4DCD8099F59}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -111,8 +111,18 @@
       <DependentUpon>AccountDetail.cs</DependentUpon>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="IncomeExpenseStmt.ManualCode.cs">
+      <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IncomeExpenseStmt.cs" />
+    <Compile Include="IncomeExpenseStmt.Designer.cs">
+      <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AccountDetail.resx">
       <DependentUpon>AccountDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IncomeExpenseStmt.resx">
+      <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

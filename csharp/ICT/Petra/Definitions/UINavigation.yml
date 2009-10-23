@@ -44,6 +44,7 @@ OpenPetra:
                         AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=AccountsPayable.TFrmAPMain}
                     Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
+                        IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
                     Setup:
                         SetupCurrencies: {Description: Not functional yet, ActionOpenScreen=Setup.TFrmSetupCurrency}
                         SetupDailyExchangeRate: {Description=Not functional yet, ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
