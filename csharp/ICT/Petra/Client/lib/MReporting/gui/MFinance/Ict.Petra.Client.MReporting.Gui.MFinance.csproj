@@ -111,6 +111,13 @@
       <DependentUpon>AccountDetail.cs</DependentUpon>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BalanceSheet.cs" />
+    <Compile Include="BalanceSheet.Designer.cs">
+      <DependentUpon>BalanceSheet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BalanceSheet.ManualCode.cs">
+      <DependentUpon>BalanceSheet.cs</DependentUpon>
+    </Compile>
     <Compile Include="IncomeExpenseStmt.ManualCode.cs">
       <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>
     </Compile>
@@ -120,6 +127,9 @@
     </Compile>
     <EmbeddedResource Include="AccountDetail.resx">
       <DependentUpon>AccountDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BalanceSheet.resx">
+      <DependentUpon>BalanceSheet.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="IncomeExpenseStmt.resx">
       <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>

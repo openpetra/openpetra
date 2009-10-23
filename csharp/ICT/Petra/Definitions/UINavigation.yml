@@ -45,6 +45,7 @@ OpenPetra:
                     Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
+                        BalanceSheet: {ActionOpenScreen=TFrmBalanceSheet}
                     Setup:
                         SetupCurrencies: {Description: Not functional yet, ActionOpenScreen=Setup.TFrmSetupCurrency}
                         SetupDailyExchangeRate: {Description=Not functional yet, ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
