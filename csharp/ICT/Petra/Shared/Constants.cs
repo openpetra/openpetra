@@ -166,7 +166,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_GIFTBANKACCOUNT = "GiftBankAccount";
-        
+
         /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_USERMESSAGE = "USERMESSAGE";
 

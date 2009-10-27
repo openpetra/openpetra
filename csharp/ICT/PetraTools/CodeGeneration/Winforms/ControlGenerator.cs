@@ -1052,13 +1052,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public RadioGroupSimpleGenerator()
             : base("rgr")
         {
-            FChangeEventName = "";        	
+            FChangeEventName = "";
         }
 
         public RadioGroupSimpleGenerator(string prefix, System.Type type)
             : base(prefix, type)
         {
-            FChangeEventName = "";        	
+            FChangeEventName = "";
         }
 
         public override bool ControlFitsNode(XmlNode curNode)
@@ -1116,12 +1116,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     newCtrl.SetAttribute("SuppressChangeDetection", TYml2Xml.GetAttribute(curNode, "SuppressChangeDetection"));
                 }
-                
+
                 if (TYml2Xml.HasAttribute(curNode, "OnChange"))
                 {
-                	newCtrl.SetAttribute("OnChange", TYml2Xml.GetAttribute(curNode, "OnChange"));
+                    newCtrl.SetAttribute("OnChange", TYml2Xml.GetAttribute(curNode, "OnChange"));
                 }
-                    
+
                 Controls.Add(radioButtonName);
             }
 

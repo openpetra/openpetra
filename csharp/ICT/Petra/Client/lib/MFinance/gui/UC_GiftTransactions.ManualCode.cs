@@ -131,6 +131,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // TODO: deal properly with gift details and split gifts etc
             AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
+
             giftRow.LedgerNumber = batchRow.LedgerNumber;
             giftRow.BatchNumber = batchRow.BatchNumber;
             giftRow.GiftTransactionNumber = batchRow.LastGiftNumber + 1;

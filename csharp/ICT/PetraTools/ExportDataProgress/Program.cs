@@ -44,7 +44,8 @@ class Program
 
             if (!settings.IsFlagSet("Server.ODBC_DSN"))
             {
-                Console.WriteLine("sample call: " +
+                Console.WriteLine(
+                    "sample call: " +
                     "ExportDataProgress.exe -Server.ODBC_DSN:Petra2_2sa -username:demo_sql -password:demo -sql:\"SELECT * from pub.a_account\" -output:test.xml");
                 Environment.Exit(-1);
             }

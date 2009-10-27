@@ -58,7 +58,7 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>GL Batch</summary>
         public const String TRANSACTION_AP = "INV";
-        
+
         /// <summary>General Ledger</summary>
         public const String ACCOUNT_HIERARCHY_STANDARD = "STANDARD";
 
@@ -76,7 +76,7 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>Accounts Payable</summary>
         public const String AP_DOCUMENT_PAID = "PAID";
-        
+
         /// <summary>Account Property</summary>
         public const String ACCOUNT_PROPERTY_BANK_ACCOUNT = "Bank Account";
 
