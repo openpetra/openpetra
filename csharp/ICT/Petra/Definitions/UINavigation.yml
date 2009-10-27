@@ -73,7 +73,7 @@ OpenPetra:
             MoreFunctions:
                 SetupPartnerModule:
         # Department
-        Finance: {Icon=accounts_small.ico}
+        Finance: {Icon=accounts_small.ico, LedgerNumber=43, Namespace=Ict.Petra.Client.MFinance.Gui}
             # Module
             GeneralLedger:
                 # Sub Module
@@ -81,7 +81,7 @@ OpenPetra:
                     # Task Group
                     Accounts:
                         # Tasks (parse from c# file, or even dll?)
-                        ViewAccounts: {Description=show all accounts in this ledger}
+                        ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=GL.TFrmGLAccountHierarchy}
                         AddPostingAccount:
                         AddForeignCurrencyAccount:
                         AddSummarisationAccount:
@@ -90,6 +90,7 @@ OpenPetra:
                         RenameAccount:
                         ImportChartOfAccounts:
                     CostCentres:
+                        ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=GL.TFrmGLCostCentreHierarchy}
                         AddCostCentre:
                         EditCostCentre:
                         DeleteCostCentre:
@@ -102,6 +103,7 @@ OpenPetra:
                 Transactions:
                     SearchBoxes: [Transaction, Batch]
                     General:
+                        GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=GL.TFrmGLBatch}
                         EnterTransactions:
                         ImportTransactions:
                         EditExistingTransactions:
@@ -110,20 +112,24 @@ OpenPetra:
                         FindTransaction:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
                     AccountDetail:
-                        DefaultReport: {ActionOpenScreen=TFrmAccountDetail}
+                        AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
                     BalanceSheet:
+                        BalanceSheet: {ActionOpenScreen=TFrmBalanceSheet}
                         CurrentPeriod:
                         EndOfLastYear:
                         SpecifyParameters:
                         RepeatLastReport:
                         MyFancyBalanceSheetWithCoolGraph:
                     IncomeExpense:
+                        IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
                 PeriodEnd:
                 YearEnd:
                 ICHProcessing:
             GiftProcessing:
                 SearchBoxes: [Donor, Recipient]
                 GiftEntry:
+                    EnteringGifts: {Description: Just a prototype at the moment, ActionOpenScreen=TFrmBankStatementImport}
+                    GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=Gift.TFrmGiftBatch}
                     AddGifts:
                     ImportGifts:
                     EditExistingGifts:
@@ -133,6 +139,8 @@ OpenPetra:
                     PrintSingleReceipt:
                     PrintAnnualReceipt:
             AccountsPayable:
+				Main:
+                	AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=AccountsPayable.TFrmAPMain}
             Budgets:
             ICH:
             Reports:
