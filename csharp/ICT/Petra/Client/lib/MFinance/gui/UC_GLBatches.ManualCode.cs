@@ -25,8 +25,11 @@
  ************************************************************************/
 using System;
 using System.Windows.Forms;
+using System.IO;
+using System.Xml;
 using Mono.Unix;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
@@ -139,6 +142,130 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // TODO: refresh the grid, to reflect that the batch has been posted
                 LoadBatches(FLedgerNumber);
             }
+        }
+
+        private void ImportFromSpreadSheet(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            dialog.Title = Catalog.GetString("Import transactions from spreadsheet file");
+            dialog.Filter = Catalog.GetString("Spreadsheet files (*.csv)|*.csv");
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                string directory = Path.GetDirectoryName(dialog.FileName);
+                string[] ymlFiles = Directory.GetFiles(directory, "*.yml");
+                string definitionFileName = String.Empty;
+
+                if (ymlFiles.Length == 1)
+                {
+                    definitionFileName = ymlFiles[0];
+                }
+                else
+                {
+                    // show another open file dialog for the description file
+                    OpenFileDialog dialogDefinitionFile = new OpenFileDialog();
+                    dialogDefinitionFile.Title = Catalog.GetString("Please select a yml file that describes the content of the spreadsheet");
+                    dialogDefinitionFile.Filter = Catalog.GetString("Data description files (*.yml)|*.yml");
+
+                    if (dialogDefinitionFile.ShowDialog() == DialogResult.OK)
+                    {
+                        definitionFileName = dialogDefinitionFile.FileName;
+                    }
+                }
+
+                if (File.Exists(definitionFileName))
+                {
+                    TYml2Xml parser = new TYml2Xml(definitionFileName);
+                    XmlDocument dataDescription = parser.ParseYML2XML();
+                    XmlNode RootNode = TXMLParser.FindNodeRecursive(dataDescription.DocumentElement, "RootNode");
+                    Int32 FirstTransactionRow = TXMLParser.GetIntAttribute(RootNode, "FirstTransactionRow");
+                    string DefaultCostCentre = TXMLParser.GetAttribute(RootNode, "CostCentre");
+
+                    CreateNewABatch();
+                    AJournalRow NewJournal = FMainDS.AJournal.NewRowTyped(true);
+                    ((TFrmGLBatch)ParentForm).GetJournalsControl().NewRowManual(ref NewJournal);
+                    FMainDS.AJournal.Rows.Add(NewJournal);
+                    NewJournal.TransactionCurrency = TXMLParser.GetAttribute(RootNode, "Currency");
+
+                    if (Path.GetExtension(dialog.FileName).ToLower() == ".csv")
+                    {
+                        CreateBatchFromCSVFile(dialog.FileName,
+                            RootNode,
+                            NewJournal,
+                            FirstTransactionRow,
+                            DefaultCostCentre);
+                    }
+                }
+            }
+        }
+
+        /// load transactions from a CSV file into the currently selected batch
+        private void CreateBatchFromCSVFile(string ADataFilename,
+            XmlNode ARootNode,
+            AJournalRow ARefJournalRow,
+            Int32 AFirstTransactionRow,
+            string ADefaultCostCentre)
+        {
+            StreamReader dataFile = new StreamReader(ADataFilename, System.Text.Encoding.Default);
+
+            XmlNode ColumnsNode = TXMLParser.GetChild(ARootNode, "Columns");
+            string Separator = TXMLParser.GetAttribute(ARootNode, "Separator");
+            string DateFormat = TXMLParser.GetAttribute(ARootNode, "DateFormat");
+            string ThousandsSeparator = TXMLParser.GetAttribute(ARootNode, "ThousandsSeparator");
+            string DecimalSeparator = TXMLParser.GetAttribute(ARootNode, "DecimalSeparator");
+
+            // read headers
+            for (Int32 lineCounter = 0; lineCounter < AFirstTransactionRow - 1; lineCounter++)
+            {
+                dataFile.ReadLine();
+            }
+
+            do
+            {
+                string line = dataFile.ReadLine();
+
+                ATransactionRow NewTransaction = FMainDS.ATransaction.NewRowTyped(true);
+                ((TFrmGLBatch)ParentForm).GetTransactionsControl().NewRowManual(ref NewTransaction, ARefJournalRow);
+                FMainDS.ATransaction.Rows.Add(NewTransaction);
+
+                foreach (XmlNode ColumnNode in ColumnsNode.ChildNodes)
+                {
+                    string Value = StringHelper.GetNextCSV(ref line, Separator);
+                    string UseAs = TXMLParser.GetAttribute(ColumnNode, "UseAs");
+
+                    if (UseAs.ToLower() == "reference")
+                    {
+                        NewTransaction.Reference = Value;
+                    }
+                    else if (UseAs.ToLower() == "narrative")
+                    {
+                        NewTransaction.Narrative = Value;
+                    }
+                    else if (UseAs.ToLower() == "dateeffective")
+                    {
+                        NewTransaction.TransactionDate = XmlConvert.ToDateTime(Value, DateFormat);
+                    }
+                    else if (UseAs.ToLower() == "account")
+                    {
+                        if (Value.Length > 0)
+                        {
+                            if (Value.Contains(" "))
+                            {
+                                // cut off currency code; should have been defined in the data description file, for the whole batch
+                                Value = Value.Substring(0, Value.IndexOf(" ") - 1);
+                            }
+
+                            Value = Value.Replace(ThousandsSeparator, "");
+                            Value = Value.Replace(DecimalSeparator, ".");
+
+                            NewTransaction.TransactionAmount = Convert.ToDouble(Value, System.Globalization.CultureInfo.InvariantCulture);
+                            NewTransaction.CostCentreCode = ADefaultCostCentre;
+                            NewTransaction.AccountCode = ColumnNode.Name;
+                        }
+                    }
+                }
+            } while (!dataFile.EndOfStream);
         }
     }
 }

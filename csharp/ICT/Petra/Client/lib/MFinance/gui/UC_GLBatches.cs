@@ -79,7 +79,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.lblDetailDateEffective.Text = Catalog.GetString("Effective Date:");
       this.lblDateCantBeBeyond.Text = Catalog.GetString("Date can't be beyond:");
       this.tbbPostBatch.Text = Catalog.GetString("&Post Batch");
+      this.tbbImportFromSpreadSheet.Text = Catalog.GetString("Import From Spread Sheet");
       this.mniPost.Text = Catalog.GetString("&Post Batch");
+      this.mniImportFromSpreadSheet.Text = Catalog.GetString("Import From Spread Sheet");
       this.mniBatch.Text = Catalog.GetString("&Batch");
       #endregion
 
@@ -334,6 +336,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             btnPostBatch.Enabled = e.Enabled;
             tbbPostBatch.Enabled = e.Enabled;
             mniPost.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actImportFromSpreadSheet")
+        {
+            tbbImportFromSpreadSheet.Enabled = e.Enabled;
+            mniImportFromSpreadSheet.Enabled = e.Enabled;
         }
     }
 

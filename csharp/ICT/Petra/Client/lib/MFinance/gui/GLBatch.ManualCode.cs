@@ -122,5 +122,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
         }
+
+        /// <summary>
+        /// directly access the journals control
+        /// </summary>
+        public TUC_GLJournals GetJournalsControl()
+        {
+            return ucoJournals;
+        }
+
+        /// directly access the transactions control
+        public TUC_GLTransactions GetTransactionsControl()
+        {
+            return ucoTransactions;
+        }
     }
 }

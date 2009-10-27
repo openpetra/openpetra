@@ -105,7 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// make sure the correct journal number is assigned and the batch.lastJournal is updated
         /// </summary>
         /// <param name="ANewRow"></param>
-        private void NewRowManual(ref AJournalRow ANewRow)
+        public void NewRowManual(ref AJournalRow ANewRow)
         {
             DataView view = new DataView(FMainDS.ABatch);
 

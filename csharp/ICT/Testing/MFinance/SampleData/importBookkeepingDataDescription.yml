@@ -1,0 +1,17 @@
+RootNode:
+    Currency: KES
+    CashCostCentre: 4700
+    CashAccount: 6100
+    CostCentre: 4700
+    Separator: ,
+    DateFormat: dd.MM.yyyy
+    DecimalSeparator: ,
+    ThousandsSeparator: .
+    StartBalanceRow: 9
+    FirstTransactionRow: 10
+    Columns:
+        Number: {UseAs=Reference, Comment=Receiptnumber}
+        Transaction: {UseAs=Narrative}
+        Date: {UseAs=DateEffective}
+        0200: {UseAs=Account, Comment=Donations Income}
+        4202: {UseAs=Account, Comment=Food Expenses}

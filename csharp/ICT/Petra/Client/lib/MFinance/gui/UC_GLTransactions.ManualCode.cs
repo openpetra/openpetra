@@ -102,16 +102,29 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// make sure the correct transaction number is assigned and the journal.lastTransactionNumber is updated
         /// </summary>
-        /// <param name="ANewRow"></param>
-        private void NewRowManual(ref ATransactionRow ANewRow)
+        /// <param name="ANewRow">returns the modified new transaction row</param>
+        /// <param name="ARefJournalRow">this can be null; otherwise this is the journal that the transaction should belong to</param>
+        public void NewRowManual(ref ATransactionRow ANewRow, AJournalRow ARefJournalRow)
         {
-            AJournalRow row = GetJournalRow();
+            if (ARefJournalRow == null)
+            {
+                ARefJournalRow = GetJournalRow();
+            }
 
-            ANewRow.LedgerNumber = row.LedgerNumber;
-            ANewRow.BatchNumber = row.BatchNumber;
-            ANewRow.JournalNumber = row.JournalNumber;
-            ANewRow.TransactionNumber = row.LastTransactionNumber + 1;
-            row.LastTransactionNumber++;
+            ANewRow.LedgerNumber = ARefJournalRow.LedgerNumber;
+            ANewRow.BatchNumber = ARefJournalRow.BatchNumber;
+            ANewRow.JournalNumber = ARefJournalRow.JournalNumber;
+            ANewRow.TransactionNumber = ARefJournalRow.LastTransactionNumber + 1;
+            ARefJournalRow.LastTransactionNumber++;
+        }
+
+        /// <summary>
+        /// make sure the correct transaction number is assigned and the journal.lastTransactionNumber is updated;
+        /// will use the currently selected journal
+        /// </summary>
+        public void NewRowManual(ref ATransactionRow ANewRow)
+        {
+            NewRowManual(ref ANewRow, null);
         }
 
         /// <summary>
