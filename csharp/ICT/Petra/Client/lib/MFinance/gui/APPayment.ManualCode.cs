@@ -199,7 +199,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             TVerificationResultCollection Verifications;
 
             // TODO: message box asking for payment date
-            DateTime PaymentDate = new DateTime(2009, 06, 01);
+            DateTime PeriodStartDate, PeriodEndDate;
+
+            TRemote.MFinance.GL.WebConnectors.GetCurrentPeriodDates(FMainDS.AApDocument[0].LedgerNumber, out PeriodStartDate, out PeriodEndDate);
+            DateTime PaymentDate = PeriodStartDate;
 
             if (!TRemote.MFinance.AccountsPayable.WebConnectors.PostAPPayments(FMainDS.AApPayment,
                     FMainDS.AApDocumentPayment,

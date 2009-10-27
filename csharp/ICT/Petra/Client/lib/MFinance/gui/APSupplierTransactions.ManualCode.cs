@@ -163,7 +163,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             TVerificationResultCollection Verifications;
 
             // TODO: message box asking for posting date
-            DateTime PostingDate = new DateTime(2009, 06, 01);
+            DateTime PeriodStartDate, PeriodEndDate;
+            TRemote.MFinance.GL.WebConnectors.GetCurrentPeriodDates(FLedgerNumber, out PeriodStartDate, out PeriodEndDate);
+            DateTime PostingDate = PeriodStartDate;
 
             if (!TRemote.MFinance.AccountsPayable.WebConnectors.PostAPDocuments(
                     FLedgerNumber,

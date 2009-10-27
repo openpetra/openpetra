@@ -46,6 +46,29 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     public class TTransactionWebConnector
     {
         /// <summary>
+        /// retrieve the start and end dates of the current period of the ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AStartDate"></param>
+        /// <param name="AEndDate"></param>
+        public static bool GetCurrentPeriodDates(Int32 ALedgerNumber, out DateTime AStartDate, out DateTime AEndDate)
+        {
+            ALedgerTable LedgerTable;
+            AAccountingPeriodTable AccountingPeriodTable;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+            AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, LedgerTable[0].CurrentPeriod, Transaction);
+
+            AStartDate = AccountingPeriodTable[0].PeriodStartDate;
+            AEndDate = AccountingPeriodTable[0].PeriodEndDate;
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+
+            return true;
+        }
+
+        /// <summary>
         /// create a new batch with a consecutive batch number in the ledger,
         /// and immediately store the batch and the new number in the database
         /// </summary>
