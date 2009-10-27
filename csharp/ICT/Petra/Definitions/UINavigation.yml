@@ -139,8 +139,8 @@ OpenPetra:
                     PrintSingleReceipt:
                     PrintAnnualReceipt:
             AccountsPayable:
-				Main:
-                	AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=AccountsPayable.TFrmAPMain}
+                Main:
+                    AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=AccountsPayable.TFrmAPMain}
             Budgets:
             ICH:
             Reports:
