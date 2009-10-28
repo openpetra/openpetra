@@ -215,6 +215,10 @@ namespace Ict.Common.Testing
             s = " test ,a";
             Assert.AreEqual(" test ", StringHelper.GetNextCSV(ref s), "get string with spaces");
 
+            s = "shortdesc=\"Equipment, General\",longdesc=Equipment";
+            Assert.AreEqual("shortdesc=\"Equipment, General\"", StringHelper.GetNextCSV(ref s), "get string with quotes that are not at the start");
+            Assert.AreEqual("longdesc=Equipment", StringHelper.GetNextCSV(ref s), "after string with quotes that are not at the start");
+
             /* ,Bäcker,"test"",","test""",test,"test, hallo","test""tst","24/03/1999" */
             myTest = new String[] {
                 EMPTY, UMLAUT, QUOTEKOMMA, QUOTE, SIMPLE, KOMMA, QUOTES, DATE

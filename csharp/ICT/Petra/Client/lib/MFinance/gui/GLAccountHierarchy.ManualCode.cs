@@ -125,7 +125,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // store current detail values
             if ((FCurrentNode != null) && (FCurrentNode != e.Node))
             {
-                FMainDS.AAccountHierarchyDetail.DefaultView.Sort = AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
                 AAccountRow currentAccount = (AAccountRow)FMainDS.AAccount.Rows.Find(
                     new object[] { FLedgerNumber, ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
                 string oldName = currentAccount.AccountCode;
@@ -160,7 +159,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // update detail panel
             ShowDetails((AAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber,
-                                                                               ((AAccountHierarchyDetailRow)e.Node.Tag).ReportingAccountCode }));
+                                                                               ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode }));
         }
 
         private void AddNewAccount(Object sender, EventArgs e)
@@ -257,6 +256,48 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        private void DeleteUnusedAccount(Object sender, EventArgs ev)
+        {
+            string AccountCode = ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode;
+
+            if (!TRemote.MFinance.GL.WebConnectors.CanDeleteAccount(FLedgerNumber,
+                    AccountCode))
+            {
+                MessageBox.Show(
+                    String.Format(Catalog.GetString(
+                            "Account {0} cannot be deleted because it has already been used in GL transactions, or it is a system or summary account; you can deactivate the account, but not delete it."),
+                        AccountCode),
+                    Catalog.GetString("Account cannot be deleted"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                // select parent node first, so that account to be deleted will not be updated later anymore
+                TreeNode NodeToBeDeleted = FCurrentNode;
+                trvAccounts.SelectedNode = FCurrentNode.Parent;
+
+                trvAccounts.BeginUpdate();
+                NodeToBeDeleted.Remove();
+                trvAccounts.EndUpdate();
+
+                // TODO: what about other account hierarchies, that are still referencing this account?
+                AAccountHierarchyDetailRow AccountHDetailToBeDeleted = (AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.Rows.Find(
+                    new object[] { FLedgerNumber, FSelectedHierarchy, AccountCode });
+                AccountHDetailToBeDeleted.Delete();
+                AAccountRow AccountToBeDeleted = (AAccountRow)FMainDS.AAccount.Rows.Find(
+                    new object[] { FLedgerNumber, AccountCode });
+                AccountToBeDeleted.Delete();
+
+                // if parent of deleted node has no children, mark as posting account
+                // TODO: this also works only if there is just one account hierarchy
+                if (trvAccounts.SelectedNode.Nodes.Count == 0)
+                {
+                    AAccountRow AccountParent = (AAccountRow)FMainDS.AAccount.Rows.Find(
+                        new object[] { FLedgerNumber, ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
+                    AccountParent.PostingStatus = true;
+                }
+            }
+        }
+
         private void GetDataFromControlsManual()
         {
             // TODO: report to (drag/drop)
@@ -265,7 +306,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FCurrentNode != null)
             {
-                FMainDS.AAccountHierarchyDetail.DefaultView.Sort = AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
                 AAccountRow currentAccount = (AAccountRow)FMainDS.AAccount.Rows.Find(
                     new object[] { FLedgerNumber, ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
                 GetDetailsFromControls(currentAccount);

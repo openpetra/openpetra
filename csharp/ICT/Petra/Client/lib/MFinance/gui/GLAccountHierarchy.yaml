@@ -11,6 +11,8 @@ RootNode:
     WindowHeight: 700
     Actions:
         actAddNewAccount: {Label=Add Account, ActionClick=AddNewAccount}
+        actDeleteUnusedAccount: {Label=Delete Account, Help=This only works for accounts that have not been used yet; otherwise deactivate the account, ActionClick=DeleteUnusedAccount}
+        actImportHierarchy: {Help: This only works for accounts that have no transactions yet, ActionClick=ImportHierarchy}
         actExportHierarchy: {ActionClick=ExportHierarchy}
     Controls:
         pnlContent:
@@ -27,6 +29,8 @@ RootNode:
             Controls: 
                 Row0: [txtDetailAccountCode]
                 Row1: [cmbDetailAccountType]
+                Row2a: [txtDetailEngAccountCodeLongDesc]
+                Row2: [txtDetailEngAccountCodeShortDesc]
                 Row3: [txtDetailAccountCodeLongDesc]
                 Row4: [txtDetailAccountCodeShortDesc]
                 Row5: [cmbDetailValidCcCombo]
@@ -35,8 +39,10 @@ RootNode:
         cmbDetailAccountType:
             OptionalValues: [Income, Expense, Asset, Equity, Liability]
         # TODO: still need english and local description? easier to use different account hierarchies?
-        txtDetailAccountCodeLongDesc: {Label=Description Long}
-        txtDetailAccountCodeShortDesc: {Label=Description Short}
+        txtDetailEngAccountCodeLongDesc: {Label=Description Long English}
+        txtDetailEngAccountCodeShortDesc: {Label=Description Short English}
+        txtDetailAccountCodeLongDesc: {Label=Description Long Local}
+        txtDetailAccountCodeShortDesc: {Label=Description Short Local}
         cmbDetailValidCcCombo: {Label=Valid Cost Centres}
             OptionalValues: [All, Foreign, Local]
         # TODO: budget type, budget control
@@ -44,6 +50,15 @@ RootNode:
         # TODO: bank account
         # TODO: system account, standard account
         chkDetailAccountActiveFlag: {Label=Active}
+    Menu:
+        mniAccounts:
+            mniAddNewAccount:
+            mniDeleteUnusedAccount:
+            mniSeparator:
+            mniExportHierarchy:
+            mniImportHierarchy:
     Toolbar:
         tbbAddNewAccount:
+        tbbDeleteUnusedAccount:
         tbbExportHierarchy:
+        tbbImportHierarchy:

@@ -262,6 +262,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             NewTransaction.TransactionAmount = Convert.ToDouble(Value, System.Globalization.CultureInfo.InvariantCulture);
                             NewTransaction.CostCentreCode = ADefaultCostCentre;
                             NewTransaction.AccountCode = ColumnNode.Name;
+
+                            if (TXMLParser.HasAttribute(ColumnNode, "AccountCode"))
+                            {
+                                NewTransaction.AccountCode = TXMLParser.GetAttribute(ColumnNode, "AccountCode");
+                            }
                         }
                     }
                 }

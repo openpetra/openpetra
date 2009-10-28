@@ -355,7 +355,10 @@ namespace Ict.Common.Data
                 ref LastModifiedBy,
                 out LastModifiedDate);
 
-            if (LastModificationId != (string)(ADataRow[MODIFICATION_ID, DataRowVersion.Original]))
+            // check the modification ID (if the row was already there in the base database, it will have no modification ID, NULL)
+            Object OriginalLastModificationID = ADataRow[MODIFICATION_ID, DataRowVersion.Original];
+
+            if ((OriginalLastModificationID.GetType() != typeof(System.DBNull)) && (LastModificationId != (string)OriginalLastModificationID))
             {
                 throw new EDBConcurrencyException(
                     "Cannot delete row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,

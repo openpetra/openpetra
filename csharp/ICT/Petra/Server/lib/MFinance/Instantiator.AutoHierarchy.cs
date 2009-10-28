@@ -2094,6 +2094,13 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public bool CanDeleteAccount(Int32 ALedgerNumber,
+                                     string AAccountCode)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.CanDeleteAccount(ALedgerNumber, AAccountCode);
+        }
+
+        /// generated method from connector
         public bool GetCurrentPeriodDates(Int32 ALedgerNumber,
                                           out DateTime AStartDate,
                                           out DateTime AEndDate)

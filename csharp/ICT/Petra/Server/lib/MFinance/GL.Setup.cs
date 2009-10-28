@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Data;
+using System.Data.Odbc;
 using System.Xml;
 using System.IO;
 using Ict.Common;
@@ -108,7 +109,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     if ((AInspectDS.AAccount != null) || (AInspectDS.AAccountHierarchyDetail != null))
                     {
-                        // this only supports adding new accounts, and modifying details; but not renaming accounts
+                        // this only supports adding new accounts, deleting unused accounts, and modifying details; but not renaming accounts
                         if (AAccountAccess.SubmitChanges(AInspectDS.AAccount, SubmitChangesTransaction,
                                 out AVerificationResult))
                         {
@@ -172,19 +173,28 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             AAccountHierarchyDetailRow ADetailRow)
         {
             AAccountRow account = (AAccountRow)AMainDS.AAccount.Rows.Find(new object[] { ADetailRow.LedgerNumber, ADetailRow.ReportingAccountCode });
-            XmlElement accountNode = ADoc.CreateElement("Account");
+            XmlElement accountNode = ADoc.CreateElement(ADetailRow.ReportingAccountCode);
 
             // AccountCodeToReportTo and ReportOrder are encoded implicitly
-            accountNode.SetAttribute("name", ADetailRow.ReportingAccountCode);
-            accountNode.SetAttribute("active", account.AccountActiveFlag.ToString());
+            accountNode.SetAttribute("active", account.AccountActiveFlag ? "True" : "False");
             accountNode.SetAttribute("type", account.AccountType.ToString());
             accountNode.SetAttribute("debitcredit", account.DebitCreditIndicator ? "debit" : "credit");
             accountNode.SetAttribute("validcc", account.ValidCcCombo);
-            accountNode.SetAttribute("shortdesc", account.AccountCodeShortDesc);
+            accountNode.SetAttribute("shortdesc", account.EngAccountCodeShortDesc);
 
-            if (account.AccountCodeLongDesc != account.AccountCodeShortDesc)
+            if (account.EngAccountCodeLongDesc != account.EngAccountCodeShortDesc)
             {
-                accountNode.SetAttribute("longdesc", account.AccountCodeLongDesc);
+                accountNode.SetAttribute("longdesc", account.EngAccountCodeLongDesc);
+            }
+
+            if (account.EngAccountCodeShortDesc != account.AccountCodeShortDesc)
+            {
+                accountNode.SetAttribute("localdesc", account.AccountCodeShortDesc);
+            }
+
+            if (account.EngAccountCodeLongDesc != account.AccountCodeLongDesc)
+            {
+                accountNode.SetAttribute("locallongdesc", account.AccountCodeLongDesc);
             }
 
             AParentNode.AppendChild(accountNode);
@@ -244,13 +254,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             XmlNode AParentNode,
             ACostCentreRow ADetailRow)
         {
-            XmlElement costCentreNode = ADoc.CreateElement("CostCentre");
+            XmlElement costCentreNode = ADoc.CreateElement(ADetailRow.CostCentreName);
 
             // CostCentreToReportTo is encoded implicitly
             costCentreNode.SetAttribute("code", ADetailRow.CostCentreCode);
-            costCentreNode.SetAttribute("active", ADetailRow.CostCentreActiveFlag.ToString());
+            costCentreNode.SetAttribute("active", ADetailRow.CostCentreActiveFlag ? "True" : "False");
             costCentreNode.SetAttribute("type", ADetailRow.CostCentreType.ToString());
-            costCentreNode.SetAttribute("name", ADetailRow.CostCentreName);
             AParentNode.AppendChild(costCentreNode);
 
             AMainDS.ACostCentre.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
@@ -286,6 +295,87 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             return TXMLParser.XmlToString(doc);
         }
 
+        private static void CreateAccountHierarchyRecursively(ref GLSetupTDS AMainDS,
+            ref StringCollection AImportedAccountNames,
+            XmlNode ACurrentNode,
+            string AParentAccountCode)
+        {
+            AAccountRow newAccount = null;
+
+            // reverse adjustments so that name with space or starting with digit works with XML
+            string AccountCode = ACurrentNode.Name.Replace("SPACE", " ").Replace("DIGIT", "");
+
+            AImportedAccountNames.Add(AccountCode);
+
+            // does this account already exist?
+            bool newRow = false;
+            DataRow existingAccount = AMainDS.AAccount.Rows.Find(new object[] { AMainDS.AAccountHierarchy[0].LedgerNumber, AccountCode });
+
+            if (existingAccount != null)
+            {
+                newAccount = (AAccountRow)existingAccount;
+            }
+            else
+            {
+                newRow = true;
+                newAccount = AMainDS.AAccount.NewRowTyped();
+            }
+
+            newAccount.LedgerNumber = AMainDS.AAccountHierarchy[0].LedgerNumber;
+            newAccount.AccountCode = AccountCode;
+            newAccount.AccountActiveFlag = TYml2Xml.GetAttributeRecursive(ACurrentNode, "active").ToLower() == "true";
+            newAccount.AccountType = TYml2Xml.GetAttributeRecursive(ACurrentNode, "type");
+            newAccount.DebitCreditIndicator = TYml2Xml.GetAttributeRecursive(ACurrentNode, "debitcredit") == "debit";
+            newAccount.ValidCcCombo = TYml2Xml.GetAttributeRecursive(ACurrentNode, "validcc");
+            newAccount.EngAccountCodeShortDesc = TYml2Xml.GetAttributeRecursive(ACurrentNode, "shortdesc");
+
+            if (TXMLParser.HasAttribute(ACurrentNode, "shortdesc"))
+            {
+                newAccount.EngAccountCodeLongDesc = TYml2Xml.GetAttribute(ACurrentNode, "longdesc");
+            }
+            else
+            {
+                newAccount.EngAccountCodeLongDesc = TYml2Xml.GetAttributeRecursive(ACurrentNode, "longdesc");
+            }
+
+            if (newAccount.EngAccountCodeLongDesc.Length == 0)
+            {
+                newAccount.EngAccountCodeLongDesc = newAccount.EngAccountCodeShortDesc;
+            }
+
+            newAccount.AccountCodeShortDesc = TYml2Xml.GetAttribute(ACurrentNode, "localdesc");
+            newAccount.AccountCodeLongDesc = TYml2Xml.GetAttribute(ACurrentNode, "locallongdesc");
+
+            if (newAccount.AccountCodeShortDesc.Length == 0)
+            {
+                newAccount.AccountCodeShortDesc = newAccount.EngAccountCodeShortDesc;
+            }
+
+            if (newAccount.AccountCodeLongDesc.Length == 0)
+            {
+                newAccount.AccountCodeLongDesc = newAccount.AccountCodeShortDesc;
+            }
+
+            if (newRow)
+            {
+                AMainDS.AAccount.Rows.Add(newAccount);
+            }
+
+            // account hierarchy has been deleted, so always add
+            AAccountHierarchyDetailRow newAccountHDetail = AMainDS.AAccountHierarchyDetail.NewRowTyped();
+            newAccountHDetail.LedgerNumber = AMainDS.AAccountHierarchy[0].LedgerNumber;
+            newAccountHDetail.AccountHierarchyCode = AMainDS.AAccountHierarchy[0].AccountHierarchyCode;
+            newAccountHDetail.AccountCodeToReportTo = AParentAccountCode;
+            newAccountHDetail.ReportingAccountCode = AccountCode;
+
+            AMainDS.AAccountHierarchyDetail.Rows.Add(newAccountHDetail);
+
+            foreach (XmlNode child in ACurrentNode.ChildNodes)
+            {
+                CreateAccountHierarchyRecursively(ref AMainDS, ref AImportedAccountNames, child, newAccount.AccountCode);
+            }
+        }
+
         /// <summary>
         /// only works if there are no balances/transactions yet for the accounts that are deleted
         /// </summary>
@@ -300,13 +390,37 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             doc.LoadXml(AXmlAccountHierarchy);
 
             GLSetupTDS MainDS = LoadAccountHierarchies(ALedgerNumber);
-            XmlNode root = doc.FirstChild.NextSibling;
+            XmlNode root = doc.FirstChild.NextSibling.FirstChild;
 
+            StringCollection ImportedAccountNames = new StringCollection();
 
-            // TODO: delete accounts that don't exist anymore in the new hierarchy
-            // (check if their balance is empty and no transactions exist, or catch database constraint violation)
+            // delete all account hierarchy details of this hierarchy
+            foreach (AAccountHierarchyDetailRow accounthdetail in MainDS.AAccountHierarchyDetail.Rows)
+            {
+                if (accounthdetail.AccountHierarchyCode == AHierarchyName)
+                {
+                    accounthdetail.Delete();
+                }
+            }
 
-            return false;
+            CreateAccountHierarchyRecursively(ref MainDS, ref ImportedAccountNames, root, MainDS.AAccountHierarchy[0].LedgerNumber.ToString());
+
+            foreach (AAccountRow accountRow in MainDS.AAccount.Rows)
+            {
+                if (!ImportedAccountNames.Contains(accountRow.AccountCode))
+                {
+                    // TODO: delete accounts that don't exist anymore in the new hierarchy, or deactivate them?
+                    //       but need to raise a failure because they are missing in the account hierarcy
+                    // (check if their balance is empty and no transactions exist, or catch database constraint violation)
+                    // TODO: what about system accounts? probably alright to ignore here
+
+                    accountRow.Delete();
+                }
+            }
+
+            TVerificationResultCollection VerificationResult;
+            GLSetupTDS InspectDS = MainDS.GetChangesTyped(true);
+            return SaveGLSetupTDS(ref InspectDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
 
         /// <summary>
@@ -327,6 +441,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             // TODO ImportNewLedger
             return false;
+        }
+
+        /// <summary>
+        /// check if it is possible to delete the account (has no transactions)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAccountCode"></param>
+        /// <returns>false if account cannot be deleted</returns>
+        public static bool CanDeleteAccount(Int32 ALedgerNumber, string AAccountCode)
+        {
+            // TODO: enhance sql statement to check for more references to a_account
+            string SqlStmt = TDataBase.ReadSqlFile("GL.Setup.CheckAccountReferences.sql");
+
+            OdbcParameter[] parameters = new OdbcParameter[2];
+            parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Date);
+            parameters[0].Value = ALedgerNumber;
+            parameters[1] = new OdbcParameter("AccountCode", OdbcType.VarChar);
+            parameters[1].Value = AAccountCode;
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(SqlStmt, null, false, parameters)) == 0;
         }
     }
 }

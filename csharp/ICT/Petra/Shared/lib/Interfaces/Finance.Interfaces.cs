@@ -393,6 +393,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                              string AXmlAccountHierarchy,
                              string AXmlCostCentreHierarchy,
                              string AXmlInitialBalances);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
+        bool CanDeleteAccount(Int32 ALedgerNumber,
+                              string AAccountCode);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
         bool GetCurrentPeriodDates(Int32 ALedgerNumber,
                                    out DateTime AStartDate,

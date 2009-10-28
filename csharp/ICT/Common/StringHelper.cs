@@ -394,34 +394,41 @@ namespace Ict.Common
             escape = false;
             value = "";
 
-            if (list.ToCharArray()[0] == '"')
+            while ((position < list.Length) && (escape || (list.Substring(position, 1) != separator)))
             {
-                value = list.Substring(1, FindMatchingQuote(list) - 1);
-                position = value.Length + 2;
-            }
-            else
-            {
-                while ((position < list.Length) && (escape || (list.Substring(position, 1) != separator)))
+                if (escape)
                 {
-                    if (escape)
+                    escape = false;
+                }
+                else
+                {
+                    if (list[position] == '\\')
                     {
-                        escape = false;
+                        escape = true;
+                        position++;
+                    }
+                }
+
+                if (list[position] == '"')
+                {
+                    string quotedstring = list.Substring(position + 1, FindMatchingQuote(list.Substring(position) + 1) - 1);
+
+                    if (value.Length == 0)
+                    {
+                        value += quotedstring;
                     }
                     else
                     {
-                        if (list[position] == '\\')
-                        {
-                            escape = true;
-                            position++;
-                        }
+                        value += "\"" + quotedstring + "\"";
                     }
 
+                    position += quotedstring.Length + 2;
+                }
+                else
+                {
                     value = value + list[position];
                     position++;
                 }
-
-                // don't trim at all, not just when there are no quotes around the value
-                // value = value.Trim();
             }
 
             value = value.Replace("\"\"", "\"");

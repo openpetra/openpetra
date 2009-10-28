@@ -68,14 +68,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblDetailAccountCode.Text = Catalog.GetString("Account Code:");
       this.lblDetailAccountType.Text = Catalog.GetString("Account Type:");
-      this.lblDetailAccountCodeLongDesc.Text = Catalog.GetString("Description Long:");
-      this.lblDetailAccountCodeShortDesc.Text = Catalog.GetString("Description Short:");
+      this.lblDetailEngAccountCodeLongDesc.Text = Catalog.GetString("Description Long English:");
+      this.lblDetailEngAccountCodeShortDesc.Text = Catalog.GetString("Description Short English:");
+      this.lblDetailAccountCodeLongDesc.Text = Catalog.GetString("Description Long Local:");
+      this.lblDetailAccountCodeShortDesc.Text = Catalog.GetString("Description Short Local:");
       this.lblDetailValidCcCombo.Text = Catalog.GetString("Valid Cost Centres:");
       this.chkDetailAccountActiveFlag.Text = Catalog.GetString("Active");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.tbbAddNewAccount.Text = Catalog.GetString("Add Account");
+      this.tbbDeleteUnusedAccount.Text = Catalog.GetString("Delete Account");
       this.tbbExportHierarchy.Text = Catalog.GetString("Export Hierarchy");
+      this.tbbImportHierarchy.Text = Catalog.GetString("Import Hierarchy");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -86,6 +90,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.mniEditUndoScreen.Text = Catalog.GetString("&Undo Screen");
       this.mniEditFind.Text = Catalog.GetString("&Find...");
       this.mniEdit.Text = Catalog.GetString("&Edit");
+      this.mniAddNewAccount.Text = Catalog.GetString("Add Account");
+      this.mniDeleteUnusedAccount.Text = Catalog.GetString("Delete Account");
+      this.mniSeparator3.Text = Catalog.GetString("Separator");
+      this.mniExportHierarchy.Text = Catalog.GetString("Export Hierarchy");
+      this.mniImportHierarchy.Text = Catalog.GetString("Import Hierarchy");
+      this.mniAccounts.Text = Catalog.GetString("Accounts");
       this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
       this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
@@ -98,6 +108,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS();
       FPetraUtilsObject.SetStatusBarText(txtDetailAccountCode, Catalog.GetString("Enter a code for the account."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailAccountType, Catalog.GetString("Choose the type of account (e.g., Asset)"));
+      FPetraUtilsObject.SetStatusBarText(txtDetailEngAccountCodeLongDesc, Catalog.GetString("Enter a description in English (full)."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailEngAccountCodeShortDesc, Catalog.GetString("Enter a short description in English."));
       FPetraUtilsObject.SetStatusBarText(txtDetailAccountCodeLongDesc, Catalog.GetString("Enter a description of the account (full)."));
       FPetraUtilsObject.SetStatusBarText(txtDetailAccountCodeShortDesc, Catalog.GetString("Enter a short description of the account."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailValidCcCombo, Catalog.GetString("Select cost centre type that may be combined with this account."));
@@ -145,6 +157,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         else
         {
             cmbDetailAccountType.SetSelectedString(ARow.AccountType);
+        }
+        if (ARow.IsEngAccountCodeLongDescNull())
+        {
+            txtDetailEngAccountCodeLongDesc.Text = String.Empty;
+        }
+        else
+        {
+            txtDetailEngAccountCodeLongDesc.Text = ARow.EngAccountCodeLongDesc;
+        }
+        if (ARow.IsEngAccountCodeShortDescNull())
+        {
+            txtDetailEngAccountCodeShortDesc.Text = String.Empty;
+        }
+        else
+        {
+            txtDetailEngAccountCodeShortDesc.Text = ARow.EngAccountCodeShortDesc;
         }
         if (ARow.IsAccountCodeLongDescNull())
         {
@@ -197,6 +225,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else
             {
                 ARow.AccountType = cmbDetailAccountType.GetSelectedString();
+            }
+            if (txtDetailEngAccountCodeLongDesc.Text.Length == 0)
+            {
+                ARow.SetEngAccountCodeLongDescNull();
+            }
+            else
+            {
+                ARow.EngAccountCodeLongDesc = txtDetailEngAccountCodeLongDesc.Text;
+            }
+            if (txtDetailEngAccountCodeShortDesc.Text.Length == 0)
+            {
+                ARow.SetEngAccountCodeShortDescNull();
+            }
+            else
+            {
+                ARow.EngAccountCodeShortDesc = txtDetailEngAccountCodeShortDesc.Text;
             }
             if (txtDetailAccountCodeLongDesc.Text.Length == 0)
             {
@@ -416,10 +460,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         if (e.ActionName == "actAddNewAccount")
         {
             tbbAddNewAccount.Enabled = e.Enabled;
+            mniAddNewAccount.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actDeleteUnusedAccount")
+        {
+            tbbDeleteUnusedAccount.Enabled = e.Enabled;
+            mniDeleteUnusedAccount.Enabled = e.Enabled;
         }
         if (e.ActionName == "actExportHierarchy")
         {
             tbbExportHierarchy.Enabled = e.Enabled;
+            mniExportHierarchy.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actImportHierarchy")
+        {
+            tbbImportHierarchy.Enabled = e.Enabled;
+            mniImportHierarchy.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {

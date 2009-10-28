@@ -440,6 +440,18 @@ namespace Ict.Common.IO
                     // to get different versions, use the method Tag()
                     // TYml2Xml.LoadChild will either
                     // reuse an element, move an existing leaf from base to the main node, or create a new element
+
+                    // spaces are not allowed in XML element names
+                    if (nodeName.Contains(" "))
+                    {
+                        nodeName = nodeName.Replace(" ", "SPACE");
+                    }
+
+                    if (Char.IsDigit(nodeName[0]))
+                    {
+                        nodeName = "DIGIT" + nodeName;
+                    }
+
                     XmlNode newElement = TYml2Xml.LoadChild(parent, nodeName, ADepth);
 
                     if (nodeContent.Length > 0)

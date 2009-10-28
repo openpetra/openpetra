@@ -78,6 +78,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountCode = new System.Windows.Forms.Label();
             this.cmbDetailAccountType = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblDetailAccountType = new System.Windows.Forms.Label();
+            this.txtDetailEngAccountCodeLongDesc = new System.Windows.Forms.TextBox();
+            this.lblDetailEngAccountCodeLongDesc = new System.Windows.Forms.Label();
+            this.txtDetailEngAccountCodeShortDesc = new System.Windows.Forms.TextBox();
+            this.lblDetailEngAccountCodeShortDesc = new System.Windows.Forms.Label();
             this.txtDetailAccountCodeLongDesc = new System.Windows.Forms.TextBox();
             this.lblDetailAccountCodeLongDesc = new System.Windows.Forms.Label();
             this.txtDetailAccountCodeShortDesc = new System.Windows.Forms.TextBox();
@@ -88,7 +92,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbAddNewAccount = new System.Windows.Forms.ToolStripButton();
+            this.tbbDeleteUnusedAccount = new System.Windows.Forms.ToolStripButton();
             this.tbbExportHierarchy = new System.Windows.Forms.ToolStripButton();
+            this.tbbImportHierarchy = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileSave = new System.Windows.Forms.ToolStripMenuItem();
@@ -101,11 +107,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.mniEditUndoScreen = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.mniEditFind = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniAccounts = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniAddNewAccount = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniDeleteUnusedAccount = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniExportHierarchy = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniImportHierarchy = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpPetraHelp = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
@@ -184,6 +196,34 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountType.Text = "Account Type:";
             this.lblDetailAccountType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
+            // txtDetailEngAccountCodeLongDesc
+            //
+            this.txtDetailEngAccountCodeLongDesc.Location = new System.Drawing.Point(2,2);
+            this.txtDetailEngAccountCodeLongDesc.Name = "txtDetailEngAccountCodeLongDesc";
+            this.txtDetailEngAccountCodeLongDesc.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailEngAccountCodeLongDesc
+            //
+            this.lblDetailEngAccountCodeLongDesc.Location = new System.Drawing.Point(2,2);
+            this.lblDetailEngAccountCodeLongDesc.Name = "lblDetailEngAccountCodeLongDesc";
+            this.lblDetailEngAccountCodeLongDesc.AutoSize = true;
+            this.lblDetailEngAccountCodeLongDesc.Text = "Description Long English:";
+            this.lblDetailEngAccountCodeLongDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // txtDetailEngAccountCodeShortDesc
+            //
+            this.txtDetailEngAccountCodeShortDesc.Location = new System.Drawing.Point(2,2);
+            this.txtDetailEngAccountCodeShortDesc.Name = "txtDetailEngAccountCodeShortDesc";
+            this.txtDetailEngAccountCodeShortDesc.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailEngAccountCodeShortDesc
+            //
+            this.lblDetailEngAccountCodeShortDesc.Location = new System.Drawing.Point(2,2);
+            this.lblDetailEngAccountCodeShortDesc.Name = "lblDetailEngAccountCodeShortDesc";
+            this.lblDetailEngAccountCodeShortDesc.AutoSize = true;
+            this.lblDetailEngAccountCodeShortDesc.Text = "Description Short English:";
+            this.lblDetailEngAccountCodeShortDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
             // txtDetailAccountCodeLongDesc
             //
             this.txtDetailAccountCodeLongDesc.Location = new System.Drawing.Point(2,2);
@@ -195,7 +235,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountCodeLongDesc.Location = new System.Drawing.Point(2,2);
             this.lblDetailAccountCodeLongDesc.Name = "lblDetailAccountCodeLongDesc";
             this.lblDetailAccountCodeLongDesc.AutoSize = true;
-            this.lblDetailAccountCodeLongDesc.Text = "Description Long:";
+            this.lblDetailAccountCodeLongDesc.Text = "Description Long Local:";
             this.lblDetailAccountCodeLongDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // txtDetailAccountCodeShortDesc
@@ -209,7 +249,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountCodeShortDesc.Location = new System.Drawing.Point(2,2);
             this.lblDetailAccountCodeShortDesc.Name = "lblDetailAccountCodeShortDesc";
             this.lblDetailAccountCodeShortDesc.AutoSize = true;
-            this.lblDetailAccountCodeShortDesc.Text = "Description Short:";
+            this.lblDetailAccountCodeShortDesc.Text = "Description Short Local:";
             this.lblDetailAccountCodeShortDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // cmbDetailValidCcCombo
@@ -237,7 +277,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 6;
+            this.tableLayoutPanel1.RowCount = 8;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -246,16 +288,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Controls.Add(this.lblDetailAccountCode, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblDetailAccountType, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.lblDetailAccountCodeLongDesc, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.lblDetailAccountCodeShortDesc, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.lblDetailValidCcCombo, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.lblDetailEngAccountCodeLongDesc, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lblDetailEngAccountCodeShortDesc, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.lblDetailAccountCodeLongDesc, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.lblDetailAccountCodeShortDesc, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.lblDetailValidCcCombo, 0, 6);
             this.tableLayoutPanel1.SetColumnSpan(this.chkDetailAccountActiveFlag, 2);
-            this.tableLayoutPanel1.Controls.Add(this.chkDetailAccountActiveFlag, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.chkDetailAccountActiveFlag, 0, 7);
             this.tableLayoutPanel1.Controls.Add(this.txtDetailAccountCode, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.cmbDetailAccountType, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.txtDetailAccountCodeLongDesc, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.txtDetailAccountCodeShortDesc, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.cmbDetailValidCcCombo, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.txtDetailEngAccountCodeLongDesc, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.txtDetailEngAccountCodeShortDesc, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.txtDetailAccountCodeLongDesc, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.txtDetailAccountCodeShortDesc, 1, 5);
+            this.tableLayoutPanel1.Controls.Add(this.cmbDetailValidCcCombo, 1, 6);
             //
             // tbbSave
             //
@@ -273,12 +319,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tbbAddNewAccount.Click += new System.EventHandler(this.AddNewAccount);
             this.tbbAddNewAccount.Text = "Add Account";
             //
+            // tbbDeleteUnusedAccount
+            //
+            this.tbbDeleteUnusedAccount.Name = "tbbDeleteUnusedAccount";
+            this.tbbDeleteUnusedAccount.AutoSize = true;
+            this.tbbDeleteUnusedAccount.Click += new System.EventHandler(this.DeleteUnusedAccount);
+            this.tbbDeleteUnusedAccount.Text = "Delete Account";
+            //
             // tbbExportHierarchy
             //
             this.tbbExportHierarchy.Name = "tbbExportHierarchy";
             this.tbbExportHierarchy.AutoSize = true;
             this.tbbExportHierarchy.Click += new System.EventHandler(this.ExportHierarchy);
             this.tbbExportHierarchy.Text = "Export Hierarchy";
+            //
+            // tbbImportHierarchy
+            //
+            this.tbbImportHierarchy.Name = "tbbImportHierarchy";
+            this.tbbImportHierarchy.AutoSize = true;
+            this.tbbImportHierarchy.Click += new System.EventHandler(this.ImportHierarchy);
+            this.tbbImportHierarchy.Text = "Import Hierarchy";
             //
             // tbrMain
             //
@@ -288,7 +348,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbSave,
                         tbbAddNewAccount,
-                        tbbExportHierarchy});
+                        tbbDeleteUnusedAccount,
+                        tbbExportHierarchy,
+                        tbbImportHierarchy});
             //
             // mniFileSave
             //
@@ -373,17 +435,63 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         mniEditFind});
             this.mniEdit.Text = "&Edit";
             //
+            // mniAddNewAccount
+            //
+            this.mniAddNewAccount.Name = "mniAddNewAccount";
+            this.mniAddNewAccount.AutoSize = true;
+            this.mniAddNewAccount.Click += new System.EventHandler(this.AddNewAccount);
+            this.mniAddNewAccount.Text = "Add Account";
+            //
+            // mniDeleteUnusedAccount
+            //
+            this.mniDeleteUnusedAccount.Name = "mniDeleteUnusedAccount";
+            this.mniDeleteUnusedAccount.AutoSize = true;
+            this.mniDeleteUnusedAccount.Click += new System.EventHandler(this.DeleteUnusedAccount);
+            this.mniDeleteUnusedAccount.Text = "Delete Account";
+            //
+            // mniSeparator3
+            //
+            this.mniSeparator3.Name = "mniSeparator3";
+            this.mniSeparator3.AutoSize = true;
+            this.mniSeparator3.Text = "Separator";
+            //
+            // mniExportHierarchy
+            //
+            this.mniExportHierarchy.Name = "mniExportHierarchy";
+            this.mniExportHierarchy.AutoSize = true;
+            this.mniExportHierarchy.Click += new System.EventHandler(this.ExportHierarchy);
+            this.mniExportHierarchy.Text = "Export Hierarchy";
+            //
+            // mniImportHierarchy
+            //
+            this.mniImportHierarchy.Name = "mniImportHierarchy";
+            this.mniImportHierarchy.AutoSize = true;
+            this.mniImportHierarchy.Click += new System.EventHandler(this.ImportHierarchy);
+            this.mniImportHierarchy.Text = "Import Hierarchy";
+            //
+            // mniAccounts
+            //
+            this.mniAccounts.Name = "mniAccounts";
+            this.mniAccounts.AutoSize = true;
+            this.mniAccounts.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                           mniAddNewAccount,
+                        mniDeleteUnusedAccount,
+                        mniSeparator3,
+                        mniExportHierarchy,
+                        mniImportHierarchy});
+            this.mniAccounts.Text = "Accounts";
+            //
             // mniHelpPetraHelp
             //
             this.mniHelpPetraHelp.Name = "mniHelpPetraHelp";
             this.mniHelpPetraHelp.AutoSize = true;
             this.mniHelpPetraHelp.Text = "&Petra Help";
             //
-            // mniSeparator3
+            // mniSeparator4
             //
-            this.mniSeparator3.Name = "mniSeparator3";
-            this.mniSeparator3.AutoSize = true;
-            this.mniSeparator3.Text = "-";
+            this.mniSeparator4.Name = "mniSeparator4";
+            this.mniSeparator4.AutoSize = true;
+            this.mniSeparator4.Text = "-";
             //
             // mniHelpBugReport
             //
@@ -391,11 +499,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.mniHelpBugReport.AutoSize = true;
             this.mniHelpBugReport.Text = "Bug &Report";
             //
-            // mniSeparator4
+            // mniSeparator5
             //
-            this.mniSeparator4.Name = "mniSeparator4";
-            this.mniSeparator4.AutoSize = true;
-            this.mniSeparator4.Text = "-";
+            this.mniSeparator5.Name = "mniSeparator5";
+            this.mniSeparator5.AutoSize = true;
+            this.mniSeparator5.Text = "-";
             //
             // mniHelpAboutPetra
             //
@@ -415,9 +523,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.mniHelp.AutoSize = true;
             this.mniHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniHelpPetraHelp,
-                        mniSeparator3,
-                        mniHelpBugReport,
                         mniSeparator4,
+                        mniHelpBugReport,
+                        mniSeparator5,
                         mniHelpAboutPetra,
                         mniHelpDevelopmentTeam});
             this.mniHelp.Text = "&Help";
@@ -430,6 +538,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
                         mniEdit,
+                        mniAccounts,
                         mniHelp});
             //
             // stbMain
@@ -480,6 +589,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Label lblDetailAccountCode;
         private Ict.Common.Controls.TCmbAutoComplete cmbDetailAccountType;
         private System.Windows.Forms.Label lblDetailAccountType;
+        private System.Windows.Forms.TextBox txtDetailEngAccountCodeLongDesc;
+        private System.Windows.Forms.Label lblDetailEngAccountCodeLongDesc;
+        private System.Windows.Forms.TextBox txtDetailEngAccountCodeShortDesc;
+        private System.Windows.Forms.Label lblDetailEngAccountCodeShortDesc;
         private System.Windows.Forms.TextBox txtDetailAccountCodeLongDesc;
         private System.Windows.Forms.Label lblDetailAccountCodeLongDesc;
         private System.Windows.Forms.TextBox txtDetailAccountCodeShortDesc;
@@ -490,7 +603,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripButton tbbAddNewAccount;
+        private System.Windows.Forms.ToolStripButton tbbDeleteUnusedAccount;
         private System.Windows.Forms.ToolStripButton tbbExportHierarchy;
+        private System.Windows.Forms.ToolStripButton tbbImportHierarchy;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniFileSave;
@@ -503,11 +618,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.ToolStripMenuItem mniEditUndoScreen;
         private System.Windows.Forms.ToolStripSeparator mniSeparator2;
         private System.Windows.Forms.ToolStripMenuItem mniEditFind;
+        private System.Windows.Forms.ToolStripMenuItem mniAccounts;
+        private System.Windows.Forms.ToolStripMenuItem mniAddNewAccount;
+        private System.Windows.Forms.ToolStripMenuItem mniDeleteUnusedAccount;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem mniExportHierarchy;
+        private System.Windows.Forms.ToolStripMenuItem mniImportHierarchy;
         private System.Windows.Forms.ToolStripMenuItem mniHelp;
         private System.Windows.Forms.ToolStripMenuItem mniHelpPetraHelp;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator3;
-        private System.Windows.Forms.ToolStripMenuItem mniHelpBugReport;
         private System.Windows.Forms.ToolStripSeparator mniSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem mniHelpBugReport;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator5;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;

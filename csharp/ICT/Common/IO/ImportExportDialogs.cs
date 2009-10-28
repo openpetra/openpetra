@@ -93,7 +93,7 @@ namespace Ict.Common.IO
 
             DialogOpen.Filter = Catalog.GetString(
                 "Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Spreadsheet file (*.csv)|All supported file formats (*.yml, *.xml, *.csv)|*.csv;*.yml;*.xml|");
-            DialogOpen.FilterIndex = 3;
+            DialogOpen.FilterIndex = 4;
             DialogOpen.RestoreDirectory = true;
             DialogOpen.Title = ADialogTitle;
 
