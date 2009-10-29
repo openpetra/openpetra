@@ -472,7 +472,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 {
                     if (currency_s.ToLower().CompareTo("international") == 0)
                     {
-                        ReturnValue = parameters.Get("a_amount_in_base_currency_2_n", situation.GetColumn(), situation.GetDepth()).ToDouble();
+                        ReturnValue = parameters.Get("a_amount_in_intl_currency_n", situation.GetColumn(), situation.GetDepth()).ToDouble();
                     }
                 }
             }
@@ -780,7 +780,6 @@ namespace Ict.Petra.Server.MReporting.MFinance
             double lv_prev_year_amount_n;
             string strSql;
             DataTable tab;
-            string accountHierarchy;
 
             if ((period == null) || (period.realGlmSequence == null))
             {
@@ -800,11 +799,10 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 }
             }
 
-            // for summary accounts, when using a different than the STANDARD accounting hierarchy,
-            // need to get the correct summary amount
-            accountHierarchy = parameters.Get("param_account_hierarchy_c").ToString();
+            // for summary accounts, need to get the correct summary amount
+            string accountHierarchy = parameters.Get("param_account_hierarchy_c").ToString();
 
-            if ((!period.realGlmSequence.postingAccount) && (!(accountHierarchy.ToUpper().CompareTo("STANDARD") == 0)))
+            if (!period.realGlmSequence.postingAccount)
             {
                 return GetActualSummary(period, pv_period_number_i, pv_year_i, pv_ytd_l, pv_currency_select_c, accountHierarchy);
             }

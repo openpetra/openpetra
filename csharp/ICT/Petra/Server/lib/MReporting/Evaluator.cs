@@ -769,11 +769,11 @@ namespace Ict.Petra.Server.MReporting
 
             if (f == "eq")
             {
-                ReturnValue = new TVariant(ops[1].CompareTo(ops[2]) == 0);
+                ReturnValue = new TVariant(ops[1].CompareToI(ops[2]) == 0);
             }
             else if (f == "ne")
             {
-                ReturnValue = new TVariant(ops[1].CompareTo(ops[2]) != 0);
+                ReturnValue = new TVariant(ops[1].CompareToI(ops[2]) != 0);
             }
             else if (f == "lt")
             {

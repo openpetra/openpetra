@@ -45,6 +45,9 @@
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Common.Data">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common.DB">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -52,6 +55,9 @@
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MReporting">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MReporting.dll</HintPath>
@@ -68,6 +74,14 @@
     <Compile Include="Functions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\MFinance\data\Ict.Petra.Server.MFinance.DataAccess.csproj">
+      <Project>{FD074084-1FB7-4C92-BD2A-09E7369EC81D}</Project>
+      <Name>Ict.Petra.Server.MFinance.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MFinance\Ict.Petra.Server.MFinance.WebConnectors.csproj">
+      <Project>{C68F7EC9-BE30-4F11-869A-2C9E5A758880}</Project>
+      <Name>Ict.Petra.Server.MFinance.WebConnectors</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Ict.Petra.Server.MReporting.csproj">
       <Project>{1532B4C2-5A04-4FFC-B383-E147A2377370}</Project>
       <Name>Ict.Petra.Server.MReporting</Name>

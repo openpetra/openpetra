@@ -31,7 +31,10 @@ using Ict.Common.DB.DBCaching;
 using System.Collections;
 using System.Data;
 using System.Data.Odbc;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MReporting;
+using Ict.Petra.Server.MFinance.GL.WebConnectors;
 
 namespace Ict.Petra.Server.MReporting.MFinance
 {
@@ -701,67 +704,16 @@ namespace Ict.Petra.Server.MReporting.MFinance
             int pv_period_i,
             int currentFinancialYear)
         {
-            double ReturnValue;
-            DataSet exchangeRateResultSet;
-            DateTime startOfPeriod;
-            DateTime endOfPeriod;
-            DataTable tab;
-            string strSql;
-            string strTable;
-            TRptFormatQuery formatQuery;
+            ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(pv_ledger_number_i, databaseConnection.Transaction);
+            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(pv_ledger_number_i,
+                ledgerTable[0].CurrentPeriod,
+                databaseConnection.Transaction);
+            DateTime startOfPeriod = AccountingPeriodTable[0].PeriodStartDate;
 
-            startOfPeriod = DateTime.MinValue;
-            endOfPeriod = DateTime.MinValue;
-            ReturnValue = -1;
-            strSql = "SELECT a_period_start_date_d, a_period_end_date_d FROM PUB_a_accounting_period WHERE " + "a_accounting_period_number_i = " +
-                     pv_period_i.ToString() + " AND a_ledger_number_i = " + pv_ledger_number_i.ToString();
-            tab = databaseConnection.SelectDT(strSql, "", databaseConnection.Transaction);
+            startOfPeriod = new DateTime(startOfPeriod.Year - (currentFinancialYear - pv_year_i), startOfPeriod.Month, startOfPeriod.Day);
 
-            if (tab.Rows.Count > 0)
-            {
-                startOfPeriod = TSaveConvert.ObjectToDate(tab.Rows[0]["a_period_start_date_d"]);
-                endOfPeriod = TSaveConvert.ObjectToDate(tab.Rows[0]["a_period_end_date_d"]);
-                try
-                {
-                    endOfPeriod = new DateTime(endOfPeriod.Year - (currentFinancialYear - pv_year_i), endOfPeriod.Month, endOfPeriod.Day);
-                }
-                catch (Exception)
-                {
-                    endOfPeriod = new DateTime(endOfPeriod.Year - (currentFinancialYear - pv_year_i), endOfPeriod.Month, endOfPeriod.Day - 1);
-                }
-                startOfPeriod = new DateTime(startOfPeriod.Year - (currentFinancialYear - pv_year_i), startOfPeriod.Month, startOfPeriod.Day);
-            }
-
-            // get the corporate exchange rate between base and intl currency for the period
-            strTable = "PUB_a_corporate_exchange_rate";
-            strSql = "SELECT a_rate_of_exchange_n, a_date_effective_from_d " + "  FROM " + strTable + ", PUB_a_ledger " +
-                     "  WHERE PUB_a_ledger.a_ledger_number_i = " + pv_ledger_number_i.ToString() + "    AND " + strTable +
-                     ".a_to_currency_code_c = PUB_a_ledger.a_base_currency_c " + "    AND " + strTable +
-                     ".a_from_currency_code_c = PUB_a_ledger.a_intl_currency_c " + "    AND " + strTable + ".a_date_effective_from_d >= {#" +
-                     StringHelper.DateToStr(startOfPeriod,
-                "dd/MM/yyyy") + "#}" + "    AND " + strTable + ".a_date_effective_from_d <= {#" +
-                     StringHelper.DateToStr(endOfPeriod, "dd/MM/yyyy") + "#}" + "    ORDER BY a_date_effective_from_d DESC";
-            formatQuery = new TRptFormatQuery(null, -1, -1);
-            strSql = formatQuery.ReplaceVariables(strSql).ToString();
-            formatQuery = null;
-            exchangeRateResultSet = LedgerStatus.ExchangeRateCachedResultSets.GetDataSet(databaseConnection, strSql);
-
-            if ((exchangeRateResultSet != null) && (exchangeRateResultSet.Tables["cache"].Rows.Count > 0))
-            {
-                ReturnValue = Convert.ToDouble(exchangeRateResultSet.Tables["cache"].Rows[0]["a_rate_of_exchange_n"]);
-            }
-            else
-            {
-                strSql = strSql.Replace("PUB_a_corporate_exchange_rate", "PUB_a_prev_year_corp_ex_rate");
-                exchangeRateResultSet = LedgerStatus.ExchangeRateCachedResultSets.GetDataSet(databaseConnection, strSql);
-
-                if ((exchangeRateResultSet != null) && (exchangeRateResultSet.Tables["cache"].Rows.Count > 0))
-                {
-                    ReturnValue = Convert.ToDouble(exchangeRateResultSet.Tables["cache"].Rows[0]["a_rate_of_exchange_n"]);
-                }
-            }
-
-            return ReturnValue;
+            // get the daily exchange rate between base and intl currency for the period
+            return TTransactionWebConnector.GetDailyExchangeRate(ledgerTable[0].BaseCurrency, ledgerTable[0].IntlCurrency, startOfPeriod);
         }
 
         /// <summary>

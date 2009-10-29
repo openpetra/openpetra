@@ -251,10 +251,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 txtDebitAmountBase.Text =
                     (TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                    dtpDetailTransactionDate.Value) * Convert.ToDouble(txtDebitAmount.Text)).ToString();
+                         dtpDetailTransactionDate.Value) * Convert.ToDouble(txtDebitAmount.Text)).ToString();
                 txtCreditAmountBase.Text =
                     (TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                    dtpDetailTransactionDate.Value) * Convert.ToDouble(txtCreditAmount.Text)).ToString();
+                         dtpDetailTransactionDate.Value) * Convert.ToDouble(txtCreditAmount.Text)).ToString();
             }
             catch (Exception)
             {

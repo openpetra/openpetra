@@ -1344,6 +1344,14 @@ namespace Ict.Common
             return (TypeVariant == eVariantTypes.eEmpty) || ((TypeVariant == eVariantTypes.eString) && (StringValue.CompareTo("NOTFOUND") == 0));
         }
 
+        private bool ComparingBooleanValues(TVariant v)
+        {
+            return ((ToString().ToLower() == "true") || (ToString().ToLower() == "yes") || (ToString().ToLower() == "false")
+                    || (ToString().ToLower() == "no"))
+                   && ((v.ToString().ToLower() == "true") || (v.ToString().ToLower() == "yes") || (v.ToString().ToLower() == "false")
+                       || (v.ToString().ToLower() == "no"));
+        }
+
         /// <summary>
         /// </summary>
         /// <returns>s 0 if equal, -1 if this object is less than the parameter, +1 if it is greater
@@ -1376,10 +1384,7 @@ namespace Ict.Common
             else if (TypeVariant == eVariantTypes.eString)
             {
                 // test if perhaps boolean values are compared; trouble is, yes and no and true and false are used
-                if (((ToString().ToLower() == "true") || (ToString().ToLower() == "yes") || (ToString().ToLower() == "false")
-                     || (ToString().ToLower() == "no"))
-                    && ((v.ToString().ToLower() == "true") || (v.ToString().ToLower() == "yes") || (v.ToString().ToLower() == "false")
-                        || (v.ToString().ToLower() == "no")))
+                if (ComparingBooleanValues(v))
                 {
                     if (ToBool() == v.ToBool())
                     {
@@ -1421,6 +1426,31 @@ namespace Ict.Common
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// compare case insenstive
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        public System.Int16 CompareToI(TVariant v)
+        {
+            if (TypeVariant == eVariantTypes.eString)
+            {
+                // test if perhaps boolean values are compared; trouble is, yes and no and true and false are used
+                if (ComparingBooleanValues(v))
+                {
+                    return CompareTo(v);
+                }
+                else
+                {
+                    return (short)String.Compare(ToString().ToLower(), v.ToString().ToLower());
+                }
+            }
+            else
+            {
+                return CompareTo(v);
+            }
         }
     }
 }
