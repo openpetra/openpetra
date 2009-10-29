@@ -25,6 +25,7 @@
  ************************************************************************/
 using System;
 using System.Data;
+using System.Collections.Generic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -80,6 +81,64 @@ namespace Ict.Petra.Client.MFinance.Logic
             // several ledgers are available to the user
             // this function is called from TDlgSelectLedger, and it will show a list of ledgers to the user to choose
             return -2;
+        }
+
+        private static SortedList <Int32, DateTime[]>FValidPostingDates = new SortedList <int, DateTime[]>();
+
+        /// <summary>
+        /// to be called if no valid dates exist yet in the cache;
+        /// also to be called by period end to reset the cache
+        /// </summary>
+        public static void ResetValidDates(Int32 ALedgerNumber)
+        {
+            DateTime StartDateCurrentPeriod;
+            DateTime EndDateLastForwardingPeriod;
+
+            TRemote.MFinance.GL.WebConnectors.GetCurrentPostingRangeDates(ALedgerNumber, out StartDateCurrentPeriod, out EndDateLastForwardingPeriod);
+
+            if (FValidPostingDates.ContainsKey(ALedgerNumber))
+            {
+                FValidPostingDates.Remove(ALedgerNumber);
+            }
+
+            FValidPostingDates.Add(ALedgerNumber, new DateTime[] { StartDateCurrentPeriod, EndDateLastForwardingPeriod });
+        }
+
+        /// <summary>
+        /// Get the valid dates for posting;
+        /// based on current period and number of forwarding periods
+        /// </summary>
+        public static bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
+            out DateTime AStartDateCurrentPeriod,
+            out DateTime AEndDateLastForwardingPeriod,
+            out DateTime ADefaultDate)
+        {
+            if (!FValidPostingDates.ContainsKey(ALedgerNumber))
+            {
+                ResetValidDates(ALedgerNumber);
+            }
+
+            if (FValidPostingDates.ContainsKey(ALedgerNumber))
+            {
+                AStartDateCurrentPeriod = FValidPostingDates[ALedgerNumber][0];
+                AEndDateLastForwardingPeriod = FValidPostingDates[ALedgerNumber][1];
+
+                if ((DateTime.Now >= AStartDateCurrentPeriod) && (DateTime.Now <= AEndDateLastForwardingPeriod))
+                {
+                    ADefaultDate = DateTime.Now;
+                }
+                else
+                {
+                    ADefaultDate = AEndDateLastForwardingPeriod;
+                }
+
+                return true;
+            }
+
+            AStartDateCurrentPeriod = DateTime.MinValue;
+            AEndDateLastForwardingPeriod = DateTime.MinValue;
+            ADefaultDate = DateTime.MinValue;
+            return false;
         }
     }
 }

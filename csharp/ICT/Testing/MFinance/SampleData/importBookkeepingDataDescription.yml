@@ -13,5 +13,5 @@ RootNode:
         Number: {UseAs=Reference, Comment=Receiptnumber}
         Transaction: {UseAs=Narrative}
         Date: {UseAs=DateEffective}
-        0200: {UseAs=Account, Comment=Donations Income}
-        4202: {UseAs=Account, Comment=Food Expenses}
+        Gift: {UseAs=Account, Comment=Donations Income, AccountCode=0200, CreditDebit=credit}
+        Food: {UseAs=Account, Comment=Food Expenses, AccountCode=4202}

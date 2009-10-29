@@ -96,8 +96,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailBatchControlTotal = new System.Windows.Forms.Label();
             this.dtpDetailDateEffective = new System.Windows.Forms.DateTimePicker();
             this.lblDetailDateEffective = new System.Windows.Forms.Label();
-            this.dtpDateCantBeBeyond = new System.Windows.Forms.DateTimePicker();
-            this.lblDateCantBeBeyond = new System.Windows.Forms.Label();
+            this.lblValidDateRange = new System.Windows.Forms.Label();
             this.tbrTabPage = new System.Windows.Forms.ToolStrip();
             this.tbbPostBatch = new System.Windows.Forms.ToolStripButton();
             this.tbbImportFromSpreadSheet = new System.Windows.Forms.ToolStripButton();
@@ -351,22 +350,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailDateEffective.Text = "Effective Date:";
             this.lblDetailDateEffective.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
-            // dtpDateCantBeBeyond
+            // lblValidDateRange
             //
-            this.dtpDateCantBeBeyond.Location = new System.Drawing.Point(2,2);
-            this.dtpDateCantBeBeyond.Name = "dtpDateCantBeBeyond";
-            this.dtpDateCantBeBeyond.Size = new System.Drawing.Size(150, 28);
-            this.dtpDateCantBeBeyond.Enabled = false;
-            //
-            // lblDateCantBeBeyond
-            //
-            this.lblDateCantBeBeyond.Location = new System.Drawing.Point(2,2);
-            this.lblDateCantBeBeyond.Name = "lblDateCantBeBeyond";
-            this.lblDateCantBeBeyond.AutoSize = true;
-            this.lblDateCantBeBeyond.Text = "Date can't be beyond:";
-            this.lblDateCantBeBeyond.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel5.ColumnCount = 4;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.lblValidDateRange.Location = new System.Drawing.Point(2,2);
+            this.lblValidDateRange.Name = "lblValidDateRange";
+            this.lblValidDateRange.AutoSize = true;
+            this.lblValidDateRange.Text = "Valid Date Range:";
+            this.lblValidDateRange.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.ColumnCount = 3;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -381,8 +372,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel5.Controls.Add(this.txtDetailBatchDescription, 1, 0);
             this.tableLayoutPanel5.Controls.Add(this.txtDetailBatchControlTotal, 1, 1);
             this.tableLayoutPanel5.Controls.Add(this.dtpDetailDateEffective, 1, 2);
-            this.tableLayoutPanel5.Controls.Add(this.lblDateCantBeBeyond, 2, 2);
-            this.tableLayoutPanel5.Controls.Add(this.dtpDateCantBeBeyond, 3, 2);
+            this.tableLayoutPanel5.Controls.Add(this.lblValidDateRange, 2, 2);
             //
             // tbbPostBatch
             //
@@ -495,8 +485,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Label lblDetailBatchControlTotal;
         private System.Windows.Forms.DateTimePicker dtpDetailDateEffective;
         private System.Windows.Forms.Label lblDetailDateEffective;
-        private System.Windows.Forms.DateTimePicker dtpDateCantBeBeyond;
-        private System.Windows.Forms.Label lblDateCantBeBeyond;
+        private System.Windows.Forms.Label lblValidDateRange;
         private System.Windows.Forms.ToolStrip tbrTabPage;
         private System.Windows.Forms.ToolStripButton tbbPostBatch;
         private System.Windows.Forms.ToolStripButton tbbImportFromSpreadSheet;

@@ -48,15 +48,16 @@ RootNode:
                 Row0: [txtDetailBatchDescription]
                 Row1: [cmbDetailBankCostCentre]
                 Row2: [cmbDetailBankAccountCode]
-                Row3: [dtpDetailGlEffectiveDate]
+                Row3: [dtpDetailGlEffectiveDate, lblValidDateRange]
                 Row4: [txtDetailBatchHashTotal, cmbDetailCurrencyCode]
                 Row5: [txtDetailExchangeRateToBase]
                 Row6: [cmbDetailMethodOfPayment]
                 Row7: [rgrDetailGiftType]
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=3}
-        cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList}
-        cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList}
+        cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
+        cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2}
         dtpDetailGlEffectiveDate: {Label=GL Effective Date}
+        lblValidDateRange:
         txtDetailBatchHashTotal: {Label=Hash Total, Type=Currency}
         cmbDetailCurrencyCode: {List=CurrencyCodeList}
         txtDetailExchangeRateToBase:

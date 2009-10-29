@@ -31,6 +31,7 @@ using Mono.Unix;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -198,11 +199,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
             TVerificationResultCollection Verifications;
 
-            // TODO: message box asking for payment date
-            DateTime PeriodStartDate, PeriodEndDate;
+            TDlgGLEnterDateEffective dateEffectiveDialog = new TDlgGLEnterDateEffective(
+                FMainDS.AApDocument[0].LedgerNumber,
+                Catalog.GetString("Select payment date"),
+                Catalog.GetString("The date effective for the payment") + ":");
 
-            TRemote.MFinance.GL.WebConnectors.GetCurrentPeriodDates(FMainDS.AApDocument[0].LedgerNumber, out PeriodStartDate, out PeriodEndDate);
-            DateTime PaymentDate = PeriodStartDate;
+            if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
+            {
+                MessageBox.Show(Catalog.GetString("The payment was cancelled."), Catalog.GetString(
+                        "No Success"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            DateTime PaymentDate = dateEffectiveDialog.SelectedDate;
 
             if (!TRemote.MFinance.AccountsPayable.WebConnectors.PostAPPayments(FMainDS.AApPayment,
                     FMainDS.AApDocumentPayment,

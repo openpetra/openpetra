@@ -78,6 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.lblDetailBankCostCentre.Text = Catalog.GetString("Cost Centre:");
       this.lblDetailBankAccountCode.Text = Catalog.GetString("Bank Account:");
       this.lblDetailGlEffectiveDate.Text = Catalog.GetString("GL Effective Date:");
+      this.lblValidDateRange.Text = Catalog.GetString("Valid Date Range:");
       this.lblDetailBatchHashTotal.Text = Catalog.GetString("Hash Total:");
       this.lblDetailCurrencyCode.Text = Catalog.GetString("Currency Code:");
       this.lblDetailExchangeRateToBase.Text = Catalog.GetString("Exchange Rate To Base:");

@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.lblDetailBatchDescription.Text = Catalog.GetString("Batch Description:");
       this.lblDetailBatchControlTotal.Text = Catalog.GetString("Batch Hash Total:");
       this.lblDetailDateEffective.Text = Catalog.GetString("Effective Date:");
-      this.lblDateCantBeBeyond.Text = Catalog.GetString("Date can't be beyond:");
+      this.lblValidDateRange.Text = Catalog.GetString("Valid Date Range:");
       this.tbbPostBatch.Text = Catalog.GetString("&Post Batch");
       this.tbbImportFromSpreadSheet.Text = Catalog.GetString("Import From Spread Sheet");
       this.mniPost.Text = Catalog.GetString("&Post Batch");

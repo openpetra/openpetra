@@ -54,6 +54,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(ALedgerNumber));
 
             ShowData();
+
+            DateTime StartDateCurrentPeriod;
+            DateTime EndDateLastForwardingPeriod;
+            DateTime DefaultDate;
+            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber, out StartDateCurrentPeriod, out EndDateLastForwardingPeriod, out DefaultDate);
+            lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
+                StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
+            dtpDetailDateEffective.Value = DefaultDate;
         }
 
         /// <summary>
@@ -221,6 +229,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 dataFile.ReadLine();
             }
 
+            double TotalForBalancingTransaction = 0.0;
+            DateTime LatestTransactionDate = DateTime.MinValue;
+
             do
             {
                 string line = dataFile.ReadLine();
@@ -245,6 +256,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     else if (UseAs.ToLower() == "dateeffective")
                     {
                         NewTransaction.TransactionDate = XmlConvert.ToDateTime(Value, DateFormat);
+
+                        if (NewTransaction.TransactionDate > LatestTransactionDate)
+                        {
+                            LatestTransactionDate = NewTransaction.TransactionDate;
+                        }
                     }
                     else if (UseAs.ToLower() == "account")
                     {
@@ -262,15 +278,38 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             NewTransaction.TransactionAmount = Convert.ToDouble(Value, System.Globalization.CultureInfo.InvariantCulture);
                             NewTransaction.CostCentreCode = ADefaultCostCentre;
                             NewTransaction.AccountCode = ColumnNode.Name;
+                            NewTransaction.DebitCreditIndicator = true;
+
+                            if (TXMLParser.HasAttribute(ColumnNode,
+                                    "CreditDebit") && (TXMLParser.GetAttribute(ColumnNode, "CreditDebit").ToLower() == "credit"))
+                            {
+                                NewTransaction.DebitCreditIndicator = false;
+                            }
 
                             if (TXMLParser.HasAttribute(ColumnNode, "AccountCode"))
                             {
                                 NewTransaction.AccountCode = TXMLParser.GetAttribute(ColumnNode, "AccountCode");
                             }
+
+                            TotalForBalancingTransaction += NewTransaction.TransactionAmount * (NewTransaction.DebitCreditIndicator ? 1 : -1);
                         }
                     }
                 }
             } while (!dataFile.EndOfStream);
+
+            // create a balancing transaction
+            ATransactionRow BalancingTransaction = FMainDS.ATransaction.NewRowTyped(true);
+            ((TFrmGLBatch)ParentForm).GetTransactionsControl().NewRowManual(ref BalancingTransaction, ARefJournalRow);
+            FMainDS.ATransaction.Rows.Add(BalancingTransaction);
+
+            BalancingTransaction.TransactionAmount = TotalForBalancingTransaction;
+            BalancingTransaction.TransactionDate = LatestTransactionDate;
+            BalancingTransaction.Narrative = Catalog.GetString("Automatically generated balancing transaction");
+            BalancingTransaction.DebitCreditIndicator = false;
+            BalancingTransaction.CostCentreCode = TXMLParser.GetAttribute(ARootNode, "CashCostCentre");
+            BalancingTransaction.AccountCode = TXMLParser.GetAttribute(ARootNode, "CashAccount");
+
+            dtpDetailDateEffective.Value = LatestTransactionDate;
         }
     }
 }

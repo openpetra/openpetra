@@ -120,15 +120,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       FPetraUtilsObject.SetStatusBarText(cmbDetailKeyMinistryKey, Catalog.GetString("Key ministry to which this transaction applies (just for fund transfers)"));
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Transaction Number", FMainDS.ATransaction.ColumnTransactionNumber);
-      grdDetails.AddCheckBoxColumn("Transaction Posted Status", FMainDS.ATransaction.ColumnTransactionStatus);
       grdDetails.AddTextColumn("Transaction Date", FMainDS.ATransaction.ColumnTransactionDate);
-      grdDetails.AddCheckBoxColumn("Debit/Credit Indicator", FMainDS.ATransaction.ColumnDebitCreditIndicator);
       grdDetails.AddTextColumn("Cost Centre Code", FMainDS.ATransaction.ColumnCostCentreCode);
       grdDetails.AddTextColumn("Account Code", FMainDS.ATransaction.ColumnAccountCode);
       grdDetails.AddTextColumn("Transaction Amount", FMainDS.ATransaction.ColumnTransactionAmount);
+      grdDetails.AddTextColumn("Credit/Debit", FMainDS.ATransaction.ColumnDebitCreditIndicator);
       grdDetails.AddTextColumn("Reference", FMainDS.ATransaction.ColumnReference);
       grdDetails.AddTextColumn("Narrative", FMainDS.ATransaction.ColumnNarrative);
-      grdDetails.AddTextColumn("Date Entered", FMainDS.ATransaction.ColumnDateEntered);
       grdDetails.AddTextColumn("Amount in Base Currency", FMainDS.ATransaction.ColumnAmountInBaseCurrency);
       grdDetails.AddTextColumn("Amount in International Currency", FMainDS.ATransaction.ColumnAmountInIntlCurrency);
       grdDetails.AddTextColumn("Analysis Attributes", FMainDS.ATransaction.ColumnAnalysisAttributes);

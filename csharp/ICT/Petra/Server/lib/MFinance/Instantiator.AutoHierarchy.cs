@@ -2109,6 +2109,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
+                                                out DateTime AStartDateCurrentPeriod,
+                                                out DateTime AEndDateLastForwardingPeriod)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCurrentPostingRangeDates(ALedgerNumber, out AStartDateCurrentPeriod, out AEndDateLastForwardingPeriod);
+        }
+
+        /// generated method from connector
         public GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);

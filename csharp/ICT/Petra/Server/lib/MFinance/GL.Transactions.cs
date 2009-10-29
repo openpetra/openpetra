@@ -69,6 +69,36 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// Get the valid dates for posting;
+        /// based on current period and number of forwarding periods
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AStartDateCurrentPeriod"></param>
+        /// <param name="AEndDateLastForwardingPeriod"></param>
+        public static bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
+            out DateTime AStartDateCurrentPeriod,
+            out DateTime AEndDateLastForwardingPeriod)
+        {
+            ALedgerTable LedgerTable;
+            AAccountingPeriodTable AccountingPeriodTable;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+            AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, LedgerTable[0].CurrentPeriod, Transaction);
+
+            AStartDateCurrentPeriod = AccountingPeriodTable[0].PeriodStartDate;
+
+            AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods,
+                Transaction);
+            AEndDateLastForwardingPeriod = AccountingPeriodTable[0].PeriodEndDate;
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+
+            return true;
+        }
+
+        /// <summary>
         /// create a new batch with a consecutive batch number in the ledger,
         /// and immediately store the batch and the new number in the database
         /// </summary>

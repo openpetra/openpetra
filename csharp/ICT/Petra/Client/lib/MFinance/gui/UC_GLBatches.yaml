@@ -47,10 +47,10 @@ RootNode:
             Controls:
                 Row0: [txtDetailBatchDescription]
                 Row1: [txtDetailBatchControlTotal]
-                Row2: [dtpDetailDateEffective, dtpDateCantBeBeyond]
+                Row2: [dtpDetailDateEffective, lblValidDateRange]
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2}
         txtDetailBatchControlTotal: {Label=Batch Hash Total, Type=Currency}
-        dtpDateCantBeBeyond: {Label=Date can't be beyond, ReadOnly=true}
+        lblValidDateRange:
         dtpDetailDateEffective: {Label=Effective Date}
         tbrTabPage: {NoAttribute=true}
         mnuTabPage: {NoAttribute=true}

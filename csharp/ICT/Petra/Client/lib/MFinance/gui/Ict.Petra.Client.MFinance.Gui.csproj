@@ -228,6 +228,10 @@
     <Compile Include="GLCostCentreHierarchy.ManualCode.cs">
       <DependentUpon>GLCostCentreHierarchy.cs</DependentUpon>
     </Compile>
+    <Compile Include="GLEnterDateEffective.cs" />
+    <Compile Include="GLEnterDateEffective.Designer.cs">
+      <DependentUpon>GLEnterDateEffective.cs</DependentUpon>
+    </Compile>
     <Compile Include="LedgerSelection.cs" />
     <Compile Include="LedgerSelection.Designer.cs">
       <DependentUpon>LedgerSelection.cs</DependentUpon>
@@ -313,6 +317,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GLCostCentreHierarchy.resx">
       <DependentUpon>GLCostCentreHierarchy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GLEnterDateEffective.resx">
+      <DependentUpon>GLEnterDateEffective.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LedgerSelection.resx">
       <DependentUpon>LedgerSelection.cs</DependentUpon>

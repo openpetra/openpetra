@@ -401,6 +401,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                                    out DateTime AStartDate,
                                    out DateTime AEndDate);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
+        bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
+                                         out DateTime AStartDateCurrentPeriod,
+                                         out DateTime AEndDateLastForwardingPeriod);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
         GLBatchTDS CreateABatch(Int32 ALedgerNumber);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
         GLBatchTDS LoadABatch(Int32 ALedgerNumber);

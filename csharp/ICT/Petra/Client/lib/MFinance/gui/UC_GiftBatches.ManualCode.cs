@@ -70,6 +70,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TFinanceControls.InitialiseAccountList(ref cmbDetailBankAccountCode, FLedgerNumber, true, false, ActiveOnly, true);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailBankCostCentre, FLedgerNumber, true, false, ActiveOnly, true);
 
+            DateTime StartDateCurrentPeriod;
+            DateTime EndDateLastForwardingPeriod;
+            DateTime DefaultDate;
+            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber, out StartDateCurrentPeriod, out EndDateLastForwardingPeriod, out DefaultDate);
+            lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
+                StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
+            dtpDetailGlEffectiveDate.Value = DefaultDate;
+
             ShowData();
         }
 

@@ -98,6 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailBankAccountCode = new System.Windows.Forms.Label();
             this.dtpDetailGlEffectiveDate = new System.Windows.Forms.DateTimePicker();
             this.lblDetailGlEffectiveDate = new System.Windows.Forms.Label();
+            this.lblValidDateRange = new System.Windows.Forms.Label();
             this.txtDetailBatchHashTotal = new System.Windows.Forms.TextBox();
             this.lblDetailBatchHashTotal = new System.Windows.Forms.Label();
             this.cmbDetailCurrencyCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
@@ -380,6 +381,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailGlEffectiveDate.Text = "GL Effective Date:";
             this.lblDetailGlEffectiveDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
+            // lblValidDateRange
+            //
+            this.lblValidDateRange.Location = new System.Drawing.Point(2,2);
+            this.lblValidDateRange.Name = "lblValidDateRange";
+            this.lblValidDateRange.AutoSize = true;
+            this.lblValidDateRange.Text = "Valid Date Range:";
+            this.lblValidDateRange.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
             // txtDetailBatchHashTotal
             //
             this.txtDetailBatchHashTotal.Location = new System.Drawing.Point(2,2);
@@ -506,12 +515,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel5.Controls.Add(this.rgrDetailGiftType, 0, 7);
             this.tableLayoutPanel5.SetColumnSpan(this.txtDetailBatchDescription, 3);
             this.tableLayoutPanel5.Controls.Add(this.txtDetailBatchDescription, 1, 0);
+            this.tableLayoutPanel5.SetColumnSpan(this.cmbDetailBankCostCentre, 2);
             this.tableLayoutPanel5.Controls.Add(this.cmbDetailBankCostCentre, 1, 1);
+            this.tableLayoutPanel5.SetColumnSpan(this.cmbDetailBankAccountCode, 2);
             this.tableLayoutPanel5.Controls.Add(this.cmbDetailBankAccountCode, 1, 2);
             this.tableLayoutPanel5.Controls.Add(this.dtpDetailGlEffectiveDate, 1, 3);
             this.tableLayoutPanel5.Controls.Add(this.txtDetailBatchHashTotal, 1, 4);
             this.tableLayoutPanel5.Controls.Add(this.txtDetailExchangeRateToBase, 1, 5);
             this.tableLayoutPanel5.Controls.Add(this.cmbDetailMethodOfPayment, 1, 6);
+            this.tableLayoutPanel5.SetColumnSpan(this.lblValidDateRange, 2);
+            this.tableLayoutPanel5.Controls.Add(this.lblValidDateRange, 2, 3);
             this.tableLayoutPanel5.Controls.Add(this.lblDetailCurrencyCode, 2, 4);
             this.tableLayoutPanel5.Controls.Add(this.cmbDetailCurrencyCode, 3, 4);
             //
@@ -614,6 +627,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.Label lblDetailBankAccountCode;
         private System.Windows.Forms.DateTimePicker dtpDetailGlEffectiveDate;
         private System.Windows.Forms.Label lblDetailGlEffectiveDate;
+        private System.Windows.Forms.Label lblValidDateRange;
         private System.Windows.Forms.TextBox txtDetailBatchHashTotal;
         private System.Windows.Forms.Label lblDetailBatchHashTotal;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailCurrencyCode;
