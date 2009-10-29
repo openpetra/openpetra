@@ -267,5 +267,84 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             return String.Format("{0:##00}00", ALedgerNumber);
         }
+
+        /// <summary>
+        /// get daily exchange rate for the given currencies and date;
+        /// TODO: might even collect the latest exchange rate from the web
+        /// </summary>
+        /// <param name="ACurrencyFrom"></param>
+        /// <param name="ACurrencyTo"></param>
+        /// <param name="ADateEffective"></param>
+        /// <returns></returns>
+        public static double GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ADailyExchangeRateRow fittingRate = null;
+
+            // TODO: get the most recent exchange rate for the given date and currencies
+            bool oppositeRate = false;
+            ADailyExchangeRateTable rates = ADailyExchangeRateAccess.LoadByPrimaryKey(ACurrencyFrom, ACurrencyTo, ADateEffective, 0, Transaction);
+
+            if (rates.Count == 0)
+            {
+                // try other way round
+                rates = ADailyExchangeRateAccess.LoadByPrimaryKey(ACurrencyTo, ACurrencyFrom, ADateEffective, 0, Transaction);
+                oppositeRate = true;
+            }
+
+            if (rates.Count == 1)
+            {
+                fittingRate = rates[0];
+            }
+            else if (rates.Count == 0)
+            {
+                // TODO: collect exchange rate from the web; save to db
+                // see tracker http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=87
+
+                // Or look for most recent exchange rate???
+                ADailyExchangeRateTable tempTable = new ADailyExchangeRateTable();
+                ADailyExchangeRateRow templateRow = tempTable.NewRowTyped(false);
+                templateRow.FromCurrencyCode = ACurrencyFrom;
+                templateRow.ToCurrencyCode = ACurrencyTo;
+                oppositeRate = false;
+                rates = ADailyExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
+
+                if (rates.Count == 0)
+                {
+                    templateRow.FromCurrencyCode = ACurrencyTo;
+                    templateRow.ToCurrencyCode = ACurrencyFrom;
+                    oppositeRate = true;
+                    rates = ADailyExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
+                }
+
+                if (rates.Count > 0)
+                {
+                    // sort rates by date, look for rate just before the date we are looking for
+                    rates.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName();
+                    rates.DefaultView.RowFilter = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + "< '" +
+                                                  ADateEffective.ToString("dd/MM/yyyy") + "'";
+
+                    if (rates.DefaultView.Count > 0)
+                    {
+                        fittingRate = (ADailyExchangeRateRow)rates.DefaultView[rates.DefaultView.Count - 1].Row;
+                    }
+                }
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            if (fittingRate != null)
+            {
+                if (oppositeRate)
+                {
+                    return 1.0 / fittingRate.RateOfExchange;
+                }
+
+                return fittingRate.RateOfExchange;
+            }
+
+            return 1.0;
+        }
     }
 }

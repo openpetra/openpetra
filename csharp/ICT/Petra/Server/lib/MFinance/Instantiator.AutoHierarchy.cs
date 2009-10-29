@@ -2164,6 +2164,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
         }
 
+        /// generated method from connector
+        public double GetDailyExchangeRate(string ACurrencyFrom,
+                                           string ACurrencyTo,
+                                           DateTime ADateEffective)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
+        }
+
     }
 }
 

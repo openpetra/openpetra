@@ -36,6 +36,7 @@ INR,Indian Rupee,INR,IN,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
 ITL,Italian Lira,ITL,IT,"->>,>>>,>>>,>>>,>>9",true,?,?,?,?,?
 JOD,Jordanian Dinar,JOD,JO,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
 JPY,Japanese Yen,Y  ,JP,"->>,>>>,>>>,>>>,>>9",false,?,?,?,?,?
+KES,Kenyan Shilling,KES,KE,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
 KRW,South Korean Won,KRW,KR,"->>,>>>,>>>,>>>,>>9",false,?,?,?,?,?
 KWD,Kuwaiti Dinar,KWD,KW,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
 KZT,Kazakhstan Tenge,KZT,KZ,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?

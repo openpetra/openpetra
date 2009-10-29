@@ -83,10 +83,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns></returns>
         private AJournalRow GetJournalRow()
         {
-            DataView view = new DataView(FMainDS.AJournal);
+            return (AJournalRow)FMainDS.AJournal.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber });
+        }
 
-            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(AJournalTable.TableId), ",");
-            return (AJournalRow)view.FindRows(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber })[0].Row;
+        private ABatchRow GetBatchRow()
+        {
+            return (ABatchRow)FMainDS.ABatch.Rows.Find(new object[] { FLedgerNumber, FBatchNumber });
         }
 
         /// <summary>
@@ -159,41 +161,104 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtDebitAmount.Text = "0";
                 txtCreditAmount.Text = ARow.TransactionAmount.ToString();
             }
+
+            AJournalRow journal = GetJournalRow();
+            txtCreditTotalAmount.Text = journal.JournalCreditTotal.ToString();
+            txtDebitTotalAmount.Text = journal.JournalDebitTotal.ToString();
+            txtCreditTotalAmountBase.Text = (journal.JournalCreditTotal *
+                                             TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
+                                                 dtpDetailTransactionDate.Value)
+                                             ).ToString();
+            txtDebitTotalAmountBase.Text = (journal.JournalDebitTotal *
+                                            TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
+                                                dtpDetailTransactionDate.Value)
+                                            ).ToString();
         }
 
         private void GetDetailDataFromControlsManual(ATransactionRow ARow)
         {
+            Decimal oldTransactionAmount = Convert.ToDecimal(ARow.TransactionAmount);
+            bool oldDebitCreditIndicator = ARow.DebitCreditIndicator;
+
             ARow.DebitCreditIndicator = (txtDebitAmount.Text.Length > 0 && Convert.ToDouble(txtDebitAmount.Text) > 0);
 
             if (ARow.DebitCreditIndicator)
             {
-                ARow.TransactionAmount = Convert.ToDouble(txtDebitAmount.Text);
+                ARow.TransactionAmount = Math.Abs(Convert.ToDouble(txtDebitAmount.Text));
             }
             else
             {
-                ARow.TransactionAmount = Convert.ToDouble(txtCreditAmount.Text);
+                ARow.TransactionAmount = Math.Abs(Convert.ToDouble(txtCreditAmount.Text));
             }
 
-            // TODO: use the current exchange rate (corporate or daily?); use cache
-            // TODO: or create a daily exchange rate, download from the web?
-            ARow.AmountInBaseCurrency = 1 * ARow.TransactionAmount;
-            ARow.AmountInIntlCurrency = 1.5 * ARow.TransactionAmount;
-        }
+            if ((oldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount)) || (oldDebitCreditIndicator != ARow.DebitCreditIndicator))
+            {
+                AJournalRow journal = GetJournalRow();
 
-        // TODO: verification: currency: must be double; check decimal point; only positive
+                ARow.AmountInBaseCurrency = TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency,
+                    FMainDS.ALedger[0].BaseCurrency,
+                    ARow.TransactionDate) *
+                                            ARow.TransactionAmount;
+                ARow.AmountInIntlCurrency = TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency,
+                    FMainDS.ALedger[0].IntlCurrency,
+                    ARow.TransactionDate) *
+                                            ARow.TransactionAmount;
+
+                // transactions are filtered for this journal; add up the total amounts
+                double sumDebits = 0.0;
+                double sumCredits = 0.0;
+
+                foreach (DataRowView v in FMainDS.ATransaction.DefaultView)
+                {
+                    ATransactionRow r = (ATransactionRow)v.Row;
+
+                    if (r.DebitCreditIndicator)
+                    {
+                        sumDebits += r.TransactionAmount;
+                    }
+                    else
+                    {
+                        sumCredits += r.TransactionAmount;
+                    }
+                }
+
+                journal.JournalCreditTotal = sumCredits;
+                journal.JournalDebitTotal = sumDebits;
+
+                sumDebits = 0.0;
+                sumCredits = 0.0;
+
+                foreach (DataRowView v in FMainDS.AJournal.DefaultView)
+                {
+                    AJournalRow r = (AJournalRow)v.Row;
+                    sumDebits += r.JournalDebitTotal;
+                    sumCredits += r.JournalCreditTotal;
+                }
+
+                ABatchRow batch = GetBatchRow();
+                batch.BatchCreditTotal = sumCredits;
+                batch.BatchDebitTotal = sumDebits;
+
+                // TODO: Batch.BatchRunningTotal
+            }
+        }
 
         private void UpdateBaseAndTotals(System.Object sender, EventArgs e)
         {
             try
             {
-                txtDebitAmountBase.Text = (1.0 * Convert.ToDouble(txtDebitAmount.Text)).ToString();
-                txtCreditAmountBase.Text = (1.0 * Convert.ToDouble(txtCreditAmount.Text)).ToString();
+                AJournalRow journal = GetJournalRow();
+
+                txtDebitAmountBase.Text =
+                    (TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
+                    dtpDetailTransactionDate.Value) * Convert.ToDouble(txtDebitAmount.Text)).ToString();
+                txtCreditAmountBase.Text =
+                    (TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
+                    dtpDetailTransactionDate.Value) * Convert.ToDouble(txtCreditAmount.Text)).ToString();
             }
             catch (Exception)
             {
             }
-
-            // TODO: filter transactions of this journal, and add up the total amounts
         }
     }
 }

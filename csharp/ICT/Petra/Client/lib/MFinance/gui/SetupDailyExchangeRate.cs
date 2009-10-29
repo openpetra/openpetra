@@ -75,12 +75,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.lblDetailFromCurrencyCode.Text = Catalog.GetString("&From Currency Code:");
       this.lblDetailToCurrencyCode.Text = Catalog.GetString("&To Currency Code:");
       this.lblDetailDateEffectiveFrom.Text = Catalog.GetString("D&ate:");
-      this.lblDetailTimeEffectiveFrom.Text = Catalog.GetString("T&ime:");
       this.lblDetailRateOfExchange.Text = Catalog.GetString("&Rate of exchange:");
       this.lblValueOneDirection.Text = Catalog.GetString("Value One Direction:");
       this.lblValueOtherDirection.Text = Catalog.GetString("Value Other Direction:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
+      this.tbbImport.Text = Catalog.GetString("Import");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -91,6 +91,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.mniEditUndoScreen.Text = Catalog.GetString("&Undo Screen");
       this.mniEditFind.Text = Catalog.GetString("&Find...");
       this.mniEdit.Text = Catalog.GetString("&Edit");
+      this.mniImport.Text = Catalog.GetString("Import");
+      this.mniExchangeRates.Text = Catalog.GetString("Exchange Rates");
       this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
       this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
@@ -101,9 +103,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       FPetraUtilsObject.SetStatusBarText(cmbDetailFromCurrencyCode, Catalog.GetString("Enter a currency code"));
+      cmbDetailFromCurrencyCode.InitialiseUserControl();
       FPetraUtilsObject.SetStatusBarText(cmbDetailToCurrencyCode, Catalog.GetString("Enter a currency code"));
+      cmbDetailToCurrencyCode.InitialiseUserControl();
       FPetraUtilsObject.SetStatusBarText(dtpDetailDateEffectiveFrom, Catalog.GetString("Enter the date which the rate becomes effective"));
-      FPetraUtilsObject.SetStatusBarText(txtDetailTimeEffectiveFrom, Catalog.GetString("The date and time"));
       FPetraUtilsObject.SetStatusBarText(txtDetailRateOfExchange, Catalog.GetString("Enter the rate of exchange"));
       FMainDS.ADailyExchangeRate = new ADailyExchangeRateTable();
       Ict.Common.Data.TTypedDataTable TypedTable;
@@ -113,7 +116,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       grdDetails.AddTextColumn("From Currency Code", FMainDS.ADailyExchangeRate.ColumnFromCurrencyCode);
       grdDetails.AddTextColumn("To Currency Code", FMainDS.ADailyExchangeRate.ColumnToCurrencyCode);
       grdDetails.AddTextColumn("Date Effective From", FMainDS.ADailyExchangeRate.ColumnDateEffectiveFrom);
-      grdDetails.AddTextColumn("Time", FMainDS.ADailyExchangeRate.ColumnTimeEffectiveFrom);
       grdDetails.AddTextColumn("Rate of exchange", FMainDS.ADailyExchangeRate.ColumnRateOfExchange);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
@@ -216,8 +218,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         cmbDetailToCurrencyCode.Enabled = (ARow.RowState == DataRowState.Added);
         dtpDetailDateEffectiveFrom.Value = ARow.DateEffectiveFrom;
         dtpDetailDateEffectiveFrom.Enabled = (ARow.RowState == DataRowState.Added);
-        txtDetailTimeEffectiveFrom.Text = ARow.TimeEffectiveFrom.ToString();
-        txtDetailTimeEffectiveFrom.ReadOnly = (ARow.RowState != DataRowState.Added);
         txtDetailRateOfExchange.Text = ARow.RateOfExchange.ToString();
     }
 
@@ -242,8 +242,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.FromCurrencyCode = cmbDetailFromCurrencyCode.GetSelectedString();
             ARow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
             ARow.DateEffectiveFrom = dtpDetailDateEffectiveFrom.Value;
-            ARow.TimeEffectiveFrom = Convert.ToInt32(txtDetailTimeEffectiveFrom.Text);
             ARow.RateOfExchange = Convert.ToDouble(txtDetailRateOfExchange.Text);
+            GetDetailDataFromControlsManual(ARow);
         }
     }
 
@@ -439,6 +439,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             tbbSave.Enabled = e.Enabled;
             mniFileSave.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actImport")
+        {
+            tbbImport.Enabled = e.Enabled;
+            mniImport.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {

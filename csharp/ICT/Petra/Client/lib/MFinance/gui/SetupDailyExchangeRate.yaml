@@ -11,6 +11,7 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}
+        actImport: {ActionClick=Import}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
@@ -27,21 +28,25 @@ RootNode:
             Action: actDelete
         grdDetails:
             Dock: Fill
-            Columns: [ADailyExchangeRate.FromCurrencyCode, ADailyExchangeRate.ToCurrencyCode, ADailyExchangeRate.DateEffectiveFrom, ADailyExchangeRate.TimeEffectiveFrom, ADailyExchangeRate.RateOfExchange]
+            Columns: [ADailyExchangeRate.FromCurrencyCode, ADailyExchangeRate.ToCurrencyCode, ADailyExchangeRate.DateEffectiveFrom, ADailyExchangeRate.RateOfExchange]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
                 Row0: [cmbDetailFromCurrencyCode]
                 Row1: [cmbDetailToCurrencyCode]
-                Row2: [dtpDetailDateEffectiveFrom, txtDetailTimeEffectiveFrom]
+                Row2: [dtpDetailDateEffectiveFrom]
                 Row3: [txtDetailRateOfExchange]
                 Row4: [lblValueOneDirection]
                 Row5: [lblValueOtherDirection]
-        cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code}
-        cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code}
+        cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList}
+        cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList}
         dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate}
-        txtDetailTimeEffectiveFrom: {OnlySetOnce=true, Label=T&ime}
         txtDetailRateOfExchange: {Label=&Rate of exchange}
         lblValueOneDirection: {TODO=true}
         lblValueOtherDirection: {TODO=true}
+    Menu:
+        mniExchangeRates:
+            mniImport:
+    Toolbar:
+        tbbImport:

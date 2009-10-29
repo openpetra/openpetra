@@ -49,7 +49,7 @@ namespace Ict.Petra.Server.MFinance.GL
         public static bool IsValidPeriod(Int32 ALedgerNumber, DateTime ADateToTest, out Int32 APeriodNumber, TDBTransaction ATransaction)
         {
             APeriodNumber = -1;
-            AAccountingPeriodTable table = AAccountingPeriodAccess.LoadAll(ATransaction);
+            AAccountingPeriodTable table = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, ATransaction);
 
             foreach (AAccountingPeriodRow row in table.Rows)
             {

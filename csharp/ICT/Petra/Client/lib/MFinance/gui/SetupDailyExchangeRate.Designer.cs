@@ -78,20 +78,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.btnDelete = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.cmbDetailFromCurrencyCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbDetailFromCurrencyCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailFromCurrencyCode = new System.Windows.Forms.Label();
-            this.cmbDetailToCurrencyCode = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbDetailToCurrencyCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailToCurrencyCode = new System.Windows.Forms.Label();
             this.dtpDetailDateEffectiveFrom = new System.Windows.Forms.DateTimePicker();
             this.lblDetailDateEffectiveFrom = new System.Windows.Forms.Label();
-            this.txtDetailTimeEffectiveFrom = new System.Windows.Forms.TextBox();
-            this.lblDetailTimeEffectiveFrom = new System.Windows.Forms.Label();
             this.txtDetailRateOfExchange = new System.Windows.Forms.TextBox();
             this.lblDetailRateOfExchange = new System.Windows.Forms.Label();
             this.lblValueOneDirection = new System.Windows.Forms.Label();
             this.lblValueOtherDirection = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
+            this.tbbImport = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileSave = new System.Windows.Forms.ToolStripMenuItem();
@@ -104,6 +103,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.mniEditUndoScreen = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.mniEditFind = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniExchangeRates = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniImport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpPetraHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -199,7 +200,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             this.cmbDetailFromCurrencyCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailFromCurrencyCode.Name = "cmbDetailFromCurrencyCode";
-            this.cmbDetailFromCurrencyCode.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailFromCurrencyCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailFromCurrencyCode.ListTable = TCmbAutoPopulated.TListTableEnum.CurrencyCodeList;
             //
             // lblDetailFromCurrencyCode
             //
@@ -213,7 +215,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             this.cmbDetailToCurrencyCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailToCurrencyCode.Name = "cmbDetailToCurrencyCode";
-            this.cmbDetailToCurrencyCode.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailToCurrencyCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailToCurrencyCode.ListTable = TCmbAutoPopulated.TListTableEnum.CurrencyCodeList;
             //
             // lblDetailToCurrencyCode
             //
@@ -236,20 +239,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailDateEffectiveFrom.AutoSize = true;
             this.lblDetailDateEffectiveFrom.Text = "D&ate:";
             this.lblDetailDateEffectiveFrom.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            //
-            // txtDetailTimeEffectiveFrom
-            //
-            this.txtDetailTimeEffectiveFrom.Location = new System.Drawing.Point(2,2);
-            this.txtDetailTimeEffectiveFrom.Name = "txtDetailTimeEffectiveFrom";
-            this.txtDetailTimeEffectiveFrom.Size = new System.Drawing.Size(150, 28);
-            //
-            // lblDetailTimeEffectiveFrom
-            //
-            this.lblDetailTimeEffectiveFrom.Location = new System.Drawing.Point(2,2);
-            this.lblDetailTimeEffectiveFrom.Name = "lblDetailTimeEffectiveFrom";
-            this.lblDetailTimeEffectiveFrom.AutoSize = true;
-            this.lblDetailTimeEffectiveFrom.Text = "T&ime:";
-            this.lblDetailTimeEffectiveFrom.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // txtDetailRateOfExchange
             //
@@ -280,9 +269,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblValueOtherDirection.AutoSize = true;
             this.lblValueOtherDirection.Text = "Value Other Direction:";
             this.lblValueOtherDirection.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.ColumnCount = 4;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 6;
@@ -304,8 +291,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel2.Controls.Add(this.cmbDetailToCurrencyCode, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.dtpDetailDateEffectiveFrom, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailRateOfExchange, 1, 3);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailTimeEffectiveFrom, 2, 2);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailTimeEffectiveFrom, 3, 2);
             //
             // tbbSave
             //
@@ -316,13 +301,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tbbSave.ToolTipText = "Saves changed data";
             this.tbbSave.Text = "&Save";
             //
+            // tbbImport
+            //
+            this.tbbImport.Name = "tbbImport";
+            this.tbbImport.AutoSize = true;
+            this.tbbImport.Click += new System.EventHandler(this.Import);
+            this.tbbImport.Text = "Import";
+            //
             // tbrMain
             //
             this.tbrMain.Name = "tbrMain";
             this.tbrMain.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           tbbSave});
+                           tbbSave,
+                        tbbImport});
             //
             // mniFileSave
             //
@@ -407,6 +400,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         mniEditFind});
             this.mniEdit.Text = "&Edit";
             //
+            // mniImport
+            //
+            this.mniImport.Name = "mniImport";
+            this.mniImport.AutoSize = true;
+            this.mniImport.Click += new System.EventHandler(this.Import);
+            this.mniImport.Text = "Import";
+            //
+            // mniExchangeRates
+            //
+            this.mniExchangeRates.Name = "mniExchangeRates";
+            this.mniExchangeRates.AutoSize = true;
+            this.mniExchangeRates.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                           mniImport});
+            this.mniExchangeRates.Text = "Exchange Rates";
+            //
             // mniHelpPetraHelp
             //
             this.mniHelpPetraHelp.Name = "mniHelpPetraHelp";
@@ -464,6 +472,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
                         mniEdit,
+                        mniExchangeRates,
                         mniHelp});
             //
             // stbMain
@@ -514,20 +523,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDetailFromCurrencyCode;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailFromCurrencyCode;
         private System.Windows.Forms.Label lblDetailFromCurrencyCode;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDetailToCurrencyCode;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailToCurrencyCode;
         private System.Windows.Forms.Label lblDetailToCurrencyCode;
         private System.Windows.Forms.DateTimePicker dtpDetailDateEffectiveFrom;
         private System.Windows.Forms.Label lblDetailDateEffectiveFrom;
-        private System.Windows.Forms.TextBox txtDetailTimeEffectiveFrom;
-        private System.Windows.Forms.Label lblDetailTimeEffectiveFrom;
         private System.Windows.Forms.TextBox txtDetailRateOfExchange;
         private System.Windows.Forms.Label lblDetailRateOfExchange;
         private System.Windows.Forms.Label lblValueOneDirection;
         private System.Windows.Forms.Label lblValueOtherDirection;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
+        private System.Windows.Forms.ToolStripButton tbbImport;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniFileSave;
@@ -540,6 +548,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private System.Windows.Forms.ToolStripMenuItem mniEditUndoScreen;
         private System.Windows.Forms.ToolStripSeparator mniSeparator2;
         private System.Windows.Forms.ToolStripMenuItem mniEditFind;
+        private System.Windows.Forms.ToolStripMenuItem mniExchangeRates;
+        private System.Windows.Forms.ToolStripMenuItem mniImport;
         private System.Windows.Forms.ToolStripMenuItem mniHelp;
         private System.Windows.Forms.ToolStripMenuItem mniHelpPetraHelp;
         private System.Windows.Forms.ToolStripSeparator mniSeparator3;

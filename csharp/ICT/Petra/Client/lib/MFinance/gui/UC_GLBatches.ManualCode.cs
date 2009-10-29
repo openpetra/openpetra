@@ -229,7 +229,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 dataFile.ReadLine();
             }
 
-            double TotalForBalancingTransaction = 0.0;
+            double sumDebits = 0.0;
+            double sumCredits = 0.0;
             DateTime LatestTransactionDate = DateTime.MinValue;
 
             do
@@ -286,30 +287,75 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 NewTransaction.DebitCreditIndicator = false;
                             }
 
+                            if (NewTransaction.TransactionAmount < 0)
+                            {
+                                NewTransaction.TransactionAmount *= -1.0;
+                                NewTransaction.DebitCreditIndicator = !NewTransaction.DebitCreditIndicator;
+                            }
+
                             if (TXMLParser.HasAttribute(ColumnNode, "AccountCode"))
                             {
                                 NewTransaction.AccountCode = TXMLParser.GetAttribute(ColumnNode, "AccountCode");
                             }
 
-                            TotalForBalancingTransaction += NewTransaction.TransactionAmount * (NewTransaction.DebitCreditIndicator ? 1 : -1);
+                            if (NewTransaction.DebitCreditIndicator)
+                            {
+                                sumDebits += NewTransaction.TransactionAmount;
+                            }
+                            else if (!NewTransaction.DebitCreditIndicator)
+                            {
+                                sumCredits += NewTransaction.TransactionAmount;
+                            }
+
+                            sumCredits += NewTransaction.TransactionAmount * (NewTransaction.DebitCreditIndicator ? 1 : -1);
                         }
                     }
                 }
+
+                NewTransaction.AmountInIntlCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
+                    ARefJournalRow.TransactionCurrency,
+                    FMainDS.ALedger[0].IntlCurrency,
+                    NewTransaction.TransactionDate);
+                NewTransaction.AmountInBaseCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
+                    ARefJournalRow.TransactionCurrency,
+                    FMainDS.ALedger[0].BaseCurrency,
+                    NewTransaction.TransactionDate);
             } while (!dataFile.EndOfStream);
 
-            // create a balancing transaction
-            ATransactionRow BalancingTransaction = FMainDS.ATransaction.NewRowTyped(true);
-            ((TFrmGLBatch)ParentForm).GetTransactionsControl().NewRowManual(ref BalancingTransaction, ARefJournalRow);
-            FMainDS.ATransaction.Rows.Add(BalancingTransaction);
+            // create a balancing transaction; not sure if this is needed at all???
+            if (Convert.ToDecimal(sumCredits - sumDebits) != 0)
+            {
+                ATransactionRow BalancingTransaction = FMainDS.ATransaction.NewRowTyped(true);
+                ((TFrmGLBatch)ParentForm).GetTransactionsControl().NewRowManual(ref BalancingTransaction, ARefJournalRow);
+                FMainDS.ATransaction.Rows.Add(BalancingTransaction);
 
-            BalancingTransaction.TransactionAmount = TotalForBalancingTransaction;
-            BalancingTransaction.TransactionDate = LatestTransactionDate;
-            BalancingTransaction.Narrative = Catalog.GetString("Automatically generated balancing transaction");
-            BalancingTransaction.DebitCreditIndicator = false;
-            BalancingTransaction.CostCentreCode = TXMLParser.GetAttribute(ARootNode, "CashCostCentre");
-            BalancingTransaction.AccountCode = TXMLParser.GetAttribute(ARootNode, "CashAccount");
+                BalancingTransaction.TransactionDate = LatestTransactionDate;
+                BalancingTransaction.TransactionAmount = sumCredits - sumDebits;
+                BalancingTransaction.AmountInIntlCurrency = BalancingTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
+                    ARefJournalRow.TransactionCurrency,
+                    FMainDS.ALedger[0].IntlCurrency,
+                    BalancingTransaction.TransactionDate);
+                BalancingTransaction.AmountInBaseCurrency = BalancingTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
+                    ARefJournalRow.TransactionCurrency,
+                    FMainDS.ALedger[0].BaseCurrency,
+                    BalancingTransaction.TransactionDate);
+                BalancingTransaction.Narrative = Catalog.GetString("Automatically generated balancing transaction");
+                BalancingTransaction.DebitCreditIndicator = false;
+                BalancingTransaction.CostCentreCode = TXMLParser.GetAttribute(ARootNode, "CashCostCentre");
+                BalancingTransaction.AccountCode = TXMLParser.GetAttribute(ARootNode, "CashAccount");
+            }
+
+            ARefJournalRow.JournalCreditTotal = sumCredits;
+            ARefJournalRow.JournalDebitTotal = sumDebits;
+            ARefJournalRow.JournalDescription = Path.GetFileNameWithoutExtension(ADataFilename);
 
             dtpDetailDateEffective.Value = LatestTransactionDate;
+            txtDetailBatchDescription.Text = Path.GetFileNameWithoutExtension(ADataFilename);
+            ABatchRow RefBatch = (ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1];
+            RefBatch.BatchCreditTotal = sumCredits;
+            RefBatch.BatchDebitTotal = sumDebits;
+
+            // TODO: RefBatch.BatchRunningTotal
         }
     }
 }

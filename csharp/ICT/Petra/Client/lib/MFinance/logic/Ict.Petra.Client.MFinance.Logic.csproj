@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ExchangeRateCache.cs" />
     <Compile Include="FinanceControls.cs" />
     <Compile Include="LedgerSelection.cs" />
   </ItemGroup>

@@ -424,6 +424,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                          out TVerificationResultCollection AVerifications);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
         string GetStandardCostCentre(Int32 ALedgerNumber);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
+        double GetDailyExchangeRate(string ACurrencyFrom,
+                                    string ACurrencyTo,
+                                    DateTime ADateEffective);
     }
 
 }

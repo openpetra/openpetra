@@ -369,9 +369,12 @@ namespace Ict.Petra.Client.CommonControls
 
                     InitialiseUserControl(
                     TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CountryList),
-                    "p_country_code_c",
-                    "p_country_name_c",
-                    "#VALUE#, p_country_name_c");
+                    PCountryTable.GetCountryCodeDBName(),
+                    PCountryTable.GetCountryNameDBName(),
+                    null
+                    );
+
+                    //"#VALUE#, " + PCountryTable.GetCountryNameDBName()
                     break;
 
                 case TListTableEnum.CurrencyCodeList:
