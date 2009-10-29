@@ -533,6 +533,13 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     AAccountHierarchyDetailRow HierarchyDetail = (AAccountHierarchyDetailRow)AAccountHierarchyDetailView[0].Row;
                     AAccountView.RowFilter = AAccountTable.GetAccountCodeDBName() + "='" + HierarchyDetail.AccountCodeToReportTo + "'";
+
+                    if (AAccountView.Count == 0)
+                    {
+                        // current account is BAL SHT, and it reports nowhere (account with name = ledgernumber does not exist)
+                        break;
+                    }
+
                     Account = (AAccountRow)AAccountView[0].Row;
                     AAccountTree.Add(TAccountTreeElement.MakeKey(AccountCode, HierarchyDetail.AccountCodeToReportTo),
                         new TAccountTreeElement(DebitCreditIndicator != Account.DebitCreditIndicator, Account.ForeignCurrencyFlag));

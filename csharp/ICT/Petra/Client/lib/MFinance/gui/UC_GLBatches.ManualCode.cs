@@ -306,8 +306,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             {
                                 sumCredits += NewTransaction.TransactionAmount;
                             }
-
-                            sumCredits += NewTransaction.TransactionAmount * (NewTransaction.DebitCreditIndicator ? 1 : -1);
                         }
                     }
                 }
@@ -330,7 +328,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.ATransaction.Rows.Add(BalancingTransaction);
 
                 BalancingTransaction.TransactionDate = LatestTransactionDate;
+                BalancingTransaction.DebitCreditIndicator = false;
                 BalancingTransaction.TransactionAmount = sumCredits - sumDebits;
+
+                if (BalancingTransaction.TransactionAmount < 0)
+                {
+                    BalancingTransaction.TransactionAmount *= -1;
+                    BalancingTransaction.DebitCreditIndicator = true;
+                }
+
                 BalancingTransaction.AmountInIntlCurrency = BalancingTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
                     ARefJournalRow.TransactionCurrency,
                     FMainDS.ALedger[0].IntlCurrency,
@@ -340,7 +346,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.ALedger[0].BaseCurrency,
                     BalancingTransaction.TransactionDate);
                 BalancingTransaction.Narrative = Catalog.GetString("Automatically generated balancing transaction");
-                BalancingTransaction.DebitCreditIndicator = false;
                 BalancingTransaction.CostCentreCode = TXMLParser.GetAttribute(ARootNode, "CashCostCentre");
                 BalancingTransaction.AccountCode = TXMLParser.GetAttribute(ARootNode, "CashAccount");
             }
