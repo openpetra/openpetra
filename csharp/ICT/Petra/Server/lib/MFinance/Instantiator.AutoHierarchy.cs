@@ -2117,6 +2117,17 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public bool GetPeriodDates(Int32 ALedgerNumber,
+                                   Int32 AYearNumber,
+                                   Int32 ADiffPeriod,
+                                   Int32 APeriodNumber,
+                                   out DateTime AStartDatePeriod,
+                                   out DateTime AEndDatePeriod)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetPeriodDates(ALedgerNumber, AYearNumber, ADiffPeriod, APeriodNumber, out AStartDatePeriod, out AEndDatePeriod);
+        }
+
+        /// generated method from connector
         public GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);

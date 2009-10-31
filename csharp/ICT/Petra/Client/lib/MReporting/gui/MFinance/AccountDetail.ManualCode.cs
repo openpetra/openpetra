@@ -26,6 +26,7 @@
 using System;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -70,6 +71,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_with_analysis_attributes", false);
+
+            if (rbtPeriodRange.Checked)
+            {
+                // TODO: support DiffPeriod for other financial years
+                DateTime StartDate, EndDate, TempDate;
+
+                TRemote.MFinance.GL.WebConnectors.GetPeriodDates(FLedgerNumber,
+                    Convert.ToInt32(cmbPeriodYear.GetSelectedString()),
+                    0,
+                    Convert.ToInt32(txtStartPeriod.Text),
+                    out StartDate, out TempDate);
+                TRemote.MFinance.GL.WebConnectors.GetPeriodDates(FLedgerNumber,
+                    Convert.ToInt32(cmbPeriodYear.GetSelectedString()),
+                    0,
+                    Convert.ToInt32(txtEndPeriod.Text),
+                    out TempDate, out EndDate);
+
+                ACalc.AddParameter("param_start_date", StartDate);
+                ACalc.AddParameter("param_end_date", EndDate);
+            }
         }
     }
 }

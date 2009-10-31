@@ -59,6 +59,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void ReadControlsManual(TRptCalculator ACalc)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
+            ACalc.AddParameter("param_ytd", true);
+            ACalc.AddParameter("param_cost_centre_summary", false);
+            ACalc.AddParameter("param_cost_centre_breakdown", false);
+            ACalc.AddParameter("param_quarter", false);
         }
     }
 }

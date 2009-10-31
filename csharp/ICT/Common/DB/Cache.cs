@@ -111,9 +111,6 @@ namespace Ict.Common.DB.DBCaching
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    Console.WriteLine(this.GetType().FullName + ".GetDataSet: committed own transaction.");
-#endif
                 }
             }
             storedDataSet.Add(newDataSet);

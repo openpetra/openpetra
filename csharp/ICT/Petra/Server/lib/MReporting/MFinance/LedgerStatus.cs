@@ -641,10 +641,10 @@ namespace Ict.Petra.Server.MReporting.MFinance
         }
 
         /// <summary>
-        /// Get the complete System.Object to a known sequence number
+        /// Get the complete object to a known sequence number
         /// </summary>
         /// <param name="sequenceNumber">The known sequence number of a general_ledger_master year</param>
-        /// <returns>the glm sequence System.Object of the a_general_ledger_master row of the given sequence; nil if sequence is not in cache
+        /// <returns>the glm sequence object of the a_general_ledger_master row of the given sequence; nil if sequence is not in cache
         /// </returns>
         public TGlmSequence GetGlmSequence(int sequenceNumber)
         {

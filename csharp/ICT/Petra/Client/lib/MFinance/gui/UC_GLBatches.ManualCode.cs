@@ -328,13 +328,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.ATransaction.Rows.Add(BalancingTransaction);
 
                 BalancingTransaction.TransactionDate = LatestTransactionDate;
-                BalancingTransaction.DebitCreditIndicator = false;
+                BalancingTransaction.DebitCreditIndicator = true;
                 BalancingTransaction.TransactionAmount = sumCredits - sumDebits;
 
                 if (BalancingTransaction.TransactionAmount < 0)
                 {
                     BalancingTransaction.TransactionAmount *= -1;
-                    BalancingTransaction.DebitCreditIndicator = true;
+                    BalancingTransaction.DebitCreditIndicator = !BalancingTransaction.DebitCreditIndicator;
+                }
+
+                if (BalancingTransaction.DebitCreditIndicator)
+                {
+                    sumDebits += BalancingTransaction.TransactionAmount;
+                }
+                else
+                {
+                    sumCredits += BalancingTransaction.TransactionAmount;
                 }
 
                 BalancingTransaction.AmountInIntlCurrency = BalancingTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(

@@ -405,6 +405,13 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                                          out DateTime AStartDateCurrentPeriod,
                                          out DateTime AEndDateLastForwardingPeriod);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
+        bool GetPeriodDates(Int32 ALedgerNumber,
+                            Int32 AYearNumber,
+                            Int32 ADiffPeriod,
+                            Int32 APeriodNumber,
+                            out DateTime AStartDatePeriod,
+                            out DateTime AEndDatePeriod);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
         GLBatchTDS CreateABatch(Int32 ALedgerNumber);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
         GLBatchTDS LoadABatch(Int32 ALedgerNumber);

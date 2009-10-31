@@ -998,14 +998,11 @@ namespace Ict.Petra.Server.MReporting.MFinance
             Boolean pv_ytd_l,
             String pv_currency_select_c)
         {
-            double ReturnValue;
-            int numberAccountingPeriods;
-
-            ReturnValue = GetActualPeriods(pv_start_period_number_i, pv_end_period_number_i, pv_year_i, pv_ytd_l, pv_currency_select_c);
+            double ReturnValue = GetActualPeriods(pv_start_period_number_i, pv_end_period_number_i, pv_year_i, pv_ytd_l, pv_currency_select_c);
 
             if (pv_ytd_l)
             {
-                numberAccountingPeriods = situation.GetParameters().Get("param_number_of_accounting_periods_i", situation.GetColumn()).ToInt();
+                int numberAccountingPeriods = situation.GetParameters().Get("param_number_of_accounting_periods_i", situation.GetColumn()).ToInt();
 
                 if (pv_end_period_number_i > numberAccountingPeriods)
                 {

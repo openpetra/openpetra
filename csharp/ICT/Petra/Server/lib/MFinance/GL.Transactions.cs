@@ -79,12 +79,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out DateTime AStartDateCurrentPeriod,
             out DateTime AEndDateLastForwardingPeriod)
         {
-            ALedgerTable LedgerTable;
-            AAccountingPeriodTable AccountingPeriodTable;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, LedgerTable[0].CurrentPeriod, Transaction);
+            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                LedgerTable[0].CurrentPeriod,
+                Transaction);
 
             AStartDateCurrentPeriod = AccountingPeriodTable[0].PeriodStartDate;
 
@@ -92,6 +92,41 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods,
                 Transaction);
             AEndDateLastForwardingPeriod = AccountingPeriodTable[0].PeriodEndDate;
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Get the start date and end date
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AYearNumber"></param>
+        /// <param name="ADiffPeriod"></param>
+        /// <param name="APeriodNumber"></param>
+        /// <param name="AStartDatePeriod"></param>
+        /// <param name="AEndDatePeriod"></param>
+        /// <returns></returns>
+        public static bool GetPeriodDates(Int32 ALedgerNumber,
+            Int32 AYearNumber,
+            Int32 ADiffPeriod,
+            Int32 APeriodNumber,
+            out DateTime AStartDatePeriod,
+            out DateTime AEndDatePeriod)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, Transaction);
+
+            // TODO: ADiffPeriod for support of different financial years
+
+            AStartDatePeriod = AccountingPeriodTable[0].PeriodStartDate;
+            AEndDatePeriod = AccountingPeriodTable[0].PeriodEndDate;
+
+            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+            AStartDatePeriod = AStartDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
+            AEndDatePeriod = AEndDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
 
             DBAccess.GDBAccessObj.CommitTransaction();
 
@@ -343,6 +378,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 return fittingRate.RateOfExchange;
             }
+
+            TLogging.Log("cannot find rate for " + ACurrencyFrom + " " + ACurrencyTo);
 
             return 1.0;
         }

@@ -325,7 +325,6 @@ namespace Ict.Petra.Server.MReporting
 
                 debit_credit_indicator = Parameters.Get("debit_credit_indicator", column, Depth).ToBool();
                 display = true;
-                newRow = null;
                 newRow = Results.AddRow(masterRow,
                     LineId,
                     display,
