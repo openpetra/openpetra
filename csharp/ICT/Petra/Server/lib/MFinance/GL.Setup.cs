@@ -173,9 +173,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             AAccountHierarchyDetailRow ADetailRow)
         {
             AAccountRow account = (AAccountRow)AMainDS.AAccount.Rows.Find(new object[] { ADetailRow.LedgerNumber, ADetailRow.ReportingAccountCode });
-            XmlElement accountNode = ADoc.CreateElement(ADetailRow.ReportingAccountCode);
+            XmlElement accountNode = ADoc.CreateElement(TYml2Xml.XMLELEMENT);
 
             // AccountCodeToReportTo and ReportOrder are encoded implicitly
+            accountNode.SetAttribute("name", ADetailRow.ReportingAccountCode);
             accountNode.SetAttribute("active", account.AccountActiveFlag ? "True" : "False");
             accountNode.SetAttribute("type", account.AccountType.ToString());
             accountNode.SetAttribute("debitcredit", account.DebitCreditIndicator ? "debit" : "credit");
@@ -254,9 +255,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             XmlNode AParentNode,
             ACostCentreRow ADetailRow)
         {
-            XmlElement costCentreNode = ADoc.CreateElement(ADetailRow.CostCentreName);
+            XmlElement costCentreNode = ADoc.CreateElement(TYml2Xml.XMLELEMENT);
 
             // CostCentreToReportTo is encoded implicitly
+            costCentreNode.SetAttribute("name", ADetailRow.CostCentreName);
             costCentreNode.SetAttribute("code", ADetailRow.CostCentreCode);
             costCentreNode.SetAttribute("active", ADetailRow.CostCentreActiveFlag ? "True" : "False");
             costCentreNode.SetAttribute("type", ADetailRow.CostCentreType.ToString());
@@ -302,8 +304,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             AAccountRow newAccount = null;
 
-            // reverse adjustments so that name with space or starting with digit works with XML
-            string AccountCode = ACurrentNode.Name.Replace("SPACE", " ").Replace("DIGIT", "");
+            string AccountCode = TYml2Xml.GetElementName(ACurrentNode);
 
             AImportedAccountNames.Add(AccountCode);
 

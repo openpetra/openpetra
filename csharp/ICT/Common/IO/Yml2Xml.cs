@@ -96,6 +96,35 @@ namespace Ict.Common.IO
             currentLine = -1;
         }
 
+        /// <summary>
+        /// return either the name from the attribute, or the element name
+        /// </summary>
+        public static string GetElementName(XmlNode ANode)
+        {
+            if (TXMLParser.HasAttribute(ANode, "name"))
+            {
+                return TXMLParser.GetAttribute(ANode, "name");
+            }
+
+            return ANode.Name;
+        }
+
+        /// <summary>
+        /// check if the name can be used as an element name for XML
+        /// </summary>
+        public static bool CheckName(string AElementName)
+        {
+            try
+            {
+                new XmlDocument().CreateElement(AElementName);
+                return true;
+            }
+            catch (XmlException)
+            {
+                return false;
+            }
+        }
+
         private static Int32 DEFAULTINDENT = 4;
         private static void WriteXmlNode2Yml(StreamWriter sw, Int32 ACurrentIndent, XmlNode ANode)
         {
@@ -441,18 +470,17 @@ namespace Ict.Common.IO
                     // TYml2Xml.LoadChild will either
                     // reuse an element, move an existing leaf from base to the main node, or create a new element
 
-                    // spaces are not allowed in XML element names
-                    if (nodeName.Contains(" "))
-                    {
-                        nodeName = nodeName.Replace(" ", "SPACE");
-                    }
+                    XmlNode newElement = null;
 
-                    if (Char.IsDigit(nodeName[0]))
+                    if (!CheckName(nodeName))
                     {
-                        nodeName = "DIGIT" + nodeName;
+                        newElement = TYml2Xml.LoadChild(parent, TYml2Xml.XMLELEMENT, ADepth);
+                        ((XmlElement)newElement).SetAttribute("name", nodeName);
                     }
-
-                    XmlNode newElement = TYml2Xml.LoadChild(parent, nodeName, ADepth);
+                    else
+                    {
+                        newElement = TYml2Xml.LoadChild(parent, nodeName, ADepth);
+                    }
 
                     if (nodeContent.Length > 0)
                     {
