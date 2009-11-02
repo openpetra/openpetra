@@ -113,7 +113,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbImportStatement = new System.Windows.Forms.ToolStripButton();
             this.tbbExportGiftBatch = new System.Windows.Forms.ToolStripButton();
-            this.tbbExportUnmatchedDonors = new System.Windows.Forms.ToolStripButton();
+            this.tbbExportUnmatched = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniClose = new System.Windows.Forms.ToolStripMenuItem();
@@ -518,11 +518,12 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tbbExportGiftBatch.Click += new System.EventHandler(this.ExportGiftBatch);
             this.tbbExportGiftBatch.Text = "Export Gift Batch";
             //
-            // tbbExportUnmatchedDonors
+            // tbbExportUnmatched
             //
-            this.tbbExportUnmatchedDonors.Name = "tbbExportUnmatchedDonors";
-            this.tbbExportUnmatchedDonors.AutoSize = true;
-            this.tbbExportUnmatchedDonors.Text = "Export Unmatched Donors";
+            this.tbbExportUnmatched.Name = "tbbExportUnmatched";
+            this.tbbExportUnmatched.AutoSize = true;
+            this.tbbExportUnmatched.Click += new System.EventHandler(this.ExportUnmatched);
+            this.tbbExportUnmatched.Text = "Export Unmatched";
             //
             // tbrMain
             //
@@ -532,7 +533,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbImportStatement,
                         tbbExportGiftBatch,
-                        tbbExportUnmatchedDonors});
+                        tbbExportUnmatched});
             //
             // mniClose
             //
@@ -692,7 +693,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbImportStatement;
         private System.Windows.Forms.ToolStripButton tbbExportGiftBatch;
-        private System.Windows.Forms.ToolStripButton tbbExportUnmatchedDonors;
+        private System.Windows.Forms.ToolStripButton tbbExportUnmatched;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniClose;

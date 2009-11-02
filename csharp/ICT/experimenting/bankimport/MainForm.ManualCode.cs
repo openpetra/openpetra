@@ -660,10 +660,16 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 return;
             }
 
+            if (FSelectedGiftBatch != -1)
+            {
+                return;
+            }
+
             SaveFileDialog DialogSave = new SaveFileDialog();
 
             DialogSave.Filter = Catalog.GetString("Gift Batch file (*.csv)|*.csv");
             DialogSave.AddExtension = true;
+            DialogSave.RestoreDirectory = true;
             DialogSave.Title = Catalog.GetString("Export gift batch of matched gifts");
 
             if (DialogSave.ShowDialog() == DialogResult.OK)
@@ -680,78 +686,53 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 FMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetDonorShortNameDBName() + "," +
                                                           BankImportTDSAEpTransactionTable.GetRecipientDescriptionDBName();
 
-                if (FSelectedGiftBatch == -1)
+                TGiftMatching exportMatchGifts = new TGiftMatching();
+                exportMatchGifts.WritePetraImportFile(ref FMainDS, sw, txtBankName.Text);
+
+                sw.Close();
+            }
+        }
+
+        private void ExportUnmatched(object sender, EventArgs e)
+        {
+            rbtUnmatchedGifts.Checked = true;
+
+            if (FMainDS.AEpTransaction.DefaultView.Count == 0)
+            {
+                return;
+            }
+
+            SaveFileDialog DialogSave = new SaveFileDialog();
+
+            DialogSave.Filter = Catalog.GetString("Unmatched Gifts file (*.csv)|*.csv");
+            DialogSave.AddExtension = true;
+            DialogSave.Title = Catalog.GetString("Export list of unmatched gifts");
+
+            if (DialogSave.ShowDialog() == DialogResult.OK)
+            {
+                StreamWriter sw = new StreamWriter(DialogSave.FileName, false, System.Text.Encoding.Default);
+
+                sw.WriteLine("#TransactionTypeCode;#AccountName;#BankAccountNumber;#BranchCode;#BIC;#IBAN;#Description;#TransactionAmount");
+
+                BankImportTDSAEpTransactionRow row = (BankImportTDSAEpTransactionRow)FMainDS.AEpTransaction.DefaultView[0].Row;
+
+                FMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetDonorShortNameDBName() + "," +
+                                                          BankImportTDSAEpTransactionTable.GetRecipientDescriptionDBName();
+
+                foreach (DataRowView rv in FMainDS.AEpTransaction.DefaultView)
                 {
-                    TGiftMatching exportMatchGifts = new TGiftMatching();
-                    exportMatchGifts.WritePetraImportFile(ref FMainDS, sw, txtBankName.Text);
+                    row = (BankImportTDSAEpTransactionRow)rv.Row;
+
+                    sw.WriteLine(row.TransactionTypeCode + ";" +
+                        row.DateEffective.ToShortDateString() + ";" +
+                        row.AccountName + ";" +
+                        row.BankAccountNumber + ";" +
+                        row.BranchCode + ";" +
+                        row.Bic + ";" +
+                        row.Iban + ";" +
+                        row.Description + ";" +
+                        row.TransactionAmount.ToString() + ";");
                 }
-                else
-                {
-//#if DISABLED
-// TODO: this should not be needed; even matching existing gifts should set the epmatchkey etc
-                    FMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetDonorShortNameDBName() + "," +
-                                                              BankImportTDSAEpTransactionTable.GetRecipientDescriptionDBName();
-
-                    foreach (DataRowView rv in FMainDS.AEpTransaction.DefaultView)
-                    {
-                        row = (BankImportTDSAEpTransactionRow)rv.Row;
-
-                        FMainDS.AGiftDetail.DefaultView.RowFilter = TGiftMatching.FilterForMatchedGiftTransactions(row, FSelectedGiftBatch);
-
-                        if (FMainDS.AGiftDetail.DefaultView.RowFilter.Length > 0)
-                        {
-                            Decimal sumExport = 0.0m;
-
-                            foreach (DataRowView gv in FMainDS.AGiftDetail.DefaultView)
-                            {
-                                BankImportTDSAGiftDetailRow giftRow = (BankImportTDSAGiftDetailRow)gv.Row;
-
-                                sw.WriteLine("\"T\";" + giftRow.DonorKey.ToString() +
-                                    ";\"" + giftRow.DonorShortName + "\";\"\";\"\";\"" + txtBankName.Text + " " +
-                                    row.DateEffective.ToString("dd/MM/yyyy") +
-                                    "\";\"<none>\";" +
-                                    giftRow.RecipientKey.ToString() + ";\"" +
-                                    giftRow.RecipientDescription + "\";" +
-                                    giftRow.GiftTransactionAmount.ToString() +
-                                    ";no;\"" + giftRow.MotivationGroupCode + "\";\"" +
-                                    giftRow.MotivationDetailCode +
-                                    "\";\"\";\"Both\";\"\";\"\";\"\";\"\";\"\";yes");
-                                sumExport += Convert.ToDecimal(giftRow.GiftTransactionAmount);
-                            }
-
-                            if (sumExport != Convert.ToDecimal(row.TransactionAmount))
-                            {
-                                TLogging.Log(
-                                    "problem " + row.DonorShortName + " " + row.RecipientDescription + " " + sumExport.ToString() + " " +
-                                    row.TransactionAmount.ToString());
-                            }
-                        }
-                    }
-                }
-
-//#endif
-#if DISABLED
-                FMainDS.AGiftDetail.DefaultView.RowFilter =
-                    BankImportTDSAGiftDetailTable.GetBatchNumberDBName() + " = " +
-                    FSelectedGiftBatch.ToString() +
-                    " AND AlreadyMatched = true";
-                FMainDS.AGiftDetail.DefaultView.Sort = BankImportTDSAGiftDetailTable.GetDonorShortNameDBName() + "," +
-                                                       BankImportTDSAGiftDetailTable.GetRecipientDescriptionDBName();
-
-                foreach (DataRowView gv in FMainDS.AGiftDetail.DefaultView)
-                {
-                    BankImportTDSAGiftDetailRow giftRow = (BankImportTDSAGiftDetailRow)gv.Row;
-
-                    sw.WriteLine("\"T\";" + giftRow.DonorKey.ToString() +
-                        ";\"" + giftRow.DonorShortName + "\";\"\";\"\";\"EKK 090909\";\"<none>\";" +
-                        giftRow.RecipientKey.ToString() + ";\"" +
-                        giftRow.RecipientDescription + "\";" +
-                        giftRow.GiftTransactionAmount.ToString() +
-                        ";no;\"" + giftRow.MotivationGroupCode + "\";\"" +
-                        giftRow.MotivationDetailCode +
-                        "\";\"\";\"Both\";\"\";\"\";\"\";\"\";\"\";yes");
-                }
-#endif
 
                 sw.Close();
             }

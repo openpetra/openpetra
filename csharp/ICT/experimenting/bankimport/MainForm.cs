@@ -85,7 +85,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
       this.rgrFilter.Text = Catalog.GetString("Filter");
       this.tbbImportStatement.Text = Catalog.GetString("&Import Statement");
       this.tbbExportGiftBatch.Text = Catalog.GetString("Export Gift Batch");
-      this.tbbExportUnmatchedDonors.Text = Catalog.GetString("Export Unmatched Donors");
+      this.tbbExportUnmatched.Text = Catalog.GetString("Export Unmatched");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
       this.mniFile.Text = Catalog.GetString("&File");
@@ -185,6 +185,10 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         if (e.ActionName == "actExportGiftBatch")
         {
             tbbExportGiftBatch.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actExportUnmatched")
+        {
+            tbbExportUnmatched.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {

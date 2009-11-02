@@ -249,7 +249,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             // first connect to the database (this will also create the initial database)
             if (FSqliteDatabase == null)
             {
-                FSqliteDatabase = ConnectDatabase("tempMatching.db");
+                FSqliteDatabase = ConnectDatabase(TAppSettingsManager.GetValueStatic("MatchingDB.file"));
             }
 
             TDBTransaction dbtransaction = FSqliteDatabase.BeginTransaction();
@@ -388,7 +388,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             // first connect to the database
             if (FSqliteDatabase == null)
             {
-                FSqliteDatabase = ConnectDatabase("tempMatching.db");
+                FSqliteDatabase = ConnectDatabase(TAppSettingsManager.GetValueStatic("MatchingDB.file"));
 
                 // FSqliteDatabase.DebugLevel = 10;
             }
@@ -402,7 +402,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 // find the match
                 // can return several matches, for split gifts
                 MatchDS.AEpMatch.Rows.Clear();
-                string checkForMatch = "SELECT p_recipient_short_name_c FROM " + AEpMatchTable.GetTableDBName() + " WHERE " +
+                string checkForMatch = "SELECT * FROM " + AEpMatchTable.GetTableDBName() + " WHERE " +
                                        AEpMatchTable.GetEpMatchKeyDBName() + " = " +
                                        tr.EpMatchKey.ToString();
                 FSqliteDatabase.Select(MatchDS, checkForMatch, AEpMatchTable.GetTableName(), null);

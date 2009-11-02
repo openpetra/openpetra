@@ -9,6 +9,7 @@ RootNode:
     Actions:
         actImportStatement: {Label=&Import Statement, ActionClick=ImportStatement}
         actExportGiftBatch: {ActionClick=ExportGiftBatch}
+        actExportUnmatched: {ActionClick=ExportUnmatched}
     Controls:
         pnlContent:
             Dock: Fill
@@ -52,4 +53,4 @@ RootNode:
     Toolbar:
         tbbImportStatement:
         tbbExportGiftBatch:
-        tbbExportUnmatchedDonors:
+        tbbExportUnmatched:
