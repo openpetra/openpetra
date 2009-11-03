@@ -23,6 +23,7 @@
             <CustomField name="DonorShortName" type="string"/>
             <CustomField name="RecipientDescription" type="string"/>
             <CustomField name="AlreadyMatched" type="Boolean"/>
+            <CustomField name="BatchStatus" type="string"/>
         </Table>
         <Table sqltable="p_banking_details">
             <CustomField name="PartnerKey" type="Int64"/>

@@ -111,9 +111,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.rbtOther = new System.Windows.Forms.RadioButton();
             this.grdResult = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
+            this.tbbSplitAndTrain = new System.Windows.Forms.ToolStripButton();
             this.tbbImportStatement = new System.Windows.Forms.ToolStripButton();
             this.tbbExportGiftBatch = new System.Windows.Forms.ToolStripButton();
             this.tbbExportUnmatched = new System.Windows.Forms.ToolStripButton();
+            this.tbbExportOther = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniClose = new System.Windows.Forms.ToolStripMenuItem();
@@ -504,6 +506,13 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tableLayoutPanel1.Controls.Add(this.rgrFilter, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.grdResult, 0, 2);
             //
+            // tbbSplitAndTrain
+            //
+            this.tbbSplitAndTrain.Name = "tbbSplitAndTrain";
+            this.tbbSplitAndTrain.AutoSize = true;
+            this.tbbSplitAndTrain.Click += new System.EventHandler(this.SplitAndTrain);
+            this.tbbSplitAndTrain.Text = "Split And Train";
+            //
             // tbbImportStatement
             //
             this.tbbImportStatement.Name = "tbbImportStatement";
@@ -525,15 +534,24 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tbbExportUnmatched.Click += new System.EventHandler(this.ExportUnmatched);
             this.tbbExportUnmatched.Text = "Export Unmatched";
             //
+            // tbbExportOther
+            //
+            this.tbbExportOther.Name = "tbbExportOther";
+            this.tbbExportOther.AutoSize = true;
+            this.tbbExportOther.Click += new System.EventHandler(this.ExportOther);
+            this.tbbExportOther.Text = "Export Other";
+            //
             // tbrMain
             //
             this.tbrMain.Name = "tbrMain";
             this.tbrMain.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           tbbImportStatement,
+                           tbbSplitAndTrain,
+                        tbbImportStatement,
                         tbbExportGiftBatch,
-                        tbbExportUnmatched});
+                        tbbExportUnmatched,
+                        tbbExportOther});
             //
             // mniClose
             //
@@ -691,9 +709,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         private System.Windows.Forms.RadioButton rbtOther;
         private Ict.Common.Controls.TSgrdDataGridPaged grdResult;
         private System.Windows.Forms.ToolStrip tbrMain;
+        private System.Windows.Forms.ToolStripButton tbbSplitAndTrain;
         private System.Windows.Forms.ToolStripButton tbbImportStatement;
         private System.Windows.Forms.ToolStripButton tbbExportGiftBatch;
         private System.Windows.Forms.ToolStripButton tbbExportUnmatched;
+        private System.Windows.Forms.ToolStripButton tbbExportOther;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniClose;

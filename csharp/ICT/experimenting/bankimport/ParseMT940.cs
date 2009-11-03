@@ -45,6 +45,20 @@ namespace Ict.Plugins.Finance.SwiftParser
         public List <TStatement>statements;
         private TStatement currentStatement = null;
 
+        private static string WithoutLeadingZeros(string ACode)
+        {
+            // cut off leading zeros
+            try
+            {
+                return Convert.ToInt64(ACode).ToString();
+            }
+            catch (Exception)
+            {
+                // IBAN or BIC
+                return ACode;
+            }
+        }
+
         private void HandleSwiftData(string swiftTag, string swiftData)
         {
             if (currentStatement != null)
@@ -70,7 +84,7 @@ namespace Ict.Plugins.Finance.SwiftParser
             {
                 int posSlash = swiftData.IndexOf("/");
                 currentStatement.bankCode = swiftData.Substring(0, posSlash);
-                currentStatement.accountCode = swiftData.Substring(posSlash + 1);
+                currentStatement.accountCode = WithoutLeadingZeros(swiftData.Substring(posSlash + 1));
             }
             else if (swiftTag.StartsWith("60"))
             {
@@ -84,7 +98,7 @@ namespace Ict.Plugins.Finance.SwiftParser
                 // next 3 characters: currency
                 // last characters: balance with comma for decimal point
                 Console.WriteLine(swiftData);
-                double balance = Convert.ToDouble(swiftData.Substring(10).Replace(",",
+                double balance = DebitCreditIndicator * Convert.ToDouble(swiftData.Substring(10).Replace(",",
                         Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator));
 
                 // we only want to use the first start balance
@@ -215,6 +229,8 @@ namespace Ict.Plugins.Finance.SwiftParser
                     }
                     else if (key == 31)
                     {
+                        // could use WithoutLeadingZeros, but then this must be stored in p_banking_details also without leading zeros
+                        // which is not the case at the moment, and would increase complexity of sql queries
                         transaction.accountCode = value;
                     }
                     else if ((key == 32) || (key == 33))
@@ -249,6 +265,12 @@ namespace Ict.Plugins.Finance.SwiftParser
                 // currency
                 swiftData = swiftData.Substring(3);
 
+                // sometimes, this line is the last line, and it has -NULNULNUL at the end
+                if (swiftData.Contains("-\0"))
+                {
+                    swiftData = swiftData.Substring(0, swiftData.IndexOf("-\0"));
+                }
+
                 // end balance
                 double shouldBeBalance = debitCreditIndicator * Convert.ToDouble(swiftData.Replace(",",
                         Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator));
@@ -282,6 +304,47 @@ namespace Ict.Plugins.Finance.SwiftParser
             }
         }
 
+        private static string ReadLine(ref string AFileContent)
+        {
+            Int32 counter;
+
+            for (counter = 0; counter < AFileContent.Length; counter++)
+            {
+                if ((AFileContent[counter] == (char)10) || (AFileContent[counter] == (char)13))
+                {
+                    break;
+                }
+            }
+
+            string line = AFileContent.Substring(0, counter);
+
+            if ((counter < AFileContent.Length) && (AFileContent[counter] == (char)13))
+            {
+                counter++;
+            }
+
+            if ((counter < AFileContent.Length) && (AFileContent[counter] == (char)10))
+            {
+                counter++;
+            }
+
+            if (counter < AFileContent.Length)
+            {
+                AFileContent = AFileContent.Substring(counter);
+            }
+            else
+            {
+                AFileContent = String.Empty;
+            }
+
+            line = line.Trim();
+            line = line.Replace("™", "Ö");
+            line = line.Replace("š", "Ü");
+            line = line.Replace("Ž", "Ä");
+            line = line.Replace("á", "ß");
+            return line;
+        }
+
         /// <summary>
         /// processing MT940 file
         /// </summary>
@@ -289,47 +352,57 @@ namespace Ict.Plugins.Finance.SwiftParser
         public void ProcessFile(string filename)
         {
             Console.WriteLine("Read file " + filename);
-            StreamReader reader = new StreamReader(filename, Encoding.Default);
-            string swiftTag = "";
-            string swiftData = "";
-            statements = new List <TStatement>();
-            currentStatement = null;
+            Int32 LineCounter = 0;
 
-            while (!reader.EndOfStream)
+            try
             {
-                string line = reader.ReadLine();
-                line = line.Replace("™", "Ö");
-                line = line.Replace("š", "Ü");
-                line = line.Replace("Ž", "Ä");
-                line = line.Replace("á", "ß");
+                StreamReader reader = new StreamReader(filename, Encoding.Default);
+                string fileContent = reader.ReadToEnd();
+                reader.Close();
 
-                if ((line.Length > 0) && (line != "-"))
+                string swiftTag = "";
+                string swiftData = "";
+                statements = new List <TStatement>();
+                currentStatement = null;
+
+                while (fileContent.Length > 0)
                 {
-                    // a swift chunk starts with a swiftTag, which is between colons
-                    if (line.StartsWith(":"))
-                    {
-                        // process previously read swift chunk
-                        if (swiftTag.Length > 0)
-                        {
-                            // Console.WriteLine(" Tag " + swiftTag + " Data " + swiftData);
-                            HandleSwiftData(swiftTag, swiftData);
-                        }
+                    string line = ReadLine(ref fileContent);
+                    LineCounter++;
 
-                        int posColon = line.IndexOf(":", 2);
-                        swiftTag = line.Substring(1, posColon - 1);
-                        swiftData = line.Substring(posColon + 1);
-                    }
-                    else
+                    if ((line.Length > 0) && (!line.StartsWith("-")))
                     {
-                        // the swift chunk is spread over several lines
-                        swiftData = swiftData + line;
+                        // a swift chunk starts with a swiftTag, which is between colons
+                        if (line.StartsWith(":"))
+                        {
+                            // process previously read swift chunk
+                            if (swiftTag.Length > 0)
+                            {
+                                // Console.WriteLine(" Tag " + swiftTag + " Data " + swiftData);
+                                HandleSwiftData(swiftTag, swiftData);
+                            }
+
+                            int posColon = line.IndexOf(":", 2);
+                            swiftTag = line.Substring(1, posColon - 1);
+                            swiftData = line.Substring(posColon + 1);
+                        }
+                        else
+                        {
+                            // the swift chunk is spread over several lines
+                            swiftData = swiftData + line;
+                        }
                     }
                 }
-            }
 
-            if (swiftTag.Length > 0)
+                if (swiftTag.Length > 0)
+                {
+                    HandleSwiftData(swiftTag, swiftData);
+                }
+            }
+            catch (Exception e)
             {
-                HandleSwiftData(swiftTag, swiftData);
+                throw new Exception(
+                    "problem with file " + filename + "; line: " + LineCounter.ToString() + "; " + e.Message + Environment.NewLine + e.StackTrace);
             }
         }
 
@@ -375,6 +448,23 @@ namespace Ict.Plugins.Finance.SwiftParser
             textWriter.WriteEndElement();
             textWriter.WriteEndDocument();
             textWriter.Close();
+        }
+
+        /// <summary>
+        /// this is useful to save an MT940 file after splitting by date
+        /// </summary>
+        /// <param name="AFilename"></param>
+        /// <param name="AStmt"></param>
+        static public void DumpMT940File(string AFilename, TStatement AStmt)
+        {
+            StreamWriter sw = new StreamWriter(AFilename, false, Encoding.Default);
+
+            foreach (TLine line in AStmt.lines)
+            {
+                sw.WriteLine(":" + line.swiftTag + ":" + line.swiftData);
+            }
+
+            sw.Close();
         }
     }
 

@@ -902,6 +902,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public static short ColumnRecipientDescriptionId = 31;
         /// used for generic TTypedDataTable functions
         public static short ColumnAlreadyMatchedId = 32;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchStatusId = 33;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -940,7 +942,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(29, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(30, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(31, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(32, "AlreadyMatched", "AlreadyMatched", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(32, "AlreadyMatched", "AlreadyMatched", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(33, "BatchStatus", "BatchStatus", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
                     0, 1, 2, 3
@@ -974,6 +977,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public DataColumn ColumnRecipientDescription;
         ///
         public DataColumn ColumnAlreadyMatched;
+        ///
+        public DataColumn ColumnBatchStatus;
 
         /// create the columns
         protected override void InitClass()
@@ -1011,6 +1016,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("DonorShortName", typeof(string)));
             this.Columns.Add(new System.Data.DataColumn("RecipientDescription", typeof(string)));
             this.Columns.Add(new System.Data.DataColumn("AlreadyMatched", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("BatchStatus", typeof(string)));
         }
 
         /// assign columns to properties, set primary key
@@ -1049,6 +1055,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.ColumnDonorShortName = this.Columns["DonorShortName"];
             this.ColumnRecipientDescription = this.Columns["RecipientDescription"];
             this.ColumnAlreadyMatched = this.Columns["AlreadyMatched"];
+            this.ColumnBatchStatus = this.Columns["BatchStatus"];
             this.PrimaryKey = new System.Data.DataColumn[4] {
                     ColumnLedgerNumber,ColumnBatchNumber,ColumnGiftTransactionNumber,ColumnDetailNumber};
         }
@@ -1153,6 +1160,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
 
         /// get character length for column
         public static short GetAlreadyMatchedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetBatchStatusDBName()
+        {
+            return "BatchStatus";
+        }
+
+        /// get character length for column
+        public static short GetBatchStatusLength()
         {
             return -1;
         }
@@ -1276,6 +1295,32 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             }
         }
 
+        ///
+        public string BatchStatus
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnBatchStatus.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnBatchStatus)
+                            || (((string)(this[this.myTable.ColumnBatchStatus])) != value)))
+                {
+                    this[this.myTable.ColumnBatchStatus] = value;
+                }
+            }
+        }
+
         /// set default values
         public override void InitValues()
         {
@@ -1312,6 +1357,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.SetNull(this.myTable.ColumnDonorShortName);
             this.SetNull(this.myTable.ColumnRecipientDescription);
             this.SetNull(this.myTable.ColumnAlreadyMatched);
+            this.SetNull(this.myTable.ColumnBatchStatus);
         }
 
         /// test for NULL value
@@ -1360,6 +1406,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public void SetAlreadyMatchedNull()
         {
             this.SetNull(this.myTable.ColumnAlreadyMatched);
+        }
+
+        /// test for NULL value
+        public bool IsBatchStatusNull()
+        {
+            return this.IsNull(this.myTable.ColumnBatchStatus);
+        }
+
+        /// assign NULL value
+        public void SetBatchStatusNull()
+        {
+            this.SetNull(this.myTable.ColumnBatchStatus);
         }
     }
 

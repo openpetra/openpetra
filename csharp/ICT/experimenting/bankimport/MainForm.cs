@@ -83,9 +83,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
       this.rbtUnmatchedGifts.Text = Catalog.GetString("UnmatchedGifts");
       this.rbtOther.Text = Catalog.GetString("Other");
       this.rgrFilter.Text = Catalog.GetString("Filter");
+      this.tbbSplitAndTrain.Text = Catalog.GetString("Split And Train");
       this.tbbImportStatement.Text = Catalog.GetString("&Import Statement");
       this.tbbExportGiftBatch.Text = Catalog.GetString("Export Gift Batch");
       this.tbbExportUnmatched.Text = Catalog.GetString("Export Unmatched");
+      this.tbbExportOther.Text = Catalog.GetString("Export Other");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
       this.mniFile.Text = Catalog.GetString("&File");
@@ -178,6 +180,10 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
+        if (e.ActionName == "actSplitAndTrain")
+        {
+            tbbSplitAndTrain.Enabled = e.Enabled;
+        }
         if (e.ActionName == "actImportStatement")
         {
             tbbImportStatement.Enabled = e.Enabled;
@@ -189,6 +195,10 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         if (e.ActionName == "actExportUnmatched")
         {
             tbbExportUnmatched.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actExportOther")
+        {
+            tbbExportOther.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {

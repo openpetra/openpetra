@@ -10,6 +10,8 @@ RootNode:
         actImportStatement: {Label=&Import Statement, ActionClick=ImportStatement}
         actExportGiftBatch: {ActionClick=ExportGiftBatch}
         actExportUnmatched: {ActionClick=ExportUnmatched}
+        actExportOther: {ActionClick=ExportOther}
+        actSplitAndTrain: {ActionClick=SplitAndTrain}
     Controls:
         pnlContent:
             Dock: Fill
@@ -51,6 +53,8 @@ RootNode:
                 RecipientDescription: {Label=Recipient, Type=String}
     Menu:
     Toolbar:
+        tbbSplitAndTrain:
         tbbImportStatement:
         tbbExportGiftBatch:
         tbbExportUnmatched:
+        tbbExportOther:

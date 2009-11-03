@@ -24,6 +24,8 @@
  *
  ************************************************************************/
 using System;
+using System.IO;
+using Ict.Common;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.MFinance.Gui.BankImport;
@@ -122,6 +124,7 @@ namespace Ict.Plugins.Finance.SwiftParser
                 ABankName = stmt.bankCode;
 
                 // TODO; use BLZ List?
+                // TODO: use app setting BankAccounts
                 // see http://www.bundesbank.de/zahlungsverkehr/zahlungsverkehr_bankleitzahlen_download.php
                 if (ABankName == "52060410")
                 {
@@ -154,6 +157,100 @@ namespace Ict.Plugins.Finance.SwiftParser
             }
 
             return true;
+        }
+
+        /// create the output directories if they don't exist yet
+        static private void CreateDirectories(string AOutputPath, string[] ABankAccountData)
+        {
+            if (!Directory.Exists(AOutputPath))
+            {
+                Directory.CreateDirectory(AOutputPath);
+            }
+
+            if (!Directory.Exists(AOutputPath + Path.DirectorySeparatorChar + "imported"))
+            {
+                Directory.CreateDirectory(AOutputPath + Path.DirectorySeparatorChar + "imported");
+            }
+
+            for (Int32 bankCounter = 0; bankCounter < ABankAccountData.Length / 3; bankCounter++)
+            {
+                string legalEntityPath = AOutputPath + Path.DirectorySeparatorChar + ABankAccountData[bankCounter * 3 + 2];
+
+                if (!Directory.Exists(legalEntityPath))
+                {
+                    Directory.CreateDirectory(legalEntityPath);
+                }
+
+                if (!Directory.Exists(legalEntityPath + Path.DirectorySeparatorChar + "imported"))
+                {
+                    Directory.CreateDirectory(legalEntityPath + Path.DirectorySeparatorChar + "imported");
+                }
+            }
+        }
+
+        /// check for STA files in RawMT940.Path
+        /// there are files from several banks, possibly for several legal entities
+        /// one file can contain several bank statements from several days
+        /// split the files into one file per statement, and move the file to a separate directory for each legal entity
+        static public void SplitFilesAndMove()
+        {
+            // BankAccounts contains a comma separated list of bank accounts, each with bank account number, bank id, name for legal entity
+            string[] bankAccountData = TAppSettingsManager.GetValueStatic("BankAccounts").Split(new char[] { ',' });
+            string RawPath = TAppSettingsManager.GetValueStatic("RawMT940.Path");
+            string OutputPath = TAppSettingsManager.GetValueStatic("MT940.Output.Path");
+            string[] RawSTAFiles = Directory.GetFiles(RawPath, "*.sta");
+
+            CreateDirectories(OutputPath, bankAccountData);
+
+            foreach (string RawFile in RawSTAFiles)
+            {
+                TSwiftParser Parser = new TSwiftParser();
+                Parser.ProcessFile(RawFile);
+
+                if (Parser.statements.Count > 0)
+                {
+                    bool filesWereSplit = false;
+                    string lastDate = String.Empty;
+
+                    foreach (TStatement stmt in Parser.statements)
+                    {
+                        for (Int32 bankCounter = 0; bankCounter < bankAccountData.Length / 3; bankCounter++)
+                        {
+                            if (bankAccountData[bankCounter * 3 + 0] == stmt.accountCode)
+                            {
+                                string newfilename = Path.GetFileName(RawFile);
+
+                                if (!newfilename.StartsWith(lastDate))
+                                {
+                                    newfilename = lastDate + "_" + bankAccountData[bankCounter * 3 + 1] + newfilename;
+                                }
+
+                                newfilename = OutputPath + Path.DirectorySeparatorChar +
+                                              bankAccountData[bankCounter * 3 + 2] + Path.DirectorySeparatorChar + newfilename;
+                                TSwiftParser.DumpMT940File(newfilename,
+                                    stmt);
+                                filesWereSplit = true;
+                                lastDate = stmt.date;
+                            }
+                        }
+                    }
+
+                    if (filesWereSplit)
+                    {
+                        // move original file to imported folder
+                        // don't repeat the date in the filename
+                        string Backupfilename = Path.GetFileName(RawFile);
+
+                        if (!Backupfilename.StartsWith(lastDate))
+                        {
+                            Backupfilename = lastDate + Backupfilename;
+                        }
+
+                        Backupfilename = OutputPath + Path.DirectorySeparatorChar + "imported" + Path.DirectorySeparatorChar + Backupfilename;
+                        File.Move(RawFile, Backupfilename);
+                    }
+                }
+            }
         }
     }
 }
