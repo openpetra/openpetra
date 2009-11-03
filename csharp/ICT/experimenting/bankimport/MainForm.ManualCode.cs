@@ -62,6 +62,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
             DialogOpen.Filter = Catalog.GetString(FBankStatementImporter.GetFileFilter());
             DialogOpen.RestoreDirectory = true;
+            DialogOpen.InitialDirectory = TAppSettingsManager.GetValueStatic("MT940.Output.Path") +
+            		Path.DirectorySeparatorChar + TAppSettingsManager.GetValueStatic("LegalEntity");
             DialogOpen.Title = Catalog.GetString("Import bank statement file");
 
             if (DialogOpen.ShowDialog() == DialogResult.OK)
@@ -316,8 +318,10 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         {
             try
             {
+                this.Cursor = Cursors.WaitCursor;
                 TImportMT940.SplitFilesAndMove();
                 TGiftMatching.Training(TAppSettingsManager.GetValueStatic("LegalEntity"), FBankStatementImporter);
+                this.Cursor = Cursors.Default;
                 MessageBox.Show(Catalog.GetString("Splitting and training finished"));
             }
             catch (Exception exp)

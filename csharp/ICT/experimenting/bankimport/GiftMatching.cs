@@ -138,10 +138,15 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             while (oldMatchText != matchtext)
             {
                 oldMatchText = matchtext;
+                matchtext = matchtext.ToUpper();
                 matchtext = matchtext.Replace("UE", "");
                 matchtext = matchtext.Replace("AE", "");
                 matchtext = matchtext.Replace("OE", "");
                 matchtext = matchtext.Replace("SS", "");
+                matchtext = matchtext.Replace("Ü", "");
+                matchtext = matchtext.Replace("Ä", "");
+                matchtext = matchtext.Replace("Ö", "");
+                matchtext = matchtext.Replace("ß", "");
                 matchtext = matchtext.Replace(" ", "");
             }
 
@@ -663,6 +668,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 return -1;
             }
 
+            AMainDS.AGiftDetail.DefaultView.RowFilter = BankImportTDSAGiftDetailTable.GetBatchNumberDBName() + " = " +
+                                                        SelectedGiftBatch.ToString();
+
+            bool postedBatch = ((BankImportTDSAGiftDetailRow)AMainDS.AGiftDetail.DefaultView[0].Row).BatchStatus == "Posted";
+
             for (Int32 TransactionsCounter = 0; TransactionsCounter < AMainDS.AEpTransaction.Rows.Count; TransactionsCounter++)
             {
                 BankImportTDSAEpTransactionRow stmtRow = AMainDS.AEpTransaction[TransactionsCounter];
@@ -769,65 +779,64 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 }
             }
 
-#if UNDEFINED
-            // do another loop, now looking even harder for matching gifts; match donor name, and recipient name with transaction description
-            // by now the list of unassigned gifts from the old gift batch should be quite small
-            for (Int32 TransactionsCounter = 0; TransactionsCounter < AMainDS.AEpTransaction.Rows.Count; TransactionsCounter++)
+            if (postedBatch)
             {
-                BankImportTDSAEpTransactionRow stmtRow = AMainDS.AEpTransaction[TransactionsCounter];
-
-                if (stmtRow.MatchingStatus != Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED)
+                // do another loop, now looking even harder for matching gifts; match donor name, and recipient name with transaction description
+                // by now the list of unassigned gifts from the old gift batch should be quite small
+                for (Int32 TransactionsCounter = 0; TransactionsCounter < AMainDS.AEpTransaction.Rows.Count; TransactionsCounter++)
                 {
-                    AMainDS.AGiftDetail.DefaultView.RowFilter = BankImportTDSAGiftDetailTable.GetBatchNumberDBName() + " = " +
-                                                                SelectedGiftBatch.ToString() +
-                                                                " AND AlreadyMatched = false";
-                    BankImportTDSAGiftDetailRow BestMatch = null;
-                    int BestMatchNumber = 0;
+                    BankImportTDSAEpTransactionRow stmtRow = AMainDS.AEpTransaction[TransactionsCounter];
 
-                    foreach (DataRowView rv in AMainDS.AGiftDetail.DefaultView)
+                    if (stmtRow.MatchingStatus != Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED)
                     {
-                        BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)rv.Row;
+                        AMainDS.AGiftDetail.DefaultView.RowFilter = BankImportTDSAGiftDetailTable.GetBatchNumberDBName() + " = " +
+                                                                    SelectedGiftBatch.ToString() +
+                                                                    " AND AlreadyMatched = false";
+                        BankImportTDSAGiftDetailRow BestMatch = null;
+                        int BestMatchNumber = 0;
 
-                        int matchNumber = MatchingWords(detailrow.DonorShortName, stmtRow.AccountName) +
-                                          MatchingWords(detailrow.RecipientDescription, stmtRow.Description);
-
-                        if ((matchNumber > BestMatchNumber)
-                            && ((SumAmounts(ref AMainDS, SelectedGiftBatch,
-                                     detailrow.GiftTransactionNumber) == Convert.ToDecimal(stmtRow.TransactionAmount))
-                                || (Convert.ToDecimal(detailrow.GiftTransactionAmount) == Convert.ToDecimal(stmtRow.TransactionAmount))))
+                        foreach (DataRowView rv in AMainDS.AGiftDetail.DefaultView)
                         {
-                            BestMatchNumber = matchNumber;
-                            BestMatch = detailrow;
+                            BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)rv.Row;
+
+                            int matchNumber = MatchingWords(detailrow.DonorShortName, stmtRow.AccountName) +
+                                              MatchingWords(detailrow.RecipientDescription, stmtRow.Description);
+
+                            if ((matchNumber > BestMatchNumber)
+                                && ((SumAmounts(ref AMainDS, SelectedGiftBatch,
+                                         detailrow.GiftTransactionNumber) == Convert.ToDecimal(stmtRow.TransactionAmount))
+                                    || (Convert.ToDecimal(detailrow.GiftTransactionAmount) == Convert.ToDecimal(stmtRow.TransactionAmount))))
+                            {
+                                BestMatchNumber = matchNumber;
+                                BestMatch = detailrow;
+                            }
                         }
-                    }
 
-                    if (BestMatchNumber > 0)
-                    {
-                        if (Convert.ToDecimal(BestMatch.GiftTransactionAmount) == Convert.ToDecimal(stmtRow.TransactionAmount))
+                        if (BestMatchNumber > 0)
                         {
-                            // only matches part of the gift
-                            MarkTransactionMatched(ref AMainDS,
-                                ref stmtRow,
-                                SelectedGiftBatch,
-                                BestMatch.GiftTransactionNumber,
-                                BestMatch.DetailNumber);
-                        }
-                        else
-                        {
-                            // match full gift
-                            MarkTransactionMatched(ref AMainDS, ref stmtRow, SelectedGiftBatch, BestMatch.GiftTransactionNumber, -1);
+                            if (Convert.ToDecimal(BestMatch.GiftTransactionAmount) == Convert.ToDecimal(stmtRow.TransactionAmount))
+                            {
+                                // only matches part of the gift
+                                MarkTransactionMatched(ref AMainDS,
+                                    ref stmtRow,
+                                    SelectedGiftBatch,
+                                    BestMatch.GiftTransactionNumber,
+                                    BestMatch.DetailNumber);
+                            }
+                            else
+                            {
+                                // match full gift
+                                MarkTransactionMatched(ref AMainDS, ref stmtRow, SelectedGiftBatch, BestMatch.GiftTransactionNumber, -1);
+                            }
                         }
                     }
                 }
             }
-#endif
+
             TGiftMatching storeMatchGifts = new TGiftMatching();
             storeMatchGifts.StoreCurrentMatches(ref AMainDS, SelectedGiftBatch);
 
-            AMainDS.AGiftDetail.DefaultView.RowFilter = BankImportTDSAGiftDetailTable.GetBatchNumberDBName() + " = " +
-                                                        SelectedGiftBatch.ToString();
-
-            if (((BankImportTDSAGiftDetailRow)AMainDS.AGiftDetail.DefaultView[0].Row).BatchStatus == "Posted")
+            if (postedBatch)
             {
                 return SelectedGiftBatch;
             }
