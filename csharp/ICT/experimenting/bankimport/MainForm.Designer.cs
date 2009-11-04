@@ -103,19 +103,22 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.lblSumCredit = new System.Windows.Forms.Label();
             this.txtSumDebit = new System.Windows.Forms.TextBox();
             this.lblSumDebit = new System.Windows.Forms.Label();
-            this.rgrFilter = new System.Windows.Forms.GroupBox();
+            this.pnlFilter = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.rgrFilter = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtAllTransactions = new System.Windows.Forms.RadioButton();
             this.rbtMatchedGifts = new System.Windows.Forms.RadioButton();
             this.rbtUnmatchedGifts = new System.Windows.Forms.RadioButton();
             this.rbtOther = new System.Windows.Forms.RadioButton();
+            this.pnlButtons = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnExport = new System.Windows.Forms.Button();
+            this.btnPrint = new System.Windows.Forms.Button();
             this.grdResult = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSplitAndTrain = new System.Windows.Forms.ToolStripButton();
             this.tbbImportStatement = new System.Windows.Forms.ToolStripButton();
-            this.tbbExportGiftBatch = new System.Windows.Forms.ToolStripButton();
-            this.tbbExportUnmatched = new System.Windows.Forms.ToolStripButton();
-            this.tbbExportOther = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniClose = new System.Windows.Forms.ToolStripMenuItem();
@@ -132,8 +135,12 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlInfoStatement.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.rgrFilter.SuspendLayout();
+            this.pnlFilter.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
+            this.rgrFilter.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
+            this.pnlButtons.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -434,18 +441,31 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tableLayoutPanel2.Controls.Add(this.txtValueOtherDebit, 5, 4);
             this.tableLayoutPanel2.Controls.Add(this.txtSumDebit, 5, 5);
             //
-            // rgrFilter
+            // pnlFilter
             //
-            this.rgrFilter.Location = new System.Drawing.Point(2,2);
-            this.rgrFilter.Name = "rgrFilter";
-            this.rgrFilter.AutoSize = true;
+            this.pnlFilter.Location = new System.Drawing.Point(2,2);
+            this.pnlFilter.Name = "pnlFilter";
+            this.pnlFilter.AutoSize = true;
             //
             // tableLayoutPanel3
             //
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.AutoSize = true;
-            this.rgrFilter.Controls.Add(this.tableLayoutPanel3);
+            this.pnlFilter.Controls.Add(this.tableLayoutPanel3);
+            //
+            // rgrFilter
+            //
+            this.rgrFilter.Location = new System.Drawing.Point(2,2);
+            this.rgrFilter.Name = "rgrFilter";
+            this.rgrFilter.AutoSize = true;
+            //
+            // tableLayoutPanel4
+            //
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
+            this.rgrFilter.Controls.Add(this.tableLayoutPanel4);
             //
             // rbtAllTransactions
             //
@@ -479,18 +499,61 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.rbtOther.AutoSize = true;
             this.rbtOther.CheckedChanged += new System.EventHandler(this.FilterChanged);
             this.rbtOther.Text = "Other";
-            this.tableLayoutPanel3.ColumnCount = 4;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 1;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Controls.Add(this.rbtAllTransactions, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.rbtMatchedGifts, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.rbtUnmatchedGifts, 2, 0);
-            this.tableLayoutPanel3.Controls.Add(this.rbtOther, 3, 0);
+            this.tableLayoutPanel4.ColumnCount = 4;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.Controls.Add(this.rbtAllTransactions, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.rbtMatchedGifts, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.rbtUnmatchedGifts, 2, 0);
+            this.tableLayoutPanel4.Controls.Add(this.rbtOther, 3, 0);
             this.rgrFilter.Text = "Filter";
+            //
+            // pnlButtons
+            //
+            this.pnlButtons.Location = new System.Drawing.Point(2,2);
+            this.pnlButtons.Name = "pnlButtons";
+            this.pnlButtons.AutoSize = true;
+            //
+            // tableLayoutPanel5
+            //
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.AutoSize = true;
+            this.pnlButtons.Controls.Add(this.tableLayoutPanel5);
+            //
+            // btnExport
+            //
+            this.btnExport.Location = new System.Drawing.Point(2,2);
+            this.btnExport.Name = "btnExport";
+            this.btnExport.AutoSize = true;
+            this.btnExport.Click += new System.EventHandler(this.Export);
+            this.btnExport.Text = "Export";
+            //
+            // btnPrint
+            //
+            this.btnPrint.Location = new System.Drawing.Point(2,2);
+            this.btnPrint.Name = "btnPrint";
+            this.btnPrint.AutoSize = true;
+            this.btnPrint.Click += new System.EventHandler(this.Print);
+            this.btnPrint.Text = "Print";
+            this.tableLayoutPanel5.ColumnCount = 2;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.RowCount = 1;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.Controls.Add(this.btnExport, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.btnPrint, 1, 0);
+            this.tableLayoutPanel3.ColumnCount = 1;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.rgrFilter, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.pnlButtons, 0, 1);
             //
             // grdResult
             //
@@ -503,7 +566,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Controls.Add(this.pnlInfoStatement, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.rgrFilter, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.pnlFilter, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.grdResult, 0, 2);
             //
             // tbbSplitAndTrain
@@ -520,27 +583,6 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tbbImportStatement.Click += new System.EventHandler(this.ImportStatement);
             this.tbbImportStatement.Text = "&Import Statement";
             //
-            // tbbExportGiftBatch
-            //
-            this.tbbExportGiftBatch.Name = "tbbExportGiftBatch";
-            this.tbbExportGiftBatch.AutoSize = true;
-            this.tbbExportGiftBatch.Click += new System.EventHandler(this.ExportGiftBatch);
-            this.tbbExportGiftBatch.Text = "Export Gift Batch";
-            //
-            // tbbExportUnmatched
-            //
-            this.tbbExportUnmatched.Name = "tbbExportUnmatched";
-            this.tbbExportUnmatched.AutoSize = true;
-            this.tbbExportUnmatched.Click += new System.EventHandler(this.ExportUnmatched);
-            this.tbbExportUnmatched.Text = "Export Unmatched";
-            //
-            // tbbExportOther
-            //
-            this.tbbExportOther.Name = "tbbExportOther";
-            this.tbbExportOther.AutoSize = true;
-            this.tbbExportOther.Click += new System.EventHandler(this.ExportOther);
-            this.tbbExportOther.Text = "Export Other";
-            //
             // tbrMain
             //
             this.tbrMain.Name = "tbrMain";
@@ -548,10 +590,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbSplitAndTrain,
-                        tbbImportStatement,
-                        tbbExportGiftBatch,
-                        tbbExportUnmatched,
-                        tbbExportOther});
+                        tbbImportStatement});
             //
             // mniClose
             //
@@ -658,8 +697,12 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.pnlButtons.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
             this.rgrFilter.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.pnlFilter.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.pnlInfoStatement.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -701,19 +744,22 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         private System.Windows.Forms.Label lblSumCredit;
         private System.Windows.Forms.TextBox txtSumDebit;
         private System.Windows.Forms.Label lblSumDebit;
-        private System.Windows.Forms.GroupBox rgrFilter;
+        private System.Windows.Forms.Panel pnlFilter;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.GroupBox rgrFilter;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.RadioButton rbtAllTransactions;
         private System.Windows.Forms.RadioButton rbtMatchedGifts;
         private System.Windows.Forms.RadioButton rbtUnmatchedGifts;
         private System.Windows.Forms.RadioButton rbtOther;
+        private System.Windows.Forms.Panel pnlButtons;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.Button btnExport;
+        private System.Windows.Forms.Button btnPrint;
         private Ict.Common.Controls.TSgrdDataGridPaged grdResult;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSplitAndTrain;
         private System.Windows.Forms.ToolStripButton tbbImportStatement;
-        private System.Windows.Forms.ToolStripButton tbbExportGiftBatch;
-        private System.Windows.Forms.ToolStripButton tbbExportUnmatched;
-        private System.Windows.Forms.ToolStripButton tbbExportOther;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniClose;

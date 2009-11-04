@@ -8,14 +8,13 @@ RootNode:
     WindowHeight: 623
     Actions:
         actImportStatement: {Label=&Import Statement, ActionClick=ImportStatement}
-        actExportGiftBatch: {ActionClick=ExportGiftBatch}
-        actExportUnmatched: {ActionClick=ExportUnmatched}
-        actExportOther: {ActionClick=ExportOther}
+        actExport: {ActionClick=Export}
+        actPrint: {ActionClick=Print}
         actSplitAndTrain: {ActionClick=SplitAndTrain}
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlInfoStatement, rgrFilter, grdResult]
+            Controls: [pnlInfoStatement, pnlFilter, grdResult]
         pnlInfoStatement:
             Controls: 
                 Row0: [txtBankName, txtDateStatement]
@@ -39,10 +38,17 @@ RootNode:
         txtNumberMatched: {ReadOnly=true, Width=100}
         txtNumberUnmatched: {ReadOnly=true, Width=100}
         txtNumberOther: {ReadOnly=true, Width=100}
+        pnlFilter:
+            Controls: [rgrFilter, pnlButtons]
+        pnlButtons:
+            Controls: [btnExport, btnPrint]
+            ControlsOrientation: Horizontal
         rgrFilter:
             OptionalValues: [AllTransactions, MatchedGifts, UnmatchedGifts, Other]
             ControlsOrientation: Horizontal
             OnChange:FilterChanged
+        btnExport:
+        btnPrint:
         grdResult:
             Dock: Fill
             TableName: AEpTransaction
@@ -55,6 +61,3 @@ RootNode:
     Toolbar:
         tbbSplitAndTrain:
         tbbImportStatement:
-        tbbExportGiftBatch:
-        tbbExportUnmatched:
-        tbbExportOther:

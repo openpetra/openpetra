@@ -36,6 +36,7 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MPartner;
 using Ict.Common.DB;
 using Ict.Common;
+using Ict.Common.Printing;
 using Ict.Common.Verification;
 
 namespace Ict.Petra.Client.MFinance.Gui.BankImport
@@ -226,6 +227,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                 newMatch.RecipientKey = giftRow.RecipientKey;
                 newMatch.RecipientLedgerNumber = giftRow.RecipientLedgerNumber;
+                newMatch.LedgerNumber = giftRow.LedgerNumber;
                 newMatch.DonorKey = giftRow.DonorKey;
                 newMatch.DonorShortName = giftRow.DonorShortName;
                 newMatch.RecipientShortName = giftRow.RecipientDescription;
@@ -462,6 +464,47 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             }
         }
 
+        /// <summary>
+        /// dump unmatched gifts or other transactions to a HTML table for printing
+        /// </summary>
+        public static string PrintHTML(ref BankImportTDS AMainDS, string ATitle)
+        {
+            string letterTemplateFilename = TAppSettingsManager.GetValueStatic("TransactionList.File");
+
+            // message body from HTML template
+            StreamReader reader = new StreamReader(letterTemplateFilename);
+            string msg = reader.ReadToEnd();
+
+            reader.Close();
+
+            msg = msg.Replace("#TITLE", ATitle);
+
+            // recognise detail lines automatically
+            string RowTemplate;
+            msg = TPrinterHtml.GetTableRow(msg, "#DESCRIPTION", out RowTemplate);
+            string rowTexts = "";
+
+            BankImportTDSAEpTransactionRow row = null;
+
+            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetTransactionAmountDBName() + "," +
+                                                      BankImportTDSAEpTransactionTable.GetOrderDBName();
+
+            foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
+            {
+                row = (BankImportTDSAEpTransactionRow)rv.Row;
+
+                rowTexts += RowTemplate.
+                            Replace("#NAME", row.AccountName).
+                            Replace("#DESCRIPTION", row.Description).
+                            Replace("#AMOUNT", String.Format("{0:C}", row.TransactionAmount)).
+                            Replace("#ACCOUNTNUMBER", row.BankAccountNumber).
+                            Replace("#BANKSORTCODE", row.BranchCode).
+                            Replace("#TRANSACTIONTYPE", row.TransactionTypeCode);
+            }
+
+            return msg.Replace("#ROWTEMPLATE", rowTexts);
+        }
+
         private static Int64 GetDonorByBankAccountNumber(ref BankImportTDS AMainDS, string ABankAccountNumber)
         {
             AMainDS.PBankingDetails.DefaultView.RowFilter = BankImportTDSPBankingDetailsTable.GetBankAccountNumberDBName() +
@@ -632,6 +675,9 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             TGetData.GetGiftsByDate(ref AMainDS, AMainDS.AEpTransaction[0].DateEffective);
 
             // simple matching; no split gifts, bank account number fits and amount fits
+            // problem: recipient different????
+            Int32 CountMatches = 0;
+
             for (Int32 TransactionsCounter = 0; TransactionsCounter < AMainDS.AEpTransaction.Rows.Count; TransactionsCounter++)
             {
                 BankImportTDSAEpTransactionRow stmtRow = AMainDS.AEpTransaction[TransactionsCounter];
@@ -655,15 +701,20 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                     if (AMainDS.AGiftDetail.DefaultView.Count == 1)
                     {
-                        // found a match
+                        // found a possible match
+                        CountMatches++;
                         BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)AMainDS.AGiftDetail.DefaultView[0].Row;
                         SelectedGiftBatch = detailrow.BatchNumber;
-                        MarkTransactionMatched(ref AMainDS, ref stmtRow, detailrow);
+
+                        // we have found exactly one gift detail which matches the donor and the amount and the date
+                        // but it might be that the donation was for a different recipient
+                        // do not mark matched here yet
+                        //MarkTransactionMatched(ref AMainDS, ref stmtRow, detailrow);
                     }
                 }
             }
 
-            if (SelectedGiftBatch == -1)
+            if ((SelectedGiftBatch == -1) || ((AMainDS.AEpTransaction.Rows.Count > 2) && (CountMatches < AMainDS.AEpTransaction.Rows.Count / 2)))
             {
                 return -1;
             }

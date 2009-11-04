@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.IO;
 using Mono.Unix;
 using Ict.Common;
+using Ict.Common.Printing;
 using Ict.Plugins.Finance.SwiftParser;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -62,8 +63,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
             DialogOpen.Filter = Catalog.GetString(FBankStatementImporter.GetFileFilter());
             DialogOpen.RestoreDirectory = true;
-            DialogOpen.InitialDirectory = TAppSettingsManager.GetValueStatic("MT940.Output.Path") +
-            		Path.DirectorySeparatorChar + TAppSettingsManager.GetValueStatic("LegalEntity");
+            DialogOpen.InitialDirectory = (TAppSettingsManager.GetValueStatic("MT940.Output.Path") +
+                                           Path.DirectorySeparatorChar + TAppSettingsManager.GetValueStatic("LegalEntity")).Replace("\\\\", "\\");
             DialogOpen.Title = Catalog.GetString("Import bank statement file");
 
             if (DialogOpen.ShowDialog() == DialogResult.OK)
@@ -257,8 +258,9 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         {
             Int32 countRows;
 
+            // use the last transaction for the date effective, sometimes the first transaction is from a previous date (eg. Saturday, Sunday)
+            txtDateStatement.Text = FMainDS.AEpTransaction[FMainDS.AEpTransaction.Rows.Count - 1].DateEffective.ToShortDateString();
             txtBankName.Text = ABankName;
-            txtDateStatement.Text = FMainDS.AEpTransaction[0].DateEffective.ToShortDateString();
             txtStartBalance.Text = startBalance.ToString();
             txtEndBalance.Text = endBalance.ToString();
 
@@ -330,92 +332,120 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             }
         }
 
-        private void ExportGiftBatch(object sender, EventArgs e)
+        private void Export(object sender, EventArgs e)
         {
-            rbtMatchedGifts.Checked = true;
-
             if (FMainDS.AEpTransaction.DefaultView.Count == 0)
             {
                 return;
             }
 
-            if (FSelectedGiftBatch != -1)
+            if (rbtOther.Checked)
             {
-                return;
+                SaveFileDialog DialogSave = new SaveFileDialog();
+
+                DialogSave.Filter = Catalog.GetString("Other Gifts file (*.csv)|*.csv");
+                DialogSave.AddExtension = true;
+                DialogSave.RestoreDirectory = true;
+                DialogSave.Title = Catalog.GetString("Export list of other transactions");
+
+                if (DialogSave.ShowDialog() == DialogResult.OK)
+                {
+                    StreamWriter sw = new StreamWriter(DialogSave.FileName, false, System.Text.Encoding.Default);
+
+                    TGiftMatching.WriteCSVFile(ref FMainDS, sw);
+
+                    sw.Close();
+                }
             }
-
-            SaveFileDialog DialogSave = new SaveFileDialog();
-
-            DialogSave.Filter = Catalog.GetString("Gift Batch file (*.csv)|*.csv");
-            DialogSave.AddExtension = true;
-            DialogSave.RestoreDirectory = true;
-            DialogSave.Title = Catalog.GetString("Export gift batch of matched gifts");
-
-            if (DialogSave.ShowDialog() == DialogResult.OK)
+            else if (rbtUnmatchedGifts.Checked)
             {
-                StreamWriter sw = new StreamWriter(DialogSave.FileName, false, System.Text.Encoding.Default);
+                SaveFileDialog DialogSave = new SaveFileDialog();
 
-                BankImportTDSAEpTransactionRow row = (BankImportTDSAEpTransactionRow)FMainDS.AEpTransaction.DefaultView[0].Row;
+                DialogSave.Filter = Catalog.GetString("Unmatched Gifts file (*.csv)|*.csv");
+                DialogSave.AddExtension = true;
+                DialogSave.RestoreDirectory = true;
+                DialogSave.Title = Catalog.GetString("Export list of unmatched gifts");
 
-                FMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetDonorShortNameDBName() + "," +
-                                                          BankImportTDSAEpTransactionTable.GetRecipientDescriptionDBName();
+                if (DialogSave.ShowDialog() == DialogResult.OK)
+                {
+                    StreamWriter sw = new StreamWriter(DialogSave.FileName, false, System.Text.Encoding.Default);
 
-                TGiftMatching exportMatchGifts = new TGiftMatching();
-                exportMatchGifts.WritePetraImportFile(ref FMainDS, sw, txtBankName.Text);
+                    TGiftMatching.WriteCSVFile(ref FMainDS, sw);
 
-                sw.Close();
+                    sw.Close();
+                }
+            }
+            else if (rbtMatchedGifts.Checked && (FSelectedGiftBatch == -1))
+            {
+                SaveFileDialog DialogSave = new SaveFileDialog();
+
+                DialogSave.Filter = Catalog.GetString("Gift Batch file (*.csv)|*.csv");
+                DialogSave.AddExtension = true;
+                DialogSave.RestoreDirectory = true;
+                DialogSave.Title = Catalog.GetString("Export gift batch of matched gifts");
+
+                if (DialogSave.ShowDialog() == DialogResult.OK)
+                {
+                    StreamWriter sw = new StreamWriter(DialogSave.FileName, false, System.Text.Encoding.Default);
+
+                    BankImportTDSAEpTransactionRow row = (BankImportTDSAEpTransactionRow)FMainDS.AEpTransaction.DefaultView[0].Row;
+
+                    FMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetDonorShortNameDBName() + "," +
+                                                              BankImportTDSAEpTransactionTable.GetRecipientDescriptionDBName();
+
+                    TGiftMatching exportMatchGifts = new TGiftMatching();
+                    exportMatchGifts.WritePetraImportFile(ref FMainDS, sw, txtBankName.Text);
+
+                    sw.Close();
+                }
             }
         }
 
-        private void ExportUnmatched(object sender, EventArgs e)
+        private void Print(object sender, EventArgs e)
         {
-            rbtUnmatchedGifts.Checked = true;
-
             if (FMainDS.AEpTransaction.DefaultView.Count == 0)
             {
                 return;
             }
 
-            SaveFileDialog DialogSave = new SaveFileDialog();
+            System.Drawing.Printing.PrintDocument doc = new System.Drawing.Printing.PrintDocument();
+            bool PrinterInstalled = doc.PrinterSettings.IsValid;
 
-            DialogSave.Filter = Catalog.GetString("Unmatched Gifts file (*.csv)|*.csv");
-            DialogSave.AddExtension = true;
-            DialogSave.RestoreDirectory = true;
-            DialogSave.Title = Catalog.GetString("Export list of unmatched gifts");
-
-            if (DialogSave.ShowDialog() == DialogResult.OK)
+            if (!PrinterInstalled)
             {
-                StreamWriter sw = new StreamWriter(DialogSave.FileName, false, System.Text.Encoding.Default);
-
-                TGiftMatching.WriteCSVFile(ref FMainDS, sw);
-
-                sw.Close();
-            }
-        }
-
-        private void ExportOther(object sender, EventArgs e)
-        {
-            rbtOther.Checked = true;
-
-            if (FMainDS.AEpTransaction.DefaultView.Count == 0)
-            {
+                MessageBox.Show("The program cannot find a printer, and therefore cannot print!", "Problem with printing");
                 return;
             }
 
-            SaveFileDialog DialogSave = new SaveFileDialog();
+            string ShortCodeOfBank = "TODO";
+            string DateOfStatement = "TODO";
+            string HtmlDocument = String.Empty;
 
-            DialogSave.Filter = Catalog.GetString("Other Gifts file (*.csv)|*.csv");
-            DialogSave.AddExtension = true;
-            DialogSave.RestoreDirectory = true;
-            DialogSave.Title = Catalog.GetString("Export list of other transactions");
-
-            if (DialogSave.ShowDialog() == DialogResult.OK)
+            if (rbtUnmatchedGifts.Checked)
             {
-                StreamWriter sw = new StreamWriter(DialogSave.FileName, false, System.Text.Encoding.Default);
+                HtmlDocument =
+                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Unmatched transactions, " + ShortCodeOfBank + ", " + DateOfStatement));
+            }
 
-                TGiftMatching.WriteCSVFile(ref FMainDS, sw);
+            if (HtmlDocument.Length == 0)
+            {
+                MessageBox.Show(Catalog.GetString("nothing to print"));
+            }
 
-                sw.Close();
+            TGfxPrinter GfxPrinter = new TGfxPrinter(doc);
+            TPrinterHtml htmlPrinter = new TPrinterHtml(HtmlDocument,
+                String.Empty,
+                GfxPrinter);
+            GfxPrinter.Init(eOrientation.ePortrait, htmlPrinter);
+
+            PrintDialog dlg = new PrintDialog();
+            dlg.Document = GfxPrinter.Document;
+            dlg.AllowCurrentPage = true;
+            dlg.AllowSomePages = true;
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                dlg.Document.Print();
             }
         }
     }
