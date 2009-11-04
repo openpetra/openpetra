@@ -155,14 +155,14 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         }
 
         /// <summary>
-        /// returns true if a match with exactly the same settings already exists for the transactions and gift batch;
-        /// returns false if no such match is there, or if something has been changed in the gift batch
+        /// returns match key id if a match with exactly the same settings already exists for the transactions and gift batch;
+        /// returns -1 if no such match is there, or if something has been changed in the gift batch
         /// </summary>
-        private bool IdenticalMatchAlreadyExists(BankImportTDS AMainDS, BankImportTDS AMatchDS)
+        private Int32 GetIdenticalMatch(BankImportTDS AMainDS, BankImportTDS AMatchDS)
         {
             if (AMainDS.AGiftDetail.DefaultView.Count != AMatchDS.AEpMatch.Rows.Count)
             {
-                return true;
+                return -1;
             }
 
             AMainDS.AGiftDetail.DefaultView.Sort = AGiftDetailTable.GetDetailNumberDBName();
@@ -200,12 +200,15 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                 if (!sameData)
                 {
-                    return true;
+                    return -1;
                 }
             }
 
             // all details have already matched in exactly the same way as in the compared gift batch
-            return false;
+            // add the match details to the MainDS
+            AMainDS.AEpMatch.Merge(AMatchDS.AEpMatch);
+
+            return ((AEpMatchRow)AMatchDS.AEpMatch.DefaultView[0].Row).EpMatchKey;
         }
 
         // add new (or modified) matches
@@ -291,11 +294,12 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 MatchDS.AEpMatch.Rows.Clear();
                 FSqliteDatabase.Select(MatchDS, checkForMatch, AEpMatchTable.GetTableName(), null);
 
-                bool newMatch = IdenticalMatchAlreadyExists(AMainDS, MatchDS);
+                Int32 MatchKey = GetIdenticalMatch(AMainDS, MatchDS);
 
-                if (!newMatch)
+                if (MatchKey > -1)
                 {
                     // no changes to the already existing match
+                    tr.EpMatchKey = MatchKey;
                     continue;
                 }
 
@@ -392,8 +396,13 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         /// <summary>
         /// store matched gifts to a text file which can be imported into Petra 2.x
         /// </summary>
-        public void WritePetraImportFile(ref BankImportTDS AMainDS, StreamWriter sw, string ABankName)
+        public void WritePetraImportFile(ref BankImportTDS AMainDS, string AFilename, string ABankName)
         {
+            StreamWriter sw = new StreamWriter(AFilename, false, System.Text.Encoding.Default);
+
+            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetDonorShortNameDBName() + "," +
+                                                      BankImportTDSAEpTransactionTable.GetRecipientDescriptionDBName();
+
             // first connect to the database
             if (FSqliteDatabase == null)
             {
@@ -423,7 +432,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                         tr.DateEffective.ToString("dd/MM/yyyy") +
                         "\";\"<none>\";" +
                         match.RecipientKey.ToString() + ";\"" +
-                        match.RecipientShortName + "\";" +
+                        (match.MotivationGroupCode != "GIFT" && match.MotivationDetailCode != "SUPPORT" ? "" : match.RecipientShortName) + "\";" +
                         match.GiftTransactionAmount.ToString() +
                         ";no;\"" + match.MotivationGroupCode + "\";\"" +
                         match.MotivationDetailCode +
@@ -434,6 +443,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             FSqliteDatabase.CloseDBConnection();
 
             FSqliteDatabase = null;
+
+            sw.Close();
         }
 
         /// <summary>
@@ -443,7 +454,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         {
             sw.WriteLine("#TransactionTypeCode;#AccountName;#BankAccountNumber;#BranchCode;#BIC;#IBAN;#Description;#TransactionAmount");
 
-            BankImportTDSAEpTransactionRow row = (BankImportTDSAEpTransactionRow)AMainDS.AEpTransaction.DefaultView[0].Row;
+            BankImportTDSAEpTransactionRow row;
 
             AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetDonorShortNameDBName() + "," +
                                                       BankImportTDSAEpTransactionTable.GetRecipientDescriptionDBName();
@@ -917,11 +928,20 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 if (AutoMatchGiftsAgainstPetraDB(ref MainDS) != -1)
                 {
                     // move file to imported folder
-                    File.Move(
-                        filename,
-                        OutputPath + Path.DirectorySeparatorChar + ALegalEntity + Path.DirectorySeparatorChar + "imported" +
-                        Path.DirectorySeparatorChar +
-                        Path.GetFileName(filename));
+                    string BackupName = OutputPath + Path.DirectorySeparatorChar + ALegalEntity + Path.DirectorySeparatorChar + "imported" +
+                                        Path.DirectorySeparatorChar +
+                                        Path.GetFileName(filename);
+                    int CountBackup = 0;
+
+                    while (File.Exists(BackupName))
+                    {
+                        BackupName = OutputPath + Path.DirectorySeparatorChar + ALegalEntity + Path.DirectorySeparatorChar + "imported" +
+                                     Path.DirectorySeparatorChar +
+                                     Path.GetFileNameWithoutExtension(filename) + CountBackup.ToString() + ".sta";
+                        CountBackup++;
+                    }
+
+                    File.Move(filename, BackupName);
                 }
             }
         }

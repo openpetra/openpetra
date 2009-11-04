@@ -87,6 +87,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
       this.btnPrint.Text = Catalog.GetString("Print");
       this.tbbSplitAndTrain.Text = Catalog.GetString("Split And Train");
       this.tbbImportStatement.Text = Catalog.GetString("&Import Statement");
+      this.tbbProcessAllNewStatements.Text = Catalog.GetString("Process All New Statements");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
       this.mniFile.Text = Catalog.GetString("&File");
@@ -194,6 +195,10 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         if (e.ActionName == "actImportStatement")
         {
             tbbImportStatement.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actProcessAllNewStatements")
+        {
+            tbbProcessAllNewStatements.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {

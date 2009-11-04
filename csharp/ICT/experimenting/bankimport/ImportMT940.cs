@@ -246,8 +246,18 @@ namespace Ict.Plugins.Finance.SwiftParser
                             Backupfilename = lastDate + Backupfilename;
                         }
 
-                        Backupfilename = OutputPath + Path.DirectorySeparatorChar + "imported" + Path.DirectorySeparatorChar + Backupfilename;
-                        File.Move(RawFile, Backupfilename);
+                        string BackupName = OutputPath + Path.DirectorySeparatorChar + "imported" + Path.DirectorySeparatorChar + Backupfilename;
+                        int CountBackup = 0;
+
+                        while (File.Exists(BackupName))
+                        {
+                            BackupName = OutputPath + Path.DirectorySeparatorChar + "imported" +
+                                         Path.DirectorySeparatorChar +
+                                         Path.GetFileNameWithoutExtension(Backupfilename) + CountBackup.ToString() + ".sta";
+                            CountBackup++;
+                        }
+
+                        File.Move(RawFile, BackupName);
                     }
                 }
             }

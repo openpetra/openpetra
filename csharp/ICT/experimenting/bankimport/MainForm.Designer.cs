@@ -119,6 +119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSplitAndTrain = new System.Windows.Forms.ToolStripButton();
             this.tbbImportStatement = new System.Windows.Forms.ToolStripButton();
+            this.tbbProcessAllNewStatements = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniClose = new System.Windows.Forms.ToolStripMenuItem();
@@ -583,6 +584,13 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tbbImportStatement.Click += new System.EventHandler(this.ImportStatement);
             this.tbbImportStatement.Text = "&Import Statement";
             //
+            // tbbProcessAllNewStatements
+            //
+            this.tbbProcessAllNewStatements.Name = "tbbProcessAllNewStatements";
+            this.tbbProcessAllNewStatements.AutoSize = true;
+            this.tbbProcessAllNewStatements.Click += new System.EventHandler(this.ProcessAllNewStatements);
+            this.tbbProcessAllNewStatements.Text = "Process All New Statements";
+            //
             // tbrMain
             //
             this.tbrMain.Name = "tbrMain";
@@ -590,7 +598,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbSplitAndTrain,
-                        tbbImportStatement});
+                        tbbImportStatement,
+                        tbbProcessAllNewStatements});
             //
             // mniClose
             //
@@ -760,6 +769,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSplitAndTrain;
         private System.Windows.Forms.ToolStripButton tbbImportStatement;
+        private System.Windows.Forms.ToolStripButton tbbProcessAllNewStatements;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniClose;

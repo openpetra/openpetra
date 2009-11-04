@@ -57,6 +57,64 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             }
         }
 
+        /// <summary>
+        /// import each statement that has not been posted yet,
+        /// and export 3 csv files: one for matched gifts, one for unmatched, one for other
+        /// </summary>
+        private void ProcessAllNewStatements(Object sender, EventArgs e)
+        {
+            string[] newFiles = Directory.GetFiles((TAppSettingsManager.GetValueStatic("MT940.Output.Path") +
+                                                    Path.DirectorySeparatorChar + TAppSettingsManager.GetValueStatic("LegalEntity")).Replace("\\\\",
+                    "\\"), "*.sta");
+
+            foreach (string newFile in newFiles)
+            {
+                FMainDS.AEpTransaction.Rows.Clear();
+                FMainDS.AGiftDetail.Rows.Clear();
+                FMainDS.PBankingDetails.Rows.Clear();
+
+                double startBalance, endBalance;
+                string bankName;
+                FBankStatementImporter.ImportFromFile(newFile, ref FMainDS, out startBalance, out endBalance, out bankName);
+
+                AutoMatchGiftsAgainstPetraDB();
+
+                rbtMatchedGifts.Checked = true;
+                TGiftMatching exportMatchGifts = new TGiftMatching();
+                exportMatchGifts.WritePetraImportFile(ref FMainDS,
+                    TAppSettingsManager.GetValueStatic("OutputCSV.Path") +
+                    Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(newFile) +
+                    Catalog.GetString("Matched") + ".csv",
+                    bankName);
+
+                rbtUnmatchedGifts.Checked = true;
+                StreamWriter sw = new StreamWriter(TAppSettingsManager.GetValueStatic("OutputCSV.Path") +
+                    Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(newFile) +
+                    Catalog.GetString("Unmatched") + ".csv",
+                    false, System.Text.Encoding.Default);
+
+                TGiftMatching.WriteCSVFile(ref FMainDS, sw);
+
+                sw.Close();
+
+                rbtOther.Checked = true;
+                sw = new StreamWriter(TAppSettingsManager.GetValueStatic("OutputCSV.Path") +
+                    Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(newFile) +
+                    Catalog.GetString("Other") + ".csv",
+                    false, System.Text.Encoding.Default);
+
+                TGiftMatching.WriteCSVFile(ref FMainDS, sw);
+
+                sw.Close();
+            }
+
+            FMainDS.AEpTransaction.Rows.Clear();
+            FMainDS.AGiftDetail.Rows.Clear();
+            FMainDS.PBankingDetails.Rows.Clear();
+
+            MessageBox.Show(String.Format(Catalog.GetString("Please check the files in {0}"), TAppSettingsManager.GetValueStatic("OutputCSV.Path")));
+        }
+
         private void ImportStatement(Object sender, EventArgs e)
         {
             OpenFileDialog DialogOpen = new OpenFileDialog();
@@ -95,7 +153,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                     FillPanelInfo(startBalance, endBalance, bankName);
 
-                    rbtAllTransactions.Checked = true;
+                    rbtMatchedGifts.Checked = true;
 
                     FMainDS.AEpTransaction.DefaultView.AllowNew = false;
                     grdResult.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AEpTransaction.DefaultView);
@@ -113,12 +171,13 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             FMainDS.AEpTransaction.DefaultView.RowFilter = AEpTransactionTable.GetMatchingStatusDBName() + "= '" +
                                                            Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED + "' AND " +
                                                            AEpTransactionTable.GetTransactionAmountDBName().ToString(
-                System.Globalization.CultureInfo.InvariantCulture) + " > 0";
+                System.Globalization.CultureInfo.InvariantCulture) + " > 0 AND " + AEpTransactionTable.GetEpMatchKeyDBName() + " IS NOT NULL";
         }
 
         private void SetFilterUnmatchedGifts()
         {
-            FMainDS.AEpTransaction.DefaultView.RowFilter = AEpTransactionTable.GetMatchingStatusDBName() + " IS NULL AND " +
+            FMainDS.AEpTransaction.DefaultView.RowFilter = "(" + AEpTransactionTable.GetMatchingStatusDBName() + " IS NULL OR " +
+                                                           AEpTransactionTable.GetEpMatchKeyDBName() + " IS NULL) AND " +
                                                            AEpTransactionTable.GetTransactionAmountDBName().ToString(
                 System.Globalization.CultureInfo.InvariantCulture) + " > 0 AND (" +
                                                            FBankStatementImporter.GetFilterGifts() + ")";
@@ -386,17 +445,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                 if (DialogSave.ShowDialog() == DialogResult.OK)
                 {
-                    StreamWriter sw = new StreamWriter(DialogSave.FileName, false, System.Text.Encoding.Default);
-
-                    BankImportTDSAEpTransactionRow row = (BankImportTDSAEpTransactionRow)FMainDS.AEpTransaction.DefaultView[0].Row;
-
-                    FMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetDonorShortNameDBName() + "," +
-                                                              BankImportTDSAEpTransactionTable.GetRecipientDescriptionDBName();
-
                     TGiftMatching exportMatchGifts = new TGiftMatching();
-                    exportMatchGifts.WritePetraImportFile(ref FMainDS, sw, txtBankName.Text);
-
-                    sw.Close();
+                    exportMatchGifts.WritePetraImportFile(ref FMainDS, DialogSave.FileName, txtBankName.Text);
                 }
             }
         }

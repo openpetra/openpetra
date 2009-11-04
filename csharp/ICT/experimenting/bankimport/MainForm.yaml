@@ -11,6 +11,7 @@ RootNode:
         actExport: {ActionClick=Export}
         actPrint: {ActionClick=Print}
         actSplitAndTrain: {ActionClick=SplitAndTrain}
+        actProcessAllNewStatements: {ActionClick=ProcessAllNewStatements}
     Controls:
         pnlContent:
             Dock: Fill
@@ -61,3 +62,4 @@ RootNode:
     Toolbar:
         tbbSplitAndTrain:
         tbbImportStatement:
+        tbbProcessAllNewStatements:
