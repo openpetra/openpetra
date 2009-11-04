@@ -1,3 +1,6 @@
+DELETE FROM a_transaction;
+DELETE FROM a_general_ledger_master_period;
+DELETE FROM a_general_ledger_master;
 DELETE FROM a_motivation_detail;
 DELETE FROM a_motivation_group;
 DELETE FROM a_transaction;
