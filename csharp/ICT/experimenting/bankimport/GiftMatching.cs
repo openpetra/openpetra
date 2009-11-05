@@ -211,8 +211,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             return ((AEpMatchRow)AMatchDS.AEpMatch.DefaultView[0].Row).EpMatchKey;
         }
 
-        // add new (or modified) matches
-        void CreateNewMatches(BankImportTDS AMainDS, BankImportTDS AMatchDS, string AMatchText)
+        /// add new (or modified) matches
+        private void CreateNewMatches(BankImportTDS AMainDS, BankImportTDS AMatchDS, string AMatchText)
         {
             Int32 countDetail = 1;
 
@@ -316,6 +316,9 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 TDataBase backupDB = DBAccess.GDBAccessObj;
                 DBAccess.GDBAccessObj = FSqliteDatabase;
                 AEpMatchAccess.SubmitChanges(MatchDS.AEpMatch, dbtransaction, out Verification);
+
+                tr.EpMatchKey = MatchDS.AEpMatch[0].EpMatchKey;
+
                 DBAccess.GDBAccessObj = backupDB;
             }
 
@@ -420,6 +423,14 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 // find the match
                 // can return several matches, for split gifts
                 MatchDS.AEpMatch.Rows.Clear();
+
+                if (tr.IsEpMatchKeyNull())
+                {
+                    System.Windows.Forms.MessageBox.Show(
+                        "Should not get here; MatchKey is NULL in matched table; " + AFilename + " " + tr.AccountName);
+                    continue;
+                }
+
                 string checkForMatch = "SELECT * FROM " + AEpMatchTable.GetTableDBName() + " WHERE " +
                                        AEpMatchTable.GetEpMatchKeyDBName() + " = " +
                                        tr.EpMatchKey.ToString();
@@ -617,7 +628,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             ref BankImportTDSAEpTransactionRow stmtRow,
             BankImportTDSAGiftDetailRow giftDetail)
         {
-            if (SumAmounts(ref AMainDS, giftDetail.BatchNumber, giftDetail.GiftTransactionNumber) != Convert.ToDecimal(stmtRow.TransactionAmount))
+            if (SumAmounts(ref AMainDS, giftDetail.BatchNumber, giftDetail.GiftTransactionNumber,
+                    false) != Convert.ToDecimal(stmtRow.TransactionAmount))
             {
                 // it seems that there are several different transactions treated as a split gift
                 // don't mark the whole transactions as matched
@@ -649,15 +661,20 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             return Result;
         }
 
-        private static Decimal SumAmounts(ref BankImportTDS AMainDS, Int32 ASelectedGiftBatch, Int32 AGiftTransactionNumber)
+        private static Decimal SumAmounts(ref BankImportTDS AMainDS, Int32 ASelectedGiftBatch, Int32 AGiftTransactionNumber, bool ACheckUnmatchedOnly)
         {
             Decimal Result = 0.0m;
 
-            // attention: this does check even for already matched gift details
             DataView v = new DataView(AMainDS.AGiftDetail);
 
             v.RowFilter = AGiftDetailTable.GetBatchNumberDBName() + " = " + ASelectedGiftBatch.ToString() +
                           " AND " + AGiftDetailTable.GetGiftTransactionNumberDBName() + " = " + AGiftTransactionNumber.ToString();
+
+            // if not ACheckUnmatchedOnly: sum all gift details, both unmatched and match
+            if (ACheckUnmatchedOnly)
+            {
+                v.RowFilter += " AND " + BankImportTDSAGiftDetailTable.GetAlreadyMatchedDBName() + "= false";
+            }
 
             foreach (DataRowView rv in v)
             {
@@ -753,7 +770,12 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                                                                 SelectedGiftBatch.ToString() +
                                                                 " AND AlreadyMatched = false";
 
-                    if (AMainDS.AGiftDetail.DefaultView.Count > 1)
+                    if (AMainDS.AGiftDetail.DefaultView.Count == 1)
+                    {
+                        // found exactly one match
+                        MarkTransactionMatched(ref AMainDS, ref stmtRow, (BankImportTDSAGiftDetailRow)AMainDS.AGiftDetail.DefaultView[0].Row);
+                    }
+                    else if (AMainDS.AGiftDetail.DefaultView.Count > 1)
                     {
                         // donor has several gifts with same amount?
                         // look for fitting words in description
@@ -806,7 +828,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                                 if ((matchingGiftDetail == null) || (detailrow.GiftTransactionNumber != matchingGiftDetail.GiftTransactionNumber))
                                 {
                                     if ((SumAmounts(ref AMainDS, SelectedGiftBatch,
-                                             detailrow.GiftTransactionNumber) == Convert.ToDecimal(stmtRow.TransactionAmount))
+                                             detailrow.GiftTransactionNumber, true) == Convert.ToDecimal(stmtRow.TransactionAmount))
                                         || (Convert.ToDecimal(detailrow.GiftTransactionAmount) == Convert.ToDecimal(stmtRow.TransactionAmount)))
                                     {
                                         if (matchingGiftDetail != null)
@@ -866,7 +888,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                             if ((matchNumber > BestMatchNumber)
                                 && ((SumAmounts(ref AMainDS, SelectedGiftBatch,
-                                         detailrow.GiftTransactionNumber) == Convert.ToDecimal(stmtRow.TransactionAmount))
+                                         detailrow.GiftTransactionNumber, true) == Convert.ToDecimal(stmtRow.TransactionAmount))
                                     || (Convert.ToDecimal(detailrow.GiftTransactionAmount) == Convert.ToDecimal(stmtRow.TransactionAmount))))
                             {
                                 BestMatchNumber = matchNumber;
@@ -937,7 +959,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     {
                         BackupName = OutputPath + Path.DirectorySeparatorChar + ALegalEntity + Path.DirectorySeparatorChar + "imported" +
                                      Path.DirectorySeparatorChar +
-                                     Path.GetFileNameWithoutExtension(filename) + CountBackup.ToString() + ".sta";
+                                     Path.GetFileNameWithoutExtension(filename) + "_" + CountBackup.ToString() + ".sta";
                         CountBackup++;
                     }
 

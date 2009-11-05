@@ -218,19 +218,13 @@ namespace Ict.Plugins.Finance.SwiftParser
                         {
                             if (bankAccountData[bankCounter * 3 + 0] == stmt.accountCode)
                             {
-                                string newfilename = Path.GetFileName(RawFile);
-
-                                if (!newfilename.StartsWith(lastDate))
-                                {
-                                    newfilename = lastDate + "_" + bankAccountData[bankCounter * 3 + 1] + newfilename;
-                                }
-
-                                newfilename = OutputPath + Path.DirectorySeparatorChar +
-                                              bankAccountData[bankCounter * 3 + 2] + Path.DirectorySeparatorChar + newfilename;
+                                lastDate = stmt.date;
+                                string newfilename = OutputPath + Path.DirectorySeparatorChar +
+                                                     bankAccountData[bankCounter * 3 + 2] + Path.DirectorySeparatorChar +
+                                                     bankAccountData[bankCounter * 3 + 1] + "_" + lastDate + ".sta";
                                 TSwiftParser.DumpMT940File(newfilename,
                                     stmt);
                                 filesWereSplit = true;
-                                lastDate = stmt.date;
                             }
                         }
                     }
@@ -253,7 +247,7 @@ namespace Ict.Plugins.Finance.SwiftParser
                         {
                             BackupName = OutputPath + Path.DirectorySeparatorChar + "imported" +
                                          Path.DirectorySeparatorChar +
-                                         Path.GetFileNameWithoutExtension(Backupfilename) + CountBackup.ToString() + ".sta";
+                                         Path.GetFileNameWithoutExtension(Backupfilename) + "_" + CountBackup.ToString() + ".sta";
                             CountBackup++;
                         }
 
