@@ -1689,19 +1689,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// TableId for Ict.Common.Data generic functions
         public new static short TableId = 5603;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftLedgerNumberId = 23;
+        public static short ColumnDetailKeyId = 23;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftBatchNumberId = 24;
+        public static short ColumnOriginalAmountOnStatementId = 24;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftTransactionNumberId = 25;
+        public static short ColumnGiftLedgerNumberId = 25;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftDetailNumberId = 26;
+        public static short ColumnGiftBatchNumberId = 26;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDonorKeyId = 27;
+        public static short ColumnGiftTransactionNumberId = 27;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDonorShortNameId = 28;
+        public static short ColumnGiftDetailNumberId = 28;
         /// used for generic TTypedDataTable functions
-        public static short ColumnRecipientDescriptionId = 29;
+        public static short ColumnDonorKeyId = 29;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDonorShortNameId = 30;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRecipientDescriptionId = 31;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1731,16 +1735,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
                     new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(23, "GiftLedgerNumber", "GiftLedgerNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(24, "GiftBatchNumber", "GiftBatchNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(25, "GiftTransactionNumber", "GiftTransactionNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(26, "GiftDetailNumber", "GiftDetailNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(27, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(28, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(29, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(23, "DetailKey", "DetailKey", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(24, "OriginalAmountOnStatement", "OriginalAmountOnStatement", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(25, "GiftLedgerNumber", "GiftLedgerNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(26, "GiftBatchNumber", "GiftBatchNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(27, "GiftTransactionNumber", "GiftTransactionNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(28, "GiftDetailNumber", "GiftDetailNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(29, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(30, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(31, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
-                    0, 1
+                    0, 1, 23
                 }));
             return true;
         }
@@ -1763,6 +1769,10 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         {
         }
 
+        ///
+        public DataColumn ColumnDetailKey;
+        ///
+        public DataColumn ColumnOriginalAmountOnStatement;
         ///
         public DataColumn ColumnGiftLedgerNumber;
         ///
@@ -1804,10 +1814,12 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("GiftLedgerNumber", typeof(string)));
-            this.Columns.Add(new System.Data.DataColumn("GiftBatchNumber", typeof(string)));
-            this.Columns.Add(new System.Data.DataColumn("GiftTransactionNumber", typeof(string)));
-            this.Columns.Add(new System.Data.DataColumn("GiftDetailNumber", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("DetailKey", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("OriginalAmountOnStatement", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("GiftLedgerNumber", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("GiftBatchNumber", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("GiftTransactionNumber", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("GiftDetailNumber", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("DonorKey", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("DonorShortName", typeof(string)));
             this.Columns.Add(new System.Data.DataColumn("RecipientDescription", typeof(string)));
@@ -1839,6 +1851,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.ColumnDetailKey = this.Columns["DetailKey"];
+            this.ColumnOriginalAmountOnStatement = this.Columns["OriginalAmountOnStatement"];
             this.ColumnGiftLedgerNumber = this.Columns["GiftLedgerNumber"];
             this.ColumnGiftBatchNumber = this.Columns["GiftBatchNumber"];
             this.ColumnGiftTransactionNumber = this.Columns["GiftTransactionNumber"];
@@ -1846,8 +1860,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.ColumnDonorKey = this.Columns["DonorKey"];
             this.ColumnDonorShortName = this.Columns["DonorShortName"];
             this.ColumnRecipientDescription = this.Columns["RecipientDescription"];
-            this.PrimaryKey = new System.Data.DataColumn[2] {
-                    ColumnStatementKey,ColumnOrder};
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnStatementKey,ColumnOrder,ColumnDetailKey};
         }
 
         /// Access a typed row by index
@@ -1904,6 +1918,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
         {
             return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDetailKeyDBName()
+        {
+            return "DetailKey";
+        }
+
+        /// get character length for column
+        public static short GetDetailKeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetOriginalAmountOnStatementDBName()
+        {
+            return "OriginalAmountOnStatement";
+        }
+
+        /// get character length for column
+        public static short GetOriginalAmountOnStatementLength()
+        {
+            return -1;
         }
 
         /// get the name of the field in the database for this column
@@ -2006,7 +2044,59 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         ///
-        public string GiftLedgerNumber
+        public Int32 DetailKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDetailKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDetailKey)
+                            || (((Int32)(this[this.myTable.ColumnDetailKey])) != value)))
+                {
+                    this[this.myTable.ColumnDetailKey] = value;
+                }
+            }
+        }
+
+        ///
+        public Double OriginalAmountOnStatement
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnOriginalAmountOnStatement.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Double)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnOriginalAmountOnStatement)
+                            || (((Double)(this[this.myTable.ColumnOriginalAmountOnStatement])) != value)))
+                {
+                    this[this.myTable.ColumnOriginalAmountOnStatement] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 GiftLedgerNumber
         {
             get
             {
@@ -2014,17 +2104,17 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnGiftLedgerNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
-                    return ((string)(ret));
+                    return ((Int32)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnGiftLedgerNumber)
-                            || (((string)(this[this.myTable.ColumnGiftLedgerNumber])) != value)))
+                            || (((Int32)(this[this.myTable.ColumnGiftLedgerNumber])) != value)))
                 {
                     this[this.myTable.ColumnGiftLedgerNumber] = value;
                 }
@@ -2032,7 +2122,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         ///
-        public string GiftBatchNumber
+        public Int32 GiftBatchNumber
         {
             get
             {
@@ -2040,17 +2130,17 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnGiftBatchNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
-                    return ((string)(ret));
+                    return ((Int32)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnGiftBatchNumber)
-                            || (((string)(this[this.myTable.ColumnGiftBatchNumber])) != value)))
+                            || (((Int32)(this[this.myTable.ColumnGiftBatchNumber])) != value)))
                 {
                     this[this.myTable.ColumnGiftBatchNumber] = value;
                 }
@@ -2058,7 +2148,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         ///
-        public string GiftTransactionNumber
+        public Int32 GiftTransactionNumber
         {
             get
             {
@@ -2066,17 +2156,17 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnGiftTransactionNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
-                    return ((string)(ret));
+                    return ((Int32)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnGiftTransactionNumber)
-                            || (((string)(this[this.myTable.ColumnGiftTransactionNumber])) != value)))
+                            || (((Int32)(this[this.myTable.ColumnGiftTransactionNumber])) != value)))
                 {
                     this[this.myTable.ColumnGiftTransactionNumber] = value;
                 }
@@ -2084,7 +2174,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         ///
-        public string GiftDetailNumber
+        public Int32 GiftDetailNumber
         {
             get
             {
@@ -2092,17 +2182,17 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 ret = this[this.myTable.ColumnGiftDetailNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return String.Empty;
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
-                    return ((string)(ret));
+                    return ((Int32)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnGiftDetailNumber)
-                            || (((string)(this[this.myTable.ColumnGiftDetailNumber])) != value)))
+                            || (((Int32)(this[this.myTable.ColumnGiftDetailNumber])) != value)))
                 {
                     this[this.myTable.ColumnGiftDetailNumber] = value;
                 }
@@ -2213,6 +2303,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.SetNull(this.myTable.ColumnDateModified);
             this.SetNull(this.myTable.ColumnModifiedBy);
             this.SetNull(this.myTable.ColumnModificationId);
+            this.SetNull(this.myTable.ColumnDetailKey);
+            this.SetNull(this.myTable.ColumnOriginalAmountOnStatement);
             this.SetNull(this.myTable.ColumnGiftLedgerNumber);
             this.SetNull(this.myTable.ColumnGiftBatchNumber);
             this.SetNull(this.myTable.ColumnGiftTransactionNumber);
@@ -2220,6 +2312,30 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.SetNull(this.myTable.ColumnDonorKey);
             this.SetNull(this.myTable.ColumnDonorShortName);
             this.SetNull(this.myTable.ColumnRecipientDescription);
+        }
+
+        /// test for NULL value
+        public bool IsDetailKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnDetailKey);
+        }
+
+        /// assign NULL value
+        public void SetDetailKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnDetailKey);
+        }
+
+        /// test for NULL value
+        public bool IsOriginalAmountOnStatementNull()
+        {
+            return this.IsNull(this.myTable.ColumnOriginalAmountOnStatement);
+        }
+
+        /// assign NULL value
+        public void SetOriginalAmountOnStatementNull()
+        {
+            this.SetNull(this.myTable.ColumnOriginalAmountOnStatement);
         }
 
         /// test for NULL value

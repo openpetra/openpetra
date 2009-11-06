@@ -143,6 +143,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 {
                     // TODO: for some reason, the columns' initialisation in the constructor does not have any effect; need to do here again???
                     grdResult.Columns.Clear();
+                    grdResult.AddTextColumn("id", FMainDS.AEpTransaction.ColumnOrder);
                     grdResult.AddTextColumn("transaction type", FMainDS.AEpTransaction.ColumnTransactionTypeCode);
                     grdResult.AddTextColumn("Account Name", FMainDS.AEpTransaction.ColumnAccountName);
                     grdResult.AddTextColumn("DonorKey", FMainDS.AEpTransaction.ColumnDonorKey);
@@ -402,7 +403,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             catch (Exception exp)
             {
                 this.Cursor = Cursors.Default;
-                MessageBox.Show(exp.Message);
+                MessageBox.Show(exp.Message + Environment.NewLine + exp.StackTrace);
             }
         }
 

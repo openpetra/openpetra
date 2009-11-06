@@ -85,10 +85,11 @@ namespace Ict.Plugins.Finance.SwiftParser
 
                 foreach (TTransaction tr in stmt.transactions)
                 {
-                    AEpTransactionRow row = AMainDS.AEpTransaction.NewRowTyped();
+                    BankImportTDSAEpTransactionRow row = AMainDS.AEpTransaction.NewRowTyped();
 
                     row.StatementKey = statementCounter;
                     row.Order = transactionCounter;
+                    row.DetailKey = -1;
                     row.AccountName = tr.partnerName;
 
                     if ((tr.accountCode != null) && tr.accountCode.StartsWith("0"))

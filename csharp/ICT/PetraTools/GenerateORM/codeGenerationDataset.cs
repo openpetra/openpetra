@@ -263,6 +263,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                     OverloadTable = true;
                                 }
 
+                                if (tableNodes.Name.ToLower() == "primarykey")
+                                {
+                                    TConstraint primKeyConstraint = table.GetPrimaryKey();
+                                    primKeyConstraint.strThisFields = StringHelper.StrSplit(TXMLParser.GetAttribute(tableNodes,
+                                            "thisFields"), ",");
+
+                                    OverloadTable = true;
+                                }
+
                                 tableNodes = tableNodes.NextSibling;
                             }
 

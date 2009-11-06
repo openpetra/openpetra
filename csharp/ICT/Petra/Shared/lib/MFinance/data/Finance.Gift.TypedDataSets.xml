@@ -29,13 +29,16 @@
             <CustomField name="PartnerKey" type="Int64"/>
         </Table>
         <Table sqltable="a_ep_transaction">
-            <CustomField name="GiftLedgerNumber" type="string"/>
-            <CustomField name="GiftBatchNumber" type="string"/>
-            <CustomField name="GiftTransactionNumber" type="string"/>
-            <CustomField name="GiftDetailNumber" type="string"/>
+            <CustomField name="DetailKey" type="Int32"/>
+            <CustomField name="OriginalAmountOnStatement" type="Double"/>
+            <CustomField name="GiftLedgerNumber" type="Int32"/>
+            <CustomField name="GiftBatchNumber" type="Int32"/>
+            <CustomField name="GiftTransactionNumber" type="Int32"/>
+            <CustomField name="GiftDetailNumber" type="Int32"/>
             <CustomField name="DonorKey" type="Int64"/>
             <CustomField name="DonorShortName" type="string"/>
             <CustomField name="RecipientDescription" type="string"/>
+            <PrimaryKey thisFields="a_statement_key_i, a_order_i, DetailKey"/>
         </Table>
         <Table sqltable="a_ep_match"/>
     </DataSet> 
