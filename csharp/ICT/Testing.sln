@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 # SharpDevelop 3.0.0.3800
@@ -9,6 +9,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Testing.NUnitClient", "Testing\NUnitPetraClient\Ict.Testing.NUnitClient.csproj", "{212F7EE5-B247-4924-93D9-93646CB6C804}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Common.IO", "Testing\Common\IO\Tests.Common.IO.csproj", "{CC90C23D-CCF8-4D41-A25B-5D14911845B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Common.Printing", "Testing\Common\Printing\Tests.Common.Printing.csproj", "{35CC59A5-8FAD-4950-A896-F5823EC85765}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,5 +34,9 @@ Global
 		{CC90C23D-CCF8-4D41-A25B-5D14911845B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC90C23D-CCF8-4D41-A25B-5D14911845B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC90C23D-CCF8-4D41-A25B-5D14911845B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35CC59A5-8FAD-4950-A896-F5823EC85765}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35CC59A5-8FAD-4950-A896-F5823EC85765}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35CC59A5-8FAD-4950-A896-F5823EC85765}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35CC59A5-8FAD-4950-A896-F5823EC85765}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

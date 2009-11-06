@@ -482,8 +482,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 return;
             }
 
-            string ShortCodeOfBank = "TODO";
-            string DateOfStatement = "TODO";
+            string ShortCodeOfBank = txtBankName.Text;
+            string DateOfStatement = txtDateStatement.Text;
             string HtmlDocument = String.Empty;
 
             if (rbtUnmatchedGifts.Checked)
@@ -491,10 +491,25 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 HtmlDocument =
                     TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Unmatched transactions, " + ShortCodeOfBank + ", " + DateOfStatement));
             }
+            else if (rbtMatchedGifts.Checked)
+            {
+                HtmlDocument =
+                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Matched transactions, " + ShortCodeOfBank + ", " + DateOfStatement));
+            }
+            else if (rbtOther.Checked)
+            {
+                HtmlDocument =
+                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Other transactions, " + ShortCodeOfBank + ", " + DateOfStatement));
+            }
+
+            StreamWriter sw = new StreamWriter("test.html");
+            sw.WriteLine(HtmlDocument);
+            sw.Close();
 
             if (HtmlDocument.Length == 0)
             {
                 MessageBox.Show(Catalog.GetString("nothing to print"));
+                return;
             }
 
             TGfxPrinter GfxPrinter = new TGfxPrinter(doc);

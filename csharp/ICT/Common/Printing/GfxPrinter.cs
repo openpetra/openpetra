@@ -183,7 +183,7 @@ namespace Ict.Common.Printing
 
             if (CurrentRelativeFontSize != 0)
             {
-                ReturnValue = new Font(ReturnValue.FontFamily, ReturnValue.SizeInPoints + CurrentRelativeFontSize / 2.0f, ReturnValue.Style);
+                ReturnValue = new Font(ReturnValue.FontFamily, ReturnValue.SizeInPoints + CurrentRelativeFontSize * 2.0f, ReturnValue.Style);
             }
 
             return ReturnValue;
@@ -267,14 +267,14 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
-        /// word wrap text, return the number of characters that fit the line width
+        /// word wrap text, return the number of characters that fit the line width;
+        /// if the first word does not fit the space available, wrap the word in itself
         /// </summary>
         /// <param name="ATxt"></param>
         /// <param name="AFont"></param>
         /// <param name="AWidth"></param>
-        /// <param name="firstWordLength"></param>
         /// <returns>returns the length of the first word; this is needed if even the first word does not fit</returns>
-        protected Int32 GetTextLengthThatWillFit(String ATxt, eFont AFont, float AWidth, out Int32 firstWordLength)
+        protected Int32 GetTextLengthThatWillFit(String ATxt, eFont AFont, float AWidth)
         {
             // see also http://www.codeguru.com/vb/gen/vb_misc/printing/article.php/c11233
             string buffer = ATxt;
@@ -285,29 +285,28 @@ namespace Ict.Common.Printing
             };
             string previousWhitespaces = "";
             Int32 result = 0;
-            firstWordLength = 0;
-
+            
             while (GetWidthString(fittingText, AFont) < AWidth)
             {
-                result = fittingText.Length + previousWhitespaces.Length;
+                result = fittingText.Length;
 
                 if (buffer.Length == 0)
                 {
-                    return result;
+                    return ATxt.Length;
                 }
 
                 Int32 indexWhitespace = buffer.IndexOfAny(whitespace);
 
-                if (indexWhitespace > 0)
+                if (indexWhitespace > -1)
                 {
                     string nextWord = buffer.Substring(0, indexWhitespace);
                     fittingText += previousWhitespaces + nextWord;
 
-                    // sometimes there are forced whitespaces (eg &nbsp; etc)
+                    // sometimes there are forced whitespaces (eg &nbsp;, already replaced by spaces etc)
                     // consider them as a word
                     previousWhitespaces = buffer[indexWhitespace].ToString();
 
-                    while (indexWhitespace < buffer.Length && buffer.IndexOfAny(whitespace, indexWhitespace + 1) == indexWhitespace + 1)
+                    while (indexWhitespace < buffer.Length - 1 && buffer.Substring(indexWhitespace + 1).IndexOfAny(whitespace) == 0)
                     {
                         indexWhitespace++;
                         previousWhitespaces += buffer[indexWhitespace];
@@ -317,18 +316,35 @@ namespace Ict.Common.Printing
                 }
                 else // no whitespace left
                 {
+                	// store length of result without the rest of the text, because it might not fit; 
+                	// but include whitespaces already, avoid printing them at start of new line
+                	result = (fittingText + previousWhitespaces).Length;
                     fittingText += previousWhitespaces + buffer;
                     previousWhitespaces = "";
                     buffer = "";
                 }
-
-                if (firstWordLength == 0)
-                {
-                    firstWordLength = fittingText.Length + previousWhitespaces.Length;
-                }
             }
 
-            return result + previousWhitespaces.Length;
+            if (result > 0)
+            {
+            	result += previousWhitespaces.Length;
+            }
+            
+            if (result == 0)
+            {
+            	// the first word is already too long for the assigned space
+            	// see how many characters would fit
+            	buffer = fittingText;
+            	fittingText = "";
+	            while (GetWidthString(fittingText, AFont) < AWidth && buffer.Length > 0)
+	            {
+	            	fittingText += buffer[0];
+            		buffer = buffer.Substring(1);
+	            }
+	            return fittingText.Length - 1;
+            }
+            
+            return result;
         }
 
         /// <summary>
@@ -337,24 +353,12 @@ namespace Ict.Common.Printing
         /// uses FCurrentXPos and FCurrentYPos to know where to start to print, and also sets
         /// valid values in those member variables
         /// </summary>
-        /// <returns>s bool true if any text was printed</returns>
+        /// <returns>true if any text was printed</returns>
         public override bool PrintStringWrap(String ATxt, eFont AFont, float AXPos, float AWidth, eAlignment AAlign)
         {
             while (ATxt.Length > 0)
             {
-                Int32 firstWordLength;
-                Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AXPos + AWidth - FCurrentXPos, out firstWordLength);
-
-                if ((length <= 0) && (FCurrentXPos == AXPos) && (firstWordLength > 0))
-                {
-                    // the word is too long, it will never fit;
-                    // force to print the first word
-                    // todo: this overwrites the text in the next cell; should we break the line inside the word, or not print the overlap?
-                    // goal: the problem should be easy to notice by the user...
-                    length = firstWordLength;
-                    string toPrint = ATxt.Substring(0, length);
-                    TLogging.Log("the text \"" + toPrint + "\" does not fit into the assigned space!");
-                }
+                Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AXPos + AWidth - FCurrentXPos);
 
                 if (length > 0)
                 {

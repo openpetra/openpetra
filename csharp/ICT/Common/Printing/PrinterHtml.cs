@@ -113,12 +113,7 @@ namespace Ict.Common.Printing
                     Environment.NewLine + "(see log file for details: " + TLogging.GetLogFileName() +
                     ")" + Environment.NewLine + e.Message);
             }
-
-            if (result == null)
-            {
-                return result;
-            }
-
+           
             return result;
         }
 
@@ -203,13 +198,45 @@ namespace Ict.Common.Printing
                 // Paper Size Width is inch/100
                 //printer.Inch2Twips(printer.Document.PrinterSettings.PaperSizes[0].Width*100);
                 //float edge = printer.Cm2Twips(1.5f);
-                printer.CurrentXPos = printer.LeftMargin;
+                float pageRightMargin = TGfxPrinter.Cm2Inch(1.0f);
+                float pageLeftMargin = TGfxPrinter.Cm2Inch(1.3f);
+                float WidthAvailable;
+
+		       	XmlNode BodyNode = TXMLParser.FindNodeRecursive(FHtmlDoc.DocumentElement, "body");
+                
+                if (TXMLParser.HasAttribute(BodyNode, "style"))
+                {
+                	string styles = TXMLParser.GetAttribute(BodyNode, "style");
+                	string[] namevaluepairs = styles.Split(',');
+                	foreach (string namevaluepair in namevaluepairs)
+                	{
+                		string[] detail = namevaluepair.Split(':');
+                		if (detail[0] == "margin-left")
+                		{
+                			// TODO: PixelToInch? support not just 0px left margin
+                			if (detail[1] == "0px")
+                			{
+                				pageLeftMargin = 0;
+                			}
+                		}
+                		else if (detail[0] == "margin-right")
+                		{
+                			// TODO: PixelToInch? support not just 0px right margin
+                			if (detail[1] == "0px")
+                			{
+                				pageRightMargin = 0;
+                			}
+                		}
+                	}
+                }
 
                 // TODO set the margins and the font sizes in the HTML file???
+                printer.CurrentXPos =  printer.LeftMargin + pageLeftMargin;
+                WidthAvailable = printer.Width - (pageRightMargin + pageLeftMargin);
                 printer.FDefaultFont = new System.Drawing.Font("Arial", 12);
                 printer.FDefaultBoldFont = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
                 XmlNode childNode = FCurrentNodeNextPage.FirstChild;
-                RenderContent(printer.LeftMargin + TGfxPrinter.Cm2Inch(1.3f), printer.Width - TGfxPrinter.Cm2Inch(2.3f), ref childNode);
+                RenderContent(printer.CurrentXPos, WidthAvailable, ref childNode);
 
                 // there can be several body blocks, each representing a page
                 FCurrentNodeNextPage = FCurrentNodeNextPage.NextSibling;
@@ -261,6 +288,18 @@ namespace Ict.Common.Printing
             return s;
         }
 
+        /// <summary>
+        /// the px value from an HTML document is converted to an inch value for printing
+        /// </summary>
+        /// <param name="APixel"></param>
+        /// <returns></returns>
+        public static float Pixel2Inch(Int32 APixel)
+        {
+        	// without any margin, a table with width of approx 800 px does fit on a page
+        	// pagewidth: 20 cm = 7.87 inches
+        	return ((float)Convert.ToDouble(APixel) * 7.87f) / 800.0f;
+        }
+        
         /// <summary>
         /// interpret HTML code
         /// </summary>
@@ -425,7 +464,7 @@ namespace Ict.Common.Printing
             FPrinter.LineFeed();
             FPrinter.CurrentXPos = AXPos;
 
-            int border = 1;
+            int border = 0;
             int height = -1;
 
             if (TXMLParser.HasAttribute(tableNode, "border"))
@@ -441,17 +480,19 @@ namespace Ict.Common.Printing
                 {
                     AWidthAvailable *= (float)Convert.ToDouble(width.Substring(0, width.Length - 1)) / 100.0f;
                 }
+                else
+                {
+                	AWidthAvailable = Pixel2Inch(Convert.ToInt32(width));
+                }
             }
 
             if (TXMLParser.HasAttribute(tableNode, "height"))
             {
-                // TODO: convert from html pixel into printing height
+                // TODO: convert from html pixel into printing height, using Pixel2Inch
                 // height = TXMLParser.GetIntAttribute(tableNode, "height");
             }
 
-            // todo: read border value from table attributes
-            // todo: read table width from table styles
-            curNode = curNode.FirstChild; // should be tbody, or tr
+            curNode = curNode.FirstChild; // should be tbody, or tr, or colgroup
 
             // widths of columns defined in colgroup
             List <Int32>colWidth = new List <Int32>();
@@ -479,18 +520,16 @@ namespace Ict.Common.Printing
                     colNode = colNode.NextSibling;
                 }
 
-                // Twips are pixel/20???
-                // full page width is 6.892598, and this should fit for 600 pixel
-                Int32 newTableWidth = Convert.ToInt32(6.892598f * TableWidth / 600.0f);
-
-                if (newTableWidth < AWidthAvailable)
+                if (Pixel2Inch(TableWidth) < AWidthAvailable)
                 {
-                    AWidthAvailable = newTableWidth;
+                    AWidthAvailable = Pixel2Inch(TableWidth);
+                }
 
-                    for (Int32 counter = 0; counter < colWidth.Count; counter++)
-                    {
-                        colWidth[counter] = Convert.ToInt32((colWidth[counter] * 100.0f / TableWidth));
-                    }
+                // calculate percentages
+                for (Int32 counter = 0; counter < colWidth.Count; counter++)
+                {
+                	int test = Convert.ToInt32((colWidth[counter] * 100.0f / TableWidth));
+                    colWidth[counter] = Convert.ToInt32((colWidth[counter] * 100.0f / TableWidth));
                 }
 
                 curNode = curNode.NextSibling;
