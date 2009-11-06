@@ -100,6 +100,7 @@ namespace Ict.Common.Printing
                 }
 
                 AHtmlDocument = AHtmlDocument.Replace("<br>", "<br/>");
+                AHtmlDocument = AHtmlDocument.Replace("&", "&amp;");
                 AHtmlDocument = AHtmlDocument.Replace("&amp;", "&amp;amp;");
                 AHtmlDocument = AHtmlDocument.Replace("&nbsp;", "&amp;nbsp;");
                 AHtmlDocument = AHtmlDocument.Replace("&gt;", "&amp;gt;");
@@ -428,6 +429,11 @@ namespace Ict.Common.Printing
                     FPrinter.CurrentXPos = AXPos;
                     curNode = curNode.NextSibling;
                     FPrinter.CurrentAlignment = origAlignment;
+                }
+                else if (curNode.Name == "#comment")
+                {
+                	// just skip comments
+                	curNode = curNode.NextSibling;
                 }
                 // unrecognised HTML element, text
                 else if (curNode.InnerText.Length > 0)

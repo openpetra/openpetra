@@ -165,11 +165,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                     FillPanelInfo(startBalance, endBalance, bankName);
 
-                    rbtMatchedGifts.Checked = true;
-
                     FMainDS.AEpTransaction.DefaultView.AllowNew = false;
                     grdResult.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AEpTransaction.DefaultView);
                     grdResult.AutoSizeCells();
+
+                    rbtMatchedGifts.Checked = true;
                 }
                 catch (Exception exp)
                 {

@@ -317,7 +317,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 DBAccess.GDBAccessObj = FSqliteDatabase;
                 AEpMatchAccess.SubmitChanges(MatchDS.AEpMatch, dbtransaction, out Verification);
 
-                tr.EpMatchKey = MatchDS.AEpMatch[0].EpMatchKey;
+                tr.EpMatchKey = ((AEpMatchRow)MatchDS.AEpMatch.DefaultView[0].Row).EpMatchKey;
 
                 DBAccess.GDBAccessObj = backupDB;
             }
