@@ -61,6 +61,7 @@ namespace Tests.Common.Printing
             this.tbbPreview = new System.Windows.Forms.ToolStripButton();
             this.tbbSaveTestText = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.txtHTMLText = new System.Windows.Forms.TextBox();
             this.tabPreview = new System.Windows.Forms.TabControl();
             this.tbpPrintPreview = new System.Windows.Forms.TabPage();
             this.printPreviewControl1 = new System.Windows.Forms.PrintPreviewControl();
@@ -70,7 +71,6 @@ namespace Tests.Common.Printing
             this.cmbZoom = new System.Windows.Forms.ToolStripComboBox();
             this.tbpHtmlView = new System.Windows.Forms.TabPage();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
-            this.txtHTMLText = new System.Windows.Forms.TextBox();
             this.toolStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -134,8 +134,19 @@ namespace Tests.Common.Printing
             //
             this.splitContainer1.Panel2.Controls.Add(this.tabPreview);
             this.splitContainer1.Size = new System.Drawing.Size(635, 398);
-            this.splitContainer1.SplitterDistance = 60;
+            this.splitContainer1.SplitterDistance = 59;
             this.splitContainer1.TabIndex = 5;
+
+            //
+            // txtHTMLText
+            //
+            this.txtHTMLText.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtHTMLText.Location = new System.Drawing.Point(0, 0);
+            this.txtHTMLText.Multiline = true;
+            this.txtHTMLText.Name = "txtHTMLText";
+            this.txtHTMLText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtHTMLText.Size = new System.Drawing.Size(635, 59);
+            this.txtHTMLText.TabIndex = 5;
 
             //
             // tabPreview
@@ -146,7 +157,7 @@ namespace Tests.Common.Printing
             this.tabPreview.Location = new System.Drawing.Point(0, 0);
             this.tabPreview.Name = "tabPreview";
             this.tabPreview.SelectedIndex = 0;
-            this.tabPreview.Size = new System.Drawing.Size(635, 334);
+            this.tabPreview.Size = new System.Drawing.Size(635, 335);
             this.tabPreview.TabIndex = 6;
 
             //
@@ -157,7 +168,7 @@ namespace Tests.Common.Printing
             this.tbpPrintPreview.Location = new System.Drawing.Point(4, 22);
             this.tbpPrintPreview.Name = "tbpPrintPreview";
             this.tbpPrintPreview.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpPrintPreview.Size = new System.Drawing.Size(627, 308);
+            this.tbpPrintPreview.Size = new System.Drawing.Size(627, 309);
             this.tbpPrintPreview.TabIndex = 0;
             this.tbpPrintPreview.Text = "Print Preview";
             this.tbpPrintPreview.UseVisualStyleBackColor = true;
@@ -168,7 +179,7 @@ namespace Tests.Common.Printing
             this.printPreviewControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.printPreviewControl1.Location = new System.Drawing.Point(3, 28);
             this.printPreviewControl1.Name = "printPreviewControl1";
-            this.printPreviewControl1.Size = new System.Drawing.Size(621, 277);
+            this.printPreviewControl1.Size = new System.Drawing.Size(621, 278);
             this.printPreviewControl1.TabIndex = 3;
 
             //
@@ -194,6 +205,7 @@ namespace Tests.Common.Printing
             this.tbbPreviousPage.Name = "tbbPreviousPage";
             this.tbbPreviousPage.Size = new System.Drawing.Size(79, 22);
             this.tbbPreviousPage.Text = "Previous Page";
+            this.tbbPreviousPage.Click += new System.EventHandler(this.TbbPreviousPageClick);
 
             //
             // tbbNextPage
@@ -204,6 +216,7 @@ namespace Tests.Common.Printing
             this.tbbNextPage.Name = "tbbNextPage";
             this.tbbNextPage.Size = new System.Drawing.Size(61, 22);
             this.tbbNextPage.Text = "Next Page";
+            this.tbbNextPage.Click += new System.EventHandler(this.TbbNextPageClick);
 
             //
             // cmbZoom
@@ -225,7 +238,7 @@ namespace Tests.Common.Printing
             this.tbpHtmlView.Location = new System.Drawing.Point(4, 22);
             this.tbpHtmlView.Name = "tbpHtmlView";
             this.tbpHtmlView.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpHtmlView.Size = new System.Drawing.Size(627, 287);
+            this.tbpHtmlView.Size = new System.Drawing.Size(627, 309);
             this.tbpHtmlView.TabIndex = 1;
             this.tbpHtmlView.Text = "HTML View";
             this.tbpHtmlView.UseVisualStyleBackColor = true;
@@ -237,19 +250,8 @@ namespace Tests.Common.Printing
             this.webBrowser1.Location = new System.Drawing.Point(3, 3);
             this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(621, 281);
+            this.webBrowser1.Size = new System.Drawing.Size(621, 303);
             this.webBrowser1.TabIndex = 1;
-
-            //
-            // txtHTMLText
-            //
-            this.txtHTMLText.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtHTMLText.Location = new System.Drawing.Point(0, 0);
-            this.txtHTMLText.Multiline = true;
-            this.txtHTMLText.Name = "txtHTMLText";
-            this.txtHTMLText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtHTMLText.Size = new System.Drawing.Size(635, 60);
-            this.txtHTMLText.TabIndex = 5;
 
             //
             // MainForm

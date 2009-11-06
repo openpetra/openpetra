@@ -24,6 +24,7 @@
  *
  ************************************************************************/
 using System;
+using System.Xml;
 using System.Collections.Generic;
 using Ict.Common.Printing;
 
@@ -164,10 +165,14 @@ namespace Ict.Common.Printing
         /// <summary>todoComment</summary>
         protected eFont FCurrentFont;
 
+        private eFont FCurrentFontBackup;
+
         /// <summary>
         /// relative number; 0 is normal size
         /// </summary>
         protected Int32 FCurrentRelativeFontSize = 0;
+
+        private Int32 FCurrentRelativeFontSizeBackup = 0;
 
         /// <summary>todoComment</summary>
         protected eAlignment FCurrentAlignment = eAlignment.eLeft;
@@ -518,6 +523,8 @@ namespace Ict.Common.Printing
         public void StartSimulatePrinting()
         {
             FCurrentYPosBackup = FCurrentYPos;
+            FCurrentFontBackup = FCurrentFont;
+            FCurrentRelativeFontSizeBackup = FCurrentRelativeFontSize;
             FPrintingMode = ePrintingMode.eDoSimulate;
         }
 
@@ -529,6 +536,8 @@ namespace Ict.Common.Printing
         public void FinishSimulatePrinting()
         {
             FCurrentYPos = FCurrentYPosBackup;
+            FCurrentFont = FCurrentFontBackup;
+            FCurrentRelativeFontSize = FCurrentRelativeFontSizeBackup;
             FPrintingMode = ePrintingMode.eDoPrint;
         }
 
@@ -572,9 +581,14 @@ namespace Ict.Common.Printing
         /// <param name="AXPos">the X position to start the table</param>
         /// <param name="AWidthAvailable">AWidthAvailable</param>
         /// <param name="rows"></param>
-        /// <returns>s height of table</returns>
-        public virtual float PrintTable(float AXPos, float AWidthAvailable, List <TTableRowGfx>rows)
+        /// <param name="ARowsFittingOnPage">number of rows that fitted on the page</param>
+        /// <returns>height of table</returns>
+        public virtual float PrintTable(float AXPos, float AWidthAvailable, List <TTableRowGfx>rows, out Int32 ARowsFittingOnPage)
         {
+            float origYPos = FCurrentYPos;
+
+            ARowsFittingOnPage = 0;
+
             foreach (TTableRowGfx row in rows)
             {
                 float currentYPos = FCurrentYPos;
@@ -600,7 +614,8 @@ namespace Ict.Common.Printing
 
                     eAlignment origAlignment = FCurrentAlignment;
                     FCurrentAlignment = cell.align;
-                    cell.contentHeight = FPrinterLayout.RenderContent(currentXPos, cell.contentWidth, ref cell.content);
+                    XmlNode LocalNode = cell.content;
+                    cell.contentHeight = FPrinterLayout.RenderContent(currentXPos, cell.contentWidth, ref LocalNode);
                     LineFeed();
                     cell.contentHeight = FCurrentYPos - currentYPos;
 
@@ -631,9 +646,17 @@ namespace Ict.Common.Printing
                 }
 
                 FCurrentYPos += row.contentHeight;
+
+                // do we need a page break?
+                if (!ValidYPos())
+                {
+                    break;
+                }
+
+                ARowsFittingOnPage++;
             }
 
-            return -1;
+            return FCurrentYPos - origYPos;
         }
     }
 }

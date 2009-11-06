@@ -101,10 +101,6 @@ namespace Ict.Common.Printing
 
                 AHtmlDocument = AHtmlDocument.Replace("<br>", "<br/>");
                 AHtmlDocument = AHtmlDocument.Replace("&", "&amp;");
-                AHtmlDocument = AHtmlDocument.Replace("&amp;", "&amp;amp;");
-                AHtmlDocument = AHtmlDocument.Replace("&nbsp;", "&amp;nbsp;");
-                AHtmlDocument = AHtmlDocument.Replace("&gt;", "&amp;gt;");
-                AHtmlDocument = AHtmlDocument.Replace("&lt;", "&amp;lt;");
                 result.LoadXml(AHtmlDocument);
             }
             catch (Exception e)
@@ -114,7 +110,7 @@ namespace Ict.Common.Printing
                     Environment.NewLine + "(see log file for details: " + TLogging.GetLogFileName() +
                     ")" + Environment.NewLine + e.Message);
             }
-           
+
             return result;
         }
 
@@ -177,6 +173,9 @@ namespace Ict.Common.Printing
         {
         }
 
+        // this should be null, while printing a page; it is set to a node, when the node does not fit on the page anymore
+        private XmlNode FContinueNextPageNode = null;
+
         /// <summary>
         /// print one page of the HTML, one body tag per page???
         /// TODO: or until div with page break?
@@ -184,9 +183,25 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override void PrintPageBody()
         {
-            FCurrentNodeNextPage = GetPageNode(FPrinter.CurrentPageNr);
+            XmlNode CurrentNode = null;
 
-            if (FCurrentNodeNextPage == null)
+            if (FContinueNextPageNode != null)
+            {
+                CurrentNode = FContinueNextPageNode;
+                FContinueNextPageNode = null;
+            }
+
+            if (CurrentNode == null)
+            {
+                FCurrentNodeNextPage = GetPageNode(FPrinter.CurrentPageNr);
+
+                if (FCurrentNodeNextPage != null)
+                {
+                    CurrentNode = FCurrentNodeNextPage.FirstChild;
+                }
+            }
+
+            if (CurrentNode == null)
             {
                 return;
             }
@@ -203,45 +218,54 @@ namespace Ict.Common.Printing
                 float pageLeftMargin = TGfxPrinter.Cm2Inch(1.3f);
                 float WidthAvailable;
 
-		       	XmlNode BodyNode = TXMLParser.FindNodeRecursive(FHtmlDoc.DocumentElement, "body");
-                
+                XmlNode BodyNode = TXMLParser.FindNodeRecursive(FHtmlDoc.DocumentElement, "body");
+
                 if (TXMLParser.HasAttribute(BodyNode, "style"))
                 {
-                	string styles = TXMLParser.GetAttribute(BodyNode, "style");
-                	string[] namevaluepairs = styles.Split(',');
-                	foreach (string namevaluepair in namevaluepairs)
-                	{
-                		string[] detail = namevaluepair.Split(':');
-                		if (detail[0] == "margin-left")
-                		{
-                			// TODO: PixelToInch? support not just 0px left margin
-                			if (detail[1] == "0px")
-                			{
-                				pageLeftMargin = 0;
-                			}
-                		}
-                		else if (detail[0] == "margin-right")
-                		{
-                			// TODO: PixelToInch? support not just 0px right margin
-                			if (detail[1] == "0px")
-                			{
-                				pageRightMargin = 0;
-                			}
-                		}
-                	}
+                    string styles = TXMLParser.GetAttribute(BodyNode, "style");
+                    string[] namevaluepairs = styles.Split(',');
+
+                    foreach (string namevaluepair in namevaluepairs)
+                    {
+                        string[] detail = namevaluepair.Split(':');
+
+                        if (detail[0] == "margin-left")
+                        {
+                            // TODO: PixelToInch? support not just 0px left margin
+                            if (detail[1] == "0px")
+                            {
+                                pageLeftMargin = 0;
+                            }
+                        }
+                        else if (detail[0] == "margin-right")
+                        {
+                            // TODO: PixelToInch? support not just 0px right margin
+                            if (detail[1] == "0px")
+                            {
+                                pageRightMargin = 0;
+                            }
+                        }
+                    }
                 }
 
                 // TODO set the margins and the font sizes in the HTML file???
-                printer.CurrentXPos =  printer.LeftMargin + pageLeftMargin;
+                printer.CurrentXPos = printer.LeftMargin + pageLeftMargin;
                 WidthAvailable = printer.Width - (pageRightMargin + pageLeftMargin);
                 printer.FDefaultFont = new System.Drawing.Font("Arial", 12);
                 printer.FDefaultBoldFont = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
-                XmlNode childNode = FCurrentNodeNextPage.FirstChild;
-                RenderContent(printer.CurrentXPos, WidthAvailable, ref childNode);
 
-                // there can be several body blocks, each representing a page
-                FCurrentNodeNextPage = FCurrentNodeNextPage.NextSibling;
-                printer.SetHasMorePages(FCurrentNodeNextPage != null);
+                RenderContent(printer.CurrentXPos, WidthAvailable, ref CurrentNode);
+
+                if ((CurrentNode == null) && (FContinueNextPageNode == null))
+                {
+                    // there can be several body blocks, each representing a page
+                    FCurrentNodeNextPage = FCurrentNodeNextPage.NextSibling;
+                    printer.SetHasMorePages(FCurrentNodeNextPage != null);
+                }
+                else
+                {
+                    printer.SetHasMorePages(true);
+                }
             }
             else
             {
@@ -278,10 +302,10 @@ namespace Ict.Common.Printing
             s = s.Replace("\n", "");
 
             // replace special codes
+            s = s.Replace("&amp;", "&");
             s = s.Replace("&nbsp;", "  ");
             s = s.Replace("&gt;", "<");
             s = s.Replace("&lt;", ">");
-            s = s.Replace("&amp;", "&");
 
             // other special characters? e.g. &uuml; etc
             // solution: use UTF-8 in the text editor when editing the template
@@ -296,11 +320,11 @@ namespace Ict.Common.Printing
         /// <returns></returns>
         public static float Pixel2Inch(Int32 APixel)
         {
-        	// without any margin, a table with width of approx 800 px does fit on a page
-        	// pagewidth: 20 cm = 7.87 inches
-        	return ((float)Convert.ToDouble(APixel) * 7.87f) / 800.0f;
+            // without any margin, a table with width of approx 800 px does fit on a page
+            // pagewidth: 20 cm = 7.87 inches
+            return ((float)Convert.ToDouble(APixel) * 7.87f) / 800.0f;
         }
-        
+
         /// <summary>
         /// interpret HTML code
         /// </summary>
@@ -314,7 +338,7 @@ namespace Ict.Common.Printing
         {
             float oldYPos = FPrinter.CurrentYPos;
 
-            while (curNode != null)
+            while (curNode != null && FPrinter.ValidYPos() && FContinueNextPageNode == null)
             {
                 if (curNode.Name == "table")
                 {
@@ -370,6 +394,11 @@ namespace Ict.Common.Printing
                     XmlNode child = curNode.FirstChild;
                     RenderContent(AXPos, AWidthAvailable, ref child);
 
+                    if (FContinueNextPageNode != null)
+                    {
+                        break;
+                    }
+
                     // reset font
                     FPrinter.CurrentRelativeFontSize = previousFontSize;
                     curNode = curNode.NextSibling;
@@ -381,6 +410,12 @@ namespace Ict.Common.Printing
                     FPrinter.CurrentFont = eFont.eDefaultBoldFont;
                     XmlNode child = curNode.FirstChild;
                     RenderContent(AXPos, AWidthAvailable, ref child);
+
+                    if (FContinueNextPageNode != null)
+                    {
+                        break;
+                    }
+
                     FPrinter.CurrentFont = previousFont;
                     curNode = curNode.NextSibling;
                 }
@@ -432,8 +467,8 @@ namespace Ict.Common.Printing
                 }
                 else if (curNode.Name == "#comment")
                 {
-                	// just skip comments
-                	curNode = curNode.NextSibling;
+                    // just skip comments
+                    curNode = curNode.NextSibling;
                 }
                 // unrecognised HTML element, text
                 else if (curNode.InnerText.Length > 0)
@@ -455,6 +490,8 @@ namespace Ict.Common.Printing
 
             return FPrinter.CurrentYPos - oldYPos;
         }
+
+        private List <TTableRowGfx>FRowsLeftOver = new List <TTableRowGfx>();
 
         /// <summary>
         /// print an html table
@@ -488,7 +525,7 @@ namespace Ict.Common.Printing
                 }
                 else
                 {
-                	AWidthAvailable = Pixel2Inch(Convert.ToInt32(width));
+                    AWidthAvailable = Pixel2Inch(Convert.ToInt32(width));
                 }
             }
 
@@ -498,116 +535,167 @@ namespace Ict.Common.Printing
                 // height = TXMLParser.GetIntAttribute(tableNode, "height");
             }
 
-            curNode = curNode.FirstChild; // should be tbody, or tr, or colgroup
-
-            // widths of columns defined in colgroup
-            List <Int32>colWidth = new List <Int32>();
-
-            while (curNode != null && curNode.Name != "colgroup"
-                   && curNode.Name != "tbody" && curNode.Name != "tr")
-            {
-                curNode = curNode.NextSibling;
-            }
-
-            if ((curNode != null) && (curNode.Name == "colgroup"))
-            {
-                XmlNode colNode = curNode.FirstChild;
-                Int32 TableWidth = 0;
-
-                while (colNode != null)
-                {
-                    if (TXMLParser.HasAttribute(colNode, "width"))
-                    {
-                        Int32 width = Convert.ToInt32(TXMLParser.GetAttribute(colNode, "width"));
-                        colWidth.Add(width);
-                        TableWidth += width;
-                    }
-
-                    colNode = colNode.NextSibling;
-                }
-
-                if (Pixel2Inch(TableWidth) < AWidthAvailable)
-                {
-                    AWidthAvailable = Pixel2Inch(TableWidth);
-                }
-
-                // calculate percentages
-                for (Int32 counter = 0; counter < colWidth.Count; counter++)
-                {
-                	int test = Convert.ToInt32((colWidth[counter] * 100.0f / TableWidth));
-                    colWidth[counter] = Convert.ToInt32((colWidth[counter] * 100.0f / TableWidth));
-                }
-
-                curNode = curNode.NextSibling;
-            }
-
-            while (curNode != null && curNode.Name != "tbody" && curNode.Name != "tr")
-            {
-                curNode = curNode.NextSibling;
-            }
-
-            if (curNode.Name == "tbody")
-            {
-                curNode = curNode.FirstChild;
-            }
-
             List <TTableRowGfx>preparedRows = new List <TTableRowGfx>();
+            TTableRowGfx titleRow = null;
 
-            while (curNode != null && curNode.Name == "tr")
+            if (FRowsLeftOver.Count > 0)
             {
-                TTableRowGfx preparedRow = new TTableRowGfx();
-                preparedRow.cells = new List <TTableCellGfx>();
-                XmlNode row = curNode;
-                XmlNode cell = curNode.FirstChild;
+                preparedRows = FRowsLeftOver;
+                FRowsLeftOver = new List <TTableRowGfx>();
+            }
+            else
+            {
+                curNode = curNode.FirstChild;     // should be tbody, or tr, or colgroup
 
-                while (cell != null && (cell.Name == "td" || cell.Name == "th"))
+                // widths of columns defined in colgroup
+                List <Int32>colWidth = new List <Int32>();
+
+                while (curNode != null && curNode.Name != "colgroup"
+                       && curNode.Name != "tbody" && curNode.Name != "tr")
                 {
-                    TTableCellGfx preparedCell = new TTableCellGfx();
-                    preparedCell.borderWidth = border;
-                    preparedCell.content = cell.FirstChild;
-                    preparedCell.bold = (cell.Name == "th");
-
-                    if (TXMLParser.GetAttribute(cell, "align") == "right")
-                    {
-                        preparedCell.align = eAlignment.eRight;
-                    }
-                    else if ((TXMLParser.GetAttribute(cell, "align") == "center") || (cell.Name == "th"))
-                    {
-                        preparedCell.align = eAlignment.eCenter;
-                    }
-
-                    preparedRow.cells.Add(preparedCell);
-                    cell = cell.NextSibling;
+                    curNode = curNode.NextSibling;
                 }
 
-                // make sure the percentages are right;
-                // todo: what if only some columns have a percentage?
-                Int32 counter = 0;
-
-                foreach (TTableCellGfx preparedCell in preparedRow.cells)
+                if ((curNode != null) && (curNode.Name == "colgroup"))
                 {
-                    if (preparedCell.columnWidthInPercentage == -1)
+                    XmlNode colNode = curNode.FirstChild;
+                    Int32 TableWidth = 0;
+
+                    while (colNode != null)
                     {
-                        if (colWidth.Count > counter)
+                        if (TXMLParser.HasAttribute(colNode, "width"))
                         {
-                            preparedCell.columnWidthInPercentage = colWidth[counter];
+                            Int32 width = Convert.ToInt32(TXMLParser.GetAttribute(colNode, "width"));
+                            colWidth.Add(width);
+                            TableWidth += width;
                         }
-                        else
-                        {
-                            preparedCell.columnWidthInPercentage = 100.0f / preparedRow.cells.Count;
-                        }
+
+                        colNode = colNode.NextSibling;
                     }
 
-                    counter++;
+                    if (Pixel2Inch(TableWidth) < AWidthAvailable)
+                    {
+                        AWidthAvailable = Pixel2Inch(TableWidth);
+                    }
+
+                    // calculate percentages
+                    for (Int32 counter = 0; counter < colWidth.Count; counter++)
+                    {
+                        int test = Convert.ToInt32((colWidth[counter] * 100.0f / TableWidth));
+                        colWidth[counter] = Convert.ToInt32((colWidth[counter] * 100.0f / TableWidth));
+                    }
+
+                    curNode = curNode.NextSibling;
                 }
 
-                preparedRows.Add(preparedRow);
-                curNode = row.NextSibling;
+                while (curNode != null && curNode.Name != "tbody" && curNode.Name != "tr")
+                {
+                    curNode = curNode.NextSibling;
+                }
+
+                if (curNode.Name == "tbody")
+                {
+                    curNode = curNode.FirstChild;
+                }
+
+                while (curNode != null && curNode.Name == "tr")
+                {
+                    TTableRowGfx preparedRow = new TTableRowGfx();
+                    preparedRow.cells = new List <TTableCellGfx>();
+                    XmlNode row = curNode;
+                    XmlNode cell = curNode.FirstChild;
+
+                    while (cell != null && (cell.Name == "td" || cell.Name == "th"))
+                    {
+                        TTableCellGfx preparedCell = new TTableCellGfx();
+                        preparedCell.borderWidth = border;
+                        preparedCell.content = cell.FirstChild;
+                        preparedCell.bold = (cell.Name == "th");
+
+                        if (cell.Name == "th")
+                        {
+                            // remember title row for next pages
+                            titleRow = preparedRow;
+                        }
+
+                        if (TXMLParser.GetAttribute(cell, "align") == "right")
+                        {
+                            preparedCell.align = eAlignment.eRight;
+                        }
+                        else if ((TXMLParser.GetAttribute(cell, "align") == "center") || (cell.Name == "th"))
+                        {
+                            preparedCell.align = eAlignment.eCenter;
+                        }
+
+                        preparedRow.cells.Add(preparedCell);
+                        cell = cell.NextSibling;
+                    }
+
+                    // make sure the percentages are right;
+                    // todo: what if only some columns have a percentage?
+                    Int32 counter = 0;
+
+                    foreach (TTableCellGfx preparedCell in preparedRow.cells)
+                    {
+                        if (preparedCell.columnWidthInPercentage == -1)
+                        {
+                            if (colWidth.Count > counter)
+                            {
+                                preparedCell.columnWidthInPercentage = colWidth[counter];
+                            }
+                            else
+                            {
+                                preparedCell.columnWidthInPercentage = 100.0f / preparedRow.cells.Count;
+                            }
+                        }
+
+                        counter++;
+                    }
+
+                    preparedRows.Add(preparedRow);
+                    curNode = row.NextSibling;
+                }
             }
 
-            FPrinter.PrintTable(AXPos, AWidthAvailable, preparedRows);
+            // first simulate the printing, and see how many rows will fit on the page
+            Int32 RowsFittingOnPage;
 
-            curNode = tableNode.NextSibling;
+            FPrinter.StartSimulatePrinting();
+            FPrinter.PrintTable(AXPos, AWidthAvailable, preparedRows, out RowsFittingOnPage);
+            FPrinter.FinishSimulatePrinting();
+
+            FContinueNextPageNode = null;
+
+            if (RowsFittingOnPage != preparedRows.Count)
+            {
+                // the rows did not all fit on the page
+                FRowsLeftOver = new List <TTableRowGfx>();
+
+                if (titleRow != null)
+                {
+                    FRowsLeftOver.Add(titleRow);
+                }
+
+                while (preparedRows.Count > RowsFittingOnPage)
+                {
+                    FRowsLeftOver.Add(preparedRows[RowsFittingOnPage]);
+                    preparedRows.RemoveAt(RowsFittingOnPage);
+                }
+
+                curNode = tableNode;
+            }
+            else
+            {
+                // table was completely printed
+                curNode = tableNode.NextSibling;
+            }
+
+            FPrinter.PrintTable(AXPos, AWidthAvailable, preparedRows, out RowsFittingOnPage);
+
+            if (curNode == tableNode)
+            {
+                FContinueNextPageNode = tableNode;
+            }
 
             if (height < FPrinter.CurrentYPos - oldYPos)
             {

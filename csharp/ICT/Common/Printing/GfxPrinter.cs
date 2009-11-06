@@ -285,7 +285,7 @@ namespace Ict.Common.Printing
             };
             string previousWhitespaces = "";
             Int32 result = 0;
-            
+
             while (GetWidthString(fittingText, AFont) < AWidth)
             {
                 result = fittingText.Length;
@@ -316,9 +316,9 @@ namespace Ict.Common.Printing
                 }
                 else // no whitespace left
                 {
-                	// store length of result without the rest of the text, because it might not fit; 
-                	// but include whitespaces already, avoid printing them at start of new line
-                	result = (fittingText + previousWhitespaces).Length;
+                    // store length of result without the rest of the text, because it might not fit;
+                    // but include whitespaces already, avoid printing them at start of new line
+                    result = (fittingText + previousWhitespaces).Length;
                     fittingText += previousWhitespaces + buffer;
                     previousWhitespaces = "";
                     buffer = "";
@@ -327,23 +327,25 @@ namespace Ict.Common.Printing
 
             if (result > 0)
             {
-            	result += previousWhitespaces.Length;
+                result += previousWhitespaces.Length;
             }
-            
+
             if (result == 0)
             {
-            	// the first word is already too long for the assigned space
-            	// see how many characters would fit
-            	buffer = fittingText;
-            	fittingText = "";
-	            while (GetWidthString(fittingText, AFont) < AWidth && buffer.Length > 0)
-	            {
-	            	fittingText += buffer[0];
-            		buffer = buffer.Substring(1);
-	            }
-	            return fittingText.Length - 1;
+                // the first word is already too long for the assigned space
+                // see how many characters would fit
+                buffer = fittingText;
+                fittingText = "";
+
+                while (GetWidthString(fittingText, AFont) < AWidth && buffer.Length > 0)
+                {
+                    fittingText += buffer[0];
+                    buffer = buffer.Substring(1);
+                }
+
+                return fittingText.Length - 1;
             }
-            
+
             return result;
         }
 
@@ -475,7 +477,10 @@ namespace Ict.Common.Printing
             float AWidth,
             float AHeight)
         {
-            FEv.Graphics.DrawRectangle(FBlackPen, AXPos, AYPos, AWidth, AHeight);
+            if (FPrintingMode == ePrintingMode.eDoPrint)
+            {
+                FEv.Graphics.DrawRectangle(FBlackPen, AXPos, AYPos, AWidth, AHeight);
+            }
         }
 
         /// <summary>
@@ -491,7 +496,10 @@ namespace Ict.Common.Printing
         {
             Bitmap img = new System.Drawing.Bitmap(APath);
 
-            FEv.Graphics.DrawImage(img, AXPos, AYPos);
+            if (FPrintingMode == ePrintingMode.eDoPrint)
+            {
+                FEv.Graphics.DrawImage(img, AXPos, AYPos);
+            }
 
             // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
             // pixel/inch = dpi <=> inch = pixel/dpi
@@ -513,7 +521,10 @@ namespace Ict.Common.Printing
             float Height = img.Size.Height / img.VerticalResolution * AHeightPercentage;
             float Width = img.Size.Width / img.HorizontalResolution * AWidthPercentage;
 
-            FEv.Graphics.DrawImage(img, AXPos, AYPos, Width, Height);
+            if (FPrintingMode == ePrintingMode.eDoPrint)
+            {
+                FEv.Graphics.DrawImage(img, AXPos, AYPos, Width, Height);
+            }
 
             // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
             // pixel/inch = dpi <=> inch = pixel/dpi

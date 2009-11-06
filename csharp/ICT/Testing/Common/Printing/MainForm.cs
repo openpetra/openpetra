@@ -64,20 +64,32 @@ namespace Tests.Common.Printing
             TbbPreviewClick(null, null);
         }
 
+        private Int32 NumberOfPages = 0;
+        private TGfxPrinter FGfxPrinter = null;
+
+        private void PrintDocument_EndPrint(System.Object sender, System.Drawing.Printing.PrintEventArgs e)
+        {
+            NumberOfPages = FGfxPrinter.NumberOfPages;
+        }
+
         void TbbPreviewClick(object sender, EventArgs e)
         {
             webBrowser1.DocumentText = txtHTMLText.Text;
 
             PrintDocument doc = new PrintDocument();
 
-            TGfxPrinter GfxPrinter = new TGfxPrinter(doc);
+            FGfxPrinter = new TGfxPrinter(doc);
             TPrinterHtml htmlPrinter = new TPrinterHtml(txtHTMLText.Text,
                 String.Empty,
-                GfxPrinter);
-            GfxPrinter.Init(eOrientation.ePortrait, htmlPrinter);
+                FGfxPrinter);
+            FGfxPrinter.Init(eOrientation.ePortrait, htmlPrinter);
+
+            doc.EndPrint += new PrintEventHandler(this.PrintDocument_EndPrint);
 
             printPreviewControl1.Document = doc;
             printPreviewControl1.InvalidatePreview();
+
+            printPreviewControl1.Rows = 1;
         }
 
         void CmbZoomSelectedIndexChanged(object sender, EventArgs e)
@@ -110,6 +122,22 @@ namespace Tests.Common.Printing
 
             sw.WriteLine(txtHTMLText.Text);
             sw.Close();
+        }
+
+        void TbbPreviousPageClick(object sender, EventArgs e)
+        {
+            if (printPreviewControl1.StartPage > 0)
+            {
+                printPreviewControl1.StartPage--;
+            }
+        }
+
+        void TbbNextPageClick(object sender, EventArgs e)
+        {
+            if (printPreviewControl1.StartPage < NumberOfPages)
+            {
+                printPreviewControl1.StartPage++;
+            }
         }
     }
 }
