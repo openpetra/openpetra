@@ -136,68 +136,9 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             return matchtext;
         }
 
-        /// <summary>
-        /// returns match key id if a match with exactly the same settings already exists for the transactions and gift batch;
-        /// returns -1 if no such match is there, or if something has been changed in the gift batch
-        /// </summary>
-        private Int32 GetIdenticalMatch(BankImportTDS AMainDS, BankImportTDS AMatchDS)
-        {
-            if (AMainDS.AGiftDetail.DefaultView.Count != AMatchDS.AEpMatch.Rows.Count)
-            {
-                return -1;
-            }
-
-            AMainDS.AGiftDetail.DefaultView.Sort = AGiftDetailTable.GetDetailNumberDBName();
-            AMatchDS.AEpMatch.DefaultView.Sort = AEpMatchTable.GetDetailDBName();
-
-            // is it assigned to the same gift details?
-            for (Int32 Counter = 0; Counter < AMainDS.AGiftDetail.DefaultView.Count; Counter++)
-            {
-                // both views are sorted by detail number, so they should fit
-                BankImportTDSAGiftDetailRow giftRow = (BankImportTDSAGiftDetailRow)AMainDS.AGiftDetail.DefaultView[Counter].Row;
-                AEpMatchRow matchRow = (AEpMatchRow)AMatchDS.AEpMatch.DefaultView[Counter].Row;
-
-                bool sameData = true;
-
-                // TODO use constant for GIFT
-                sameData = sameData && matchRow.Action == "GIFT";
-                sameData = sameData && matchRow.RecipientKey == giftRow.RecipientKey;
-                sameData = sameData && matchRow.RecipientLedgerNumber == giftRow.RecipientLedgerNumber;
-                sameData = sameData && matchRow.DonorKey == giftRow.DonorKey;
-                sameData = sameData && matchRow.MotivationGroupCode == giftRow.MotivationGroupCode;
-                sameData = sameData && matchRow.MotivationDetailCode == giftRow.MotivationDetailCode;
-                sameData = sameData && matchRow.GiftCommentOne == giftRow.GiftCommentOne;
-                sameData = sameData && matchRow.GiftCommentTwo == giftRow.GiftCommentTwo;
-                sameData = sameData && matchRow.GiftCommentThree == giftRow.GiftCommentThree;
-                sameData = sameData && matchRow.CommentOneType == giftRow.CommentOneType;
-                sameData = sameData && matchRow.CommentTwoType == giftRow.CommentTwoType;
-                sameData = sameData && matchRow.CommentThreeType == giftRow.CommentThreeType;
-                sameData = sameData && matchRow.MailingCode == giftRow.MailingCode;
-                sameData = sameData && matchRow.ChargeFlag == giftRow.ChargeFlag;
-                sameData = sameData && matchRow.ConfidentialGiftFlag == giftRow.ConfidentialGiftFlag;
-                sameData = sameData && matchRow.GiftTransactionAmount == giftRow.GiftTransactionAmount;
-
-                // don't check for costcentre code, since that is modified during posting anyways???
-                // sameData = sameData && matchRow.CostCentreCode == giftRow.CostCentreCode;
-
-                if (!sameData)
-                {
-                    return -1;
-                }
-            }
-
-            // all details have already matched in exactly the same way as in the compared gift batch
-            // add the match details to the MainDS
-            AMainDS.AEpMatch.Merge(AMatchDS.AEpMatch);
-
-            return ((AEpMatchRow)AMatchDS.AEpMatch.DefaultView[0].Row).EpMatchKey;
-        }
-
         /// add new (or modified) matches
         private void CreateNewMatches(BankImportTDS AMainDS, BankImportTDS AMatchDS, string AMatchText)
         {
-            Int32 countDetail = 1;
-
             // create a match with the same matchtext for each gift detail (split gift)
             foreach (DataRowView gv in AMainDS.AGiftDetail.DefaultView)
             {
@@ -207,7 +148,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 // matchkey will be set properly on save, by sequence
                 newMatch.EpMatchKey = -1 * (AMatchDS.AEpMatch.Count + 1);
                 newMatch.MatchText = AMatchText;
-                newMatch.Detail = countDetail;
+                newMatch.Detail = giftRow.DetailNumber;
                 newMatch.Action = "GIFT"; // TODO: use constant for GIFT
 
                 newMatch.RecipientKey = giftRow.RecipientKey;
@@ -230,8 +171,6 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 newMatch.GiftTransactionAmount = giftRow.GiftTransactionAmount;
 
                 AMatchDS.AEpMatch.Rows.Add(newMatch);
-
-                countDetail++;
             }
         }
 
@@ -240,17 +179,36 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         /// </summary>
         public void StoreCurrentMatches(ref BankImportTDS AMainDS, Int32 ASelectedGiftBatch)
         {
+            TDataBase backupDB = DBAccess.GDBAccessObj;
+
             // first connect to the database (this will also create the initial database)
             if (FSqliteDatabase == null)
             {
                 FSqliteDatabase = ConnectDatabase(TAppSettingsManager.GetValueStatic("MatchingDB.file"));
             }
 
+            DBAccess.GDBAccessObj = FSqliteDatabase;
+
             TDBTransaction dbtransaction = FSqliteDatabase.BeginTransaction();
 
             // for all matched FMainDS.AEpTransactions
             AMainDS.AEpTransaction.DefaultView.RowFilter = AEpTransactionTable.GetMatchingStatusDBName() + " = '" +
                                                            Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED + "'";
+
+            // first delete all existing matches with the same match texts
+            // TODO: this is not very efficient; on the other hand, there can be split gifts, and if the splitting changes, how is it ensured that the match is updated?
+            foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
+            {
+                BankImportTDSAEpTransactionRow tr = (BankImportTDSAEpTransactionRow)rv.Row;
+
+                // create a match text which uniquely identifies this transaction
+                string MatchText = CalculateMatchText(tr);
+
+                string deleteMatch = "DELETE FROM " + AEpMatchTable.GetTableDBName() + " WHERE " + AEpMatchTable.GetMatchTextDBName() + " = '" +
+                                     MatchText + "'";
+                FSqliteDatabase.ExecuteNonQuery(deleteMatch, dbtransaction, false);
+            }
+
             BankImportTDS MatchDS = new BankImportTDS();
 
             foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
@@ -260,55 +218,21 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 // get the gift details assigned to this transaction
                 AMainDS.AGiftDetail.DefaultView.RowFilter = FilterForMatchedGiftTransactions(tr, ASelectedGiftBatch);
 
-                if (AMainDS.AGiftDetail.DefaultView.RowFilter.Length == 0)
-                {
-                    // there is no matching gift in the gift batch
-                    continue;
-                }
-
                 // create a match text which uniquely identifies this transaction
                 string MatchText = CalculateMatchText(tr);
-
-                // check if such a match text already exists
-                // can return several matches, for split gifts
-                string checkForMatch = "SELECT * FROM " + AEpMatchTable.GetTableDBName() + " WHERE " + AEpMatchTable.GetMatchTextDBName() + " = '" +
-                                       MatchText + "'";
-                MatchDS.AEpMatch.Rows.Clear();
-                FSqliteDatabase.Select(MatchDS, checkForMatch, AEpMatchTable.GetTableName(), null);
-
-                Int32 MatchKey = GetIdenticalMatch(AMainDS, MatchDS);
-
-                if (MatchKey > -1)
-                {
-                    // no changes to the already existing match
-                    tr.EpMatchKey = MatchKey;
-                    continue;
-                }
-
-                // therefore delete the current matches if any exist
-                foreach (AEpMatchRow matchRow in MatchDS.AEpMatch.Rows)
-                {
-                    matchRow.Delete();
-                }
 
                 // add new (or modified) matches
                 CreateNewMatches(AMainDS, MatchDS, MatchText);
 
-                TVerificationResultCollection Verification;
-                TDataBase backupDB = DBAccess.GDBAccessObj;
-                DBAccess.GDBAccessObj = FSqliteDatabase;
-                AEpMatchAccess.SubmitChanges(MatchDS.AEpMatch, dbtransaction, out Verification);
-
                 tr.EpMatchKey = ((AEpMatchRow)MatchDS.AEpMatch.DefaultView[0].Row).EpMatchKey;
-
-                DBAccess.GDBAccessObj = backupDB;
             }
 
+            TVerificationResultCollection Verification;
+            AEpMatchAccess.SubmitChanges(MatchDS.AEpMatch, dbtransaction, out Verification);
             FSqliteDatabase.CommitTransaction();
-
             FSqliteDatabase.CloseDBConnection();
-
             FSqliteDatabase = null;
+            DBAccess.GDBAccessObj = backupDB;
         }
 
         /// <summary>
@@ -340,22 +264,35 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                                        MatchText + "'";
                 FSqliteDatabase.Select(MatchDS, checkForMatch, AEpMatchTable.GetTableName(), null);
 
+                Int32 countMatches = 0;
+
                 foreach (AEpMatchRow match in MatchDS.AEpMatch.Rows)
                 {
-                    stmtRow.MatchingStatus = Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED;
-                    stmtRow.DetailKey = match.Detail;
-                    stmtRow.EpMatchKey = match.EpMatchKey;
-                    stmtRow.DonorKey = match.DonorKey;
-                    stmtRow.DonorShortName = match.DonorShortName;
-                    stmtRow.RecipientDescription = match.RecipientShortName;
-
-                    if (Convert.ToDecimal(stmtRow.TransactionAmount) != Convert.ToDecimal(match.GiftTransactionAmount))
+                    if (countMatches == 0)
                     {
-                        // create a copy of the transaction; new copy is the rest of the transaction; we will match stmtRow
+                        stmtRow.DetailKey = match.Detail;
+                        stmtRow.EpMatchKey = match.EpMatchKey;
+                        stmtRow.DonorKey = match.DonorKey;
+                        stmtRow.DonorShortName = match.DonorShortName;
+                        stmtRow.RecipientDescription = match.RecipientShortName;
+                        stmtRow.MatchingStatus = Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED;
+
+                        if (stmtRow.IsOriginalAmountOnStatementNull())
+                        {
+                            stmtRow.OriginalAmountOnStatement = stmtRow.TransactionAmount;
+                        }
+
+                        stmtRow.TransactionAmount = match.GiftTransactionAmount;
+                    }
+
+                    if (countMatches > 0)
+                    {
+                        // create a copy of the transaction
                         BankImportTDSAEpTransactionRow newRow = AMainDS.AEpTransaction.NewRowTyped();
                         newRow.StatementKey = stmtRow.StatementKey;
                         newRow.Order = stmtRow.Order;
-                        newRow.DetailKey = -1;
+                        newRow.DetailKey = match.Detail;
+                        newRow.EpMatchKey = match.EpMatchKey;
                         newRow.AccountName = stmtRow.AccountName;
                         newRow.BankAccountNumber = stmtRow.BankAccountNumber;
                         newRow.BranchCode = stmtRow.BranchCode;
@@ -363,18 +300,15 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                         newRow.TransactionTypeCode = stmtRow.TransactionTypeCode;
                         newRow.DonorShortName = match.DonorShortName;
                         newRow.DonorKey = match.DonorKey;
-
-                        if (stmtRow.IsOriginalAmountOnStatementNull())
-                        {
-                            stmtRow.OriginalAmountOnStatement = stmtRow.TransactionAmount;
-                        }
-
+                        newRow.MatchingStatus = Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED;
                         newRow.OriginalAmountOnStatement = stmtRow.OriginalAmountOnStatement;
-                        newRow.TransactionAmount = stmtRow.TransactionAmount - match.GiftTransactionAmount;
-                        stmtRow.TransactionAmount = match.GiftTransactionAmount;
+                        newRow.TransactionAmount = match.GiftTransactionAmount;
+                        newRow.RecipientDescription = match.RecipientShortName;
 
                         AMainDS.AEpTransaction.Rows.Add(newRow);
                     }
+
+                    countMatches++;
                 }
             }
 
