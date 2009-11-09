@@ -354,7 +354,6 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     continue;
                 }
 
-//todo does not print all; solution: one row for each gift detail in matched transaction view?
                 string checkForMatch = "SELECT * FROM " + AEpMatchTable.GetTableDBName() + " WHERE " +
                                        AEpMatchTable.GetEpMatchKeyDBName() + " = " +
                                        tr.EpMatchKey.ToString();
@@ -369,9 +368,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                         match.RecipientKey.ToString() + ";\"" +
                         (match.MotivationGroupCode != "GIFT" && match.MotivationDetailCode != "SUPPORT" ? "" : match.RecipientShortName) + "\";" +
                         match.GiftTransactionAmount.ToString() +
-                        ";no;\"" + match.MotivationGroupCode + "\";\"" +
+                        ";" + (match.ConfidentialGiftFlag ? "yes" : "no") + ";\"" + match.MotivationGroupCode + "\";\"" +
                         match.MotivationDetailCode +
-                        "\";\"\";\"Both\";\"\";\"\";\"\";\"\";\"\";yes");
+                        "\";\"" + match.GiftCommentOne + "\";\"" + match.CommentOneType + "\";\"" +
+                        match.MailingCode + "\";\"" + match.GiftCommentTwo + "\";\"" + match.CommentTwoType + "\";\"" +
+                        match.GiftCommentThree + "\";\"" + match.CommentThreeType + "\";yes");
                 }
             }
 
