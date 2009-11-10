@@ -443,11 +443,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                 if (DialogSave.ShowDialog() == DialogResult.OK)
                 {
-                    StreamWriter sw = new StreamWriter(DialogSave.FileName, false, System.Text.Encoding.Default);
-
-                    TGiftMatching.WriteCSVFile(ref FMainDS, sw);
-
-                    sw.Close();
+                    TGiftMatching.WritePetraImportFileUnmatched(ref FMainDS, DialogSave.FileName, txtBankName.Text);
                 }
             }
             else if (rbtMatchedGifts.Checked && (FSelectedGiftBatch == -1))

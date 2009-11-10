@@ -310,6 +310,18 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                     countMatches++;
                 }
+                
+                if (MatchDS.AEpMatch.Rows.Count == 0)
+                {
+                	// try to find the donor by the bank account number
+                	string DonorName;
+					Int64 DonorKey = TGetData.GetDonorByAccountNumber(stmtRow.BankAccountNumber, out DonorName);
+					if (DonorKey != -1)
+					{
+						stmtRow.DonorKey = DonorKey;
+						stmtRow.DonorShortName = DonorName;
+					}
+                }
             }
 
             FSqliteDatabase.CloseDBConnection();
@@ -384,6 +396,55 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         }
 
         /// <summary>
+        /// dump unmatched gifts to a CSV file
+        /// </summary>
+        public static void WritePetraImportFileUnmatched(ref BankImportTDS AMainDS, string AFilename, string ABankName)
+        {
+            StreamWriter sw = new StreamWriter(AFilename, false, System.Text.Encoding.Default);
+
+            BankImportTDSAEpTransactionRow row;
+
+            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetDonorShortNameDBName() + "," +
+                                                      BankImportTDSAEpTransactionTable.GetRecipientDescriptionDBName();
+
+            foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
+            {
+                row = (BankImportTDSAEpTransactionRow)rv.Row;
+
+                if (row.IsDonorKeyNull() || row.DonorKey == -1)
+                {
+	                sw.WriteLine("" +
+	                    ";" + ";\"\";\"\";\"" + ABankName + " " +
+	                    row.DateEffective.ToString("dd/MM/yyyy") +
+	                    "\";\"<none>\";" +
+	                    "0" + ";\"" +
+	                    "\";" +
+	                    row.TransactionAmount.ToString() +
+	                    ";" + "no" + ";\"" + "\";\"" +
+	                    "\";\"" + "\";\"" + row.AccountName + "\";\"" +
+	                    "\";\"" + "\";\"" + row.BankAccountNumber + " BLZ: " + row.BranchCode + "\";\"" +
+	                    row.Description + "\";\"" + "\";yes");
+                }
+                else
+                {
+	                sw.WriteLine(row.DonorKey.ToString() +
+	                    ";\"" + row.DonorShortName + "\";\"\";\"\";\"" + ABankName + " " +
+	                    row.DateEffective.ToString("dd/MM/yyyy") +
+	                    "\";\"<none>\";" +
+	                    "0" + ";\"" +
+	                    "\";" +
+	                    row.TransactionAmount.ToString() +
+	                    ";" + "no" + ";\"" + "\";\"" +
+	                    "\";\"" + "\";\"" + "\";\"" +
+	                    "\";\"" + "\";\"" + "\";\"" +
+	                    row.Description + "\";\"" + "\";yes");
+                }
+            }
+            
+            sw.Close();
+        }
+
+        /// <summary>
         /// dump unmatched gifts or other transactions to a CSV file
         /// </summary>
         public static void WriteCSVFile(ref BankImportTDS AMainDS, StreamWriter sw)
@@ -454,6 +515,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
         private static Int64 GetDonorByBankAccountNumber(ref BankImportTDS AMainDS, string ABankAccountNumber)
         {
+        	// TODO: what about bank sorting code? would make query more difficult, because the bank code is not directly in p_banking_details
             AMainDS.PBankingDetails.DefaultView.RowFilter = BankImportTDSPBankingDetailsTable.GetBankAccountNumberDBName() +
                                                             " = '" + ABankAccountNumber + "'";
 
