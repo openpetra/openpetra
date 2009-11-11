@@ -118,7 +118,9 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.grdResult = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSplitAndTrain = new System.Windows.Forms.ToolStripButton();
+            this.tbbSeparator0 = new System.Windows.Forms.ToolStripSeparator();
             this.tbbImportStatement = new System.Windows.Forms.ToolStripButton();
+            this.tbbSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbbProcessAllNewStatements = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -532,7 +534,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.btnExport.Name = "btnExport";
             this.btnExport.AutoSize = true;
             this.btnExport.Click += new System.EventHandler(this.Export);
-            this.btnExport.Text = "Export";
+            this.btnExport.Text = "Export as CSV";
             //
             // btnPrint
             //
@@ -575,7 +577,13 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tbbSplitAndTrain.Name = "tbbSplitAndTrain";
             this.tbbSplitAndTrain.AutoSize = true;
             this.tbbSplitAndTrain.Click += new System.EventHandler(this.SplitAndTrain);
-            this.tbbSplitAndTrain.Text = "Split And Train";
+            this.tbbSplitAndTrain.Text = "Split and Train";
+            //
+            // tbbSeparator0
+            //
+            this.tbbSeparator0.Name = "tbbSeparator0";
+            this.tbbSeparator0.AutoSize = true;
+            this.tbbSeparator0.Text = "Separator";
             //
             // tbbImportStatement
             //
@@ -584,12 +592,18 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tbbImportStatement.Click += new System.EventHandler(this.ImportStatement);
             this.tbbImportStatement.Text = "&Import Statement";
             //
+            // tbbSeparator1
+            //
+            this.tbbSeparator1.Name = "tbbSeparator1";
+            this.tbbSeparator1.AutoSize = true;
+            this.tbbSeparator1.Text = "Separator";
+            //
             // tbbProcessAllNewStatements
             //
             this.tbbProcessAllNewStatements.Name = "tbbProcessAllNewStatements";
             this.tbbProcessAllNewStatements.AutoSize = true;
             this.tbbProcessAllNewStatements.Click += new System.EventHandler(this.ProcessAllNewStatements);
-            this.tbbProcessAllNewStatements.Text = "Process All New Statements";
+            this.tbbProcessAllNewStatements.Text = "Create CSV files for all current bank statements";
             //
             // tbrMain
             //
@@ -598,7 +612,9 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbSplitAndTrain,
+                        tbbSeparator0,
                         tbbImportStatement,
+                        tbbSeparator1,
                         tbbProcessAllNewStatements});
             //
             // mniClose
@@ -768,7 +784,9 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         private Ict.Common.Controls.TSgrdDataGridPaged grdResult;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSplitAndTrain;
+        private System.Windows.Forms.ToolStripSeparator tbbSeparator0;
         private System.Windows.Forms.ToolStripButton tbbImportStatement;
+        private System.Windows.Forms.ToolStripSeparator tbbSeparator1;
         private System.Windows.Forms.ToolStripButton tbbProcessAllNewStatements;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;

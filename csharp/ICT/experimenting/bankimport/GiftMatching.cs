@@ -339,8 +339,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         {
             StreamWriter sw = new StreamWriter(AFilename, false, System.Text.Encoding.Default);
 
-            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetDonorShortNameDBName() + "," +
-                                                      BankImportTDSAEpTransactionTable.GetRecipientDescriptionDBName();
+            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetOriginalAmountOnStatementDBName() + "," +
+                                                      BankImportTDSAEpTransactionTable.GetOrderDBName();
 
             // first connect to the database
             if (FSqliteDatabase == null)
@@ -405,8 +405,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
             BankImportTDSAEpTransactionRow row;
 
-            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetDonorShortNameDBName() + "," +
-                                                      BankImportTDSAEpTransactionTable.GetRecipientDescriptionDBName();
+            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetOriginalAmountOnStatementDBName() + "," +
+                                                      BankImportTDSAEpTransactionTable.GetOrderDBName();
 
             foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
             {
@@ -414,17 +414,18 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                 if (row.IsDonorKeyNull() || (row.DonorKey == -1))
                 {
-                    sw.WriteLine("" +
-                        ";" + ";\"\";\"\";\"" + ABankName + " " +
+                    sw.WriteLine("27002909" +
+                        ";" + ";\"Unbekannt\";\"\";\"" + ABankName + " " +
                         row.DateEffective.ToString("dd/MM/yyyy") +
                         "\";\"<none>\";" +
                         "0" + ";\"" +
                         "\";" +
                         row.TransactionAmount.ToString() +
-                        ";" + "no" + ";\"" + "\";\"" +
-                        "\";\"" + "\";\"" + row.AccountName + "\";\"" +
-                        "\";\"" + "\";\"" + row.BankAccountNumber + " BLZ: " + row.BranchCode + "\";\"" +
-                        row.Description + "\";\"" + "\";yes");
+                        ";" + "no" + ";\"EFS\";\"01" +
+                        "\";\"" + row.AccountName + "\";\"both" +
+                        "\";\"" +
+                        "\";\"" + row.BankAccountNumber + " BLZ: " + row.BranchCode + "\";\"both\";\"" +
+                        row.Description + "\";\"both" + "\";yes");
                 }
                 else
                 {
@@ -435,10 +436,10 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                         "0" + ";\"" +
                         "\";" +
                         row.TransactionAmount.ToString() +
-                        ";" + "no" + ";\"" + "\";\"" +
-                        "\";\"" + "\";\"" + "\";\"" +
-                        "\";\"" + "\";\"" + "\";\"" +
-                        row.Description + "\";\"" + "\";yes");
+                        ";" + "no" + ";\"EFS\";\"01" +
+                        "\";\"" + "\";\"both" + "\";\"" +
+                        "\";\"" + "\";\"" + "both\";\"" +
+                        row.Description + "\";\"both" + "\";yes");
                 }
             }
 
@@ -454,8 +455,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
             BankImportTDSAEpTransactionRow row;
 
-            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetDonorShortNameDBName() + "," +
-                                                      BankImportTDSAEpTransactionTable.GetRecipientDescriptionDBName();
+            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetOriginalAmountOnStatementDBName() + "," +
+                                                      BankImportTDSAEpTransactionTable.GetOrderDBName();
 
             foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
             {
@@ -495,7 +496,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
             BankImportTDSAEpTransactionRow row = null;
 
-            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetTransactionAmountDBName() + "," +
+            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetOriginalAmountOnStatementDBName() + "," +
                                                       BankImportTDSAEpTransactionTable.GetOrderDBName();
 
             foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)

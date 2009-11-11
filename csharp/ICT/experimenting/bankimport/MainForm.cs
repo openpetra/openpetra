@@ -83,11 +83,13 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
       this.rbtUnmatchedGifts.Text = Catalog.GetString("UnmatchedGifts");
       this.rbtOther.Text = Catalog.GetString("Other");
       this.rgrFilter.Text = Catalog.GetString("Filter");
-      this.btnExport.Text = Catalog.GetString("Export");
+      this.btnExport.Text = Catalog.GetString("Export as CSV");
       this.btnPrint.Text = Catalog.GetString("Print");
-      this.tbbSplitAndTrain.Text = Catalog.GetString("Split And Train");
+      this.tbbSplitAndTrain.Text = Catalog.GetString("Split and Train");
+      this.tbbSeparator0.Text = Catalog.GetString("Separator");
       this.tbbImportStatement.Text = Catalog.GetString("&Import Statement");
-      this.tbbProcessAllNewStatements.Text = Catalog.GetString("Process All New Statements");
+      this.tbbSeparator1.Text = Catalog.GetString("Separator");
+      this.tbbProcessAllNewStatements.Text = Catalog.GetString("Create CSV files for all current bank statements");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
       this.mniFile.Text = Catalog.GetString("&File");

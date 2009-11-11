@@ -540,6 +540,25 @@
         </if>
     </target>
 
+    <target name="translationBankimport">
+        <!-- create initial version of .po file if it does not exist yet -->
+        <property name="WorkingDir" value="${OpenPetraRoot.dir}/csharp/ICT/experimenting/bankimport"/>
+        <property name="LocalPofileWithPath" value="${WorkingDir}/${Translation.TargetLanguage}.po"/>
+
+        <if test="${not file::exists(LocalPofileWithPath)}">
+            <exec program="${Poedit.gettext}" workingdir="${WorkingDir}" commandline="--force-po --no-location --from-code=UTF-8 ${WorkingDir}/Program.cs -o ${TargetLanguage.Pofile}"/>
+            <property name="toReplace" value="Content-Type: text/plain; charset=CHARSET/n"/>
+            <property name="newValue" value="Content-Type: text/plain; charset=UTF-8/n"/>
+            <echo message='${script::ReplaceInFile(LocalPofileWithPath, toReplace, newValue)}'/>
+        </if>
+
+        <!-- first collect all Catalog.GetString from all source files in solution; also resolve calls to Table.GetFieldnameHelp etc; result is in solutionName.CollectedGettext.cs -->
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-solution:${OpenPetraRoot.dir}/csharp/ICT/Experimenting/bankimport/bankimport.sln -petraxml:${PetraXML.file} -UINavigation.File:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml"/>
+        <!-- use solutionName.CollectedGettext.cs as input for po file -->
+        <property name="collectedGettext.file" value="bankimport.CollectedGettext.cs"/>
+        <exec program="${Poedit.gettext}" workingdir="${WorkingDir}" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${collectedGettext.file} -o ${TargetLanguage.Pofile}"/>
+    </target>
+
     <target name="translation">
 
         <!-- create initial version of .po file if it does not exist yet -->

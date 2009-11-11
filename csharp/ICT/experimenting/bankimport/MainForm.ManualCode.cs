@@ -55,6 +55,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             {
                 MessageBox.Show(exp.Message, Catalog.GetString("Error connecting to Petra 2.x"));
             }
+           
+            lblValueMatchedGiftBatch.Visible = false;
         }
 
         /// <summary>
@@ -380,7 +382,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             txtSumCredit.Text = sumCreditAll.ToString();
             txtSumDebit.Text = sumDebitAll.ToString();
 
-            if (Convert.ToDecimal(startBalance + sumCreditAll + sumDebitAll) != Convert.ToDecimal(endBalance))
+            if (Math.Round(Convert.ToDecimal(startBalance + sumCreditAll + sumDebitAll),2) != Math.Round(Convert.ToDecimal(endBalance),2))
             {
                 MessageBox.Show(Catalog.GetString("the startbalance, credit/debit all and endbalance don't add up"));
             }
@@ -420,14 +422,21 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 return;
             }
 
-            if (rbtOther.Checked)
+            if (rbtOther.Checked || rbtAllTransactions.Checked)
             {
                 SaveFileDialog DialogSave = new SaveFileDialog();
 
-                DialogSave.Filter = Catalog.GetString("Other Gifts file (*.csv)|*.csv");
+                DialogSave.Filter = Catalog.GetString("bank statement file (*.csv)|*.csv");
                 DialogSave.AddExtension = true;
                 DialogSave.RestoreDirectory = true;
-                DialogSave.Title = Catalog.GetString("Export list of other transactions");
+                if (rbtAllTransactions.Checked)
+                {
+                	DialogSave.Title = Catalog.GetString("Export list of all transactions");
+                }
+                else
+                {
+                	DialogSave.Title = Catalog.GetString("Export list of other transactions");
+                }
 
                 if (DialogSave.ShowDialog() == DialogResult.OK)
                 {
@@ -489,25 +498,26 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             string DateOfStatement = txtDateStatement.Text;
             string HtmlDocument = String.Empty;
 
-            if (rbtUnmatchedGifts.Checked)
+            if (rbtAllTransactions.Checked)
             {
                 HtmlDocument =
-                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Unmatched transactions, " + ShortCodeOfBank + ", " + DateOfStatement));
+                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Kompletter Kontoauszug, " + ShortCodeOfBank + ", " + DateOfStatement));
+            }
+            else if (rbtUnmatchedGifts.Checked)
+            {
+                HtmlDocument =
+                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Unerkannte Kontobewegungen, " + ShortCodeOfBank + ", " + DateOfStatement));
             }
             else if (rbtMatchedGifts.Checked)
             {
                 HtmlDocument =
-                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Matched transactions, " + ShortCodeOfBank + ", " + DateOfStatement));
+                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Erkannte Kontobewegungen, " + ShortCodeOfBank + ", " + DateOfStatement));
             }
             else if (rbtOther.Checked)
             {
                 HtmlDocument =
-                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Other transactions, " + ShortCodeOfBank + ", " + DateOfStatement));
+                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Sonstige Kontobewegungen, " + ShortCodeOfBank + ", " + DateOfStatement));
             }
-
-            StreamWriter sw = new StreamWriter("test.html");
-            sw.WriteLine(HtmlDocument);
-            sw.Close();
 
             if (HtmlDocument.Length == 0)
             {

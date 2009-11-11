@@ -275,6 +275,7 @@ namespace Ict.Plugins.Finance.SwiftParser
                 double shouldBeBalance = debitCreditIndicator * Convert.ToDouble(swiftData.Replace(",",
                         Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator));
 
+                currentStatement.endBalance = Math.Round(currentStatement.endBalance, 2);
                 if (Convert.ToDecimal(Math.Round(currentStatement.endBalance, 2)) != Convert.ToDecimal(shouldBeBalance))
                 {
                     throw new Exception("end balance does not match" +
