@@ -66,6 +66,7 @@ namespace Ict.Plugins.Finance.SwiftParser
             ref BankImportTDS AMainDS,
             out double AStartBalance,
             out double AEndBalance,
+            out DateTime ADateEffective,
             out string ABankName)
         {
             TSwiftParser parser = new TSwiftParser();
@@ -73,6 +74,7 @@ namespace Ict.Plugins.Finance.SwiftParser
             AStartBalance = -1;
             AEndBalance = -1;
             ABankName = "";
+            ADateEffective = DateTime.MinValue;
 
             parser.ProcessFile(AFilename);
 
@@ -144,6 +146,8 @@ namespace Ict.Plugins.Finance.SwiftParser
                 if (statementCounter == parser.statements.Count - 1)
                 {
                     AEndBalance = stmt.endBalance;
+                    ADateEffective = new DateTime(2000 + Convert.ToInt32(stmt.date.Substring(0, 2)), Convert.ToInt32(stmt.date.Substring(2,
+                                2)), Convert.ToInt32(stmt.date.Substring(4, 2)));
                 }
 
                 statementCounter++;

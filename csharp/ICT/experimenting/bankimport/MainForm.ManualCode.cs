@@ -78,10 +78,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     FMainDS.PBankingDetails.Rows.Clear();
 
                     double startBalance, endBalance;
+                    DateTime dateEffective;
                     string bankName;
-                    FBankStatementImporter.ImportFromFile(newFile, ref FMainDS, out startBalance, out endBalance, out bankName);
+                    FBankStatementImporter.ImportFromFile(newFile, ref FMainDS, out startBalance, out endBalance, out dateEffective, out bankName);
 
-                    AutoMatchGiftsAgainstPetraDB();
+                    AutoMatchGiftsAgainstPetraDB(dateEffective);
 
                     rbtMatchedGifts.Checked = true;
                     TGiftMatching exportMatchGifts = new TGiftMatching();
@@ -160,11 +161,17 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     // TODO: at the moment only support one statement by file?
                     double startBalance, endBalance;
                     string bankName;
-                    FBankStatementImporter.ImportFromFile(DialogOpen.FileName, ref FMainDS, out startBalance, out endBalance, out bankName);
+                    DateTime dateEffective;
+                    FBankStatementImporter.ImportFromFile(DialogOpen.FileName,
+                        ref FMainDS,
+                        out startBalance,
+                        out endBalance,
+                        out dateEffective,
+                        out bankName);
 
-                    AutoMatchGiftsAgainstPetraDB();
+                    AutoMatchGiftsAgainstPetraDB(dateEffective);
 
-                    FillPanelInfo(startBalance, endBalance, bankName);
+                    FillPanelInfo(startBalance, endBalance, dateEffective, bankName);
 
                     FMainDS.AEpTransaction.DefaultView.AllowNew = false;
                     grdResult.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AEpTransaction.DefaultView);
@@ -236,9 +243,9 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         // determine the one gift batch that was posted for this bank statement
         private Int32 FSelectedGiftBatch = -1;
 
-        private bool AutoMatchGiftsAgainstPetraDB()
+        private bool AutoMatchGiftsAgainstPetraDB(DateTime dateEffective)
         {
-            FSelectedGiftBatch = TGiftMatching.AutoMatchGiftsAgainstPetraDB(ref FMainDS);
+            FSelectedGiftBatch = TGiftMatching.AutoMatchGiftsAgainstPetraDB(ref FMainDS, dateEffective);
 
             if (FSelectedGiftBatch == -1)
             {
@@ -328,12 +335,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             }
         }
 
-        private void FillPanelInfo(double startBalance, double endBalance, string ABankName)
+        private void FillPanelInfo(double startBalance, double endBalance, DateTime dateEffective, string ABankName)
         {
             Int32 countRows;
 
-            // use the last transaction for the date effective, sometimes the first transaction is from a previous date (eg. Saturday, Sunday)
-            txtDateStatement.Text = FMainDS.AEpTransaction[FMainDS.AEpTransaction.Rows.Count - 1].DateEffective.ToShortDateString();
+            txtDateStatement.Text = dateEffective.ToShortDateString();
             txtBankName.Text = ABankName;
             txtStartBalance.Text = startBalance.ToString();
             txtEndBalance.Text = endBalance.ToString();

@@ -47,6 +47,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         /// <summary>
         /// open the file and return a typed datatable
         /// </summary>
-        bool ImportFromFile(string AFilename, ref BankImportTDS AMainDS, out double AStartBalance, out double AEndBalance, out string ABankName);
+        bool ImportFromFile(string AFilename,
+            ref BankImportTDS AMainDS,
+            out double AStartBalance,
+            out double AEndBalance,
+            out DateTime ADateEffective,
+            out string ABankName);
     }
 }

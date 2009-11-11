@@ -310,17 +310,18 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                     countMatches++;
                 }
-                
+
                 if (MatchDS.AEpMatch.Rows.Count == 0)
                 {
-                	// try to find the donor by the bank account number
-                	string DonorName;
-					Int64 DonorKey = TGetData.GetDonorByAccountNumber(stmtRow.BankAccountNumber, out DonorName);
-					if (DonorKey != -1)
-					{
-						stmtRow.DonorKey = DonorKey;
-						stmtRow.DonorShortName = DonorName;
-					}
+                    // try to find the donor by the bank account number
+                    string DonorName;
+                    Int64 DonorKey = TGetData.GetDonorByAccountNumber(stmtRow.BankAccountNumber, out DonorName);
+
+                    if (DonorKey != -1)
+                    {
+                        stmtRow.DonorKey = DonorKey;
+                        stmtRow.DonorShortName = DonorName;
+                    }
                 }
             }
 
@@ -411,36 +412,36 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             {
                 row = (BankImportTDSAEpTransactionRow)rv.Row;
 
-                if (row.IsDonorKeyNull() || row.DonorKey == -1)
+                if (row.IsDonorKeyNull() || (row.DonorKey == -1))
                 {
-	                sw.WriteLine("" +
-	                    ";" + ";\"\";\"\";\"" + ABankName + " " +
-	                    row.DateEffective.ToString("dd/MM/yyyy") +
-	                    "\";\"<none>\";" +
-	                    "0" + ";\"" +
-	                    "\";" +
-	                    row.TransactionAmount.ToString() +
-	                    ";" + "no" + ";\"" + "\";\"" +
-	                    "\";\"" + "\";\"" + row.AccountName + "\";\"" +
-	                    "\";\"" + "\";\"" + row.BankAccountNumber + " BLZ: " + row.BranchCode + "\";\"" +
-	                    row.Description + "\";\"" + "\";yes");
+                    sw.WriteLine("" +
+                        ";" + ";\"\";\"\";\"" + ABankName + " " +
+                        row.DateEffective.ToString("dd/MM/yyyy") +
+                        "\";\"<none>\";" +
+                        "0" + ";\"" +
+                        "\";" +
+                        row.TransactionAmount.ToString() +
+                        ";" + "no" + ";\"" + "\";\"" +
+                        "\";\"" + "\";\"" + row.AccountName + "\";\"" +
+                        "\";\"" + "\";\"" + row.BankAccountNumber + " BLZ: " + row.BranchCode + "\";\"" +
+                        row.Description + "\";\"" + "\";yes");
                 }
                 else
                 {
-	                sw.WriteLine(row.DonorKey.ToString() +
-	                    ";\"" + row.DonorShortName + "\";\"\";\"\";\"" + ABankName + " " +
-	                    row.DateEffective.ToString("dd/MM/yyyy") +
-	                    "\";\"<none>\";" +
-	                    "0" + ";\"" +
-	                    "\";" +
-	                    row.TransactionAmount.ToString() +
-	                    ";" + "no" + ";\"" + "\";\"" +
-	                    "\";\"" + "\";\"" + "\";\"" +
-	                    "\";\"" + "\";\"" + "\";\"" +
-	                    row.Description + "\";\"" + "\";yes");
+                    sw.WriteLine(row.DonorKey.ToString() +
+                        ";\"" + row.DonorShortName + "\";\"\";\"\";\"" + ABankName + " " +
+                        row.DateEffective.ToString("dd/MM/yyyy") +
+                        "\";\"<none>\";" +
+                        "0" + ";\"" +
+                        "\";" +
+                        row.TransactionAmount.ToString() +
+                        ";" + "no" + ";\"" + "\";\"" +
+                        "\";\"" + "\";\"" + "\";\"" +
+                        "\";\"" + "\";\"" + "\";\"" +
+                        row.Description + "\";\"" + "\";yes");
                 }
             }
-            
+
             sw.Close();
         }
 
@@ -515,7 +516,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
         private static Int64 GetDonorByBankAccountNumber(ref BankImportTDS AMainDS, string ABankAccountNumber)
         {
-        	// TODO: what about bank sorting code? would make query more difficult, because the bank code is not directly in p_banking_details
+            // TODO: what about bank sorting code? would make query more difficult, because the bank code is not directly in p_banking_details
             AMainDS.PBankingDetails.DefaultView.RowFilter = BankImportTDSPBankingDetailsTable.GetBankAccountNumberDBName() +
                                                             " = '" + ABankAccountNumber + "'";
 
@@ -661,6 +662,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                 if (stmtRow.MatchingStatus != Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED)
                 {
+                    // problem: what if bank account is used by several donors?
                     Int64 DonorKey = GetDonorByBankAccountNumber(ref AMainDS, stmtRow.BankAccountNumber);
 
                     // look for gifts that match the donor (identified by account number) and the transaction amount
@@ -814,7 +816,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         /// try to find any posted or unposted gift batch and try to match gifts
         /// </summary>
         /// <returns>the gift batch number if gift batch has already been posted</returns>
-        public static Int32 AutoMatchGiftsAgainstPetraDB(ref BankImportTDS AMainDS)
+        public static Int32 AutoMatchGiftsAgainstPetraDB(ref BankImportTDS AMainDS, DateTime ADateEffective)
         {
             // first stage: collect historic matches from Petra database
             // go through each transaction of the statement,
@@ -824,7 +826,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             Int32 SelectedGiftBatch = -1;
 
             // Get all gifts at given date
-            TGetData.GetGiftsByDate(ref AMainDS, AMainDS.AEpTransaction[0].DateEffective);
+            TGetData.GetGiftsByDate(ref AMainDS, ADateEffective);
 
             // simple matching; no split gifts, bank account number fits and amount fits
             // problem: recipient different????
@@ -834,35 +836,30 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             {
                 BankImportTDSAEpTransactionRow stmtRow = AMainDS.AEpTransaction[TransactionsCounter];
 
-                if (stmtRow.MatchingStatus != Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED)
+                Int64 DonorKey = GetDonorByBankAccountNumber(ref AMainDS, stmtRow.BankAccountNumber);
+
+                if (DonorKey == -1)
                 {
-                    Int64 DonorKey = GetDonorByBankAccountNumber(ref AMainDS, stmtRow.BankAccountNumber);
+                    continue;
+                }
 
-                    AMainDS.AGiftDetail.DefaultView.RowFilter = AGiftDetailTable.GetGiftAmountDBName() + " = " +
-                                                                stmtRow.TransactionAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)
-                                                                +
-                                                                " AND " + BankImportTDSAGiftDetailTable.GetDonorKeyDBName() + " = " +
-                                                                DonorKey.ToString() +
-                                                                " AND AlreadyMatched = false";
+                AMainDS.AGiftDetail.DefaultView.RowFilter = AGiftDetailTable.GetGiftAmountDBName() + " = " +
+                                                            stmtRow.TransactionAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                                            +
+                                                            " AND " + BankImportTDSAGiftDetailTable.GetDonorKeyDBName() + " = " +
+                                                            DonorKey.ToString();
 
-                    if (SelectedGiftBatch != -1)
-                    {
-                        AMainDS.AGiftDetail.DefaultView.RowFilter += " AND " + AGiftDetailTable.GetBatchNumberDBName() + " = " +
-                                                                     SelectedGiftBatch.ToString();
-                    }
+                if (AMainDS.AGiftDetail.DefaultView.Count == 1)
+                {
+                    // found a possible match
+                    CountMatches++;
+                    BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)AMainDS.AGiftDetail.DefaultView[0].Row;
+                    SelectedGiftBatch = detailrow.BatchNumber;
 
-                    if (AMainDS.AGiftDetail.DefaultView.Count == 1)
-                    {
-                        // found a possible match
-                        CountMatches++;
-                        BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)AMainDS.AGiftDetail.DefaultView[0].Row;
-                        SelectedGiftBatch = detailrow.BatchNumber;
-
-                        // we have found exactly one gift detail which matches the donor and the amount and the date
-                        // but it might be that the donation was for a different recipient
-                        // do not mark matched here yet
-                        //MarkTransactionMatched(ref AMainDS, ref stmtRow, detailrow);
-                    }
+                    // we have found exactly one gift detail which matches the donor and the amount and the date
+                    // but it might be that the donation was for a different recipient
+                    // do not mark matched here yet
+                    //MarkTransactionMatched(ref AMainDS, ref stmtRow, detailrow);
                 }
             }
 
@@ -908,9 +905,10 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 // TODO: at the moment only support one statement by file?
                 double startBalance, endBalance;
                 string bankName;
-                ABankStatementImporter.ImportFromFile(filename, ref MainDS, out startBalance, out endBalance, out bankName);
+                DateTime dateEffective;
+                ABankStatementImporter.ImportFromFile(filename, ref MainDS, out startBalance, out endBalance, out dateEffective, out bankName);
 
-                if (AutoMatchGiftsAgainstPetraDB(ref MainDS) != -1)
+                if (AutoMatchGiftsAgainstPetraDB(ref MainDS, dateEffective) != -1)
                 {
                     // move file to imported folder
                     string BackupName = OutputPath + Path.DirectorySeparatorChar + ALegalEntity + Path.DirectorySeparatorChar + "imported" +
