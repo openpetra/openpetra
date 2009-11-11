@@ -44,6 +44,12 @@ namespace Ict.Common.Printing
     {
         private System.Drawing.Printing.PrintDocument FDocument;
 
+        /// printing should be started at this position for each line
+        public float FPageXPos;
+
+        /// space available for printing
+        public float FPageWidthAvailable;
+
         /// todoComment
         public System.Drawing.Font FDefaultFont;
 

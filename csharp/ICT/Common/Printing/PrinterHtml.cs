@@ -49,6 +49,8 @@ namespace Ict.Common.Printing
         /// <summary>todoComment</summary>
         protected string FPath;
 
+        private string FPageHeader = string.Empty;
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -59,6 +61,9 @@ namespace Ict.Common.Printing
         {
             FPrinter = APrinter;
             FPath = APath;
+
+            AHtmlDocument = RemoveElement(AHtmlDocument, "div", "class", "PageHeader", out FPageHeader);
+
             FHtmlDoc = ParseHtml(AHtmlDocument);
         }
 
@@ -74,6 +79,7 @@ namespace Ict.Common.Printing
             StreamReader sr = new StreamReader(AHtmlFile, System.Text.Encoding.Default);
             string htmlDocument = sr.ReadToEnd();
             sr.Close();
+            htmlDocument = RemoveElement(htmlDocument, "div", "class", "PageHeader", out FPageHeader);
             FHtmlDoc = ParseHtml(htmlDocument);
         }
 
@@ -101,6 +107,7 @@ namespace Ict.Common.Printing
 
                 AHtmlDocument = AHtmlDocument.Replace("<br>", "<br/>");
                 AHtmlDocument = AHtmlDocument.Replace("&", "&amp;");
+
                 result.LoadXml(AHtmlDocument);
             }
             catch (Exception e)
@@ -171,41 +178,6 @@ namespace Ict.Common.Printing
         /// </summary>
         public override void PrintPageHeader()
         {
-        }
-
-        // this should be null, while printing a page; it is set to a node, when the node does not fit on the page anymore
-        private XmlNode FContinueNextPageNode = null;
-
-        /// <summary>
-        /// print one page of the HTML, one body tag per page???
-        /// TODO: or until div with page break?
-        /// </summary>
-        /// <returns>void</returns>
-        public override void PrintPageBody()
-        {
-            XmlNode CurrentNode = null;
-
-            if (FContinueNextPageNode != null)
-            {
-                CurrentNode = FContinueNextPageNode;
-                FContinueNextPageNode = null;
-            }
-
-            if (CurrentNode == null)
-            {
-                FCurrentNodeNextPage = GetPageNode(FPrinter.CurrentPageNr);
-
-                if (FCurrentNodeNextPage != null)
-                {
-                    CurrentNode = FCurrentNodeNextPage.FirstChild;
-                }
-            }
-
-            if (CurrentNode == null)
-            {
-                return;
-            }
-
             if (FPrinter is TGfxPrinter)
             {
                 TGfxPrinter printer = (TGfxPrinter)FPrinter;
@@ -216,7 +188,6 @@ namespace Ict.Common.Printing
                 //float edge = printer.Cm2Twips(1.5f);
                 float pageRightMargin = TGfxPrinter.Cm2Inch(1.0f);
                 float pageLeftMargin = TGfxPrinter.Cm2Inch(1.3f);
-                float WidthAvailable;
 
                 XmlNode BodyNode = TXMLParser.FindNodeRecursive(FHtmlDoc.DocumentElement, "body");
 
@@ -249,27 +220,74 @@ namespace Ict.Common.Printing
                 }
 
                 // TODO set the margins and the font sizes in the HTML file???
-                printer.CurrentXPos = printer.LeftMargin + pageLeftMargin;
-                WidthAvailable = printer.Width - (pageRightMargin + pageLeftMargin);
+                printer.FPageXPos = printer.LeftMargin + pageLeftMargin;
+                printer.FPageWidthAvailable = printer.Width - (pageRightMargin + pageLeftMargin);
                 printer.FDefaultFont = new System.Drawing.Font("Arial", 12);
                 printer.FDefaultBoldFont = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
 
-                RenderContent(printer.CurrentXPos, WidthAvailable, ref CurrentNode);
+                if (FPageHeader.Length > 0)
+                {
+                    XmlDocument HeaderDoc = ParseHtml(FPageHeader);
+                    XmlNode CurrentNode = HeaderDoc.DocumentElement;
+
+					// TODO: stack: push and pop environment variables?
+                    XmlNode BackupContinueNextPageNode = FContinueNextPageNode;
+                    List <TTableRowGfx>BackupRowsLeftOver = FRowsLeftOver;
+                    int BackupCurrentRelativeFontSize = FPrinter.CurrentRelativeFontSize;
+                    FPrinter.CurrentRelativeFontSize = 0;
+                    FRowsLeftOver = null;
+                    FContinueNextPageNode = null;
+                    RenderContent(printer.FPageXPos, printer.FPageWidthAvailable, ref CurrentNode);
+                    FContinueNextPageNode = BackupContinueNextPageNode;
+                    FRowsLeftOver = BackupRowsLeftOver;
+                    FPrinter.CurrentRelativeFontSize = BackupCurrentRelativeFontSize;
+                }
+            }
+        }
+
+        // this should be null, while printing a page; it is set to a node, when the node does not fit on the page anymore
+        private XmlNode FContinueNextPageNode = null;
+
+        /// <summary>
+        /// print one page of the HTML, one body tag per page???
+        /// TODO: or until div with page break?
+        /// </summary>
+        /// <returns>void</returns>
+        public override void PrintPageBody()
+        {
+            XmlNode CurrentNode = null;
+
+            if (FContinueNextPageNode != null)
+            {
+                CurrentNode = FContinueNextPageNode;
+                FContinueNextPageNode = null;
+            }
+
+            if (CurrentNode == null)
+            {
+                FCurrentNodeNextPage = GetPageNode(FPrinter.CurrentPageNr);
+
+                if (FCurrentNodeNextPage != null)
+                {
+                    CurrentNode = FCurrentNodeNextPage.FirstChild;
+                }
+            }
+
+            if (FPrinter is TGfxPrinter)
+            {
+                TGfxPrinter printer = (TGfxPrinter)FPrinter;
+                RenderContent(printer.FPageXPos, printer.FPageWidthAvailable, ref CurrentNode);
 
                 if ((CurrentNode == null) && (FContinueNextPageNode == null))
                 {
                     // there can be several body blocks, each representing a page
                     FCurrentNodeNextPage = FCurrentNodeNextPage.NextSibling;
-                    printer.SetHasMorePages(FCurrentNodeNextPage != null);
+                    FPrinter.SetHasMorePages(FCurrentNodeNextPage != null);
                 }
                 else
                 {
-                    printer.SetHasMorePages(true);
+                    FPrinter.SetHasMorePages(true);
                 }
-            }
-            else
-            {
-                // todo: do something for e.g. PDF printing
             }
         }
 
@@ -538,7 +556,7 @@ namespace Ict.Common.Printing
             List <TTableRowGfx>preparedRows = new List <TTableRowGfx>();
             TTableRowGfx titleRow = null;
 
-            if (FRowsLeftOver.Count > 0)
+            if ((FRowsLeftOver != null) && (FRowsLeftOver.Count > 0))
             {
                 preparedRows = FRowsLeftOver;
                 FRowsLeftOver = new List <TTableRowGfx>();
@@ -771,31 +789,33 @@ namespace Ict.Common.Printing
         /// <returns></returns>
         public static string RemoveDivWithName(string AHtmlMessage, string ADivName)
         {
-            // use xml tree to avoid whitespace differences etc?
-            XmlDocument htmlDoc = Ict.Common.Printing.TPrinterHtml.ParseHtml(AHtmlMessage);
+            string dummy;
 
-            List <XmlNode>children = new List <XmlNode>();
-            FindAllChildren(htmlDoc.DocumentElement, ref children, "div", "name", ADivName);
-
-            foreach (XmlNode child in children)
-            {
-                child.ParentNode.RemoveChild(child);
-            }
-
-            return htmlDoc.OuterXml.Replace("&amp;", "&");
+            return RemoveElement(AHtmlMessage, "div", "name", "name", out dummy);
         }
 
         /// remove all divs of the given class
         public static string RemoveDivWithClass(string AHtmlMessage, string ADivClass)
         {
+            string dummy;
+
+            return RemoveElement(AHtmlMessage, "div", "class", "class", out dummy);
+        }
+
+        /// remove all elments with given name or class
+        public static string RemoveElement(string AHtmlMessage, string AElementName, string AAttributeName, string ADivID, out string AElementCode)
+        {
             // use xml tree to avoid whitespace differences etc?
             XmlDocument htmlDoc = Ict.Common.Printing.TPrinterHtml.ParseHtml(AHtmlMessage);
 
             List <XmlNode>children = new List <XmlNode>();
-            FindAllChildren(htmlDoc.DocumentElement, ref children, "div", "class", ADivClass);
+            FindAllChildren(htmlDoc.DocumentElement, ref children, AElementName, AAttributeName, ADivID);
+
+            AElementCode = "";
 
             foreach (XmlNode child in children)
             {
+                AElementCode += child.OuterXml.Replace("&amp;", "&");
                 child.ParentNode.RemoveChild(child);
             }
 
