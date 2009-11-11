@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -68,6 +68,10 @@ namespace Ict.Common.Controls
         public TRbtNavigationButton()
         {
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            #endregion
 
             this.lblCaption.Enter += new System.EventHandler(this.PanelEnter);
             this.lblCaption.Leave += new System.EventHandler(this.PanelLeave);

@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -45,6 +45,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public TDlgGLEnterDateEffective()
         {
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblDateEffective.Text = Catalog.GetString("label1");
+            this.lblValidDateRange.Text = Catalog.GetString("valid dates from {0} to {1}");
+            this.btnCancel.Text = Catalog.GetString("Cancel");
+            this.btnOK.Text = Catalog.GetString("OK");
+            this.Text = Catalog.GetString("Select the posting date");
+            #endregion
         }
 
         /// <summary>

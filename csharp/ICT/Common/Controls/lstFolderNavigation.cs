@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -61,6 +61,11 @@ namespace Ict.Common.Controls
             ResourceDirectory = TAppSettingsManager.GetValueStatic("Resource.Dir");
 
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblNavigationCaption.Text = Catalog.GetString("Caption");
+            #endregion
 
             if (System.IO.File.Exists(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2leftarrow.png"))
             {
