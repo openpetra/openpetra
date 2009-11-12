@@ -50,7 +50,7 @@ internal sealed class Program
         // Thread.CurrentThread.CurrentUICulture = culture;
         // Environment.SetEnvironmentVariable ("LANGUAGE", "de");
         Catalog.Init("i18n", "./locale");
-    	
+
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         Application.Run(new TFrmMainForm(System.IntPtr.Zero));

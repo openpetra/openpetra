@@ -134,7 +134,10 @@ namespace Ict.Common.Printing
 
         /// <summary>todoComment</summary>
         public eAlignment FCurrentAlignment = eAlignment.eLeft;
-
+        
+        /// avoid wrapping, cut off text if it does not fit
+		public bool FNoWrap = false;
+			
         /// create a copy of this state
         public TPrinterState Copy()
         {
@@ -147,6 +150,7 @@ namespace Ict.Common.Printing
             newState.FCurrentFont = FCurrentFont;
             newState.FCurrentRelativeFontSize = FCurrentRelativeFontSize;
             newState.FCurrentAlignment = FCurrentAlignment;
+            newState.FNoWrap = FNoWrap;
             return newState;
         }
     }
@@ -564,8 +568,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public void StartSimulatePrinting()
         {
-            FPrinterStateStack.Push(FCurrentState);
-            FCurrentState = FCurrentState.Copy();
+        	PushCurrentState();
             PrintingMode = ePrintingMode.eDoSimulate;
         }
 
@@ -576,7 +579,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public void FinishSimulatePrinting()
         {
-            FCurrentState = FPrinterStateStack.Pop();
+        	PopCurrentState();
         }
 
         /// <summary>
@@ -588,6 +591,15 @@ namespace Ict.Common.Printing
             FCurrentState = FCurrentState.Copy();
         }
 
+        /// <summary>
+        /// return to previous printer state;
+        /// this is used for printing table cells
+        /// </summary>
+        public void PopCurrentState()
+        {
+            FCurrentState = FPrinterStateStack.Pop();
+        }
+        
         /// <summary>
         /// return to previous printer state; but keep the new y position (used eg. for printing the page header)
         /// </summary>
@@ -649,7 +661,7 @@ namespace Ict.Common.Printing
 
             foreach (TTableRowGfx row in rows)
             {
-                float currentYPos = CurrentYPos;
+                float RowYPos = CurrentYPos;
                 row.contentHeight = 0;
 
                 // for each row, start again at the beginning of the line
@@ -658,33 +670,32 @@ namespace Ict.Common.Printing
                 foreach (TTableCellGfx cell in row.cells)
                 {
                     // for each cell, start again at the top of the table
-                    CurrentYPos = currentYPos;
+                    CurrentYPos = RowYPos;
                     CurrentXPos = currentXPos;
                     cell.contentWidth =
                         (AWidthAvailable * cell.columnWidthInPercentage) / 100.0f;
 
-                    eFont origFont = CurrentFont;
-
+                    PushCurrentState();
+                    
                     if (cell.bold)
                     {
                         CurrentFont = eFont.eDefaultBoldFont;
                     }
-
-                    eAlignment origAlignment = CurrentAlignment;
+                    
+                	FCurrentState.FNoWrap = cell.nowrap;
                     CurrentAlignment = cell.align;
                     XmlNode LocalNode = cell.content;
                     cell.contentHeight = FPrinterLayout.RenderContent(currentXPos, cell.contentWidth, ref LocalNode);
                     LineFeed();
-                    cell.contentHeight = CurrentYPos - currentYPos;
+                    cell.contentHeight = CurrentYPos - RowYPos;
 
                     if (cell.contentHeight > row.contentHeight)
                     {
                         row.contentHeight = cell.contentHeight;
                     }
 
-                    CurrentFont = origFont;
-                    CurrentAlignment = origAlignment;
-
+                    PopCurrentState();
+                    
                     currentXPos += cell.contentWidth;
                 }
 
@@ -693,7 +704,7 @@ namespace Ict.Common.Printing
 
                 foreach (TTableCellGfx cell in row.cells)
                 {
-                    CurrentYPos = currentYPos;
+                    CurrentYPos = RowYPos;
 
                     if (cell.borderWidth > 0)
                     {

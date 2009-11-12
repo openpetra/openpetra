@@ -368,6 +368,11 @@ namespace Ict.Common.Printing
             {
                 Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AXPos + AWidth - CurrentXPos);
 
+                if (FCurrentState.FNoWrap)
+                {
+                	length = ATxt.Length;
+                }
+                
                 if (length > 0)
                 {
                     string toPrint = ATxt.Substring(0, length);

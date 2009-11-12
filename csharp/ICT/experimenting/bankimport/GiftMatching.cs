@@ -504,9 +504,25 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             {
                 row = (BankImportTDSAEpTransactionRow)rv.Row;
 
+                if (row.IsDonorKeyNull())
+                {
+	                rowTexts += RowTemplate.Replace("#NAME", row.AccountName);
+                }
+                else
+                {
+	                rowTexts += RowTemplate.Replace("#NAME", row.DonorShortName);
+                }
+                
+                if (row.IsRecipientDescriptionNull() || row.RecipientDescription.Length == 0)
+                {
+	                rowTexts += RowTemplate.Replace("#NAME", row.Description);
+                }
+                else
+                {
+	                rowTexts += RowTemplate.Replace("#NAME", row.DonorShortName);
+                }
+
                 rowTexts += RowTemplate.
-                            Replace("#NAME", row.AccountName).
-                            Replace("#DESCRIPTION", row.Description).
                             Replace("#AMOUNT", String.Format("{0:C}", row.TransactionAmount)).
                             Replace("#ACCOUNTNUMBER", row.BankAccountNumber).
                             Replace("#BANKSORTCODE", row.BranchCode).

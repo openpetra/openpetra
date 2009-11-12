@@ -276,6 +276,7 @@ namespace Ict.Plugins.Finance.SwiftParser
                         Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator));
 
                 currentStatement.endBalance = Math.Round(currentStatement.endBalance, 2);
+
                 if (Convert.ToDecimal(Math.Round(currentStatement.endBalance, 2)) != Convert.ToDecimal(shouldBeBalance))
                 {
                     throw new Exception("end balance does not match" +

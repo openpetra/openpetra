@@ -69,6 +69,9 @@ namespace Ict.Common.Printing
 
         /// needed for table headers (th)
         public bool bold;
+        
+        /// avoid wrapping in cell
+        public bool nowrap = false;
 
         /// align the content of the cell
         public eAlignment align = eAlignment.eLeft;

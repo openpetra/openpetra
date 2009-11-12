@@ -651,6 +651,11 @@ namespace Ict.Common.Printing
                         preparedCell.borderWidth = border;
                         preparedCell.content = cell.FirstChild;
                         preparedCell.bold = (cell.Name == "th");
+                        
+                        if (TXMLParser.GetAttribute(cell, "nowrap") == "nowrap")
+                        {
+                        	preparedCell.nowrap = true;
+                        }
 
                         if (cell.Name == "th")
                         {
