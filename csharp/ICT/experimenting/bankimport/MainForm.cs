@@ -105,10 +105,10 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
       InitializeManualCode();
       grdResult.Columns.Clear();
       grdResult.AddTextColumn("Nr", FMainDS.AEpTransaction.ColumnNumberOnStatement);
-      grdResult.AddTextColumn("transaction type", FMainDS.AEpTransaction.ColumnTransactionTypeCode);
       grdResult.AddTextColumn("Account Name", FMainDS.AEpTransaction.ColumnAccountName);
       grdResult.AddTextColumn("DonorKey", FMainDS.AEpTransaction.ColumnDonorKey);
       grdResult.AddTextColumn("DonorShortName", FMainDS.AEpTransaction.ColumnDonorShortName);
+      grdResult.AddTextColumn("transaction type", FMainDS.AEpTransaction.ColumnTransactionTypeCode);
       grdResult.AddTextColumn("Account Number", FMainDS.AEpTransaction.ColumnBankAccountNumber);
       grdResult.AddTextColumn("description", FMainDS.AEpTransaction.ColumnDescription);
       grdResult.AddTextColumn("Recipient", FMainDS.AEpTransaction.ColumnRecipientDescription);

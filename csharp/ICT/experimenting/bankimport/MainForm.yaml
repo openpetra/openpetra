@@ -53,7 +53,7 @@
         grdResult:
             Dock: Fill
             TableName: AEpTransaction
-            Columns: [NumberOnStatement, TransactionTypeCode, AccountName, DonorKey, DonorShortName, BankAccountNumber, Description, RecipientDescription, TransactionAmount]
+            Columns: [NumberOnStatement, AccountName, DonorKey, DonorShortName, TransactionTypeCode, BankAccountNumber, Description, RecipientDescription, TransactionAmount]
             CustomColumns:
                 NumberOnStatement: {Label=Nr, Type=Int32}
                 DonorKey: {Label=DonorKey, Type=PartnerKey}

@@ -497,6 +497,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
             AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetNumberOnStatementDBName();
 
+            Decimal Sum = 0.0m;
+
             foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
             {
                 row = (BankImportTDSAEpTransactionRow)rv.Row;
@@ -542,9 +544,13 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                             Replace("#AMOUNT", String.Format("{0:C}", row.TransactionAmount)).
                             Replace("#ACCOUNTNUMBER", row.BankAccountNumber).
                             Replace("#BANKSORTCODE", row.BranchCode);
+
+                Sum += Convert.ToDecimal(row.TransactionAmount);
             }
 
-            return msg.Replace("#ROWTEMPLATE", rowTexts);
+            Sum = Math.Round(Sum, 2);
+
+            return msg.Replace("#ROWTEMPLATE", rowTexts).Replace("#TOTALAMOUNT", String.Format("{0:C}", Sum));
         }
 
         private static Int64 GetDonorByBankAccountNumber(ref BankImportTDS AMainDS, string ABankAccountNumber)

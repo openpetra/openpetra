@@ -87,6 +87,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     AutoMatchGiftsAgainstPetraDB(dateEffective);
 
                     rbtMatchedGifts.Checked = true;
+                    SetFilterMatchingGifts();
                     TGiftMatching exportMatchGifts = new TGiftMatching();
                     exportMatchGifts.WritePetraImportFile(ref FMainDS,
                         TAppSettingsManager.GetValueStatic("OutputCSV.Path") +
@@ -146,15 +147,15 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 {
                     // TODO: for some reason, the columns' initialisation in the constructor does not have any effect; need to do here again???
                     grdResult.Columns.Clear();
-                    grdResult.AddTextColumn("Nr", FMainDS.AEpTransaction.ColumnNumberOnStatement);
-                    grdResult.AddTextColumn("transaction type", FMainDS.AEpTransaction.ColumnTransactionTypeCode);
-                    grdResult.AddTextColumn("Account Name", FMainDS.AEpTransaction.ColumnAccountName);
-                    grdResult.AddTextColumn("DonorKey", FMainDS.AEpTransaction.ColumnDonorKey);
-                    grdResult.AddTextColumn("DonorShortName", FMainDS.AEpTransaction.ColumnDonorShortName);
-                    grdResult.AddTextColumn("Account Number", FMainDS.AEpTransaction.ColumnBankAccountNumber);
-                    grdResult.AddTextColumn("description", FMainDS.AEpTransaction.ColumnDescription);
-                    grdResult.AddTextColumn("Recipient", FMainDS.AEpTransaction.ColumnRecipientDescription);
-                    grdResult.AddTextColumn("Transaction Amount", FMainDS.AEpTransaction.ColumnTransactionAmount);
+                    grdResult.AddTextColumn(Catalog.GetString("Nr"), FMainDS.AEpTransaction.ColumnNumberOnStatement, 40);
+                    grdResult.AddTextColumn(Catalog.GetString("Account Name"), FMainDS.AEpTransaction.ColumnAccountName, 150);
+                    grdResult.AddTextColumn(Catalog.GetString("DonorKey"), FMainDS.AEpTransaction.ColumnDonorKey, 70);
+                    grdResult.AddTextColumn(Catalog.GetString("DonorShortName"), FMainDS.AEpTransaction.ColumnDonorShortName, 100);
+                    grdResult.AddTextColumn(Catalog.GetString("Type"), FMainDS.AEpTransaction.ColumnTransactionTypeCode, 30);
+                    grdResult.AddTextColumn(Catalog.GetString("Account Number"), FMainDS.AEpTransaction.ColumnBankAccountNumber, 70);
+                    grdResult.AddTextColumn(Catalog.GetString("description"), FMainDS.AEpTransaction.ColumnDescription, 100);
+                    grdResult.AddTextColumn(Catalog.GetString("Recipient"), FMainDS.AEpTransaction.ColumnRecipientDescription, 100);
+                    grdResult.AddTextColumn(Catalog.GetString("Transaction Amount"), FMainDS.AEpTransaction.ColumnTransactionAmount, 70);
 
                     FMainDS.AEpTransaction.Rows.Clear();
                     FMainDS.AGiftDetail.Rows.Clear();
@@ -179,8 +180,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                     FMainDS.AEpTransaction.DefaultView.AllowNew = false;
                     grdResult.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AEpTransaction.DefaultView);
-                    grdResult.AutoSizeCells();
 
+                    //grdResult.AutoSizeCells();
+
+                    // just to make sure; on import, the filter is cleared; checkbox might not change
+                    SetFilterMatchingGifts();
                     rbtMatchedGifts.Checked = true;
                 }
                 catch (Exception exp)
@@ -434,6 +438,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 DialogSave.Filter = Catalog.GetString("bank statement file (*.csv)|*.csv");
                 DialogSave.AddExtension = true;
                 DialogSave.RestoreDirectory = true;
+                DialogSave.FileName = txtBankName.Text + ".csv";
+                DialogSave.InitialDirectory = TAppSettingsManager.GetValueStatic("OutputCSV.Path");
 
                 if (rbtAllTransactions.Checked)
                 {
@@ -460,6 +466,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 DialogSave.Filter = Catalog.GetString("Unmatched Gifts file (*.csv)|*.csv");
                 DialogSave.AddExtension = true;
                 DialogSave.RestoreDirectory = true;
+                DialogSave.FileName = txtBankName.Text + ".csv";
+                DialogSave.InitialDirectory = TAppSettingsManager.GetValueStatic("OutputCSV.Path");
                 DialogSave.Title = Catalog.GetString("Export list of unmatched gifts");
 
                 if (DialogSave.ShowDialog() == DialogResult.OK)
@@ -474,6 +482,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 DialogSave.Filter = Catalog.GetString("Gift Batch file (*.csv)|*.csv");
                 DialogSave.AddExtension = true;
                 DialogSave.RestoreDirectory = true;
+                DialogSave.FileName = txtBankName.Text + ".csv";
+                DialogSave.InitialDirectory = TAppSettingsManager.GetValueStatic("OutputCSV.Path");
                 DialogSave.Title = Catalog.GetString("Export gift batch of matched gifts");
 
                 if (DialogSave.ShowDialog() == DialogResult.OK)

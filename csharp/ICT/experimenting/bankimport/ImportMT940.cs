@@ -56,6 +56,7 @@ namespace Ict.Plugins.Finance.SwiftParser
         {
             string typeName = AEpTransactionTable.GetTransactionTypeCodeDBName();
 
+            // TODO: match GL transactions as well; independent of amount
             return typeName + " = '052' OR " + typeName + " = '051' OR " + typeName + " = '053' OR " + typeName + " = '067' OR " + typeName +
                    " = '068' OR " + typeName + " = '069'";
         }
@@ -165,7 +166,7 @@ namespace Ict.Plugins.Finance.SwiftParser
             // sort by amount, and by accountname; this is the order of the paper statements and attachments
             AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetTransactionAmountDBName() + "," +
                                                       BankImportTDSAEpTransactionTable.GetOrderDBName();
-
+            AMainDS.AEpTransaction.DefaultView.RowFilter = "";
             Int32 countOrderOnStatement = 1;
 
             foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
