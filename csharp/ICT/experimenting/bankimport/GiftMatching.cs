@@ -495,8 +495,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
             BankImportTDSAEpTransactionRow row = null;
 
-            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetOriginalAmountOnStatementDBName() + "," +
-                                                      BankImportTDSAEpTransactionTable.GetOrderDBName();
+            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetNumberOnStatementDBName();
 
             foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
             {
