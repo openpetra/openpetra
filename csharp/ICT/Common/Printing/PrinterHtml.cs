@@ -246,6 +246,8 @@ namespace Ict.Common.Printing
                     // TODO: stack: push and pop environment variables?
                     XmlNode BackupContinueNextPageNode = FContinueNextPageNode;
                     List <TTableRowGfx>BackupRowsLeftOver = FRowsLeftOver;
+                    TTableRowGfx BackupHeaderRow = FTableHeaderRow;
+                    FTableHeaderRow = null;
                     FRowsLeftOver = null;
                     FContinueNextPageNode = null;
                     printer.PushCurrentState();
@@ -254,6 +256,7 @@ namespace Ict.Common.Printing
                     printer.PopCurrentStateApartFromYPosition();
                     FContinueNextPageNode = BackupContinueNextPageNode;
                     FRowsLeftOver = BackupRowsLeftOver;
+                    FTableHeaderRow = BackupHeaderRow;
                 }
             }
         }
@@ -532,6 +535,7 @@ namespace Ict.Common.Printing
         }
 
         private List <TTableRowGfx>FRowsLeftOver = new List <TTableRowGfx>();
+        private TTableRowGfx FTableHeaderRow = null;
 
         /// <summary>
         /// print an html table
@@ -576,7 +580,6 @@ namespace Ict.Common.Printing
             }
 
             List <TTableRowGfx>preparedRows = new List <TTableRowGfx>();
-            TTableRowGfx titleRow = null;
 
             if ((FRowsLeftOver != null) && (FRowsLeftOver.Count > 0))
             {
@@ -651,16 +654,16 @@ namespace Ict.Common.Printing
                         preparedCell.borderWidth = border;
                         preparedCell.content = cell.FirstChild;
                         preparedCell.bold = (cell.Name == "th");
-                        
+
                         if (TXMLParser.GetAttribute(cell, "nowrap") == "nowrap")
                         {
-                        	preparedCell.nowrap = true;
+                            preparedCell.nowrap = true;
                         }
 
                         if (cell.Name == "th")
                         {
                             // remember title row for next pages
-                            titleRow = preparedRow;
+                            FTableHeaderRow = preparedRow;
                         }
 
                         if (TXMLParser.GetAttribute(cell, "align") == "right")
@@ -682,15 +685,17 @@ namespace Ict.Common.Printing
 
                     foreach (TTableCellGfx preparedCell in preparedRow.cells)
                     {
-                        if (preparedCell.columnWidthInPercentage == -1)
+                        if (preparedCell.contentWidth == -1)
                         {
                             if (colWidth.Count > counter)
                             {
-                                preparedCell.columnWidthInPercentage = colWidth[counter];
+                                preparedCell.contentWidth =
+                                    (AWidthAvailable * colWidth[counter]) / 100.0f;
                             }
                             else
                             {
-                                preparedCell.columnWidthInPercentage = 100.0f / preparedRow.cells.Count;
+                                preparedCell.contentWidth =
+                                    (AWidthAvailable / preparedRow.cells.Count);
                             }
                         }
 
@@ -716,9 +721,9 @@ namespace Ict.Common.Printing
                 // the rows did not all fit on the page
                 FRowsLeftOver = new List <TTableRowGfx>();
 
-                if (titleRow != null)
+                if (FTableHeaderRow != null)
                 {
-                    FRowsLeftOver.Add(titleRow);
+                    FRowsLeftOver.Add(FTableHeaderRow);
                 }
 
                 while (preparedRows.Count > RowsFittingOnPage)

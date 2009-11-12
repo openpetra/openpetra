@@ -134,10 +134,10 @@ namespace Ict.Common.Printing
 
         /// <summary>todoComment</summary>
         public eAlignment FCurrentAlignment = eAlignment.eLeft;
-        
+
         /// avoid wrapping, cut off text if it does not fit
-		public bool FNoWrap = false;
-			
+        public bool FNoWrap = false;
+
         /// create a copy of this state
         public TPrinterState Copy()
         {
@@ -568,7 +568,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public void StartSimulatePrinting()
         {
-        	PushCurrentState();
+            PushCurrentState();
             PrintingMode = ePrintingMode.eDoSimulate;
         }
 
@@ -579,7 +579,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public void FinishSimulatePrinting()
         {
-        	PopCurrentState();
+            PopCurrentState();
         }
 
         /// <summary>
@@ -599,7 +599,7 @@ namespace Ict.Common.Printing
         {
             FCurrentState = FPrinterStateStack.Pop();
         }
-        
+
         /// <summary>
         /// return to previous printer state; but keep the new y position (used eg. for printing the page header)
         /// </summary>
@@ -672,17 +672,15 @@ namespace Ict.Common.Printing
                     // for each cell, start again at the top of the table
                     CurrentYPos = RowYPos;
                     CurrentXPos = currentXPos;
-                    cell.contentWidth =
-                        (AWidthAvailable * cell.columnWidthInPercentage) / 100.0f;
 
                     PushCurrentState();
-                    
+
                     if (cell.bold)
                     {
                         CurrentFont = eFont.eDefaultBoldFont;
                     }
-                    
-                	FCurrentState.FNoWrap = cell.nowrap;
+
+                    FCurrentState.FNoWrap = cell.nowrap;
                     CurrentAlignment = cell.align;
                     XmlNode LocalNode = cell.content;
                     cell.contentHeight = FPrinterLayout.RenderContent(currentXPos, cell.contentWidth, ref LocalNode);
@@ -695,7 +693,7 @@ namespace Ict.Common.Printing
                     }
 
                     PopCurrentState();
-                    
+
                     currentXPos += cell.contentWidth;
                 }
 

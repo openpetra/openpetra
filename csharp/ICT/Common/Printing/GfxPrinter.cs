@@ -118,7 +118,7 @@ namespace Ict.Common.Printing
             if (AOrientation == eOrientation.ePortrait)
             {
                 FDocument.DefaultPageSettings.Margins.Left = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                FDocument.DefaultPageSettings.Margins.Right = Convert.ToInt32(Cm2Inch(1) * 100);
+                FDocument.DefaultPageSettings.Margins.Right = Convert.ToInt32(Cm2Inch(0.5f) * 100);
                 FDocument.DefaultPageSettings.Margins.Top = Convert.ToInt32(Cm2Inch(0.5f) * 100);
                 FDocument.DefaultPageSettings.Margins.Bottom = Convert.ToInt32(Cm2Inch(1) * 100);
             }
@@ -370,9 +370,9 @@ namespace Ict.Common.Printing
 
                 if (FCurrentState.FNoWrap)
                 {
-                	length = ATxt.Length;
+                    length = ATxt.Length;
                 }
-                
+
                 if (length > 0)
                 {
                     string toPrint = ATxt.Substring(0, length);
@@ -742,25 +742,6 @@ namespace Ict.Common.Printing
 
                 // Calculate the number of lines per page.
                 FLinesPerPage = (float)FHeight / (float)FDefaultFont.GetHeight(FEv.Graphics);
-
-                // estimate the number of pages needed
-                // todo: use the height of the header, the number of linesPerPage, and the expected number of result lines.
-                // if the last page does not match the predicted number of pages, print again, with the correct number as a parameter
-                // prepare the columns
-
-                /*
-                 * if (FColumns = nil) then
-                 * begin
-                 * FColumns := new ArrayList();
-                 * x := FLeftMargin + Cm(4);
-                 * colWidth := Cm(2);
-                 * for countColumn := 1 to 20 do
-                 * begin
-                 * FColumns.Add(RectangleF.Create(x, 0, colWidth, 0));
-                 * x := x + colWidth;
-                 * end;
-                 * end;
-                 */
 
                 if (FNumberOfPages == 0)
                 {

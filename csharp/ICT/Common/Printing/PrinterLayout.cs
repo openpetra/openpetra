@@ -61,15 +61,12 @@ namespace Ict.Common.Printing
     /// <summary>todoComment</summary>
     public class TTableCellGfx
     {
-        /// <summary>todoComment</summary>
-        public float columnWidthInPercentage = -1;
-
         /// <summary>can be html code</summary>
         public XmlNode content;
 
         /// needed for table headers (th)
         public bool bold;
-        
+
         /// avoid wrapping in cell
         public bool nowrap = false;
 
@@ -83,7 +80,7 @@ namespace Ict.Common.Printing
         public float contentHeight;
 
         /// <summary>todoComment</summary>
-        public float contentWidth;
+        public float contentWidth = -1;
     }
 
     /// <summary>todoComment</summary>
