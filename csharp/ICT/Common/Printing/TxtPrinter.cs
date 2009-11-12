@@ -82,7 +82,7 @@ namespace Ict.Common.Printing
             FWidth = DEFAULT_LENGTH_LINE;
             FLeftMargin = 0;
             FRightMargin = FWidth - FLeftMargin;
-            FCurrentPageNr = 1;
+            CurrentPageNr = 1;
         }
 
         #region Manage the Y Position
@@ -99,10 +99,10 @@ namespace Ict.Common.Printing
             System.Int32 counter;
             bool HasDash;
             bool HasOtherCharacters;
-            FCurrentYPos = FCurrentYPos + 1;
+            CurrentYPos = CurrentYPos + 1;
 
             // check if line is only a marking line; in that case, jump over it
-            s = GetLine(Convert.ToInt32(FCurrentYPos)).Trim();
+            s = GetLine(Convert.ToInt32(CurrentYPos)).Trim();
             HasDash = false;
             HasOtherCharacters = false;
 
@@ -121,10 +121,10 @@ namespace Ict.Common.Printing
 
             if (HasDash && (!HasOtherCharacters))
             {
-                FCurrentYPos = FCurrentYPos + 1;
+                CurrentYPos = CurrentYPos + 1;
             }
 
-            return FCurrentYPos;
+            return CurrentYPos;
         }
 
         /// <summary>
@@ -134,8 +134,8 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineSpaceFeed(eFont AFont)
         {
-            FCurrentYPos = FCurrentYPos + 1;
-            return FCurrentYPos;
+            CurrentYPos = CurrentYPos + 1;
+            return CurrentYPos;
         }
 
         /// <summary>
@@ -145,8 +145,8 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineUnFeed(eFont AFont)
         {
-            FCurrentYPos = FCurrentYPos - 1;
-            return FCurrentYPos;
+            CurrentYPos = CurrentYPos - 1;
+            return CurrentYPos;
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override float LineFeedToPageFooter()
         {
-            return FCurrentYPos + 1;
+            return CurrentYPos + 1;
         }
 
         /// <summary>
@@ -215,6 +215,15 @@ namespace Ict.Common.Printing
         public override void SetHasMorePages(bool AHasMorePages)
         {
             // not implemented
+        }
+
+        /// <summary>
+        /// not implemented
+        /// </summary>
+        /// <returns></returns>
+        public override bool HasMorePages()
+        {
+            return false;
         }
 
         #endregion
@@ -334,7 +343,7 @@ namespace Ict.Common.Printing
                 head = line;
             }
 
-            if (FPrintingMode == ePrintingMode.eDoPrint)
+            if (PrintingMode == ePrintingMode.eDoPrint)
             {
                 line = head + s + tail;
             }
@@ -399,7 +408,7 @@ namespace Ict.Common.Printing
                     break;
             }
 
-            Print(XPos, Convert.ToInt32(FCurrentYPos), ATxt);
+            Print(XPos, Convert.ToInt32(CurrentYPos), ATxt);
             return ReturnValue;
         }
 
@@ -453,7 +462,7 @@ namespace Ict.Common.Printing
                 ToPrint = ATxt.Substring(0, Convert.ToInt32(AWidth));
             }
 
-            Print(XPos, Convert.ToInt32(FCurrentYPos), ToPrint);
+            Print(XPos, Convert.ToInt32(CurrentYPos), ToPrint);
             return true;
         }
 
@@ -467,7 +476,7 @@ namespace Ict.Common.Printing
             Boolean ReturnValue;
 
             ReturnValue = (ATxt.Length != 0);
-            Print(Convert.ToInt32(AXPos), Convert.ToInt32(FCurrentYPos), ATxt);
+            Print(Convert.ToInt32(AXPos), Convert.ToInt32(CurrentYPos), ATxt);
             return ReturnValue;
         }
 
@@ -505,11 +514,11 @@ namespace Ict.Common.Printing
             if (ALinePosition == eLinePosition.eAbove)
             {
                 // to deal with things already printed in the beginning of the line (e.g. descr)
-                InsertLineForMarkingLine(FCurrentYPos);
+                InsertLineForMarkingLine(CurrentYPos);
             }
             else if (ALinePosition == eLinePosition.eBelow)
             {
-                FCurrentYPos = FCurrentYPos + 1;
+                CurrentYPos = CurrentYPos + 1;
             }
 
             if (AXPos1 != 0)
@@ -519,12 +528,12 @@ namespace Ict.Common.Printing
                 AXPos2 = AXPos2 - 1;
             }
 
-            if (FPrintingMode == ePrintingMode.eDoPrint)
+            if (PrintingMode == ePrintingMode.eDoPrint)
             {
                 PrintString(new String('-', Convert.ToInt32(AXPos2 - AXPos1 + 1)), eFont.eDefaultFont, Convert.ToInt32(AXPos1));
             }
 
-            FCurrentYPos = FCurrentYPos + 1;
+            CurrentYPos = CurrentYPos + 1;
             return true;
         }
 

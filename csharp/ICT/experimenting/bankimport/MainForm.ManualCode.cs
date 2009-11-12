@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             {
                 MessageBox.Show(exp.Message, Catalog.GetString("Error connecting to Petra 2.x"));
             }
-           
+
             lblValueMatchedGiftBatch.Visible = false;
         }
 
@@ -335,6 +335,9 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     ASumDebit += amount;
                 }
             }
+
+            ASumCredit = Math.Round(ASumCredit, 2);
+            ASumDebit = Math.Round(ASumDebit, 2);
         }
 
         private void FillPanelInfo(double startBalance, double endBalance, DateTime dateEffective, string ABankName)
@@ -382,17 +385,17 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             txtSumCredit.Text = sumCreditAll.ToString();
             txtSumDebit.Text = sumDebitAll.ToString();
 
-            if (Math.Round(Convert.ToDecimal(startBalance + sumCreditAll + sumDebitAll),2) != Math.Round(Convert.ToDecimal(endBalance),2))
+            if (Math.Round(Convert.ToDecimal(startBalance + sumCreditAll + sumDebitAll), 2) != Math.Round(Convert.ToDecimal(endBalance), 2))
             {
                 MessageBox.Show(Catalog.GetString("the startbalance, credit/debit all and endbalance don't add up"));
             }
 
-            if (Convert.ToDecimal(sumCreditAll) != Convert.ToDecimal(sumCreditMatched + sumCreditUnmatched + sumCreditOther))
+            if (Convert.ToDecimal(sumCreditAll) != Math.Round(Convert.ToDecimal(sumCreditMatched + sumCreditUnmatched + sumCreditOther), 2))
             {
                 MessageBox.Show(Catalog.GetString("the credits don't add up"));
             }
 
-            if (Convert.ToDecimal(sumDebitAll) != Convert.ToDecimal(sumDebitMatched + sumDebitUnmatched + sumDebitOther))
+            if (Convert.ToDecimal(sumDebitAll) != Math.Round(Convert.ToDecimal(sumDebitMatched + sumDebitUnmatched + sumDebitOther), 2))
             {
                 MessageBox.Show(Catalog.GetString("the debits don't add up"));
             }
@@ -429,13 +432,14 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 DialogSave.Filter = Catalog.GetString("bank statement file (*.csv)|*.csv");
                 DialogSave.AddExtension = true;
                 DialogSave.RestoreDirectory = true;
+
                 if (rbtAllTransactions.Checked)
                 {
-                	DialogSave.Title = Catalog.GetString("Export list of all transactions");
+                    DialogSave.Title = Catalog.GetString("Export list of all transactions");
                 }
                 else
                 {
-                	DialogSave.Title = Catalog.GetString("Export list of other transactions");
+                    DialogSave.Title = Catalog.GetString("Export list of other transactions");
                 }
 
                 if (DialogSave.ShowDialog() == DialogResult.OK)

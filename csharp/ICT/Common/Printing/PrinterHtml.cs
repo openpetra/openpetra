@@ -46,8 +46,11 @@ namespace Ict.Common.Printing
         /// <summary>todoComment</summary>
         protected XmlNode FCurrentNodeNextPage;
 
-        /// <summary>todoComment</summary>
+        /// <summary>path for embedded images</summary>
         protected string FPath;
+
+        /// local version used for preprinting HTML to discover total number of pages
+        protected bool FHasMorePages = false;
 
         private string FPageHeader = string.Empty;
 
@@ -126,6 +129,7 @@ namespace Ict.Common.Printing
         /// </summary>
         public override void StartPrintDocument()
         {
+            FHasMorePages = true;
         }
 
         /// <summary>
@@ -221,26 +225,35 @@ namespace Ict.Common.Printing
 
                 // TODO set the margins and the font sizes in the HTML file???
                 printer.FPageXPos = printer.LeftMargin + pageLeftMargin;
-                printer.FPageWidthAvailable = printer.Width - (pageRightMargin + pageLeftMargin);
-                printer.FDefaultFont = new System.Drawing.Font("Arial", 12);
-                printer.FDefaultBoldFont = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
+
+                if (printer.CurrentPageNr == 1)
+                {
+                    printer.FPageWidthAvailable = printer.Width - (pageRightMargin + pageLeftMargin);
+                    printer.FDefaultFont = new System.Drawing.Font("Arial", 12);
+                    printer.FDefaultBoldFont = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
+                    printer.CurrentRelativeFontSize = 0;
+                }
 
                 if (FPageHeader.Length > 0)
                 {
-                    XmlDocument HeaderDoc = ParseHtml(FPageHeader);
+                    string TempPageHeader = FPageHeader;
+                    TempPageHeader = TempPageHeader.Replace("#PAGENR", printer.CurrentPageNr.ToString());
+                    TempPageHeader = TempPageHeader.Replace("#PAGETOTAL", printer.NumberOfPages.ToString());
+
+                    XmlDocument HeaderDoc = ParseHtml(TempPageHeader);
                     XmlNode CurrentNode = HeaderDoc.DocumentElement;
 
-					// TODO: stack: push and pop environment variables?
+                    // TODO: stack: push and pop environment variables?
                     XmlNode BackupContinueNextPageNode = FContinueNextPageNode;
                     List <TTableRowGfx>BackupRowsLeftOver = FRowsLeftOver;
-                    int BackupCurrentRelativeFontSize = FPrinter.CurrentRelativeFontSize;
-                    FPrinter.CurrentRelativeFontSize = 0;
                     FRowsLeftOver = null;
                     FContinueNextPageNode = null;
+                    printer.PushCurrentState();
+                    printer.CurrentRelativeFontSize = 0;
                     RenderContent(printer.FPageXPos, printer.FPageWidthAvailable, ref CurrentNode);
+                    printer.PopCurrentStateApartFromYPosition();
                     FContinueNextPageNode = BackupContinueNextPageNode;
                     FRowsLeftOver = BackupRowsLeftOver;
-                    FPrinter.CurrentRelativeFontSize = BackupCurrentRelativeFontSize;
                 }
             }
         }
@@ -278,16 +291,25 @@ namespace Ict.Common.Printing
                 TGfxPrinter printer = (TGfxPrinter)FPrinter;
                 RenderContent(printer.FPageXPos, printer.FPageWidthAvailable, ref CurrentNode);
 
+                FHasMorePages = false;
+
                 if ((CurrentNode == null) && (FContinueNextPageNode == null))
                 {
                     // there can be several body blocks, each representing a page
                     FCurrentNodeNextPage = FCurrentNodeNextPage.NextSibling;
-                    FPrinter.SetHasMorePages(FCurrentNodeNextPage != null);
+                    FHasMorePages = FCurrentNodeNextPage != null;
                 }
                 else
                 {
-                    FPrinter.SetHasMorePages(true);
+                    if ((CurrentNode != null) && (FContinueNextPageNode == null))
+                    {
+                        FContinueNextPageNode = CurrentNode;
+                    }
+
+                    FHasMorePages = true;
                 }
+
+                FPrinter.SetHasMorePages(FHasMorePages);
             }
         }
 

@@ -141,12 +141,12 @@ namespace Ict.Common.Printing
 
         void BeginPrint(object ASender, PrintEventArgs AEv)
         {
-            if (FCurrentPageNr != 0)
+            if ((FNumberOfPages == 0) && (CurrentPageNr != 0))
             {
-                FNumberOfPages = FCurrentPageNr;
+                FNumberOfPages = CurrentPageNr;
             }
 
-            FCurrentPageNr = 0;
+            CurrentPageNr = 0;
             FPrinterLayout.StartPrintDocument();
         }
 
@@ -157,9 +157,9 @@ namespace Ict.Common.Printing
         /// <param name="AEv"></param>
         private void EndPrint(object ASender, PrintEventArgs AEv)
         {
-            if ((FCurrentPageNr != 0) && (FNumberOfPages == 0))
+            if ((CurrentPageNr != 0) && (FNumberOfPages == 0))
             {
-                FNumberOfPages = FCurrentPageNr;
+                FNumberOfPages = CurrentPageNr;
             }
         }
 
@@ -230,9 +230,9 @@ namespace Ict.Common.Printing
         {
             RectangleF rect;
 
-            rect = new RectangleF(FLeftMargin, FCurrentYPos, FWidth, GetFont(AFont).GetHeight(FEv.Graphics));
+            rect = new RectangleF(FLeftMargin, CurrentYPos, FWidth, GetFont(AFont).GetHeight(FEv.Graphics));
 
-            if (FPrintingMode == ePrintingMode.eDoPrint)
+            if (PrintingMode == ePrintingMode.eDoPrint)
             {
                 FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, rect, GetStringFormat(AAlign));
             }
@@ -246,9 +246,9 @@ namespace Ict.Common.Printing
         /// </summary>
         public override Boolean PrintString(String ATxt, eFont AFont, float AXPos)
         {
-            if (FPrintingMode == ePrintingMode.eDoPrint)
+            if (PrintingMode == ePrintingMode.eDoPrint)
             {
-                FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, AXPos, FCurrentYPos);
+                FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, AXPos, CurrentYPos);
             }
 
             return (ATxt != null) && (ATxt.Length != 0);
@@ -260,9 +260,9 @@ namespace Ict.Common.Printing
         /// <returns>true if something was printed</returns>
         public override Boolean PrintString(String ATxt, eFont AFont, float AXPos, float AWidth, eAlignment AAlign)
         {
-            RectangleF rect = new RectangleF(AXPos, FCurrentYPos, AWidth, GetFont(AFont).GetHeight(FEv.Graphics));
+            RectangleF rect = new RectangleF(AXPos, CurrentYPos, AWidth, GetFont(AFont).GetHeight(FEv.Graphics));
 
-            if (FPrintingMode == ePrintingMode.eDoPrint)
+            if (PrintingMode == ePrintingMode.eDoPrint)
             {
                 StringFormat f = GetStringFormat(AAlign);
                 f.FormatFlags = StringFormatFlags.MeasureTrailingSpaces;
@@ -366,7 +366,7 @@ namespace Ict.Common.Printing
         {
             while (ATxt.Length > 0)
             {
-                Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AXPos + AWidth - FCurrentXPos);
+                Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AXPos + AWidth - CurrentXPos);
 
                 if (length > 0)
                 {
@@ -378,24 +378,24 @@ namespace Ict.Common.Printing
                         FBiggestLastUsedFont = GetFont(AFont);
                     }
 
-                    PrintString(toPrint, AFont, FCurrentXPos, AWidth, AAlign);
+                    PrintString(toPrint, AFont, CurrentXPos, AWidth, AAlign);
 
                     if (AAlign == eAlignment.eRight)
                     {
-                        FCurrentXPos += GetWidthString(toPrint, AFont);
+                        CurrentXPos += GetWidthString(toPrint, AFont);
                     }
 
                     if (ATxt.Length > 0)
                     {
                         // there is still more to come, we need a new line
-                        FCurrentXPos = AXPos;
+                        CurrentXPos = AXPos;
                         LineFeed(); // will use the biggest used font, and reset it
                     }
                 }
-                else if ((ATxt.Length > 0) && (FCurrentXPos != AXPos))
+                else if ((ATxt.Length > 0) && (CurrentXPos != AXPos))
                 {
                     // the first word did not fit the space; needs a new line
-                    FCurrentXPos = AXPos;
+                    CurrentXPos = AXPos;
                     LineFeed();
                 }
             }
@@ -444,15 +444,15 @@ namespace Ict.Common.Printing
         {
             float YPos;
 
-            YPos = FCurrentYPos;
+            YPos = CurrentYPos;
 
             if (ALinePosition == eLinePosition.eBelow)
             {
-                YPos = FCurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics);
+                YPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics);
             }
             else if (ALinePosition == eLinePosition.eAbove)
             {
-                YPos = FCurrentYPos;
+                YPos = CurrentYPos;
             }
 
             if (AXPos1 != LeftMargin)
@@ -461,7 +461,7 @@ namespace Ict.Common.Printing
                 AXPos1 = AXPos1 + Cm(0.3f);
             }
 
-            if (FPrintingMode == ePrintingMode.eDoPrint)
+            if (PrintingMode == ePrintingMode.eDoPrint)
             {
                 FEv.Graphics.DrawLine(FBlackPen, AXPos1, YPos, AXPos2, YPos);
             }
@@ -483,7 +483,7 @@ namespace Ict.Common.Printing
             float AWidth,
             float AHeight)
         {
-            if (FPrintingMode == ePrintingMode.eDoPrint)
+            if (PrintingMode == ePrintingMode.eDoPrint)
             {
                 FEv.Graphics.DrawRectangle(FBlackPen, AXPos, AYPos, AWidth, AHeight);
             }
@@ -502,15 +502,15 @@ namespace Ict.Common.Printing
         {
             Bitmap img = new System.Drawing.Bitmap(APath);
 
-            if (FPrintingMode == ePrintingMode.eDoPrint)
+            if (PrintingMode == ePrintingMode.eDoPrint)
             {
                 FEv.Graphics.DrawImage(img, AXPos, AYPos);
             }
 
             // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
             // pixel/inch = dpi <=> inch = pixel/dpi
-            FCurrentYPos += img.Size.Height / img.VerticalResolution;
-            FCurrentXPos += img.Size.Width / img.HorizontalResolution;
+            CurrentYPos += img.Size.Height / img.VerticalResolution;
+            CurrentXPos += img.Size.Width / img.HorizontalResolution;
         }
 
         /// <summary>
@@ -527,15 +527,15 @@ namespace Ict.Common.Printing
             float Height = img.Size.Height / img.VerticalResolution * AHeightPercentage;
             float Width = img.Size.Width / img.HorizontalResolution * AWidthPercentage;
 
-            if (FPrintingMode == ePrintingMode.eDoPrint)
+            if (PrintingMode == ePrintingMode.eDoPrint)
             {
                 FEv.Graphics.DrawImage(img, AXPos, AYPos, Width, Height);
             }
 
             // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
             // pixel/inch = dpi <=> inch = pixel/dpi
-            FCurrentYPos += Height;
-            FCurrentXPos += Width;
+            CurrentYPos += Height;
+            CurrentXPos += Width;
         }
 
         /// <summary>
@@ -545,8 +545,8 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineFeed(eFont AFont)
         {
-            FCurrentYPos = FCurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics);
-            return FCurrentYPos;
+            CurrentYPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics);
+            return CurrentYPos;
         }
 
         /// <summary>
@@ -555,11 +555,11 @@ namespace Ict.Common.Printing
         /// <returns>the new current line</returns>
         public override float LineFeed()
         {
-            FCurrentYPos = FCurrentYPos + FBiggestLastUsedFont.GetHeight(FEv.Graphics);
+            CurrentYPos = CurrentYPos + FBiggestLastUsedFont.GetHeight(FEv.Graphics);
 
             // reset the biggest last used font
             FBiggestLastUsedFont = FDefaultFont;
-            return FCurrentYPos;
+            return CurrentYPos;
         }
 
         /// <summary>
@@ -569,8 +569,8 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineSpaceFeed(eFont AFont)
         {
-            FCurrentYPos = FCurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics) / 2;
-            return FCurrentYPos;
+            CurrentYPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics) / 2;
+            return CurrentYPos;
         }
 
         /// <summary>
@@ -580,8 +580,8 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineUnFeed(eFont AFont)
         {
-            FCurrentYPos = FCurrentYPos - GetFont(AFont).GetHeight(FEv.Graphics);
-            return FCurrentYPos;
+            CurrentYPos = CurrentYPos - GetFont(AFont).GetHeight(FEv.Graphics);
+            return CurrentYPos;
         }
 
         /// <summary>
@@ -608,8 +608,8 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override float LineFeedToPageFooter()
         {
-            FCurrentYPos = FTopMargin + FHeight - FPageFooterSpace + FDefaultFont.GetHeight(FEv.Graphics);
-            return FCurrentYPos;
+            CurrentYPos = FTopMargin + FHeight - FPageFooterSpace + FDefaultFont.GetHeight(FEv.Graphics);
+            return CurrentYPos;
         }
 
         /// <summary>
@@ -630,7 +630,7 @@ namespace Ict.Common.Printing
         public override Boolean ValidYPos()
         {
             // MessageBox.Show(CurrentYPos.ToString() + ' ' + Height.ToString());
-            return FCurrentYPos < FTopMargin + FHeight - FPageFooterSpace;
+            return CurrentYPos < FTopMargin + FHeight - FPageFooterSpace;
         }
 
         /// <summary>
@@ -640,7 +640,24 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override void SetHasMorePages(bool AHasMorePages)
         {
-            FEv.HasMorePages = AHasMorePages;
+            if (FEv != null)
+            {
+                FEv.HasMorePages = AHasMorePages;
+            }
+        }
+
+        /// <summary>
+        /// more pages are coming
+        /// </summary>
+        /// <returns></returns>
+        public override bool HasMorePages()
+        {
+            if (FEv != null)
+            {
+                return FEv.HasMorePages;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -708,7 +725,7 @@ namespace Ict.Common.Printing
             FEv.Graphics.TranslateTransform(0, 0);
 
             // first page? then we should store some settings
-            if (FCurrentPageNr == 0)
+            if (CurrentPageNr == 0)
             {
                 FLeftMargin = FEv.MarginBounds.Left / 100.0f;
                 FTopMargin = FEv.MarginBounds.Top / 100.0f;
@@ -739,26 +756,46 @@ namespace Ict.Common.Printing
                  * end;
                  * end;
                  */
-            }
 
-            FCurrentPageNr++;
-
-            if (AEv.PageSettings.PrinterSettings.PrintRange == PrintRange.SomePages)
-            {
-                if (AEv.PageSettings.PrinterSettings.FromPage > FCurrentPageNr)
+                if (FNumberOfPages == 0)
                 {
-                    FCurrentPageNr = AEv.PageSettings.PrinterSettings.FromPage;
+                    // do a dry run without printing but calculate the number of pages
+
+                    StartSimulatePrinting();
+
+                    int pageCounter = 0;
+                    FNumberOfPages = 1;
+
+                    do
+                    {
+                        pageCounter++;
+                        PrintPage(null, FEv);
+                    } while (HasMorePages());
+
+                    FinishSimulatePrinting();
+
+                    FNumberOfPages = pageCounter;
                 }
             }
 
-            FCurrentYPos = FTopMargin;
+            CurrentPageNr++;
+
+            if (AEv.PageSettings.PrinterSettings.PrintRange == PrintRange.SomePages)
+            {
+                if (AEv.PageSettings.PrinterSettings.FromPage > CurrentPageNr)
+                {
+                    CurrentPageNr = AEv.PageSettings.PrinterSettings.FromPage;
+                }
+            }
+
+            CurrentYPos = FTopMargin;
             FPrinterLayout.PrintPageHeader();
             FPrinterLayout.PrintPageBody();
             FPrinterLayout.PrintPageFooter();
 
             if (AEv.PageSettings.PrinterSettings.PrintRange == PrintRange.SomePages)
             {
-                if (FCurrentPageNr == AEv.PageSettings.PrinterSettings.ToPage)
+                if (CurrentPageNr == AEv.PageSettings.PrinterSettings.ToPage)
                 {
                     SetHasMorePages(false);
                     return;

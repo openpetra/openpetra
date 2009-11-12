@@ -488,6 +488,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             reader.Close();
 
             msg = msg.Replace("#TITLE", ATitle);
+            msg = msg.Replace("#PRINTDATE", DateTime.Now.ToShortDateString());
 
             // recognise detail lines automatically
             string RowTemplate;

@@ -111,6 +111,46 @@ namespace Ict.Common.Printing
         eFinished
     };
 
+    /// definition for current state of printer; useful with the stack
+    public class TPrinterState
+    {
+        /// <summary>todoComment</summary>
+        public ePrintingMode FPrintingMode;
+
+        /// <summary>todoComment</summary>
+        public Int32 FCurrentPageNr;
+
+        /// <summary>todoComment</summary>
+        public float FCurrentXPos;
+
+        /// <summary>current y Position on page, in current display unit</summary>
+        public float FCurrentYPos;
+
+        /// <summary>todoComment</summary>
+        public eFont FCurrentFont;
+
+        /// relative number; 0 is normal size
+        public Int32 FCurrentRelativeFontSize = 0;
+
+        /// <summary>todoComment</summary>
+        public eAlignment FCurrentAlignment = eAlignment.eLeft;
+
+        /// create a copy of this state
+        public TPrinterState Copy()
+        {
+            TPrinterState newState = new TPrinterState();
+
+            newState.FPrintingMode = FPrintingMode;
+            newState.FCurrentPageNr = FCurrentPageNr;
+            newState.FCurrentXPos = FCurrentXPos;
+            newState.FCurrentYPos = FCurrentYPos;
+            newState.FCurrentFont = FCurrentFont;
+            newState.FCurrentRelativeFontSize = FCurrentRelativeFontSize;
+            newState.FCurrentAlignment = FCurrentAlignment;
+            return newState;
+        }
+    }
+
     /// <summary>
     /// The TPrinter class helps to print.
     ///
@@ -121,25 +161,10 @@ namespace Ict.Common.Printing
     public abstract class TPrinter
     {
         /// <summary>todoComment</summary>
-        protected ePrintingMode FPrintingMode;
-
-        /// <summary>todoComment</summary>
         protected eOrientation FOrientation;
 
         /// <summary>todoComment</summary>
-        protected Int32 FCurrentPageNr;
-
-        /// <summary>todoComment</summary>
         protected Int32 FNumberOfPages;
-
-        /// <summary>todoComment</summary>
-        protected float FCurrentXPos;
-
-        /// <summary>current y Position on page, in current display unit</summary>
-        protected float FCurrentYPos;
-
-        /// <summary>backup of current y position; needed for simulation</summary>
-        protected float FCurrentYPosBackup;
 
         /// <summary>how much space is needed for the footer lines; footerspace = font.height  number of lines</summary>
         protected float FPageFooterSpace;
@@ -163,29 +188,21 @@ namespace Ict.Common.Printing
         protected float FHeight;
 
         /// <summary>todoComment</summary>
-        protected eFont FCurrentFont;
-
-        private eFont FCurrentFontBackup;
-
-        /// <summary>
-        /// relative number; 0 is normal size
-        /// </summary>
-        protected Int32 FCurrentRelativeFontSize = 0;
-
-        private Int32 FCurrentRelativeFontSizeBackup = 0;
-
-        /// <summary>todoComment</summary>
-        protected eAlignment FCurrentAlignment = eAlignment.eLeft;
-
-        /// <summary>todoComment</summary>
         protected TPrinterLayout FPrinterLayout;
+
+        /// current state of printer
+        protected TPrinterState FCurrentState = new TPrinterState();
 
         /// <summary>todoComment</summary>
         public System.Int32 CurrentPageNr
         {
             get
             {
-                return FCurrentPageNr;
+                return FCurrentState.FCurrentPageNr;
+            }
+            set
+            {
+                FCurrentState.FCurrentPageNr = value;
             }
         }
 
@@ -196,6 +213,10 @@ namespace Ict.Common.Printing
             {
                 return FNumberOfPages;
             }
+            set
+            {
+                FNumberOfPages = value;
+            }
         }
 
         /// <summary>todoComment</summary>
@@ -203,12 +224,12 @@ namespace Ict.Common.Printing
         {
             get
             {
-                return FCurrentYPos;
+                return FCurrentState.FCurrentYPos;
             }
 
             set
             {
-                FCurrentYPos = value;
+                FCurrentState.FCurrentYPos = value;
             }
         }
 
@@ -217,12 +238,12 @@ namespace Ict.Common.Printing
         {
             get
             {
-                return FCurrentXPos;
+                return FCurrentState.FCurrentXPos;
             }
 
             set
             {
-                FCurrentXPos = value;
+                FCurrentState.FCurrentXPos = value;
             }
         }
 
@@ -249,11 +270,11 @@ namespace Ict.Common.Printing
         {
             get
             {
-                return FCurrentFont;
+                return FCurrentState.FCurrentFont;
             }
             set
             {
-                FCurrentFont = value;
+                FCurrentState.FCurrentFont = value;
             }
         }
 
@@ -264,11 +285,11 @@ namespace Ict.Common.Printing
         {
             get
             {
-                return FCurrentRelativeFontSize;
+                return FCurrentState.FCurrentRelativeFontSize;
             }
             set
             {
-                FCurrentRelativeFontSize = value;
+                FCurrentState.FCurrentRelativeFontSize = value;
             }
         }
 
@@ -277,11 +298,24 @@ namespace Ict.Common.Printing
         {
             get
             {
-                return FCurrentAlignment;
+                return FCurrentState.FCurrentAlignment;
             }
             set
             {
-                FCurrentAlignment = value;
+                FCurrentState.FCurrentAlignment = value;
+            }
+        }
+
+        /// this is about simulation or printing
+        public ePrintingMode PrintingMode
+        {
+            get
+            {
+                return FCurrentState.FPrintingMode;
+            }
+            set
+            {
+                FCurrentState.FPrintingMode = value;
             }
         }
 
@@ -318,7 +352,7 @@ namespace Ict.Common.Printing
         /// </returns>
         public virtual float LineFeed()
         {
-            return FCurrentYPos + 1;
+            return CurrentYPos + 1;
         }
 
         /// <summary>
@@ -328,8 +362,8 @@ namespace Ict.Common.Printing
         /// </returns>
         public float LineFeed(float height)
         {
-            FCurrentYPos += height;
-            return FCurrentYPos;
+            CurrentYPos += height;
+            return CurrentYPos;
         }
 
         /// <summary>
@@ -382,6 +416,12 @@ namespace Ict.Common.Printing
         /// </summary>
         /// <returns>void</returns>
         public abstract void SetHasMorePages(bool AHasMorePages);
+
+        /// <summary>
+        /// more pages are coming
+        /// </summary>
+        /// <returns></returns>
+        public abstract bool HasMorePages();
 
         #region Calculate X position
 
@@ -497,10 +537,10 @@ namespace Ict.Common.Printing
         public TPrinter() : base()
         {
             FOrientation = eOrientation.ePortrait;
-            FPrintingMode = ePrintingMode.eDoPrint;
-            FCurrentPageNr = 0;
+            PrintingMode = ePrintingMode.eDoPrint;
+            CurrentPageNr = 0;
             FNumberOfPages = 0;
-            FCurrentFont = eFont.eDefaultFont;
+            CurrentFont = eFont.eDefaultFont;
             FPageFooterSpace = 0;
         }
 
@@ -515,6 +555,8 @@ namespace Ict.Common.Printing
             FOrientation = AOrientation;
         }
 
+        Stack <TPrinterState>FPrinterStateStack = new Stack <TPrinterState>();
+
         /// <summary>
         /// start the simulation of printing; nothing is actually printed, but the CurrentYPos is increased
         ///
@@ -522,10 +564,9 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public void StartSimulatePrinting()
         {
-            FCurrentYPosBackup = FCurrentYPos;
-            FCurrentFontBackup = FCurrentFont;
-            FCurrentRelativeFontSizeBackup = FCurrentRelativeFontSize;
-            FPrintingMode = ePrintingMode.eDoSimulate;
+            FPrinterStateStack.Push(FCurrentState);
+            FCurrentState = FCurrentState.Copy();
+            PrintingMode = ePrintingMode.eDoSimulate;
         }
 
         /// <summary>
@@ -535,10 +576,27 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public void FinishSimulatePrinting()
         {
-            FCurrentYPos = FCurrentYPosBackup;
-            FCurrentFont = FCurrentFontBackup;
-            FCurrentRelativeFontSize = FCurrentRelativeFontSizeBackup;
-            FPrintingMode = ePrintingMode.eDoPrint;
+            FCurrentState = FPrinterStateStack.Pop();
+        }
+
+        /// <summary>
+        /// store the current printer state (font size etc)
+        /// </summary>
+        public void PushCurrentState()
+        {
+            FPrinterStateStack.Push(FCurrentState);
+            FCurrentState = FCurrentState.Copy();
+        }
+
+        /// <summary>
+        /// return to previous printer state; but keep the new y position (used eg. for printing the page header)
+        /// </summary>
+        public void PopCurrentStateApartFromYPosition()
+        {
+            float YPos = this.CurrentYPos;
+
+            FCurrentState = FPrinterStateStack.Pop();
+            CurrentYPos = YPos;
         }
 
         /// <summary>
@@ -585,13 +643,13 @@ namespace Ict.Common.Printing
         /// <returns>height of table</returns>
         public virtual float PrintTable(float AXPos, float AWidthAvailable, List <TTableRowGfx>rows, out Int32 ARowsFittingOnPage)
         {
-            float origYPos = FCurrentYPos;
+            float origYPos = CurrentYPos;
 
             ARowsFittingOnPage = 0;
 
             foreach (TTableRowGfx row in rows)
             {
-                float currentYPos = FCurrentYPos;
+                float currentYPos = CurrentYPos;
                 row.contentHeight = 0;
 
                 // for each row, start again at the beginning of the line
@@ -600,32 +658,32 @@ namespace Ict.Common.Printing
                 foreach (TTableCellGfx cell in row.cells)
                 {
                     // for each cell, start again at the top of the table
-                    FCurrentYPos = currentYPos;
-                    FCurrentXPos = currentXPos;
+                    CurrentYPos = currentYPos;
+                    CurrentXPos = currentXPos;
                     cell.contentWidth =
                         (AWidthAvailable * cell.columnWidthInPercentage) / 100.0f;
 
-                    eFont origFont = FCurrentFont;
+                    eFont origFont = CurrentFont;
 
                     if (cell.bold)
                     {
-                        FCurrentFont = eFont.eDefaultBoldFont;
+                        CurrentFont = eFont.eDefaultBoldFont;
                     }
 
-                    eAlignment origAlignment = FCurrentAlignment;
-                    FCurrentAlignment = cell.align;
+                    eAlignment origAlignment = CurrentAlignment;
+                    CurrentAlignment = cell.align;
                     XmlNode LocalNode = cell.content;
                     cell.contentHeight = FPrinterLayout.RenderContent(currentXPos, cell.contentWidth, ref LocalNode);
                     LineFeed();
-                    cell.contentHeight = FCurrentYPos - currentYPos;
+                    cell.contentHeight = CurrentYPos - currentYPos;
 
                     if (cell.contentHeight > row.contentHeight)
                     {
                         row.contentHeight = cell.contentHeight;
                     }
 
-                    FCurrentFont = origFont;
-                    FCurrentAlignment = origAlignment;
+                    CurrentFont = origFont;
+                    CurrentAlignment = origAlignment;
 
                     currentXPos += cell.contentWidth;
                 }
@@ -635,17 +693,17 @@ namespace Ict.Common.Printing
 
                 foreach (TTableCellGfx cell in row.cells)
                 {
-                    FCurrentYPos = currentYPos;
+                    CurrentYPos = currentYPos;
 
                     if (cell.borderWidth > 0)
                     {
-                        DrawRectangle(cell.borderWidth, currentXPos, FCurrentYPos, cell.contentWidth, row.contentHeight);
+                        DrawRectangle(cell.borderWidth, currentXPos, CurrentYPos, cell.contentWidth, row.contentHeight);
                     }
 
                     currentXPos += cell.contentWidth;
                 }
 
-                FCurrentYPos += row.contentHeight;
+                CurrentYPos += row.contentHeight;
 
                 // do we need a page break?
                 if (!ValidYPos())
@@ -656,7 +714,7 @@ namespace Ict.Common.Printing
                 ARowsFittingOnPage++;
             }
 
-            return FCurrentYPos - origYPos;
+            return CurrentYPos - origYPos;
         }
     }
 }
