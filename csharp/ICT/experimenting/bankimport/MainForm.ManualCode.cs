@@ -146,7 +146,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 {
                     // TODO: for some reason, the columns' initialisation in the constructor does not have any effect; need to do here again???
                     grdResult.Columns.Clear();
-                    grdResult.AddTextColumn("id", FMainDS.AEpTransaction.ColumnOrder);
+                    grdResult.AddTextColumn("Nr", FMainDS.AEpTransaction.ColumnNumberOnStatement);
                     grdResult.AddTextColumn("transaction type", FMainDS.AEpTransaction.ColumnTransactionTypeCode);
                     grdResult.AddTextColumn("Account Name", FMainDS.AEpTransaction.ColumnAccountName);
                     grdResult.AddTextColumn("DonorKey", FMainDS.AEpTransaction.ColumnDonorKey);
@@ -174,6 +174,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     AutoMatchGiftsAgainstPetraDB(dateEffective);
 
                     FillPanelInfo(startBalance, endBalance, dateEffective, bankName);
+
+                    FMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetNumberOnStatementDBName();
 
                     FMainDS.AEpTransaction.DefaultView.AllowNew = false;
                     grdResult.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AEpTransaction.DefaultView);

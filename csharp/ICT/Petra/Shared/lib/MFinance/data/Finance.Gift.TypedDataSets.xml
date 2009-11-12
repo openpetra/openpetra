@@ -29,6 +29,7 @@
             <CustomField name="PartnerKey" type="Int64"/>
         </Table>
         <Table sqltable="a_ep_transaction">
+            <CustomField name="NumberOnStatement" type="Int32"/>
             <CustomField name="DetailKey" type="Int32"/>
             <CustomField name="OriginalAmountOnStatement" type="Double"/>
             <CustomField name="GiftLedgerNumber" type="Int32"/>

@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
@@ -24,21 +24,25 @@
 <!-- hint: table width max 800 -->
 <table border="0" width="800">
   <colgroup>
-    <col width="200"/>
-    <col width="370"/>
+    <col width="50"/>
+    <col width="180"/>
     <col width="70"/>
     <col width="70"/>
-    <col width="60"/>
-    <col width="30"/>
+    <col width="70"/>
+    <col width="240"/>
+    <col width="70"/>
+    <col width="50"/>
   </colgroup>
   <tbody>
-    <tr><th>Name</th><th>Anlage</th><th>Verwendung</th><th>Konto</th><th>BLZ</th><th>Betrag</th></tr>
+    <tr><th>Nr</th><th>Name</th><th>Spender</th><th>Konto</th><th>BLZ</th><th>Verwendung</th><th>Für</th><th>Betrag</th></tr>
     <tr>
+      <td>#NRONSTATEMENT</td>
       <td nowrap="nowrap">#NAME</td>
-      <td nowrap="nowrap">#SORTORDER</td>
+      <td align="right">#DONORKEY</td>
+      <td>#ACCOUNTNUMBER</td>
+      <td>#BANKSORTCODE</td>
       <td nowrap="nowrap">#DESCRIPTION</td>
-      <td nowrap="nowrap">#ACCOUNTNUMBER</td>
-      <td nowrap="nowrap">#BANKSORTCODE</td>
+      <td align="right">#RECIPIENTKEY</td>
       <td align="right">#AMOUNT</td>
     </tr>
   </tbody>

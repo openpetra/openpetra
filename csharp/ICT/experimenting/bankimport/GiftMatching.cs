@@ -290,6 +290,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                         // create a copy of the transaction
                         BankImportTDSAEpTransactionRow newRow = AMainDS.AEpTransaction.NewRowTyped();
                         newRow.StatementKey = stmtRow.StatementKey;
+                        newRow.NumberOnStatement = stmtRow.NumberOnStatement;
                         newRow.Order = stmtRow.Order;
                         newRow.DetailKey = match.Detail;
                         newRow.EpMatchKey = match.EpMatchKey;
@@ -339,8 +340,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
         {
             StreamWriter sw = new StreamWriter(AFilename, false, System.Text.Encoding.Default);
 
-            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetOriginalAmountOnStatementDBName() + "," +
-                                                      BankImportTDSAEpTransactionTable.GetOrderDBName();
+            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetNumberOnStatementDBName();
 
             // first connect to the database
             if (FSqliteDatabase == null)
@@ -405,8 +405,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
             BankImportTDSAEpTransactionRow row;
 
-            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetOriginalAmountOnStatementDBName() + "," +
-                                                      BankImportTDSAEpTransactionTable.GetOrderDBName();
+            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetNumberOnStatementDBName();
 
             foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
             {
@@ -455,8 +454,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
             BankImportTDSAEpTransactionRow row;
 
-            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetOriginalAmountOnStatementDBName() + "," +
-                                                      BankImportTDSAEpTransactionTable.GetOrderDBName();
+            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetNumberOnStatementDBName();
 
             foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
             {
@@ -504,29 +502,47 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             {
                 row = (BankImportTDSAEpTransactionRow)rv.Row;
 
+                string rowToPrint = RowTemplate;
+
                 if (row.IsDonorKeyNull())
                 {
-	                rowTexts += RowTemplate.Replace("#NAME", row.AccountName);
+                    rowToPrint = rowToPrint.Replace("#NAME", row.AccountName);
                 }
                 else
                 {
-	                rowTexts += RowTemplate.Replace("#NAME", row.DonorShortName);
-                }
-                
-                if (row.IsRecipientDescriptionNull() || row.RecipientDescription.Length == 0)
-                {
-	                rowTexts += RowTemplate.Replace("#NAME", row.Description);
-                }
-                else
-                {
-	                rowTexts += RowTemplate.Replace("#NAME", row.DonorShortName);
+                    rowToPrint = rowToPrint.Replace("#NAME", row.DonorShortName);
                 }
 
-                rowTexts += RowTemplate.
+                if (row.IsRecipientDescriptionNull() || (row.RecipientDescription.Length == 0))
+                {
+                    rowToPrint = rowToPrint.Replace("#DESCRIPTION", row.Description);
+                }
+                else
+                {
+                    rowToPrint = rowToPrint.Replace("#DESCRIPTION", row.RecipientDescription);
+                }
+
+//                if (row.IsRecipientKeyNull() || row.RecipientKey <= 0)
+//                {
+//                      rowToPrint = rowToPrint.Replace("#RECIPIENTKEY", row.RecipientKey.ToString());
+//                }
+// TODO: print recipientkey
+                rowToPrint = rowToPrint.Replace("#RECIPIENTKEY", "");
+
+                if (row.IsDonorKeyNull() || (row.DonorKey <= 0))
+                {
+                    rowToPrint = rowToPrint.Replace("#DONORKEY", "");
+                }
+                else
+                {
+                    rowToPrint = rowToPrint.Replace("#DONORKEY", row.DonorKey.ToString());
+                }
+
+                rowTexts += rowToPrint.
+                            Replace("#NRONSTATEMENT", row.NumberOnStatement.ToString()).
                             Replace("#AMOUNT", String.Format("{0:C}", row.TransactionAmount)).
                             Replace("#ACCOUNTNUMBER", row.BankAccountNumber).
-                            Replace("#BANKSORTCODE", row.BranchCode).
-                            Replace("#TRANSACTIONTYPE", row.TransactionTypeCode);
+                            Replace("#BANKSORTCODE", row.BranchCode);
             }
 
             return msg.Replace("#ROWTEMPLATE", rowTexts);
@@ -595,6 +611,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 BankImportTDSAEpTransactionRow newRow = AMainDS.AEpTransaction.NewRowTyped();
                 newRow.StatementKey = stmtRow.StatementKey;
                 newRow.Order = stmtRow.Order;
+                newRow.NumberOnStatement = stmtRow.NumberOnStatement;
                 newRow.DetailKey = giftDetail.DetailNumber;
                 newRow.AccountName = stmtRow.AccountName;
                 newRow.BankAccountNumber = stmtRow.BankAccountNumber;

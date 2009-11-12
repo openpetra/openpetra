@@ -1689,23 +1689,25 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// TableId for Ict.Common.Data generic functions
         public new static short TableId = 5603;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDetailKeyId = 23;
+        public static short ColumnNumberOnStatementId = 23;
         /// used for generic TTypedDataTable functions
-        public static short ColumnOriginalAmountOnStatementId = 24;
+        public static short ColumnDetailKeyId = 24;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftLedgerNumberId = 25;
+        public static short ColumnOriginalAmountOnStatementId = 25;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftBatchNumberId = 26;
+        public static short ColumnGiftLedgerNumberId = 26;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftTransactionNumberId = 27;
+        public static short ColumnGiftBatchNumberId = 27;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftDetailNumberId = 28;
+        public static short ColumnGiftTransactionNumberId = 28;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDonorKeyId = 29;
+        public static short ColumnGiftDetailNumberId = 29;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDonorShortNameId = 30;
+        public static short ColumnDonorKeyId = 30;
         /// used for generic TTypedDataTable functions
-        public static short ColumnRecipientDescriptionId = 31;
+        public static short ColumnDonorShortNameId = 31;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRecipientDescriptionId = 32;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1735,18 +1737,19 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
                     new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(23, "DetailKey", "DetailKey", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(24, "OriginalAmountOnStatement", "OriginalAmountOnStatement", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(25, "GiftLedgerNumber", "GiftLedgerNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(26, "GiftBatchNumber", "GiftBatchNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(27, "GiftTransactionNumber", "GiftTransactionNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(28, "GiftDetailNumber", "GiftDetailNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(29, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(30, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(31, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(23, "NumberOnStatement", "NumberOnStatement", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(24, "DetailKey", "DetailKey", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(25, "OriginalAmountOnStatement", "OriginalAmountOnStatement", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(26, "GiftLedgerNumber", "GiftLedgerNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(27, "GiftBatchNumber", "GiftBatchNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(28, "GiftTransactionNumber", "GiftTransactionNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(29, "GiftDetailNumber", "GiftDetailNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(30, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(31, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(32, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
-                    0, 1, 23
+                    0, 1, 24
                 }));
             return true;
         }
@@ -1769,6 +1772,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         {
         }
 
+        ///
+        public DataColumn ColumnNumberOnStatement;
         ///
         public DataColumn ColumnDetailKey;
         ///
@@ -1814,6 +1819,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("NumberOnStatement", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("DetailKey", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("OriginalAmountOnStatement", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("GiftLedgerNumber", typeof(Int32)));
@@ -1851,6 +1857,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.ColumnNumberOnStatement = this.Columns["NumberOnStatement"];
             this.ColumnDetailKey = this.Columns["DetailKey"];
             this.ColumnOriginalAmountOnStatement = this.Columns["OriginalAmountOnStatement"];
             this.ColumnGiftLedgerNumber = this.Columns["GiftLedgerNumber"];
@@ -1918,6 +1925,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
         {
             return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetNumberOnStatementDBName()
+        {
+            return "NumberOnStatement";
+        }
+
+        /// get character length for column
+        public static short GetNumberOnStatementLength()
+        {
+            return -1;
         }
 
         /// get the name of the field in the database for this column
@@ -2041,6 +2060,32 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 base(rb)
         {
             this.myTable = ((BankImportTDSAEpTransactionTable)(this.Table));
+        }
+
+        ///
+        public Int32 NumberOnStatement
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnNumberOnStatement.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnNumberOnStatement)
+                            || (((Int32)(this[this.myTable.ColumnNumberOnStatement])) != value)))
+                {
+                    this[this.myTable.ColumnNumberOnStatement] = value;
+                }
+            }
         }
 
         ///
@@ -2303,6 +2348,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.SetNull(this.myTable.ColumnDateModified);
             this.SetNull(this.myTable.ColumnModifiedBy);
             this.SetNull(this.myTable.ColumnModificationId);
+            this.SetNull(this.myTable.ColumnNumberOnStatement);
             this.SetNull(this.myTable.ColumnDetailKey);
             this.SetNull(this.myTable.ColumnOriginalAmountOnStatement);
             this.SetNull(this.myTable.ColumnGiftLedgerNumber);
@@ -2312,6 +2358,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.SetNull(this.myTable.ColumnDonorKey);
             this.SetNull(this.myTable.ColumnDonorShortName);
             this.SetNull(this.myTable.ColumnRecipientDescription);
+        }
+
+        /// test for NULL value
+        public bool IsNumberOnStatementNull()
+        {
+            return this.IsNull(this.myTable.ColumnNumberOnStatement);
+        }
+
+        /// assign NULL value
+        public void SetNumberOnStatementNull()
+        {
+            this.SetNull(this.myTable.ColumnNumberOnStatement);
         }
 
         /// test for NULL value

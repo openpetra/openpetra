@@ -104,7 +104,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
       FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
       InitializeManualCode();
       grdResult.Columns.Clear();
-      grdResult.AddTextColumn("order", FMainDS.AEpTransaction.ColumnOrder);
+      grdResult.AddTextColumn("Nr", FMainDS.AEpTransaction.ColumnNumberOnStatement);
       grdResult.AddTextColumn("transaction type", FMainDS.AEpTransaction.ColumnTransactionTypeCode);
       grdResult.AddTextColumn("Account Name", FMainDS.AEpTransaction.ColumnAccountName);
       grdResult.AddTextColumn("DonorKey", FMainDS.AEpTransaction.ColumnDonorKey);

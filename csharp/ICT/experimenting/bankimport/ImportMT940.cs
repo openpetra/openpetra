@@ -25,6 +25,7 @@
  ************************************************************************/
 using System;
 using System.IO;
+using System.Data;
 using Ict.Common;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -159,6 +160,28 @@ namespace Ict.Plugins.Finance.SwiftParser
             if (parser.statements.Count > 1)
             {
                 System.Windows.Forms.MessageBox.Show(Catalog.GetString("We don't support several bank statements per file at the moment"));
+            }
+
+            // sort by amount, and by accountname; this is the order of the paper statements and attachments
+            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetTransactionAmountDBName() + "," +
+                                                      BankImportTDSAEpTransactionTable.GetOrderDBName();
+
+            Int32 countOrderOnStatement = 1;
+
+            foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
+            {
+                BankImportTDSAEpTransactionRow row = (BankImportTDSAEpTransactionRow)rv.Row;
+
+                if (row.TransactionAmount < 0)
+                {
+                    // TODO: sort by absolute amount, ignoring debit/credit?
+                    row.NumberOnStatement = 1000;
+                }
+                else
+                {
+                    row.NumberOnStatement = countOrderOnStatement;
+                    countOrderOnStatement++;
+                }
             }
 
             return true;
