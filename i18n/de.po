@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-16 14:12+0200\n"
-"PO-Revision-Date: 2009-06-20 23:01+0100\n"
-"Last-Translator: Timotheus Pokorra <timotheus.pokorra@gmail.com>\n"
+"POT-Creation-Date: 2009-11-13 14:20+0100\n"
+"PO-Revision-Date: 2009-11-13 14:41+0100\n"
+"Last-Translator: Timotheus Pokorra <pokorra@users.sourceforge.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3241,5 +3241,341 @@ msgid "Default Report"
 msgstr ""
 
 msgid "ICH Processing"
+msgstr ""
+
+msgid "Cannot open CSV file, because it is missing the header line"
+msgstr ""
+
+#, csharp-format
+msgid "Cannot parse CSV file header of file {0}, caption {1} is missing the #"
+msgstr ""
+
+msgid "Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Spreadsheet file (*.csv)|*.csv"
+msgstr ""
+
+msgid "Select posting date"
+msgstr ""
+
+msgid "The date effective for posting"
+msgstr ""
+
+msgid "The payment was cancelled."
+msgstr ""
+
+msgid "Suppliers to Pay"
+msgstr ""
+
+msgid "Cash"
+msgstr ""
+
+msgid "Payment T&ype:"
+msgstr ""
+
+msgid "Exchange Rate:"
+msgstr ""
+
+msgid "Bank Account:"
+msgstr ""
+
+msgid "Print Remittance"
+msgstr ""
+
+msgid "Print Label"
+msgstr ""
+
+msgid "Print Cheque"
+msgstr ""
+
+msgid "Cheque Number:"
+msgstr ""
+
+msgid "PayFullOutstandingAmount"
+msgstr ""
+
+msgid "PayAPartialAmount"
+msgstr ""
+
+msgid "Amount To Pay"
+msgstr ""
+
+msgid "Claim Discount"
+msgstr ""
+
+msgid "Amount To Pay:"
+msgstr ""
+
+msgid "Invoices in this payment"
+msgstr ""
+
+msgid "&Make Payment"
+msgstr ""
+
+msgid "Split By Invoice"
+msgstr ""
+
+msgid "AP Payment"
+msgstr ""
+
+msgid "Select payment date"
+msgstr ""
+
+msgid "The date effective for the payment"
+msgstr ""
+
+msgid "Payment failed"
+msgstr ""
+
+msgid "The AP payment has been posted successfully!"
+msgstr ""
+
+msgid "Gift Batches"
+msgstr ""
+
+msgid "Account Type:"
+msgstr ""
+
+msgid "Description Long English:"
+msgstr ""
+
+msgid "Description Short English:"
+msgstr ""
+
+msgid "Description Long Local:"
+msgstr ""
+
+msgid "Description Short Local:"
+msgstr ""
+
+msgid "Valid Cost Centres:"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Add Account"
+msgstr ""
+
+msgid "Export Hierarchy"
+msgstr ""
+
+msgid "Import Hierarchy"
+msgstr ""
+
+msgid "Separator"
+msgstr ""
+
+msgid "GL Account Hierarchy"
+msgstr ""
+
+msgid "Enter a code for the account."
+msgstr ""
+
+msgid "Choose the type of account (e.g., Asset)"
+msgstr ""
+
+msgid "Enter a description in English (full)."
+msgstr ""
+
+msgid "Enter a short description in English."
+msgstr ""
+
+msgid "Enter a description of the account (full)."
+msgstr ""
+
+msgid "Enter a short description of the account."
+msgstr ""
+
+msgid "Select cost centre type that may be combined with this account."
+msgstr ""
+
+msgid "Is this account available for posting transactions?"
+msgstr ""
+
+msgid "You can only add a new account after selecting a parent account"
+msgstr ""
+
+msgid "NewAccount"
+msgstr ""
+
+msgid "Save Account Hierarchy to file"
+msgstr ""
+
+msgid "Load Account Hierarchy from file"
+msgstr ""
+
+msgid "Success"
+msgstr ""
+
+msgid "Account cannot be deleted"
+msgstr ""
+
+msgid "Cost Centre Type:"
+msgstr ""
+
+msgid "Cost Centre Name:"
+msgstr ""
+
+msgid "GL Cost Centre Hierarchy"
+msgstr ""
+
+msgid "Enter a cost centre code"
+msgstr ""
+
+msgid "Type of cost centre (foreign or local)."
+msgstr ""
+
+msgid "You can only add a new cost centre after selecting a parent cost centre"
+msgstr ""
+
+msgid "NewCostCentre"
+msgstr ""
+
+msgid "Save Cost Centre Hierarchy to file"
+msgstr ""
+
+msgid "Load Cost Centre Hierarchy from file"
+msgstr ""
+
+msgid "label1"
+msgstr ""
+
+#, csharp-format
+msgid "valid dates from {0} to {1}"
+msgstr ""
+
+msgid "OK"
+msgstr ""
+
+msgid "Select the posting date"
+msgstr ""
+
+msgid "Please select a date which is in the valid posting range of your ledger!"
+msgstr ""
+
+msgid "Invalid date"
+msgstr ""
+
+msgid "Import"
+msgstr ""
+
+msgid "Exchange Rates"
+msgstr ""
+
+msgid "Import exchange rates from spreadsheet file"
+msgstr ""
+
+msgid "Spreadsheet files (*.csv)|*.csv"
+msgstr ""
+
+msgid "Please select a yml file that describes the content of the spreadsheet"
+msgstr ""
+
+msgid "Data description files (*.yml)|*.yml"
+msgstr ""
+
+msgid "Cannot import exchange rates, please name the file after the currencies involved, eg. KES_EUR.csv"
+msgstr ""
+
+msgid "GL Effective Date:"
+msgstr ""
+
+msgid "Valid Date Range:"
+msgstr ""
+
+msgid "Hash Total:"
+msgstr ""
+
+msgid "Exchange Rate To Base:"
+msgstr ""
+
+msgid "GiftInKind"
+msgstr ""
+
+msgid "Gift Type"
+msgstr ""
+
+msgid "Enter a description for the gift batch."
+msgstr ""
+
+msgid "Enter the bank account which this batch is for."
+msgstr ""
+
+msgid "Effective date to be used when posted to the general ledger."
+msgstr ""
+
+#, csharp-format
+msgid "Valid between {0} and {1}"
+msgstr ""
+
+msgid "Gift Batch:"
+msgstr ""
+
+msgid "Recipient:"
+msgstr ""
+
+msgid "Enter Your Currency Amount"
+msgstr ""
+
+msgid "Enter the partner key"
+msgstr ""
+
+msgid "Enter a motivation group code"
+msgstr ""
+
+msgid "Enter a motivation detail code"
+msgstr ""
+
+msgid "Import From Spread Sheet"
+msgstr ""
+
+msgid "Import transactions from spreadsheet file"
+msgstr ""
+
+msgid "Automatically generated balancing transaction"
+msgstr ""
+
+msgid "Selected Cost Centres"
+msgstr ""
+
+msgid "All Cost Centres"
+msgstr ""
+
+msgid "All Active Cost Centres"
+msgstr ""
+
+msgid "Account Level"
+msgstr ""
+
+msgid "Cost Centre Options"
+msgstr ""
+
+msgid "Cost Centre Breakdown"
+msgstr ""
+
+msgid "detail"
+msgstr ""
+
+msgid "standard"
+msgstr ""
+
+msgid "summary"
+msgstr ""
+
+msgid "Depth"
+msgstr ""
+
+msgid "CostCentre Settings"
+msgstr ""
+
+msgid "Income Expense Statement"
+msgstr ""
+
+msgid "Manage Accounts"
+msgstr ""
+
+msgid "Manage Cost Centres"
+msgstr ""
+
+msgid "Accounts Payable Payment Batch"
 msgstr ""
 
