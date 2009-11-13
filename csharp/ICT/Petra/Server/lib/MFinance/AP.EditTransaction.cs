@@ -163,7 +163,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                 try
                 {
                     // set AP Number if it has not been set yet
-                    if (AInspectDS.AApDocument[0].ApNumber == -1)
+                    if ((AInspectDS.AApDocument != null) && (AInspectDS.AApDocument[0].ApNumber == -1))
                     {
                         StringCollection fieldlist = new StringCollection();
                         ALedgerTable myLedgerTable;
@@ -175,18 +175,22 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                         myLedgerTable[0].LastApInvNumber++;
                         AInspectDS.AApDocument[0].ApNumber = myLedgerTable[0].LastApInvNumber;
 
-                        foreach (AApDocumentDetailRow detailrow in AInspectDS.AApDocumentDetail.Rows)
+                        if (AInspectDS.AApDocumentDetail != null)
                         {
-                            detailrow.ApNumber = AInspectDS.AApDocument[0].ApNumber;
+                            foreach (AApDocumentDetailRow detailrow in AInspectDS.AApDocumentDetail.Rows)
+                            {
+                                detailrow.ApNumber = AInspectDS.AApDocument[0].ApNumber;
+                            }
                         }
 
                         ALedgerAccess.SubmitChanges(myLedgerTable, SubmitChangesTransaction, out AVerificationResult);
                     }
 
-                    if (AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
+                    if ((AInspectDS.AApDocument == null) || AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
                             out AVerificationResult))
                     {
-                        if (AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
+                        if ((AInspectDS.AApDocumentDetail == null)
+                            || AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
                                 out AVerificationResult))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
@@ -213,6 +217,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
                 catch (Exception e)
                 {
                     TLogging.Log("after submitchanges: exception " + e.Message);
+                    TLogging.Log(e.StackTrace);
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
