@@ -49,7 +49,7 @@ Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Petra.Client*dll; Dest
 Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_Client\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30
 Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: {app}/bin30
 Source: ..\..\..\csharp\ICT\Petra\Definitions\UINavigation.yml; DestDir: {app}/bin30
-Source: ..\i18n\*.mo; DestDir: {app}/bin30/locale/de/LC_MESSAGES; Flags: recursesubdirs createallsubdirs
+Source: ..\i18n\*.mo; DestDir: {app}/bin30; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\XmlReports\reports.dtd; DestDir: {app}/reports30
 Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30
 Source: PetraClientRemote.config; DestDir: {app}; DestName: PetraClient-Remote-3.0.config
