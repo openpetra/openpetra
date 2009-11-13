@@ -1,8 +1,8 @@
 RootNode:
     Currency: KES
-    CashCostCentre: 4700
-    CashAccount: 6100
-    CostCentre: 4700
+    CashCostCentre: 4300
+    CashAccount: 6000
+    CostCentre: 4300
     Separator: ,
     DateFormat: dd.MM.yyyy
     DecimalSeparator: ,
