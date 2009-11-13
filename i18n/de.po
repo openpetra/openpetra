@@ -7,13 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-11-13 14:20+0100\n"
-"PO-Revision-Date: 2009-11-13 14:41+0100\n"
-"Last-Translator: Timotheus Pokorra <pokorra@users.sourceforge.net>\n"
+"POT-Creation-Date: 2009-06-16 14:12+0200\n"
+"PO-Revision-Date: 2009-09-28 14:29+0200\n"
+"Last-Translator: Timotheus Pokorra <timotheus.pokorra@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 1.2.1\n"
 
 msgid "invalid database system"
 msgstr "ungültige Datenbank"
@@ -97,16 +100,16 @@ msgid "Database:"
 msgstr "Datenbank:"
 
 msgid "Petra Login"
-msgstr ""
+msgstr "Petra Anmeldung"
 
 msgid " P E T R A "
-msgstr ""
+msgstr "O P E N P E T R A"
 
 msgid "Version"
-msgstr ""
+msgstr "Version"
 
 msgid "© 1995 - 2009 by OM International"
-msgstr ""
+msgstr "© 1995 - 2009 by OM International"
 
 msgid "Standalone / Network / Remote"
 msgstr ""
@@ -220,7 +223,7 @@ msgid "New Petra Screen"
 msgstr ""
 
 msgid "Security Violation"
-msgstr ""
+msgstr "Sicherheitsverletzung"
 
 #, csharp-format
 msgid "You do not have permission to {0} {1} records."
@@ -3211,38 +3214,38 @@ msgid "Partner By City"
 msgstr ""
 
 msgid "German Ledger (43)"
-msgstr ""
+msgstr "Deutsches Hauptbuch"
 
+#, fuzzy
 msgid "GL"
-msgstr ""
+msgstr "Hauptbuch"
 
 msgid "Entering Gifts"
-msgstr ""
+msgstr "Spenden eingeben"
 
 msgid "Account Detail Report"
 msgstr ""
 
 msgid "Setup Currencies"
-msgstr ""
+msgstr "Währungen einrichten"
 
 msgid "Setup Daily Exchange Rate"
-msgstr ""
+msgstr "den täglichen Wechselkurs einrichten"
 
 msgid "Change Address"
-msgstr ""
+msgstr "Adresse verändern"
 
 msgid "Merge Partners"
-msgstr ""
+msgstr "Partner zusammenlegen"
 
 msgid "Mailing&&Subscriptions"
-msgstr ""
+msgstr "Email&&Abonnements"
 
 msgid "Default Report"
-msgstr ""
+msgstr "Standardreport"
 
 msgid "ICH Processing"
-msgstr ""
-
+msgstr "ICH Verarbeitung"
 msgid "Cannot open CSV file, because it is missing the header line"
 msgstr ""
 
