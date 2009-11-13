@@ -114,6 +114,16 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     TGiftMatching.WriteCSVFile(ref FMainDS, sw);
 
                     sw.Close();
+
+                    rbtAllTransactions.Checked = true;
+                    sw = new StreamWriter(TAppSettingsManager.GetValueStatic("OutputCSV.Path") +
+                        Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(newFile) +
+                        Catalog.GetString("AllTransactions") + ".csv",
+                        false, System.Text.Encoding.Default);
+
+                    TGiftMatching.WriteCSVFile(ref FMainDS, sw);
+
+                    sw.Close();
                 }
 
                 FMainDS.AEpTransaction.Rows.Clear();
