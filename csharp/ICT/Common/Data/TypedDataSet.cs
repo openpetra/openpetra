@@ -238,6 +238,8 @@ namespace Ict.Common.Data
             }
             catch (Exception e)
             {
+                // see also in tracker, http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=94
+                // recommendation: use Mono 2.x, this error happens only with Mono 1.x
                 TLogging.Log("PROBLEM in MyOwnGetSerializationData: " + e.Message, TLoggingType.ToLogfile);
                 TLogging.Log("diffGram: " + diffGram, TLoggingType.ToLogfile);
             }
