@@ -90,7 +90,8 @@ namespace Ict.Common.Controls
                         ListViewItem task = new ListViewItem(
                             new string[] {
                                 TLstFolderNavigation.GetLabel(TaskGroupNode),
-                                Catalog.GetString(TYml2Xml.GetAttribute(TaskGroupNode, "Description"))
+                                TYml2Xml.HasAttribute(TaskGroupNode,
+                                    "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskGroupNode, "Description")) : ""
                             }
                             );
                         task.Name = TaskGroupNode.Name;
@@ -107,7 +108,8 @@ namespace Ict.Common.Controls
                             ListViewItem task = new ListViewItem(
                                 new string[] {
                                     TLstFolderNavigation.GetLabel(TaskNode),
-                                    Catalog.GetString(TYml2Xml.GetAttribute(TaskNode, "Description"))
+                                    TYml2Xml.HasAttribute(TaskNode, "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskNode,
+                                            "Description")) : ""
                                 }
                                 );
                             task.Name = TaskNode.Name;
