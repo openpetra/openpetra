@@ -375,18 +375,20 @@ public partial class MainForm : Form
 
     void BtnSendOneEmailClick(object sender, EventArgs e)
     {
-        MessageBox.Show("not implemented at the moment");
+        TSmtpSender smtp = CreateConnection();
 
-        /*
-         * TSmtpSender smtp = CreateConnection();
-         *
-         * if (grdEmails.SelectedRows.Count == 1)
-         * {
-         *  MailMessage selectedMail = FEmails[grdEmails.SelectedRows[0].Index];
-         *  smtp.SendMessage(ref selectedMail);
-         *  RefreshGridEmails();
-         * }
-         */
+        if (grdEmails.SelectedRows.Count == 1)
+        {
+            DataGridViewRow row = grdEmails.SelectedRows[0];
+            DataGridViewCell cell = row.Cells["LetterMessagePointer"];
+            LetterMessage selectedMail = (LetterMessage)cell.Value;
+
+            if (selectedMail.SendAsEmail())
+            {
+                smtp.SendMessage(ref selectedMail.EmailMessage);
+                RefreshGridEmails();
+            }
+        }
     }
 
     void BtnSendAllEmailsClick(object sender, EventArgs e)

@@ -319,6 +319,7 @@ partial class MainForm
         this.btnSendOneEmail.Name = "btnSendOneEmail";
         this.btnSendOneEmail.Size = new System.Drawing.Size(105, 22);
         this.btnSendOneEmail.Text = "Send selected Email";
+        this.btnSendOneEmail.Click += new System.EventHandler(this.BtnSendOneEmailClick);
 
         //
         // btnSendAllEmails
