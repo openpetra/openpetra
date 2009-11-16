@@ -192,6 +192,12 @@ public class TGetTreasurerData
             Int32 yearNr = Convert.ToInt32(row["FinancialYear"]);
             Int32 periodNr = Convert.ToInt32(row["FinancialPeriod"]);
 
+            // somehow in Petra 2.x there is a problem that some batches have period and batch = 0, but the gl date effective is correct
+            if (periodNr == 0)
+            {
+                throw new Exception("Problem with gift batch, no valid period; please run a fix program on the Petra database");
+            }
+
             DateTime monthDate = DateTime.MinValue;
 
             foreach (AAccountingPeriodRow period in periods.Rows)

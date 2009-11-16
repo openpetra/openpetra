@@ -120,6 +120,9 @@ namespace Ict.Common.Printing
         /// <summary>todoComment</summary>
         public Int32 FCurrentPageNr;
 
+        /// <summary>several documents are printed from one html file with different body elements</summary>
+        public Int32 FCurrentDocumentNr = 1;
+
         /// <summary>todoComment</summary>
         public float FCurrentXPos;
 
@@ -207,6 +210,20 @@ namespace Ict.Common.Printing
             set
             {
                 FCurrentState.FCurrentPageNr = value;
+            }
+        }
+
+        /// <summary>a document can consist of several pages;
+        /// a document is one body element</summary>
+        public System.Int32 CurrentDocumentNr
+        {
+            get
+            {
+                return FCurrentState.FCurrentDocumentNr;
+            }
+            set
+            {
+                FCurrentState.FCurrentDocumentNr = value;
             }
         }
 

@@ -105,7 +105,7 @@ namespace Ict.Common.Printing
 
                 if (!AHtmlDocument.StartsWith("<?xml version="))
                 {
-                    AHtmlDocument = "<?xml version='1.0' encoding='UTF-16'?>" + Environment.NewLine + AHtmlDocument;
+                    AHtmlDocument = "<?xml version='1.0' encoding='UTF-8'?>" + Environment.NewLine + AHtmlDocument;
                 }
 
                 AHtmlDocument = AHtmlDocument.Replace("<br>", "<br/>");
@@ -135,9 +135,9 @@ namespace Ict.Common.Printing
         /// <summary>
         /// get the xmlnode for the given page
         /// </summary>
-        /// <param name="APageNr">starting with 1</param>
+        /// <param name="ADocumentNr">starting with 1</param>
         /// <returns></returns>
-        XmlNode GetPageNode(Int32 APageNr)
+        XmlNode GetDocumentNode(Int32 ADocumentNr)
         {
             if (FHtmlDoc == null)
             {
@@ -165,7 +165,7 @@ namespace Ict.Common.Printing
 
             while ((result != null) && (result.Name == "body"))
             {
-                if (counter == APageNr)
+                if (counter == ADocumentNr)
                 {
                     return result;
                 }
@@ -281,11 +281,12 @@ namespace Ict.Common.Printing
 
             if (CurrentNode == null)
             {
-                FCurrentNodeNextPage = GetPageNode(FPrinter.CurrentPageNr);
+                FCurrentNodeNextPage = GetDocumentNode(FPrinter.CurrentDocumentNr);
 
                 if (FCurrentNodeNextPage != null)
                 {
                     CurrentNode = FCurrentNodeNextPage.FirstChild;
+                    FPrinter.CurrentDocumentNr++;
                 }
             }
 
@@ -520,6 +521,11 @@ namespace Ict.Common.Printing
 
                     // continues text in the same row
                     FPrinter.PrintStringWrap(toPrint, FPrinter.CurrentFont, AXPos, AWidthAvailable, FPrinter.CurrentAlignment);
+                    curNode = curNode.NextSibling;
+                }
+                // unrecognised HTML element which is empty, eg. hr
+                else
+                {
                     curNode = curNode.NextSibling;
                 }
 
@@ -823,7 +829,7 @@ namespace Ict.Common.Printing
         {
             string dummy;
 
-            return RemoveElement(AHtmlMessage, "div", "name", "name", out dummy);
+            return RemoveElement(AHtmlMessage, "div", "name", ADivName, out dummy);
         }
 
         /// remove all divs of the given class
@@ -831,7 +837,7 @@ namespace Ict.Common.Printing
         {
             string dummy;
 
-            return RemoveElement(AHtmlMessage, "div", "class", "class", out dummy);
+            return RemoveElement(AHtmlMessage, "div", "class", ADivClass, out dummy);
         }
 
         /// remove all elments with given name or class
