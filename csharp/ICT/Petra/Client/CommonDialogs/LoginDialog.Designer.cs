@@ -122,9 +122,9 @@ namespace Ict.Petra.Client.CommonDialogs
                 ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) |
                                                       System.Windows.Forms.AnchorStyles.Right)));
             this.btnLogin.Image = ((System.Drawing.Image)(resources.GetObject("btnLogin.Image")));
-            this.btnLogin.Location = new System.Drawing.Point(4, 8);
+            this.btnLogin.Location = new System.Drawing.Point(4, 7);
             this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Size = new System.Drawing.Size(75, 25);
+            this.btnLogin.Size = new System.Drawing.Size(94, 25);
             this.btnLogin.TabIndex = 6;
             this.btnLogin.Text = " &Login";
             this.btnLogin.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -138,9 +138,9 @@ namespace Ict.Petra.Client.CommonDialogs
                                                       System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Image = ((System.Drawing.Image)(resources.GetObject("btnCancel.Image")));
-            this.btnCancel.Location = new System.Drawing.Point(4, 36);
+            this.btnCancel.Location = new System.Drawing.Point(4, 37);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 25);
+            this.btnCancel.Size = new System.Drawing.Size(94, 25);
             this.btnCancel.TabIndex = 7;
             this.btnCancel.Text = " &Cancel";
             this.btnCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -162,7 +162,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.prbLogin.Anchor =
                 ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) |
                                                       System.Windows.Forms.AnchorStyles.Right)));
-            this.prbLogin.Location = new System.Drawing.Point(4, 38);
+            this.prbLogin.Location = new System.Drawing.Point(27, 38);
             this.prbLogin.Name = "prbLogin";
             this.prbLogin.Size = new System.Drawing.Size(76, 18);
             this.prbLogin.TabIndex = 10;
@@ -176,7 +176,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.pnlLoginControls.Controls.Add(this.btnLogin);
             this.pnlLoginControls.Location = new System.Drawing.Point(205, 76);
             this.pnlLoginControls.Name = "pnlLoginControls";
-            this.pnlLoginControls.Size = new System.Drawing.Size(82, 66);
+            this.pnlLoginControls.Size = new System.Drawing.Size(105, 66);
             this.pnlLoginControls.TabIndex = 11;
 
             //
@@ -185,7 +185,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.AcceptButton = this.btnLogin;
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 14);
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(293, 142);
+            this.ClientSize = new System.Drawing.Size(309, 142);
             this.Controls.Add(this.pnlLoginControls);
             this.Controls.Add(this.lblDatabase);
             this.Controls.Add(this.txtPassword);
