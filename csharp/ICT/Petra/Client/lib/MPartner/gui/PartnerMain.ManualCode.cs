@@ -28,6 +28,7 @@ using System.Xml;
 using System.Windows.Forms;
 using Mono.Unix;
 using Ict.Common.IO;
+using Ict.Common.Verification;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -74,8 +75,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             XmlDocument doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Load Partners from File"));
 
-            // TODO: pass current site key?
-            if (!TRemote.MPartner.ImportExport.WebConnectors.ImportPartners(TXMLParser.XmlToString(doc)))
+            TVerificationResultCollection VerificationResult;
+
+            if (!TRemote.MPartner.ImportExport.WebConnectors.ImportPartners(TXMLParser.XmlToString(doc), out VerificationResult))
             {
                 // TODO: show verification details
                 MessageBox.Show(Catalog.GetString(

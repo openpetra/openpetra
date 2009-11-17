@@ -88,6 +88,7 @@ using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 
 
 #region ManualCode
+using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.RemotedExceptions;
@@ -982,9 +983,10 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
 
 
         /// generated method from connector
-        public bool ImportPartners(string AXmlPartnerData)
+        public bool ImportPartners(string AXmlPartnerData,
+                                   out TVerificationResultCollection AVerificationResult)
         {
-            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ImportPartners(AXmlPartnerData);
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ImportPartners(AXmlPartnerData, out AVerificationResult);
         }
 
     }

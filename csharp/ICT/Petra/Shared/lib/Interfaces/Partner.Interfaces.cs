@@ -189,7 +189,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.ImportExport.WebConnectors
     public interface IImportExportWebConnectorsNamespace : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
-        bool ImportPartners(string AXmlPartnerData);
+        bool ImportPartners(string AXmlPartnerData,
+                            out TVerificationResultCollection AVerificationResult);
     }
 
 }

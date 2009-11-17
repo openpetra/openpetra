@@ -33,8 +33,10 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Common;
 
 namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 {
@@ -43,21 +45,123 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
     /// </summary>
     public class TImportExportWebConnector
     {
+        private static void ParsePartners(ref PartnerEditTDS AMainDS, XmlNode ACurNode)
+        {
+            while (ACurNode != null)
+            {
+                if (ACurNode.Name == "PartnerGroup")
+                {
+                    ParsePartners(ref AMainDS, ACurNode.FirstChild);
+                }
+                else if (ACurNode.Name == "Partner")
+                {
+                    PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
+
+                    // get a new partner key
+                    newPartner.PartnerKey = TNewPartnerKey.GetNewPartnerKey(Convert.ToInt64(TYml2Xml.GetAttributeRecursive(ACurNode, "SiteKey")));
+
+                    if (TYml2Xml.GetAttributeRecursive(ACurNode, "class") == MPartnerConstants.PARTNERCLASS_FAMILY)
+                    {
+                        PFamilyRow newFamily = AMainDS.PFamily.NewRowTyped();
+                        newFamily.PartnerKey = newPartner.PartnerKey;
+                        newFamily.FamilyName = TYml2Xml.GetAttributeRecursive(ACurNode, "LastName");
+                        newFamily.FirstName = TYml2Xml.GetAttribute(ACurNode, "FirstName");
+
+                        newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
+                        newPartner.PartnerShortName = newFamily.FamilyName + ", " + newFamily.FirstName;
+                    }
+
+                    if (TYml2Xml.GetAttributeRecursive(ACurNode, "class") == MPartnerConstants.PARTNERCLASS_PERSON)
+                    {
+                        // TODO
+                    }
+                    else if (TYml2Xml.GetAttributeRecursive(ACurNode, "class") == MPartnerConstants.PARTNERCLASS_ORGANISATION)
+                    {
+                        // TODO
+                    }
+                    else
+                    {
+                        // TODO AVerificationResult add failing problem: unknown partner class
+                    }
+                }
+
+                ACurNode = ACurNode.NextSibling;
+            }
+        }
+
         /// <summary>
         /// imports partner data from file
         /// </summary>
         /// <returns></returns>
-        public static bool ImportPartners(string AXmlPartnerData)
+        public static bool ImportPartners(string AXmlPartnerData, out TVerificationResultCollection AVerificationResult)
         {
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
             XmlDocument doc = new XmlDocument();
 
             doc.LoadXml(AXmlPartnerData);
 
-// TODO
-//            TVerificationResultCollection VerificationResult;
-//            GLSetupTDS InspectDS = MainDS.GetChangesTyped(true);
-//            return SaveGLSetupTDS(ref InspectDS, out VerificationResult) == TSubmitChangesResult.scrOK;
-            return false;
+            XmlNode root = doc.FirstChild.NextSibling.FirstChild;
+
+            // import partner groups
+            // advantage: can inherit some common attributes, eg. partner class, etc
+
+            ParsePartners(ref MainDS, root);
+
+            TVerificationResultCollection VerificationResult;
+            PartnerEditTDS InspectDS = MainDS.GetChangesTyped(true);
+
+            TDBTransaction SubmitChangesTransaction;
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+
+            AVerificationResult = null;
+
+            if (InspectDS != null)
+            {
+                AVerificationResult = new TVerificationResultCollection();
+                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                try
+                {
+                    if ((InspectDS.PPartner != null) && !PPartnerAccess.SubmitChanges(InspectDS.PPartner, SubmitChangesTransaction,
+                            out AVerificationResult))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                    else if ((InspectDS.PFamily != null) && !PFamilyAccess.SubmitChanges(InspectDS.PFamily, SubmitChangesTransaction,
+                                 out AVerificationResult))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                    else if ((InspectDS.PPerson != null) || PPersonAccess.SubmitChanges(InspectDS.PPerson, SubmitChangesTransaction,
+                                 out AVerificationResult))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                    else
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrOK;
+                    }
+
+                    if (SubmissionResult == TSubmitChangesResult.scrOK)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log("after submitchanges: exception " + e.Message);
+
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    throw new Exception(e.ToString() + " " + e.Message);
+                }
+            }
+
+            return SubmissionResult == TSubmitChangesResult.scrOK;
         }
     }
 }

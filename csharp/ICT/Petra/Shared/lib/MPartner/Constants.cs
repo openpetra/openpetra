@@ -68,6 +68,15 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Partner Types (Special Types)</summary>
         public const String PARTNERTYPE_EX_WORKER = "EX-WORKER";
 
+        /// <summary>Partner class</summary>
+        public const String PARTNERCLASS_FAMILY = "FAMILY";
+
+        /// <summary>Partner class</summary>
+        public const String PARTNERCLASS_PERSON = "PERSON";
+
+        /// <summary>Partner class</summary>
+        public const String PARTNERCLASS_ORGANISATION = "ORGANISATION";
+
         /// Default values
         /// <summary>used eg. for PPerson.OccupationCode</summary>
         public const String DEFAULT_CODE_UNKNOWN = "UNKNOWN";
