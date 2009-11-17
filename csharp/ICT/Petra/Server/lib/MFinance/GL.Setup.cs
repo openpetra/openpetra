@@ -408,10 +408,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             foreach (AAccountRow accountRow in MainDS.AAccount.Rows)
             {
-                if (!ImportedAccountNames.Contains(accountRow.AccountCode))
+                if ((accountRow.RowState != DataRowState.Deleted) && !ImportedAccountNames.Contains(accountRow.AccountCode))
                 {
                     // TODO: delete accounts that don't exist anymore in the new hierarchy, or deactivate them?
-                    //       but need to raise a failure because they are missing in the account hierarcy
+                    //       but need to raise a failure because they are missing in the account hierarchy
                     // (check if their balance is empty and no transactions exist, or catch database constraint violation)
                     // TODO: what about system accounts? probably alright to ignore here
 
@@ -424,12 +424,91 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             return SaveGLSetupTDS(ref InspectDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
 
+        private static void CreateCostCentresRecursively(ref GLSetupTDS AMainDS,
+            Int32 ALedgerNumber,
+            ref StringCollection AImportedCostCentreCodes,
+            XmlNode ACurrentNode,
+            string AParentCostCentreCode)
+        {
+            ACostCentreRow newCostCentre = null;
+
+            string CostCentreCode = TYml2Xml.GetAttribute(ACurrentNode, "code");
+
+            AImportedCostCentreCodes.Add(CostCentreCode);
+
+            // does this costcentre already exist?
+            bool newRow = false;
+            DataRow existingCostCentre = AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, CostCentreCode });
+
+            if (existingCostCentre != null)
+            {
+                newCostCentre = (ACostCentreRow)existingCostCentre;
+            }
+            else
+            {
+                newRow = true;
+                newCostCentre = AMainDS.ACostCentre.NewRowTyped();
+            }
+
+            newCostCentre.LedgerNumber = ALedgerNumber;
+            newCostCentre.CostCentreCode = CostCentreCode;
+            newCostCentre.CostCentreName = TYml2Xml.GetElementName(ACurrentNode);
+            newCostCentre.CostCentreActiveFlag = TYml2Xml.GetAttributeRecursive(ACurrentNode, "active").ToLower() == "true";
+            newCostCentre.CostCentreType = TYml2Xml.GetAttributeRecursive(ACurrentNode, "type");
+
+            if ((AParentCostCentreCode != null) && (AParentCostCentreCode.Length != 0))
+            {
+                newCostCentre.CostCentreToReportTo = AParentCostCentreCode;
+            }
+
+            if (newRow)
+            {
+                AMainDS.ACostCentre.Rows.Add(newCostCentre);
+            }
+
+            foreach (XmlNode child in ACurrentNode.ChildNodes)
+            {
+                CreateCostCentresRecursively(ref AMainDS, ALedgerNumber, ref AImportedCostCentreCodes, child, newCostCentre.CostCentreCode);
+            }
+        }
+
         /// <summary>
-        /// TODO import cost centre hierarchy
+        /// only works if there are no balances/transactions yet for the cost centres that are deleted
         /// </summary>
         public static bool ImportCostCentreHierarchy(Int32 ALedgerNumber, string AXmlHierarchy)
         {
-            return false;
+            XmlDocument doc = new XmlDocument();
+
+            doc.LoadXml(AXmlHierarchy);
+
+            GLSetupTDS MainDS = LoadCostCentreHierarchy(ALedgerNumber);
+            XmlNode root = doc.FirstChild.NextSibling.FirstChild;
+
+            StringCollection ImportedCostCentreNames = new StringCollection();
+
+            // delete all costcentres
+            foreach (ACostCentreRow costCentreRow in MainDS.ACostCentre.Rows)
+            {
+                costCentreRow.Delete();
+            }
+
+            CreateCostCentresRecursively(ref MainDS, ALedgerNumber, ref ImportedCostCentreNames, root, null);
+
+            foreach (ACostCentreRow costCentreRow in MainDS.ACostCentre.Rows)
+            {
+                if ((costCentreRow.RowState != DataRowState.Deleted) && !ImportedCostCentreNames.Contains(costCentreRow.CostCentreCode))
+                {
+                    // TODO: delete costcentres that don't exist anymore in the new hierarchy, or deactivate them?
+                    // (check if their balance is empty and no transactions exist, or catch database constraint violation)
+                    // TODO: what about system cost centres? probably alright to ignore here
+
+                    costCentreRow.Delete();
+                }
+            }
+
+            TVerificationResultCollection VerificationResult;
+            GLSetupTDS InspectDS = MainDS.GetChangesTyped(true);
+            return SaveGLSetupTDS(ref InspectDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
 
         /// <summary>

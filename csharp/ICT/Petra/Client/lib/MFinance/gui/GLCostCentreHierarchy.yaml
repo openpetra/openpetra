@@ -12,6 +12,7 @@ RootNode:
     Actions:
         actAddNewCostCentre: {Label=Add Cost Centre, ActionClick=AddNewCostCentre}
         actExportHierarchy: {ActionClick=ExportHierarchy}
+        actImportHierarchy: {ActionClick=ImportHierarchy}
     Controls:
         pnlContent:
             Controls: [sptSplitter]
@@ -40,3 +41,4 @@ RootNode:
     Toolbar:
         tbbAddNewCostCentre:
         tbbExportHierarchy:
+        tbbImportHierarchy:

@@ -85,6 +85,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbAddNewCostCentre = new System.Windows.Forms.ToolStripButton();
             this.tbbExportHierarchy = new System.Windows.Forms.ToolStripButton();
+            this.tbbImportHierarchy = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileSave = new System.Windows.Forms.ToolStripMenuItem();
@@ -241,6 +242,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tbbExportHierarchy.Click += new System.EventHandler(this.ExportHierarchy);
             this.tbbExportHierarchy.Text = "Export Hierarchy";
             //
+            // tbbImportHierarchy
+            //
+            this.tbbImportHierarchy.Name = "tbbImportHierarchy";
+            this.tbbImportHierarchy.AutoSize = true;
+            this.tbbImportHierarchy.Click += new System.EventHandler(this.ImportHierarchy);
+            this.tbbImportHierarchy.Text = "Import Hierarchy";
+            //
             // tbrMain
             //
             this.tbrMain.Name = "tbrMain";
@@ -249,7 +257,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbSave,
                         tbbAddNewCostCentre,
-                        tbbExportHierarchy});
+                        tbbExportHierarchy,
+                        tbbImportHierarchy});
             //
             // mniFileSave
             //
@@ -448,6 +457,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripButton tbbAddNewCostCentre;
         private System.Windows.Forms.ToolStripButton tbbExportHierarchy;
+        private System.Windows.Forms.ToolStripButton tbbImportHierarchy;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniFileSave;
