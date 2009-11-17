@@ -28,6 +28,7 @@ OpenPetra:
                         AddNewFamily: {ActionClick=TFrmPartnerMain.NewPartner}
                         AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson}
                         AddNewOrganisation: {ActionClick=TFrmPartnerMain.NewOrganisation}
+                        ImportPartners: {ActionClick=TFrmPartnerMain.ImportPartners}
                     MaintainPartner:
                         FindPartner: {ActionClick=TFrmPartnerMain.FindPartner}
                     Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}

@@ -24,9 +24,13 @@
  *
  ************************************************************************/
 using System;
+using System.Xml;
 using System.Windows.Forms;
+using Mono.Unix;
+using Ict.Common.IO;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -63,6 +67,21 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "");
             frm.Show();
+        }
+
+        /// import partners from file
+        public static void ImportPartners(IntPtr AParentFormHandle)
+        {
+            XmlDocument doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Load Partners from File"));
+
+            // TODO: pass current site key?
+            if (!TRemote.MPartner.ImportExport.WebConnectors.ImportPartners(TXMLParser.XmlToString(doc)))
+            {
+                // TODO: show verification details
+                MessageBox.Show(Catalog.GetString(
+                        "Import of partners failed!"),
+                    Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>

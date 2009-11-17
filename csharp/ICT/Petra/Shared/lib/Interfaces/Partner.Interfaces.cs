@@ -27,6 +27,7 @@ using Ict.Petra.Shared.Interfaces.MPartner.Subscriptions;
 using Ict.Petra.Shared.Interfaces.MPartner.TableMaintenance;
 using Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.ImportExport.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Mailing.Cacheable;
 using Ict.Petra.Shared.Interfaces.MPartner.Mailing.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.Cacheable;
@@ -161,6 +162,12 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.ImportExport
             get;
         }
 
+        /// <summary>access to sub namespace</summary>
+        IImportExportWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
     }
 
 }
@@ -171,6 +178,18 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.ImportExport.UIConnectors
     /// <summary>auto generated</summary>
     public interface IImportExportUIConnectorsNamespace : IInterface
     {
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MPartner.ImportExport.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IImportExportWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        bool ImportPartners(string AXmlPartnerData);
     }
 
 }

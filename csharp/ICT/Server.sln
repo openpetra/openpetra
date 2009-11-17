@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 # SharpDevelop 3.0.0.3800
@@ -81,6 +81,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MSysMan.DataAccess", "Petra\Server\lib\MSysMan\data\Ict.Petra.Server.MSysMan.DataAccess.csproj", "{CF8F3805-344B-4B75-8498-C93205B2A2A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MCommon.DataCascading", "Petra\Server\lib\MCommon\data\Ict.Petra.Server.MCommon.DataCascading.csproj", "{2E02BD3D-BB0A-456D-A3D0-AC05FC9114E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPartner.WebConnectors", "Petra\Server\lib\MPartner\Ict.Petra.Server.MPartner.WebConnectors.csproj", "B7E0E43A-F197-46C0-9F5E-260FFDF2C877"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -248,5 +250,9 @@ Global
 		{CF8F3805-344B-4B75-8498-C93205B2A2A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF8F3805-344B-4B75-8498-C93205B2A2A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF8F3805-344B-4B75-8498-C93205B2A2A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		B7E0E43A-F197-46C0-9F5E-260FFDF2C877.Debug|Any CPU.ActiveCfg = Debug|x86
+		B7E0E43A-F197-46C0-9F5E-260FFDF2C877.Debug|Any CPU.Build.0 = Debug|x86
+		B7E0E43A-F197-46C0-9F5E-260FFDF2C877.Release|Any CPU.ActiveCfg = Release|x86
+		B7E0E43A-F197-46C0-9F5E-260FFDF2C877.Release|Any CPU.Build.0 = Release|x86
 	EndGlobalSection
 EndGlobal

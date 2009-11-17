@@ -45,6 +45,9 @@
       <HintPath>..\..\..\..\..\Common\_bin\Debug\DevAge.Core.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Common.IO">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
