@@ -85,7 +85,7 @@ public class TSendEmail
 
         view.Sort = "DOBThisYear ASC";
 
-        string emailText = "<html><body>" + Environment.NewLine;
+        string emailText = "<html>  <meta content=\"text/html; charset=UTF-8\" http-equiv=\"content-type\"/><body>" + Environment.NewLine;
         emailText += String.Format("<h3>Birthdays for the date range {0:d-MMM-yyyy} to {1:d-MMM-yyyy}</h3>",
             AStartDate, AEndDate) + Environment.NewLine;
         emailText += String.Format("Round Birthdays: {0}",
