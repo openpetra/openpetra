@@ -50,6 +50,8 @@ class Program
                 Environment.Exit(-1);
             }
 
+            new TLogging("debug.log");
+            
             TDataBase db = new TDataBase();
 
             TDBType dbtype = TDBType.ProgressODBC;
@@ -72,7 +74,7 @@ class Program
                 "");
             DBAccess.GDBAccessObj = db;
 
-            //db.DebugLevel = 10;
+            db.DebugLevel = 10;
 
             string sqlText = "";
 

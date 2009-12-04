@@ -90,6 +90,7 @@ class Program
         catch (Exception exp)
         {
             Console.WriteLine(exp.Message);
+            Console.WriteLine(exp.StackTrace);
         }
     }
 }

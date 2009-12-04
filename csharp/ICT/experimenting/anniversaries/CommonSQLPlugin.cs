@@ -135,6 +135,12 @@ namespace Ict.Petra.Plugins.SQL
             foreach (DataRow row in ADataSet.Tables[ATableNameWithPartnerKeys].Rows)
             {
                 ADataSet.Merge(GetBestAddress(Convert.ToInt64(row[AColumnNameWithPartnerKeys])));
+                
+        		PPartnerLocationTable PartnerLocationTable = (PPartnerLocationTable)ADataSet.Tables[PPartnerLocationTable.GetTableName()];
+        		PLocationTable LocationTable = (PLocationTable)ADataSet.Tables[PLocationTable.GetTableName()];
+        
+        		PartnerLocationTable.InitVars();       
+        		LocationTable.InitVars();
             }
         }
     }
