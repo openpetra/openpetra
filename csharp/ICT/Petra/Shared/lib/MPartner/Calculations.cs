@@ -685,6 +685,10 @@ namespace Ict.Petra.Shared.MPartner
             {
                 return names[names.Count - 1];
             }
+            else if (AFormat == eShortNameFormat.eOnlySurname)
+            {
+                return names[0];
+            }
             else if (AFormat == eShortNameFormat.eReverseWithoutTitle)
             {
                 if (names.Count > 1)
@@ -696,7 +700,7 @@ namespace Ict.Petra.Shared.MPartner
                 {
                     if (resultValue.Length > 0)
                     {
-                        resultValue = ", " + resultValue;
+                        resultValue = " " + resultValue;
                     }
 
                     resultValue = name + resultValue;

@@ -95,6 +95,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new MenuGenerator());
                 AvailableControlGenerators.Add(new MenuItemGenerator());
                 AvailableControlGenerators.Add(new MenuItemSeparatorGenerator());
+                AvailableControlGenerators.Add(new ToolbarTextBoxGenerator());
+                AvailableControlGenerators.Add(new ToolbarLabelGenerator());
                 AvailableControlGenerators.Add(new ToolbarButtonGenerator());
                 AvailableControlGenerators.Add(new ToolbarSeparatorGenerator());
                 AvailableControlGenerators.Add(new StatusBarGenerator());
@@ -115,6 +117,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new TcmbAutoPopulatedGenerator());
                 AvailableControlGenerators.Add(new TcmbAutoCompleteGenerator());
                 AvailableControlGenerators.Add(new TCmbVersatileGenerator());
+                AvailableControlGenerators.Add(new PrintPreviewGenerator());
+                AvailableControlGenerators.Add(new PrintPreviewWithToolbarGenerator());
                 AvailableControlGenerators.Add(new RadioGroupComplexGenerator());
                 AvailableControlGenerators.Add(new RadioGroupSimpleGenerator());
                 AvailableControlGenerators.Add(new RadioGroupNoBorderGenerator());

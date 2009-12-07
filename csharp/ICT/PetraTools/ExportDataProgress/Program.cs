@@ -51,7 +51,7 @@ class Program
             }
 
             new TLogging("debug.log");
-            
+
             TDataBase db = new TDataBase();
 
             TDBType dbtype = TDBType.ProgressODBC;

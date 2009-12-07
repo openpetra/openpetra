@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -25,8 +25,8 @@
  ************************************************************************/
 #region Using directives
 
+using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #endregion
@@ -34,11 +34,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("treasurerEmails")]
+[assembly: AssemblyTitle("newDonorSubscriptions")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("treasurerEmails")]
+[assembly: AssemblyProduct("newDonorSubscriptions")]
 [assembly: AssemblyCopyright("(c) OM International 2004-2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

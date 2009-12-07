@@ -2480,4 +2480,654 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.SetNull(this.myTable.ColumnRecipientDescription);
         }
     }
+
+     /// auto generated
+    [Serializable()]
+    public class NewDonorTDS : TTypedDataSet
+    {
+
+        private NewDonorTDSAGiftTable TableAGift;
+
+        /// auto generated
+        public NewDonorTDS() :
+                base("NewDonorTDS")
+        {
+        }
+
+        /// auto generated for serialization
+        public NewDonorTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// auto generated
+        public NewDonorTDS(string ADatasetName) :
+                base(ADatasetName)
+        {
+        }
+
+        /// auto generated
+        public NewDonorTDSAGiftTable AGift
+        {
+            get
+            {
+                return this.TableAGift;
+            }
+        }
+
+        /// auto generated
+        public new virtual NewDonorTDS GetChangesTyped(bool removeEmptyTables)
+        {
+            return ((NewDonorTDS)(base.GetChangesTyped(removeEmptyTables)));
+        }
+
+        /// auto generated
+        protected override void InitTables()
+        {
+            this.Tables.Add(new NewDonorTDSAGiftTable("AGift"));
+        }
+
+        /// auto generated
+        protected override void InitTables(System.Data.DataSet ds)
+        {
+            if ((ds.Tables.IndexOf("AGift") != -1))
+            {
+                this.Tables.Add(new NewDonorTDSAGiftTable("AGift"));
+            }
+        }
+
+        /// auto generated
+        protected override void MapTables()
+        {
+            this.InitVars();
+            base.MapTables();
+            if ((this.TableAGift != null))
+            {
+                this.TableAGift.InitVars();
+            }
+        }
+
+        /// auto generated
+        public override void InitVars()
+        {
+            this.DataSetName = "NewDonorTDS";
+            this.TableAGift = ((NewDonorTDSAGiftTable)(this.Tables["AGift"]));
+        }
+
+        /// auto generated
+        protected override void InitConstraints()
+        {
+        }
+    }
+
+    /// Information on the donor's giving. Points to the gift detail records.
+    [Serializable()]
+    public class NewDonorTDSAGiftTable : AGiftTable
+    {
+        /// TableId for Ict.Common.Data generic functions
+        public new static short TableId = 5604;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDonorShortNameId = 24;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRecipientDescriptionId = 25;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateOfSubscriptionStartId = 26;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateOfFirstGiftId = 27;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationGroupCodeId = 28;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationDetailCodeId = 29;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AGift", "a_gift",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", "Batch Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "GiftTransactionNumber", "a_gift_transaction_number_i", "Transaction Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "GiftStatus", "a_gift_status_c", "Gift Status", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(4, "DateEntered", "a_date_entered_d", "Date Entered", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(5, "HomeAdminChargesFlag", "a_home_admin_charges_flag_l", "Local Admin Charges", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(6, "IltAdminChargesFlag", "a_ilt_admin_charges_flag_l", "IT Admin Charges", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(7, "ReceiptLetterCode", "a_receipt_letter_code_c", "Receipt Letter Code", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(8, "MethodOfGivingCode", "a_method_of_giving_code_c", "Method Of Giving", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(9, "MethodOfPaymentCode", "a_method_of_payment_code_c", "Method of Payment", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(10, "DonorKey", "p_donor_key_n", "Donor", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(11, "AdminCharge", "a_admin_charge_l", "Admin Charge", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(12, "ReceiptNumber", "a_receipt_number_i", "Receipt Number", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(13, "LastDetailNumber", "a_last_detail_number_i", "Last Gift Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(14, "Reference", "a_reference_c", "Reference", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(15, "FirstTimeGift", "a_first_time_gift_l", "Donors first gift flag", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(16, "ReceiptPrinted", "a_receipt_printed_l", "Receipt Printed", OdbcType.Bit, -1, true),
+                    new TTypedColumnInfo(17, "Restricted", "a_restricted_l", "Gift Restricted", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(18, "BankingDetailsKey", "p_banking_details_key_i", "Bank or Credit Card", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(19, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(20, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(21, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(22, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(23, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
+                    new TTypedColumnInfo(24, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(25, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(26, "DateOfSubscriptionStart", "DateOfSubscriptionStart", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(27, "DateOfFirstGift", "DateOfFirstGift", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(28, "MotivationGroupCode", "MotivationGroupCode", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(29, "MotivationDetailCode", "MotivationDetailCode", "", OdbcType.Int, -1, false)
+                },
+                new int[] {
+                    0, 1, 2
+                }));
+            return true;
+        }
+
+        /// constructor
+        public NewDonorTDSAGiftTable() :
+                base("AGift")
+        {
+        }
+
+        /// constructor
+        public NewDonorTDSAGiftTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public NewDonorTDSAGiftTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        ///
+        public DataColumn ColumnDonorShortName;
+        ///
+        public DataColumn ColumnRecipientDescription;
+        ///
+        public DataColumn ColumnDateOfSubscriptionStart;
+        ///
+        public DataColumn ColumnDateOfFirstGift;
+        ///
+        public DataColumn ColumnMotivationGroupCode;
+        ///
+        public DataColumn ColumnMotivationDetailCode;
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_batch_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_status_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_date_entered_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("a_home_admin_charges_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_ilt_admin_charges_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_receipt_letter_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_method_of_giving_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_method_of_payment_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_donor_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("a_admin_charge_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_receipt_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_last_detail_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_reference_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_first_time_gift_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_receipt_printed_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_restricted_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("p_banking_details_key_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("DonorShortName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("RecipientDescription", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("DateOfSubscriptionStart", typeof(DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("DateOfFirstGift", typeof(DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("MotivationGroupCode", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("MotivationDetailCode", typeof(string)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
+            this.ColumnBatchNumber = this.Columns["a_batch_number_i"];
+            this.ColumnGiftTransactionNumber = this.Columns["a_gift_transaction_number_i"];
+            this.ColumnGiftStatus = this.Columns["a_gift_status_c"];
+            this.ColumnDateEntered = this.Columns["a_date_entered_d"];
+            this.ColumnHomeAdminChargesFlag = this.Columns["a_home_admin_charges_flag_l"];
+            this.ColumnIltAdminChargesFlag = this.Columns["a_ilt_admin_charges_flag_l"];
+            this.ColumnReceiptLetterCode = this.Columns["a_receipt_letter_code_c"];
+            this.ColumnMethodOfGivingCode = this.Columns["a_method_of_giving_code_c"];
+            this.ColumnMethodOfPaymentCode = this.Columns["a_method_of_payment_code_c"];
+            this.ColumnDonorKey = this.Columns["p_donor_key_n"];
+            this.ColumnAdminCharge = this.Columns["a_admin_charge_l"];
+            this.ColumnReceiptNumber = this.Columns["a_receipt_number_i"];
+            this.ColumnLastDetailNumber = this.Columns["a_last_detail_number_i"];
+            this.ColumnReference = this.Columns["a_reference_c"];
+            this.ColumnFirstTimeGift = this.Columns["a_first_time_gift_l"];
+            this.ColumnReceiptPrinted = this.Columns["a_receipt_printed_l"];
+            this.ColumnRestricted = this.Columns["a_restricted_l"];
+            this.ColumnBankingDetailsKey = this.Columns["p_banking_details_key_i"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.ColumnDonorShortName = this.Columns["DonorShortName"];
+            this.ColumnRecipientDescription = this.Columns["RecipientDescription"];
+            this.ColumnDateOfSubscriptionStart = this.Columns["DateOfSubscriptionStart"];
+            this.ColumnDateOfFirstGift = this.Columns["DateOfFirstGift"];
+            this.ColumnMotivationGroupCode = this.Columns["MotivationGroupCode"];
+            this.ColumnMotivationDetailCode = this.Columns["MotivationDetailCode"];
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnLedgerNumber,ColumnBatchNumber,ColumnGiftTransactionNumber};
+        }
+
+        /// Access a typed row by index
+        public new NewDonorTDSAGiftRow this[int i]
+        {
+            get
+            {
+                return ((NewDonorTDSAGiftRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public new NewDonorTDSAGiftRow NewRowTyped(bool AWithDefaultValues)
+        {
+            NewDonorTDSAGiftRow ret = ((NewDonorTDSAGiftRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public new NewDonorTDSAGiftRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new NewDonorTDSAGiftRow(builder);
+        }
+
+        /// get typed set of changes
+        public new NewDonorTDSAGiftTable GetChangesTyped()
+        {
+            return ((NewDonorTDSAGiftTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static new string GetTableName()
+        {
+            return "AGift";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static new string GetTableDBName()
+        {
+            return "a_gift";
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDonorShortNameDBName()
+        {
+            return "DonorShortName";
+        }
+
+        /// get character length for column
+        public static short GetDonorShortNameLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetRecipientDescriptionDBName()
+        {
+            return "RecipientDescription";
+        }
+
+        /// get character length for column
+        public static short GetRecipientDescriptionLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateOfSubscriptionStartDBName()
+        {
+            return "DateOfSubscriptionStart";
+        }
+
+        /// get character length for column
+        public static short GetDateOfSubscriptionStartLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateOfFirstGiftDBName()
+        {
+            return "DateOfFirstGift";
+        }
+
+        /// get character length for column
+        public static short GetDateOfFirstGiftLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMotivationGroupCodeDBName()
+        {
+            return "MotivationGroupCode";
+        }
+
+        /// get character length for column
+        public static short GetMotivationGroupCodeLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMotivationDetailCodeDBName()
+        {
+            return "MotivationDetailCode";
+        }
+
+        /// get character length for column
+        public static short GetMotivationDetailCodeLength()
+        {
+            return -1;
+        }
+
+    }
+
+    /// Information on the donor's giving. Points to the gift detail records.
+    [Serializable()]
+    public class NewDonorTDSAGiftRow : AGiftRow
+    {
+        private NewDonorTDSAGiftTable myTable;
+
+        /// Constructor
+        public NewDonorTDSAGiftRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((NewDonorTDSAGiftTable)(this.Table));
+        }
+
+        ///
+        public string DonorShortName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDonorShortName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDonorShortName)
+                            || (((string)(this[this.myTable.ColumnDonorShortName])) != value)))
+                {
+                    this[this.myTable.ColumnDonorShortName] = value;
+                }
+            }
+        }
+
+        ///
+        public string RecipientDescription
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnRecipientDescription.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnRecipientDescription)
+                            || (((string)(this[this.myTable.ColumnRecipientDescription])) != value)))
+                {
+                    this[this.myTable.ColumnRecipientDescription] = value;
+                }
+            }
+        }
+
+        ///
+        public DateTime DateOfSubscriptionStart
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateOfSubscriptionStart.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return DateTime.MinValue;
+                }
+                else
+                {
+                    return ((DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateOfSubscriptionStart)
+                            || (((DateTime)(this[this.myTable.ColumnDateOfSubscriptionStart])) != value)))
+                {
+                    this[this.myTable.ColumnDateOfSubscriptionStart] = value;
+                }
+            }
+        }
+
+        ///
+        public DateTime DateOfFirstGift
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateOfFirstGift.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return DateTime.MinValue;
+                }
+                else
+                {
+                    return ((DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateOfFirstGift)
+                            || (((DateTime)(this[this.myTable.ColumnDateOfFirstGift])) != value)))
+                {
+                    this[this.myTable.ColumnDateOfFirstGift] = value;
+                }
+            }
+        }
+
+        ///
+        public string MotivationGroupCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMotivationGroupCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMotivationGroupCode)
+                            || (((string)(this[this.myTable.ColumnMotivationGroupCode])) != value)))
+                {
+                    this[this.myTable.ColumnMotivationGroupCode] = value;
+                }
+            }
+        }
+
+        ///
+        public string MotivationDetailCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMotivationDetailCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMotivationDetailCode)
+                            || (((string)(this[this.myTable.ColumnMotivationDetailCode])) != value)))
+                {
+                    this[this.myTable.ColumnMotivationDetailCode] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public override void InitValues()
+        {
+            this[this.myTable.ColumnLedgerNumber.Ordinal] = 0;
+            this[this.myTable.ColumnBatchNumber.Ordinal] = 0;
+            this[this.myTable.ColumnGiftTransactionNumber.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnGiftStatus);
+            this[this.myTable.ColumnDateEntered.Ordinal] = DateTime.Today;
+            this[this.myTable.ColumnHomeAdminChargesFlag.Ordinal] = true;
+            this[this.myTable.ColumnIltAdminChargesFlag.Ordinal] = true;
+            this.SetNull(this.myTable.ColumnReceiptLetterCode);
+            this.SetNull(this.myTable.ColumnMethodOfGivingCode);
+            this.SetNull(this.myTable.ColumnMethodOfPaymentCode);
+            this[this.myTable.ColumnDonorKey.Ordinal] = 0;
+            this[this.myTable.ColumnAdminCharge.Ordinal] = false;
+            this[this.myTable.ColumnReceiptNumber.Ordinal] = 0;
+            this[this.myTable.ColumnLastDetailNumber.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnReference);
+            this[this.myTable.ColumnFirstTimeGift.Ordinal] = false;
+            this[this.myTable.ColumnReceiptPrinted.Ordinal] = false;
+            this[this.myTable.ColumnRestricted.Ordinal] = false;
+            this[this.myTable.ColumnBankingDetailsKey.Ordinal] = 0;
+            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnCreatedBy);
+            this.SetNull(this.myTable.ColumnDateModified);
+            this.SetNull(this.myTable.ColumnModifiedBy);
+            this.SetNull(this.myTable.ColumnModificationId);
+            this.SetNull(this.myTable.ColumnDonorShortName);
+            this.SetNull(this.myTable.ColumnRecipientDescription);
+            this.SetNull(this.myTable.ColumnDateOfSubscriptionStart);
+            this.SetNull(this.myTable.ColumnDateOfFirstGift);
+            this.SetNull(this.myTable.ColumnMotivationGroupCode);
+            this.SetNull(this.myTable.ColumnMotivationDetailCode);
+        }
+
+        /// test for NULL value
+        public bool IsDonorShortNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnDonorShortName);
+        }
+
+        /// assign NULL value
+        public void SetDonorShortNameNull()
+        {
+            this.SetNull(this.myTable.ColumnDonorShortName);
+        }
+
+        /// test for NULL value
+        public bool IsRecipientDescriptionNull()
+        {
+            return this.IsNull(this.myTable.ColumnRecipientDescription);
+        }
+
+        /// assign NULL value
+        public void SetRecipientDescriptionNull()
+        {
+            this.SetNull(this.myTable.ColumnRecipientDescription);
+        }
+
+        /// test for NULL value
+        public bool IsDateOfSubscriptionStartNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateOfSubscriptionStart);
+        }
+
+        /// assign NULL value
+        public void SetDateOfSubscriptionStartNull()
+        {
+            this.SetNull(this.myTable.ColumnDateOfSubscriptionStart);
+        }
+
+        /// test for NULL value
+        public bool IsDateOfFirstGiftNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateOfFirstGift);
+        }
+
+        /// assign NULL value
+        public void SetDateOfFirstGiftNull()
+        {
+            this.SetNull(this.myTable.ColumnDateOfFirstGift);
+        }
+
+        /// test for NULL value
+        public bool IsMotivationGroupCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnMotivationGroupCode);
+        }
+
+        /// assign NULL value
+        public void SetMotivationGroupCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnMotivationGroupCode);
+        }
+
+        /// test for NULL value
+        public bool IsMotivationDetailCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnMotivationDetailCode);
+        }
+
+        /// assign NULL value
+        public void SetMotivationDetailCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnMotivationDetailCode);
+        }
+    }
 }

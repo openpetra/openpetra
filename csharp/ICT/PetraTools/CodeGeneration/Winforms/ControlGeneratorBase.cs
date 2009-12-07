@@ -805,8 +805,27 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return addChildren;
             }
 
+            List <XmlNode>childrenlist;
+
+            if (TYml2Xml.GetChild(container.xmlNode, "Controls") != null)
+            {
+                // this is for generated toolbar, eg. for the PrintPreviewControl
+                StringCollection childrenNames = TYml2Xml.GetElements(container.xmlNode, "Controls");
+                childrenlist = new List <XmlNode>();
+
+                foreach (string name in childrenNames)
+                {
+                    childrenlist.Add(container.xmlNode.OwnerDocument.CreateElement(name));
+                }
+            }
+            else
+            {
+                // usually, the toolbar buttons are direct children of the toolbar control
+                childrenlist = TYml2Xml.GetChildren(container.xmlNode, true);
+            }
+
             //Console.WriteLine("Container: " + container.controlName);
-            foreach (XmlNode child in TYml2Xml.GetChildren(container.xmlNode, true))
+            foreach (XmlNode child in childrenlist)
             {
                 // Console.WriteLine("Child: " + child.Name);
                 if (addChildren.Length > 0)

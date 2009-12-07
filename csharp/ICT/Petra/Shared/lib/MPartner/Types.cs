@@ -135,7 +135,10 @@ namespace Ict.Petra.Shared.MPartner
         /// title
         eOnlyTitle,
 
-        /// firstname, lastname
+        /// family name
+        eOnlySurname,
+
+        /// firstname lastname
         eReverseWithoutTitle
     };
 
