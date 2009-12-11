@@ -39,6 +39,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 using Ict.Petra.Shared.Security;
+using Ict.Petra.Shared.RemotingSinks.Encryption;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.ClientDomain;
@@ -352,7 +353,6 @@ namespace Ict.Petra.Server.App.ClientDomain
             TPetraPrincipal AUserInfo)
         {
             System.Int16 RemotingPortInt;
-            BinaryServerFormatterSinkProvider TCPSink;
             Hashtable ChannelProperties;
 
             // Console.WriteLine('TClientDomainManager.Create in AppDomain: ' + Thread.GetDomain().FriendlyName);
@@ -393,12 +393,20 @@ namespace Ict.Petra.Server.App.ClientDomain
                 LifetimeServices.RenewOnCallTime = TimeSpan.FromSeconds(60);
                 LifetimeServices.LeaseManagerPollTime = TimeSpan.FromSeconds(5);
 #endif
-                TCPSink = new BinaryServerFormatterSinkProvider();
+                BinaryServerFormatterSinkProvider TCPSink = new BinaryServerFormatterSinkProvider();
                 TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
+                EncryptionServerSinkProvider EncryptionSink = TCPSink;
+
+                if (TAppSettingsManager.HasValueStatic("Server.ChannelEncryption.Keyfile"))
+                {
+                    EncryptionSink = new EncryptionServerSinkProvider(TAppSettingsManager.GetValueStatic("Server.ChannelEncryption.Keyfile"));
+                    EncryptionSink.Next = TCPSink;
+                }
+
                 ChannelProperties = new Hashtable();
                 ChannelProperties.Add("port", RemotingPortInt.ToString());
-                FTcpChannel = new TcpChannel(ChannelProperties, null, TCPSink);
-                ChannelServices.RegisterChannel(FTcpChannel);
+                FTcpChannel = new TcpChannel(ChannelProperties, null, EncryptionSink);
+                ChannelServices.RegisterChannel(FTcpChannel, false);
             }
             catch (Exception)
             {
