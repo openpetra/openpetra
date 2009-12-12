@@ -47,35 +47,50 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
     {
         private static void ParsePartners(ref PartnerEditTDS AMainDS, XmlNode ACurNode)
         {
-            while (ACurNode != null)
+            XmlNode LocalNode = ACurNode;
+
+            while (LocalNode != null)
             {
-                if (ACurNode.Name == "PartnerGroup")
+                if (LocalNode.Name.StartsWith("PartnerGroup"))
                 {
-                    ParsePartners(ref AMainDS, ACurNode.FirstChild);
+                    ParsePartners(ref AMainDS, LocalNode.FirstChild);
                 }
-                else if (ACurNode.Name == "Partner")
+                else if (LocalNode.Name.StartsWith("Partner"))
                 {
                     PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
 
                     // get a new partner key
-                    newPartner.PartnerKey = TNewPartnerKey.GetNewPartnerKey(Convert.ToInt64(TYml2Xml.GetAttributeRecursive(ACurNode, "SiteKey")));
+                    Int64 SiteKey = Convert.ToInt64(TYml2Xml.GetAttributeRecursive(LocalNode, "SiteKey"));
+                    Int64 newPartnerKey = -1;
 
-                    if (TYml2Xml.GetAttributeRecursive(ACurNode, "class") == MPartnerConstants.PARTNERCLASS_FAMILY)
+                    do
+                    {
+                        newPartnerKey = TNewPartnerKey.GetNewPartnerKey(SiteKey);
+                        TNewPartnerKey.SubmitNewPartnerKey(SiteKey, newPartnerKey, ref newPartnerKey);
+                        newPartner.PartnerKey = newPartnerKey;
+                    } while (newPartnerKey == -1);
+
+                    if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_FAMILY)
                     {
                         PFamilyRow newFamily = AMainDS.PFamily.NewRowTyped();
                         newFamily.PartnerKey = newPartner.PartnerKey;
-                        newFamily.FamilyName = TYml2Xml.GetAttributeRecursive(ACurNode, "LastName");
-                        newFamily.FirstName = TYml2Xml.GetAttribute(ACurNode, "FirstName");
+                        newFamily.FamilyName = TYml2Xml.GetAttributeRecursive(LocalNode, "LastName");
+                        newFamily.FirstName = TYml2Xml.GetAttribute(LocalNode, "FirstName");
+                        newFamily.Title = TYml2Xml.GetAttribute(LocalNode, "Title");
+                        AMainDS.PFamily.Rows.Add(newFamily);
 
                         newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
-                        newPartner.PartnerShortName = newFamily.FamilyName + ", " + newFamily.FirstName;
+                        newPartner.AddresseeTypeCode = MPartnerConstants.PARTNERCLASS_FAMILY;
+
+                        newPartner.PartnerShortName =
+                            Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
                     }
 
-                    if (TYml2Xml.GetAttributeRecursive(ACurNode, "class") == MPartnerConstants.PARTNERCLASS_PERSON)
+                    if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_PERSON)
                     {
                         // TODO
                     }
-                    else if (TYml2Xml.GetAttributeRecursive(ACurNode, "class") == MPartnerConstants.PARTNERCLASS_ORGANISATION)
+                    else if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_ORGANISATION)
                     {
                         // TODO
                     }
@@ -83,9 +98,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     {
                         // TODO AVerificationResult add failing problem: unknown partner class
                     }
+
+                    newPartner.StatusCode = TYml2Xml.GetAttributeRecursive(LocalNode, "status");
+                    AMainDS.PPartner.Rows.Add(newPartner);
+
+                    // TODO: at the moment, add the empty location
+                    PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
+                    partnerlocation.SiteKey = 0;
+                    partnerlocation.PartnerKey = newPartner.PartnerKey;
+                    partnerlocation.DateEffective = DateTime.Now;
+                    partnerlocation.LocationType = "HOME";
+                    AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
                 }
 
-                ACurNode = ACurNode.NextSibling;
+                LocalNode = LocalNode.NextSibling;
             }
         }
 
@@ -108,7 +134,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             ParsePartners(ref MainDS, root);
 
-            TVerificationResultCollection VerificationResult;
             PartnerEditTDS InspectDS = MainDS.GetChangesTyped(true);
 
             TDBTransaction SubmitChangesTransaction;
@@ -132,7 +157,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                     }
-                    else if ((InspectDS.PPerson != null) || PPersonAccess.SubmitChanges(InspectDS.PPerson, SubmitChangesTransaction,
+                    else if ((InspectDS.PPerson != null) && !PPersonAccess.SubmitChanges(InspectDS.PPerson, SubmitChangesTransaction,
+                                 out AVerificationResult))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                    else if ((InspectDS.PLocation != null) && !PLocationAccess.SubmitChanges(InspectDS.PLocation, SubmitChangesTransaction,
+                                 out AVerificationResult))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                    else if ((InspectDS.PPartnerLocation != null)
+                             && !PPartnerLocationAccess.SubmitChanges(InspectDS.PPartnerLocation, SubmitChangesTransaction,
                                  out AVerificationResult))
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
