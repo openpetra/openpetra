@@ -395,9 +395,9 @@ namespace Ict.Petra.Server.App.ClientDomain
 #endif
                 BinaryServerFormatterSinkProvider TCPSink = new BinaryServerFormatterSinkProvider();
                 TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
-                EncryptionServerSinkProvider EncryptionSink = TCPSink;
+                IServerChannelSinkProvider EncryptionSink = TCPSink;
 
-                if (TAppSettingsManager.HasValueStatic("Server.ChannelEncryption.Keyfile"))
+                if (TAppSettingsManager.GetValueStatic("Server.ChannelEncryption.Keyfile", "").Length > 0)
                 {
                     EncryptionSink = new EncryptionServerSinkProvider(TAppSettingsManager.GetValueStatic("Server.ChannelEncryption.Keyfile"));
                     EncryptionSink.Next = TCPSink;
