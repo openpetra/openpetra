@@ -778,10 +778,13 @@
         <property name="DBMS.Password" value="CHANGEME"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
+
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <!-- this currently only works on Linux -->
-            <ExecCmd program="sh" superuser="postgres" commandline="/C ${pgdump.exe} --format=c petra -f ${path::get-temp-path()}/demo-pg.bak"/>
-            <copy file="${path::get-temp-path()}/demo-pg.bak" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo-pg.bak" overwrite="true"/>
+            <exec program="sudo" commandline="-u postgres /usr/bin/pg_dumpall -s -f ${path::get-temp-path()}/createdb-pg.sql" />
+            <exec program="sudo" commandline="-u postgres /usr/bin/pg_dumpall -a -f ${path::get-temp-path()}/demodata-pg.sql" />
+            <copy file="${path::get-temp-path()}/createdb-pg.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createdb-pg.sql" overwrite="true"/>
+            <copy file="${path::get-temp-path()}/demodata-pg.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-pg.sql" overwrite="true"/>
         </if>
     </target>
     
