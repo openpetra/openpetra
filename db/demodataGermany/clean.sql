@@ -19,3 +19,5 @@ DELETE FROM a_account_property;
 DELETE FROM a_account_property_code;
 DELETE FROM a_account;
 DELETE FROM a_ledger;
+DELETE FROM p_subscription;
+DELETE FROM p_publication;

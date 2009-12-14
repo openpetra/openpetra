@@ -75,6 +75,12 @@ namespace Ict.Common
             string stemp;
 
             ReturnValue = new StringCollection();
+
+            if (s.Length == 0)
+            {
+                return ReturnValue;
+            }
+
             done = false;
             pos = 0;
 

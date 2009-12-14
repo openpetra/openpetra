@@ -35,7 +35,9 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 
 namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
@@ -102,6 +104,30 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     newPartner.StatusCode = TYml2Xml.GetAttributeRecursive(LocalNode, "status");
                     AMainDS.PPartner.Rows.Add(newPartner);
 
+                    // import special types
+                    StringCollection SpecialTypes = StringHelper.StrSplit(TYml2Xml.GetAttributeRecursive(LocalNode, "SpecialTypes"), ",");
+
+                    foreach (string SpecialType in SpecialTypes)
+                    {
+                        PPartnerTypeRow partnertype = AMainDS.PPartnerType.NewRowTyped();
+                        partnertype.PartnerKey = newPartner.PartnerKey;
+                        partnertype.TypeCode = SpecialType.Trim();
+                        AMainDS.PPartnerType.Rows.Add(partnertype);
+                    }
+
+                    // import subscriptions
+                    StringCollection Subscriptions = StringHelper.StrSplit(TYml2Xml.GetAttributeRecursive(LocalNode, "Subscriptions"), ",");
+
+                    foreach (string publicationCode in Subscriptions)
+                    {
+                        PSubscriptionRow subscription = AMainDS.PSubscription.NewRowTyped();
+                        subscription.PartnerKey = newPartner.PartnerKey;
+                        subscription.PublicationCode = publicationCode.Trim();
+                        subscription.ReasonSubsGivenCode = "FREE";
+                        AMainDS.PSubscription.Rows.Add(subscription);
+                    }
+
+                    // import address
                     XmlNode addressNode = TYml2Xml.GetChild(LocalNode, "Address");
 
                     if (addressNode == null)
@@ -194,6 +220,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 {
                     if ((InspectDS.PPartner != null) && !PPartnerAccess.SubmitChanges(InspectDS.PPartner, SubmitChangesTransaction,
                             out AVerificationResult))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                    else if ((InspectDS.PPartnerType != null) && !PPartnerTypeAccess.SubmitChanges(InspectDS.PPartnerType, SubmitChangesTransaction,
+                                 out AVerificationResult))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                    else if ((InspectDS.PSubscription != null)
+                             && !PSubscriptionAccess.SubmitChanges(InspectDS.PSubscription, SubmitChangesTransaction,
+                                 out AVerificationResult))
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                     }
