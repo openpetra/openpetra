@@ -102,17 +102,62 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     newPartner.StatusCode = TYml2Xml.GetAttributeRecursive(LocalNode, "status");
                     AMainDS.PPartner.Rows.Add(newPartner);
 
-                    // TODO: at the moment, add the empty location
-                    PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
-                    partnerlocation.SiteKey = 0;
-                    partnerlocation.PartnerKey = newPartner.PartnerKey;
-                    partnerlocation.DateEffective = DateTime.Now;
-                    partnerlocation.LocationType = "HOME";
-                    AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
+                    XmlNode addressNode = TYml2Xml.GetChild(LocalNode, "Address");
+
+                    if (addressNode == null)
+                    {
+                        // add the empty location
+                        PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
+                        partnerlocation.SiteKey = 0;
+                        partnerlocation.PartnerKey = newPartner.PartnerKey;
+                        partnerlocation.DateEffective = DateTime.Now;
+                        partnerlocation.LocationType = "HOME";
+                        AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
+                    }
+                    else
+                    {
+                        // TODO: avoid duplicate addresses, reuse existing locations
+                        PLocationRow location = AMainDS.PLocation.NewRowTyped(true);
+                        location.LocationKey = (AMainDS.PLocation.Rows.Count + 1) * -1;
+                        location.SiteKey = 0;
+                        location.CountryCode = TYml2Xml.GetAttributeRecursive(addressNode, "Country");
+                        location.StreetName = TYml2Xml.GetAttributeRecursive(addressNode, "Street");
+                        location.City = TYml2Xml.GetAttributeRecursive(addressNode, "City");
+                        location.PostalCode = TYml2Xml.GetAttributeRecursive(addressNode, "PostCode");
+                        AMainDS.PLocation.Rows.Add(location);
+
+                        PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
+                        partnerlocation.SiteKey = 0;
+                        partnerlocation.LocationKey = location.LocationKey;
+                        partnerlocation.PartnerKey = newPartner.PartnerKey;
+                        partnerlocation.SendMail = true;
+                        partnerlocation.DateEffective = DateTime.Now;
+                        partnerlocation.LocationType = "HOME";
+                        partnerlocation.EmailAddress = TYml2Xml.GetAttributeRecursive(addressNode, "Email");
+                        AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
+                    }
                 }
 
                 LocalNode = LocalNode.NextSibling;
             }
+        }
+
+        /// <summary>
+        /// for all negative location numbers, get the new location number;
+        /// this assumes that the order of locations is still the same
+        /// </summary>
+        /// <returns></returns>
+        private static bool ApplyNewLocationNumbers(ref PartnerEditTDS AMainDS)
+        {
+            foreach (PartnerEditTDSPPartnerLocationRow partnerlocationRow in AMainDS.PPartnerLocation.Rows)
+            {
+                if (partnerlocationRow.LocationKey < 0)
+                {
+                    partnerlocationRow.LocationKey = AMainDS.PLocation[(partnerlocationRow.LocationKey * -1) - 1].LocationKey;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -162,14 +207,21 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                     }
-                    else if ((InspectDS.PLocation != null) && !PLocationAccess.SubmitChanges(InspectDS.PLocation, SubmitChangesTransaction,
-                                 out AVerificationResult))
+                    else if ((InspectDS.PLocation != null)
+                             && !PLocationAccess.SubmitChanges(InspectDS.PLocation, SubmitChangesTransaction, out AVerificationResult))
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                     }
-                    else if ((InspectDS.PPartnerLocation != null)
-                             && !PPartnerLocationAccess.SubmitChanges(InspectDS.PPartnerLocation, SubmitChangesTransaction,
-                                 out AVerificationResult))
+                    else
+                    {
+                        ApplyNewLocationNumbers(ref InspectDS);
+                        SubmissionResult = TSubmitChangesResult.scrOK;
+                    }
+
+                    if ((SubmissionResult == TSubmitChangesResult.scrOK)
+                        && (InspectDS.PPartnerLocation != null)
+                        && !PPartnerLocationAccess.SubmitChanges(InspectDS.PPartnerLocation, SubmitChangesTransaction,
+                            out AVerificationResult))
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                     }

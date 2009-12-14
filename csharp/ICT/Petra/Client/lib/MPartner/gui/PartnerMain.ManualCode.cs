@@ -75,6 +75,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             XmlDocument doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Load Partners from File"));
 
+            if (doc == null)
+            {
+                return;
+            }
+
             TVerificationResultCollection VerificationResult;
 
             if (!TRemote.MPartner.ImportExport.WebConnectors.ImportPartners(TXMLParser.XmlToString(doc), out VerificationResult))
