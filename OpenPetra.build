@@ -788,6 +788,14 @@
         </if>
     </target>
     
+    <target name="createPatch">
+        <ExecDotNet program="${PetraToolsExe.dir}/PatchTool.exe" commandline="-action:create -Petra.PathTemp:u:/tmp/patch -deliverypath:u:/delivery -oldversion:0.0.8-0 -newversion:0.0.10-0" failonerror="true">
+            <environment>
+                <variable name="PATH" path="${environment::get-variable('PATH')};${OpenPetraRoot.dir}/csharp/ThirdParty/bsdiff"/>
+            </environment>
+        </ExecDotNet>
+    </target>
+    
     <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, translation, setupStandalone, setupRemote"/>
     <target name="buildReleaseLinux" depends="switchToDebug, createSQLiteDB, createPostgreSQLDB, generateWinforms, compileRelease, translation, setupLinuxServer"/>
     <target name="buildRelease">

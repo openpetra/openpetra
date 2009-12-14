@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportDataProgress", "Petra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateEncryptionKey", "PetraTools\GenerateEncryptionKey\GenerateEncryptionKey.csproj", "{DA8F3163-99D2-4FC9-910F-4D12461DEA8D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatchTool", "PetraTools\PatchTool\PatchTool.csproj", "{B3976248-2013-44E4-8937-EB17E2EC1DB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,5 +106,9 @@ Global
 		{DA8F3163-99D2-4FC9-910F-4D12461DEA8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA8F3163-99D2-4FC9-910F-4D12461DEA8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA8F3163-99D2-4FC9-910F-4D12461DEA8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3976248-2013-44E4-8937-EB17E2EC1DB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3976248-2013-44E4-8937-EB17E2EC1DB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3976248-2013-44E4-8937-EB17E2EC1DB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3976248-2013-44E4-8937-EB17E2EC1DB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
