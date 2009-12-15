@@ -2,12 +2,12 @@
 <html>
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
-  <title>Finanzbericht für #RECIPIENTNAME</title>
+  <title>Finanzbericht für #RECIPIENTINITIALS</title>
   <!-- todo: CSS for position of address label, font sizes, etc? -->
 </head>
 <body>
 <div class="letter">
-<br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/>#MARKMULTIPLELETTERS<br/><br/><br/><br/>
 #TREASURERTITLE<br/>
 #TREASURERNAME<br/>
 #STREETNAME<br/><br/>
@@ -15,9 +15,14 @@
 #COUNTRYNAME<br/>
 
 <p align="right">#DATE</p><br/><br/><br/>
-</div>
 
 <b>Finanzbericht für #RECIPIENTNAME</b><br/><br/>
+
+</div>
+
+<div class="email">
+<b>Finanzbericht für #RECIPIENTINITIALS</b><br/><br/>
+</div>
 
 Hiermit senden wir Ihnen die aktuellen Daten.<br/>
 
@@ -69,8 +74,8 @@ Spendenbuchhaltung
 Spendenbuchhaltung
 
 <hr/>
-Sie erhalten diese Email, weil Sie mit Ihrer Email Adresse #RECIPIENTEMAIL<br/>
-bei uns als Mitglied des Basisteams von #RECIPIENTNAME eingetragen sind.<br/>
+Sie erhalten diese Email, weil Sie mit Ihrer Email Adresse #TREASUREREMAIL<br/>
+bei uns als Mitglied des Basisteams von #RECIPIENTINITIALS eingetragen sind.<br/>
 Bitte melden Sie sich, wenn sich Ihre Email Adresse ändert.
 </div>
 </body>

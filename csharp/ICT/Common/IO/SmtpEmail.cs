@@ -40,15 +40,24 @@ namespace Ict.Common.IO
         /// <summary>
         /// setup the smtp client
         /// </summary>
-        public TSmtpSender(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword)
+        public TSmtpSender(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
         {
             //Set up SMTP client
             FSmtpClient = new SmtpClient();
-            FSmtpClient.Host = ASMTPHost;
-            FSmtpClient.Port = ASMTPPort;
-            FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-            FSmtpClient.Credentials = new NetworkCredential(AUsername, APassword);
-            FSmtpClient.EnableSsl = AEnableSsl;
+
+            if (AOutputEMLToDirectory.Length > 0)
+            {
+                FSmtpClient.PickupDirectoryLocation = AOutputEMLToDirectory;
+                FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
+            }
+            else
+            {
+                FSmtpClient.Host = ASMTPHost;
+                FSmtpClient.Port = ASMTPPort;
+                FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                FSmtpClient.Credentials = new NetworkCredential(AUsername, APassword);
+                FSmtpClient.EnableSsl = AEnableSsl;
+            }
         }
 
         /// <summary>
@@ -60,13 +69,22 @@ namespace Ict.Common.IO
 
             //Set up SMTP client
             FSmtpClient = new SmtpClient();
-            FSmtpClient.Host = settings.GetValue("SmtpHost");
-            FSmtpClient.Port = settings.GetInt16("SmtpPort", 25);
-            FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-            FSmtpClient.Credentials = new NetworkCredential(
-                settings.GetValue("SmtpUser", ""),
-                settings.GetValue("SmtpPassword", ""));
-            FSmtpClient.EnableSsl = settings.GetBoolean("SmtpEnableSsl", false);
+
+            if (settings.HasValue("OutputEMLToDirectory"))
+            {
+                FSmtpClient.PickupDirectoryLocation = settings.GetValue("OutputEMLToDirectory");
+                FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
+            }
+            else
+            {
+                FSmtpClient.Host = settings.GetValue("SmtpHost");
+                FSmtpClient.Port = settings.GetInt16("SmtpPort", 25);
+                FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                FSmtpClient.Credentials = new NetworkCredential(
+                    settings.GetValue("SmtpUser", ""),
+                    settings.GetValue("SmtpPassword", ""));
+                FSmtpClient.EnableSsl = settings.GetBoolean("SmtpEnableSsl", false);
+            }
         }
 
         /// <summary>

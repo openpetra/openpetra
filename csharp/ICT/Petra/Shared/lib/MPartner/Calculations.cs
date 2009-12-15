@@ -660,7 +660,13 @@ namespace Ict.Petra.Shared.MPartner
         /// </summary>
         public static string FormatShortName(string AShortname, eShortNameFormat AFormat)
         {
+            if (AShortname.Length == 0)
+            {
+                return "";
+            }
+
             StringCollection names = StringHelper.StrSplit(AShortname, ",");
+
             string resultValue = "";
 
             if (AFormat == eShortNameFormat.eShortname)
@@ -683,7 +689,10 @@ namespace Ict.Petra.Shared.MPartner
             }
             else if (AFormat == eShortNameFormat.eOnlyTitle)
             {
-                return names[names.Count - 1];
+                if (names.Count > 0)
+                {
+                    return names[names.Count - 1];
+                }
             }
             else if (AFormat == eShortNameFormat.eOnlySurname)
             {
@@ -693,6 +702,7 @@ namespace Ict.Petra.Shared.MPartner
             {
                 if (names.Count > 1)
                 {
+                    // remove the title
                     names.RemoveAt(names.Count - 1);
                 }
 
@@ -707,6 +717,21 @@ namespace Ict.Petra.Shared.MPartner
                 }
 
                 return resultValue;
+            }
+            else if (AFormat == eShortNameFormat.eReverseLastnameInitialsOnly)
+            {
+                if (names.Count > 1)
+                {
+                    // remove the title
+                    names.RemoveAt(names.Count - 1);
+                }
+
+                if (names.Count > 1)
+                {
+                    return names[1] + " " + names[0].Substring(0, 1) + ".";
+                }
+
+                return names[0].Substring(0, 1) + ".";
             }
 
             return "";
