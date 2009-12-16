@@ -73,17 +73,29 @@ public class TGetTreasurerData
 
         TDBType dbtype = CommonTypes.ParseDBType(settings.GetValue("Server.RDBMSType"));
 
-        if (dbtype != TDBType.ProgressODBC)
+        if (dbtype == TDBType.PostgreSQL)
         {
-            throw new Exception("at the moment only Progress ODBC db is supported");
+            db.EstablishDBConnection(dbtype,
+                settings.GetValue("Server.ServerName"),
+                settings.GetValue("Server.ServerPort"),
+                ADBUsername,
+                ADBPassword,
+                "");
+        }
+        else if (dbtype == TDBType.ProgressODBC)
+        {
+            db.EstablishDBConnection(dbtype,
+                settings.GetValue("Server.ODBC_DSN"),
+                "",
+                ADBUsername,
+                ADBPassword,
+                "");
+        }
+        else
+        {
+            throw new Exception("unsupported database type");
         }
 
-        db.EstablishDBConnection(dbtype,
-            settings.GetValue("Server.ODBC_DSN"),
-            "",
-            ADBUsername,
-            ADBPassword,
-            "");
         DBAccess.GDBAccessObj = db;
 
         //db.DebugLevel = 10;
@@ -151,12 +163,16 @@ public class TGetTreasurerData
         string stmt = TDataBase.ReadSqlFile("GetAllGiftsForRecipientPerMonthByMotivation.sql");
 
         OdbcParameter[] parameters = new OdbcParameter[6];
-        parameters[0] = new OdbcParameter("Ledger", ALedgerNumber);
+        parameters[0] = new OdbcParameter("Ledger", OdbcType.Int);
+        parameters[0].Value = ALedgerNumber;
         parameters[1] = new OdbcParameter("MotivationGroup", AMotivationGroup);
         parameters[2] = new OdbcParameter("MotivationDetail", AMotivationDetail);
-        parameters[3] = new OdbcParameter("StartDate", AStartDate);
-        parameters[4] = new OdbcParameter("EndDate", AEndDate);
-        parameters[5] = new OdbcParameter("HomeOffice", ALedgerNumber * 1000000L);
+        parameters[3] = new OdbcParameter("StartDate", OdbcType.Date);
+        parameters[3].Value = AStartDate;
+        parameters[4] = new OdbcParameter("EndDate", OdbcType.Date);
+        parameters[4].Value = AEndDate;
+        parameters[5] = new OdbcParameter("HomeOffice", OdbcType.BigInt);
+        parameters[5].Value = ALedgerNumber * 1000000L;
         DataTable ResultTable = DBAccess.GDBAccessObj.SelectDT(stmt, GIFTSTABLE, transaction,
             parameters);
 
@@ -298,7 +314,7 @@ public class TGetTreasurerData
                     sTransition = "TRANSITION";
                 }
             }
-            
+
             parameters = new OdbcParameter[1];
             parameters[0] = new OdbcParameter("PartnerKey", recipientKey);
 
@@ -480,7 +496,7 @@ public class TGetTreasurerData
         view.Sort = "TreasurerName ASC";
 
         string LedgerCountryCode = ((ALedgerTable)ATreasurerData.Tables[ALedgerTable.GetTableName()])[0].CountryCode;
-        
+
         Int64 PreviousTreasurerKey = -1;
 
         foreach (DataRowView rowview in view)
@@ -501,9 +517,17 @@ public class TGetTreasurerData
                 errorMessage = String.Empty;
             }
 
-            if (Convert.ToBoolean(row["ExWorker"]) == true || row["Transition"].ToString().Length > 0)
+            if ((Convert.ToBoolean(row["ExWorker"]) == true) || (row["Transition"].ToString().Length > 0))
             {
-                errorMessage = "EXWORKER";
+                if (Convert.ToBoolean(row["ExWorker"]) == true)
+                {
+                    errorMessage = "EXWORKER";
+                }
+                else
+                {
+                    errorMessage = "TRANSITION-NO_DONATIONS";
+                }
+
                 bool bRecentGift = false;
 
                 // check if there has been a gift in the last month of the reporting period
@@ -537,7 +561,12 @@ public class TGetTreasurerData
                     errorMessage = "NOADDRESS";
                 }
 
-                letter.HtmlMessage = GenerateLetterText(ATreasurerData, row, LedgerCountryCode, "letter", SeveralLettersForSameTreasurer, out letter.Subject);
+                letter.HtmlMessage = GenerateLetterText(ATreasurerData,
+                    row,
+                    LedgerCountryCode,
+                    "letter",
+                    SeveralLettersForSameTreasurer,
+                    out letter.Subject);
             }
             else
             {
@@ -624,9 +653,11 @@ public class TGetTreasurerData
 
         reader.Close();
 
-        msg = msg.Replace("#MARKMULTIPLELETTERS", APreviousLetterSameTreasurer?"*":"");
+        msg = msg.Replace("#MARKMULTIPLELETTERS", APreviousLetterSameTreasurer ? "*" : "");
         msg = msg.Replace("#RECIPIENTNAME", Calculations.FormatShortName(row["RecipientName"].ToString(), eShortNameFormat.eReverseWithoutTitle));
-        msg = msg.Replace("#RECIPIENTINITIALS", Calculations.FormatShortName(row["RecipientName"].ToString(), eShortNameFormat.eReverseLastnameInitialsOnly));
+        msg =
+            msg.Replace("#RECIPIENTINITIALS",
+                Calculations.FormatShortName(row["RecipientName"].ToString(), eShortNameFormat.eReverseLastnameInitialsOnly));
         msg = msg.Replace("#RECIPIENTKEY", row["RecipientKey"].ToString());
         msg = msg.Replace("#TREASUREREMAIL", GetStringOrEmpty(row["TreasurerEmail"]));
         msg = msg.Replace("#TREASURERTITLE", Calculations.FormatShortName(treasurerName, eShortNameFormat.eOnlyTitle));

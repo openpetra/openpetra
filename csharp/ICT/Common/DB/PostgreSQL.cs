@@ -271,6 +271,13 @@ namespace Ict.Common.DB
 
                             break;
 
+                        case OdbcType.BigInt:
+                            ReturnValue[Counter] = new NpgsqlParameter(
+                            ParamName,
+                            NpgsqlDbType.Bigint);
+
+                            break;
+
                         default:
                             ReturnValue[Counter] = new NpgsqlParameter(
                             ParamName,

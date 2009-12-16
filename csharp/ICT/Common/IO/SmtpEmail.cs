@@ -55,6 +55,7 @@ namespace Ict.Common.IO
                 FSmtpClient.Host = ASMTPHost;
                 FSmtpClient.Port = ASMTPPort;
                 FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                FSmtpClient.UseDefaultCredentials = false;
                 FSmtpClient.Credentials = new NetworkCredential(AUsername, APassword);
                 FSmtpClient.EnableSsl = AEnableSsl;
             }
