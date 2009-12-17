@@ -776,6 +776,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.HasAttribute("MasterTable"))
             {
                 FTemplate.AddToCodelet("MASTERTABLE", FCodeStorage.GetAttribute("MasterTable"));
+
+                if (FCodeStorage.HasAttribute("MasterTableType"))
+                {
+                    FTemplate.AddToCodelet("MASTERTABLETYPE", FCodeStorage.GetAttribute("MasterTableType"));
+                }
+                else
+                {
+                    FTemplate.AddToCodelet("MASTERTABLETYPE", FCodeStorage.GetAttribute("MasterTable"));
+                }
             }
 
             if (FCodeStorage.HasAttribute("DetailTable"))

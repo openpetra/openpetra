@@ -375,6 +375,11 @@ namespace Ict.Tools.CodeGeneration
 
             if (table == null)
             {
+                if (!AShowWarningNonExistingField)
+                {
+                    return null;
+                }
+
                 throw new Exception("Cannot find table: " + tablename);
             }
 

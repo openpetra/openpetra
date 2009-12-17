@@ -1,10 +1,34 @@
-/* auto generated with nant generateWinforms from {#XAMLSRCFILE} and template windowBrowsePrint
+/* auto generated with nant generateWinforms from MainForm.yaml and template windowBrowsePrint
  *
  * DO NOT edit manually, DO NOT edit with the designer
  * use a user control if you need to modify the screen content
  *
  */
-{#GPLFILEHEADER}
+/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       auto generated
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
 using System;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -21,21 +45,19 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
-{#USINGNAMESPACES}
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
-namespace {#NAMESPACE}
+namespace Ict.Petra.Client.MFinance.Gui.DonorHistoryReports
 {
 
-  /// auto generated: {#FORMTITLE}
-  public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
+  /// auto generated: Get Partner Keys of Donors
+  public partial class TFrmMainForm: System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
   {
-    private {#UTILOBJECTCLASS} FPetraUtilsObject;
-{#IFDEF DATASETTYPE}
-    private {#DATASETTYPE} FMainDS;
-{#ENDIF DATASETTYPE}
-    
+    private Ict.Petra.Client.CommonForms.TFrmPetraUtils FPetraUtilsObject;
+    private DonorHistoryTDS FMainDS;
+
     /// constructor
-    public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
+    public TFrmMainForm(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -44,23 +66,62 @@ namespace {#NAMESPACE}
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      {#CATALOGI18N}
+      this.lblStartDate.Text = Catalog.GetString("Start Date:");
+      this.lblEndDate.Text = Catalog.GetString("End Date:");
+      this.lblMinimumAmount.Text = Catalog.GetString("Minimum Amount:");
+      this.lblMaximumAmount.Text = Catalog.GetString("Maximum Amount:");
+      this.lblMinimumCount.Text = Catalog.GetString("Minimum Count:");
+      this.lblMaximumCount.Text = Catalog.GetString("Maximum Count:");
+      this.chkProjects.Text = Catalog.GetString("Projects");
+      this.chkSupport.Text = Catalog.GetString("Support");
+      this.chkFamily.Text = Catalog.GetString("Family");
+      this.chkChurch.Text = Catalog.GetString("Church");
+      this.chkOrganisation.Text = Catalog.GetString("Organisation");
+      this.tblTotalNumberPages.Text = Catalog.GetString("Total Number Pages");
+      this.tbbPrevPage.Text = Catalog.GetString("Prev Page");
+      this.tbbNextPage.Text = Catalog.GetString("Next Page");
+      this.tbbPrintCurrentPage.Text = Catalog.GetString("Print Current Page");
+      this.tbbPrint.Text = Catalog.GetString("Print");
+      this.tbbGenerateLetters.Text = Catalog.GetString("&Generate Letters");
+      this.tbbExportCSV.Text = Catalog.GetString("&Export CSV");
+      this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
+      this.mniClose.Text = Catalog.GetString("&Close");
+      this.mniFile.Text = Catalog.GetString("&File");
+      this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
+      this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
+      this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
+      this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
+      this.mniHelp.Text = Catalog.GetString("&Help");
+      this.Text = Catalog.GetString("Get Partner Keys of Donors");
       #endregion
 
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
-{#IFDEF DATASETTYPE}
-      FMainDS = new {#DATASETTYPE}();
-{#ENDIF DATASETTYPE}
-      {#INITUSERCONTROLS}
-      {#INITMANUALCODE}
-{#IFDEF ACTIONENABLING}
+      FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
+      FMainDS = new DonorHistoryTDS();
+      InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
-{#ENDIF ACTIONENABLING}
 
-      {#INITACTIONSTATE}
+      FPetraUtilsObject.InitActionState();
     }
 
-    {#EVENTHANDLERSIMPLEMENTATION}
+    private void TFrmPetra_Activated(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.TFrmPetra_Activated(sender, e);
+    }
+
+    private void TFrmPetra_Load(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.TFrmPetra_Load(sender, e);
+    }
+
+    private void TFrmPetra_Closing(object sender, CancelEventArgs e)
+    {
+        FPetraUtilsObject.TFrmPetra_Closing(sender, e);
+    }
+
+    private void Form_KeyDown(object sender, KeyEventArgs e)
+    {
+        FPetraUtilsObject.Form_KeyDown(sender, e);
+    }
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
@@ -74,9 +135,9 @@ namespace {#NAMESPACE}
         for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
         {
             bool found = true;
-            foreach (DataColumn myColumn in FMainDS.{#MASTERTABLE}.PrimaryKey)
+            foreach (DataColumn myColumn in FMainDS.Gift.PrimaryKey)
             {
-                string value1 = FMainDS.{#MASTERTABLE}.Rows[ARowNumberInTable][myColumn].ToString();
+                string value1 = FMainDS.Gift.Rows[ARowNumberInTable][myColumn].ToString();
                 string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
@@ -97,7 +158,7 @@ namespace {#NAMESPACE}
     }
 
     /// return the selected row index
-    private Int32 GetRowIndex({#MASTERTABLETYPE}Row row)
+    private Int32 GetRowIndex(DonorHistoryTDSGiftRow row)
     {
         if (row == null)
         {
@@ -107,7 +168,7 @@ namespace {#NAMESPACE}
         for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
         {
             bool found = true;
-            foreach (DataColumn myColumn in FMainDS.{#MASTERTABLE}.PrimaryKey)
+            foreach (DataColumn myColumn in FMainDS.Gift.PrimaryKey)
             {
                 string value1 = row[myColumn].ToString();
                 string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView.Table.Rows[Counter][myColumn.Ordinal].ToString();
@@ -124,21 +185,21 @@ namespace {#NAMESPACE}
 
         return -1;
     }
-    
+
     /// return the selected row
-    private {#MASTERTABLETYPE}Row GetSelectedRow()
+    private DonorHistoryTDSGiftRow GetSelectedRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            return ({#MASTERTABLETYPE}Row)SelectedGridRow[0].Row;
+            return (DonorHistoryTDSGiftRow)SelectedGridRow[0].Row;
         }
 
         return null;
     }
 
-    private void ShowData({#MASTERTABLETYPE}Row ARow)
+    private void ShowData(DonorHistoryTDSGiftRow ARow)
     {
         if (ARow != null)
         {
@@ -159,7 +220,6 @@ namespace {#NAMESPACE}
     /// auto generated
     public void RunOnceOnActivation()
     {
-        {#RUNONCEINTERFACEIMPLEMENTATION}
     }
 
     /// <summary>
@@ -167,7 +227,6 @@ namespace {#NAMESPACE}
     /// </summary>
     public void HookupAllControls()
     {
-        {#HOOKUPINTERFACEIMPLEMENTATION}
     }
 
     /// auto generated
@@ -194,11 +253,29 @@ namespace {#NAMESPACE}
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
-        {#ACTIONENABLING}
-        {#ACTIONENABLINGDISABLEMISSINGFUNCS}
+        if (e.ActionName == "actGenerateLetters")
+        {
+            tbbGenerateLetters.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actExportCSV")
+        {
+            tbbExportCSV.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actClose")
+        {
+            mniClose.Enabled = e.Enabled;
+        }
+        mniHelpPetraHelp.Enabled = false;
+        mniHelpBugReport.Enabled = false;
+        mniHelpAboutPetra.Enabled = false;
+        mniHelpDevelopmentTeam.Enabled = false;
     }
 
-    {#ACTIONHANDLERS}
+    /// auto generated
+    protected void actClose(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.ExecuteAction(eActionId.eClose);
+    }
 
 #endregion
 
@@ -208,7 +285,7 @@ namespace {#NAMESPACE}
         tblTotalNumberPages.Text = String.Format(Catalog.GetString("of {0}"), FNumberOfPages);
         ttxCurrentPage.Text = (this.ppvLetters.StartPage + 1).ToString();
     }
-    
+
     void PrevPageClick(object sender, EventArgs e)
     {
         if (this.ppvLetters.StartPage > 0)

@@ -3130,4 +3130,1627 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.SetNull(this.myTable.ColumnMotivationDetailCode);
         }
     }
+
+     /// auto generated
+    [Serializable()]
+    public class DonorHistoryTDS : TTypedDataSet
+    {
+
+        private DonorHistoryTDSGiftTable TableGift;
+        private DonorHistoryTDSDonorTable TableDonor;
+
+        /// auto generated
+        public DonorHistoryTDS() :
+                base("DonorHistoryTDS")
+        {
+        }
+
+        /// auto generated for serialization
+        public DonorHistoryTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// auto generated
+        public DonorHistoryTDS(string ADatasetName) :
+                base(ADatasetName)
+        {
+        }
+
+        /// auto generated
+        public DonorHistoryTDSGiftTable Gift
+        {
+            get
+            {
+                return this.TableGift;
+            }
+        }
+
+        /// auto generated
+        public DonorHistoryTDSDonorTable Donor
+        {
+            get
+            {
+                return this.TableDonor;
+            }
+        }
+
+        /// auto generated
+        public new virtual DonorHistoryTDS GetChangesTyped(bool removeEmptyTables)
+        {
+            return ((DonorHistoryTDS)(base.GetChangesTyped(removeEmptyTables)));
+        }
+
+        /// auto generated
+        protected override void InitTables()
+        {
+            this.Tables.Add(new DonorHistoryTDSGiftTable("Gift"));
+            this.Tables.Add(new DonorHistoryTDSDonorTable("Donor"));
+        }
+
+        /// auto generated
+        protected override void InitTables(System.Data.DataSet ds)
+        {
+            if ((ds.Tables.IndexOf("Gift") != -1))
+            {
+                this.Tables.Add(new DonorHistoryTDSGiftTable("Gift"));
+            }
+            if ((ds.Tables.IndexOf("Donor") != -1))
+            {
+                this.Tables.Add(new DonorHistoryTDSDonorTable("Donor"));
+            }
+        }
+
+        /// auto generated
+        protected override void MapTables()
+        {
+            this.InitVars();
+            base.MapTables();
+            if ((this.TableGift != null))
+            {
+                this.TableGift.InitVars();
+            }
+            if ((this.TableDonor != null))
+            {
+                this.TableDonor.InitVars();
+            }
+        }
+
+        /// auto generated
+        public override void InitVars()
+        {
+            this.DataSetName = "DonorHistoryTDS";
+            this.TableGift = ((DonorHistoryTDSGiftTable)(this.Tables["Gift"]));
+            this.TableDonor = ((DonorHistoryTDSDonorTable)(this.Tables["Donor"]));
+        }
+
+        /// auto generated
+        protected override void InitConstraints()
+        {
+        }
+    }
+
+    ///
+    [Serializable()]
+    public class DonorHistoryTDSGiftTable : TTypedDataTable
+    {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 5605;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDonorKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDonorShortNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRecipientDescriptionId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateOfGiftId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftAmountId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationGroupCodeId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMotivationDetailCodeId = 6;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "Gift", "DonorHistoryTDSGift",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(1, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "DateOfGift", "DateOfGift", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "GiftAmount", "GiftAmount", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "MotivationGroupCode", "MotivationGroupCode", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "MotivationDetailCode", "MotivationDetailCode", "", OdbcType.Int, -1, false)
+                },
+                new int[] {
+                }));
+            return true;
+        }
+
+        /// constructor
+        public DonorHistoryTDSGiftTable() :
+                base("Gift")
+        {
+        }
+
+        /// constructor
+        public DonorHistoryTDSGiftTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public DonorHistoryTDSGiftTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        ///
+        public DataColumn ColumnDonorKey;
+        ///
+        public DataColumn ColumnDonorShortName;
+        ///
+        public DataColumn ColumnRecipientDescription;
+        ///
+        public DataColumn ColumnDateOfGift;
+        ///
+        public DataColumn ColumnGiftAmount;
+        ///
+        public DataColumn ColumnMotivationGroupCode;
+        ///
+        public DataColumn ColumnMotivationDetailCode;
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("DonorKey", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("DonorShortName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("RecipientDescription", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("DateOfGift", typeof(DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("GiftAmount", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("MotivationGroupCode", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("MotivationDetailCode", typeof(string)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnDonorKey = this.Columns["DonorKey"];
+            this.ColumnDonorShortName = this.Columns["DonorShortName"];
+            this.ColumnRecipientDescription = this.Columns["RecipientDescription"];
+            this.ColumnDateOfGift = this.Columns["DateOfGift"];
+            this.ColumnGiftAmount = this.Columns["GiftAmount"];
+            this.ColumnMotivationGroupCode = this.Columns["MotivationGroupCode"];
+            this.ColumnMotivationDetailCode = this.Columns["MotivationDetailCode"];
+        }
+
+        /// Access a typed row by index
+        public DonorHistoryTDSGiftRow this[int i]
+        {
+            get
+            {
+                return ((DonorHistoryTDSGiftRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public DonorHistoryTDSGiftRow NewRowTyped(bool AWithDefaultValues)
+        {
+            DonorHistoryTDSGiftRow ret = ((DonorHistoryTDSGiftRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public DonorHistoryTDSGiftRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new DonorHistoryTDSGiftRow(builder);
+        }
+
+        /// get typed set of changes
+        public DonorHistoryTDSGiftTable GetChangesTyped()
+        {
+            return ((DonorHistoryTDSGiftTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "Gift";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "DonorHistoryTDSGift";
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDonorKeyDBName()
+        {
+            return "DonorKey";
+        }
+
+        /// get character length for column
+        public static short GetDonorKeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDonorShortNameDBName()
+        {
+            return "DonorShortName";
+        }
+
+        /// get character length for column
+        public static short GetDonorShortNameLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetRecipientDescriptionDBName()
+        {
+            return "RecipientDescription";
+        }
+
+        /// get character length for column
+        public static short GetRecipientDescriptionLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateOfGiftDBName()
+        {
+            return "DateOfGift";
+        }
+
+        /// get character length for column
+        public static short GetDateOfGiftLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetGiftAmountDBName()
+        {
+            return "GiftAmount";
+        }
+
+        /// get character length for column
+        public static short GetGiftAmountLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMotivationGroupCodeDBName()
+        {
+            return "MotivationGroupCode";
+        }
+
+        /// get character length for column
+        public static short GetMotivationGroupCodeLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMotivationDetailCodeDBName()
+        {
+            return "MotivationDetailCode";
+        }
+
+        /// get character length for column
+        public static short GetMotivationDetailCodeLength()
+        {
+            return -1;
+        }
+
+    }
+
+    ///
+    [Serializable()]
+    public class DonorHistoryTDSGiftRow : System.Data.DataRow
+    {
+        private DonorHistoryTDSGiftTable myTable;
+
+        /// Constructor
+        public DonorHistoryTDSGiftRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((DonorHistoryTDSGiftTable)(this.Table));
+        }
+
+        ///
+        public Int64 DonorKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDonorKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDonorKey)
+                            || (((Int64)(this[this.myTable.ColumnDonorKey])) != value)))
+                {
+                    this[this.myTable.ColumnDonorKey] = value;
+                }
+            }
+        }
+
+        ///
+        public string DonorShortName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDonorShortName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDonorShortName)
+                            || (((string)(this[this.myTable.ColumnDonorShortName])) != value)))
+                {
+                    this[this.myTable.ColumnDonorShortName] = value;
+                }
+            }
+        }
+
+        ///
+        public string RecipientDescription
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnRecipientDescription.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnRecipientDescription)
+                            || (((string)(this[this.myTable.ColumnRecipientDescription])) != value)))
+                {
+                    this[this.myTable.ColumnRecipientDescription] = value;
+                }
+            }
+        }
+
+        ///
+        public DateTime DateOfGift
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateOfGift.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return DateTime.MinValue;
+                }
+                else
+                {
+                    return ((DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateOfGift)
+                            || (((DateTime)(this[this.myTable.ColumnDateOfGift])) != value)))
+                {
+                    this[this.myTable.ColumnDateOfGift] = value;
+                }
+            }
+        }
+
+        ///
+        public Decimal GiftAmount
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnGiftAmount.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Decimal)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnGiftAmount)
+                            || (((Decimal)(this[this.myTable.ColumnGiftAmount])) != value)))
+                {
+                    this[this.myTable.ColumnGiftAmount] = value;
+                }
+            }
+        }
+
+        ///
+        public string MotivationGroupCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMotivationGroupCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMotivationGroupCode)
+                            || (((string)(this[this.myTable.ColumnMotivationGroupCode])) != value)))
+                {
+                    this[this.myTable.ColumnMotivationGroupCode] = value;
+                }
+            }
+        }
+
+        ///
+        public string MotivationDetailCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMotivationDetailCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMotivationDetailCode)
+                            || (((string)(this[this.myTable.ColumnMotivationDetailCode])) != value)))
+                {
+                    this[this.myTable.ColumnMotivationDetailCode] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this.SetNull(this.myTable.ColumnDonorKey);
+            this.SetNull(this.myTable.ColumnDonorShortName);
+            this.SetNull(this.myTable.ColumnRecipientDescription);
+            this.SetNull(this.myTable.ColumnDateOfGift);
+            this.SetNull(this.myTable.ColumnGiftAmount);
+            this.SetNull(this.myTable.ColumnMotivationGroupCode);
+            this.SetNull(this.myTable.ColumnMotivationDetailCode);
+        }
+
+        /// test for NULL value
+        public bool IsDonorKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnDonorKey);
+        }
+
+        /// assign NULL value
+        public void SetDonorKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnDonorKey);
+        }
+
+        /// test for NULL value
+        public bool IsDonorShortNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnDonorShortName);
+        }
+
+        /// assign NULL value
+        public void SetDonorShortNameNull()
+        {
+            this.SetNull(this.myTable.ColumnDonorShortName);
+        }
+
+        /// test for NULL value
+        public bool IsRecipientDescriptionNull()
+        {
+            return this.IsNull(this.myTable.ColumnRecipientDescription);
+        }
+
+        /// assign NULL value
+        public void SetRecipientDescriptionNull()
+        {
+            this.SetNull(this.myTable.ColumnRecipientDescription);
+        }
+
+        /// test for NULL value
+        public bool IsDateOfGiftNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateOfGift);
+        }
+
+        /// assign NULL value
+        public void SetDateOfGiftNull()
+        {
+            this.SetNull(this.myTable.ColumnDateOfGift);
+        }
+
+        /// test for NULL value
+        public bool IsGiftAmountNull()
+        {
+            return this.IsNull(this.myTable.ColumnGiftAmount);
+        }
+
+        /// assign NULL value
+        public void SetGiftAmountNull()
+        {
+            this.SetNull(this.myTable.ColumnGiftAmount);
+        }
+
+        /// test for NULL value
+        public bool IsMotivationGroupCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnMotivationGroupCode);
+        }
+
+        /// assign NULL value
+        public void SetMotivationGroupCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnMotivationGroupCode);
+        }
+
+        /// test for NULL value
+        public bool IsMotivationDetailCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnMotivationDetailCode);
+        }
+
+        /// assign NULL value
+        public void SetMotivationDetailCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnMotivationDetailCode);
+        }
+    }
+
+    ///
+    [Serializable()]
+    public class DonorHistoryTDSDonorTable : TTypedDataTable
+    {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 5606;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDonorKeyId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDonorShortNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftTotalCountId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftTotalAmountId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnEmailId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnValidAddressId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLocalityId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnStreetNameId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBuilding1Id = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBuilding2Id = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddress3Id = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountryCodeId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountryNameId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPostalCodeId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCityId = 14;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "Donor", "DonorHistoryTDSDonor",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(1, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "GiftTotalCount", "GiftTotalCount", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "GiftTotalAmount", "GiftTotalAmount", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(4, "Email", "Email", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(5, "ValidAddress", "ValidAddress", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(6, "Locality", "Locality", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(7, "StreetName", "StreetName", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(8, "Building1", "Building1", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(9, "Building2", "Building2", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(10, "Address3", "Address3", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(11, "CountryCode", "CountryCode", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(12, "CountryName", "CountryName", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(13, "PostalCode", "PostalCode", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(14, "City", "City", "", OdbcType.Int, -1, false)
+                },
+                new int[] {
+                }));
+            return true;
+        }
+
+        /// constructor
+        public DonorHistoryTDSDonorTable() :
+                base("Donor")
+        {
+        }
+
+        /// constructor
+        public DonorHistoryTDSDonorTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public DonorHistoryTDSDonorTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        ///
+        public DataColumn ColumnDonorKey;
+        ///
+        public DataColumn ColumnDonorShortName;
+        ///
+        public DataColumn ColumnGiftTotalCount;
+        ///
+        public DataColumn ColumnGiftTotalAmount;
+        ///
+        public DataColumn ColumnEmail;
+        ///
+        public DataColumn ColumnValidAddress;
+        ///
+        public DataColumn ColumnLocality;
+        ///
+        public DataColumn ColumnStreetName;
+        ///
+        public DataColumn ColumnBuilding1;
+        ///
+        public DataColumn ColumnBuilding2;
+        ///
+        public DataColumn ColumnAddress3;
+        ///
+        public DataColumn ColumnCountryCode;
+        ///
+        public DataColumn ColumnCountryName;
+        ///
+        public DataColumn ColumnPostalCode;
+        ///
+        public DataColumn ColumnCity;
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("DonorKey", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("DonorShortName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("GiftTotalCount", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("GiftTotalAmount", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("Email", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("ValidAddress", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("Locality", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("StreetName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("Building1", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("Building2", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("Address3", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("CountryCode", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("CountryName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("PostalCode", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("City", typeof(string)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnDonorKey = this.Columns["DonorKey"];
+            this.ColumnDonorShortName = this.Columns["DonorShortName"];
+            this.ColumnGiftTotalCount = this.Columns["GiftTotalCount"];
+            this.ColumnGiftTotalAmount = this.Columns["GiftTotalAmount"];
+            this.ColumnEmail = this.Columns["Email"];
+            this.ColumnValidAddress = this.Columns["ValidAddress"];
+            this.ColumnLocality = this.Columns["Locality"];
+            this.ColumnStreetName = this.Columns["StreetName"];
+            this.ColumnBuilding1 = this.Columns["Building1"];
+            this.ColumnBuilding2 = this.Columns["Building2"];
+            this.ColumnAddress3 = this.Columns["Address3"];
+            this.ColumnCountryCode = this.Columns["CountryCode"];
+            this.ColumnCountryName = this.Columns["CountryName"];
+            this.ColumnPostalCode = this.Columns["PostalCode"];
+            this.ColumnCity = this.Columns["City"];
+        }
+
+        /// Access a typed row by index
+        public DonorHistoryTDSDonorRow this[int i]
+        {
+            get
+            {
+                return ((DonorHistoryTDSDonorRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public DonorHistoryTDSDonorRow NewRowTyped(bool AWithDefaultValues)
+        {
+            DonorHistoryTDSDonorRow ret = ((DonorHistoryTDSDonorRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public DonorHistoryTDSDonorRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new DonorHistoryTDSDonorRow(builder);
+        }
+
+        /// get typed set of changes
+        public DonorHistoryTDSDonorTable GetChangesTyped()
+        {
+            return ((DonorHistoryTDSDonorTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "Donor";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "DonorHistoryTDSDonor";
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDonorKeyDBName()
+        {
+            return "DonorKey";
+        }
+
+        /// get character length for column
+        public static short GetDonorKeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDonorShortNameDBName()
+        {
+            return "DonorShortName";
+        }
+
+        /// get character length for column
+        public static short GetDonorShortNameLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetGiftTotalCountDBName()
+        {
+            return "GiftTotalCount";
+        }
+
+        /// get character length for column
+        public static short GetGiftTotalCountLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetGiftTotalAmountDBName()
+        {
+            return "GiftTotalAmount";
+        }
+
+        /// get character length for column
+        public static short GetGiftTotalAmountLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetEmailDBName()
+        {
+            return "Email";
+        }
+
+        /// get character length for column
+        public static short GetEmailLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetValidAddressDBName()
+        {
+            return "ValidAddress";
+        }
+
+        /// get character length for column
+        public static short GetValidAddressLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocalityDBName()
+        {
+            return "Locality";
+        }
+
+        /// get character length for column
+        public static short GetLocalityLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetStreetNameDBName()
+        {
+            return "StreetName";
+        }
+
+        /// get character length for column
+        public static short GetStreetNameLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetBuilding1DBName()
+        {
+            return "Building1";
+        }
+
+        /// get character length for column
+        public static short GetBuilding1Length()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetBuilding2DBName()
+        {
+            return "Building2";
+        }
+
+        /// get character length for column
+        public static short GetBuilding2Length()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAddress3DBName()
+        {
+            return "Address3";
+        }
+
+        /// get character length for column
+        public static short GetAddress3Length()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCountryCodeDBName()
+        {
+            return "CountryCode";
+        }
+
+        /// get character length for column
+        public static short GetCountryCodeLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCountryNameDBName()
+        {
+            return "CountryName";
+        }
+
+        /// get character length for column
+        public static short GetCountryNameLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPostalCodeDBName()
+        {
+            return "PostalCode";
+        }
+
+        /// get character length for column
+        public static short GetPostalCodeLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCityDBName()
+        {
+            return "City";
+        }
+
+        /// get character length for column
+        public static short GetCityLength()
+        {
+            return -1;
+        }
+
+    }
+
+    ///
+    [Serializable()]
+    public class DonorHistoryTDSDonorRow : System.Data.DataRow
+    {
+        private DonorHistoryTDSDonorTable myTable;
+
+        /// Constructor
+        public DonorHistoryTDSDonorRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((DonorHistoryTDSDonorTable)(this.Table));
+        }
+
+        ///
+        public Int64 DonorKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDonorKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDonorKey)
+                            || (((Int64)(this[this.myTable.ColumnDonorKey])) != value)))
+                {
+                    this[this.myTable.ColumnDonorKey] = value;
+                }
+            }
+        }
+
+        ///
+        public string DonorShortName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDonorShortName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDonorShortName)
+                            || (((string)(this[this.myTable.ColumnDonorShortName])) != value)))
+                {
+                    this[this.myTable.ColumnDonorShortName] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 GiftTotalCount
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnGiftTotalCount.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnGiftTotalCount)
+                            || (((Int32)(this[this.myTable.ColumnGiftTotalCount])) != value)))
+                {
+                    this[this.myTable.ColumnGiftTotalCount] = value;
+                }
+            }
+        }
+
+        ///
+        public Decimal GiftTotalAmount
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnGiftTotalAmount.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Decimal)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnGiftTotalAmount)
+                            || (((Decimal)(this[this.myTable.ColumnGiftTotalAmount])) != value)))
+                {
+                    this[this.myTable.ColumnGiftTotalAmount] = value;
+                }
+            }
+        }
+
+        ///
+        public string Email
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnEmail.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnEmail)
+                            || (((string)(this[this.myTable.ColumnEmail])) != value)))
+                {
+                    this[this.myTable.ColumnEmail] = value;
+                }
+            }
+        }
+
+        ///
+        public bool ValidAddress
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnValidAddress.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((bool)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnValidAddress)
+                            || (((bool)(this[this.myTable.ColumnValidAddress])) != value)))
+                {
+                    this[this.myTable.ColumnValidAddress] = value;
+                }
+            }
+        }
+
+        ///
+        public string Locality
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLocality.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLocality)
+                            || (((string)(this[this.myTable.ColumnLocality])) != value)))
+                {
+                    this[this.myTable.ColumnLocality] = value;
+                }
+            }
+        }
+
+        ///
+        public string StreetName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnStreetName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnStreetName)
+                            || (((string)(this[this.myTable.ColumnStreetName])) != value)))
+                {
+                    this[this.myTable.ColumnStreetName] = value;
+                }
+            }
+        }
+
+        ///
+        public string Building1
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnBuilding1.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnBuilding1)
+                            || (((string)(this[this.myTable.ColumnBuilding1])) != value)))
+                {
+                    this[this.myTable.ColumnBuilding1] = value;
+                }
+            }
+        }
+
+        ///
+        public string Building2
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnBuilding2.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnBuilding2)
+                            || (((string)(this[this.myTable.ColumnBuilding2])) != value)))
+                {
+                    this[this.myTable.ColumnBuilding2] = value;
+                }
+            }
+        }
+
+        ///
+        public string Address3
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAddress3.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAddress3)
+                            || (((string)(this[this.myTable.ColumnAddress3])) != value)))
+                {
+                    this[this.myTable.ColumnAddress3] = value;
+                }
+            }
+        }
+
+        ///
+        public string CountryCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCountryCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCountryCode)
+                            || (((string)(this[this.myTable.ColumnCountryCode])) != value)))
+                {
+                    this[this.myTable.ColumnCountryCode] = value;
+                }
+            }
+        }
+
+        ///
+        public string CountryName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCountryName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCountryName)
+                            || (((string)(this[this.myTable.ColumnCountryName])) != value)))
+                {
+                    this[this.myTable.ColumnCountryName] = value;
+                }
+            }
+        }
+
+        ///
+        public string PostalCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPostalCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPostalCode)
+                            || (((string)(this[this.myTable.ColumnPostalCode])) != value)))
+                {
+                    this[this.myTable.ColumnPostalCode] = value;
+                }
+            }
+        }
+
+        ///
+        public string City
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCity.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCity)
+                            || (((string)(this[this.myTable.ColumnCity])) != value)))
+                {
+                    this[this.myTable.ColumnCity] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this.SetNull(this.myTable.ColumnDonorKey);
+            this.SetNull(this.myTable.ColumnDonorShortName);
+            this.SetNull(this.myTable.ColumnGiftTotalCount);
+            this.SetNull(this.myTable.ColumnGiftTotalAmount);
+            this.SetNull(this.myTable.ColumnEmail);
+            this.SetNull(this.myTable.ColumnValidAddress);
+            this.SetNull(this.myTable.ColumnLocality);
+            this.SetNull(this.myTable.ColumnStreetName);
+            this.SetNull(this.myTable.ColumnBuilding1);
+            this.SetNull(this.myTable.ColumnBuilding2);
+            this.SetNull(this.myTable.ColumnAddress3);
+            this.SetNull(this.myTable.ColumnCountryCode);
+            this.SetNull(this.myTable.ColumnCountryName);
+            this.SetNull(this.myTable.ColumnPostalCode);
+            this.SetNull(this.myTable.ColumnCity);
+        }
+
+        /// test for NULL value
+        public bool IsDonorKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnDonorKey);
+        }
+
+        /// assign NULL value
+        public void SetDonorKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnDonorKey);
+        }
+
+        /// test for NULL value
+        public bool IsDonorShortNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnDonorShortName);
+        }
+
+        /// assign NULL value
+        public void SetDonorShortNameNull()
+        {
+            this.SetNull(this.myTable.ColumnDonorShortName);
+        }
+
+        /// test for NULL value
+        public bool IsGiftTotalCountNull()
+        {
+            return this.IsNull(this.myTable.ColumnGiftTotalCount);
+        }
+
+        /// assign NULL value
+        public void SetGiftTotalCountNull()
+        {
+            this.SetNull(this.myTable.ColumnGiftTotalCount);
+        }
+
+        /// test for NULL value
+        public bool IsGiftTotalAmountNull()
+        {
+            return this.IsNull(this.myTable.ColumnGiftTotalAmount);
+        }
+
+        /// assign NULL value
+        public void SetGiftTotalAmountNull()
+        {
+            this.SetNull(this.myTable.ColumnGiftTotalAmount);
+        }
+
+        /// test for NULL value
+        public bool IsEmailNull()
+        {
+            return this.IsNull(this.myTable.ColumnEmail);
+        }
+
+        /// assign NULL value
+        public void SetEmailNull()
+        {
+            this.SetNull(this.myTable.ColumnEmail);
+        }
+
+        /// test for NULL value
+        public bool IsValidAddressNull()
+        {
+            return this.IsNull(this.myTable.ColumnValidAddress);
+        }
+
+        /// assign NULL value
+        public void SetValidAddressNull()
+        {
+            this.SetNull(this.myTable.ColumnValidAddress);
+        }
+
+        /// test for NULL value
+        public bool IsLocalityNull()
+        {
+            return this.IsNull(this.myTable.ColumnLocality);
+        }
+
+        /// assign NULL value
+        public void SetLocalityNull()
+        {
+            this.SetNull(this.myTable.ColumnLocality);
+        }
+
+        /// test for NULL value
+        public bool IsStreetNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnStreetName);
+        }
+
+        /// assign NULL value
+        public void SetStreetNameNull()
+        {
+            this.SetNull(this.myTable.ColumnStreetName);
+        }
+
+        /// test for NULL value
+        public bool IsBuilding1Null()
+        {
+            return this.IsNull(this.myTable.ColumnBuilding1);
+        }
+
+        /// assign NULL value
+        public void SetBuilding1Null()
+        {
+            this.SetNull(this.myTable.ColumnBuilding1);
+        }
+
+        /// test for NULL value
+        public bool IsBuilding2Null()
+        {
+            return this.IsNull(this.myTable.ColumnBuilding2);
+        }
+
+        /// assign NULL value
+        public void SetBuilding2Null()
+        {
+            this.SetNull(this.myTable.ColumnBuilding2);
+        }
+
+        /// test for NULL value
+        public bool IsAddress3Null()
+        {
+            return this.IsNull(this.myTable.ColumnAddress3);
+        }
+
+        /// assign NULL value
+        public void SetAddress3Null()
+        {
+            this.SetNull(this.myTable.ColumnAddress3);
+        }
+
+        /// test for NULL value
+        public bool IsCountryCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnCountryCode);
+        }
+
+        /// assign NULL value
+        public void SetCountryCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnCountryCode);
+        }
+
+        /// test for NULL value
+        public bool IsCountryNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnCountryName);
+        }
+
+        /// assign NULL value
+        public void SetCountryNameNull()
+        {
+            this.SetNull(this.myTable.ColumnCountryName);
+        }
+
+        /// test for NULL value
+        public bool IsPostalCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnPostalCode);
+        }
+
+        /// assign NULL value
+        public void SetPostalCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnPostalCode);
+        }
+
+        /// test for NULL value
+        public bool IsCityNull()
+        {
+            return this.IsNull(this.myTable.ColumnCity);
+        }
+
+        /// assign NULL value
+        public void SetCityNull()
+        {
+            this.SetNull(this.myTable.ColumnCity);
+        }
+    }
 }
