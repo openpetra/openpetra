@@ -43,16 +43,14 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\..\..\..\Common\_bin\Debug\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\..\Common\_bin\Debug\ICSharpCode.SharpZipLib.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Common">
-      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Common.IO">
-      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
