@@ -65,10 +65,19 @@ namespace Ict.Tools.CodeGeneration
         {
             StringCollection result = new StringCollection();
             StreamReader reader = new StreamReader(ASolutionFile);
+            StringCollection lines = new StringCollection();
+            bool SolutionFixed = false;
 
             while (!reader.EndOfStream)
             {
-                string line = reader.ReadLine();
+                lines.Add(reader.ReadLine());
+            }
+
+            reader.Close();
+
+            for (Int32 counter = 0; counter < lines.Count; counter++)
+            {
+                string line = lines[counter];
 
                 if (line.StartsWith("Project("))
                 {
@@ -83,11 +92,35 @@ namespace Ict.Tools.CodeGeneration
                     // GUID of project
                     string ProjectGUID = StringHelper.TrimQuotes(details[2]);
 
+                    if (!ProjectGUID.StartsWith("{"))
+                    {
+                        SolutionFixed = true;
+
+                        for (Int32 counter2 = 0; counter2 < lines.Count; counter2++)
+                        {
+                            lines[counter2] = lines[counter2].Replace(ProjectGUID, "{" + ProjectGUID + "}");
+                        }
+
+                        ProjectGUID = "{" + ProjectGUID + "}";
+                    }
+
                     if (ProcessProjectDetails(ProjectName, RelativePath, ProjectGUID, ASolutionFile))
                     {
                         result.Add(Path.GetFullPath(Path.GetDirectoryName(ASolutionFile) + Path.DirectorySeparatorChar + RelativePath));
                     }
                 }
+            }
+
+            if (SolutionFixed)
+            {
+                StreamWriter sw = new StreamWriter(ASolutionFile);
+
+                foreach (string line in lines)
+                {
+                    sw.WriteLine(line);
+                }
+
+                sw.Close();
             }
 
             return result;
