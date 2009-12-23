@@ -205,6 +205,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return false;
             }
 
+            if (StringHelper.TryStrToInt32(ALabelText, -1).ToString() = ALabelText)
+            {
+                // don't translate digits?
+                return false;
+            }
+            
             // careful with \n and \r in the string; that is not allowed by gettext
             if (ALabelText.Contains("\\r") || ALabelText.Contains("\\n"))
             {

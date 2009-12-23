@@ -73,7 +73,6 @@ namespace Ict.Petra.Client.App.PetraClient
             this.lblConference = new System.Windows.Forms.Label();
             this.lblDevelopment = new System.Windows.Forms.Label();
             this.lblSysMan = new System.Windows.Forms.Label();
-            this.btnFormList = new System.Windows.Forms.Button();
             this.pbxPetraRocks = new System.Windows.Forms.PictureBox();
             this.lblWelcomeMessage = new System.Windows.Forms.Label();
             this.Panel2 = new System.Windows.Forms.Panel();
@@ -116,7 +115,6 @@ namespace Ict.Petra.Client.App.PetraClient
             this.Panel1.Controls.Add(this.lblConference);
             this.Panel1.Controls.Add(this.lblDevelopment);
             this.Panel1.Controls.Add(this.lblSysMan);
-            this.Panel1.Controls.Add(this.btnFormList);
             this.Panel1.Location = new System.Drawing.Point(5, 258);
             this.Panel1.Name = "Panel1";
             this.Panel1.Size = new System.Drawing.Size(502, 108);
@@ -260,17 +258,6 @@ namespace Ict.Petra.Client.App.PetraClient
             this.lblSysMan.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 
             //
-            // btnFormList
-            //
-            this.btnFormList.Location = new System.Drawing.Point(4, 88);
-            this.btnFormList.Name = "btnFormList";
-            this.btnFormList.Size = new System.Drawing.Size(70, 20);
-            this.btnFormList.TabIndex = 15;
-            this.btnFormList.TabStop = false;
-            this.btnFormList.Text = "Form &List";
-            this.btnFormList.Visible = false;
-
-            //
             // pbxPetraRocks
             //
             this.pbxPetraRocks.Image = ((System.Drawing.Image)(resources.GetObject("pbxPetraRocks.Image")));
@@ -333,7 +320,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.lblLastFailedLogin.Name = "lblLastFailedLogin";
             this.lblLastFailedLogin.Size = new System.Drawing.Size(142, 16);
             this.lblLastFailedLogin.TabIndex = 24;
-            this.lblLastFailedLogin.Text = "01-JAN-1900 00:00:00";
+            this.lblLastFailedLogin.Text = "";
 
             //
             // lblFailedLoginsLabel
@@ -351,7 +338,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.lblFailedLogins.Name = "lblFailedLogins";
             this.lblFailedLogins.Size = new System.Drawing.Size(22, 16);
             this.lblFailedLogins.TabIndex = 26;
-            this.lblFailedLogins.Text = "0";
+            this.lblFailedLogins.Text = "";
 
             //
             // lblUserLabel
@@ -389,7 +376,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.lblLastLogin.Name = "lblLastLogin";
             this.lblLastLogin.Size = new System.Drawing.Size(142, 16);
             this.lblLastLogin.TabIndex = 23;
-            this.lblLastLogin.Text = "01-JAN-1900 00:00:00";
+            this.lblLastLogin.Text = "";
 
             //
             // imlSysManager
@@ -478,7 +465,6 @@ namespace Ict.Petra.Client.App.PetraClient
         private System.Windows.Forms.Panel Panel2;
         private System.Windows.Forms.Label lblWelcomeMessage;
         private System.Windows.Forms.PictureBox pbxPetraRocks;
-        private System.Windows.Forms.Button btnFormList;
         private System.Windows.Forms.Label lblSysMan;
         private System.Windows.Forms.Label lblDevelopment;
         private System.Windows.Forms.Label lblConference;

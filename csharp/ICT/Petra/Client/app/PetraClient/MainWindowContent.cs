@@ -56,15 +56,11 @@ namespace Ict.Petra.Client.App.PetraClient
             this.lblConference.Text = Catalog.GetString("C&onference Management");
             this.lblDevelopment.Text = Catalog.GetString("Financial &Development");
             this.lblSysMan.Text = Catalog.GetString("&System Manager");
-            this.btnFormList.Text = Catalog.GetString("Form &List");
             this.lblUserName.Text = Catalog.GetString("USERNAME");
-            this.lblLastFailedLogin.Text = Catalog.GetString("01-JAN-1900 00:00:00");
             this.lblFailedLoginsLabel.Text = Catalog.GetString("Failed Logins:");
-            this.lblFailedLogins.Text = Catalog.GetString("0");
             this.lblUserLabel.Text = Catalog.GetString("User:");
             this.lblLastFailedLoginLabel.Text = Catalog.GetString("Last Failed Login:");
             this.lblLastLoginLabel.Text = Catalog.GetString("Last Login:");
-            this.lblLastLogin.Text = Catalog.GetString("01-JAN-1900 00:00:00");
             #endregion
         }
 

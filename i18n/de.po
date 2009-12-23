@@ -102,7 +102,7 @@ msgstr "Datenbank:"
 msgid "Petra Login"
 msgstr "Petra Anmeldung"
 
-msgid " P E T R A "
+msgid " O P E N P E T R A "
 msgstr "O P E N P E T R A"
 
 msgid "Version"
@@ -180,14 +180,8 @@ msgstr ""
 msgid "USERNAME"
 msgstr "BENUTZER"
 
-msgid "01-JAN-1900 00:00:00"
-msgstr ""
-
 msgid "Failed Logins:"
 msgstr "Fehlgeschlagene Logins:"
-
-msgid "0"
-msgstr ""
 
 msgid "User:"
 msgstr "Benutzer:"
@@ -395,33 +389,6 @@ msgid "&Search"
 msgstr ""
 
 msgid "&Work with Last Partner..."
-msgstr ""
-
-msgid "1"
-msgstr ""
-
-msgid "2"
-msgstr ""
-
-msgid "3"
-msgstr ""
-
-msgid "4"
-msgstr ""
-
-msgid "5"
-msgstr ""
-
-msgid "6"
-msgstr ""
-
-msgid "7"
-msgstr ""
-
-msgid "8"
-msgstr ""
-
-msgid "9"
 msgstr ""
 
 msgid "&Recent Partners"
@@ -3246,6 +3213,7 @@ msgstr "Standardreport"
 
 msgid "ICH Processing"
 msgstr "ICH Verarbeitung"
+
 msgid "Cannot open CSV file, because it is missing the header line"
 msgstr ""
 
@@ -3580,5 +3548,52 @@ msgid "Manage Cost Centres"
 msgstr ""
 
 msgid "Accounts Payable Payment Batch"
+msgstr ""
+
+msgid ""
+"You need to finish editing by choosing the 'Done' button\n"
+"before you can close the window!"
+msgstr ""
+
+msgid "Load Partners from File"
+msgstr ""
+
+msgid "Import of partners failed!"
+msgstr ""
+
+msgid "Partner(s) have been imported successfully"
+msgstr ""
+
+msgid "Import Partners"
+msgstr ""
+
+msgid "0"
+msgstr ""
+
+msgid "1"
+msgstr ""
+
+msgid "2"
+msgstr ""
+
+msgid "3"
+msgstr ""
+
+msgid "4"
+msgstr ""
+
+msgid "5"
+msgstr ""
+
+msgid "6"
+msgstr ""
+
+msgid "7"
+msgstr ""
+
+msgid "8"
+msgstr ""
+
+msgid "9"
 msgstr ""
 
