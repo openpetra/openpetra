@@ -726,7 +726,7 @@
             </do>
         </foreach>
 
-        <nant buildfile="OpenPetra.build" target="cleanPetra compilePetra">
+        <nant buildfile="OpenPetra.build" target="cleanPetra compilePetraTools compilePetra">
             <properties>
                 <property name="Output.dir" value="Release"/>
                 <property name="Configuration" value="RELEASE"/>
