@@ -58,6 +58,8 @@ Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
 Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
 Source: ..\..\..\resources\*.png; DestDir: {app}/resources30
 Source: ..\..\..\LICENSE; DestDir: {app}
+Source: version.txt; DestDir: {app}/bin30
+
 [Icons]
 Name: {group}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-Remote-3.0.config"" -AutoLogin:demo"
 Name: {group}\{cm:cmIconReleaseNotesLabel}; Filename: {app}\manuals30\{cm:cmReleaseNotesFile}; WorkingDir: {app}/manuals30; Comment: {cm:cmIconReleaseNotesComment}
@@ -82,13 +84,13 @@ var
 
 // This page will ask the user for the Server and Port to find Petra listening on.
 function CreatePage_PetraServerConnection(const afterId: Integer; AStrServer: String; ANETPort: Integer): TWizardPage;
-var 
+var
   currentY: integer;
   lblHeader, lblHostName, lblNET: TNewStaticText;
 begin
-  Result := CreateCustomPage(afterId, 
+  Result := CreateCustomPage(afterId,
     ExpandConstant('{cm:cmPetraServerConnectionTitle}'), ExpandConstant('{cm:cmPetraServerConnectionSubTitle}'));
-  
+
   lblHeader := TNewStaticText.Create(Result);
   with lblHeader do begin
     AutoSize := False;
@@ -98,9 +100,9 @@ begin
     Parent := Result.Surface;
   end;
   WizardForm.AdjustLabelHeight(lblHeader);
-  
+
   currentY := lblHeader.Top + lblHeader.Height + ScaleY(8);
-  
+
   lblHostName := TNewStaticText.Create(Result);
   lblHostName.Width := ScaleX(10);
   lblHostName.Top := currentY;
@@ -153,7 +155,7 @@ begin
     result :=  IsDotNetInstalled();
   end
   else if (CurPageID = PetraServerConnectionPage.ID) then
-  begin  
+  begin
     strServer := ctrlPetraServerConnectionHostName.Text;
     NetPort := StrToInt(ctrlPetraServerConnectionNET.Text);
     result := (Length(strServer) > 0) and (NETPort > 0);
@@ -174,6 +176,7 @@ begin
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', 'Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"', true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'PETRAHOST', strServer, true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'PETRAPORT', IntToStr(NetPort), true);
+    ReplaceInTextFile(ExpandConstant('{app}/bin30/version.txt'), 'ReleaseVersion', '#RELEASEVERSION', true);
   end;
 
   // allow the .net remoting communication between client and server

@@ -31,6 +31,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
+using Mono.Unix;
 using Ict.Common;
 
 namespace Ict.Tools.PatchTool
@@ -70,9 +71,82 @@ namespace Ict.Tools.PatchTool
                         appOpts.GetValue("oldversion"),
                         appOpts.GetValue("newversion"));
                 }
-                else if (action.Equals("apply"))
+                else
                 {
-                    // TODO PatchApplication.ApplyPatch(cmdOpts.GetOptValue("tmppath"));
+                    if (action.Equals("preparePatch"))
+                    {
+                        // to be called before installing the patch;
+                        // will only copy the files if there is a new patch available
+                        TPetraPatchTools patchTools = new TPetraPatchTools(appOpts.GetValue("OpenPetra.Path"),
+                            TempPath,
+                            "",
+                            "",
+                            appOpts.GetValue("OpenPetra.Path.Patches"),
+                            "");
+
+                        if (patchTools.CheckForRecentPatch())
+                        {
+                            patchTools.CopyLatestPatchProgram(appOpts.GetValue("Petra.PathTemp"));
+                        }
+                        else
+                        {
+                            System.Console.WriteLine(Catalog.GetString("There is no new patch to be installed."));
+                            System.Environment.Exit(-1);
+                        }
+                    }
+                    else if (action.Equals("patchRemote"))
+                    {
+                        // basically the same as patchFiles, but will use the status window.
+                        PatchApplication.PatchRemoteInstallation(appOpts);
+                    }
+                    else if (action.Equals("patchFiles"))
+                    {
+                        // need to call first preparePatch;
+                        // and then run the patch from TmpPatchPath so that the files can be overwritten
+                        // this will patch the application files
+                        TPetraPatchTools patchTools = new TPetraPatchTools(appOpts.GetValue("OpenPetra.Path"),
+                            TempPath,
+                            appOpts.GetValue("OpenPetra.Path.Dat"),
+                            "",
+                            appOpts.GetValue("OpenPetra.Path.Patches"),
+                            "");
+
+                        if (patchTools.CheckForRecentPatch())
+                        {
+                            if (!patchTools.PatchTheFiles())
+                            {
+                                System.Console.WriteLine(Catalog.GetString("There was a problem installing the patch."));
+                                System.Environment.Exit(-1);
+                            }
+                        }
+                        else
+                        {
+                            if ((!patchTools.GetCurrentPatchVersion().Equals(patchTools.GetLatestPatchVersion())))
+                            {
+                                System.Console.WriteLine(Catalog.GetString(
+                                        "You don't have all patches that are necessary for patching to the latest patch."));
+                                System.Environment.Exit(-1);
+                            }
+                            else
+                            {
+                                System.Console.WriteLine(Catalog.GetString("There is no new patch to be installed."));
+                                System.Environment.Exit(-1);
+                            }
+                        }
+                    }
+                    else if (action.Equals("patchDatabase"))
+                    {
+                        // this should only be called after patchFiles;
+                        // this will possibly change the database structure, and modify database content
+                        TPetraPatchTools patchTools = new TPetraPatchTools(appOpts.GetValue("OpenPetra.Path"),
+                            TempPath,
+                            "",
+                            "",
+                            appOpts.GetValue("OpenPetra.Path.Patches"),
+                            "");
+
+                        patchTools.RunDBPatches();
+                    }
                 }
             }
             catch (Exception e)

@@ -36,18 +36,18 @@ using Ict.Common;
 
 namespace Ict.Tools.PatchTool
 {
-	/// there is a patch between each build and the previous build. 
-	/// when we send out a patch, we include all the latest builds. they are all copied to netpatches, 
-	/// and picked up from there;
-	/// the patch program (database patch) is only run at the end after all
+    /// there is a patch between each build and the previous build.
+    /// when we send out a patch, we include all the latest builds. they are all copied to netpatches,
+    /// and picked up from there;
+    /// the patch program (database patch) is only run at the end after all
     /// builds of that patch have been installed;
-    /// the patch application program and required dlls need to be copied 
-    /// from bin to another location first and executed from there, 
+    /// the patch application program and required dlls need to be copied
+    /// from bin to another location first and executed from there,
     /// so that they can be patched too;
     /// create a zip archive of the bin directory before applying any patches;
     public class PatchApplication
     {
-    	private static TFrmStatus StatusWindow;
+        private static TFrmStatus StatusWindow;
         private static Thread StatusWindowThread;
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Ict.Tools.PatchTool
 
         /// <summary>
         /// to be called from PetraClient
-        /// the latest patch zip files have already been copied; 
+        /// the latest patch zip files have already been copied;
         /// </summary>
         public static void PatchRemoteInstallation(TAppSettingsManager appOpts)
         {
@@ -93,9 +93,9 @@ namespace Ict.Tools.PatchTool
             startPetraClient = true;
             TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusWindow));
             patchTools =
-                new TPetraPatchTools(appOpts.GetValue("Petra.Path.Bin"), "", appOpts.GetValue("Petra.PathTemp"), appOpts.GetValue(
-                        "Petra.Path.Dat"), "", appOpts.GetValue("Petra.Path.Patches"), appOpts.GetValue(
-                        "Petra.Path.RemotePatches"), "PetraClient.exe");
+                new TPetraPatchTools(appOpts.GetValue("OpenPetra.Path"), appOpts.GetValue("Petra.PathTemp"), appOpts.GetValue(
+                        "OpenPetra.Path.Dat"), "", appOpts.GetValue("OpenPetra.Path.Patches"), appOpts.GetValue(
+                        "OpenPetra.Path.RemotePatches"));
 
             if (patchTools.CheckForRecentPatch())
             {
@@ -114,7 +114,7 @@ namespace Ict.Tools.PatchTool
             }
             else
             {
-                // todo: will this ever be executed? this should be checked by PetraClient 
+                // todo: will this ever be executed? this should be checked by PetraClient
                 if ((!patchTools.GetCurrentPatchVersion().Equals(patchTools.GetLatestPatchVersion())))
                 {
                     TLogging.Log("Problem: You don't have all patches that are necessary for patching to the latest patch.");
@@ -135,7 +135,7 @@ namespace Ict.Tools.PatchTool
                 // restart Petra Client if patch was successful
                 PetraClientProcess = new System.Diagnostics.Process();
                 PetraClientProcess.EnableRaisingEvents = false;
-                PetraClientProcess.StartInfo.FileName = appOpts.GetValue("Petra.Path.Bin") + Path.DirectorySeparatorChar + "PetraClient.exe";
+                PetraClientProcess.StartInfo.FileName = appOpts.GetValue("OpenPetra.Path.Bin") + Path.DirectorySeparatorChar + "PetraClient.exe";
                 PetraClientProcess.StartInfo.Arguments = "-C:" + appOpts.GetValue("C");
                 PetraClientProcess.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
                 PetraClientProcess.Start();
@@ -160,9 +160,9 @@ namespace Ict.Tools.PatchTool
             }
             catch (Exception)
             {
-                // Messagebox.show(e.Message); 
-                // Message on Vista: Couldn't get process information from remote machine 
-                // http:www.mombu.com/microsoft/netsecurity/tcantusegetprocessesbynamewithvista813749.html 
+                // Messagebox.show(e.Message);
+                // Message on Vista: Couldn't get process information from remote machine
+                // http:www.mombu.com/microsoft/netsecurity/tcantusegetprocessesbynamewithvista813749.html
                 processes = null;
             }
 
@@ -180,18 +180,16 @@ namespace Ict.Tools.PatchTool
     /// </summary>
     public class TPetraPatchTools : TPatchTools
     {
-    	/// <summary>
-    	/// constructor
-    	/// </summary>
-        public TPetraPatchTools(String ABinPath,
-            String AServerBinPath,
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TPetraPatchTools(String AInstallPath,
             String ATmpPath,
             String ADatPath,
             String ADBPath,
             String APatchesPath,
-            String ARemotePatchesPath,
-            String AMainExecutable)
-            : base(ABinPath, AServerBinPath, ATmpPath, ADatPath, ADBPath, APatchesPath, ARemotePatchesPath, AMainExecutable)
+            String ARemotePatchesPath)
+            : base(AInstallPath, "30", ATmpPath, ADatPath, ADBPath, APatchesPath, ARemotePatchesPath)
         {
         }
 
@@ -199,13 +197,13 @@ namespace Ict.Tools.PatchTool
         {
             AAction = Path.GetExtension(AFileName).Substring(1);
             AFileName = AFileName.Substring(0, AFileName.Length - AAction.Length - 1).Replace("\\", "/");
-            ATargetFile = FInstallPath + Path.DirectorySeparatorChar + Path.GetFileName(AFileName);
+            ATargetFile = FInstallPath + AFileName.Substring(AFileName.IndexOf("/"));
             return true;
         }
 
         /// <summary>
-        /// this is called by an external install program (innosetup or bash script). 
-        /// need to run RunDBPatches independently this is used for the Standalone Installer (and Network installer) 
+        /// this is called by an external install program (innosetup or bash script).
+        /// need to run RunDBPatches independently this is used for the Standalone Installer (and Network installer)
         /// </summary>
         /// <returns>true if any patch was installed</returns>
         public Boolean PatchTheFiles()
@@ -216,7 +214,7 @@ namespace Ict.Tools.PatchTool
 
             ReturnValue = false;
 
-            // this can only be called after CheckForRecentPatch 
+            // this can only be called after CheckForRecentPatch
             if (FListOfNewPatches == null)
             {
                 throw new Exception("TPatchTools.InstallPatches: need to call CheckForRecentPatch first!");
@@ -225,18 +223,18 @@ namespace Ict.Tools.PatchTool
             previousPatchVersion = null;
             currentPatchVersion = null;
 
-            // todo: RunDBPatch for patches that have not been applied to the database yet, although the binaries have been installed already? 
-            // this is probably not necessary for network; it is done by innosetup for standalone; also see RunDBPatches 
+            // todo: RunDBPatch for patches that have not been applied to the database yet, although the binaries have been installed already?
+            // this is probably not necessary for network; it is done by innosetup for standalone; also see RunDBPatches
             foreach (String patch in FListOfNewPatches.GetValueList())
             {
-                // apply the patch 
+                // apply the patch
                 if (!ApplyPetraPatch(patch))
                 {
                     TLogging.Log("There is a problem with installing patch " + patch);
                     return false;
                 }
 
-                // also needs to call the progress patch program for the last build of each patch that is installed now 
+                // also needs to call the progress patch program for the last build of each patch that is installed now
                 currentPatchVersion = TFileVersionInfo.GetLatestPatchVersionFromDiffZipName(patch);
 
                 previousPatchVersion = currentPatchVersion;
@@ -261,36 +259,36 @@ namespace Ict.Tools.PatchTool
 
             foreach (string filename in files)
             {
-	            // what to do with the file: add, remove, patch
-	            string action;
-	            String TargetFile;
+                // what to do with the file: add, remove, patch
+                string action;
+                String TargetFile;
 
-            	// find a match with the registered File Patterns
+                // find a match with the registered File Patterns
                 if ((!GetMatch(filename.Substring(APatchRootDirectory.Length + 1), out action, out TargetFile)))
                 {
                     throw new Exception("cannot find a destination path for file " + filename.Substring(APatchRootDirectory.Length + 1));
                 }
 
-                // Console.WriteLine(filename + ' ' + TargetFile); 
+                // Console.WriteLine(filename + ' ' + TargetFile);
                 if (action == "new")
                 {
                     if (System.IO.File.Exists(TargetFile))
                     {
-                        // prepare for undo; make a copy of the original file 
+                        // prepare for undo; make a copy of the original file
                         System.IO.File.Copy(TargetFile, TargetFile + ".bak", true);
                     }
 
-                    // unzip the file 
+                    // unzip the file
                     BZip2.Decompress(System.IO.File.OpenRead(filename), System.IO.File.OpenWrite(TargetFile));
                 }
-                else if (action == "patch")
+                else if ((action == "patch") && File.Exists(TargetFile))
                 {
                     try
                     {
-                        // safety copy 
+                        // safety copy
                         System.IO.File.Copy(TargetFile, TargetFile + ".bak", true);
 
-                        // apply patch 
+                        // apply patch
                         if (System.IO.File.Exists(TargetFile + ".new"))
                         {
                             System.IO.File.Delete(TargetFile + ".new");
@@ -298,7 +296,7 @@ namespace Ict.Tools.PatchTool
 
                         patch.ApplyPatch(TargetFile, TargetFile + ".new", filename);
 
-                        // remove original, rename file 
+                        // remove original, rename file
                         if (System.IO.File.Exists(TargetFile + ".new"))
                         {
                             if (System.IO.File.Exists(TargetFile))
@@ -318,18 +316,17 @@ namespace Ict.Tools.PatchTool
                 {
                     if (System.IO.File.Exists(TargetFile))
                     {
-                        // safety copy 
+                        // safety copy
                         System.IO.File.Copy(TargetFile, TargetFile + ".bak");
 
-                        // remove file 
+                        // remove file
                         System.IO.File.Delete(TargetFile);
                     }
                 }
                 else if (action == "skip")
                 {
-	                // skip server files on a remote system 
+                    // skip server files on a remote system
                 }
-
             }
         }
 
@@ -342,8 +339,8 @@ namespace Ict.Tools.PatchTool
         /// <returns></returns>
         private Boolean RunDBPatch(TFileVersionInfo ADesiredVersion, Boolean ALastPatch)
         {
-			// TODO: run sql script or code from DLL to update the database
-			// TODO: if last patch, send an email to central support etc
+            // TODO: run sql script or code from DLL to update the database
+            // TODO: if last patch, send an email to central support etc
             return true;
         }
 
@@ -366,7 +363,8 @@ namespace Ict.Tools.PatchTool
             if (dbVersion != null)
             {
                 ReturnValue = true;
-                appVersion = new TFileVersionInfo(FileVersionInfo.GetVersionInfo(FBinPath + Path.DirectorySeparatorChar + FMainExecutable));
+
+                appVersion = FCurrentlyInstalledVersion;
 
                 if (dbVersion.FileBuildPart == appVersion.FileBuildPart)
                 {
@@ -391,8 +389,8 @@ namespace Ict.Tools.PatchTool
 
         private TFileVersionInfo GetDBPatchLevel()
         {
-        	// TODO: read current patch level from the database (table s_system_defaults, default code CurrentDatabaseVersion)
-        	return new TFileVersionInfo();
+            // TODO: read current patch level from the database (table s_system_defaults, default code CurrentDatabaseVersion)
+            return new TFileVersionInfo();
         }
 
         private void UndoPatchRecursively(String APatchRootDirectory, String APatchDirectory)
@@ -409,11 +407,11 @@ namespace Ict.Tools.PatchTool
 
             foreach (string filename in files)
             {
-	            // what to do with the file: add, remove, patch
-	            string Action;
-	            String TargetFile;
+                // what to do with the file: add, remove, patch
+                string Action;
+                String TargetFile;
 
-            	// find a match with the registered File Patterns
+                // find a match with the registered File Patterns
                 if ((!GetMatch(filename.Substring(APatchRootDirectory.Length + 1), out Action, out TargetFile)))
                 {
                     TLogging.Log("cannot find a destination path for file " + filename.Substring(APatchRootDirectory.Length + 1));
@@ -434,7 +432,7 @@ namespace Ict.Tools.PatchTool
                     }
                     else if (Action == "rem")
                     {
-                        // restore the file 
+                        // restore the file
                         if (System.IO.File.Exists(TargetFile + ".bak") && (!System.IO.File.Exists(TargetFile)))
                         {
                             System.IO.File.Move(TargetFile + ".bak", TargetFile);
@@ -471,10 +469,10 @@ namespace Ict.Tools.PatchTool
 
             foreach (string filename in files)
             {
-	            // what to do with the file: add, remove, patch
-	            string Action;
-	            String TargetFile;
-                
+                // what to do with the file: add, remove, patch
+                string Action;
+                String TargetFile;
+
                 // find a match with the registered File Patterns
                 if ((!GetMatch(filename.Substring(APatchRootDirectory.Length + 1), out Action, out TargetFile)))
                 {
@@ -513,8 +511,8 @@ namespace Ict.Tools.PatchTool
 
         private Boolean SpecialOperationsConfigAndScripts()
         {
-        	// TODO: this should go into a special patch plugin DLL?
-        	
+            // TODO: this should go into a special patch plugin DLL?
+
             return true;
         }
 
@@ -548,7 +546,7 @@ namespace Ict.Tools.PatchTool
 
             try
             {
-                // apply the patch 
+                // apply the patch
                 TLogging.Log("applying patch, please wait");
 
                 // go through all directories in patch, all files
@@ -559,7 +557,7 @@ namespace Ict.Tools.PatchTool
                     ApplyPatchRecursively(TempPath, dir);
                 }
 
-                // rename the manually patched .dll and .exe files in net-patches directory, 
+                // rename the manually patched .dll and .exe files in net-patches directory,
                 // since they should be part of the official patch in bin directory
 
                 // go through bin/netpatches (or sapatches or remotepatches)
@@ -567,8 +565,8 @@ namespace Ict.Tools.PatchTool
 
                 foreach (string dir in directories)
                 {
-                    // delete the file.old if it already exists, if there is a file without .old 
-                    // that way we prevent the deletion of nrr (non routine request) files that have gone to the wrong directory 
+                    // delete the file.old if it already exists, if there is a file without .old
+                    // that way we prevent the deletion of nrr (non routine request) files that have gone to the wrong directory
                     files = System.IO.Directory.GetFiles(dir, "*.old");
 
                     foreach (string filename in files)
@@ -579,7 +577,7 @@ namespace Ict.Tools.PatchTool
                         }
                         else
                         {
-                            // restore the .dll file (nrr) 
+                            // restore the .dll file (nrr)
                             System.IO.File.Move(filename, filename.Substring(0, filename.Length - 4));
                         }
                     }
@@ -592,7 +590,7 @@ namespace Ict.Tools.PatchTool
                         System.IO.File.Move(filename, filename + ".old");
                     }
 
-                    // rename .exe file to file.exe.old 
+                    // rename .exe file to file.exe.old
                     files = System.IO.Directory.GetFiles(directories[0], "*.exe");
 
                     foreach (string filename in files)
@@ -601,8 +599,8 @@ namespace Ict.Tools.PatchTool
                     }
                 }
 
-                // delete the .dll.orig files, because we have applied the new version for all files 
-                // those files have been created manually when we give out special dll files (not recommended) 
+                // delete the .dll.orig files, because we have applied the new version for all files
+                // those files have been created manually when we give out special dll files (not recommended)
                 files = System.IO.Directory.GetFiles(FBinPath, "*.orig");
 
                 foreach (string filename in files)
@@ -623,8 +621,8 @@ namespace Ict.Tools.PatchTool
                 TLogging.Log("Patch could not be installed: " + e.Message);
                 TLogging.Log("Restoring the situation before the patch...");
 
-                // if unsuccessful, restore the previous situation; 
-                // go through all directories in patch, all files 
+                // if unsuccessful, restore the previous situation;
+                // go through all directories in patch, all files
                 directories = System.IO.Directory.GetDirectories(TempPath);
 
                 foreach (string dir in directories)
@@ -643,7 +641,7 @@ namespace Ict.Tools.PatchTool
                 CleanupPatchRecursively(TempPath, dir);
             }
 
-            // delete temp directory recursively (and the backup zip files) 
+            // delete temp directory recursively (and the backup zip files)
             Directory.Delete(TempPath, true);
             return ReturnValue;
         }

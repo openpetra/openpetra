@@ -25,6 +25,7 @@
         <mkdir dir="${setupDir}/reports30"/>
         <mkdir dir="${setupDir}/sql30"/>
         <mkdir dir="${setupDir}/resources30"/>
+		<echo file="${setupDir}/bin30/version.txt">${ReleaseVersion}</echo>
         <copy todir="${setupDir}/bin30">
             <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/Release/">
                 <include name="*.dll" />
@@ -43,6 +44,8 @@
                 <include name="*.exe" />
             </fileset>
         </copy>
+        <copy file="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/Release/PatchTool.exe" 
+					tofile="${setupDir}/bin30/PatchTool.exe"/>
         <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll"
                     tofile="${setupDir}/bin30/System.Data.SQLite.dll"/>
         <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/Npgsql/Npgsql.dll"

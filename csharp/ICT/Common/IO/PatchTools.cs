@@ -311,10 +311,15 @@ namespace Ict.Common.IO
         protected SortedList FListOfNewPatches;
 
         /// <summary>todoComment</summary>
-        protected string FBinPath;
+        protected string FInstallPath;
 
-        /// <summary>todoComment</summary>
-        protected string FServerBinPath;
+        /// <summary>eg. bin30 has postfix 30</summary>
+        protected string FVersionPostFix;
+
+        /// <summary>
+        /// calculated from FInstallPath and FVersionPostFix
+        /// </summary>
+        protected string FBinPath;
 
         /// <summary>todoComment</summary>
         protected string FTmpPath;
@@ -323,16 +328,10 @@ namespace Ict.Common.IO
         protected string FDatPath;
 
         /// <summary>todoComment</summary>
-        protected string FDBPath;
-
-        /// <summary>todoComment</summary>
         protected string FPatchesPath;
 
         /// <summary>todoComment</summary>
         protected string FRemotePatchesPath;
-
-        /// <summary>todoComment</summary>
-        protected string FMainExecutable;
 
         /// <summary>todoComment</summary>
         protected TFileVersionInfo FCurrentlyInstalledVersion;
@@ -990,25 +989,17 @@ namespace Ict.Common.IO
         /// constructor;
         /// to be used to actually install patches
         /// </summary>
-        public TPatchTools(String ABinPath,
-            String AServerBinPath,
+        public TPatchTools(String AInstallPath,
+            String AVersionPostFix,
             String ATmpPath,
             String ADatPath,
             String ADBPath,
             String APatchesPath,
-            String ARemotePatchesPath,
-            String AMainExecutable) : base()
+            String ARemotePatchesPath) : base()
         {
-            FBinPath = Path.GetFullPath(ABinPath);
-
-            if (AServerBinPath.Length > 0)
-            {
-                FServerBinPath = Path.GetFullPath(AServerBinPath);
-            }
-            else
-            {
-                FServerBinPath = ABinPath; // for patchtool.exe on a remote machine
-            }
+            FInstallPath = Path.GetFullPath(AInstallPath);
+            FVersionPostFix = AVersionPostFix;
+            FBinPath = FInstallPath + Path.DirectorySeparatorChar + "bin" + FVersionPostFix;
 
             if (ATmpPath.Length > 0)
             {
@@ -1019,15 +1010,9 @@ namespace Ict.Common.IO
                 FTmpPath = "";
             }
 
-            FDatPath = Path.GetFullPath(ADatPath);
-
-            if (ADBPath.Length > 0)
+            if (ADatPath.Length > 0)
             {
-                FDBPath = Path.GetFullPath(ADBPath);
-            }
-            else
-            {
-                FDBPath = "";
+                FDatPath = Path.GetFullPath(ADatPath);
             }
 
             if (APatchesPath.Length > 0)
@@ -1052,7 +1037,6 @@ namespace Ict.Common.IO
                 FRemotePatchesPath = "";
             }
 
-            FMainExecutable = AMainExecutable;
             FListOfNewPatches = new SortedList();
         }
 
@@ -1137,9 +1121,7 @@ namespace Ict.Common.IO
         /// <paramref name="AShowStatus" /> is false.</param>
         public Boolean CheckForRecentPatch(bool AShowStatus, out string AStatusMessage)
         {
-            const string ProblemMessage = "There is a problem connecting to {0}\r\r" +
-                                          "Please ask your System Administrator to look at the FAQ on the Petra Website\r\n" +
-                                          "or contact petra-support@ict-software.org.";
+            const string ProblemMessage = "There is a problem connecting to {0}";
 
             string localname;
             TFileVersionInfo fileStartVersion;
@@ -1147,21 +1129,15 @@ namespace Ict.Common.IO
             string directoryListing;
             string searchPattern;
             string filesignature;
-            StreamReader sr;
-            StreamWriter sw;
 
             AStatusMessage = "";
             FListOfNewPatches = new SortedList();
 
             // first get the version of the currently installed binaries
-            FCurrentlyInstalledVersion = new TFileVersionInfo(FileVersionInfo.GetVersionInfo(FBinPath + Path.DirectorySeparatorChar + FMainExecutable));
-
-            // check for an .orig file, in case the main file has been patched manually
-            if (File.Exists(FBinPath + Path.DirectorySeparatorChar + FMainExecutable + ".orig"))
-            {
-                FCurrentlyInstalledVersion =
-                    new TFileVersionInfo(FileVersionInfo.GetVersionInfo(FBinPath + Path.DirectorySeparatorChar + FMainExecutable + ".orig"));
-            }
+            // read from version.txt in the bin directory; it contains the currently installed version in RPM style (e.g. 3.0.0-14)
+            StreamReader srVersion = new StreamReader(FBinPath + Path.DirectorySeparatorChar + "version.txt");
+            FCurrentlyInstalledVersion = new TFileVersionInfo(srVersion.ReadLine());
+            srVersion.Close();
 
             if (FRemotePatchesPath.StartsWith("http://"))
             {
@@ -1215,7 +1191,7 @@ namespace Ict.Common.IO
                         // download .r/.dll/.exe files from the netpatches directory if there is no file with same date already
                         if (System.IO.File.Exists(FPatchesPath + Path.DirectorySeparatorChar + filename + ".signature"))
                         {
-                            sr = new StreamReader(FPatchesPath + Path.DirectorySeparatorChar + filename + ".signature");
+                            StreamReader sr = new StreamReader(FPatchesPath + Path.DirectorySeparatorChar + filename + ".signature");
 
                             if (sr.ReadLine().Trim() == filesignature.Trim())
                             {
@@ -1250,7 +1226,7 @@ namespace Ict.Common.IO
                             }
 
                             DownloadFile(FRemotePatchesPath + "/" + filename, localFile);
-                            sw = new StreamWriter(FPatchesPath + Path.DirectorySeparatorChar + filename + ".signature");
+                            StreamWriter sw = new StreamWriter(FPatchesPath + Path.DirectorySeparatorChar + filename + ".signature");
                             sw.WriteLine(filesignature);
                             sw.Close();
                         }
@@ -1391,7 +1367,8 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// this procedure makes sure that the latest version of the patch tool is being used; the latest available executable and required dlls are copied to the patch tmp directory
+        /// this procedure makes sure that the latest version of the patch tool is being used;
+        /// the latest available executable and required dlls are copied to the patch tmp directory
         /// </summary>
         /// <returns>void</returns>
         public void CopyLatestPatchProgram(String APatchDirectory)
@@ -1399,27 +1376,22 @@ namespace Ict.Common.IO
             String remotename;
             ArrayList PatchExecutableFiles;
 
-            // copy the PatchTool.exe and Ict.Common.dll and Ict.Common.IO.dll from bin23 to a temp directory
-            System.IO.File.Copy(FBinPath + Path.DirectorySeparatorChar + "Borland.Delphi.dll",
-                APatchDirectory + Path.DirectorySeparatorChar + "Borland.Delphi.dll",
-                true);
-            System.IO.File.Copy(FBinPath + Path.DirectorySeparatorChar + "Ict.Common.dll",
-                APatchDirectory + Path.DirectorySeparatorChar + "Ict.Common.dll",
-                true);
-            System.IO.File.Copy(FBinPath + Path.DirectorySeparatorChar + "Ict.Common.IO.dll",
-                APatchDirectory + Path.DirectorySeparatorChar + "Ict.Common.IO.dll",
-                true);
-            System.IO.File.Copy(FBinPath + Path.DirectorySeparatorChar + "ICSharpCode.SharpZipLib.dll",
-                APatchDirectory + Path.DirectorySeparatorChar + "ICSharpCode.SharpZipLib.dll",
-                true);
-            System.IO.File.Copy(FServerBinPath + Path.DirectorySeparatorChar + "patchtool.exe",
-                APatchDirectory + Path.DirectorySeparatorChar + "patchtool.exe",
-                true);
             PatchExecutableFiles = new ArrayList();
-            PatchExecutableFiles.Add("dotnet-code" + Path.DirectorySeparatorChar + "Ict.Common.dll");
-            PatchExecutableFiles.Add("dotnet-code" + Path.DirectorySeparatorChar + "Ict.Common.IO.dll");
-            PatchExecutableFiles.Add("dotnet-code" + Path.DirectorySeparatorChar + "ICSharpCode.SharpZipLib.dll");
-            PatchExecutableFiles.Add("dotnet-code" + Path.DirectorySeparatorChar + "server" + Path.DirectorySeparatorChar + "patchtool.exe");
+            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "Ict.Common.dll");
+            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "Ict.Common.IO.dll");
+            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "ICSharpCode.SharpZipLib.dll");
+            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "patchtool.exe");
+            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "intl.dll");
+            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "Mono.Posix.dll");
+            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "Mono.Security.dll");
+            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "MonoPosixHelper.dll");
+
+            // copy the PatchTool.exe and required files from the currently installed application to a temp directory
+            foreach (string patchExeFile in PatchExecutableFiles)
+            {
+                System.IO.File.Copy(FInstallPath + Path.DirectorySeparatorChar + patchExeFile,
+                    APatchDirectory + Path.DirectorySeparatorChar + Path.GetFileName(patchExeFile), true);
+            }
 
             // check for the latest version of those files in the new patches
             foreach (string patch in FListOfNewPatches.GetValueList())
