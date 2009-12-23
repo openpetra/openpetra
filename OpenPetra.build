@@ -726,7 +726,7 @@
             </do>
         </foreach>
 
-        <nant buildfile="OpenPetra.build" target="cleanPetra compilePetraTools compilePetra">
+        <nant buildfile="OpenPetra.build" target="cleanPetra compileCommon compilePetraTools compilePetra">
             <properties>
                 <property name="Output.dir" value="Release"/>
                 <property name="Configuration" value="RELEASE"/>
@@ -773,6 +773,11 @@
         <copy file="${SQLitedb.file}" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db" overwrite="true"/>
     </target>
 
+	<target name="refreshSudo">
+		<!-- make sure that sudo is working, this is called before buildRelease on Linux -->
+        <exec program="sudo" commandline="-u postgres echo refresh sudo" />
+	</target>
+	
     <target name="createPostgreSQLDB">
         <property name="DBMS.Type" value="postgresql"/>
         <property name="DBMS.Password" value="CHANGEME"/>
@@ -797,7 +802,7 @@
     </target>
     
     <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, translation, setupStandalone, setupRemote"/>
-    <target name="buildReleaseLinux" depends="switchToDebug, createSQLiteDB, createPostgreSQLDB, generateWinforms, compileRelease, translation, setupLinuxServer"/>
+    <target name="buildReleaseLinux" depends="refreshSudo, switchToDebug, createSQLiteDB, createPostgreSQLDB, generateWinforms, compileRelease, translation, setupLinuxServer"/>
     <target name="buildRelease">
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <call target="buildReleaseLinux"/>
