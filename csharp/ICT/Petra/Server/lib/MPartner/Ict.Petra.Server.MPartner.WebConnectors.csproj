@@ -72,7 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ImportExport.cs" />
-    <Compile Include="Webconnectors.AssemblyInfo.cs" />
+    <Compile Include="WebConnectors.AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="data\Ict.Petra.Server.MPartner.DataAccess.csproj">
