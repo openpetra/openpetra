@@ -311,7 +311,7 @@ namespace Ict.Petra.Client.App.PetraClient
             this.lblUserName.Name = "lblUserName";
             this.lblUserName.Size = new System.Drawing.Size(102, 16);
             this.lblUserName.TabIndex = 22;
-            this.lblUserName.Text = "USERNAME";
+            this.lblUserName.Text = "";
 
             //
             // lblLastFailedLogin

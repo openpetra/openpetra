@@ -56,7 +56,6 @@ namespace Ict.Petra.Client.App.PetraClient
             this.lblConference.Text = Catalog.GetString("C&onference Management");
             this.lblDevelopment.Text = Catalog.GetString("Financial &Development");
             this.lblSysMan.Text = Catalog.GetString("&System Manager");
-            this.lblUserName.Text = Catalog.GetString("USERNAME");
             this.lblFailedLoginsLabel.Text = Catalog.GetString("Failed Logins:");
             this.lblUserLabel.Text = Catalog.GetString("User:");
             this.lblLastFailedLoginLabel.Text = Catalog.GetString("Last Failed Login:");

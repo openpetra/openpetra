@@ -174,12 +174,6 @@ msgstr "&Personal"
 msgid "C&onference Management"
 msgstr "K&onferenzen"
 
-msgid "Form &List"
-msgstr ""
-
-msgid "USERNAME"
-msgstr "BENUTZER"
-
 msgid "Failed Logins:"
 msgstr "Fehlgeschlagene Logins:"
 
