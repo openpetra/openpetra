@@ -205,7 +205,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return false;
             }
 
-            if (StringHelper.TryStrToInt32(ALabelText, -1).ToString() = ALabelText)
+            if (StringHelper.TryStrToInt32(ALabelText, -1).ToString() == ALabelText)
             {
                 // don't translate digits?
                 return false;
