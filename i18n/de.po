@@ -694,9 +694,6 @@ msgstr ""
 msgid "Believer since"
 msgstr ""
 
-msgid "8888"
-msgstr ""
-
 msgid "&Year:"
 msgstr ""
 
@@ -3561,33 +3558,16 @@ msgstr ""
 msgid "Import Partners"
 msgstr ""
 
-msgid "0"
+#, csharp-format
+msgid ""
+"Please make sure that you have logged in to your network drive\n"
+"and can access the directory\n"
+"{0}\n"
+"If this is the case and you still get this message,\n"
+"you might use an IP address rather than a hostname for the server.\n"
+"Please ask your local System Administrator for help."
 msgstr ""
 
-msgid "1"
-msgstr ""
-
-msgid "2"
-msgstr ""
-
-msgid "3"
-msgstr ""
-
-msgid "4"
-msgstr ""
-
-msgid "5"
-msgstr ""
-
-msgid "6"
-msgstr ""
-
-msgid "7"
-msgstr ""
-
-msgid "8"
-msgstr ""
-
-msgid "9"
+msgid "Cannot check for patches"
 msgstr ""
 

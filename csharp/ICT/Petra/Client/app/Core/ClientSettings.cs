@@ -292,7 +292,7 @@ namespace Ict.Petra.Client.App.Core
             //
             // Parse settings from the Application Configuration File
             //
-            UPathTemp = FAppSettings.GetValue("Petra.PathTemp");
+            UPathTemp = FAppSettings.GetValue("OpenPetra.PathTemp");
 
             if (UPathTemp.Contains("{userappdata}"))
             {

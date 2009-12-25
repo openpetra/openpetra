@@ -50,15 +50,15 @@ namespace Ict.Tools.PatchTool
             {
                 // check command line
                 TAppSettingsManager appOpts = new TAppSettingsManager(false);
-                string TempPath = appOpts.GetValue("Petra.PathTemp");
+                string TempPath = appOpts.GetValue("OpenPetra.PathTemp");
                 new TLogging(TempPath + Path.DirectorySeparatorChar + "PetraPatch.log");
 
                 if (!appOpts.HasValue("action"))
                 {
                     System.Console.WriteLine(
-                        "patch creation:    patchtool -action:create -Petra.PathTemp:u:/tmp/patch -deliverypath:u:/delivery -oldversion:0.0.8-0 -newversion:0.0.10-0");
+                        "patch creation:    patchtool -action:create -OpenPetra.PathTemp:u:/tmp/patch -deliverypath:u:/delivery -oldversion:0.0.8-0 -newversion:0.0.10-0");
                     System.Console.WriteLine(
-                        "patch application: patchtool -action:apply -Petra.PathTemp:u:/tmp/patch -diffzip:u:/tmp/patch/Patch2.2.3-5_2.2.4-3.zip -apppath:c:/Programme/OpenPetra.org -datpath:c:/Programme/OpenPetra.org/data30");
+                        "patch application: patchtool -action:apply -OpenPetra.PathTemp:u:/tmp/patch -diffzip:u:/tmp/patch/Patch2.2.3-5_2.2.4-3.zip -apppath:c:/Programme/OpenPetra.org -datpath:c:/Programme/OpenPetra.org/data30");
                     return;
                 }
 
@@ -86,7 +86,7 @@ namespace Ict.Tools.PatchTool
 
                         if (patchTools.CheckForRecentPatch())
                         {
-                            patchTools.CopyLatestPatchProgram(appOpts.GetValue("Petra.PathTemp"));
+                            patchTools.CopyLatestPatchProgram(appOpts.GetValue("OpenPetra.PathTemp"));
                         }
                         else
                         {

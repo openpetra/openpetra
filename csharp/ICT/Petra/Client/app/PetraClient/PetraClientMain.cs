@@ -214,6 +214,79 @@ namespace Ict.Petra.Client.App.PetraClient
         }
 
         /// <summary>
+        /// this is usually only used for remote clients; standalone clients are patched with a windows installer program
+        /// </summary>
+        private static void CheckForPatches()
+        {
+            FSplashScreen.ProgressText = "Running checks that are specific to Remote Installation...";
+
+            // todo: check whether the user has SYSADMIN rights; should not be required
+            // todo: check whether the user has write access to the bin directory
+            // check whether the user has access to the server and the Petra patches directory
+            if ((TClientSettings.Petra_Path_RemotePatches.Length > 0)
+                && !TClientSettings.Petra_Path_RemotePatches.ToLower().StartsWith("http://")
+                && !System.IO.Directory.Exists(TClientSettings.Petra_Path_RemotePatches))
+            {
+                FSplashScreen.ShowMessageBox(
+                    String.Format(
+                        Catalog.GetString(
+                            "Please make sure that you have logged in to your network drive\nand can access the directory\n{0}\nIf this is the case and you still get this message,\nyou might use an IP address rather than a hostname for the server.\nPlease ask your local System Administrator for help."),
+                        TClientSettings.Petra_Path_RemotePatches),
+                    Catalog.GetString("Cannot check for patches"));
+            }
+
+            // check whether there is a patch available; if this is a remote version, try to download a patch from the server
+            TPatchTools patchTools = new TPatchTools(Path.GetFullPath(TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + ".."),
+                "30",
+                TClientSettings.PathTemp,
+                "",
+                "",
+                TClientSettings.Petra_Path_Patches,
+                TClientSettings.Petra_Path_RemotePatches);
+
+            string PatchStatusMessage;
+
+            if (patchTools.CheckForRecentPatch(false, out PatchStatusMessage))
+            {
+                // todo: display a list of all patches that will be installed? or confusing with different builds?
+                if (FSplashScreen.ShowMessageBox(String.Format(Catalog.GetString("There is a new patch available: {0}" +
+                                ".\r\nThe currently installed version is {1}" +
+                                ".\r\nThe patch will be installed to directory '{2}'.\r\nDo you want to install now?"),
+                            patchTools.GetLatestPatchVersion(), patchTools.GetCurrentPatchVersion(), TClientSettings.Petra_Path_Bin),
+                        String.Format("Install new Petra patch"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+                {
+                    // create the temp directory; using the Petra tmp directory, so that we don't need to change the drive in the batch file
+                    string TempPath = TClientSettings.PathTemp + Path.DirectorySeparatorChar + "petrapatch";
+                    Directory.CreateDirectory(TempPath);
+
+                    // check for newer patchtool
+                    patchTools.CopyLatestPatchProgram(TempPath);
+
+                    // need to stop petra client, start the patch in temppath, restart Petra client
+                    Process PatchProcess = new System.Diagnostics.Process();
+                    PatchProcess.EnableRaisingEvents = false;
+                    PatchProcess.StartInfo.FileName = TempPath + Path.DirectorySeparatorChar + "patchtool.exe";
+                    PatchProcess.StartInfo.Arguments = "-action:patchRemote" + " -C:" + Path.GetFullPath(TClientSettings.ConfigurationFile) +
+                                                       " -OpenPetra.Path:" + Path.GetFullPath(
+                        TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + "..");
+                    PatchProcess.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+                    PatchProcess.Start();
+
+                    // Application stops here !!!
+                    Environment.Exit(0);
+                }
+            }
+            else
+            {
+                if (PatchStatusMessage != String.Empty)
+                {
+                    FSplashScreen.ShowMessageBox(PatchStatusMessage, "");
+                }
+            }
+        }
+
+        /// <summary>
         /// start the client
         /// </summary>
         public static void StartUp()
@@ -270,7 +343,13 @@ namespace Ict.Petra.Client.App.PetraClient
 
             FLogging = new TLogging(TClientSettings.PathTemp + "/PetraClient.log");
 
-// TODO: check for patches
+            // only do automatic patch installation on remote situation
+            // needs to be done before login, because the login connects to the updated server, and could go wrong because of changed interfaces
+            if (TClientSettings.RunAsRemote == true)
+            {
+                CheckForPatches();
+            }
+
             if (TClientSettings.RunAsStandalone == true)
             {
                 FSplashScreen.ProgressText = "Starting PetraServer Environment...";

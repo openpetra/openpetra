@@ -93,7 +93,7 @@ namespace Ict.Tools.PatchTool
             startPetraClient = true;
             TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusWindow));
             patchTools =
-                new TPetraPatchTools(appOpts.GetValue("OpenPetra.Path"), appOpts.GetValue("Petra.PathTemp"), appOpts.GetValue(
+                new TPetraPatchTools(appOpts.GetValue("OpenPetra.Path"), appOpts.GetValue("OpenPetra.PathTemp"), appOpts.GetValue(
                         "OpenPetra.Path.Dat"), "", appOpts.GetValue("OpenPetra.Path.Patches"), appOpts.GetValue(
                         "OpenPetra.Path.RemotePatches"));
 
