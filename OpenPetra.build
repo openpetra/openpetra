@@ -7,7 +7,7 @@
     <property name="Output.dir" value="Debug" unless="${property::exists('Output.dir')}"/>
     <property name="Configuration" value="DEBUG" unless="${property::exists('Configuration')}"/>
     <property name="ReleaseID" value="0.0.0.99" unless="${property::exists('ReleaseID')}"/>
-    <property name="ReleaseVersion" value="0.0.0-99" unless="${property::exists('ReleaseVersion')}"/>
+    <property name="ReleaseVersion" value="${script::CalculateRPMVersionFromDLLVersion(ReleaseID)}"/>
     <property name="PetraRelease" value="0300"/>
     <property name="ThirdParty.dir" value="${OpenPetraRoot.dir}/csharp/ThirdParty/"/>
     <property name="PetraToolsExe.dir" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}"/>
@@ -49,7 +49,7 @@
         <echo message="stopPetraServer: stop the local Petra Server"/>
         <echo message="startPetraClient: run the Petra Client"/>
         <echo message="startSOAPServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)"/>
-        <echo message="buildRelease: requires these parameters: -D:ReleaseID=0.0.2.0 -D:ReleaseVersion=0.0.2-0"/>
+        <echo message="buildRelease: requires these parameters: -D:ReleaseID=0.0.2.0"/>
     </target>
     
     <target name="compilePetraTools" description="compile the PetraTools">
