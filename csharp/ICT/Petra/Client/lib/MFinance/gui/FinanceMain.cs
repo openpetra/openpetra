@@ -119,7 +119,7 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.mniPetraConferenceModule.Text = Catalog.GetString("C&onference");
       this.mniPetraFinDevModule.Text = Catalog.GetString("Financial &Development");
       this.mniPetraSysManModule.Text = Catalog.GetString("&System Manager");
-      this.mniPetraModules.Text = Catalog.GetString("&Petra");
+      this.mniPetraModules.Text = Catalog.GetString("&OpenPetra");
       this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
       this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");

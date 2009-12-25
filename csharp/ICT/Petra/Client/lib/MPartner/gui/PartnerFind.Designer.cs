@@ -765,7 +765,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniPetraConferenceModule,
                         mniPetraFinDevModule,
                         mniPetraSysManModule});
-            this.mniPetraModules.Text = "&Petra";
+            this.mniPetraModules.Text = "&OpenPetra";
             //
             // mniHelpPetraHelp
             //
