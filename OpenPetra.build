@@ -34,6 +34,7 @@
         <echo message="dbdoc: generates database design documentation using sql2diagram"/>
         <echo message="ndoc: todo"/>
         <echo message="uncrustify: beautify the code according to coding style guide"/>
+        <echo message="loc, ploc: count the lines of code, to be used for COCOMO etc"/>
         <echo message="checkcode: todo"/>
         <echo message="fixProjectFiles: use this for broken GUIDs in sln and csproj files"/>
         <echo message="recreateDatabase: needed after changes in table structure in petra.xml"/>
@@ -584,6 +585,16 @@
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES" failonerror="false"/>
         <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.PofileWithPath} -o ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES/i18n.mo"/>
     </target>
+
+	<target name="loc">
+		<property name="ourCodeDir" value="${OpenPetraRoot.dir}/csharp/ICT/"/>
+		<echo message="logical lines of code: ${script::CountLinesOfCode(ourCodeDir)}"/>
+	</target>
+
+	<target name="ploc">
+		<property name="ourCodeDir" value="${OpenPetraRoot.dir}/csharp/ICT/"/>
+		<echo message="physical lines of code, without comments: ${script::CountPhysicalLinesOfCode(ourCodeDir)}"/>
+	</target>
     
     <target name="uncrustifyTemplate">
         <attrib normal="true">
@@ -802,6 +813,7 @@
     </target>
     
     <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, translation, setupStandalone, setupRemote"/>
+	<!-- problem: one version for mac and Windows? what about patching? generateWinforms; 2 versions? -->
     <target name="buildReleaseLinux" depends="refreshSudo, switchToDebug, createSQLiteDB, createPostgreSQLDB, generateWinforms, compileRelease, translation, setupLinuxServer"/>
     <target name="buildRelease">
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >

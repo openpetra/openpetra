@@ -10,7 +10,6 @@
         </imports>    
         <code>
         <![CDATA[
-
     [Function("ReplaceInFile")]
     public static bool ReplaceInFile(string filename, string oldValue, string newValue)
     {
@@ -125,6 +124,151 @@
       }
       return fileOK;
     }
+
+	/// Count the lines of code of all cs and yaml files, but disregard designer files, and generated files;
+	/// ignores comments and empty lines
+    [Function("CountLinesOfCode")]
+    public static Int32 CountLinesOfCode(string ARootDirectory)
+    {
+		Int32 CountLines = 0;
+
+		string[] files = System.IO.Directory.GetFiles(ARootDirectory, "*.cs", SearchOption.AllDirectories);
+
+		foreach (string filename in files)
+		{
+			if (!filename.EndsWith(".Designer.cs") 
+				&& filename.IndexOf("AssemblyInfo") == -1 
+				&& filename.IndexOf("CollectedGettext") == -1 
+				&& filename.IndexOf("Testing") == -1 
+				&& filename.IndexOf("experimenting") == -1)
+			{
+				StreamReader reader = new StreamReader(filename);
+				
+				string line = reader.ReadLine();
+				bool insideCommentBlock = false;
+				
+				if (line.ToLower().IndexOf("auto generated with nant") == -1)
+				{
+					//Console.WriteLine(filename);
+					while (!reader.EndOfStream)
+					{
+						line = reader.ReadLine().Trim();
+						if (line.StartsWith("//") || (line.StartsWith("/*") && line.EndsWith("*/")))
+						{
+							continue;
+						}
+
+						if (line.IndexOf("/*") > -1 && line.IndexOf("*/") == -1)
+						{
+							insideCommentBlock = true;
+							continue;
+						}
+						else if (line.IndexOf("*/") > -1)
+						{
+							insideCommentBlock = false;
+							continue;
+						}
+						
+						if (!insideCommentBlock && line.Length > 0)
+						{
+							CountLines++;
+						}
+					}
+				}
+				reader.Close();
+			}
+		}
+		
+		files = System.IO.Directory.GetFiles(ARootDirectory, "*.yaml", SearchOption.AllDirectories);
+
+		foreach (string filename in files)
+		{
+			//Console.WriteLine(filename);
+			StreamReader reader = new StreamReader(filename);
+			
+			string line = reader.ReadLine();
+
+			while (!reader.EndOfStream)
+			{
+				line = reader.ReadLine().Trim();
+				if (line.StartsWith("#"))
+				{
+					continue;
+				}
+
+				if (line.Length > 0)
+				{
+					CountLines++;
+				}
+			}
+			
+			reader.Close();
+		}
+						
+		return CountLines;
+	}
+
+	private static Int32 CountPhysicalLinesOfFiles(string ARootDirectory, string ASearchPattern)
+	{
+		Int32 CountLines = 0;
+		string[] files = System.IO.Directory.GetFiles(ARootDirectory, ASearchPattern, SearchOption.AllDirectories);
+
+		foreach (string filename in files)
+		{
+			if (filename.IndexOf(".yaml.xml") == -1
+				&& filename.IndexOf(Path.DirectorySeparatorChar + "_bin" + Path.DirectorySeparatorChar) == -1)
+			{
+				//Console.WriteLine(filename);
+				StreamReader reader = new StreamReader(filename);
+				
+				string line = reader.ReadLine();
+				bool insideCommentBlock = false;
+					
+				while (!reader.EndOfStream)
+				{
+					line = reader.ReadLine().Trim();
+
+					if (line.StartsWith("//") || (line.StartsWith("/*") && line.EndsWith("*/")))
+					{
+						continue;
+					}
+
+					if (line.IndexOf("/*") > -1 && line.IndexOf("*/") == -1)
+					{
+						insideCommentBlock = true;
+						continue;
+					}
+					else if (line.IndexOf("*/") > -1)
+					{
+						insideCommentBlock = false;
+						continue;
+					}
+					
+					if (!insideCommentBlock && line.Length > 0)
+					{
+						CountLines++;
+					}
+				}
+				reader.Close();
+			}
+		}
+		
+		return CountLines;
+	}
+	
+	/// count all lines of code, no matter if empty line, comment, file type etc
+	[Function("CountPhysicalLinesOfCode")]
+    public static Int32 CountPhysicalLinesOfCode(string ARootDirectory)
+    {
+		Int32 CountLines = 0;
+		
+		CountLines += CountPhysicalLinesOfFiles(ARootDirectory, "*.cs");
+		//CountLines += CountPhysicalLinesOfFiles(ARootDirectory, "*.yaml");
+		//CountLines += CountPhysicalLinesOfFiles(ARootDirectory, "*.resx");
+		//CountLines += CountPhysicalLinesOfFiles(ARootDirectory, "*.xml");
+
+		return CountLines;
+	}
 
     [Function("CalculateRPMVersionFromDLLVersion")]
     public static string CalculateRPMVersionFromDLLVersion(string AReleaseID)
