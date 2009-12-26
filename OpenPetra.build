@@ -812,7 +812,7 @@
         </ExecDotNet>
     </target>
     
-    <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, translation, setupStandalone, setupRemote"/>
+    <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, translation, setupStandalone, setupRemote, setupLinuxServer"/>
 	<!-- problem: one version for mac and Windows? what about patching? generateWinforms; 2 versions? -->
     <target name="buildReleaseLinux" depends="refreshSudo, switchToDebug, createSQLiteDB, createPostgreSQLDB, generateWinforms, compileRelease, translation, setupLinuxServer"/>
     <target name="buildRelease">
