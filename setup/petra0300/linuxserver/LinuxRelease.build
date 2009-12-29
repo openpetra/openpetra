@@ -101,8 +101,8 @@
 						tofile="${setupDir}/db30/createtables-PostgreSQL.sql"/>
 			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql"
 						tofile="${setupDir}/db30/createconstraints-PostgreSQL.sql"/>
-			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-pg.sql"
-						tofile="${setupDir}/db30/demodata-pg.sql"/>	
+			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"
+						tofile="${setupDir}/db30/demodata-PostgreSQL.sql"/>	
 			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/INSTALL"
 						tofile="${setupDir}/INSTALL"/>
 			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/startClient.sh"
