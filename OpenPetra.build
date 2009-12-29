@@ -797,9 +797,10 @@
 
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <!-- this currently only works on Linux -->
-            <exec program="sudo" commandline="-u postgres /usr/bin/pg_dumpall -s -f ${path::get-temp-path()}/createdb-pg.sql" />
+            <!--exec program="sudo" commandline="-u postgres /usr/bin/pg_dumpall -s -f ${path::get-temp-path()}/createdb-pg.sql" -->
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" overwrite="true"/>
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" overwrite="true"/>
             <exec program="sudo" commandline="-u postgres /usr/bin/pg_dumpall -a -f ${path::get-temp-path()}/demodata-pg.sql" />
-            <copy file="${path::get-temp-path()}/createdb-pg.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createdb-pg.sql" overwrite="true"/>
             <copy file="${path::get-temp-path()}/demodata-pg.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-pg.sql" overwrite="true"/>
         </if>
     </target>

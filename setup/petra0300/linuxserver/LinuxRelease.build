@@ -97,8 +97,10 @@
 		<if test="${framework::get-target-framework() == 'mono-2.0'}" >
 			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db"
 						tofile="${setupDir}/db30/demo.db"/>
-			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createdb-pg.sql"
-						tofile="${setupDir}/db30/createdb-pg.sql"/>
+			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql"
+						tofile="${setupDir}/db30/createtables-PostgreSQL.sql"/>
+			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql"
+						tofile="${setupDir}/db30/createconstraints-PostgreSQL.sql"/>
 			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-pg.sql"
 						tofile="${setupDir}/db30/demodata-pg.sql"/>	
 			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/INSTALL"
