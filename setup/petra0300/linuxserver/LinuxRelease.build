@@ -21,6 +21,7 @@
         <mkdir dir="${setupDir}/bin30"/>
         <mkdir dir="${setupDir}/bin30/locale/"/>
         <mkdir dir="${setupDir}/db30"/>
+        <mkdir dir="${setupDir}/log30"/>
         <mkdir dir="${setupDir}/etc30"/>
         <mkdir dir="${setupDir}/reports30"/>
         <mkdir dir="${setupDir}/sql30"/>
@@ -120,6 +121,7 @@
 			<ExecCmd program="sh" commandline="/C &quot;chmod a+x ${setupDir}/*.sh&quot;"/>
 			<!-- make sure that the script files are in unix format -->
 			<ExecCmd program="sh" commandline="/C &quot;for f in ${setupDir}/*.sh; do dos2unix -o $f; done;&quot;"/>
+			<ExecCmd program="sh" commandline="/C &quot;ln -s ${setupDir}/etc30/PetraServerConsole-postgresql.config ${setupDir}/etc30/PetraServerConsole.config&quot;"/>
 			
 			<ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}; cd ..; tar czpf openpetraorg-${ReleaseVersion}.tar.gz *; mv openpetraorg-${ReleaseVersion}.tar.gz ..&quot;"/>
 		</if>

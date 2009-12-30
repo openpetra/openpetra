@@ -49,6 +49,7 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="AServer">The Database Server</param>
         /// <param name="APort">the port that the db server is running on</param>
+        /// <param name="ADatabaseName">the database that we want to connect to</param>
         /// <param name="AUsername">The username for opening the PostgreSQL connection</param>
         /// <param name="APassword">The password for opening the PostgreSQL connection</param>
         /// <param name="AConnectionString">The connection string; if it is not empty, it will overrule the previous parameters</param>
@@ -56,6 +57,7 @@ namespace Ict.Common.DB
         /// <returns>NpgsqlConnection, but not opened yet (null if connection could not be established).
         /// </returns>
         public IDbConnection GetConnection(String AServer, String APort,
+            String ADatabaseName,
             String AUsername, ref String APassword,
             ref String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler)
@@ -87,7 +89,7 @@ namespace Ict.Common.DB
             if (AConnectionString == "")
             {
                 AConnectionString = "Server=" + AServer + ";Port=" + APort + ";User Id=" + AUsername +
-                                    ";Database=petra;ConnectionLifeTime=60;Password=";
+                                    ";Database=" + ADatabaseName + ";ConnectionLifeTime=60;Password=";
             }
 
             try

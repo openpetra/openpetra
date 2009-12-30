@@ -348,7 +348,7 @@
         </if>
         <if test="${DBMS.Type=='postgresql'}">
              <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver;" database="openpetra" failonerror="false"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER';" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER';" database="openpetra" failonerror="false"/>
              <property name="tempfile" value="${path::get-temp-path()}/userpermissions.sql"/>
              <if test="${framework::get-target-framework() == 'mono-2.0'}" >
                  <!-- at least on Mac, the tmp directory of the current user is returned, which the postgres user has no access to -->
@@ -560,6 +560,12 @@
         <exec program="${Poedit.gettext}" workingdir="${WorkingDir}" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${collectedGettext.file} -o ${TargetLanguage.Pofile}"/>
     </target>
 
+    <target name="translationCompilePOFile">
+        <!-- compile the language file for delivery -->
+        <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES" failonerror="false"/>
+        <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.PofileWithPath} -o ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES/i18n.mo"/>
+	</target>
+
     <target name="translation">
 
         <!-- create initial version of .po file if it does not exist yet -->
@@ -581,9 +587,7 @@
         <property name="solutionName" value="ServerAdmin"/>
         <call target="translationTemplate"/>
 
-        <!-- compile the language file for delivery -->
-        <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES" failonerror="false"/>
-        <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.PofileWithPath} -o ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES/i18n.mo"/>
+		<call target="translationCompilePOFile"/>
     </target>
 
 	<target name="loc">
@@ -812,9 +816,9 @@
         </ExecDotNet>
     </target>
     
-    <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, setupStandalone, setupRemote, setupLinuxServer"/>
+    <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, translationCompilePOFile, setupStandalone, setupRemote, setupLinuxServer"/>
 	<!-- problem: one version for mac and Windows? what about patching? generateWinforms; 2 versions? -->
-    <target name="buildReleaseLinux" depends="refreshSudo, switchToDebug, createSQLiteDB, createPostgreSQLDB, generateWinforms, compileRelease, setupLinuxServer"/>
+    <target name="buildReleaseLinux" depends="refreshSudo, switchToDebug, createSQLiteDB, createPostgreSQLDB, generateWinforms, compileRelease, translationCompilePOFile, setupLinuxServer"/>
     <target name="buildRelease">
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <call target="buildReleaseLinux"/>

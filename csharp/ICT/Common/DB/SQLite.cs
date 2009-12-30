@@ -47,12 +47,14 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="AServer">The Database file</param>
         /// <param name="APort">the port that the db server is running on</param>
+        /// <param name="ADatabaseName">not in use</param>
         /// <param name="AUsername">not in use</param>
         /// <param name="APassword">The password for opening the database</param>
         /// <param name="AConnectionString">not in use</param>
         /// <param name="AStateChangeEventHandler">for connection state changes</param>
         /// <returns>the connection</returns>
         public IDbConnection GetConnection(String AServer, String APort,
+            String ADatabaseName,
             String AUsername, ref String APassword,
             ref String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler)

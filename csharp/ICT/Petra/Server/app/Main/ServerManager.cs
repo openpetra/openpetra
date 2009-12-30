@@ -314,8 +314,6 @@ namespace Ict.Petra.Server.App.Main
             String ServerName;
             String ServerIPAddresses;
             String ODBCDsnAppSetting;
-            String PostreSQLServer;
-            String PostreSQLServerPort;
             TDBType RDBMSTypeAppSetting;
             Int16 ServerBaseIPAddress;
             Int16 ServerDebugLevel;
@@ -338,11 +336,10 @@ namespace Ict.Petra.Server.App.Main
             // Server.ODBC_DSN
             ODBCDsnAppSetting = AppSettingsManager.GetValue("Server.ODBC_DSN", false);
 
-            // Server.PostreSQLServer
-            PostreSQLServer = AppSettingsManager.GetValue("Server.PostgreSQLServer", "localhost");
-
-            // Server.PostreSQLServerPort
-            PostreSQLServerPort = AppSettingsManager.GetValue("Server.PostgreSQLServerPort", "5432");
+            string PostgreSQLServer = AppSettingsManager.GetValue("Server.PostgreSQLServer", "localhost");
+            string PostgreSQLServerPort = AppSettingsManager.GetValue("Server.PostgreSQLServerPort", "5432");
+            string PostgreSQLUserName = AppSettingsManager.GetValue("Server.PostgreSQLUserName", "petraserver");
+            string PostgreSQLDatabaseName = AppSettingsManager.GetValue("Server.PostgreSQLDatabaseName", "openpetra");
 
             if (AppSettingsManager.HasValue("Server.LogFile"))
             {
@@ -409,10 +406,11 @@ namespace Ict.Petra.Server.App.Main
                 Utilities.DetermineExecutingOS(),
                 RDBMSTypeAppSetting,
                 ODBCDsn,
-                PostreSQLServer,
-                PostreSQLServerPort,
-                "petraserver", // TSrvSetting.PostgreSQLUsername
-                ServerCredentials, // TSrvSetting.PostgreSQLPassword
+                PostgreSQLServer,
+                PostgreSQLServerPort,
+                PostgreSQLDatabaseName,
+                PostgreSQLUserName,
+                ServerCredentials,
                 ServerBaseIPAddress,
                 ServerDebugLevel,
                 ServerLogFile,
@@ -480,6 +478,7 @@ namespace Ict.Petra.Server.App.Main
                 DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
                     TSrvSetting.PostgreSQLServer,
                     TSrvSetting.PostgreSQLServerPort,
+                    TSrvSetting.PostgreSQLDatabaseName,
                     TSrvSetting.DBUsername,
                     TSrvSetting.DBPassword,
                     "");
@@ -537,6 +536,7 @@ namespace Ict.Petra.Server.App.Main
                             DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
                                 TSrvSetting.PostgreSQLServer,
                                 TSrvSetting.PostgreSQLServerPort,
+                                TSrvSetting.PostgreSQLDatabaseName,
                                 TSrvSetting.DBUsername,
                                 TSrvSetting.DBPassword,
                                 "");

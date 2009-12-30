@@ -43,12 +43,14 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="ADSN">The DSN defining the connection to the database server</param>
         /// <param name="APort">not in use</param>
+        /// <param name="ADatabaseName">not in use</param>
         /// <param name="AUsername">odbc user name</param>
         /// <param name="APassword">The password for opening the database</param>
         /// <param name="AConnectionString">not in use</param>
         /// <param name="AStateChangeEventHandler">for connection state changes</param>
         /// <returns>the connection</returns>
         public IDbConnection GetConnection(String ADSN, String APort,
+            String ADatabaseName,
             String AUsername, ref String APassword,
             ref String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler)

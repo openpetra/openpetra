@@ -96,6 +96,7 @@ namespace Ict.Common.DB
         /// <param name="ADataBaseRDBMS">the database functions for the selected type of database</param>
         /// <param name="AServer">The Database Server</param>
         /// <param name="APort">the port that the db server is running on</param>
+        /// <param name="ADatabaseName">the database to connect to</param>
         /// <param name="AUsername">The username for opening the connection</param>
         /// <param name="APassword">The password for opening the connection</param>
         /// <param name="AConnectionString">The connection string; if it is not empty, it will overrule the previous parameters</param>
@@ -105,6 +106,7 @@ namespace Ict.Common.DB
         public IDbConnection GetConnection(IDataBaseRDBMS ADataBaseRDBMS,
             String AServer,
             String APort,
+            String ADatabaseName,
             String AUsername,
             ref String APassword,
             String AConnectionString,
@@ -115,6 +117,7 @@ namespace Ict.Common.DB
             FConnectionString = AConnectionString;
 
             return ADataBaseRDBMS.GetConnection(AServer, APort,
+                ADatabaseName,
                 AUsername, ref APassword,
                 ref FConnectionString,
                 AStateChangeEventHandler);

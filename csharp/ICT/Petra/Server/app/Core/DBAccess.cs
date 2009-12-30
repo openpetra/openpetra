@@ -87,6 +87,7 @@ namespace Ict.Petra.Server.App.Core.Security
         /// <param name="ADataBaseType"></param>
         /// <param name="ADsn"></param>
         /// <param name="ADBPort"></param>
+        /// <param name="ADatabaseName"></param>
         /// <param name="AUsername"></param>
         /// <param name="APassword"></param>
         /// <param name="AConnectionString"></param>
@@ -94,6 +95,7 @@ namespace Ict.Petra.Server.App.Core.Security
         public void EstablishDBConnection(TDBType ADataBaseType,
             String ADsn,
             String ADBPort,
+            String ADatabaseName,
             String AUsername,
             String APassword,
             String AConnectionString,
@@ -103,7 +105,7 @@ namespace Ict.Petra.Server.App.Core.Security
             FCache.Invalidate();
 
             // inherited
-            EstablishDBConnection(ADataBaseType, ADsn, ADBPort, AUsername, APassword, AConnectionString);
+            EstablishDBConnection(ADataBaseType, ADsn, ADBPort, ADatabaseName, AUsername, APassword, AConnectionString);
         }
 
         /// <summary>

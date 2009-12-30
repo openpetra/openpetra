@@ -87,12 +87,14 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="AServer"></param>
         /// <param name="APort"></param>
+        /// <param name="ADatabaseName"></param>
         /// <param name="AUsername"></param>
         /// <param name="APassword"></param>
         /// <param name="AConnectionString"></param>
         /// <param name="AStateChangeEventHandler"></param>
         /// <returns></returns>
         IDbConnection GetConnection(String AServer, String APort,
+            String ADatabaseName,
             String AUsername, ref String APassword,
             ref String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler);
@@ -367,6 +369,7 @@ namespace Ict.Common.DB
         /// <param name="ADataBaseType">Type of the RDBMS to connect to. At the moment only PostgreSQL is officially supported.</param>
         /// <param name="ADsnOrServer">In case of an ODBC Connection: DSN (Data Source Name). In case of a PostgreSQL connection: Server.</param>
         /// <param name="ADBPort">In case of a PostgreSQL connection: port that the db server is running on.</param>
+        /// <param name="ADatabaseName">the database to connect to</param>
         /// <param name="AUsername">User which should be used for connecting to the DB server</param>
         /// <param name="APassword">Password of the User which should be used for connecting to the DB server</param>
         /// <param name="AConnectionString">If this is not empty, it is prefered over the Dsn and Username and Password</param>
@@ -375,6 +378,7 @@ namespace Ict.Common.DB
         public void EstablishDBConnection(TDBType ADataBaseType,
             String ADsnOrServer,
             String ADBPort,
+            String ADatabaseName,
             String AUsername,
             String APassword,
             String AConnectionString)
@@ -412,6 +416,7 @@ namespace Ict.Common.DB
                     FDataBaseRDBMS,
                     ADsnOrServer,
                     ADBPort,
+                    ADatabaseName,
                     AUsername,
                     ref APassword,
                     AConnectionString,
