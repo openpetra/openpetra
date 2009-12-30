@@ -72,6 +72,8 @@
                 <include name="*.config" />
             </fileset>
         </copy>
+		<copy file="${OpenPetraRoot.dir}/csharp/ICT/Testing/secretkey.txt"
+			tofile="${setupDir}/etc30/secretkey.dat"/>
 
         <copy todir="${setupDir}/manuals30">
             <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/releasenotes/">

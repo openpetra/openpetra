@@ -24,6 +24,7 @@ Name: {app}/reports30
 Name: {app}/resources30
 Name: {userappdata}/OpenPetra.org/tmp30
 Name: {userappdata}/OpenPetra.org/reports30
+Name: {userappdata}/OpenPetra.org/etc30
 
 [Files]
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30
@@ -52,18 +53,19 @@ Source: ..\..\..\csharp\ICT\Petra\Definitions\UINavigation.yml; DestDir: {app}/b
 Source: ..\i18n\*.mo; DestDir: {app}/bin30; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\XmlReports\reports.dtd; DestDir: {app}/reports30
 Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30
-Source: PetraClientRemote.config; DestDir: {app}; DestName: PetraClient-Remote-3.0.config
+Source: PetraClientRemote.config; DestDir: {app}/etc30; DestName: PetraClient-Remote.config
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
 Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
 Source: ..\..\..\resources\*.png; DestDir: {app}/resources30
 Source: ..\..\..\LICENSE; DestDir: {app}
 Source: version.txt; DestDir: {app}/bin30
+Source: ..\..\..\csharp\ICT\Testing\secretkey.txt; DestDir: {app}/etc30/secretkey.dat
 
 [Icons]
-Name: {group}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-Remote-3.0.config"" -AutoLogin:demo"
+Name: {group}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClient-Remote.config"" -AutoLogin:demo"
 Name: {group}\{cm:cmIconReleaseNotesLabel}; Filename: {app}\manuals30\{cm:cmReleaseNotesFile}; WorkingDir: {app}/manuals30; Comment: {cm:cmIconReleaseNotesComment}
-Name: {commondesktop}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: Start OpenPetra.org; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-Remote-3.0.config"" -AutoLogin:demo"; Tasks: iconDesktop
+Name: {commondesktop}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: Start OpenPetra.org; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClient-Remote.config"" -AutoLogin:demo"; Tasks: iconDesktop
 
 [Tasks]
 Name: iconDesktop; Description: {cm:cmIconTask}
@@ -172,10 +174,10 @@ var
 begin
   if CurStep=ssPostInstall then
   begin
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'Petra.PathTemp" value="TOREPLACE"', 'Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', 'Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'PETRAHOST', strServer, true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'PETRAPORT', IntToStr(NetPort), true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.PathTemp" value="TOREPLACE"', 'Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', 'Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'PETRAHOST', strServer, true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'PETRAPORT', IntToStr(NetPort), true);
     ReplaceInTextFile(ExpandConstant('{app}/bin30/version.txt'), 'ReleaseVersion', '#RELEASEVERSION', true);
   end;
 
