@@ -126,6 +126,9 @@
 			<ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; ln -s PetraServerConsole-postgresql.config PetraServerConsole.config&quot;"/>
 			
 			<ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ../openpetraorg-mono-${ReleaseVersion}.tar.gz *&quot;"/>
+
+			<!-- to avoid problem with symbolic link with delete dir task -->
+			<ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; rm PetraServerConsole.config&quot;"/>
 		</if>
 		<if test="${framework::get-target-framework() == 'net-2.0'}" >
 			<!-- this does not keep the executable flag; need this to make the patch for windows clients -->
@@ -136,8 +139,6 @@
 			</tar>
 		</if>
 
-		<!-- to avoid problem with symbolic link with delete dir task -->
-		<ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; rm PetraServerConsole.config&quot;"/>
         <delete dir="${setupDir}"/>
     </target>
 </project>
