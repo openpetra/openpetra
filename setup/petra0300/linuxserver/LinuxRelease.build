@@ -121,7 +121,7 @@
 			<ExecCmd program="sh" commandline="/C &quot;chmod a+x ${setupDir}/*.sh&quot;"/>
 			<!-- make sure that the script files are in unix format -->
 			<ExecCmd program="sh" commandline="/C &quot;for f in ${setupDir}/*.sh; do dos2unix -o $f; done;&quot;"/>
-			<ExecCmd program="sh" commandline="/C &quot;ln -s ${setupDir}/etc30/PetraServerConsole-postgresql.config ${setupDir}/etc30/PetraServerConsole.config&quot;"/>
+			<ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; ln -s PetraServerConsole-postgresql.config PetraServerConsole.config&quot;"/>
 			
 			<ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}; cd ..; tar czpf openpetraorg-${ReleaseVersion}.tar.gz *; mv openpetraorg-${ReleaseVersion}.tar.gz ..&quot;"/>
 		</if>
@@ -134,6 +134,8 @@
 			</tar>
 		</if>
 
+		<!-- to avoid problem with symbolic link with delete dir task -->
+		<ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; rm PetraServerConsole.config&quot;"/>
         <delete dir="${setupDir}"/>
     </target>
 </project>

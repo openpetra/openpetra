@@ -231,7 +231,7 @@
         <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/*.txt" /></fileset></delete>
     </target>
     
-    <target name="createSQLStatements" depends="compilePetraTools" description="Create the SQL files.">
+    <target name="createSQLStatements" depends="compileCommon, compilePetraTools" description="Create the SQL files.">
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
         <!-- we don't need SQL statements for sqlite, but only for the other DBMS -->
         <if test="${DBMS.Type!='sqlite'}">
