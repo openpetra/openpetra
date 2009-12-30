@@ -98,7 +98,7 @@ public class TWriteSQL
         }
 
         WriteSequences(sw, ATargetDatabase, AStore);
-        
+
         sw.Close();
         System.Console.WriteLine("Success: file written: {0}", AOutputFile);
 
@@ -161,8 +161,8 @@ public class TWriteSQL
         System.Console.WriteLine("Success: file written: {0}", LoadDataFile);
 
         string CreateTablesFile = System.IO.Path.GetDirectoryName(AOutputFile) +
-                              System.IO.Path.DirectorySeparatorChar +
-        					  "createtables-" + ATargetDatabase.ToString() + ".sql";
+                                  System.IO.Path.DirectorySeparatorChar +
+                                  "createtables-" + ATargetDatabase.ToString() + ".sql";
         outPutFileStream = new FileStream(CreateTablesFile,
             FileMode.Create, FileAccess.Write);
         sw = new StreamWriter(outPutFileStream);
@@ -174,7 +174,7 @@ public class TWriteSQL
                 Environment.Exit(1);
             }
         }
-        
+
         WriteSequences(sw, ATargetDatabase, AStore);
 
         sw.Close();
@@ -182,8 +182,8 @@ public class TWriteSQL
         System.Console.WriteLine("Success: file written: {0}", CreateTablesFile);
 
         string CreateConstraintsAndIndexesFile = System.IO.Path.GetDirectoryName(AOutputFile) +
-                              System.IO.Path.DirectorySeparatorChar +
-                              "createconstraints-" + ATargetDatabase.ToString() + ".sql";
+                                                 System.IO.Path.DirectorySeparatorChar +
+                                                 "createconstraints-" + ATargetDatabase.ToString() + ".sql";
         outPutFileStream = new FileStream(CreateConstraintsAndIndexesFile,
             FileMode.Create, FileAccess.Write);
         sw = new StreamWriter(outPutFileStream);
@@ -238,6 +238,7 @@ public class TWriteSQL
                 }
             }
         }
+
         return true;
     }
 

@@ -210,7 +210,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 // don't translate digits?
                 return false;
             }
-            
+
             // careful with \n and \r in the string; that is not allowed by gettext
             if (ALabelText.Contains("\\r") || ALabelText.Contains("\\n"))
             {
