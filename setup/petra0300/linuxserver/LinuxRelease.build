@@ -125,11 +125,11 @@
 			<ExecCmd program="sh" commandline="/C &quot;for f in ${setupDir}/*.sh; do dos2unix -o $f; done;&quot;"/>
 			<ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; ln -s PetraServerConsole-postgresql.config PetraServerConsole.config&quot;"/>
 			
-			<ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}; cd ..; tar czpf openpetraorg-${ReleaseVersion}.tar.gz *; mv openpetraorg-${ReleaseVersion}.tar.gz ..&quot;"/>
+			<ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ../openpetraorg-mono-${ReleaseVersion}.tar.gz *&quot;"/>
 		</if>
 		<if test="${framework::get-target-framework() == 'net-2.0'}" >
 			<!-- this does not keep the executable flag; need this to make the patch for windows clients -->
-			<tar destfile="openpetraorg-${ReleaseVersion}.tar.gz" compression="GZip">
+			<tar destfile="openpetraorg-win-${ReleaseVersion}.tar.gz" compression="GZip">
 				<fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseVersion}">
 					<include name="**/*" />
 				</fileset>
