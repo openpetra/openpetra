@@ -352,9 +352,9 @@ namespace Ict.Petra.Client.App.Core
 
             if (URunAsRemote == true)
             {
-                UPetra_Path_Patches = FAppSettings.GetValue("Petra.Path.Patches");
-                UPetra_Path_Dat = FAppSettings.GetValue("Petra.Path.Dat");
-                UPetra_Path_RemotePatches = FAppSettings.GetValue("Petra.Path.RemotePatches");
+                UPetra_Path_Patches = FAppSettings.GetValue("OpenPetra.Path.Patches");
+                UPetra_Path_Dat = FAppSettings.GetValue("OpenPetra.Path.Dat");
+                UPetra_Path_RemotePatches = FAppSettings.GetValue("OpenPetra.Path.RemotePatches");
 
                 // check whether the config file refers to http: or samba directory
                 // or should we check for http anyways?
