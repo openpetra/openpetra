@@ -69,6 +69,7 @@ class Program
             db.EstablishDBConnection(dbtype,
                 settings.GetOptValue("Server.ODBC_DSN"),
                 "",
+                "",
                 settings.GetOptValue("username"),
                 settings.GetOptValue("password"),
                 "");
