@@ -50,4 +50,14 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Ict.Common.csproj">
+      <Project>{ED73B0A3-AC08-4FB0-A18C-2816C9AC5588}</Project>
+      <Name>Ict.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\IO\Ict.Common.IO.csproj">
+      <Project>{31A5F128-F78F-4957-AA0E-B0F6005A2614}</Project>
+      <Name>Ict.Common.IO</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

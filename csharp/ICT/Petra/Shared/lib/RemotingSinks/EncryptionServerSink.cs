@@ -27,6 +27,7 @@ using System;
 using System.IO;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Messaging;
+using Ict.Common.IO;
 
 namespace Ict.Petra.Shared.RemotingSinks.Encryption
 {
@@ -35,15 +36,15 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
     /// </summary>
     public class EncryptionServerSink : BaseChannelSinkWithProperties, IServerChannelSink
     {
+        private byte[] FEncryptionKey;
         private IServerChannelSink FNextSink;
-        private EncryptionHelper FEncryptionHelper;
 
         /// <summary>
         /// constructor
         /// </summary>
         public EncryptionServerSink(IServerChannelSink ANextSink, byte[] AEncryptionKey)
         {
-            FEncryptionHelper = new EncryptionHelper(AEncryptionKey);
+            FEncryptionKey = AEncryptionKey;
             FNextSink = ANextSink;
         }
 
@@ -114,10 +115,10 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
         /// </summary>
         protected void ProcessRequest(IMessage message, ITransportHeaders headers, ref Stream stream, ref object state)
         {
-            if (headers[EncryptionHelper.ENCRYPTIONNAME] != null)
+            if (headers[EncryptionRijndael.GetEncryptionName()] != null)
             {
-                byte[] EncryptionIV = Convert.FromBase64String((String)headers[EncryptionHelper.ENCRYPTIONNAME + "IV"]);
-                stream = FEncryptionHelper.Decrypt(stream, EncryptionIV);
+                byte[] EncryptionIV = Convert.FromBase64String((String)headers[EncryptionRijndael.GetEncryptionName() + "IV"]);
+                stream = EncryptionRijndael.Decrypt(FEncryptionKey, stream, EncryptionIV);
                 state = true;
             }
         }
@@ -130,9 +131,9 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
             if (state != null)
             {
                 byte[] EncryptionIV;
-                stream = FEncryptionHelper.Encrypt(stream, out EncryptionIV);
-                headers[EncryptionHelper.ENCRYPTIONNAME] = "Yes";
-                headers[EncryptionHelper.ENCRYPTIONNAME + "IV"] = Convert.ToBase64String(EncryptionIV);
+                stream = EncryptionRijndael.Encrypt(FEncryptionKey, stream, out EncryptionIV);
+                headers[EncryptionRijndael.GetEncryptionName()] = "Yes";
+                headers[EncryptionRijndael.GetEncryptionName() + "IV"] = Convert.ToBase64String(EncryptionIV);
             }
         }
     }

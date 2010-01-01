@@ -60,6 +60,9 @@
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.Interfaces.Plugins">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.Plugins.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MSysMan">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>

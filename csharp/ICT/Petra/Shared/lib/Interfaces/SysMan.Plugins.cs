@@ -24,29 +24,22 @@
  *
  ************************************************************************/
 using System;
-using System.IO;
-using System.Security.Cryptography;
-using Ict.Common.IO;
+using System.Xml;
 
-namespace GenerateEncryptionKey
+namespace Ict.Petra.Shared.Interfaces.Plugins.MSysMan
 {
-class Program
-{
-    public static void Main(string[] args)
+    /// <summary>
+    /// This interface defines which methods need to be implemented
+    /// by a plugin for authentication of users
+    /// e.g. you can authenticate against an LDAP server
+    /// or use the authentication of another application that the users are already using
+    /// </summary>
+    public interface IUserAuthentication
     {
-        try
-        {
-            string keyfile = "../../../Testing/secretkey.txt";
-            EncryptionRijndael.CreateSecretKey(keyfile);
-            Console.WriteLine("new key has been written to " + Path.GetFullPath(keyfile));
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("error: " + e.Message);
-            Console.WriteLine("error: " + e.StackTrace);
-        }
-
-        Console.ReadLine();
+        /// <summary>
+        /// return true if the user is known and the password is correct;
+        /// otherwise returns false and an error message
+        /// </summary>
+        bool AuthenticateUser(string AUsername, string APassword, out string AMessage);
     }
-}
 }

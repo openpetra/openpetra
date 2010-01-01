@@ -74,10 +74,7 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
                 throw new RemotingException("Specified keyfile does not exist");
             }
 
-            FileStream fs = new FileStream(AKeyFile, FileMode.Open);
-            FEncryptionKey = new Byte[fi.Length];
-            fs.Read(FEncryptionKey, 0, FEncryptionKey.Length);
-            fs.Close();
+            FEncryptionKey = Ict.Common.IO.EncryptionRijndael.ReadSecretKey(AKeyFile);
         }
 
         /// <summary>

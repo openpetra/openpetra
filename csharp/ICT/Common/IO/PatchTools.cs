@@ -35,7 +35,6 @@ using System.Collections.Specialized;
 using System.Threading;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using System.Net;
 using System.Text;
 
 namespace Ict.Common.IO
@@ -1041,65 +1040,6 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// read from a website;
-        /// used to check for available patches
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        public static string ReadWebsite(string url)
-        {
-            string ReturnValue;
-
-            byte[] buf;
-            WebClient client;
-            client = new WebClient();
-            ReturnValue = null;
-            try
-            {
-                buf = client.DownloadData(url);
-
-                if ((buf != null) && (buf.Length > 0))
-                {
-                    ReturnValue = Encoding.ASCII.GetString(buf, 0, buf.Length);
-                }
-            }
-            catch (System.Net.WebException e)
-            {
-                TLogging.Log("Trying to download: " + url + Environment.NewLine +
-                    e.Message, TLoggingType.ToLogfile);
-            }
-            finally
-            {
-            }
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// download a patch or other file from a website;
-        /// used for patching the program
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="filename"></param>
-        /// <returns></returns>
-        public static Boolean DownloadFile(string url, string filename)
-        {
-            Boolean ReturnValue;
-            WebClient client;
-
-            client = new WebClient();
-            ReturnValue = false;
-            try
-            {
-                client.DownloadFile(url, filename);
-                ReturnValue = true;
-            }
-            finally
-            {
-            }
-            return ReturnValue;
-        }
-
-        /// <summary>
         /// check whether there is a patch available; if this is a remote version, try to download a patch from the server this will also get the version of the currently installed code, and the list of patches that can be installed, in local
         /// variables
         /// </summary>
@@ -1141,7 +1081,7 @@ namespace Ict.Common.IO
 
             if (FRemotePatchesPath.StartsWith("http://"))
             {
-                directoryListing = ReadWebsite(FRemotePatchesPath);
+                directoryListing = THTTPUtils.ReadWebsite(FRemotePatchesPath);
 
                 if (directoryListing == null)
                 {
@@ -1225,7 +1165,7 @@ namespace Ict.Common.IO
                                 }
                             }
 
-                            DownloadFile(FRemotePatchesPath + "/" + filename, localFile);
+                            THTTPUtils.DownloadFile(FRemotePatchesPath + "/" + filename, localFile);
                             StreamWriter sw = new StreamWriter(FPatchesPath + Path.DirectorySeparatorChar + filename + ".signature");
                             sw.WriteLine(filesignature);
                             sw.Close();
@@ -1401,7 +1341,7 @@ namespace Ict.Common.IO
                 if (FRemotePatchesPath.StartsWith("http://"))
                 {
                     remotename = FRemotePatchesPath + "/" + Path.GetFileName(patch);
-                    DownloadFile(remotename, patch);
+                    THTTPUtils.DownloadFile(remotename, patch);
                 }
                 else if (!System.IO.File.Exists(patch) && (FRemotePatchesPath.Length > 0))
                 {
