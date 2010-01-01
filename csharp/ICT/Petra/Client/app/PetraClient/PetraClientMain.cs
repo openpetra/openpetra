@@ -347,7 +347,14 @@ namespace Ict.Petra.Client.App.PetraClient
             // needs to be done before login, because the login connects to the updated server, and could go wrong because of changed interfaces
             if (TClientSettings.RunAsRemote == true)
             {
-                CheckForPatches();
+                try
+                {
+                    CheckForPatches();
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log("Problem during checking for patches: " + e.Message);
+                }
             }
 
             if (TClientSettings.RunAsStandalone == true)
