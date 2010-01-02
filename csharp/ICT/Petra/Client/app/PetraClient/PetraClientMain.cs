@@ -293,6 +293,9 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             ExceptionHandling.GApplicationShutdownCallback = Shutdown.SaveUserDefaultsAndDisconnectAndStop;
 
+            FLogging = new TLogging(TAppSettingsManager.GetValueStatic("OpenPetra.PathTemp",
+                    Path.GetTempPath()) + Path.DirectorySeparatorChar + "PetraClient.log");
+
             // seems not to work to load culture from config file etc
             // need to set environment variable before starting PetraClient?
             // ie if you want to force english: set LANGUAGE=en; PetraClient.exe -C:[..]PetraClient.exe.config
@@ -341,8 +344,6 @@ namespace Ict.Petra.Client.App.PetraClient
              */
             FSplashScreen.UpdateTexts();
 
-            FLogging = new TLogging(TClientSettings.PathTemp + "/PetraClient.log");
-
             // only do automatic patch installation on remote situation
             // needs to be done before login, because the login connects to the updated server, and could go wrong because of changed interfaces
             if (TClientSettings.RunAsRemote == true)
@@ -354,6 +355,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 catch (Exception e)
                 {
                     TLogging.Log("Problem during checking for patches: " + e.Message);
+                    TLogging.Log(e.StackTrace);
                 }
             }
 
