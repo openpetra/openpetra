@@ -1075,6 +1075,12 @@ namespace Ict.Common.IO
 
             // first get the version of the currently installed binaries
             // read from version.txt in the bin directory; it contains the currently installed version in RPM style (e.g. 3.0.0-14)
+            if (!File.Exists(FBinPath + Path.DirectorySeparatorChar + "version.txt"))
+            {
+                throw new Exception(String.Format("Cannot search for new patch, since I cannot find file {0}", FBinPath +
+                        Path.DirectorySeparatorChar + "version.txt"));
+            }
+
             StreamReader srVersion = new StreamReader(FBinPath + Path.DirectorySeparatorChar + "version.txt");
             FCurrentlyInstalledVersion = new TFileVersionInfo(srVersion.ReadLine());
             srVersion.Close();
