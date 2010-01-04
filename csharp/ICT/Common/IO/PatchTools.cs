@@ -1334,9 +1334,9 @@ namespace Ict.Common.IO
             // copy the PatchTool.exe and required files from the currently installed application to a temp directory
             foreach (string patchExeFile in PatchExecutableFiles)
             {
-                if (File.Exists(FInstallPath + Path.DirectorySeparatorChar + patchExeFile))
+                if (File.Exists(FInstallPath + patchExeFile.Substring("openpetraorg".Length)))
                 {
-                    System.IO.File.Copy(FInstallPath + Path.DirectorySeparatorChar + patchExeFile,
+                    System.IO.File.Copy(FInstallPath + patchExeFile.Substring("openpetraorg".Length),
                         APatchDirectory + Path.DirectorySeparatorChar + Path.GetFileName(patchExeFile), true);
                 }
             }

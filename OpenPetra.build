@@ -766,10 +766,12 @@
               workingdir="${path::get-directory-name(Current.File)}"/>
     </target>
     <target name="setupStandalone">
+        <echo file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/version.txt">${ReleaseVersion}</echo>
         <property name="SetupOriginal.File" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/standalone.iss"/>
         <call target="setupTemplate"/>
     </target>
     <target name="setupRemote">
+        <echo file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin/version.txt">${ReleaseVersion}</echo>
         <property name="SetupOriginal.File" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin/remote.iss"/>
         <call target="setupTemplate"/>
     </target>

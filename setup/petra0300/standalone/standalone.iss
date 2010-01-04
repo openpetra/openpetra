@@ -121,7 +121,6 @@ begin
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerAdminConsole.exe.config', ExpandConstant('{app}/PetraServerAdminConsole-3.0.config'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'OpenPetra.PathTemp" value="TOREPLACE"', 'OpenPetra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', 'Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"', true);
-    ReplaceInTextFile(ExpandConstant('{app}/bin30/version.txt'), 'ReleaseVersion', '{#RELEASEVERSION}', true);
   end;
 
   // allow the .net remoting communication between client and server
