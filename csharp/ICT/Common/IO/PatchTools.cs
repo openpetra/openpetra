@@ -180,19 +180,26 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// returns the version numbers of the patch;
+        /// e.g. Patch-win_2.2.35_2.2.43.zip should return 2.2.35 and 2.2.43
+        /// </summary>
+        /// <param name="APatchZipFile"></param>
+        /// <returns></returns>
+        public static StringCollection GetVersionsFromDiffZipName(string APatchZipFile)
+        {
+            return StringHelper.StrSplit(Path.GetFileNameWithoutExtension(APatchZipFile).Substring(Path.GetFileNameWithoutExtension(APatchZipFile).
+                    IndexOf("_") + 1), "_");
+        }
+
+        /// <summary>
         /// what is the latest patch; look at the name of the diff file
         /// </summary>
         /// <param name="APatchZipFile"></param>
         /// <returns></returns>
         public static TFileVersionInfo GetLatestPatchVersionFromDiffZipName(String APatchZipFile)
         {
-            StringCollection versions;
+            StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
 
-            // example Patch2.2.35_2.2.43.zip
-            // Latest Version in this example should be 2.2.4.3
-            versions = StringHelper.StrSplit(Path.GetFileNameWithoutExtension(APatchZipFile).Substring(5), "_");
-
-            // Length of 'Patch'
             return new TFileVersionInfo(versions[1]);
         }
 
@@ -203,14 +210,8 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public static TFileVersionInfo GetStartVersionFromDiffZipName(String APatchZipFile)
         {
-            StringCollection versions;
+            StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
 
-            // example Patch2.2.35_2.2.43.zip
-            // Start Version in this example should be 2.2.3.5
-
-            versions = StringHelper.StrSplit(Path.GetFileNameWithoutExtension(APatchZipFile).Substring(5), "_");
-
-            // Length of 'Patch'
             return new TFileVersionInfo(versions[0]);
         }
 
@@ -221,15 +222,9 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public Boolean PatchApplies(String APatchZipFile)
         {
-            StringCollection versions;
-            TFileVersionInfo patchStartVersion;
+            StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
+            TFileVersionInfo patchStartVersion = new TFileVersionInfo(versions[0]);
 
-            // example Patch2.2.35_2.2.43.zip
-            // should compare the first versionnumber in the patch with the current version (self)
-            versions = StringHelper.StrSplit(Path.GetFileNameWithoutExtension(APatchZipFile).Substring(5), "_");
-
-            // Length of 'Patch'
-            patchStartVersion = new TFileVersionInfo(versions[0]);
             return patchStartVersion.Compare(this) == 0;
         }
     }
@@ -1130,11 +1125,14 @@ namespace Ict.Common.IO
                             FListOfNewPatches.Add(LocalName, LocalName);
                         }
                     }
-                    else if (filename.ToLower().EndsWith(".r")
-                             || filename.ToLower().EndsWith(".dll")
+                    else if (filename.Contains("Setup") && filename.EndsWith(".exe"))
+                    {
+                        // ignore setup executable
+                    }
+                    else if (filename.ToLower().EndsWith(".dll")
                              || filename.ToLower().EndsWith(".exe"))
                     {
-                        // download .r/.dll/.exe files from the netpatches directory if there is no file with same date already
+                        // download .dll/.exe files from the netpatches directory if there is no file with same date already
                         if (System.IO.File.Exists(FPatchesPath + Path.DirectorySeparatorChar + filename + ".signature"))
                         {
                             StreamReader sr = new StreamReader(FPatchesPath + Path.DirectorySeparatorChar + filename + ".signature");
@@ -1204,7 +1202,7 @@ namespace Ict.Common.IO
             }
 
             // create a list of patches that should be installed
-            string[]  patchfiles = System.IO.Directory.GetFiles(FPatchesPath, "Patch*.zip");
+            string[] patchfiles = System.IO.Directory.GetFiles(FPatchesPath, "Patch*.zip");
 
             foreach (string filename in patchfiles)
             {
@@ -1323,20 +1321,24 @@ namespace Ict.Common.IO
             ArrayList PatchExecutableFiles;
 
             PatchExecutableFiles = new ArrayList();
-            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "Ict.Common.dll");
-            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "Ict.Common.IO.dll");
-            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "ICSharpCode.SharpZipLib.dll");
-            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "patchtool.exe");
-            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "intl.dll");
-            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "Mono.Posix.dll");
-            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "Mono.Security.dll");
-            PatchExecutableFiles.Add("bin" + FVersionPostFix + Path.DirectorySeparatorChar + "MonoPosixHelper.dll");
+            string binPath = "openpetraorg" + Path.DirectorySeparatorChar + "bin" + FVersionPostFix + Path.DirectorySeparatorChar;
+            PatchExecutableFiles.Add(binPath + "Ict.Common.dll");
+            PatchExecutableFiles.Add(binPath + "Ict.Common.IO.dll");
+            PatchExecutableFiles.Add(binPath + "ICSharpCode.SharpZipLib.dll");
+            PatchExecutableFiles.Add(binPath + "PatchTool.exe");
+            PatchExecutableFiles.Add(binPath + "intl.dll");
+            PatchExecutableFiles.Add(binPath + "Mono.Posix.dll");
+            PatchExecutableFiles.Add(binPath + "Mono.Security.dll");
+            PatchExecutableFiles.Add(binPath + "MonoPosixHelper.dll");
 
             // copy the PatchTool.exe and required files from the currently installed application to a temp directory
             foreach (string patchExeFile in PatchExecutableFiles)
             {
-                System.IO.File.Copy(FInstallPath + Path.DirectorySeparatorChar + patchExeFile,
-                    APatchDirectory + Path.DirectorySeparatorChar + Path.GetFileName(patchExeFile), true);
+                if (File.Exists(FInstallPath + Path.DirectorySeparatorChar + patchExeFile))
+                {
+                    System.IO.File.Copy(FInstallPath + Path.DirectorySeparatorChar + patchExeFile,
+                        APatchDirectory + Path.DirectorySeparatorChar + Path.GetFileName(patchExeFile), true);
+                }
             }
 
             // check for the latest version of those files in the new patches

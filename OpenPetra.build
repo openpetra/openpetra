@@ -809,7 +809,7 @@
     </target>
     
     <target name="createPatch">
-        <ExecDotNet program="${PetraToolsExe.dir}/PatchTool.exe" commandline="-action:create -Petra.PathTemp:u:/tmp/patch -deliverypath:u:/delivery -oldversion:0.0.8-0 -newversion:0.0.10-0" failonerror="true">
+        <ExecDotNet program="${PetraToolsExe.dir}/PatchTool.exe" commandline="-action:create -OpenPetra.PathTemp:u:/tmp/patch -deliverypath:u:/delivery -appname:openpetraorg-win -oldversion:0.0.8-0 -newversion:0.0.10-0" failonerror="true">
             <environment>
                 <variable name="PATH" path="${environment::get-variable('PATH')};${OpenPetraRoot.dir}/csharp/ThirdParty/bsdiff"/>
             </environment>

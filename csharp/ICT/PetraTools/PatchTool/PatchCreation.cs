@@ -32,13 +32,11 @@ using Ict.Common.IO;
 
 namespace Ict.Tools.PatchTool
 {
-/// <summary>
-/// create a patch file between 2 tar gz files
-/// </summary>
+    /// <summary>
+    /// create a patch file between 2 tar gz files
+    /// </summary>
     public class PatchCreation
     {
-        private const string APPLICATIONNAME = "openpetraorg";
-
         private static void PreparePatchTmpDirectory(String ATmpDirectory)
         {
             // empty temp directory
@@ -56,12 +54,12 @@ namespace Ict.Tools.PatchTool
             Directory.CreateDirectory(ATmpDirectory);
         }
 
-        private static void UnzipTarFile(String ATmpDirectory, String AFileName)
+        private static void UnzipTarFile(String ATmpDirectory, String AFileName, String AAppName)
         {
             string[] directories;
             PreparePatchTmpDirectory(ATmpDirectory);
 
-            // openpetraorg-0.0.10-0.tar.gz\openpetraorg-0.0.10-0.tar\openpetraorg-0.0.10-0\bin30 etc
+            // openpetraorg-0.0.10-0.tar.gz -> openpetraorg-0.0.10-0\bin30 etc
             PackTools.ExtractTarGz(ATmpDirectory, AFileName);
 
             // remove version number from directory name...
@@ -69,22 +67,22 @@ namespace Ict.Tools.PatchTool
 
             foreach (string dir in directories)
             {
-                if (Path.GetFileName(dir).IndexOf(APPLICATIONNAME + "-") == 0)
+                if (Path.GetFileName(dir).IndexOf(AAppName + "-") == 0)
                 {
-                    System.IO.Directory.Move(dir, dir.Substring(0, dir.Length - Path.GetFileName(dir).Length) + APPLICATIONNAME);
+                    System.IO.Directory.Move(dir, dir.Substring(0, dir.Length - Path.GetFileName(dir).Length) + AAppName);
                 }
             }
         }
 
-        private static String CreateDiffFiles(String ATmpDirectory, String oldPatch, String newPatch, String ARecursiveSubDir)
+        private static void CreateDiffFiles(String ATmpDirectory,
+            String ARootPatchDirectory,
+            String oldPatch,
+            String newPatch,
+            String ARecursiveSubDir)
         {
             string OldDirectory = ATmpDirectory + '/' + oldPatch + '/' + ARecursiveSubDir;
             string NewDirectory = ATmpDirectory + '/' + newPatch + '/' + ARecursiveSubDir;
-            string PatchDirectory = ATmpDirectory + '/' + "Patch" + oldPatch + '_' + newPatch;
-            string RootPatchDirectory = PatchDirectory;
-            string ReturnValue = PatchDirectory;
-
-            PatchDirectory = PatchDirectory + '/' + ARecursiveSubDir;
+            string PatchDirectory = ARootPatchDirectory + '/' + ARecursiveSubDir;
 
             if (!Directory.Exists(PatchDirectory))
             {
@@ -100,7 +98,9 @@ namespace Ict.Tools.PatchTool
 
             foreach (string dir in directories)
             {
-                CreateDiffFiles(ATmpDirectory, oldPatch, newPatch, dir.Substring((ATmpDirectory + "/" + newPatch).Length + 1));
+                CreateDiffFiles(ATmpDirectory,
+                    ARootPatchDirectory,
+                    oldPatch, newPatch, dir.Substring((ATmpDirectory + "/" + newPatch).Length + 1));
             }
 
             // compare the files file by file
@@ -125,7 +125,7 @@ namespace Ict.Tools.PatchTool
                             Directory.CreateDirectory(PatchDirectory);
                         }
 
-                        string OldPatchFile = RootPatchDirectory + "bak" + PatchDirectory.Substring(RootPatchDirectory.Length) + '/' +
+                        string OldPatchFile = ARootPatchDirectory + "bak" + PatchDirectory.Substring(ARootPatchDirectory.Length) + '/' +
                                               Path.GetFileName(filename) + ".patch";
 
                         if (System.IO.File.Exists(OldPatchFile))
@@ -153,7 +153,8 @@ namespace Ict.Tools.PatchTool
 
                         // if this is a file required for the patch program, include the new version
                         if ((Path.GetFileName(filename) == "Ict.Common.dll") || (Path.GetFileName(filename) == "Ict.Common.IO.dll")
-                            || (Path.GetFileName(filename) == "ICSharpCode.SharpZipLib.dll") || (Path.GetFileName(filename) == "patchtool.exe"))
+                            || (Path.GetFileName(filename) == "ICSharpCode.SharpZipLib.dll")
+                            || (Path.GetFileName(filename).ToLower() == "patchtool.exe"))
                         {
                             // don't compress here:
                             // the whole patch directory is zipped anyways in the end;
@@ -206,31 +207,33 @@ namespace Ict.Tools.PatchTool
 
             // todo: something about changes to config files? xml file with instructions?
             // todo: check if all files can be matched when installing the patch
-            return ReturnValue;
         }
 
         /// <summary>
         /// create a patch file containing all differences between two versions of the software
         /// </summary>
-        public static void CreateDiff(String ATmpDirectory, String ADeliveryDirectory, String oldPatch, String newPatch)
+        public static void CreateDiff(String ATmpDirectory, String ADeliveryDirectory, String AAppName, String oldPatch, String newPatch)
         {
-            String DiffDirectory;
-
             if (!System.IO.Directory.Exists(ATmpDirectory + Path.DirectorySeparatorChar + oldPatch))
             {
                 UnzipTarFile(ATmpDirectory + Path.DirectorySeparatorChar + oldPatch,
-                    ADeliveryDirectory + Path.DirectorySeparatorChar + APPLICATIONNAME + '-' + oldPatch + ".tar.gz");
+                    ADeliveryDirectory + Path.DirectorySeparatorChar + AAppName + "-" + oldPatch + ".tar.gz",
+                    AAppName.Substring(0, AAppName.IndexOf("-")));
             }
 
             if (!System.IO.Directory.Exists(ATmpDirectory + Path.DirectorySeparatorChar + newPatch))
             {
                 UnzipTarFile(ATmpDirectory + Path.DirectorySeparatorChar + newPatch,
-                    ADeliveryDirectory + Path.DirectorySeparatorChar + APPLICATIONNAME + '-' + newPatch + ".tar.gz");
+                    ADeliveryDirectory + Path.DirectorySeparatorChar + AAppName + "-" + newPatch + ".tar.gz",
+                    AAppName.Substring(0, AAppName.IndexOf("-")));
             }
 
+            string DiffDirectory = ATmpDirectory + '/' + "Patch" + AAppName.Substring(AAppName.IndexOf("-")) + "_" + oldPatch + '_' + newPatch;
+
             // clear the diff directory
-            PreparePatchTmpDirectory(ATmpDirectory + '/' + "Patch" + oldPatch + '_' + newPatch);
-            DiffDirectory = CreateDiffFiles(ATmpDirectory, oldPatch, newPatch, "");
+            PreparePatchTmpDirectory(DiffDirectory);
+
+            CreateDiffFiles(ATmpDirectory, DiffDirectory, oldPatch, newPatch, "");
 
             // put it all into a zip file
             PackTools.ZipDirectory(DiffDirectory);

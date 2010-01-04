@@ -162,6 +162,10 @@ public class TSplashScreenManager
         {
             FSplashScreenForm.ShowMessageBox(AMessage);
         }
+        else
+        {
+            MessageBox.Show(AMessage);
+        }
     }
 
     /// <summary>
@@ -174,6 +178,10 @@ public class TSplashScreenManager
         if (FSplashScreenForm != null)
         {
             FSplashScreenForm.ShowMessageBox(AMessage, ATitle);
+        }
+        else
+        {
+            MessageBox.Show(AMessage, ATitle);
         }
     }
 
@@ -188,6 +196,10 @@ public class TSplashScreenManager
         if (FSplashScreenForm != null)
         {
             FSplashScreenForm.ShowMessageBox(AMessage, ATitle, AMessageBoxIcon);
+        }
+        else
+        {
+            MessageBox.Show(AMessage, ATitle, MessageBoxButtons.OK, AMessageBoxIcon);
         }
     }
 
@@ -204,6 +216,10 @@ public class TSplashScreenManager
         {
             FSplashScreenForm.ShowMessageBox(AMessage, ATitle, AMessageBoxButtons);
             return FSplashScreenForm.MessageBoxDialogResult;
+        }
+        else
+        {
+            return MessageBox.Show(AMessage, ATitle, AMessageBoxButtons);
         }
 
         return DialogResult.Cancel;
@@ -224,6 +240,10 @@ public class TSplashScreenManager
         {
             FSplashScreenForm.ShowMessageBox(AMessage, ATitle, AMessageBoxButtons, AMessageBoxIcon);
             return FSplashScreenForm.MessageBoxDialogResult;
+        }
+        else
+        {
+            return MessageBox.Show(AMessage, ATitle, AMessageBoxButtons, AMessageBoxIcon);
         }
 
         return DialogResult.Cancel;
@@ -246,6 +266,10 @@ public class TSplashScreenManager
         {
             FSplashScreenForm.ShowMessageBox(AMessage, ATitle, AMessageBoxButtons, AMessageBoxIcon, AMessageBoxDefaultButton);
             return FSplashScreenForm.MessageBoxDialogResult;
+        }
+        else
+        {
+            return MessageBox.Show(AMessage, ATitle, AMessageBoxButtons, AMessageBoxIcon, AMessageBoxDefaultButton);
         }
 
         return DialogResult.Cancel;

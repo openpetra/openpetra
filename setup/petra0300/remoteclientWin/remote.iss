@@ -19,6 +19,7 @@ Name: de; MessagesFile: compiler:Languages\German.isl,..\language\lang-de.isl
 [Dirs]
 Name: {app}/bin30
 Name: {app}/bin30/locale/de/LC_MESSAGES
+Name: {app}/patches30
 Name: {app}/manuals30
 Name: {app}/reports30
 Name: {app}/resources30
@@ -167,10 +168,10 @@ var
 begin
   if CurStep=ssPostInstall then
   begin
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.PathTemp" value="TOREPLACE"', 'Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.Path.Patches" value="TOREPLACE"', 'Petra.Path.Patches" value="{app}/bin30/patches"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.PathTemp" value="TOREPLACE"', ExpandConstant(''Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.Path.Patches" value="TOREPLACE"', ExpandConstant('Petra.Path.Patches" value="{app}/patches30"'), true);
     ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.Path.RemotePatches" value="TOREPLACE"', 'Petra.Path.RemotePatches" value="http://www.example.org/OpenPetraPatches/"', true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', 'Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', ExpandConstant('Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"'), true);
     ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'PETRAHOST', strServer, true);
     ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'PETRAPORT', IntToStr(NetPort), true);
     ReplaceInTextFile(ExpandConstant('{app}/bin30/version.txt'), 'ReleaseVersion', '{#RELEASEVERSION}', true);

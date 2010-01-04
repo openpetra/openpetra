@@ -68,6 +68,7 @@ namespace Ict.Tools.PatchTool
                 {
                     PatchCreation.CreateDiff(TempPath,
                         appOpts.GetValue("deliverypath"),
+                        appOpts.GetValue("appname"),
                         appOpts.GetValue("oldversion"),
                         appOpts.GetValue("newversion"));
                 }
