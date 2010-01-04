@@ -3,7 +3,8 @@
 
 echo "creating database..."
 sudo -u postgres psql -c "DROP DATABASE IF EXISTS openpetra;"
-sudo -u postgres psql -c "DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver; CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER'; "
+sudo -u postgres psql -c "DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver;"
+sudo -u postgres psql -c "CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER'; "
 sudo -u postgres createdb -T template0 openpetra
 
 echo "creating tables..."
@@ -14,7 +15,7 @@ rm /tmp/createtables-PostgreSQL.sql
 
 echo "loading initial data..."
 #make sure that error messages are caught, independent of the local language of the server
-echo "set lc_messages to 'en_GB.UTF-8';" > /tmp/demodata-PostgreSQL.sql
+#echo "set lc_messages to 'en_GB.UTF-8';" > /tmp/demodata-PostgreSQL.sql
 cat db30/demodata-PostgreSQL.sql >> /tmp/demodata-PostgreSQL.sql
 sudo -u postgres psql openpetra -q < /tmp/demodata-PostgreSQL.sql | grep -e "ERROR|CONTEXT"
 rm /tmp/demodata-PostgreSQL.sql
