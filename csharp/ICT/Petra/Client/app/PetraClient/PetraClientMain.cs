@@ -272,8 +272,6 @@ namespace Ict.Petra.Client.App.PetraClient
                         TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + "..") +
                                                        " -OpenPetra.Path.Bin:" + Path.GetFullPath(
                         TClientSettings.Petra_Path_Bin);
-                    PatchProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    PatchProcess.StartInfo.CreateNoWindow = true;
                     PatchProcess.Start();
 
                     // Application stops here !!!
