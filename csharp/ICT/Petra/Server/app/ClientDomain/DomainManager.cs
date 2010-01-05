@@ -480,8 +480,9 @@ namespace Ict.Petra.Server.App.ClientDomain
         /// <param name="AExecutingOS">ExecutingOS setting</param>
         /// <param name="ARDMBSType">RDMBSType setting</param>
         /// <param name="AODBCDsn">ODBC Dsn setting</param>
-        /// <param name="APostreSQLServer"></param>
-        /// <param name="APostreSQLServerPort"></param>
+        /// <param name="APostgreSQLServer"></param>
+        /// <param name="APostgreSQLServerPort"></param>
+        /// <param name="APostgreSQLDatabaseName"></param>
         /// <param name="ADBUsername">DB Username</param>
         /// <param name="ADBPassword">DB Password</param>
         /// <param name="ABaseIPAddress">BaseIPAddress setting</param>

@@ -270,7 +270,8 @@ namespace Ict.Petra.Client.App.PetraClient
                     PatchProcess.StartInfo.Arguments = "-action:patchRemote" + " -C:" + Path.GetFullPath(TClientSettings.ConfigurationFile) +
                                                        " -OpenPetra.Path.Bin:" + Path.GetFullPath(
                         TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + "..");
-                    PatchProcess.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+                    PatchProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    PatchProcess.StartInfo.CreateNoWindow = true;
                     PatchProcess.Start();
 
                     // Application stops here !!!
