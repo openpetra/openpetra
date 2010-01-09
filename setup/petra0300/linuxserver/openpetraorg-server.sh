@@ -25,7 +25,7 @@ start() {
 
     cd $OpenPetraOrgPath/bin30
     touch $OpenPetraOrgPath/log30/Server.log
-    mono --server PetraServerConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerConsole.config  # -RunWithoutMenu:true &> /dev/null &
+    mono --server PetraServerConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerConsole.config -RunWithoutMenu:true &> /dev/null &
     # in order to see if the server started successfully, wait a few seconds and then show the end of the log file
     sleep 5
     tail $OpenPetraOrgPath/log30/Server.log
