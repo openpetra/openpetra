@@ -686,7 +686,7 @@ namespace Ict.Petra.Server.App.Main
                 new Object[] { TSrvSetting.ApplicationName, TSrvSetting.ConfigurationFile, (object)TSrvSetting.ApplicationVersion,
                                TSrvSetting.ExecutingOS,
                                TSrvSetting.RDMBSType, TSrvSetting.ODBCDsn,
-                               TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort,
+                               TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort, TSrvSetting.PostgreSQLDatabaseName,
                                TSrvSetting.DBUsername, TSrvSetting.DBPassword,
                                (object)TSrvSetting.BaseIPAddress,
                                (object)TSrvSetting.DebugLevel, TSrvSetting.ServerLogFile, TSrvSetting.HostName, TSrvSetting.HostIPAddresses,

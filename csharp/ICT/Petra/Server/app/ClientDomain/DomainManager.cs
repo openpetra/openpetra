@@ -638,6 +638,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 ((TDataBasePetra)DBAccess.GDBAccessObj).EstablishDBConnection(TSrvSetting.RDMBSType,
                     TSrvSetting.PostgreSQLServer,
                     TSrvSetting.PostgreSQLServerPort,
+                    TSrvSetting.PostgreSQLDatabaseName,
                     TSrvSetting.DBUsername,
                     TSrvSetting.DBPassword,
                     "",
