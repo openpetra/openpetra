@@ -213,6 +213,11 @@ namespace Ict.Common.Controls
                         return;
                     }
 
+                    // TODO: check if user has permissions for this screen?
+                    // needs to be implemented as a static function of the screen, GetRequiredPermission returns the permission that is needed (eg PTNRUSER)
+                    // also use something similar as in lstFolderNavigation: CheckAccessPermissionDelegate?
+                    // delegate as a static function that is available from everywhere?
+
                     System.Object screen = Activator.CreateInstance(classType, new object[] { this.Handle });
 
                     // check for properties and according attributes; this works for the LedgerNumber at the moment

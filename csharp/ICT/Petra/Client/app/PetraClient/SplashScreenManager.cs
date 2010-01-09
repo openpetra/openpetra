@@ -221,8 +221,6 @@ public class TSplashScreenManager
         {
             return MessageBox.Show(AMessage, ATitle, AMessageBoxButtons);
         }
-
-        return DialogResult.Cancel;
     }
 
     /// <summary>
@@ -245,8 +243,6 @@ public class TSplashScreenManager
         {
             return MessageBox.Show(AMessage, ATitle, AMessageBoxButtons, AMessageBoxIcon);
         }
-
-        return DialogResult.Cancel;
     }
 
     /// <summary>
@@ -271,8 +267,6 @@ public class TSplashScreenManager
         {
             return MessageBox.Show(AMessage, ATitle, AMessageBoxButtons, AMessageBoxIcon, AMessageBoxDefaultButton);
         }
-
-        return DialogResult.Cancel;
     }
 
     #endregion

@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Controls;
+using Ict.Petra.Shared;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.App.PetraClient
@@ -44,6 +45,16 @@ namespace Ict.Petra.Client.App.PetraClient
                         System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString(3);
         }
 
+        /// <summary>
+        /// checks if the user has access to the navigation node
+        /// </summary>
+        private bool HasAccessPermission(XmlNode ANode, string AUserId)
+        {
+            // TODO: if this node belongs to a ledger, check if the user has access permission
+            // TODO: if this is an action node, eg. opens a screen, check the static function that tells RequiredPermissions of the screen
+            return true;
+        }
+
         private void LoadNavigationUI()
         {
             TAppSettingsManager opts = new TAppSettingsManager();
@@ -57,7 +68,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             while (DepartmentNode != null)
             {
-                lstFolders.AddFolder(DepartmentNode);
+                lstFolders.AddFolder(DepartmentNode, UserInfo.GUserInfo.UserID, HasAccessPermission);
 
                 DepartmentNode = DepartmentNode.NextSibling;
             }
