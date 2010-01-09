@@ -110,12 +110,10 @@
 						tofile="${setupDir}/INSTALL"/>
 			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/startClient.sh"
 						tofile="${setupDir}/startClient.sh"/>
-			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/start.sh"
+			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/openpetraorg-server.sh"
 						tofile="${setupDir}/start.sh"/>
 			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/menu.sh"
 						tofile="${setupDir}/menu.sh"/>
-			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/stop.sh"
-						tofile="${setupDir}/stop.sh"/>
 			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/initpg.sh"
 						tofile="${setupDir}/initpg.sh"/>
 
