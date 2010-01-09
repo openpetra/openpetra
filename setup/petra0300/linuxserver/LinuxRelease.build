@@ -24,6 +24,7 @@
         <mkdir dir="${setupDir}/log30"/>
         <mkdir dir="${setupDir}/etc30"/>
         <mkdir dir="${setupDir}/reports30"/>
+        <mkdir dir="${setupDir}/patches30"/>
         <mkdir dir="${setupDir}/sql30"/>
         <mkdir dir="${setupDir}/resources30"/>
 		<echo file="${setupDir}/bin30/version.txt">${ReleaseVersion}</echo>
