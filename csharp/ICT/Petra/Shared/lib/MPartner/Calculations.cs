@@ -338,7 +338,7 @@ namespace Ict.Petra.Shared.MPartner
             }
             catch (Exception Exp)
             {
-                MessageBox.Show("Exception occured in DeterminePartnerShortName: " + Exp.ToString());
+                TLogging.Log("Exception occured in DeterminePartnerShortName (" + AName + "): " + Exp.ToString());
             }
             return ShortName;
         }

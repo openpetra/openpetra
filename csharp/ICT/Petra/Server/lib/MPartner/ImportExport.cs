@@ -29,6 +29,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Xml;
 using System.IO;
+using Mono.Unix;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
@@ -61,6 +62,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 {
                     PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
 
+                    if (!TYml2Xml.HasAttributeRecursive(LocalNode, "SiteKey"))
+                    {
+                        throw new Exception(Catalog.GetString("Missing SiteKey Attribute"));
+                    }
+
+                    if (!TYml2Xml.HasAttributeRecursive(LocalNode, "status"))
+                    {
+                        throw new Exception(Catalog.GetString("Missing status Attribute"));
+                    }
+
                     // get a new partner key
                     Int64 SiteKey = Convert.ToInt64(TYml2Xml.GetAttributeRecursive(LocalNode, "SiteKey"));
                     Int64 newPartnerKey = -1;
@@ -79,6 +90,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         newFamily.FamilyName = TYml2Xml.GetAttributeRecursive(LocalNode, "LastName");
                         newFamily.FirstName = TYml2Xml.GetAttribute(LocalNode, "FirstName");
                         newFamily.Title = TYml2Xml.GetAttribute(LocalNode, "Title");
+                        newFamily.DateCreated = Convert.ToDateTime(TYml2Xml.GetAttribute(LocalNode, "CreatedAt"));
                         AMainDS.PFamily.Rows.Add(newFamily);
 
                         newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
@@ -113,6 +125,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         partnertype.PartnerKey = newPartner.PartnerKey;
                         partnertype.TypeCode = SpecialType.Trim();
                         AMainDS.PPartnerType.Rows.Add(partnertype);
+
+                        // TODO: check if special type does not exist yet, and create it
                     }
 
                     // import subscriptions
@@ -130,7 +144,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     // import address
                     XmlNode addressNode = TYml2Xml.GetChild(LocalNode, "Address");
 
-                    if (addressNode == null)
+                    if ((addressNode == null) || (TYml2Xml.GetAttributeRecursive(addressNode, "Street").Length == 0))
                     {
                         // add the empty location
                         PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
@@ -138,6 +152,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         partnerlocation.PartnerKey = newPartner.PartnerKey;
                         partnerlocation.DateEffective = DateTime.Now;
                         partnerlocation.LocationType = "HOME";
+                        partnerlocation.SendMail = false;
+                        partnerlocation.EmailAddress = TYml2Xml.GetAttributeRecursive(addressNode, "Email");
+                        partnerlocation.TelephoneNumber = TYml2Xml.GetAttributeRecursive(addressNode, "Phone");
+                        partnerlocation.MobileNumber = TYml2Xml.GetAttributeRecursive(addressNode, "MobilePhone");
                         AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
                     }
                     else
@@ -146,6 +164,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         PLocationRow location = AMainDS.PLocation.NewRowTyped(true);
                         location.LocationKey = (AMainDS.PLocation.Rows.Count + 1) * -1;
                         location.SiteKey = 0;
+
+                        if (!TYml2Xml.HasAttributeRecursive(LocalNode, "Country"))
+                        {
+                            throw new Exception(Catalog.GetString("Missing Country Attribute"));
+                        }
+
                         location.CountryCode = TYml2Xml.GetAttributeRecursive(addressNode, "Country");
                         location.StreetName = TYml2Xml.GetAttributeRecursive(addressNode, "Street");
                         location.City = TYml2Xml.GetAttributeRecursive(addressNode, "City");
@@ -160,6 +184,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         partnerlocation.DateEffective = DateTime.Now;
                         partnerlocation.LocationType = "HOME";
                         partnerlocation.EmailAddress = TYml2Xml.GetAttributeRecursive(addressNode, "Email");
+                        partnerlocation.TelephoneNumber = TYml2Xml.GetAttributeRecursive(addressNode, "Phone");
+                        partnerlocation.MobileNumber = TYml2Xml.GetAttributeRecursive(addressNode, "MobilePhone");
                         AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
                     }
                 }
@@ -285,6 +311,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     throw new Exception(e.ToString() + " " + e.Message);
                 }
             }
+
+            // hier kommt er hin:
+            TLogging.Log("after submitchanges: " + SubmissionResult.ToString());
 
             return SubmissionResult == TSubmitChangesResult.scrOK;
         }
