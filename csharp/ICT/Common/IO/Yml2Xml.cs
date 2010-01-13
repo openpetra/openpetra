@@ -114,6 +114,11 @@ namespace Ict.Common.IO
         /// </summary>
         public static bool CheckName(string AElementName)
         {
+            if ((AElementName.Length > 0) && Char.IsDigit(AElementName[0]))
+            {
+                return false;
+            }
+
             try
             {
                 new XmlDocument().CreateElement(AElementName);
@@ -1005,7 +1010,7 @@ namespace Ict.Common.IO
         {
             XmlNode newElement = TXMLParser.GetChild(parent, nodeName);
 
-            if (nodeName.Contains("Separator"))
+            if (nodeName.Contains("Separator") || nodeName.Contains(TYml2Xml.XMLELEMENT))
             {
                 // special case: separators have the same name
                 newElement = null;

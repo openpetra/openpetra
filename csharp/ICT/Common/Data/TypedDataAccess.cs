@@ -1984,11 +1984,30 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// enumeration of operations that can be selected for SubmitChanges
+        /// </summary>
+        public enum eSubmitChangesOperations
+        {
+            /// update records
+            eUpdate = 1,
+
+            /// delete records
+            eDelete = 2,
+
+            /// add new records
+            eInsert = 4,
+
+            /// execute all operations, no matter if it is update, delete, insert
+            eAll = 7
+        };
+
+        /// <summary>
         /// submit those rows in the table that have been modified or created or deleted
         /// </summary>
         /// <param name="ATableId"></param>
         /// <param name="ATable"></param>
         /// <param name="ATransaction"></param>
+        /// <param name="ASelectedOperations"></param>
         /// <param name="AVerificationResult"></param>
         /// <param name="AUserId">the current user, for auditing</param>
         /// <param name="ASequenceName"></param>
@@ -1997,6 +2016,7 @@ namespace Ict.Common.Data
         public static bool SubmitChanges(short ATableId,
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
+            eSubmitChangesOperations ASelectedOperations,
             out TVerificationResultCollection AVerificationResult,
             string AUserId,
             string ASequenceName, string ASequenceField)
@@ -2020,7 +2040,7 @@ namespace Ict.Common.Data
                 TheRow = ATable.Rows[RowCount];
                 try
                 {
-                    if (TheRow.RowState == DataRowState.Added)
+                    if ((TheRow.RowState == DataRowState.Added) && ((ASelectedOperations & eSubmitChangesOperations.eInsert) != 0))
                     {
                         if (ASequenceField.Length > 0)
                         {
@@ -2033,7 +2053,7 @@ namespace Ict.Common.Data
                     {
                         bool hasPrimaryKey = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId).Length > 0;
 
-                        if (TheRow.RowState == DataRowState.Modified)
+                        if ((TheRow.RowState == DataRowState.Modified) && ((ASelectedOperations & eSubmitChangesOperations.eUpdate) != 0))
                         {
                             if (!hasPrimaryKey)
                             {
@@ -2048,7 +2068,7 @@ namespace Ict.Common.Data
                             }
                         }
 
-                        if (TheRow.RowState == DataRowState.Deleted)
+                        if ((TheRow.RowState == DataRowState.Deleted) && ((ASelectedOperations & eSubmitChangesOperations.eDelete) != 0))
                         {
                             if (!hasPrimaryKey)
                             {
@@ -2081,6 +2101,26 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// overloaded version without ASelectedOperations
+        /// </summary>
+        public static bool SubmitChanges(short ATableId,
+            TTypedDataTable ATable,
+            TDBTransaction ATransaction,
+            out TVerificationResultCollection AVerificationResult,
+            string AUserId,
+            string ASequenceName, string ASequenceField)
+        {
+            return SubmitChanges(ATableId,
+                ATable,
+                ATransaction,
+                eSubmitChangesOperations.eAll,
+                out AVerificationResult,
+                AUserId,
+                ASequenceName,
+                ASequenceField);
+        }
+
+        /// <summary>
         /// overloaded version without sequence
         /// </summary>
         public static bool SubmitChanges(short ATableId,
@@ -2089,7 +2129,20 @@ namespace Ict.Common.Data
             out TVerificationResultCollection AVerificationResult,
             string AUserId)
         {
-            return SubmitChanges(ATableId, ATable, ATransaction, out AVerificationResult, AUserId, "", "");
+            return SubmitChanges(ATableId, ATable, ATransaction, eSubmitChangesOperations.eAll, out AVerificationResult, AUserId, "", "");
+        }
+
+        /// <summary>
+        /// overloaded version without sequence, but with ASelectedOperations
+        /// </summary>
+        public static bool SubmitChanges(short ATableId,
+            TTypedDataTable ATable,
+            TDBTransaction ATransaction,
+            eSubmitChangesOperations ASelectedOperations,
+            out TVerificationResultCollection AVerificationResult,
+            string AUserId)
+        {
+            return SubmitChanges(ATableId, ATable, ATransaction, ASelectedOperations, out AVerificationResult, AUserId, "", "");
         }
 
         #endregion CalledByORMGenerateCode

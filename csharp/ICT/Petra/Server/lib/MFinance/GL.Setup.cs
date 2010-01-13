@@ -29,10 +29,13 @@ using System.Data;
 using System.Data.Odbc;
 using System.Xml;
 using System.IO;
+using Mono.Unix;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Data;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -109,23 +112,28 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     if ((AInspectDS.AAccount != null) || (AInspectDS.AAccountHierarchyDetail != null))
                     {
-                        // this only supports adding new accounts, deleting unused accounts, and modifying details; but not renaming accounts
-                        if (AAccountAccess.SubmitChanges(AInspectDS.AAccount, SubmitChangesTransaction,
-                                out AVerificationResult))
+                        SubmissionResult = TSubmitChangesResult.scrError;
+
+                        // first delete account hierarchy details that are not needed anymore. otherwise we cannot delete the account
+                        if (TTypedDataAccess.SubmitChanges(AAccountHierarchyDetailTable.TableId, AInspectDS.AAccountHierarchyDetail,
+                                SubmitChangesTransaction,
+                                TTypedDataAccess.eSubmitChangesOperations.eDelete,
+                                out AVerificationResult,
+                                UserInfo.GUserInfo.UserID))
                         {
-                            if (AAccountHierarchyDetailAccess.SubmitChanges(AInspectDS.AAccountHierarchyDetail, SubmitChangesTransaction,
+                            // this only supports adding new accounts, deleting unused accounts, and modifying details; but not renaming accounts
+                            if (AAccountAccess.SubmitChanges(AInspectDS.AAccount, SubmitChangesTransaction,
                                     out AVerificationResult))
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                if (TTypedDataAccess.SubmitChanges(AAccountHierarchyDetailTable.TableId, AInspectDS.AAccountHierarchyDetail,
+                                        SubmitChangesTransaction,
+                                        TTypedDataAccess.eSubmitChangesOperations.eUpdate | TTypedDataAccess.eSubmitChangesOperations.eInsert,
+                                        out AVerificationResult,
+                                        UserInfo.GUserInfo.UserID))
+                                {
+                                    SubmissionResult = TSubmitChangesResult.scrOK;
+                                }
                             }
-                            else
-                            {
-                                SubmissionResult = TSubmitChangesResult.scrError;
-                            }
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
                         }
                     }
                     else if (AInspectDS.ACostCentre.Count > 0)
@@ -388,12 +396,26 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             XmlDocument doc = new XmlDocument();
 
-            doc.LoadXml(AXmlAccountHierarchy);
+            try
+            {
+                doc.LoadXml(AXmlAccountHierarchy);
+            }
+            catch (XmlException exp)
+            {
+                throw new Exception(
+                    Catalog.GetString("There was a problem with the syntax of the file.") +
+                    Environment.NewLine +
+                    exp.Message +
+                    Environment.NewLine +
+                    AXmlAccountHierarchy);
+            }
 
             GLSetupTDS MainDS = LoadAccountHierarchies(ALedgerNumber);
             XmlNode root = doc.FirstChild.NextSibling.FirstChild;
 
             StringCollection ImportedAccountNames = new StringCollection();
+
+            ImportedAccountNames.Add(ALedgerNumber.ToString());
 
             // delete all account hierarchy details of this hierarchy
             foreach (AAccountHierarchyDetailRow accounthdetail in MainDS.AAccountHierarchyDetail.Rows)
