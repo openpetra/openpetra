@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     -1, -1, -1, false, false), null);
 
             TDataBase db = new TDataBase();
-            db.EstablishDBConnection(TDBType.SQLite, ADBFilename, "", "", "", "");
+            db.EstablishDBConnection(TDBType.SQLite, ADBFilename, "", "", "", "", "");
             return db;
         }
 
@@ -149,7 +149,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 newMatch.EpMatchKey = -1 * (AMatchDS.AEpMatch.Count + 1);
                 newMatch.MatchText = AMatchText;
                 newMatch.Detail = giftRow.DetailNumber;
-                newMatch.Action = "GIFT"; // TODO: use constant for GIFT
+                newMatch.Action = "GIFT";                 // TODO: use constant for GIFT
 
                 newMatch.RecipientKey = giftRow.RecipientKey;
                 newMatch.RecipientLedgerNumber = giftRow.RecipientLedgerNumber;
@@ -170,7 +170,15 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                 newMatch.ConfidentialGiftFlag = giftRow.ConfidentialGiftFlag;
                 newMatch.GiftTransactionAmount = giftRow.GiftTransactionAmount;
 
-                AMatchDS.AEpMatch.Rows.Add(newMatch);
+                AMatchDS.AEpMatch.DefaultView.RowFilter = AEpMatchTable.GetMatchTextDBName() + " = '" + newMatch.MatchText + "' and " +
+                                                          AEpMatchTable.GetDetailDBName() + " = " + newMatch.Detail.ToString();
+
+                if (AMatchDS.AEpMatch.DefaultView.Count == 0)
+                {
+                    AMatchDS.AEpMatch.Rows.Add(newMatch);
+                }
+
+                AMatchDS.AEpMatch.DefaultView.RowFilter = "";
             }
         }
 
@@ -523,11 +531,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     rowToPrint = rowToPrint.Replace("#DESCRIPTION", row.RecipientDescription);
                 }
 
-//                if (row.IsRecipientKeyNull() || row.RecipientKey <= 0)
-//                {
-//                      rowToPrint = rowToPrint.Replace("#RECIPIENTKEY", row.RecipientKey.ToString());
-//                }
-// TODO: print recipientkey
+                //                if (row.IsRecipientKeyNull() || row.RecipientKey <= 0)
+                //                {
+                //                      rowToPrint = rowToPrint.Replace("#RECIPIENTKEY", row.RecipientKey.ToString());
+                //                }
+                // TODO: print recipientkey
                 rowToPrint = rowToPrint.Replace("#RECIPIENTKEY", "");
 
                 if (row.IsDonorKeyNull() || (row.DonorKey <= 0))

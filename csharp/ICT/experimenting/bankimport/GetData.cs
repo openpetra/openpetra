@@ -64,6 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             db.EstablishDBConnection(dbtype,
                 settings.GetValue("Server.ODBC_DSN"),
                 "",
+                "",
                 settings.GetValue("odbc.username"),
                 settings.GetValue("odbc.password"),
                 "");
