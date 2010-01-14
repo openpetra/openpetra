@@ -132,6 +132,9 @@
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Server.sln"/>
         <call target="compileTemplate"/>
 
+        <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ServerPlugins.sln"/>
+        <call target="compileTemplate"/>
+        
         <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/PetraServerConsole.exe.config"/>
         <if test="${not file::exists(appconfigfileBin)}">
             <!-- mdbuild does not seem to copy the app file -->
@@ -641,6 +644,10 @@
         <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin"/>
         <call target="uncrustifyTemplate"/>
     </target>
+    <target name="uncrustifyPetraServerPlugins">
+        <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerPlugins"/>
+        <call target="uncrustifyTemplate"/>
+    </target>
     <target name="uncrustifyExperimenting">
         <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Experimenting"/>
         <call target="uncrustifyTemplate"/>
@@ -654,7 +661,7 @@
         <call target="uncrustifyTemplate"/>
     </target>
     
-    <target name="uncrustify" depends="uncrustifyCommon, uncrustifyPetraShared, uncrustifyPetraServer, uncrustifyPetraClient, uncrustifyPetraServerAdmin, uncrustifyExperimenting, uncrustifyPetraTools, uncrustifyTesting"/>
+    <target name="uncrustify" depends="uncrustifyCommon, uncrustifyPetraShared, uncrustifyPetraServer, uncrustifyPetraServerPlugins, uncrustifyPetraClient, uncrustifyPetraServerAdmin, uncrustifyExperimenting, uncrustifyPetraTools, uncrustifyTesting"/>
     
     <target name="checkCode" description="check for correct file headers, missing xml comment generation, copyright, licensing, etc">
         <foreach item="File" property="filename">
@@ -674,7 +681,7 @@
     </target>
 
     <target name="fixProjectFiles">
-        <ExecDotNet program="${PetraToolsExe.dir}/FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools,Testing"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools,Testing,ServerPlugins"/>
     </target>
     
     <target name="switchToDebug">

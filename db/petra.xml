@@ -4386,6 +4386,11 @@
                 descr="The end balance of the bank account after the statement"
                 format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
                 label="End balance"/>
+    <tablefield name="a_currency_code_c"
+                type="varchar"
+                descr="This defines the currency of the transactions on this statement"
+                format="X(8)"
+                notnull="yes"/>
     <!-- Constraints on table a_ep_statement -->
     <primarykey name="a_ep_statement_pk"
                 descr=""
@@ -4400,6 +4405,11 @@
                 thisFields="a_bank_account_key_i"
                 otherTable="p_banking_details"
                 otherFields="p_banking_details_key_i"/>
+    <foreignkey name="a_ep_statement_fk3"
+                descr=""
+                thisFields="a_currency_code_c"
+                otherTable="a_currency"
+                otherFields="a_currency_code_c"/>
   </table>
   <table name="a_ep_match"
          descr="the matches that can be used to identify recurring gift or GL transactions"
