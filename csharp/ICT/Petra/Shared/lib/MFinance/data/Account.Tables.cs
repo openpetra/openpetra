@@ -1114,15 +1114,17 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnEndBalanceId = 6;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 7;
+        public static short ColumnCurrencyCodeId = 7;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 8;
+        public static short ColumnDateCreatedId = 8;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 9;
+        public static short ColumnCreatedById = 9;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 10;
+        public static short ColumnDateModifiedId = 10;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 11;
+        public static short ColumnModifiedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 12;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1136,11 +1138,12 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(4, "IdFromBank", "a_id_from_bank_c", "Id from Bank", OdbcType.VarChar, 40, false),
                     new TTypedColumnInfo(5, "Filename", "a_filename_c", "filename of statement", OdbcType.VarChar, 40, false),
                     new TTypedColumnInfo(6, "EndBalance", "a_end_balance_n", "End balance", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(7, "CurrencyCode", "a_currency_code_c", "a_currency_code_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -1180,6 +1183,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public DataColumn ColumnFilename;
         /// The end balance of the bank account after the statement
         public DataColumn ColumnEndBalance;
+        /// This defines the currency of the transactions on this statement
+        public DataColumn ColumnCurrencyCode;
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
         /// User ID of who created this record.
@@ -1201,6 +1206,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_id_from_bank_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_filename_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_end_balance_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -1218,6 +1224,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.ColumnIdFromBank = this.Columns["a_id_from_bank_c"];
             this.ColumnFilename = this.Columns["a_filename_c"];
             this.ColumnEndBalance = this.Columns["a_end_balance_n"];
+            this.ColumnCurrencyCode = this.Columns["a_currency_code_c"];
             this.ColumnDateCreated = this.Columns["s_date_created_d"];
             this.ColumnCreatedBy = this.Columns["s_created_by_c"];
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
@@ -1365,6 +1372,18 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public static short GetEndBalanceLength()
         {
             return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCurrencyCodeDBName()
+        {
+            return "a_currency_code_c";
+        }
+
+        /// get character length for column
+        public static short GetCurrencyCodeLength()
+        {
+            return 16;
         }
 
         /// get the name of the field in the database for this column
@@ -1624,6 +1643,32 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             }
         }
 
+        /// This defines the currency of the transactions on this statement
+        public String CurrencyCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCurrencyCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCurrencyCode)
+                            || (((String)(this[this.myTable.ColumnCurrencyCode])) != value)))
+                {
+                    this[this.myTable.ColumnCurrencyCode] = value;
+                }
+            }
+        }
+
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -1764,6 +1809,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.SetNull(this.myTable.ColumnIdFromBank);
             this.SetNull(this.myTable.ColumnFilename);
             this.SetNull(this.myTable.ColumnEndBalance);
+            this.SetNull(this.myTable.ColumnCurrencyCode);
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnCreatedBy);
             this.SetNull(this.myTable.ColumnDateModified);
@@ -1853,6 +1899,18 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public void SetEndBalanceNull()
         {
             this.SetNull(this.myTable.ColumnEndBalance);
+        }
+
+        /// test for NULL value
+        public bool IsCurrencyCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnCurrencyCode);
+        }
+
+        /// assign NULL value
+        public void SetCurrencyCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnCurrencyCode);
         }
 
         /// test for NULL value

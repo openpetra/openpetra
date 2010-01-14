@@ -40,10 +40,10 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
     using Ict.Petra.Shared.MFinance.Account.Data;
     using Ict.Petra.Shared.MPartner.Partner.Data;
     using Ict.Petra.Shared.MFinance.Gift.Data;
+    using Ict.Petra.Shared.MCommon.Data;
     using Ict.Petra.Shared.MPartner.Mailroom.Data;
     using Ict.Petra.Shared.MFinance.AR.Data;
     using Ict.Petra.Shared.MSysMan.Data;
-    using Ict.Petra.Shared.MCommon.Data;
 
     /// This contains the settings for one specific bank account
     public class AEpAccountAccess : TTypedDataAccess
@@ -1339,6 +1339,153 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         public static int CountViaPBankingDetailsTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
             return CountViaForeignKey(AEpStatementTable.TableId, PBankingDetailsTable.TableId, new string[1]{"a_bank_account_key_i"},
+                ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
+        public static void LoadViaACurrency(DataSet ADataSet, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpStatementTable.TableId, ACurrencyTable.TableId, ADataSet, new string[1]{"a_currency_code_c"},
+                new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaACurrency(DataSet AData, String ACurrencyCode, TDBTransaction ATransaction)
+        {
+            LoadViaACurrency(AData, ACurrencyCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACurrency(DataSet AData, String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaACurrency(AData, ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpStatementTable Data = new AEpStatementTable();
+            LoadViaForeignKey(AEpStatementTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
+                new System.Object[1]{ACurrencyCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaACurrency(String ACurrencyCode, TDBTransaction ATransaction)
+        {
+            return LoadViaACurrency(ACurrencyCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaACurrency(String ACurrencyCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaACurrency(ACurrencyCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACurrencyTemplate(DataSet ADataSet, ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpStatementTable.TableId, ACurrencyTable.TableId, ADataSet, new string[1]{"a_currency_code_c"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaACurrencyTemplate(DataSet AData, ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaACurrencyTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACurrencyTemplate(DataSet AData, ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaACurrencyTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpStatementTable Data = new AEpStatementTable();
+            LoadViaForeignKey(AEpStatementTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadViaACurrencyTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaACurrencyTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaACurrencyTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACurrencyTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpStatementTable.TableId, ACurrencyTable.TableId, ADataSet, new string[1]{"a_currency_code_c"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaACurrencyTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaACurrencyTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACurrencyTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaACurrencyTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpStatementTable Data = new AEpStatementTable();
+            LoadViaForeignKey(AEpStatementTable.TableId, ACurrencyTable.TableId, Data, new string[1]{"a_currency_code_c"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadViaACurrencyTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaACurrencyTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaACurrency(String ACurrencyCode, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpStatementTable.TableId, ACurrencyTable.TableId, new string[1]{"a_currency_code_c"},
+                new System.Object[1]{ACurrencyCode}, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaACurrencyTemplate(ACurrencyRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpStatementTable.TableId, ACurrencyTable.TableId, new string[1]{"a_currency_code_c"},
+                ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaACurrencyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpStatementTable.TableId, ACurrencyTable.TableId, new string[1]{"a_currency_code_c"},
                 ASearchCriteria, ATransaction);
         }
 
