@@ -1104,23 +1104,25 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnBankKeyId = 1;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateId = 2;
+        public static short ColumnBankAccountKeyId = 2;
         /// used for generic TTypedDataTable functions
-        public static short ColumnIdFromBankId = 3;
+        public static short ColumnDateId = 3;
         /// used for generic TTypedDataTable functions
-        public static short ColumnFilenameId = 4;
+        public static short ColumnIdFromBankId = 4;
         /// used for generic TTypedDataTable functions
-        public static short ColumnEndBalanceId = 5;
+        public static short ColumnFilenameId = 5;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 6;
+        public static short ColumnEndBalanceId = 6;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 7;
+        public static short ColumnDateCreatedId = 7;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 8;
+        public static short ColumnCreatedById = 8;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 9;
+        public static short ColumnDateModifiedId = 9;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 10;
+        public static short ColumnModifiedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1129,15 +1131,16 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                 new TTypedColumnInfo[] {
                     new TTypedColumnInfo(0, "StatementKey", "a_statement_key_i", "Bank statement", OdbcType.Int, -1, true),
                     new TTypedColumnInfo(1, "BankKey", "p_bank_key_n", "p_bank_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "Date", "a_date_d", "Date", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(3, "IdFromBank", "a_id_from_bank_c", "Id from Bank", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(4, "Filename", "a_filename_c", "filename of statement", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(5, "EndBalance", "a_end_balance_n", "End balance", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(2, "BankAccountKey", "a_bank_account_key_i", "banking details", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "Date", "a_date_d", "Date", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(4, "IdFromBank", "a_id_from_bank_c", "Id from Bank", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(5, "Filename", "a_filename_c", "filename of statement", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(6, "EndBalance", "a_end_balance_n", "End balance", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -1167,6 +1170,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public DataColumn ColumnStatementKey;
         /// The bank that issued this statement
         public DataColumn ColumnBankKey;
+        /// this is the bank account that this statement is for; this is necessary because you can have several accounts at the same bank
+        public DataColumn ColumnBankAccountKey;
         /// The date of this statement
         public DataColumn ColumnDate;
         /// This is the ID that the bank uses for this statement; it can be used to find the paper version of the bank statement
@@ -1191,6 +1196,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         {
             this.Columns.Add(new System.Data.DataColumn("a_statement_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_bank_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("a_bank_account_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_id_from_bank_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_filename_c", typeof(String)));
@@ -1207,6 +1213,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         {
             this.ColumnStatementKey = this.Columns["a_statement_key_i"];
             this.ColumnBankKey = this.Columns["p_bank_key_n"];
+            this.ColumnBankAccountKey = this.Columns["a_bank_account_key_i"];
             this.ColumnDate = this.Columns["a_date_d"];
             this.ColumnIdFromBank = this.Columns["a_id_from_bank_c"];
             this.ColumnFilename = this.Columns["a_filename_c"];
@@ -1298,6 +1305,18 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public static short GetBankKeyLength()
         {
             return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetBankAccountKeyDBName()
+        {
+            return "a_bank_account_key_i";
+        }
+
+        /// get character length for column
+        public static short GetBankAccountKeyLength()
+        {
+            return -1;
         }
 
         /// get the name of the field in the database for this column
@@ -1471,6 +1490,32 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                             || (((Int64)(this[this.myTable.ColumnBankKey])) != value)))
                 {
                     this[this.myTable.ColumnBankKey] = value;
+                }
+            }
+        }
+
+        /// this is the bank account that this statement is for; this is necessary because you can have several accounts at the same bank
+        public Int32 BankAccountKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnBankAccountKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnBankAccountKey)
+                            || (((Int32)(this[this.myTable.ColumnBankAccountKey])) != value)))
+                {
+                    this[this.myTable.ColumnBankAccountKey] = value;
                 }
             }
         }
@@ -1714,6 +1759,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         {
             this.SetNull(this.myTable.ColumnStatementKey);
             this.SetNull(this.myTable.ColumnBankKey);
+            this.SetNull(this.myTable.ColumnBankAccountKey);
             this[this.myTable.ColumnDate.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnIdFromBank);
             this.SetNull(this.myTable.ColumnFilename);
@@ -1747,6 +1793,18 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public void SetBankKeyNull()
         {
             this.SetNull(this.myTable.ColumnBankKey);
+        }
+
+        /// test for NULL value
+        public bool IsBankAccountKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnBankAccountKey);
+        }
+
+        /// assign NULL value
+        public void SetBankAccountKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnBankAccountKey);
         }
 
         /// test for NULL value
@@ -4202,47 +4260,45 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnOrderId = 1;
         /// used for generic TTypedDataTable functions
-        public static short ColumnStatementBankAccountKeyId = 2;
+        public static short ColumnAccountNameId = 2;
         /// used for generic TTypedDataTable functions
-        public static short ColumnAccountNameId = 3;
+        public static short ColumnTitleId = 3;
         /// used for generic TTypedDataTable functions
-        public static short ColumnTitleId = 4;
+        public static short ColumnFirstNameId = 4;
         /// used for generic TTypedDataTable functions
-        public static short ColumnFirstNameId = 5;
+        public static short ColumnMiddleNameId = 5;
         /// used for generic TTypedDataTable functions
-        public static short ColumnMiddleNameId = 6;
+        public static short ColumnLastNameId = 6;
         /// used for generic TTypedDataTable functions
-        public static short ColumnLastNameId = 7;
+        public static short ColumnBranchCodeId = 7;
         /// used for generic TTypedDataTable functions
-        public static short ColumnBranchCodeId = 8;
+        public static short ColumnBicId = 8;
         /// used for generic TTypedDataTable functions
-        public static short ColumnBicId = 9;
+        public static short ColumnBankAccountNumberId = 9;
         /// used for generic TTypedDataTable functions
-        public static short ColumnBankAccountNumberId = 10;
+        public static short ColumnIbanId = 10;
         /// used for generic TTypedDataTable functions
-        public static short ColumnIbanId = 11;
+        public static short ColumnTransactionTypeCodeId = 11;
         /// used for generic TTypedDataTable functions
-        public static short ColumnTransactionTypeCodeId = 12;
+        public static short ColumnTransactionAmountId = 12;
         /// used for generic TTypedDataTable functions
-        public static short ColumnTransactionAmountId = 13;
+        public static short ColumnDescriptionId = 13;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDescriptionId = 14;
+        public static short ColumnDateEffectiveId = 14;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateEffectiveId = 15;
+        public static short ColumnEpMatchKeyId = 15;
         /// used for generic TTypedDataTable functions
-        public static short ColumnEpMatchKeyId = 16;
+        public static short ColumnMatchingStatusId = 16;
         /// used for generic TTypedDataTable functions
-        public static short ColumnMatchingStatusId = 17;
+        public static short ColumnDateCreatedId = 17;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 18;
+        public static short ColumnCreatedById = 18;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 19;
+        public static short ColumnDateModifiedId = 19;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 20;
+        public static short ColumnModifiedById = 20;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 21;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 22;
+        public static short ColumnModificationIdId = 21;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -4251,27 +4307,26 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                 new TTypedColumnInfo[] {
                     new TTypedColumnInfo(0, "StatementKey", "a_statement_key_i", "Bank statement", OdbcType.Int, -1, true),
                     new TTypedColumnInfo(1, "Order", "a_order_i", "order", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "StatementBankAccountKey", "a_statement_bank_account_key_i", "banking details", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "AccountName", "a_account_name_c", "Account Name", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(4, "Title", "a_title_c", "Title", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(5, "FirstName", "a_first_name_c", "First Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(6, "MiddleName", "a_middle_name_c", "Middle Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(7, "LastName", "a_last_name_c", "Last Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(8, "BranchCode", "p_branch_code_c", "Bank/Branch Code", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "Bic", "p_bic_c", "BIC/SWIFT Code", OdbcType.VarChar, 22, false),
-                    new TTypedColumnInfo(10, "BankAccountNumber", "a_bank_account_number_c", "Account Number", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(11, "Iban", "a_iban_c", "IBAN", OdbcType.VarChar, 128, false),
-                    new TTypedColumnInfo(12, "TransactionTypeCode", "a_transaction_type_code_c", "transaction type", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(13, "TransactionAmount", "a_transaction_amount_n", "Transaction Amount", OdbcType.Decimal, 24, true),
-                    new TTypedColumnInfo(14, "Description", "a_description_c", "description", OdbcType.VarChar, 512, false),
-                    new TTypedColumnInfo(15, "DateEffective", "a_date_effective_d", "Date", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(16, "EpMatchKey", "a_ep_match_key_i", "a_ep_match_key_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(17, "MatchingStatus", "a_matching_status_c", "a_matching_status_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(2, "AccountName", "a_account_name_c", "Account Name", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(3, "Title", "a_title_c", "Title", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(4, "FirstName", "a_first_name_c", "First Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(5, "MiddleName", "a_middle_name_c", "Middle Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(6, "LastName", "a_last_name_c", "Last Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(7, "BranchCode", "p_branch_code_c", "Bank/Branch Code", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "Bic", "p_bic_c", "BIC/SWIFT Code", OdbcType.VarChar, 22, false),
+                    new TTypedColumnInfo(9, "BankAccountNumber", "a_bank_account_number_c", "Account Number", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(10, "Iban", "a_iban_c", "IBAN", OdbcType.VarChar, 128, false),
+                    new TTypedColumnInfo(11, "TransactionTypeCode", "a_transaction_type_code_c", "transaction type", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(12, "TransactionAmount", "a_transaction_amount_n", "Transaction Amount", OdbcType.Decimal, 24, true),
+                    new TTypedColumnInfo(13, "Description", "a_description_c", "description", OdbcType.VarChar, 512, false),
+                    new TTypedColumnInfo(14, "DateEffective", "a_date_effective_d", "Date", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(15, "EpMatchKey", "a_ep_match_key_i", "a_ep_match_key_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(16, "MatchingStatus", "a_matching_status_c", "a_matching_status_c", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(17, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(18, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(19, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(20, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(21, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -4301,8 +4356,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public DataColumn ColumnStatementKey;
         /// to complete the primary key
         public DataColumn ColumnOrder;
-        /// this is the bank account that this transaction is for; this is necessary because one statement can contain transactions to several accounts at the same bank?
-        public DataColumn ColumnStatementBankAccountKey;
         /// This can be a summary of title, first name, last name etc. of the other party
         public DataColumn ColumnAccountName;
         ///
@@ -4349,7 +4402,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         {
             this.Columns.Add(new System.Data.DataColumn("a_statement_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_order_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_statement_bank_account_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_account_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_title_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_first_name_c", typeof(String)));
@@ -4377,7 +4429,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         {
             this.ColumnStatementKey = this.Columns["a_statement_key_i"];
             this.ColumnOrder = this.Columns["a_order_i"];
-            this.ColumnStatementBankAccountKey = this.Columns["a_statement_bank_account_key_i"];
             this.ColumnAccountName = this.Columns["a_account_name_c"];
             this.ColumnTitle = this.Columns["a_title_c"];
             this.ColumnFirstName = this.Columns["a_first_name_c"];
@@ -4478,18 +4529,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
 
         /// get character length for column
         public static short GetOrderLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetStatementBankAccountKeyDBName()
-        {
-            return "a_statement_bank_account_key_i";
-        }
-
-        /// get character length for column
-        public static short GetStatementBankAccountKeyLength()
         {
             return -1;
         }
@@ -4797,32 +4836,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                             || (((Int32)(this[this.myTable.ColumnOrder])) != value)))
                 {
                     this[this.myTable.ColumnOrder] = value;
-                }
-            }
-        }
-
-        /// this is the bank account that this transaction is for; this is necessary because one statement can contain transactions to several accounts at the same bank?
-        public Int32 StatementBankAccountKey
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnStatementBankAccountKey.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnStatementBankAccountKey)
-                            || (((Int32)(this[this.myTable.ColumnStatementBankAccountKey])) != value)))
-                {
-                    this[this.myTable.ColumnStatementBankAccountKey] = value;
                 }
             }
         }
@@ -5352,7 +5365,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         {
             this.SetNull(this.myTable.ColumnStatementKey);
             this.SetNull(this.myTable.ColumnOrder);
-            this.SetNull(this.myTable.ColumnStatementBankAccountKey);
             this.SetNull(this.myTable.ColumnAccountName);
             this.SetNull(this.myTable.ColumnTitle);
             this.SetNull(this.myTable.ColumnFirstName);
@@ -5397,18 +5409,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public void SetOrderNull()
         {
             this.SetNull(this.myTable.ColumnOrder);
-        }
-
-        /// test for NULL value
-        public bool IsStatementBankAccountKeyNull()
-        {
-            return this.IsNull(this.myTable.ColumnStatementBankAccountKey);
-        }
-
-        /// assign NULL value
-        public void SetStatementBankAccountKeyNull()
-        {
-            this.SetNull(this.myTable.ColumnStatementBankAccountKey);
         }
 
         /// test for NULL value

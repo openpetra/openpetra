@@ -871,17 +871,10 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         protected override void InitConstraints()
         {
 
-            if (((this.TablePBankingDetails != null)
-                        && (this.TableAEpTransaction != null)))
-            {
-                this.FConstraints.Add(new TTypedConstraint("FKEpTransaction2", "PBankingDetails", new string[] {
-                                "p_banking_details_key_i"}, "AEpTransaction", new string[] {
-                                "a_statement_bank_account_key_i"}));
-            }
             if (((this.TableAEpMatch != null)
                         && (this.TableAEpTransaction != null)))
             {
-                this.FConstraints.Add(new TTypedConstraint("FKEpTransaction3", "AEpMatch", new string[] {
+                this.FConstraints.Add(new TTypedConstraint("FKEpTransaction2", "AEpMatch", new string[] {
                                 "a_ep_match_key_i"}, "AEpTransaction", new string[] {
                                 "a_ep_match_key_i"}));
             }
@@ -1689,25 +1682,25 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// TableId for Ict.Common.Data generic functions
         public new static short TableId = 5603;
         /// used for generic TTypedDataTable functions
-        public static short ColumnNumberOnStatementId = 23;
+        public static short ColumnNumberOnStatementId = 22;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDetailKeyId = 24;
+        public static short ColumnDetailKeyId = 23;
         /// used for generic TTypedDataTable functions
-        public static short ColumnOriginalAmountOnStatementId = 25;
+        public static short ColumnOriginalAmountOnStatementId = 24;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftLedgerNumberId = 26;
+        public static short ColumnGiftLedgerNumberId = 25;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftBatchNumberId = 27;
+        public static short ColumnGiftBatchNumberId = 26;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftTransactionNumberId = 28;
+        public static short ColumnGiftTransactionNumberId = 27;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftDetailNumberId = 29;
+        public static short ColumnGiftDetailNumberId = 28;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDonorKeyId = 30;
+        public static short ColumnDonorKeyId = 29;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDonorShortNameId = 31;
+        public static short ColumnDonorShortNameId = 30;
         /// used for generic TTypedDataTable functions
-        public static short ColumnRecipientDescriptionId = 32;
+        public static short ColumnRecipientDescriptionId = 31;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1716,40 +1709,39 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 new TTypedColumnInfo[] {
                     new TTypedColumnInfo(0, "StatementKey", "a_statement_key_i", "Bank statement", OdbcType.Int, -1, true),
                     new TTypedColumnInfo(1, "Order", "a_order_i", "order", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "StatementBankAccountKey", "a_statement_bank_account_key_i", "banking details", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "AccountName", "a_account_name_c", "Account Name", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(4, "Title", "a_title_c", "Title", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(5, "FirstName", "a_first_name_c", "First Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(6, "MiddleName", "a_middle_name_c", "Middle Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(7, "LastName", "a_last_name_c", "Last Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(8, "BranchCode", "p_branch_code_c", "Bank/Branch Code", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(9, "Bic", "p_bic_c", "BIC/SWIFT Code", OdbcType.VarChar, 22, false),
-                    new TTypedColumnInfo(10, "BankAccountNumber", "a_bank_account_number_c", "Account Number", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(11, "Iban", "a_iban_c", "IBAN", OdbcType.VarChar, 128, false),
-                    new TTypedColumnInfo(12, "TransactionTypeCode", "a_transaction_type_code_c", "transaction type", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(13, "TransactionAmount", "a_transaction_amount_n", "Transaction Amount", OdbcType.Decimal, 24, true),
-                    new TTypedColumnInfo(14, "Description", "a_description_c", "description", OdbcType.VarChar, 512, false),
-                    new TTypedColumnInfo(15, "DateEffective", "a_date_effective_d", "Date", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(16, "EpMatchKey", "a_ep_match_key_i", "a_ep_match_key_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(17, "MatchingStatus", "a_matching_status_c", "a_matching_status_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(23, "NumberOnStatement", "NumberOnStatement", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(24, "DetailKey", "DetailKey", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(25, "OriginalAmountOnStatement", "OriginalAmountOnStatement", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(26, "GiftLedgerNumber", "GiftLedgerNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(27, "GiftBatchNumber", "GiftBatchNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(28, "GiftTransactionNumber", "GiftTransactionNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(29, "GiftDetailNumber", "GiftDetailNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(30, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(31, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(32, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(2, "AccountName", "a_account_name_c", "Account Name", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(3, "Title", "a_title_c", "Title", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(4, "FirstName", "a_first_name_c", "First Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(5, "MiddleName", "a_middle_name_c", "Middle Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(6, "LastName", "a_last_name_c", "Last Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(7, "BranchCode", "p_branch_code_c", "Bank/Branch Code", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(8, "Bic", "p_bic_c", "BIC/SWIFT Code", OdbcType.VarChar, 22, false),
+                    new TTypedColumnInfo(9, "BankAccountNumber", "a_bank_account_number_c", "Account Number", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(10, "Iban", "a_iban_c", "IBAN", OdbcType.VarChar, 128, false),
+                    new TTypedColumnInfo(11, "TransactionTypeCode", "a_transaction_type_code_c", "transaction type", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(12, "TransactionAmount", "a_transaction_amount_n", "Transaction Amount", OdbcType.Decimal, 24, true),
+                    new TTypedColumnInfo(13, "Description", "a_description_c", "description", OdbcType.VarChar, 512, false),
+                    new TTypedColumnInfo(14, "DateEffective", "a_date_effective_d", "Date", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(15, "EpMatchKey", "a_ep_match_key_i", "a_ep_match_key_i", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(16, "MatchingStatus", "a_matching_status_c", "a_matching_status_c", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(17, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(18, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(19, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(20, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(21, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
+                    new TTypedColumnInfo(22, "NumberOnStatement", "NumberOnStatement", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(23, "DetailKey", "DetailKey", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(24, "OriginalAmountOnStatement", "OriginalAmountOnStatement", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(25, "GiftLedgerNumber", "GiftLedgerNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(26, "GiftBatchNumber", "GiftBatchNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(27, "GiftTransactionNumber", "GiftTransactionNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(28, "GiftDetailNumber", "GiftDetailNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(29, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(30, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(31, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
-                    0, 1, 24
+                    0, 1, 23
                 }));
             return true;
         }
@@ -1798,7 +1790,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         {
             this.Columns.Add(new System.Data.DataColumn("a_statement_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_order_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_statement_bank_account_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_account_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_title_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_first_name_c", typeof(String)));
@@ -1836,7 +1827,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         {
             this.ColumnStatementKey = this.Columns["a_statement_key_i"];
             this.ColumnOrder = this.Columns["a_order_i"];
-            this.ColumnStatementBankAccountKey = this.Columns["a_statement_bank_account_key_i"];
             this.ColumnAccountName = this.Columns["a_account_name_c"];
             this.ColumnTitle = this.Columns["a_title_c"];
             this.ColumnFirstName = this.Columns["a_first_name_c"];
@@ -2327,7 +2317,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         {
             this.SetNull(this.myTable.ColumnStatementKey);
             this.SetNull(this.myTable.ColumnOrder);
-            this.SetNull(this.myTable.ColumnStatementBankAccountKey);
             this.SetNull(this.myTable.ColumnAccountName);
             this.SetNull(this.myTable.ColumnTitle);
             this.SetNull(this.myTable.ColumnFirstName);

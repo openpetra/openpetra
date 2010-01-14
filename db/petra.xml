@@ -4355,6 +4355,12 @@
                 descr="The bank that issued this statement"
                 format=""
                 notnull="yes"/>
+    <tablefield name="a_bank_account_key_i"
+                type="integer"
+                descr="this is the bank account that this statement is for; this is necessary because you can have several accounts at the same bank"
+                format="9999999"
+                label="banking details"
+                notnull="yes"/>
     <tablefield name="a_date_d"
                 type="date"
                 descr="The date of this statement"
@@ -4389,6 +4395,11 @@
                 thisFields="p_bank_key_n"
                 otherTable="p_bank"
                 otherFields="p_partner_key_n"/>
+    <foreignkey name="a_ep_statement_fk2"
+                descr=""
+                thisFields="a_bank_account_key_i"
+                otherTable="p_banking_details"
+                otherFields="p_banking_details_key_i"/>
   </table>
   <table name="a_ep_match"
          descr="the matches that can be used to identify recurring gift or GL transactions"
@@ -4689,12 +4700,6 @@
                 format="9999999"
                 label="order"
                 notnull="yes"/>
-    <tablefield name="a_statement_bank_account_key_i"
-                type="integer"
-                descr="this is the bank account that this transaction is for; this is necessary because one statement can contain transactions to several accounts at the same bank?"
-                format="9999999"
-                label="banking details"
-                notnull="yes"/>
     <tablefield name="a_account_name_c"
                 type="varchar"
                 descr="This can be a summary of title, first name, last name etc. of the other party"
@@ -4784,11 +4789,6 @@
                 otherTable="a_ep_statement"
                 otherFields="a_statement_key_i"/>
     <foreignkey name="a_ep_transaction_fk2"
-                descr=""
-                thisFields="a_statement_bank_account_key_i"
-                otherTable="p_banking_details"
-                otherFields="p_banking_details_key_i"/>
-    <foreignkey name="a_ep_transaction_fk3"
                 descr=""
                 thisFields="a_ep_match_key_i"
                 otherTable="a_ep_match"

@@ -1196,6 +1196,153 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaPBankingDetails(DataSet ADataSet, Int32 ABankingDetailsKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpStatementTable.TableId, PBankingDetailsTable.TableId, ADataSet, new string[1]{"a_bank_account_key_i"},
+                new System.Object[1]{ABankingDetailsKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPBankingDetails(DataSet AData, Int32 ABankingDetailsKey, TDBTransaction ATransaction)
+        {
+            LoadViaPBankingDetails(AData, ABankingDetailsKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPBankingDetails(DataSet AData, Int32 ABankingDetailsKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPBankingDetails(AData, ABankingDetailsKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaPBankingDetails(Int32 ABankingDetailsKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpStatementTable Data = new AEpStatementTable();
+            LoadViaForeignKey(AEpStatementTable.TableId, PBankingDetailsTable.TableId, Data, new string[1]{"a_bank_account_key_i"},
+                new System.Object[1]{ABankingDetailsKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaPBankingDetails(Int32 ABankingDetailsKey, TDBTransaction ATransaction)
+        {
+            return LoadViaPBankingDetails(ABankingDetailsKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaPBankingDetails(Int32 ABankingDetailsKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaPBankingDetails(ABankingDetailsKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPBankingDetailsTemplate(DataSet ADataSet, PBankingDetailsRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpStatementTable.TableId, PBankingDetailsTable.TableId, ADataSet, new string[1]{"a_bank_account_key_i"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPBankingDetailsTemplate(DataSet AData, PBankingDetailsRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPBankingDetailsTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPBankingDetailsTemplate(DataSet AData, PBankingDetailsRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPBankingDetailsTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaPBankingDetailsTemplate(PBankingDetailsRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpStatementTable Data = new AEpStatementTable();
+            LoadViaForeignKey(AEpStatementTable.TableId, PBankingDetailsTable.TableId, Data, new string[1]{"a_bank_account_key_i"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaPBankingDetailsTemplate(PBankingDetailsRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadViaPBankingDetailsTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaPBankingDetailsTemplate(PBankingDetailsRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaPBankingDetailsTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaPBankingDetailsTemplate(PBankingDetailsRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaPBankingDetailsTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPBankingDetailsTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpStatementTable.TableId, PBankingDetailsTable.TableId, ADataSet, new string[1]{"a_bank_account_key_i"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPBankingDetailsTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPBankingDetailsTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPBankingDetailsTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPBankingDetailsTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaPBankingDetailsTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpStatementTable Data = new AEpStatementTable();
+            LoadViaForeignKey(AEpStatementTable.TableId, PBankingDetailsTable.TableId, Data, new string[1]{"a_bank_account_key_i"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaPBankingDetailsTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadViaPBankingDetailsTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaPBankingDetailsTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaPBankingDetailsTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaPBankingDetails(Int32 ABankingDetailsKey, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpStatementTable.TableId, PBankingDetailsTable.TableId, new string[1]{"a_bank_account_key_i"},
+                new System.Object[1]{ABankingDetailsKey}, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaPBankingDetailsTemplate(PBankingDetailsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpStatementTable.TableId, PBankingDetailsTable.TableId, new string[1]{"a_bank_account_key_i"},
+                ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaPBankingDetailsTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpStatementTable.TableId, PBankingDetailsTable.TableId, new string[1]{"a_bank_account_key_i"},
+                ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(Int32 AStatementKey, TDBTransaction ATransaction)
         {
             DeleteByPrimaryKey(AEpStatementTable.TableId, new System.Object[1]{AStatementKey}, ATransaction);
@@ -3145,153 +3292,6 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         public static int CountViaAEpStatementTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
             return CountViaForeignKey(AEpTransactionTable.TableId, AEpStatementTable.TableId, new string[1]{"a_statement_key_i"},
-                ASearchCriteria, ATransaction);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankingDetails(DataSet ADataSet, Int32 ABankingDetailsKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            LoadViaForeignKey(AEpTransactionTable.TableId, PBankingDetailsTable.TableId, ADataSet, new string[1]{"a_statement_bank_account_key_i"},
-                new System.Object[1]{ABankingDetailsKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankingDetails(DataSet AData, Int32 ABankingDetailsKey, TDBTransaction ATransaction)
-        {
-            LoadViaPBankingDetails(AData, ABankingDetailsKey, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankingDetails(DataSet AData, Int32 ABankingDetailsKey, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            LoadViaPBankingDetails(AData, ABankingDetailsKey, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpTransactionTable LoadViaPBankingDetails(Int32 ABankingDetailsKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            AEpTransactionTable Data = new AEpTransactionTable();
-            LoadViaForeignKey(AEpTransactionTable.TableId, PBankingDetailsTable.TableId, Data, new string[1]{"a_statement_bank_account_key_i"},
-                new System.Object[1]{ABankingDetailsKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            return Data;
-        }
-
-        /// auto generated
-        public static AEpTransactionTable LoadViaPBankingDetails(Int32 ABankingDetailsKey, TDBTransaction ATransaction)
-        {
-            return LoadViaPBankingDetails(ABankingDetailsKey, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpTransactionTable LoadViaPBankingDetails(Int32 ABankingDetailsKey, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            return LoadViaPBankingDetails(ABankingDetailsKey, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankingDetailsTemplate(DataSet ADataSet, PBankingDetailsRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            LoadViaForeignKey(AEpTransactionTable.TableId, PBankingDetailsTable.TableId, ADataSet, new string[1]{"a_statement_bank_account_key_i"},
-                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankingDetailsTemplate(DataSet AData, PBankingDetailsRow ATemplateRow, TDBTransaction ATransaction)
-        {
-            LoadViaPBankingDetailsTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankingDetailsTemplate(DataSet AData, PBankingDetailsRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            LoadViaPBankingDetailsTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpTransactionTable LoadViaPBankingDetailsTemplate(PBankingDetailsRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            AEpTransactionTable Data = new AEpTransactionTable();
-            LoadViaForeignKey(AEpTransactionTable.TableId, PBankingDetailsTable.TableId, Data, new string[1]{"a_statement_bank_account_key_i"},
-                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            return Data;
-        }
-
-        /// auto generated
-        public static AEpTransactionTable LoadViaPBankingDetailsTemplate(PBankingDetailsRow ATemplateRow, TDBTransaction ATransaction)
-        {
-            return LoadViaPBankingDetailsTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpTransactionTable LoadViaPBankingDetailsTemplate(PBankingDetailsRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            return LoadViaPBankingDetailsTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpTransactionTable LoadViaPBankingDetailsTemplate(PBankingDetailsRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            return LoadViaPBankingDetailsTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankingDetailsTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            LoadViaForeignKey(AEpTransactionTable.TableId, PBankingDetailsTable.TableId, ADataSet, new string[1]{"a_statement_bank_account_key_i"},
-                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankingDetailsTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
-        {
-            LoadViaPBankingDetailsTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankingDetailsTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            LoadViaPBankingDetailsTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpTransactionTable LoadViaPBankingDetailsTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            AEpTransactionTable Data = new AEpTransactionTable();
-            LoadViaForeignKey(AEpTransactionTable.TableId, PBankingDetailsTable.TableId, Data, new string[1]{"a_statement_bank_account_key_i"},
-                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            return Data;
-        }
-
-        /// auto generated
-        public static AEpTransactionTable LoadViaPBankingDetailsTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
-        {
-            return LoadViaPBankingDetailsTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpTransactionTable LoadViaPBankingDetailsTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            return LoadViaPBankingDetailsTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static int CountViaPBankingDetails(Int32 ABankingDetailsKey, TDBTransaction ATransaction)
-        {
-            return CountViaForeignKey(AEpTransactionTable.TableId, PBankingDetailsTable.TableId, new string[1]{"a_statement_bank_account_key_i"},
-                new System.Object[1]{ABankingDetailsKey}, ATransaction);
-        }
-
-        /// auto generated
-        public static int CountViaPBankingDetailsTemplate(PBankingDetailsRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
-        {
-            return CountViaForeignKey(AEpTransactionTable.TableId, PBankingDetailsTable.TableId, new string[1]{"a_statement_bank_account_key_i"},
-                ATemplateRow, ATemplateOperators, ATransaction);
-        }
-
-        /// auto generated
-        public static int CountViaPBankingDetailsTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
-        {
-            return CountViaForeignKey(AEpTransactionTable.TableId, PBankingDetailsTable.TableId, new string[1]{"a_statement_bank_account_key_i"},
                 ASearchCriteria, ATransaction);
         }
 

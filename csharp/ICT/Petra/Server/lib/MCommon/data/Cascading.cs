@@ -1503,10 +1503,10 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 {
                     AEpAccountCascading.DeleteUsingTemplate(MyAEpAccountTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                AEpTransactionTable MyAEpTransactionTable = AEpTransactionAccess.LoadViaPBankingDetails(ABankingDetailsKey, StringHelper.StrSplit("a_statement_key_i,a_order_i", ","), ATransaction);
-                for (countRow = 0; (countRow != MyAEpTransactionTable.Rows.Count); countRow = (countRow + 1))
+                AEpStatementTable MyAEpStatementTable = AEpStatementAccess.LoadViaPBankingDetails(ABankingDetailsKey, StringHelper.StrSplit("a_statement_key_i", ","), ATransaction);
+                for (countRow = 0; (countRow != MyAEpStatementTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    AEpTransactionCascading.DeleteUsingTemplate(MyAEpTransactionTable[countRow], null, ATransaction, AWithCascDelete);
+                    AEpStatementCascading.DeleteUsingTemplate(MyAEpStatementTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AAccountTable MyAAccountTable = AAccountAccess.LoadViaPBankingDetails(ABankingDetailsKey, StringHelper.StrSplit("a_ledger_number_i,a_account_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAAccountTable.Rows.Count); countRow = (countRow + 1))
@@ -1533,10 +1533,10 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 {
                     AEpAccountCascading.DeleteUsingTemplate(MyAEpAccountTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                AEpTransactionTable MyAEpTransactionTable = AEpTransactionAccess.LoadViaPBankingDetailsTemplate(ATemplateRow, StringHelper.StrSplit("a_statement_key_i,a_order_i", ","), ATransaction);
-                for (countRow = 0; (countRow != MyAEpTransactionTable.Rows.Count); countRow = (countRow + 1))
+                AEpStatementTable MyAEpStatementTable = AEpStatementAccess.LoadViaPBankingDetailsTemplate(ATemplateRow, StringHelper.StrSplit("a_statement_key_i", ","), ATransaction);
+                for (countRow = 0; (countRow != MyAEpStatementTable.Rows.Count); countRow = (countRow + 1))
                 {
-                    AEpTransactionCascading.DeleteUsingTemplate(MyAEpTransactionTable[countRow], null, ATransaction, AWithCascDelete);
+                    AEpStatementCascading.DeleteUsingTemplate(MyAEpStatementTable[countRow], null, ATransaction, AWithCascDelete);
                 }
                 AAccountTable MyAAccountTable = AAccountAccess.LoadViaPBankingDetailsTemplate(ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_account_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAAccountTable.Rows.Count); countRow = (countRow + 1))

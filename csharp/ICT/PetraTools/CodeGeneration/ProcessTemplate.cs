@@ -405,6 +405,11 @@ namespace Ict.Tools.CodeGeneration
                     AddToCodelet(APlaceholder, Environment.NewLine);
                 }
             }
+
+            if (countDescrLines == 0)
+            {
+                AddToCodelet(APlaceholder, "///");
+            }
         }
 
         protected void ReplaceCodelets()
