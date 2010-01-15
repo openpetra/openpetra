@@ -233,6 +233,16 @@
                 <Description>Cacheable DataTables</Description>
             </SubNamespace>
             <SubNamespace>
+                <Name>ImportExport</Name>
+                <Description>ImportExport Sub-System</Description>
+                <Children>
+                    <SubNamespace>
+                        <Name>WebConnectors</Name>
+                        <Description>Connectors for Web Services (stateless, simple)</Description>
+                    </SubNamespace>
+                </Children>
+            </SubNamespace>
+            <SubNamespace>
                 <Name>Gift</Name>
                 <Description>Gift Sub-System</Description>
                 <Children>

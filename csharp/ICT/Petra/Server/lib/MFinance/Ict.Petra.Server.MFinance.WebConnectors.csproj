@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AP.EditTransaction.cs" />
+    <Compile Include="BankImport.cs" />
     <Compile Include="Gift.Transactions.cs" />
     <Compile Include="GL.Setup.cs" />
     <Compile Include="GL.Transactions.cs" />

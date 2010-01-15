@@ -1,0 +1,34 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Import Bank Statements
+    Namespace: Ict.Petra.Client.MFinance.Gui
+    FormType: browse
+    Template: window
+    WindowWidth: 754
+    WindowHeight: 623
+    Actions:
+        actImportNewStatement:
+            Label: &Import new statement
+            ActionClick: ImportNewStatement
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlStatementInfo, tabTransactions]
+        pnlStatementInfo:
+            # Controls: [txtStartBalance, txtEndBalance, txtSumDebit, txtSumCredit, txtNumberMatchedTransactions]
+        tabTransactions:
+            # todo: Accounts Payable tab?
+            Controls: [tpgAll, tpgUnmatched, tpgGifts, tpgGL]
+            Dock: Fill
+        tpgUnmatched:
+        tpgGifts:
+        tpgGL:
+        tpgAll:
+            Controls: [grdAllTransactions]
+        grdAllTransactions:
+            Dock: Fill
+    Menu:
+        mniFile:
+            mniImportNewStatement:
+    Toolbar:
+        tbbImportNewStatement:

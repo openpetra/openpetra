@@ -1,9 +1,15 @@
-﻿/*************************************************************************
+/* auto generated with nant generateWinforms from BankStatementImport.yaml
+ *
+ * DO NOT edit manually, DO NOT edit with the designer
+ * use a user control if you need to modify the screen content
+ *
+ */
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * @Authors:
- *       timop
+ *       auto generated
  *
  * Copyright 2004-2009 by OM International
  *
@@ -25,128 +31,146 @@
  ************************************************************************/
 using System;
 using System.Drawing;
-using System.Data;
+using System.Collections;
+using System.ComponentModel;
 using System.Windows.Forms;
+using System.Data;
+using Ict.Petra.Shared;
+using System.Resources;
+using System.Collections.Specialized;
 using Mono.Unix;
+using Ict.Common;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
-    /// <summary>
-    /// Import bank statements and put them in the right sub system (gift, ap, gl, etc).
-    /// At the moment, this is just a non functional prototype
-    /// that shows how the transactions on a bank statement can
-    /// be categorized and matched automatically to partners (eg. donors and recipients, suppliers, etc)
-    /// </summary>
-    public partial class TFrmBankStatementImport : Form
+
+  /// auto generated: Import Bank Statements
+  public partial class TFrmBankStatementImport: System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
+  {
+    private Ict.Petra.Client.CommonForms.TFrmPetraUtils FPetraUtilsObject;
+
+    /// constructor
+    public TFrmBankStatementImport(IntPtr AParentFormHandle) : base()
     {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TFrmBankStatementImport(IntPtr AParentFormHandle)
-        {
-            //
-            // The InitializeComponent() call is required for Windows Forms designer support.
-            //
-            InitializeComponent();
-            #region CATALOGI18N
+      //
+      // Required for Windows Form Designer support
+      //
+      InitializeComponent();
+      #region CATALOGI18N
 
-            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.tabPage1.Text = Catalog.GetString("Unmatched");
-            this.button10.Text = Catalog.GetString("Cancel");
-            this.button9.Text = Catalog.GetString("Save");
-            this.tabPage2.Text = Catalog.GetString("Recurring Gifts");
-            this.button11.Text = Catalog.GetString("Cancel");
-            this.button12.Text = Catalog.GetString("Save");
-            this.tabPage4.Text = Catalog.GetString("One Time Gifts");
-            this.button13.Text = Catalog.GetString("Cancel");
-            this.button14.Text = Catalog.GetString("Save");
-            this.tabPage3.Text = Catalog.GetString("Other (GL, AP, etc)");
-            this.button15.Text = Catalog.GetString("Cancel");
-            this.button16.Text = Catalog.GetString("Save");
-            this.radioButton1.Text = Catalog.GetString("Recurring Gift");
-            this.radioButton2.Text = Catalog.GetString("One Time Gift");
-            this.radioButton3.Text = Catalog.GetString("Other (GL, AP, etc)");
-            this.radioButton4.Text = Catalog.GetString("Unmatched");
-            this.groupBox1.Text = Catalog.GetString("Gift");
-            this.tabPage5.Text = Catalog.GetString("Donor Details");
-            this.button1.Text = Catalog.GetString("Create New Partner");
-            this.label21.Text = Catalog.GetString("Donor:");
-            this.button8.Text = Catalog.GetString("Find Donor by Name");
-            this.button7.Text = Catalog.GetString("Find Donor by Bank details");
-            this.button6.Text = Catalog.GetString("Edit Donor");
-            this.label5.Text = Catalog.GetString("Letter Code:");
-            this.label4.Text = Catalog.GetString("Reference:");
-            this.label3.Text = Catalog.GetString("Annual Receipt");
-            this.label2.Text = Catalog.GetString("Method of Payment:");
-            this.label1.Text = Catalog.GetString("Method of Giving:");
-            this.TTxtPartnerKeyTextBox1.LabelText = Catalog.GetString("Name, Address,  Partner Class");
-            this.tabPage6.Text = Catalog.GetString("Gift Details");
-            this.label20.Text = Catalog.GetString("Mailing:");
-            this.checkBox3.Text = Catalog.GetString("Confidential");
-            this.checkBox2.Text = Catalog.GetString("Admin Grants");
-            this.checkBox1.Text = Catalog.GetString("Tax deductable");
-            this.label18.Text = Catalog.GetString("for:");
-            this.label19.Text = Catalog.GetString("Comment 3:");
-            this.label16.Text = Catalog.GetString("for:");
-            this.label17.Text = Catalog.GetString("Comment 2:");
-            this.label15.Text = Catalog.GetString("for:");
-            this.label14.Text = Catalog.GetString("Comment 1:");
-            this.label13.Text = Catalog.GetString("Account:");
-            this.label12.Text = Catalog.GetString("Cost Centre:");
-            this.label11.Text = Catalog.GetString("Motivation Detail:");
-            this.label10.Text = Catalog.GetString("Motivation Group:");
-            this.textBox3.Text = Catalog.GetString("EUR");
-            this.label9.Text = Catalog.GetString("Amount:");
-            this.label8.Text = Catalog.GetString("Key Ministry:");
-            this.button5.Text = Catalog.GetString("Field");
-            this.TTxtPartnerKeyTextBox3.LabelText = Catalog.GetString("Name of Field");
-            this.button4.Text = Catalog.GetString("Remove Detail");
-            this.button3.Text = Catalog.GetString("Add Gift Detail");
-            this.label7.Text = Catalog.GetString("Total:");
-            this.label6.Text = Catalog.GetString("Gift Date:");
-            this.button2.Text = Catalog.GetString("Recipient");
-            this.TTxtPartnerKeyTextBox2.LabelText = Catalog.GetString("Name of Recipient");
-            this.toolStripButton1.Text = Catalog.GetString("Print");
-            this.toolStripComboBox1.Text = Catalog.GetString("Select Bank Account");
-            this.toolStripButton2.Text = Catalog.GetString("Add new Bank Account");
-            this.toolStripButton3.Text = Catalog.GetString("Import new bank statement");
-            this.toolStripComboBox2.Text = Catalog.GetString("Select statement");
-            this.Text = Catalog.GetString("Match recurring gifts");
-            #endregion
+      // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      this.tpgUnmatched.Text = Catalog.GetString("Unmatched");
+      this.tpgGifts.Text = Catalog.GetString("Gifts");
+      this.tpgGL.Text = Catalog.GetString("GL");
+      this.tpgAll.Text = Catalog.GetString("All");
+      this.tbbImportNewStatement.Text = Catalog.GetString("&Import new statement");
+      this.mniImportNewStatement.Text = Catalog.GetString("&Import new statement");
+      this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
+      this.mniClose.Text = Catalog.GetString("&Close");
+      this.mniFile.Text = Catalog.GetString("&File");
+      this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
+      this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
+      this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
+      this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
+      this.mniHelp.Text = Catalog.GetString("&Help");
+      this.Text = Catalog.GetString("Import Bank Statements");
+      #endregion
 
-            DataTable statementTable = new DataTable();
-            statementTable.Columns.Add(new DataColumn("Amount", typeof(double)));
-            statementTable.Columns.Add(new DataColumn("TransactionTypeCode", typeof(String)));
-            statementTable.Columns.Add(new DataColumn("TransactionTypeDescr", typeof(String)));
-            statementTable.Columns.Add(new DataColumn("Name", typeof(String)));
-            statementTable.Columns.Add(new DataColumn("Purpose", typeof(String)));
+      FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
-            DataRow row = statementTable.NewRow();
-            row["Amount"] = 50.0f;
-            row["TransactionTypeCode"] = "051";
-            row["TransactionTypeDescr"] = "Gutschrift, �berweisung";
-            row["Name"] = "Donald Mustermann";
-            row["Purpose"] = "Support some project";
-            statementTable.Rows.Add(row);
-            row = statementTable.NewRow();
-            row["Amount"] = 30.0f;
-            row["TransactionTypeCode"] = "051";
-            row["TransactionTypeDescr"] = "Gutschrift, �berweisung";
-            row["Name"] = "SomeOne Else";
-            row["Purpose"] = "Another project";
-            statementTable.Rows.Add(row);
+      FPetraUtilsObject.InitActionState();
 
-            tsgrdDataGrid1.Columns.Clear();
-            tsgrdDataGrid1.AddTextColumn("Amount", statementTable.Columns["Amount"]);
-            tsgrdDataGrid1.AddTextColumn("Type", statementTable.Columns["TransactionTypeCode"]);
-            tsgrdDataGrid1.AddTextColumn("Type", statementTable.Columns["TransactionTypeDescr"]);
-            tsgrdDataGrid1.AddTextColumn("Name", statementTable.Columns["Name"]);
-            tsgrdDataGrid1.AddTextColumn("Purpose", statementTable.Columns["Purpose"]);
-            tsgrdDataGrid1.DataSource = new DevAge.ComponentModel.BoundDataView(new DataView(statementTable));
-            ((DevAge.ComponentModel.BoundDataView)tsgrdDataGrid1.DataSource).AllowEdit = false;
-            ((DevAge.ComponentModel.BoundDataView)tsgrdDataGrid1.DataSource).AllowNew = false;
-            ((DevAge.ComponentModel.BoundDataView)tsgrdDataGrid1.DataSource).AllowDelete = false;
-        }
     }
+
+    private void TFrmPetra_Activated(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.TFrmPetra_Activated(sender, e);
+    }
+
+    private void TFrmPetra_Load(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.TFrmPetra_Load(sender, e);
+    }
+
+    private void TFrmPetra_Closing(object sender, CancelEventArgs e)
+    {
+        FPetraUtilsObject.TFrmPetra_Closing(sender, e);
+    }
+
+    private void Form_KeyDown(object sender, KeyEventArgs e)
+    {
+        FPetraUtilsObject.Form_KeyDown(sender, e);
+    }
+
+    private void TFrmPetra_Closed(object sender, EventArgs e)
+    {
+        // TODO? Save Window position
+    }
+
+#region Implement interface functions
+
+    /// auto generated
+    public void RunOnceOnActivation()
+    {
+    }
+
+    /// <summary>
+    /// Adds event handlers for the appropiate onChange event to call a central procedure
+    /// </summary>
+    public void HookupAllControls()
+    {
+    }
+
+    /// auto generated
+    public void HookupAllInContainer(Control container)
+    {
+        FPetraUtilsObject.HookupAllInContainer(container);
+    }
+
+    /// auto generated
+    public bool CanClose()
+    {
+        return FPetraUtilsObject.CanClose();
+    }
+
+    /// auto generated
+    public TFrmPetraUtils GetPetraUtilsObject()
+    {
+        return (TFrmPetraUtils)FPetraUtilsObject;
+    }
+#endregion
+
+#region Action Handling
+
+    /// auto generated
+    public void ActionEnabledEvent(object sender, ActionEventArgs e)
+    {
+        if (e.ActionName == "actImportNewStatement")
+        {
+            tbbImportNewStatement.Enabled = e.Enabled;
+            mniImportNewStatement.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actClose")
+        {
+            mniClose.Enabled = e.Enabled;
+        }
+        mniHelpPetraHelp.Enabled = false;
+        mniHelpBugReport.Enabled = false;
+        mniHelpAboutPetra.Enabled = false;
+        mniHelpDevelopmentTeam.Enabled = false;
+    }
+
+    /// auto generated
+    protected void actClose(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.ExecuteAction(eActionId.eClose);
+    }
+
+#endregion
+  }
 }

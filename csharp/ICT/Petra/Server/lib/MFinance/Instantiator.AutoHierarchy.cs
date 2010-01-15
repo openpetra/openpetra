@@ -25,6 +25,7 @@ using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget;
 using Ict.Petra.Shared.Interfaces.MFinance.Cacheable;
+using Ict.Petra.Shared.Interfaces.MFinance.ImportExport;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift;
 using Ict.Petra.Shared.Interfaces.MFinance.GL;
 using Ict.Petra.Shared.Interfaces.MFinance.ICH;
@@ -34,6 +35,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.Setup;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
@@ -45,6 +47,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.AccountsPayable;
 using Ict.Petra.Server.MFinance.Instantiator.Budget;
 using Ict.Petra.Server.MFinance.Instantiator.Cacheable;
+using Ict.Petra.Server.MFinance.Instantiator.ImportExport;
 using Ict.Petra.Server.MFinance.Instantiator.Gift;
 using Ict.Petra.Server.MFinance.Instantiator.GL;
 using Ict.Petra.Server.MFinance.Instantiator.ICH;
@@ -54,6 +57,7 @@ using Ict.Petra.Server.MFinance.Instantiator.Setup;
 using Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Budget.UIConnectors;
+using Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors;
@@ -65,6 +69,7 @@ using Ict.Petra.Server.MFinance.Instantiator.Setup.UIConnectors;
 //using Ict.Petra.Server.MFinance.AccountsPayable;
 //using Ict.Petra.Server.MFinance.Budget;
 //using Ict.Petra.Server.MFinance.Cacheable;
+using Ict.Petra.Server.MFinance.ImportExport;
 //using Ict.Petra.Server.MFinance.Gift;
 //using Ict.Petra.Server.MFinance.GL;
 //using Ict.Petra.Server.MFinance.ICH;
@@ -74,6 +79,7 @@ using Ict.Petra.Server.MFinance.Reporting;
 using Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors;
 using Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors;
 //using Ict.Petra.Server.MFinance.Budget.UIConnectors;
+using Ict.Petra.Server.MFinance.ImportExport.WebConnectors;
 //using Ict.Petra.Server.MFinance.Gift.UIConnectors;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 //using Ict.Petra.Server.MFinance.GL.UIConnectors;
@@ -88,6 +94,7 @@ using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using System.Xml;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.RemotedExceptions;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -194,6 +201,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
         private TAccountsPayableNamespace FAccountsPayableSubNamespace;
         private TBudgetNamespace FBudgetSubNamespace;
         private TCacheableNamespace FCacheableSubNamespace;
+        private TImportExportNamespace FImportExportSubNamespace;
         private TGiftNamespace FGiftSubNamespace;
         private TGLNamespace FGLSubNamespace;
         private TICHNamespace FICHSubNamespace;
@@ -354,6 +362,37 @@ namespace Ict.Petra.Server.MFinance.Instantiator
 
 
                 return FCacheableSubNamespace;
+            }
+
+        }
+
+
+        /// <summary>The 'ImportExport' subnamespace contains further subnamespaces.</summary>
+        public IImportExportNamespace ImportExport
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'MFinance.ImportExport' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'MFinance.ImportExport' sub-namespace
+                //
+
+                // accessing TImportExportNamespace the first time? > instantiate the object
+                if (FImportExportSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TImportExportNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.MFinance.Instantiator.ImportExport') should be automatically contructable.
+                    FImportExportSubNamespace = new TImportExportNamespace();
+                }
+
+
+                return FImportExportSubNamespace;
             }
 
         }
@@ -1403,6 +1442,203 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
             System.Type TmpType;
             ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, ALedgerNumber, out TmpType);
             #endregion ManualCode
+        }
+
+    }
+}
+
+
+namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport
+{
+
+    /// <summary>auto generated class </summary>
+    public class TImportExportNamespace : MarshalByRefObject, IImportExportNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+        private TImportExportWebConnectorsNamespace FImportExportWebConnectorsSubNamespace;
+
+        /// <summary>Constructor</summary>
+        public TImportExportNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TImportExportNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TImportExportNamespace object exists until this AppDomain is unloaded!
+        }
+
+
+        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>The 'ImportExportWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IImportExportWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'ImportExport.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'ImportExport.WebConnectors' sub-namespace
+                //
+
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FImportExportWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.ImportExport.Instantiator.WebConnectors') should be automatically contructable.
+                    FImportExportWebConnectorsSubNamespace = new TImportExportWebConnectorsNamespace();
+                }
+
+
+                return (IImportExportWebConnectorsNamespace)FImportExportWebConnectorsSubNamespace;
+            }
+
+        }
+
+
+    }
+}
+
+
+namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
+{
+
+    /// <summary>auto generated class </summary>
+    public class TImportExportWebConnectorsNamespace : MarshalByRefObject, IImportExportWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TImportExportWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TImportExportWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TImportExportWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+
+        /// generated method from connector
+        public TSubmitChangesResult StoreNewBankStatement(AEpStatementTable AStmtTable,
+                                                          AEpTransactionTable ATransactionTable,
+                                                          out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.StoreNewBankStatement(AStmtTable, ATransactionTable, out AVerificationResult);
         }
 
     }

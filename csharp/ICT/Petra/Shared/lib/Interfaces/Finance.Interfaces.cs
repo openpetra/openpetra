@@ -12,6 +12,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget;
 using Ict.Petra.Shared.Interfaces.MFinance.Cacheable;
+using Ict.Petra.Shared.Interfaces.MFinance.ImportExport;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift;
 using Ict.Petra.Shared.Interfaces.MFinance.GL;
 using Ict.Petra.Shared.Interfaces.MFinance.ICH;
@@ -21,6 +22,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.Setup;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
@@ -31,6 +33,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
 #region ManualCode
 using System.Xml;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -55,6 +58,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance
 
         /// <summary>access to sub namespace</summary>
         ICacheableNamespace Cacheable
+        {
+            get;
+        }
+
+        /// <summary>access to sub namespace</summary>
+        IImportExportNamespace ImportExport
         {
             get;
         }
@@ -271,6 +280,36 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Cacheable
         void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
                                    System.Int32 ALedgerNumber,
                                    out System.Data.DataTable ADataTable);
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MFinance.ImportExport
+{
+    /// <summary>auto generated</summary>
+    public interface IImportExportNamespace : IInterface
+    {
+        /// <summary>access to sub namespace</summary>
+        IImportExportWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IImportExportWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
+        TSubmitChangesResult StoreNewBankStatement(AEpStatementTable AStmtTable,
+                                                   AEpTransactionTable ATransactionTable,
+                                                   out TVerificationResultCollection AVerificationResult);
     }
 
 }

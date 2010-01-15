@@ -192,6 +192,8 @@
             <copy file="${appconfigfile}"
                 tofile="${appconfigfileBin}"/>
         </if>
+        <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ClientPlugins.sln"/>
+        <call target="compileTemplate"/>
         <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}">
             <fileset basedir="${ThirdParty.dir}/Mono">
                 <include name="intl.dll" />
@@ -585,7 +587,11 @@
         <call target="translationTemplate"/>
         <property name="solutionName" value="Client"/>
         <call target="translationTemplate"/>
+        <property name="solutionName" value="ClientPlugins"/>
+        <call target="translationTemplate"/>
         <property name="solutionName" value="Server"/>
+        <call target="translationTemplate"/>
+        <property name="solutionName" value="ServerPlugins"/>
         <call target="translationTemplate"/>
         <property name="solutionName" value="ServerAdmin"/>
         <call target="translationTemplate"/>
@@ -648,6 +654,10 @@
         <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerPlugins"/>
         <call target="uncrustifyTemplate"/>
     </target>
+    <target name="uncrustifyPetraClientPlugins">
+        <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/ClientPlugins"/>
+        <call target="uncrustifyTemplate"/>
+    </target>
     <target name="uncrustifyExperimenting">
         <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Experimenting"/>
         <call target="uncrustifyTemplate"/>
@@ -661,7 +671,7 @@
         <call target="uncrustifyTemplate"/>
     </target>
     
-    <target name="uncrustify" depends="uncrustifyCommon, uncrustifyPetraShared, uncrustifyPetraServer, uncrustifyPetraServerPlugins, uncrustifyPetraClient, uncrustifyPetraServerAdmin, uncrustifyExperimenting, uncrustifyPetraTools, uncrustifyTesting"/>
+    <target name="uncrustify" depends="uncrustifyCommon, uncrustifyPetraShared, uncrustifyPetraServer, uncrustifyPetraServerPlugins, uncrustifyPetraClient, uncrustifyPetraClientPlugins, uncrustifyPetraServerAdmin, uncrustifyExperimenting, uncrustifyPetraTools, uncrustifyTesting"/>
     
     <target name="checkCode" description="check for correct file headers, missing xml comment generation, copyright, licensing, etc">
         <foreach item="File" property="filename">
@@ -681,7 +691,7 @@
     </target>
 
     <target name="fixProjectFiles">
-        <ExecDotNet program="${PetraToolsExe.dir}/FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools,Testing,ServerPlugins"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools,Testing,ServerPlugins,ClientPlugins"/>
     </target>
     
     <target name="switchToDebug">
