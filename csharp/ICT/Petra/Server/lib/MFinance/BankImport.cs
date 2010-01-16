@@ -27,10 +27,12 @@ using System;
 using System.Data;
 using System.IO;
 using System.Xml;
+using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
@@ -44,7 +46,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// upload new bank statement so that it can be used for matching etc.
         /// </summary>
         /// <param name="AStmtTable"></param>
-        /// <param name="ATransactionTable"></param>
+        /// <param name="ATransTable"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         static public TSubmitChangesResult StoreNewBankStatement(AEpStatementTable AStmtTable,
@@ -97,6 +99,83 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             }
 
             return SubmissionResult;
+        }
+
+        /// <summary>
+        /// returns the bank statements that are from or newer than the given date
+        /// </summary>
+        /// <param name="AStartDate"></param>
+        /// <returns></returns>
+        static public AEpStatementTable GetImportedBankStatements(DateTime AStartDate)
+        {
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            AEpStatementTable localTable = new AEpStatementTable();
+            AEpStatementRow row = localTable.NewRowTyped(false);
+
+            row.Date = AStartDate;
+
+            StringCollection operators = new StringCollection();
+            operators.Add(">=");
+
+            localTable = AEpStatementAccess.LoadUsingTemplate(row, operators, null, ReadTransaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return localTable;
+        }
+
+        /// <summary>
+        /// returns the transactions of the bank statement, and the matches if they exist;
+        /// tries to find matches too
+        /// </summary>
+        /// <param name="AStatementKey"></param>
+        /// <returns></returns>
+        static public BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey)
+        {
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            BankImportTDS ResultDataset = new BankImportTDS();
+
+            AEpTransactionAccess.LoadViaAEpStatement(ResultDataset, AStatementKey, ReadTransaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return ResultDataset;
+        }
+
+        /// <summary>
+        /// commit matches into a_ep_match
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <returns></returns>
+        static public bool CommitMatches(BankImportTDS AMainDS)
+        {
+            // TODO: store into match table
+
+            return false;
+        }
+
+        /// <summary>
+        /// create a gift batch for the matched gifts
+        /// </summary>
+        /// <returns>the gift batch number</returns>
+        static public Int32 CreateGiftBatch(BankImportTDS AMainDS, Int32 ALedgerNumber, Int32 AGiftBatchNumber)
+        {
+            // TODO: create a gift batch and return the gift batch number
+            // or use the preselected gift batch
+            return -1;
+        }
+
+        /// <summary>
+        /// create a gl batch for the matched gl transactions
+        /// </summary>
+        /// <returns>the batch number</returns>
+        static public Int32 CreateGLBatch(BankImportTDS AMainDS, Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            // TODO: create a batch and return the batch number
+            // or use the preselected batch
+            return -1;
         }
     }
 }

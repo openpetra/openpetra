@@ -1635,10 +1635,44 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
 
         /// generated method from connector
         public TSubmitChangesResult StoreNewBankStatement(AEpStatementTable AStmtTable,
-                                                          AEpTransactionTable ATransactionTable,
+                                                          AEpTransactionTable ATransTable,
                                                           out TVerificationResultCollection AVerificationResult)
         {
-            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.StoreNewBankStatement(AStmtTable, ATransactionTable, out AVerificationResult);
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.StoreNewBankStatement(AStmtTable, ATransTable, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public AEpStatementTable GetImportedBankStatements(DateTime AStartDate)
+        {
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.GetImportedBankStatements(AStartDate);
+        }
+
+        /// generated method from connector
+        public BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey)
+        {
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.GetBankStatementTransactionsAndMatches(AStatementKey);
+        }
+
+        /// generated method from connector
+        public bool CommitMatches(BankImportTDS AMainDS)
+        {
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.CommitMatches(AMainDS);
+        }
+
+        /// generated method from connector
+        public Int32 CreateGiftBatch(BankImportTDS AMainDS,
+                                     Int32 ALedgerNumber,
+                                     Int32 AGiftBatchNumber)
+        {
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.CreateGiftBatch(AMainDS, ALedgerNumber, AGiftBatchNumber);
+        }
+
+        /// generated method from connector
+        public Int32 CreateGLBatch(BankImportTDS AMainDS,
+                                   Int32 ALedgerNumber,
+                                   Int32 ABatchNumber)
+        {
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.CreateGLBatch(AMainDS, ALedgerNumber, ABatchNumber);
         }
 
     }

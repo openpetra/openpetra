@@ -308,8 +308,22 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
         TSubmitChangesResult StoreNewBankStatement(AEpStatementTable AStmtTable,
-                                                   AEpTransactionTable ATransactionTable,
+                                                   AEpTransactionTable ATransTable,
                                                    out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
+        AEpStatementTable GetImportedBankStatements(DateTime AStartDate);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
+        BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
+        bool CommitMatches(BankImportTDS AMainDS);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
+        Int32 CreateGiftBatch(BankImportTDS AMainDS,
+                              Int32 ALedgerNumber,
+                              Int32 AGiftBatchNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
+        Int32 CreateGLBatch(BankImportTDS AMainDS,
+                            Int32 ALedgerNumber,
+                            Int32 ABatchNumber);
     }
 
 }
