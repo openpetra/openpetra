@@ -512,9 +512,53 @@ namespace Ict.Tools.PatchTool
             }
         }
 
+        private bool AddToConfigFile(string AConfigFileName, string AKeyName, string AValue)
+        {
+            string OrigFilename = FInstallPath + Path.DirectorySeparatorChar +
+                                  "etc" + FVersionPostFix +
+                                  Path.DirectorySeparatorChar + AConfigFileName;
+
+            if (!File.Exists(OrigFilename))
+            {
+                return false;
+            }
+
+            StreamReader sr = new StreamReader(OrigFilename);
+            StreamWriter sw = new StreamWriter(OrigFilename + ".new");
+
+            bool hasKey = false;
+
+            while (!sr.EndOfStream)
+            {
+                string line = sr.ReadLine();
+
+                if (line.Contains("\"" + AKeyName + "\""))
+                {
+                    hasKey = true;
+                    line = "    <add key=\"" + AKeyName + "\" value=\"" + AValue + "\" />";
+                }
+
+                if (line.Contains("</appSettings>") && !hasKey)
+                {
+                    sw.WriteLine("    <add key=\"" + AKeyName + "\" value=\"" + AValue + "\" />");
+                }
+
+                sw.WriteLine(line);
+            }
+
+            sr.Close();
+            sw.Close();
+
+            File.Move(OrigFilename + ".new", OrigFilename);
+        }
+
         private Boolean SpecialOperationsConfigAndScripts()
         {
             // TODO: this should go into a special patch plugin DLL?
+
+            // 0.0.11.0 => 0.0.11.1
+            // add dll for bank import from csv
+            // AddToConfigFile("PetraClient-Remote.config", "Plugin.BankStatementImport", "Plugin.BankImportFromCSV");
 
             return true;
         }
