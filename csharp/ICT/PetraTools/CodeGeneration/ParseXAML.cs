@@ -287,7 +287,7 @@ namespace Ict.Tools.CodeGeneration
                 // the check for tbb works around problems with elements list, shortcutkeys
                 XmlNode prevNode = childNode;
 
-                if (childNode.Name.StartsWith("tbb"))
+                if (childNode.Name.StartsWith("tbb") || childNode.Name.StartsWith("tbc"))
                 {
                     UsePreviousNode = true;
                     string tbbName = childNode.Name;

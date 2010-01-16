@@ -57,6 +57,9 @@
     <Reference Include="Ict.Petra.Shared.Interfaces">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.Interfaces.Plugins">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.Plugins.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
     </Reference>
@@ -191,6 +194,9 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BankStatementImport.cs" />
     <Compile Include="BankStatementImport.Designer.cs">
+      <DependentUpon>BankStatementImport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BankStatementImport.ManualCode.cs">
       <DependentUpon>BankStatementImport.cs</DependentUpon>
     </Compile>
     <Compile Include="FinanceMain.cs" />

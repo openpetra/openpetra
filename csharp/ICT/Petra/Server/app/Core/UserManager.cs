@@ -347,7 +347,7 @@ namespace Ict.Petra.Server.App.Core.Security
             }
             else
             {
-                // namespace of the class TUserAuthentication, eg. Ict.Plugin.MSysMan.LDAPAuthentication
+                // namespace of the class TUserAuthentication, eg. Plugin.AuthenticationPhpBB
                 // the dll has to be in the normal application directory
                 string Namespace = UserAuthenticationMethod;
                 string NameOfDll = Namespace + ".dll";

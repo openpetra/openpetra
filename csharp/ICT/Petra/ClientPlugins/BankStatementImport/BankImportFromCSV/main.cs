@@ -41,7 +41,7 @@ namespace Plugin.BankImportFromCSV
     /// <summary>
     /// import a bank statement from a CSV file
     /// </summary>
-    public class TBankImportFromCSV : IImportBankStatement
+    public class TBankStatementImport : IImportBankStatement
     {
         /// <summary>
         /// should return the text for the filter for AEpTransactionTable to get all the gifts, by transaction type
@@ -62,7 +62,7 @@ namespace Plugin.BankImportFromCSV
         {
             OpenFileDialog DialogOpen = new OpenFileDialog();
 
-            DialogOpen.Filter = Catalog.GetString("bank statement (*.csv)|*.csv|");
+            DialogOpen.Filter = Catalog.GetString("bank statement (*.csv)|*.csv");
             DialogOpen.RestoreDirectory = true;
             DialogOpen.Title = Catalog.GetString("Please select the bank statement to import");
 
@@ -79,7 +79,19 @@ namespace Plugin.BankImportFromCSV
 
             if (FileStructureConfig.Length == 0)
             {
-                TLogging.Log("Missing setting in config file: BankImportCSV.FileStructure.Config");
+                // check if there is only one yml file in the directory of the csv file
+                string[] ymlConfigFile = Directory.GetFiles(Path.GetDirectoryName(BankStatementFilename), "*.yml");
+
+                if (ymlConfigFile.Length == 1)
+                {
+                    FileStructureConfig = ymlConfigFile[0];
+                }
+            }
+
+            if (FileStructureConfig.Length == 0)
+            {
+                TLogging.Log(Catalog.GetString("Missing setting in config file: BankImportCSV.FileStructure.Config"));
+                MessageBox.Show(Catalog.GetString("Missing setting in config file: BankImportCSV.FileStructure.Config"));
                 AStatementKey = -1;
                 return false;
             }
@@ -118,7 +130,8 @@ namespace Plugin.BankImportFromCSV
             stmt.StatementKey = -1;
 
             // TODO: depending on the path of BankStatementFilename you could determine between several bank accounts
-            stmt.BankKey = Convert.ToInt64(TXMLParser.GetAttribute(RootNode, "BankPartnerKey"));
+            // TODO: BankAccountKey should be NOT NULL. for the moment not time to implement
+            // stmt.BankAccountKey = Convert.ToInt64(TXMLParser.GetAttribute(RootNode, "BankAccountKey"));
             stmt.Filename = BankStatementFilename;
             stmt.CurrencyCode = CurrencyCode;
             stmtTable.Rows.Add(stmt);
@@ -127,12 +140,17 @@ namespace Plugin.BankImportFromCSV
 
             AEpTransactionTable transactionsTable = new AEpTransactionTable();
 
+            Int32 rowCount = 0;
+
             do
             {
                 string line = dataFile.ReadLine();
 
+                rowCount++;
+
                 AEpTransactionRow row = transactionsTable.NewRowTyped();
                 row.StatementKey = stmt.StatementKey;
+                row.Order = rowCount;
 
                 foreach (XmlNode ColumnNode in ColumnsNode.ChildNodes)
                 {

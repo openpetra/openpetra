@@ -73,13 +73,15 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.pnlStatementInfo = new System.Windows.Forms.Panel();
             this.tabTransactions = new Ict.Common.Controls.TTabVersatile();
+            this.tpgAll = new System.Windows.Forms.TabPage();
+            this.grdAllTransactions = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.tpgUnmatched = new System.Windows.Forms.TabPage();
             this.tpgGifts = new System.Windows.Forms.TabPage();
             this.tpgGL = new System.Windows.Forms.TabPage();
-            this.tpgAll = new System.Windows.Forms.TabPage();
-            this.grdAllTransactions = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbImportNewStatement = new System.Windows.Forms.ToolStripButton();
+            this.tbbSeparator0 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbcSelectStatement = new System.Windows.Forms.ToolStripComboBox();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniImportNewStatement = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,10 +99,10 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlStatementInfo.SuspendLayout();
             this.tabTransactions.SuspendLayout();
+            this.tpgAll.SuspendLayout();
             this.tpgUnmatched.SuspendLayout();
             this.tpgGifts.SuspendLayout();
             this.tpgGL.SuspendLayout();
-            this.tpgAll.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -124,6 +126,20 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.pnlStatementInfo.Location = new System.Drawing.Point(2,2);
             this.pnlStatementInfo.Name = "pnlStatementInfo";
             this.pnlStatementInfo.AutoSize = true;
+            //
+            // tpgAll
+            //
+            this.tpgAll.Location = new System.Drawing.Point(2,2);
+            this.tpgAll.Name = "tpgAll";
+            this.tpgAll.AutoSize = true;
+            this.tpgAll.Controls.Add(this.grdAllTransactions);
+            //
+            // grdAllTransactions
+            //
+            this.grdAllTransactions.Name = "grdAllTransactions";
+            this.grdAllTransactions.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgAll.Text = "All";
+            this.tpgAll.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgUnmatched
             //
@@ -149,28 +165,14 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tpgGL.Text = "GL";
             this.tpgGL.Dock = System.Windows.Forms.DockStyle.Fill;
             //
-            // tpgAll
-            //
-            this.tpgAll.Location = new System.Drawing.Point(2,2);
-            this.tpgAll.Name = "tpgAll";
-            this.tpgAll.AutoSize = true;
-            this.tpgAll.Controls.Add(this.grdAllTransactions);
-            //
-            // grdAllTransactions
-            //
-            this.grdAllTransactions.Name = "grdAllTransactions";
-            this.grdAllTransactions.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tpgAll.Text = "All";
-            this.tpgAll.Dock = System.Windows.Forms.DockStyle.Fill;
-            //
             // tabTransactions
             //
             this.tabTransactions.Name = "tabTransactions";
             this.tabTransactions.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabTransactions.Controls.Add(this.tpgAll);
             this.tabTransactions.Controls.Add(this.tpgUnmatched);
             this.tabTransactions.Controls.Add(this.tpgGifts);
             this.tabTransactions.Controls.Add(this.tpgGL);
-            this.tabTransactions.Controls.Add(this.tpgAll);
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.RowCount = 2;
@@ -186,13 +188,26 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tbbImportNewStatement.Click += new System.EventHandler(this.ImportNewStatement);
             this.tbbImportNewStatement.Text = "&Import new statement";
             //
+            // tbbSeparator0
+            //
+            this.tbbSeparator0.Name = "tbbSeparator0";
+            this.tbbSeparator0.AutoSize = true;
+            this.tbbSeparator0.Text = "Separator";
+            //
+            // tbcSelectStatement
+            //
+            this.tbcSelectStatement.Name = "tbcSelectStatement";
+            this.tbcSelectStatement.AutoSize = true;
+            //
             // tbrMain
             //
             this.tbrMain.Name = "tbrMain";
             this.tbrMain.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           tbbImportNewStatement});
+                           tbbImportNewStatement,
+                        tbbSeparator0,
+                        tbcSelectStatement});
             //
             // mniImportNewStatement
             //
@@ -307,10 +322,10 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
-            this.tpgAll.ResumeLayout(false);
             this.tpgGL.ResumeLayout(false);
             this.tpgGifts.ResumeLayout(false);
             this.tpgUnmatched.ResumeLayout(false);
+            this.tpgAll.ResumeLayout(false);
             this.tabTransactions.ResumeLayout(false);
             this.pnlStatementInfo.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -322,13 +337,15 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel pnlStatementInfo;
         private Ict.Common.Controls.TTabVersatile tabTransactions;
+        private System.Windows.Forms.TabPage tpgAll;
+        private Ict.Common.Controls.TSgrdDataGridPaged grdAllTransactions;
         private System.Windows.Forms.TabPage tpgUnmatched;
         private System.Windows.Forms.TabPage tpgGifts;
         private System.Windows.Forms.TabPage tpgGL;
-        private System.Windows.Forms.TabPage tpgAll;
-        private Ict.Common.Controls.TSgrdDataGridPaged grdAllTransactions;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbImportNewStatement;
+        private System.Windows.Forms.ToolStripSeparator tbbSeparator0;
+        private System.Windows.Forms.ToolStripComboBox tbcSelectStatement;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniImportNewStatement;

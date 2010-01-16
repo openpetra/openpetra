@@ -48,11 +48,13 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         static public TSubmitChangesResult StoreNewBankStatement(AEpStatementTable AStmtTable,
-            AEpTransactionTable ATransactionTable,
+            AEpTransactionTable ATransTable,
             out TVerificationResultCollection AVerificationResult)
         {
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+
+            // TODO: check for existing statement with same filename? to avoid duplicate statements? delete older statement?
 
             AVerificationResult = new TVerificationResultCollection();
             SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -60,7 +62,17 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             {
                 if (AEpStatementAccess.SubmitChanges(AStmtTable, SubmitChangesTransaction, out AVerificationResult))
                 {
-                    if (AEpTransactionAccess.SubmitChanges(ATransactionTable, SubmitChangesTransaction, out AVerificationResult))
+                    // update statement key reference
+                    // supports committing several bank statements at once
+                    foreach (AEpTransactionRow row in ATransTable.Rows)
+                    {
+                        if (row.StatementKey < 0)
+                        {
+                            row.StatementKey = AStmtTable[(row.StatementKey + 1) * -1].StatementKey;
+                        }
+                    }
+
+                    if (AEpTransactionAccess.SubmitChanges(ATransTable, SubmitChangesTransaction, out AVerificationResult))
                     {
                         SubmissionResult = TSubmitChangesResult.scrOK;
                     }

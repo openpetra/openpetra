@@ -267,7 +267,7 @@ namespace Ict.Tools.CodeGeneration
                     collectionNode = (XmlNode)FXmlNodes[AParentName];
                 }
             }
-            else if (prefix == "tbb")
+            else if ((prefix == "tbb") || (prefix == "tbc"))
             {
                 collectionNode = (XmlNode)FXmlNodes["Toolbar"];
             }

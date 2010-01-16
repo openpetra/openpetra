@@ -20,15 +20,22 @@ RootNode:
             # todo: Accounts Payable tab?
             Controls: [tpgAll, tpgUnmatched, tpgGifts, tpgGL]
             Dock: Fill
-        tpgUnmatched:
-        tpgGifts:
-        tpgGL:
         tpgAll:
             Controls: [grdAllTransactions]
+        tpgUnmatched:
+#            Controls: 
+#                Row0: [grdUnmatchedTransactions]
+#                Row1: [rgrMoveUnmatchedTransaction]
+        tpgGifts:
+        tpgGL:
         grdAllTransactions:
             Dock: Fill
+        grdUnmatchedTransactions:
+            Dock: Top
     Menu:
         mniFile:
             mniImportNewStatement:
     Toolbar:
         tbbImportNewStatement:
+        tbbSeparator:
+        tbcSelectStatement:

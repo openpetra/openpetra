@@ -11,6 +11,7 @@ DELETE FROM p_type;
 DELETE FROM p_family;
 DELETE FROM p_person;
 DELETE FROM p_organisation;
+DELETE FROM p_bank;
 DELETE FROM p_recent_partners;
 DELETE FROM p_partner; 
 DELETE FROM p_partner_status; 

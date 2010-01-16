@@ -1490,6 +1490,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
     }
 
+    public class ToolbarComboBoxGenerator : TControlGenerator
+    {
+        public ToolbarComboBoxGenerator(string APrefix, System.Type AType)
+            : base(APrefix, AType)
+        {
+            FAutoSize = true;
+            FLocation = false;
+        }
+
+        public ToolbarComboBoxGenerator()
+            : this("tbc", typeof(ToolStripComboBox))
+        {
+        }
+    }
+
     public class ToolbarSeparatorGenerator : ToolbarButtonGenerator
     {
         public ToolbarSeparatorGenerator()
