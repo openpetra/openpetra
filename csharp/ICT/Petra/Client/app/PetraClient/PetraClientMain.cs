@@ -271,7 +271,7 @@ namespace Ict.Petra.Client.App.PetraClient
                                                        "\" -OpenPetra.Path:\"" + Path.GetFullPath(
                         TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + "..\"") +
                                                        " -OpenPetra.Path.Bin:\"" + Path.GetFullPath(
-                        TClientSettings.Petra_Path_Bin + "\"");
+                        TClientSettings.Petra_Path_Bin) + "\"";
                     PatchProcess.Start();
 
                     // Application stops here !!!
