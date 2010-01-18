@@ -11,21 +11,22 @@ VersionInfoCompany=OM International
 VersionInfoDescription=Administration Software for Charities
 VersionInfoCopyright=2009 OM International
 OutputBaseFilename=OpenPetraRemoteSetup-{#RELEASEVERSION}
+PrivilegesRequired=admin
 
 [Languages]
 Name: en; MessagesFile: compiler:Default.isl,..\language\lang-en.isl
 Name: de; MessagesFile: compiler:Languages\German.isl,..\language\lang-de.isl
 
 [Dirs]
-Name: {app}/bin30
-Name: {app}/bin30/locale/de/LC_MESSAGES
-Name: {app}/patches30
-Name: {app}/manuals30
-Name: {app}/reports30
-Name: {app}/resources30
+Name: {app}/bin30; permissions: users-full
+Name: {app}/bin30/locale/de/LC_MESSAGES; permissions: users-full
+Name: {app}/patches30; permissions: users-full
+Name: {app}/manuals30; permissions: users-full
+Name: {app}/reports30; permissions: users-full
+Name: {app}/resources30; permissions: users-full
+Name: {app}/etc30; permissions: users-full
 Name: {userappdata}/OpenPetra.org/tmp30
 Name: {userappdata}/OpenPetra.org/reports30
-Name: {userappdata}/OpenPetra.org/etc30
 
 [Files]
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30; Flags: ignoreversion
