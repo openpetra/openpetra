@@ -139,7 +139,7 @@ namespace Ict.Tools.PatchTool
                 PetraClientProcess = new System.Diagnostics.Process();
                 PetraClientProcess.EnableRaisingEvents = false;
                 PetraClientProcess.StartInfo.FileName = appOpts.GetValue("OpenPetra.Path.Bin") + Path.DirectorySeparatorChar + "PetraClient.exe";
-                PetraClientProcess.StartInfo.Arguments = "-C:" + appOpts.GetValue("C");
+                PetraClientProcess.StartInfo.Arguments = "-C:\"" + appOpts.GetValue("C") + "\"";
                 PetraClientProcess.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
                 PetraClientProcess.Start();
             }
