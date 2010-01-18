@@ -169,7 +169,7 @@ var
 begin
   if CurStep=ssPostInstall then
   begin
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.PathTemp" value="TOREPLACE"', ExpandConstant(''Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.PathTemp" value="TOREPLACE"', ExpandConstant('Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"'), true);
     ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.Path.Patches" value="TOREPLACE"', ExpandConstant('Petra.Path.Patches" value="{app}/patches30"'), true);
     ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.Path.RemotePatches" value="TOREPLACE"', 'Petra.Path.RemotePatches" value="http://www.example.org/OpenPetraPatches/"', true);
     ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', ExpandConstant('Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"'), true);
