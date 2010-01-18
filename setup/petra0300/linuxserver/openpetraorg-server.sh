@@ -45,6 +45,12 @@ stop() {
     log_end_msg $status
 }
 
+# display a menu to check for logged in users etc
+menu() {
+    cd $OpenPetraOrgPath/bin30
+    mono --server PetraServerAdminConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerAdminConsole.config
+}
+
 case "$1" in
     start)
         start
@@ -52,8 +58,11 @@ case "$1" in
     stop)
         stop
         ;;
+    menu)
+        menu
+        ;;
     *)
-        echo "Usage: $0 {start|stop}"
+        echo "Usage: $0 {start|stop|menu}"
         exit 1
         ;;
 esac
