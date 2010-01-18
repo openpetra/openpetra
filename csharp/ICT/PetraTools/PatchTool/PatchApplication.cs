@@ -550,6 +550,8 @@ namespace Ict.Tools.PatchTool
             sw.Close();
 
             File.Move(OrigFilename + ".new", OrigFilename);
+
+            return true;
         }
 
         private Boolean SpecialOperationsConfigAndScripts()
