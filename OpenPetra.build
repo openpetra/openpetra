@@ -52,7 +52,8 @@
         <echo message="stopPetraServer: stop the local Petra Server"/>
         <echo message="startPetraClient: run the Petra Client"/>
         <echo message="startSOAPServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)"/>
-        <echo message="buildRelease: requires these parameters: -D:ReleaseID=0.0.2.0"/>
+        <echo message="buildRelease: requires this parameter: -D:ReleaseID=0.0.2.0"/>
+        <echo message="createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0"/>
     </target>
     
     <target name="compilePetraTools" description="compile the PetraTools">
@@ -838,7 +839,7 @@
     </target>
     
     <target name="createPatch">
-        <ExecDotNet program="${PetraToolsExe.dir}/PatchToolConsole.exe" commandline="-action:create -OpenPetra.PathTemp:u:/tmp/patch -deliverypath:u:/delivery -appname:openpetraorg-win -oldversion:0.0.8-0 -newversion:0.0.10-0" failonerror="true">
+        <ExecDotNet program="${PetraToolsExe.dir}/PatchToolConsole.exe" commandline="-action:create -OpenPetra.PathTemp:u:/tmp/patch -deliverypath:u:/delivery -appname:openpetraorg-win -oldversion:${OldVersion} -newversion:${NewVersion}" failonerror="true">
             <environment>
                 <variable name="PATH" path="${environment::get-variable('PATH')};${OpenPetraRoot.dir}/csharp/ThirdParty/bsdiff"/>
             </environment>
