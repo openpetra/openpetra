@@ -9,6 +9,8 @@
     <property name="ReleaseID" value="0.0.0.99" unless="${property::exists('ReleaseID')}"/>
     <property name="ReleaseVersion" value="${script::CalculateRPMVersionFromDLLVersion(ReleaseID)}"/>
     <property name="PetraRelease" value="0300"/>
+    <property name="SkipCompileClient" value="false" unless="${property::exists('SkipCompileClient')}"/>
+    <property name="SkipCompileServer" value="false" unless="${property::exists('SkipCompileServer')}"/>
     <property name="ThirdParty.dir" value="${OpenPetraRoot.dir}/csharp/ThirdParty/"/>
     <property name="PetraToolsExe.dir" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}"/>
     <property name="PetraXML.file" value="${OpenPetraRoot.dir}/db/petra.xml"/>
@@ -98,7 +100,7 @@
                 tofile="${appconfigfileBin}"/>
         </if>
     </target>
-    <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServerAdmin, compilePetraServer, compilePetraClient"/>
+    <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServer, compilePetraClient"/>
     <target name="compileTemplate">
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <if test="${property::exists('mdtool')}"> <!-- to allow generateWinforms on Mono on Windows; don't build at all -->
@@ -122,43 +124,48 @@
         <call target="compileTemplate"/>
     </target>
     <target name="compilePetraServer" description="compile Ict/Petra/Server">
-        <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/PetraServerConsole/app.config"/>
-        <if test="${not file::exists(appconfigfile)}">
-            <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/PetraServerConsole/app-sample-${DBMS.Type}.config"
-                tofile="${appconfigfile}"/>
-            <!-- app.config is part of the PetraServerConsole project and will be copied to _bin/${Output.dir}/PetraServerConsole.exe.config -->
-        </if>
+        <!-- if this is just for the remote client build, we might want to skip the building of the server -->
+        <if test="${not SkipCompileServer}">
+            <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/PetraServerConsole/app.config"/>
+            <if test="${not file::exists(appconfigfile)}">
+                <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/PetraServerConsole/app-sample-${DBMS.Type}.config"
+                    tofile="${appconfigfile}"/>
+                <!-- app.config is part of the PetraServerConsole project and will be copied to _bin/${Output.dir}/PetraServerConsole.exe.config -->
+            </if>
 
-        <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Server.sln"/>
-        <call target="compileTemplate"/>
+            <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Server.sln"/>
+            <call target="compileTemplate"/>
 
-        <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ServerPlugins.sln"/>
-        <call target="compileTemplate"/>
-        
-        <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/PetraServerConsole.exe.config"/>
-        <if test="${not file::exists(appconfigfileBin)}">
-            <!-- mdbuild does not seem to copy the app file -->
-            <copy file="${appconfigfile}"
-                tofile="${appconfigfileBin}"/>
-        </if>
+            <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ServerPlugins.sln"/>
+            <call target="compileTemplate"/>
 
-        <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}">
-            <fileset basedir="${ThirdParty.dir}/Mono">
-                <include name="intl.dll" />
-                <include name="MonoPosixHelper.dll" />
-                <include name="Mono.Security.dll" />
-            </fileset>
-        </copy>
-        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-            <!-- requires sqlite 3.6.1 or higher to be installed on the linux system -->
-            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" 
-                  tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/System.Data.SQLite.dll" overwrite="true"/>
-        </if>
-        <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
-        <if test="${file::exists(language.file)}">
-            <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
-            <copy file="${language.file}"
-                tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo" overwrite="true"/>
+            <call target="compilePetraServerAdmin"/>
+
+            <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/PetraServerConsole.exe.config"/>
+            <if test="${not file::exists(appconfigfileBin)}">
+                <!-- mdbuild does not seem to copy the app file -->
+                <copy file="${appconfigfile}"
+                    tofile="${appconfigfileBin}"/>
+            </if>
+
+            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}">
+                <fileset basedir="${ThirdParty.dir}/Mono">
+                    <include name="intl.dll" />
+                    <include name="MonoPosixHelper.dll" />
+                    <include name="Mono.Security.dll" />
+                </fileset>
+            </copy>
+            <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+                <!-- requires sqlite 3.6.1 or higher to be installed on the linux system -->
+                <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" 
+                      tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/System.Data.SQLite.dll" overwrite="true"/>
+            </if>
+            <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
+            <if test="${file::exists(language.file)}">
+                <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
+                <copy file="${language.file}"
+                    tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo" overwrite="true"/>
+            </if>
         </if>
     </target>
     <target name="compilePetraServerAdmin" description="compile Ict/Petra/ServerAdmin">
@@ -178,33 +185,36 @@
         </if>
     </target>
     <target name="compilePetraClient" description="compile Ict/Petra/Client">
-        <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/app.config"/>
-        <if test="${not file::exists(appconfigfile)}">
-            <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/app-sample.config"
-                tofile="${appconfigfile}"/>
-            <!-- app.config is part of the PetraClient project and will be copied to _bin/${Output.dir}/PetraClient.exe.config -->
-        </if>
-        <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Client.sln"/>
-        <call target="compileTemplate"/>
-        <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/PetraClient.exe.config"/>
-        <if test="${not file::exists(appconfigfileBin)}">
-            <!-- mdbuild does not seem to copy the app file -->
-            <copy file="${appconfigfile}"
-                tofile="${appconfigfileBin}"/>
-        </if>
-        <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ClientPlugins.sln"/>
-        <call target="compileTemplate"/>
-        <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}">
-            <fileset basedir="${ThirdParty.dir}/Mono">
-                <include name="intl.dll" />
-                <include name="MonoPosixHelper.dll" />
-            </fileset>
-        </copy>
-        <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
-        <if test="${file::exists(language.file)}">
-            <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
-            <copy file="${language.file}"
-                tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo" overwrite="true"/>
+        <!-- if this is just for the server build, we might want to skip the building of the client -->
+        <if test="${not SkipCompileClient}">
+            <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/app.config"/>
+            <if test="${not file::exists(appconfigfile)}">
+                <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/app-sample.config"
+                    tofile="${appconfigfile}"/>
+                <!-- app.config is part of the PetraClient project and will be copied to _bin/${Output.dir}/PetraClient.exe.config -->
+            </if>
+            <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Client.sln"/>
+            <call target="compileTemplate"/>
+            <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/PetraClient.exe.config"/>
+            <if test="${not file::exists(appconfigfileBin)}">
+                <!-- mdbuild does not seem to copy the app file -->
+                <copy file="${appconfigfile}"
+                    tofile="${appconfigfileBin}"/>
+            </if>
+            <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ClientPlugins.sln"/>
+            <call target="compileTemplate"/>
+            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}">
+                <fileset basedir="${ThirdParty.dir}/Mono">
+                    <include name="intl.dll" />
+                    <include name="MonoPosixHelper.dll" />
+                </fileset>
+            </copy>
+            <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
+            <if test="${file::exists(language.file)}">
+                <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
+                <copy file="${language.file}"
+                    tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo" overwrite="true"/>
+            </if>
         </if>
     </target>
     <target name="cleanPetra" description="remove all compiled code of Petra">
@@ -838,6 +848,23 @@
     <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, translationCompilePOFile, setupStandalone, setupRemote, setupLinuxServer"/>
 	<!-- problem: one version for mac and Windows? what about patching? generateWinforms; 2 versions? -->
     <target name="buildReleaseLinux" depends="refreshSudo, switchToDebug, createSQLiteDB, createPostgreSQLDB, generateWinforms, compileRelease, translationCompilePOFile, setupLinuxServer"/>
+
+    <target name="buildReleaseWindowsClient" depends="switchToDebug">
+        <!-- build the Remote Client installer, and the tar.gz file for future patches. this is for the hosted server -->
+        <property name="SkipCompileServer" value="true"/>
+        <call target="compileRelease"/>
+        <call target="translationCompilePOFile"/>
+        <call target="setupRemote"/>
+        <call target="setupLinuxServer"/>
+    </target>
+
+    <target name="buildReleaseLinuxServer" depends="refreshSudo, switchToDebug, createPostgreSQLDB">
+        <!-- build the tar.gz file without client files, and without sqlite. this is for the hosted server -->
+        <property name="SkipCompileClient" value="true"/>
+        <call target="compileRelease"/>
+        <call target="translationCompilePOFile"/>
+        <call target="setupLinuxServer"/>
+    </target>
     <target name="buildRelease">
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <call target="buildReleaseLinux"/>
