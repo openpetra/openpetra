@@ -341,19 +341,20 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             if (TXMLParser.HasAttribute(ACurrentNode, "shortdesc"))
             {
                 newAccount.EngAccountCodeLongDesc = TYml2Xml.GetAttribute(ACurrentNode, "longdesc");
+                newAccount.AccountCodeShortDesc = TYml2Xml.GetAttribute(ACurrentNode, "localdesc");
+                newAccount.AccountCodeLongDesc = TYml2Xml.GetAttribute(ACurrentNode, "locallongdesc");
             }
             else
             {
                 newAccount.EngAccountCodeLongDesc = TYml2Xml.GetAttributeRecursive(ACurrentNode, "longdesc");
+                newAccount.AccountCodeShortDesc = TYml2Xml.GetAttributeRecursive(ACurrentNode, "localdesc");
+                newAccount.AccountCodeLongDesc = TYml2Xml.GetAttributeRecursive(ACurrentNode, "locallongdesc");
             }
 
             if (newAccount.EngAccountCodeLongDesc.Length == 0)
             {
                 newAccount.EngAccountCodeLongDesc = newAccount.EngAccountCodeShortDesc;
             }
-
-            newAccount.AccountCodeShortDesc = TYml2Xml.GetAttribute(ACurrentNode, "localdesc");
-            newAccount.AccountCodeLongDesc = TYml2Xml.GetAttribute(ACurrentNode, "locallongdesc");
 
             if (newAccount.AccountCodeShortDesc.Length == 0)
             {

@@ -27,6 +27,8 @@ sudo -u postgres psql openpetra -q < /tmp/createconstraints-PostgreSQL.sql
 rm /tmp/createconstraints-PostgreSQL.sql
 
 echo "grant permissions..."
+touch /tmp/grantpermissions-PostgreSQL.sql
+chown postgres /tmp/grantpermissions-PostgreSQL.sql
 sudo -u postgres psql openpetra -c "select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);" -t -o /tmp/grantpermissions-PostgreSQL.sql
 sudo chown `whoami` /tmp/grantpermissions-PostgreSQL.sql
 echo "GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver;" >> /tmp/grantpermissions-PostgreSQL.sql
