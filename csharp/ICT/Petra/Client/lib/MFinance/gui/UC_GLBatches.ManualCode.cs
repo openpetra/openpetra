@@ -222,9 +222,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             string DateFormat = TXMLParser.GetAttribute(ARootNode, "DateFormat");
             string ThousandsSeparator = TXMLParser.GetAttribute(ARootNode, "ThousandsSeparator");
             string DecimalSeparator = TXMLParser.GetAttribute(ARootNode, "DecimalSeparator");
+            Int32 lineCounter;
 
             // read headers
-            for (Int32 lineCounter = 0; lineCounter < AFirstTransactionRow - 1; lineCounter++)
+            for (lineCounter = 0; lineCounter < AFirstTransactionRow - 1; lineCounter++)
             {
                 dataFile.ReadLine();
             }
@@ -236,6 +237,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             do
             {
                 string line = dataFile.ReadLine();
+                lineCounter++;
 
                 ATransactionRow NewTransaction = FMainDS.ATransaction.NewRowTyped(true);
                 ((TFrmGLBatch)ParentForm).GetTransactionsControl().NewRowManual(ref NewTransaction, ARefJournalRow);
@@ -256,11 +258,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
                     else if (UseAs.ToLower() == "dateeffective")
                     {
-                        NewTransaction.TransactionDate = XmlConvert.ToDateTime(Value, DateFormat);
+                        NewTransaction.SetTransactionDateNull();
 
-                        if (NewTransaction.TransactionDate > LatestTransactionDate)
+                        if (Value.Trim().ToString().Length > 0)
                         {
-                            LatestTransactionDate = NewTransaction.TransactionDate;
+                            try
+                            {
+                                NewTransaction.TransactionDate = XmlConvert.ToDateTime(Value, DateFormat);
+
+                                if (NewTransaction.TransactionDate > LatestTransactionDate)
+                                {
+                                    LatestTransactionDate = NewTransaction.TransactionDate;
+                                }
+                            }
+                            catch (Exception exp)
+                            {
+                                MessageBox.Show(Catalog.GetString("Problem with date in row " + lineCounter.ToString() + " Fehler: " + exp.Message));
+                            }
                         }
                     }
                     else if (UseAs.ToLower() == "account")
@@ -310,14 +324,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
                 }
 
-                NewTransaction.AmountInIntlCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
-                    ARefJournalRow.TransactionCurrency,
-                    FMainDS.ALedger[0].IntlCurrency,
-                    NewTransaction.TransactionDate);
-                NewTransaction.AmountInBaseCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
-                    ARefJournalRow.TransactionCurrency,
-                    FMainDS.ALedger[0].BaseCurrency,
-                    NewTransaction.TransactionDate);
+                if (!NewTransaction.IsTransactionDateNull())
+                {
+                    NewTransaction.AmountInIntlCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
+                        ARefJournalRow.TransactionCurrency,
+                        FMainDS.ALedger[0].IntlCurrency,
+                        NewTransaction.TransactionDate);
+                    NewTransaction.AmountInBaseCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
+                        ARefJournalRow.TransactionCurrency,
+                        FMainDS.ALedger[0].BaseCurrency,
+                        NewTransaction.TransactionDate);
+                }
             } while (!dataFile.EndOfStream);
 
             // create a balancing transaction; not sure if this is needed at all???
