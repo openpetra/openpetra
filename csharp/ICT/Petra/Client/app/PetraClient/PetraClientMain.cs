@@ -269,8 +269,8 @@ namespace Ict.Petra.Client.App.PetraClient
                     PatchProcess.StartInfo.FileName = TempPath + Path.DirectorySeparatorChar + "PatchTool.exe";
                     PatchProcess.StartInfo.Arguments = "-action:patchRemote" + " -C:\"" + Path.GetFullPath(TClientSettings.ConfigurationFile) +
                                                        "\" -OpenPetra.Path:\"" + Path.GetFullPath(
-                        TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + "..\"") +
-                                                       " -OpenPetra.Path.Bin:\"" + Path.GetFullPath(
+                        TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + "..") +
+                                                       "\" -OpenPetra.Path.Bin:\"" + Path.GetFullPath(
                         TClientSettings.Petra_Path_Bin) + "\"";
                     PatchProcess.Start();
 
