@@ -134,13 +134,13 @@
                 <!-- app.config is part of the PetraServerConsole project and will be copied to _bin/${Output.dir}/PetraServerConsole.exe.config -->
             </if>
 
+            <call target="compilePetraServerAdmin"/>
+
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Server.sln"/>
             <call target="compileTemplate"/>
 
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ServerPlugins.sln"/>
             <call target="compileTemplate"/>
-
-            <call target="compilePetraServerAdmin"/>
 
             <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/PetraServerConsole.exe.config"/>
             <if test="${not file::exists(appconfigfileBin)}">
