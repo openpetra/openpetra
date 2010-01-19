@@ -26,6 +26,7 @@
 using System;
 using System.Configuration;
 using System.Runtime.Remoting.Lifetime;
+using Ict.Common;
 
 namespace Ict.Petra.Shared
 {
@@ -34,7 +35,7 @@ namespace Ict.Petra.Shared
     /// see also the book 'Advanced .NET Remoting' (Chapter 7, page 193)
     /// </summary>
     /// <example>
-    /// &lt;add key="Ict.Petra.Server.MPartner.Partner.TPartnerEditUIConnector_Lifetime" value="4000" /&gt;
+    /// &lt;add key="Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector_Lifetime" value="4000" /&gt;
     /// This sets the lifetime of this object to four seconds.
     /// </example>
     public class TConfigurableMBRObject : MarshalByRefObject
@@ -46,15 +47,14 @@ namespace Ict.Petra.Shared
         public override System.Object InitializeLifetimeService()
         {
             ILease tmp;
-            string sponsorshiptimeout;
-            string renewoncall;
-            string lifetime;
-            string myName;
+            string myName = this.GetType().FullName;
 
-            myName = this.GetType().FullName;
-            lifetime = ConfigurationManager.AppSettings[(myName + "_Lifetime")];
-            renewoncall = ConfigurationManager.AppSettings[(myName + "_RenewOnCallTime")];
-            sponsorshiptimeout = ConfigurationManager.AppSettings[(myName + "_SponsorShipTimeout")];
+            TAppSettingsManager settings = new TAppSettingsManager();
+
+            // if value is not in the config file, assuming default values, 60 seconds
+            string lifetime = settings.GetValue(myName + "_Lifetime", "60000");
+            string renewoncall = settings.GetValue(myName + "_RenewOnCallTime", "60000");
+            string sponsorshiptimeout = settings.GetValue(myName + "_SponsorShipTimeout", "60000");
 
             if (lifetime == "infinity")
             {
