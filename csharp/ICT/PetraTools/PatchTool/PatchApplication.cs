@@ -549,7 +549,7 @@ namespace Ict.Tools.PatchTool
             sr.Close();
             sw.Close();
 
-            File.Move(OrigFilename + ".new", OrigFilename);
+            TTextFile.UpdateFile(OrigFilename);
 
             return true;
         }

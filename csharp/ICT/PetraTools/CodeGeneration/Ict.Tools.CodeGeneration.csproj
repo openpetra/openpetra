@@ -60,7 +60,6 @@
     <Compile Include="ParseXAML.cs" />
     <Compile Include="ProcessTemplate.cs" />
     <Compile Include="ProcessXAML.cs" />
-    <Compile Include="TextFile.cs" />
     <Compile Include="WriterInterfaces.cs" />
   </ItemGroup>
   <ItemGroup>

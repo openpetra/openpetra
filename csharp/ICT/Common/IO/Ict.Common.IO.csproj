@@ -60,6 +60,7 @@
     <Compile Include="PatchTools.cs" />
     <Compile Include="SmtpEmail.cs" />
     <Compile Include="HTTPUtils.cs" />
+    <Compile Include="TextFile.cs" />
     <Compile Include="XmlParser.cs" />
     <Compile Include="Yml2Xml.cs" />
   </ItemGroup>
