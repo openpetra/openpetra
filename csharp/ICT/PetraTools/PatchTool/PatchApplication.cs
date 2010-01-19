@@ -668,6 +668,8 @@ namespace Ict.Tools.PatchTool
             catch (Exception e)
             {
                 TLogging.Log("Patch could not be installed: " + e.Message);
+                TLogging.Log(e.ToString());
+                TLogging.Log(e.StackTrace);
                 TLogging.Log("Restoring the situation before the patch...");
 
                 // if unsuccessful, restore the previous situation;

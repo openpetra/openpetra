@@ -117,8 +117,9 @@ namespace Ict.Common.IO
                 client.DownloadFile(url, filename);
                 ReturnValue = true;
             }
-            finally
+            catch (Exception e)
             {
+                TLogging.Log(e.Message + " url: " + url + " filename: " + filename);
             }
             return ReturnValue;
         }
