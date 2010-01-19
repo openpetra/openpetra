@@ -386,12 +386,25 @@ namespace Ict.Petra.Server.App.Main
             ODBCDsn = "petra2_3";
             ODBCPassword = ServerCredentials;
 
-            // Store Server configuration in the static TSrvSetting class
             Version ServerAssemblyVersion;
 
             if ((System.Reflection.Assembly.GetEntryAssembly() != null) && (System.Reflection.Assembly.GetEntryAssembly().GetName() != null))
             {
-                ServerAssemblyVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+                ServerAssemblyVersion = new Version(0, 0, 0, 0);
+
+                // ServerAssemblyVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+
+                // retrieve the current version of the server from the file version.txt in the bin directory
+                // this is easier to manage than to check the assembly version in case you only need to quickly update the client
+                string BinPath = Environment.CurrentDirectory;
+
+                if (File.Exists(BinPath + Path.DirectorySeparatorChar + "version.txt"))
+                {
+                    StreamReader srVersion = new StreamReader(BinPath + Path.DirectorySeparatorChar + "version.txt");
+                    TFileVersionInfo v = new TFileVersionInfo(srVersion.ReadLine());
+                    ServerAssemblyVersion = new Version(v.FileMajorPart, v.FileMinorPart, v.FileBuildPart, v.FilePrivatePart);
+                    srVersion.Close();
+                }
             }
             else
             {
@@ -399,6 +412,7 @@ namespace Ict.Petra.Server.App.Main
                 ServerAssemblyVersion = new Version(0, 0, 0, 0);
             }
 
+            // Store Server configuration in the static TSrvSetting class
             FServerSettings = new TSrvSetting(
                 CmdLineArgs.ApplicationName,
                 CmdLineArgs.ConfigurationFile,

@@ -316,7 +316,9 @@ namespace Ict.Petra.Client.App.Core
                                 catch (Exception Exp)
                                 {
 #if DEBUGMODE
-                                    TLogging.Log("KeepAliveThread: " + ObjectEnum.Key.ToString() +  " Could not contact PetraServer!\r\n" + Exp.ToString(), TLoggingType.ToLogfile);
+                                    TLogging.Log(
+                                        "KeepAliveThread: " + ObjectEnum.Key.ToString() + " Could not contact PetraServer!\r\n" + Exp.ToString(),
+                                        TLoggingType.ToLogfile);
 #endif
                                 }
                             }
