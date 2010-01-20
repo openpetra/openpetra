@@ -1,6 +1,7 @@
 required packages:
  sudo (for the initialisation of the database)
- mono-2.0-runtime (>= Mono 2.4.x)
+ mono-2.0-runtime (>= Mono 2.4.x), also winforms (Ict.Common.* dlls depend on it)
+ on Debian eg.: apt-get -t lenny-backports install mono-runtime libmono-data2.0-cil libmono-system-web2.0-cil libmono-system-runtime2.0-cil libmono-winforms2.0-cil
  one of the following RDBMS:
    sqlite3 (requires > 3.6.1)
    postgresql (recommended, default)
