@@ -36,5 +36,6 @@ echo "GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver;" >> /tmp/gr
 echo "GRANT SELECT,UPDATE,USAGE ON s_login_s_login_process_id_r_seq TO petraserver;" >> /tmp/grantpermissions-PostgreSQL.sql
 echo "GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver;" >> /tmp/grantpermissions-PostgreSQL.sql
 echo "GRANT SELECT,UPDATE,USAGE ON seq_general_ledger_master TO petraserver;" >> /tmp/grantpermissions-PostgreSQL.sql
+echo "GRANT SELECT,UPDATE,USAGE ON seq_statement_number TO petraserver;" >> /tmp/grantpermissions-PostgreSQL.sql
 sudo -u postgres psql openpetra -q < /tmp/grantpermissions-PostgreSQL.sql
 rm /tmp/grantpermissions-PostgreSQL.sql
