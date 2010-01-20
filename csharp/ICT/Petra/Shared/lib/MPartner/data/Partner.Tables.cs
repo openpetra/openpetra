@@ -23083,7 +23083,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
     }
 
-    /// Any bank details for a partner can be store in this table
+    /// Any bank details for a partner can be stored in this table
     [Serializable()]
     public class PBankingDetailsTable : TTypedDataTable
     {
@@ -23552,7 +23552,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
 
     }
 
-    /// Any bank details for a partner can be store in this table
+    /// Any bank details for a partner can be stored in this table
     [Serializable()]
     public class PBankingDetailsRow : System.Data.DataRow
     {

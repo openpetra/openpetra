@@ -1102,29 +1102,27 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnStatementKeyId = 0;
         /// used for generic TTypedDataTable functions
-        public static short ColumnBankKeyId = 1;
+        public static short ColumnBankAccountKeyId = 1;
         /// used for generic TTypedDataTable functions
-        public static short ColumnBankAccountKeyId = 2;
+        public static short ColumnDateId = 2;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateId = 3;
+        public static short ColumnIdFromBankId = 3;
         /// used for generic TTypedDataTable functions
-        public static short ColumnIdFromBankId = 4;
+        public static short ColumnFilenameId = 4;
         /// used for generic TTypedDataTable functions
-        public static short ColumnFilenameId = 5;
+        public static short ColumnEndBalanceId = 5;
         /// used for generic TTypedDataTable functions
-        public static short ColumnEndBalanceId = 6;
+        public static short ColumnCurrencyCodeId = 6;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCurrencyCodeId = 7;
+        public static short ColumnDateCreatedId = 7;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 8;
+        public static short ColumnCreatedById = 8;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 9;
+        public static short ColumnDateModifiedId = 9;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 10;
+        public static short ColumnModifiedById = 10;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 11;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 12;
+        public static short ColumnModificationIdId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1132,18 +1130,17 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AEpStatement", "a_ep_statement",
                 new TTypedColumnInfo[] {
                     new TTypedColumnInfo(0, "StatementKey", "a_statement_key_i", "Bank statement", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "BankKey", "p_bank_key_n", "p_bank_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "BankAccountKey", "a_bank_account_key_i", "banking details", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "Date", "a_date_d", "Date", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(4, "IdFromBank", "a_id_from_bank_c", "Id from Bank", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(5, "Filename", "a_filename_c", "filename of statement", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(6, "EndBalance", "a_end_balance_n", "End balance", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(7, "CurrencyCode", "a_currency_code_c", "a_currency_code_c", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(8, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(1, "BankAccountKey", "a_bank_account_key_i", "banking details", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(2, "Date", "a_date_d", "Date", OdbcType.Date, -1, true),
+                    new TTypedColumnInfo(3, "IdFromBank", "a_id_from_bank_c", "Id from Bank", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(4, "Filename", "a_filename_c", "filename of statement", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(5, "EndBalance", "a_end_balance_n", "End balance", OdbcType.Decimal, 24, false),
+                    new TTypedColumnInfo(6, "CurrencyCode", "a_currency_code_c", "a_currency_code_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -1171,8 +1168,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
 
         /// auto generated unique identifier for bank statements
         public DataColumn ColumnStatementKey;
-        /// The bank that issued this statement
-        public DataColumn ColumnBankKey;
         /// this is the bank account that this statement is for; this is necessary because you can have several accounts at the same bank
         public DataColumn ColumnBankAccountKey;
         /// The date of this statement
@@ -1200,7 +1195,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         protected override void InitClass()
         {
             this.Columns.Add(new System.Data.DataColumn("a_statement_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("p_bank_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("a_bank_account_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_id_from_bank_c", typeof(String)));
@@ -1218,7 +1212,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public override void InitVars()
         {
             this.ColumnStatementKey = this.Columns["a_statement_key_i"];
-            this.ColumnBankKey = this.Columns["p_bank_key_n"];
             this.ColumnBankAccountKey = this.Columns["a_bank_account_key_i"];
             this.ColumnDate = this.Columns["a_date_d"];
             this.ColumnIdFromBank = this.Columns["a_id_from_bank_c"];
@@ -1300,18 +1293,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public static short GetStatementKeyLength()
         {
             return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetBankKeyDBName()
-        {
-            return "p_bank_key_n";
-        }
-
-        /// get character length for column
-        public static short GetBankKeyLength()
-        {
-            return 10;
         }
 
         /// get the name of the field in the database for this column
@@ -1483,32 +1464,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                             || (((Int32)(this[this.myTable.ColumnStatementKey])) != value)))
                 {
                     this[this.myTable.ColumnStatementKey] = value;
-                }
-            }
-        }
-
-        /// The bank that issued this statement
-        public Int64 BankKey
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnBankKey.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int64)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnBankKey)
-                            || (((Int64)(this[this.myTable.ColumnBankKey])) != value)))
-                {
-                    this[this.myTable.ColumnBankKey] = value;
                 }
             }
         }
@@ -1803,7 +1758,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public virtual void InitValues()
         {
             this.SetNull(this.myTable.ColumnStatementKey);
-            this.SetNull(this.myTable.ColumnBankKey);
             this.SetNull(this.myTable.ColumnBankAccountKey);
             this[this.myTable.ColumnDate.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnIdFromBank);
@@ -1827,18 +1781,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public void SetStatementKeyNull()
         {
             this.SetNull(this.myTable.ColumnStatementKey);
-        }
-
-        /// test for NULL value
-        public bool IsBankKeyNull()
-        {
-            return this.IsNull(this.myTable.ColumnBankKey);
-        }
-
-        /// assign NULL value
-        public void SetBankKeyNull()
-        {
-            this.SetNull(this.myTable.ColumnBankKey);
         }
 
         /// test for NULL value
@@ -2047,15 +1989,19 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnRestrictedId = 32;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 33;
+        public static short ColumnAccountCodeId = 33;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 34;
+        public static short ColumnKeyMinistryKeyId = 34;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 35;
+        public static short ColumnDateCreatedId = 35;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 36;
+        public static short ColumnCreatedById = 36;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 37;
+        public static short ColumnDateModifiedId = 37;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 38;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 39;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -2068,9 +2014,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(3, "Action", "a_action_c", "a_action_c", OdbcType.VarChar, 40, true),
                     new TTypedColumnInfo(4, "RecentMatch", "a_recent_match_d", "Date", OdbcType.Date, -1, true),
                     new TTypedColumnInfo(5, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(6, "RecipientLedgerNumber", "a_recipient_ledger_number_n", "Recipient Ledger", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(7, "MotivationGroupCode", "a_motivation_group_code_c", "Motivation Group", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(8, "MotivationDetailCode", "a_motivation_detail_code_c", "Motivation Detail", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(6, "RecipientLedgerNumber", "a_recipient_ledger_number_n", "Recipient Ledger", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(7, "MotivationGroupCode", "a_motivation_group_code_c", "Motivation Group", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(8, "MotivationDetailCode", "a_motivation_detail_code_c", "Motivation Detail", OdbcType.VarChar, 16, false),
                     new TTypedColumnInfo(9, "CommentOneType", "a_comment_one_type_c", "Comment Type", OdbcType.VarChar, 24, false),
                     new TTypedColumnInfo(10, "GiftCommentOne", "a_gift_comment_one_c", "Comment One", OdbcType.VarChar, 160, false),
                     new TTypedColumnInfo(11, "ConfidentialGiftFlag", "a_confidential_gift_flag_l", "Confidential Gift", OdbcType.Bit, -1, true),
@@ -2095,11 +2041,13 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(30, "DonorShortName", "p_donor_short_name_c", "p_donor_short_name_c", OdbcType.VarChar, 500, false),
                     new TTypedColumnInfo(31, "RecipientShortName", "p_recipient_short_name_c", "p_recipient_short_name_c", OdbcType.VarChar, 500, false),
                     new TTypedColumnInfo(32, "Restricted", "a_restricted_l", "Gift Restricted", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(33, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(34, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(35, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(36, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(37, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(33, "AccountCode", "a_account_code_c", "Account Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(34, "KeyMinistryKey", "a_key_ministry_key_n", "Key Ministry", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(35, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(36, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(37, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(38, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(39, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -2193,6 +2141,10 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public DataColumn ColumnRecipientShortName;
         /// Indicates whether or not the gift has restricted access. If it does then the access will be controlled by s_group_gift
         public DataColumn ColumnRestricted;
+        /// This identifies the account the financial transaction must be stored against
+        public DataColumn ColumnAccountCode;
+        /// Key ministry to which this transaction applies (just for fund transfers)
+        public DataColumn ColumnKeyMinistryKey;
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
         /// User ID of who created this record.
@@ -2240,6 +2192,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("p_donor_short_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_recipient_short_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_restricted_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_account_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_key_ministry_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -2283,6 +2237,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.ColumnDonorShortName = this.Columns["p_donor_short_name_c"];
             this.ColumnRecipientShortName = this.Columns["p_recipient_short_name_c"];
             this.ColumnRestricted = this.Columns["a_restricted_l"];
+            this.ColumnAccountCode = this.Columns["a_account_code_c"];
+            this.ColumnKeyMinistryKey = this.Columns["a_key_ministry_key_n"];
             this.ColumnDateCreated = this.Columns["s_date_created_d"];
             this.ColumnCreatedBy = this.Columns["s_created_by_c"];
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
@@ -2742,6 +2698,30 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public static short GetRestrictedLength()
         {
             return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAccountCodeDBName()
+        {
+            return "a_account_code_c";
+        }
+
+        /// get character length for column
+        public static short GetAccountCodeLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetKeyMinistryKeyDBName()
+        {
+            return "a_key_ministry_key_n";
+        }
+
+        /// get character length for column
+        public static short GetKeyMinistryKeyLength()
+        {
+            return 10;
         }
 
         /// get the name of the field in the database for this column
@@ -3677,6 +3657,58 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             }
         }
 
+        /// This identifies the account the financial transaction must be stored against
+        public String AccountCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAccountCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAccountCode)
+                            || (((String)(this[this.myTable.ColumnAccountCode])) != value)))
+                {
+                    this[this.myTable.ColumnAccountCode] = value;
+                }
+            }
+        }
+
+        /// Key ministry to which this transaction applies (just for fund transfers)
+        public Int64 KeyMinistryKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnKeyMinistryKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnKeyMinistryKey)
+                            || (((Int64)(this[this.myTable.ColumnKeyMinistryKey])) != value)))
+                {
+                    this[this.myTable.ColumnKeyMinistryKey] = value;
+                }
+            }
+        }
+
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -3843,6 +3875,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.SetNull(this.myTable.ColumnDonorShortName);
             this.SetNull(this.myTable.ColumnRecipientShortName);
             this[this.myTable.ColumnRestricted.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnAccountCode);
+            this.SetNull(this.myTable.ColumnKeyMinistryKey);
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnCreatedBy);
             this.SetNull(this.myTable.ColumnDateModified);
@@ -4244,6 +4278,30 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public void SetRestrictedNull()
         {
             this.SetNull(this.myTable.ColumnRestricted);
+        }
+
+        /// test for NULL value
+        public bool IsAccountCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnAccountCode);
+        }
+
+        /// assign NULL value
+        public void SetAccountCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnAccountCode);
+        }
+
+        /// test for NULL value
+        public bool IsKeyMinistryKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnKeyMinistryKey);
+        }
+
+        /// assign NULL value
+        public void SetKeyMinistryKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnKeyMinistryKey);
         }
 
         /// test for NULL value

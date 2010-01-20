@@ -509,12 +509,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             StringCollection ImportedCostCentreNames = new StringCollection();
 
-            // delete all costcentres
-            foreach (ACostCentreRow costCentreRow in MainDS.ACostCentre.Rows)
-            {
-                costCentreRow.Delete();
-            }
-
             CreateCostCentresRecursively(ref MainDS, ALedgerNumber, ref ImportedCostCentreNames, root, null);
 
             foreach (ACostCentreRow costCentreRow in MainDS.ACostCentre.Rows)
