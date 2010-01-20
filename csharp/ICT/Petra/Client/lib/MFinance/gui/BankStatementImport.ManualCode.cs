@@ -24,18 +24,64 @@
  *
  ************************************************************************/
 using System;
+using System.Data;
 using System.Windows.Forms;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
     /// manual methods for the generated window
     public partial class TFrmBankStatementImport
     {
+        private void InitializeManualCode()
+        {
+            tbcSelectStatement.ComboBox.SelectedValueChanged += new EventHandler(SelectBankStatement);
+            PopulateStatementCombobox();
+        }
+
+        private void SelectBankStatement(System.Object sender, EventArgs e)
+        {
+            BankImportTDS ds =
+                TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(Convert.ToInt32(tbcSelectStatement.ComboBox.
+                        SelectedValue));
+
+            grdAllTransactions.Columns.Clear();
+            grdAllTransactions.AddTextColumn(Catalog.GetString("Nr"), ds.AEpTransaction.ColumnOrder, 40);
+            grdAllTransactions.AddTextColumn(Catalog.GetString("Account Name"), ds.AEpTransaction.ColumnAccountName, 150);
+            grdAllTransactions.AddTextColumn(Catalog.GetString("description"), ds.AEpTransaction.ColumnDescription, 150);
+            grdAllTransactions.AddTextColumn(Catalog.GetString("Date Effective"), ds.AEpTransaction.ColumnDateEffective, 70);
+            grdAllTransactions.AddTextColumn(Catalog.GetString("Transaction Amount"), ds.AEpTransaction.ColumnTransactionAmount, 70);
+
+            DataView myDataView = ds.AEpTransaction.DefaultView;
+            myDataView.AllowNew = false;
+            grdAllTransactions.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            grdAllTransactions.AutoSizeCells();
+        }
+
+        private void PopulateStatementCombobox()
+        {
+            // TODO: add datetimepicker to toolstrip
+            // see http://www.daniweb.com/forums/thread109966.html#
+            // dtTScomponent = new ToolStripControlHost(dtMyDateTimePicker);
+            // MainToolStrip.Items.Add(dtTScomponent);
+            DateTime dateStatementsFrom = DateTime.Now.AddMonths(-14);
+
+            // update the combobox with the bank statements
+            AEpStatementTable stmts = TRemote.MFinance.ImportExport.WebConnectors.GetImportedBankStatements(dateStatementsFrom);
+
+            tbcSelectStatement.ComboBox.BeginUpdate();
+            tbcSelectStatement.ComboBox.DisplayMember = AEpStatementTable.GetDateDBName();
+            tbcSelectStatement.ComboBox.ValueMember = AEpStatementTable.GetStatementKeyDBName();
+            tbcSelectStatement.ComboBox.DataSource = stmts.DefaultView;
+            tbcSelectStatement.ComboBox.EndUpdate();
+        }
+
         private void ImportNewStatement(System.Object sender, EventArgs e)
         {
             // look for available plugin for importing a bank statement.
@@ -64,7 +110,8 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             if (ImportBankStatement.ImportBankStatement(out StatementKey))
             {
-                // TODO: update the combobox with the bank statements
+                PopulateStatementCombobox();
+
                 // TODO: select the loaded bank statement and display all transactions
             }
         }

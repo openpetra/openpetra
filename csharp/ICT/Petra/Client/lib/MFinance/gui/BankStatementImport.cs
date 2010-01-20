@@ -82,6 +82,7 @@ namespace Ict.Petra.Client.MFinance.Gui
       #endregion
 
       FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
+      InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
