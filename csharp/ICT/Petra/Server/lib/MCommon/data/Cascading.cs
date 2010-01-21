@@ -1376,11 +1376,6 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 {
                     PBankingDetailsCascading.DeleteUsingTemplate(MyPBankingDetailsTable[countRow], null, ATransaction, AWithCascDelete);
                 }
-                AEpStatementTable MyAEpStatementTable = AEpStatementAccess.LoadViaPBank(APartnerKey, StringHelper.StrSplit("a_statement_key_i", ","), ATransaction);
-                for (countRow = 0; (countRow != MyAEpStatementTable.Rows.Count); countRow = (countRow + 1))
-                {
-                    AEpStatementCascading.DeleteUsingTemplate(MyAEpStatementTable[countRow], null, ATransaction, AWithCascDelete);
-                }
             }
             PBankAccess.DeleteByPrimaryKey(APartnerKey, ATransaction);
         }
@@ -1395,11 +1390,6 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 for (countRow = 0; (countRow != MyPBankingDetailsTable.Rows.Count); countRow = (countRow + 1))
                 {
                     PBankingDetailsCascading.DeleteUsingTemplate(MyPBankingDetailsTable[countRow], null, ATransaction, AWithCascDelete);
-                }
-                AEpStatementTable MyAEpStatementTable = AEpStatementAccess.LoadViaPBankTemplate(ATemplateRow, StringHelper.StrSplit("a_statement_key_i", ","), ATransaction);
-                for (countRow = 0; (countRow != MyAEpStatementTable.Rows.Count); countRow = (countRow + 1))
-                {
-                    AEpStatementCascading.DeleteUsingTemplate(MyAEpStatementTable[countRow], null, ATransaction, AWithCascDelete);
                 }
             }
             PBankAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);

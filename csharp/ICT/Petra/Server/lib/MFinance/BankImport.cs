@@ -33,6 +33,7 @@ using Ict.Common.Verification;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
@@ -126,6 +127,40 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         }
 
         /// <summary>
+        /// match text should uniquely identify a gift from a certain donor with a certain purpose;
+        /// use account name, description, and amount;
+        /// remove umlaut and spaces, because the banks sometimes play around with them
+        /// </summary>
+        private static string CalculateMatchText(AEpTransactionRow tr)
+        {
+            string matchtext = tr.AccountName + tr.Description;
+
+            matchtext += tr.TransactionAmount;
+
+            matchtext = matchtext.Replace(",", "").Replace("/", "").Replace("-", "").Replace(";", "").Replace(".", "");
+
+            string oldMatchText = String.Empty;
+
+            while (oldMatchText != matchtext)
+            {
+                oldMatchText = matchtext;
+                matchtext = matchtext.ToUpper();
+                matchtext = matchtext.Replace("UE", "");
+                matchtext = matchtext.Replace("AE", "");
+                matchtext = matchtext.Replace("OE", "");
+                matchtext = matchtext.Replace("SS", "");
+                matchtext = matchtext.Replace("Ü", "");
+                matchtext = matchtext.Replace("Ä", "");
+                matchtext = matchtext.Replace("Ö", "");
+                matchtext = matchtext.Replace("ß", "");
+                matchtext = matchtext.Replace(" ", "");
+            }
+
+            return matchtext;
+        }
+        
+        
+        /// <summary>
         /// returns the transactions of the bank statement, and the matches if they exist;
         /// tries to find matches too
         /// </summary>
@@ -133,14 +168,121 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// <returns></returns>
         static public BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey)
         {
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+        	TVerificationResultCollection VerificationResult;
+        	
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            BankImportTDS ResultDataset = new BankImportTDS();
+	        BankImportTDS ResultDataset = new BankImportTDS();
+            
+            try
+            {
+	            AEpTransactionAccess.LoadViaAEpStatement(ResultDataset, AStatementKey, Transaction);
+	
+	            // load the matches or create new matches
+	            foreach (AEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
+	            {
+	            	if (!row.IsEpMatchKeyNull())
+	            	{
+	            		// load existing match
+	            		AEpMatchTable tempTable = AEpMatchAccess.LoadByPrimaryKey(row.EpMatchKey, Transaction);
+	            		
+	            		while (tempTable.Rows.Count > 0)
+            			{
+	            			AEpMatchRow tempRow = tempTable[0];
+            				tempTable.Rows.Remove(tempRow);
+            				ResultDataset.AEpMatch.Rows.Add(tempRow);
+            			}
+//	            		ResultDataset.AEpMatch.Merge(tempTable);
+//	            		ResultDataset.InitVars();
+//	            		ResultDataset.AEpMatch.InitVars();
+	            	}
+	            	else
+	            	{
+	            		// find a match with the same match text, or create a new one
+	            		string matchText = CalculateMatchText(row);
+	            		
+	            		AEpMatchTable tempTable = new AEpMatchTable();
+	            		AEpMatchRow tempRow = tempTable.NewRowTyped(false);
+	            		tempRow.MatchText = matchText;
+	            		tempTable = AEpMatchAccess.LoadUsingTemplate(tempRow, Transaction);
+	            		if (tempTable.Count > 0)
+	            		{
+	            			// update the recent date
+	            			bool update = false;
+	            			foreach (AEpMatchRow tempRow2 in tempTable.Rows)
+	            			{
+	            				if (tempRow2.RecentMatch < row.DateEffective)
+	            				{
+	            					tempRow2.RecentMatch = row.DateEffective;
+	            					update = true;
+	            				}
+	            			}
+	            			
+	            			if (update)
+	            			{
+	            				AEpMatchAccess.SubmitChanges(tempTable, Transaction, out VerificationResult);
+	            			}
+	            			
+	            			row.EpMatchKey = tempTable[0].EpMatchKey;
+	            			
+		            		while (tempTable.Rows.Count > 0)
+	            			{
+		            			tempRow = tempTable[0];
+	            				tempTable.Rows.Remove(tempRow);
+	            				ResultDataset.AEpMatch.Rows.Add(tempRow);
+	            			}
+//	            			ResultDataset.AEpMatch.Merge(tempTable);
+//	            			ResultDataset.InitVars();
+//	            			ResultDataset.AEpMatch.InitVars();
+	            		}
+	            		else
+	            		{
+	            			// create new match
+	            			tempRow = tempTable.NewRowTyped(true);
+	            			tempRow.EpMatchKey = -1;
+	            			tempRow.Detail = 0;
+	            			tempRow.MatchText = matchText;
+	            			tempRow.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+	            			tempTable.Rows.Add(tempRow);
+	        				AEpMatchAccess.SubmitChanges(tempTable, Transaction, out VerificationResult);
+TLogging.Log("row count> " + tempTable.Count.ToString());
+TLogging.Log("match null> " + tempTable[0].IsEpMatchKeyNull().ToString());
+TLogging.Log("matchkey> " + tempTable[0].EpMatchKey.ToString());
+row.BankAccountNumber = "test";
+TLogging.Log("success1");
+	        				row.EpMatchKey = tempTable[0].EpMatchKey;
+TLogging.Log("success");	        				
 
-            AEpTransactionAccess.LoadViaAEpStatement(ResultDataset, AStatementKey, ReadTransaction);
+		            		while (tempTable.Rows.Count > 0)
+	            			{
+		            			tempRow = tempTable[0];
+	            				tempTable.Rows.Remove(tempRow);
+	            				ResultDataset.AEpMatch.Rows.Add(tempRow);
+	            			}
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+	            			//ResultDataset.AEpMatch.Merge(tempTable);
+							//ResultDataset.InitVars();
+						//	ResultDataset.AEpMatch.InitVars();
+	            		}
+	            	}
+	            }
 
+	            AEpTransactionAccess.SubmitChanges(ResultDataset.AEpTransaction, Transaction, out VerificationResult);
+
+	            DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception e)
+            {
+            	DBAccess.GDBAccessObj.RollbackTransaction();
+            	TLogging.Log("Exception in BankImport, GetBankStatementTransactionsAndMatches; " + e.Message);
+            	if (e.InnerException != null)
+            	{
+            		TLogging.Log(e.InnerException.Message);
+            	}
+            	TLogging.Log(e.StackTrace);
+            	throw e;
+            }
+            
             return ResultDataset;
         }
 

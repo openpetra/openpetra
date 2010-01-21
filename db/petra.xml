@@ -4628,8 +4628,7 @@
                 descr="This identifies the account the financial transaction must be stored against"
                 format="X(8)"
                 label="Account Code"
-                help="Enter an account code."
-                notnull="yes"/>
+                help="Enter an account code."/>
     <tablefield name="a_key_ministry_key_n"
                 type="number"
                 typedotnet="Int64"
@@ -4796,10 +4795,6 @@
     <tablefield name="a_ep_match_key_i"
                 type="integer"
                 descr="set this value to the match (either new match or set automatically)"/>
-    <tablefield name="a_matching_status_c"
-                type="varchar"
-                format="X(20)"
-                descr="This defines if the match was automatically set, was created new, or this is not a recurring transaction or has not been processed yet"/>
     <!-- Constraints on table a_ep_transaction -->
     <primarykey name="a_ep_transaction_pk"
                 descr=""

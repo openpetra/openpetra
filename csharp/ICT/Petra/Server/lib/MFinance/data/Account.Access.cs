@@ -1049,153 +1049,6 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         }
 
         /// auto generated
-        public static void LoadViaPBank(DataSet ADataSet, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            LoadViaForeignKey(AEpStatementTable.TableId, PBankTable.TableId, ADataSet, new string[1]{"p_bank_key_n"},
-                new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-        }
-
-        /// auto generated
-        public static void LoadViaPBank(DataSet AData, Int64 APartnerKey, TDBTransaction ATransaction)
-        {
-            LoadViaPBank(AData, APartnerKey, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaPBank(DataSet AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            LoadViaPBank(AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpStatementTable LoadViaPBank(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            AEpStatementTable Data = new AEpStatementTable();
-            LoadViaForeignKey(AEpStatementTable.TableId, PBankTable.TableId, Data, new string[1]{"p_bank_key_n"},
-                new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            return Data;
-        }
-
-        /// auto generated
-        public static AEpStatementTable LoadViaPBank(Int64 APartnerKey, TDBTransaction ATransaction)
-        {
-            return LoadViaPBank(APartnerKey, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpStatementTable LoadViaPBank(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            return LoadViaPBank(APartnerKey, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankTemplate(DataSet ADataSet, PBankRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            LoadViaForeignKey(AEpStatementTable.TableId, PBankTable.TableId, ADataSet, new string[1]{"p_bank_key_n"},
-                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankTemplate(DataSet AData, PBankRow ATemplateRow, TDBTransaction ATransaction)
-        {
-            LoadViaPBankTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankTemplate(DataSet AData, PBankRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            LoadViaPBankTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpStatementTable LoadViaPBankTemplate(PBankRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            AEpStatementTable Data = new AEpStatementTable();
-            LoadViaForeignKey(AEpStatementTable.TableId, PBankTable.TableId, Data, new string[1]{"p_bank_key_n"},
-                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            return Data;
-        }
-
-        /// auto generated
-        public static AEpStatementTable LoadViaPBankTemplate(PBankRow ATemplateRow, TDBTransaction ATransaction)
-        {
-            return LoadViaPBankTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpStatementTable LoadViaPBankTemplate(PBankRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            return LoadViaPBankTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpStatementTable LoadViaPBankTemplate(PBankRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            return LoadViaPBankTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            LoadViaForeignKey(AEpStatementTable.TableId, PBankTable.TableId, ADataSet, new string[1]{"p_bank_key_n"},
-                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
-        {
-            LoadViaPBankTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static void LoadViaPBankTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            LoadViaPBankTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpStatementTable LoadViaPBankTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
-        {
-            AEpStatementTable Data = new AEpStatementTable();
-            LoadViaForeignKey(AEpStatementTable.TableId, PBankTable.TableId, Data, new string[1]{"p_bank_key_n"},
-                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
-            return Data;
-        }
-
-        /// auto generated
-        public static AEpStatementTable LoadViaPBankTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
-        {
-            return LoadViaPBankTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static AEpStatementTable LoadViaPBankTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
-        {
-            return LoadViaPBankTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
-        }
-
-        /// auto generated
-        public static int CountViaPBank(Int64 APartnerKey, TDBTransaction ATransaction)
-        {
-            return CountViaForeignKey(AEpStatementTable.TableId, PBankTable.TableId, new string[1]{"p_bank_key_n"},
-                new System.Object[1]{APartnerKey}, ATransaction);
-        }
-
-        /// auto generated
-        public static int CountViaPBankTemplate(PBankRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
-        {
-            return CountViaForeignKey(AEpStatementTable.TableId, PBankTable.TableId, new string[1]{"p_bank_key_n"},
-                ATemplateRow, ATemplateOperators, ATransaction);
-        }
-
-        /// auto generated
-        public static int CountViaPBankTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
-        {
-            return CountViaForeignKey(AEpStatementTable.TableId, PBankTable.TableId, new string[1]{"p_bank_key_n"},
-                ASearchCriteria, ATransaction);
-        }
-
-        /// auto generated
         public static void LoadViaPBankingDetails(DataSet ADataSet, Int32 ABankingDetailsKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             LoadViaForeignKey(AEpStatementTable.TableId, PBankingDetailsTable.TableId, ADataSet, new string[1]{"a_bank_account_key_i"},
@@ -3072,6 +2925,300 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         public static int CountViaPPartnerDonorKeyTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
             return CountViaForeignKey(AEpMatchTable.TableId, PPartnerTable.TableId, new string[1]{"p_donor_key_n"},
+                ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccount(DataSet ADataSet, Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, AAccountTable.TableId, ADataSet, new string[2]{"a_ledger_number_i", "a_account_code_c"},
+                new System.Object[2]{ALedgerNumber, AAccountCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccount(DataSet AData, Int32 ALedgerNumber, String AAccountCode, TDBTransaction ATransaction)
+        {
+            LoadViaAAccount(AData, ALedgerNumber, AAccountCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccount(DataSet AData, Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAAccount(AData, ALedgerNumber, AAccountCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_account_code_c"},
+                new System.Object[2]{ALedgerNumber, AAccountCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccount(ALedgerNumber, AAccountCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccount(ALedgerNumber, AAccountCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountTemplate(DataSet ADataSet, AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, AAccountTable.TableId, ADataSet, new string[2]{"a_ledger_number_i", "a_account_code_c"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountTemplate(DataSet AData, AAccountRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountTemplate(DataSet AData, AAccountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_account_code_c"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, AAccountTable.TableId, ADataSet, new string[2]{"a_ledger_number_i", "a_account_code_c"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_account_code_c"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaAAccount(Int32 ALedgerNumber, String AAccountCode, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, AAccountTable.TableId, new string[2]{"a_ledger_number_i", "a_account_code_c"},
+                new System.Object[2]{ALedgerNumber, AAccountCode}, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, AAccountTable.TableId, new string[2]{"a_ledger_number_i", "a_account_code_c"},
+                ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, AAccountTable.TableId, new string[2]{"a_ledger_number_i", "a_account_code_c"},
+                ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(DataSet ADataSet, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, PUnitTable.TableId, ADataSet, new string[1]{"a_key_ministry_key_n"},
+                new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(DataSet AData, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            LoadViaPUnit(AData, APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnit(DataSet AData, Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnit(AData, APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, PUnitTable.TableId, Data, new string[1]{"a_key_ministry_key_n"},
+                new System.Object[1]{APartnerKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            return LoadViaPUnit(APartnerKey, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPUnit(Int64 APartnerKey, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaPUnit(APartnerKey, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet ADataSet, PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, PUnitTable.TableId, ADataSet, new string[1]{"a_key_ministry_key_n"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet AData, PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet AData, PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, PUnitTable.TableId, Data, new string[1]{"a_key_ministry_key_n"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadViaPUnitTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaPUnitTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaPUnitTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpMatchTable.TableId, PUnitTable.TableId, ADataSet, new string[1]{"a_key_ministry_key_n"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaPUnitTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaPUnitTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpMatchTable Data = new AEpMatchTable();
+            LoadViaForeignKey(AEpMatchTable.TableId, PUnitTable.TableId, Data, new string[1]{"a_key_ministry_key_n"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadViaPUnitTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpMatchTable LoadViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaPUnitTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaPUnit(Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, PUnitTable.TableId, new string[1]{"a_key_ministry_key_n"},
+                new System.Object[1]{APartnerKey}, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaPUnitTemplate(PUnitRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, PUnitTable.TableId, new string[1]{"a_key_ministry_key_n"},
+                ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaPUnitTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpMatchTable.TableId, PUnitTable.TableId, new string[1]{"a_key_ministry_key_n"},
                 ASearchCriteria, ATransaction);
         }
 

@@ -2041,7 +2041,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(30, "DonorShortName", "p_donor_short_name_c", "p_donor_short_name_c", OdbcType.VarChar, 500, false),
                     new TTypedColumnInfo(31, "RecipientShortName", "p_recipient_short_name_c", "p_recipient_short_name_c", OdbcType.VarChar, 500, false),
                     new TTypedColumnInfo(32, "Restricted", "a_restricted_l", "Gift Restricted", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(33, "AccountCode", "a_account_code_c", "Account Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(33, "AccountCode", "a_account_code_c", "Account Code", OdbcType.VarChar, 16, false),
                     new TTypedColumnInfo(34, "KeyMinistryKey", "a_key_ministry_key_n", "Key Ministry", OdbcType.Decimal, 10, false),
                     new TTypedColumnInfo(35, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
                     new TTypedColumnInfo(36, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
@@ -4404,17 +4404,15 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnEpMatchKeyId = 15;
         /// used for generic TTypedDataTable functions
-        public static short ColumnMatchingStatusId = 16;
+        public static short ColumnDateCreatedId = 16;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 17;
+        public static short ColumnCreatedById = 17;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 18;
+        public static short ColumnDateModifiedId = 18;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 19;
+        public static short ColumnModifiedById = 19;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 20;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 21;
+        public static short ColumnModificationIdId = 20;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -4437,12 +4435,11 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(13, "Description", "a_description_c", "description", OdbcType.VarChar, 512, false),
                     new TTypedColumnInfo(14, "DateEffective", "a_date_effective_d", "Date", OdbcType.Date, -1, true),
                     new TTypedColumnInfo(15, "EpMatchKey", "a_ep_match_key_i", "a_ep_match_key_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(16, "MatchingStatus", "a_matching_status_c", "a_matching_status_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(17, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(18, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(19, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(20, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(21, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(16, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(17, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(18, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(19, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(20, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -4500,8 +4497,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public DataColumn ColumnDateEffective;
         /// set this value to the match (either new match or set automatically)
         public DataColumn ColumnEpMatchKey;
-        /// This defines if the match was automatically set, was created new, or this is not a recurring transaction or has not been processed yet
-        public DataColumn ColumnMatchingStatus;
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
         /// User ID of who created this record.
@@ -4532,7 +4527,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_date_effective_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_ep_match_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_matching_status_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -4559,7 +4553,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.ColumnDescription = this.Columns["a_description_c"];
             this.ColumnDateEffective = this.Columns["a_date_effective_d"];
             this.ColumnEpMatchKey = this.Columns["a_ep_match_key_i"];
-            this.ColumnMatchingStatus = this.Columns["a_matching_status_c"];
             this.ColumnDateCreated = this.Columns["s_date_created_d"];
             this.ColumnCreatedBy = this.Columns["s_created_by_c"];
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
@@ -4815,18 +4808,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public static short GetEpMatchKeyLength()
         {
             return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetMatchingStatusDBName()
-        {
-            return "a_matching_status_c";
-        }
-
-        /// get character length for column
-        public static short GetMatchingStatusLength()
-        {
-            return 40;
         }
 
         /// get the name of the field in the database for this column
@@ -5320,32 +5301,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             }
         }
 
-        /// This defines if the match was automatically set, was created new, or this is not a recurring transaction or has not been processed yet
-        public String MatchingStatus
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnMatchingStatus.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnMatchingStatus)
-                            || (((String)(this[this.myTable.ColumnMatchingStatus])) != value)))
-                {
-                    this[this.myTable.ColumnMatchingStatus] = value;
-                }
-            }
-        }
-
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -5495,7 +5450,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.SetNull(this.myTable.ColumnDescription);
             this[this.myTable.ColumnDateEffective.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnEpMatchKey);
-            this.SetNull(this.myTable.ColumnMatchingStatus);
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnCreatedBy);
             this.SetNull(this.myTable.ColumnDateModified);
@@ -5693,18 +5647,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public void SetEpMatchKeyNull()
         {
             this.SetNull(this.myTable.ColumnEpMatchKey);
-        }
-
-        /// test for NULL value
-        public bool IsMatchingStatusNull()
-        {
-            return this.IsNull(this.myTable.ColumnMatchingStatus);
-        }
-
-        /// assign NULL value
-        public void SetMatchingStatusNull()
-        {
-            this.SetNull(this.myTable.ColumnMatchingStatus);
         }
 
         /// test for NULL value

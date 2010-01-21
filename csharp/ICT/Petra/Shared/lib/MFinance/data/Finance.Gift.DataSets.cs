@@ -1414,7 +1414,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
     }
 
-    /// Any bank details for a partner can be store in this table
+    /// Any bank details for a partner can be stored in this table
     [Serializable()]
     public class BankImportTDSPBankingDetailsTable : PBankingDetailsTable
     {
@@ -1598,7 +1598,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
 
     }
 
-    /// Any bank details for a partner can be store in this table
+    /// Any bank details for a partner can be stored in this table
     [Serializable()]
     public class BankImportTDSPBankingDetailsRow : PBankingDetailsRow
     {
@@ -1682,25 +1682,25 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// TableId for Ict.Common.Data generic functions
         public new static short TableId = 5603;
         /// used for generic TTypedDataTable functions
-        public static short ColumnNumberOnStatementId = 22;
+        public static short ColumnNumberOnStatementId = 21;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDetailKeyId = 23;
+        public static short ColumnDetailKeyId = 22;
         /// used for generic TTypedDataTable functions
-        public static short ColumnOriginalAmountOnStatementId = 24;
+        public static short ColumnOriginalAmountOnStatementId = 23;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftLedgerNumberId = 25;
+        public static short ColumnGiftLedgerNumberId = 24;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftBatchNumberId = 26;
+        public static short ColumnGiftBatchNumberId = 25;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftTransactionNumberId = 27;
+        public static short ColumnGiftTransactionNumberId = 26;
         /// used for generic TTypedDataTable functions
-        public static short ColumnGiftDetailNumberId = 28;
+        public static short ColumnGiftDetailNumberId = 27;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDonorKeyId = 29;
+        public static short ColumnDonorKeyId = 28;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDonorShortNameId = 30;
+        public static short ColumnDonorShortNameId = 29;
         /// used for generic TTypedDataTable functions
-        public static short ColumnRecipientDescriptionId = 31;
+        public static short ColumnRecipientDescriptionId = 30;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1723,25 +1723,24 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(13, "Description", "a_description_c", "description", OdbcType.VarChar, 512, false),
                     new TTypedColumnInfo(14, "DateEffective", "a_date_effective_d", "Date", OdbcType.Date, -1, true),
                     new TTypedColumnInfo(15, "EpMatchKey", "a_ep_match_key_i", "a_ep_match_key_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(16, "MatchingStatus", "a_matching_status_c", "a_matching_status_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(17, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(18, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(19, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(20, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(21, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(22, "NumberOnStatement", "NumberOnStatement", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(23, "DetailKey", "DetailKey", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(24, "OriginalAmountOnStatement", "OriginalAmountOnStatement", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(25, "GiftLedgerNumber", "GiftLedgerNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(26, "GiftBatchNumber", "GiftBatchNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(27, "GiftTransactionNumber", "GiftTransactionNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(28, "GiftDetailNumber", "GiftDetailNumber", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(29, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(30, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(31, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(16, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(17, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(18, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(19, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(20, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
+                    new TTypedColumnInfo(21, "NumberOnStatement", "NumberOnStatement", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(22, "DetailKey", "DetailKey", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(23, "OriginalAmountOnStatement", "OriginalAmountOnStatement", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(24, "GiftLedgerNumber", "GiftLedgerNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(25, "GiftBatchNumber", "GiftBatchNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(26, "GiftTransactionNumber", "GiftTransactionNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(27, "GiftDetailNumber", "GiftDetailNumber", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(28, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(29, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(30, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
-                    0, 1, 23
+                    0, 1, 22
                 }));
             return true;
         }
@@ -1804,7 +1803,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("a_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_date_effective_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_ep_match_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_matching_status_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -1841,7 +1839,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.ColumnDescription = this.Columns["a_description_c"];
             this.ColumnDateEffective = this.Columns["a_date_effective_d"];
             this.ColumnEpMatchKey = this.Columns["a_ep_match_key_i"];
-            this.ColumnMatchingStatus = this.Columns["a_matching_status_c"];
             this.ColumnDateCreated = this.Columns["s_date_created_d"];
             this.ColumnCreatedBy = this.Columns["s_created_by_c"];
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
@@ -2331,7 +2328,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.SetNull(this.myTable.ColumnDescription);
             this[this.myTable.ColumnDateEffective.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnEpMatchKey);
-            this.SetNull(this.myTable.ColumnMatchingStatus);
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnCreatedBy);
             this.SetNull(this.myTable.ColumnDateModified);

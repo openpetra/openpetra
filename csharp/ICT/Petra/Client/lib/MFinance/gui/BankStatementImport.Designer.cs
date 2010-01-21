@@ -82,11 +82,14 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.rbtGL = new System.Windows.Forms.RadioButton();
             this.pnlHostCategorySpecificEdit = new System.Windows.Forms.Panel();
             this.pnlGiftEdit = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDonorKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
-            this.lblDonorKey = new System.Windows.Forms.Label();
+            this.pnlDetailGrid = new System.Windows.Forms.Panel();
             this.grdGiftDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
-            this.pnlGiftDetails = new System.Windows.Forms.Panel();
+            this.pnlDetailButtons = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnAddGiftDetail = new System.Windows.Forms.Button();
+            this.btnRemoveGiftDetail = new System.Windows.Forms.Button();
+            this.pnlEditGiftDetail = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.cmbMotivationDetail = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblMotivationDetail = new System.Windows.Forms.Label();
@@ -125,8 +128,10 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlHostCategorySpecificEdit.SuspendLayout();
             this.pnlGiftEdit.SuspendLayout();
+            this.pnlDetailGrid.SuspendLayout();
+            this.pnlDetailButtons.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.pnlGiftDetails.SuspendLayout();
+            this.pnlEditGiftDetail.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tpgUnmatched.SuspendLayout();
             this.tpgGifts.SuspendLayout();
@@ -232,13 +237,9 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.pnlGiftEdit.Name = "pnlGiftEdit";
             this.pnlGiftEdit.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlGiftEdit.AutoSize = true;
-            //
-            // tableLayoutPanel2
-            //
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.AutoSize = true;
-            this.pnlGiftEdit.Controls.Add(this.tableLayoutPanel2);
+            this.pnlGiftEdit.Controls.Add(this.pnlDetailGrid);
+            this.pnlGiftEdit.Controls.Add(this.pnlEditGiftDetail);
+            this.pnlGiftEdit.Controls.Add(this.txtDonorKey);
             //
             // txtDonorKey
             //
@@ -257,33 +258,67 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.txtDonorKey.Tag = "CustomDisableAlthoughInvisible";
             this.txtDonorKey.ButtonText = "Find";
             //
-            // lblDonorKey
+            // pnlDetailGrid
             //
-            this.lblDonorKey.Location = new System.Drawing.Point(2,2);
-            this.lblDonorKey.Name = "lblDonorKey";
-            this.lblDonorKey.AutoSize = true;
-            this.lblDonorKey.Text = "Donor:";
-            this.lblDonorKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.pnlDetailGrid.Name = "pnlDetailGrid";
+            this.pnlDetailGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlDetailGrid.AutoSize = true;
+            this.pnlDetailGrid.Controls.Add(this.grdGiftDetails);
+            this.pnlDetailGrid.Controls.Add(this.pnlDetailButtons);
             //
             // grdGiftDetails
             //
             this.grdGiftDetails.Name = "grdGiftDetails";
-            this.grdGiftDetails.Dock = System.Windows.Forms.DockStyle.Top;
-            this.grdGiftDetails.AutoSize = true;
+            this.grdGiftDetails.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grdGiftDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.GiftDetailsFocusedRowChanged);
             //
-            // pnlGiftDetails
+            // pnlDetailButtons
             //
-            this.pnlGiftDetails.Location = new System.Drawing.Point(2,2);
-            this.pnlGiftDetails.Name = "pnlGiftDetails";
-            this.pnlGiftDetails.AutoSize = true;
+            this.pnlDetailButtons.Name = "pnlDetailButtons";
+            this.pnlDetailButtons.Dock = System.Windows.Forms.DockStyle.Right;
+            this.pnlDetailButtons.AutoSize = true;
+            //
+            // tableLayoutPanel2
+            //
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
+            this.pnlDetailButtons.Controls.Add(this.tableLayoutPanel2);
+            //
+            // btnAddGiftDetail
+            //
+            this.btnAddGiftDetail.Location = new System.Drawing.Point(2,2);
+            this.btnAddGiftDetail.Name = "btnAddGiftDetail";
+            this.btnAddGiftDetail.AutoSize = true;
+            this.btnAddGiftDetail.Click += new System.EventHandler(this.AddGiftDetail);
+            this.btnAddGiftDetail.Text = "&Add";
+            //
+            // btnRemoveGiftDetail
+            //
+            this.btnRemoveGiftDetail.Location = new System.Drawing.Point(2,2);
+            this.btnRemoveGiftDetail.Name = "btnRemoveGiftDetail";
+            this.btnRemoveGiftDetail.AutoSize = true;
+            this.btnRemoveGiftDetail.Text = "Remove Gift Detail";
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.btnAddGiftDetail, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnRemoveGiftDetail, 0, 1);
+            //
+            // pnlEditGiftDetail
+            //
+            this.pnlEditGiftDetail.Name = "pnlEditGiftDetail";
+            this.pnlEditGiftDetail.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlEditGiftDetail.AutoSize = true;
             //
             // tableLayoutPanel3
             //
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.AutoSize = true;
-            this.pnlGiftDetails.Controls.Add(this.tableLayoutPanel3);
+            this.pnlEditGiftDetail.Controls.Add(this.tableLayoutPanel3);
             //
             // cmbMotivationDetail
             //
@@ -344,19 +379,6 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel3.Controls.Add(this.cmbMotivationDetail, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.cmbGiftAccount, 1, 1);
             this.tableLayoutPanel3.Controls.Add(this.cmbGiftCostCentre, 1, 2);
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 3;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.lblDonorKey, 0, 0);
-            this.tableLayoutPanel2.SetColumnSpan(this.grdGiftDetails, 2);
-            this.tableLayoutPanel2.Controls.Add(this.grdGiftDetails, 0, 1);
-            this.tableLayoutPanel2.SetColumnSpan(this.pnlGiftDetails, 2);
-            this.tableLayoutPanel2.Controls.Add(this.pnlGiftDetails, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.txtDonorKey, 1, 0);
             this.tpgAll.Text = "All";
             this.tpgAll.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -538,8 +560,10 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tpgGifts.ResumeLayout(false);
             this.tpgUnmatched.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
-            this.pnlGiftDetails.ResumeLayout(false);
+            this.pnlEditGiftDetail.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
+            this.pnlDetailButtons.ResumeLayout(false);
+            this.pnlDetailGrid.ResumeLayout(false);
             this.pnlGiftEdit.ResumeLayout(false);
             this.pnlHostCategorySpecificEdit.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -567,11 +591,14 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.RadioButton rbtGL;
         private System.Windows.Forms.Panel pnlHostCategorySpecificEdit;
         private System.Windows.Forms.Panel pnlGiftEdit;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtDonorKey;
-        private System.Windows.Forms.Label lblDonorKey;
+        private System.Windows.Forms.Panel pnlDetailGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdGiftDetails;
-        private System.Windows.Forms.Panel pnlGiftDetails;
+        private System.Windows.Forms.Panel pnlDetailButtons;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Button btnAddGiftDetail;
+        private System.Windows.Forms.Button btnRemoveGiftDetail;
+        private System.Windows.Forms.Panel pnlEditGiftDetail;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbMotivationDetail;
         private System.Windows.Forms.Label lblMotivationDetail;

@@ -382,6 +382,7 @@
              <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver;" database="openpetra"/>
              <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_general_ledger_master TO petraserver;" database="openpetra"/>
              <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_statement_number TO petraserver;" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_match_number TO petraserver;" database="openpetra"/>
 
              <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/clean.sql" database="openpetra"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="openpetra"/>

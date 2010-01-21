@@ -39,6 +39,8 @@ namespace Ict.Petra.Client.MFinance.Gui
     /// manual methods for the generated window
     public partial class TFrmBankStatementImport
     {
+        private BankImportTDS FMainDS = new BankImportTDS();
+
         private void InitializeManualCode()
         {
             pnlDetails.Visible = false;
@@ -49,18 +51,19 @@ namespace Ict.Petra.Client.MFinance.Gui
 
         private void SelectBankStatement(System.Object sender, EventArgs e)
         {
-            BankImportTDS ds =
+            // load the transactions of the selected statement, and the matches
+            FMainDS =
                 TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(Convert.ToInt32(tbcSelectStatement.ComboBox.
                         SelectedValue));
 
             grdAllTransactions.Columns.Clear();
-            grdAllTransactions.AddTextColumn(Catalog.GetString("Nr"), ds.AEpTransaction.ColumnOrder, 40);
-            grdAllTransactions.AddTextColumn(Catalog.GetString("Account Name"), ds.AEpTransaction.ColumnAccountName, 150);
-            grdAllTransactions.AddTextColumn(Catalog.GetString("description"), ds.AEpTransaction.ColumnDescription, 150);
-            grdAllTransactions.AddTextColumn(Catalog.GetString("Date Effective"), ds.AEpTransaction.ColumnDateEffective, 70);
-            grdAllTransactions.AddTextColumn(Catalog.GetString("Transaction Amount"), ds.AEpTransaction.ColumnTransactionAmount, 70);
+            grdAllTransactions.AddTextColumn(Catalog.GetString("Nr"), FMainDS.AEpTransaction.ColumnOrder, 40);
+            grdAllTransactions.AddTextColumn(Catalog.GetString("Account Name"), FMainDS.AEpTransaction.ColumnAccountName, 150);
+            grdAllTransactions.AddTextColumn(Catalog.GetString("description"), FMainDS.AEpTransaction.ColumnDescription, 150);
+            grdAllTransactions.AddTextColumn(Catalog.GetString("Date Effective"), FMainDS.AEpTransaction.ColumnDateEffective, 70);
+            grdAllTransactions.AddTextColumn(Catalog.GetString("Transaction Amount"), FMainDS.AEpTransaction.ColumnTransactionAmount, 70);
 
-            DataView myDataView = ds.AEpTransaction.DefaultView;
+            DataView myDataView = FMainDS.AEpTransaction.DefaultView;
             myDataView.AllowNew = false;
             grdAllTransactions.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdAllTransactions.AutoSizeCells();
@@ -127,6 +130,14 @@ namespace Ict.Petra.Client.MFinance.Gui
         private void NewTransactionCategory(System.Object sender, EventArgs e)
         {
             pnlGiftEdit.Visible = rbtGift.Checked;
+
+            if (rbtGift.Checked)
+            {
+                grdGiftDetails.Columns.Clear();
+                grdGiftDetails.AddTextColumn(Catalog.GetString("Motivation"), FMainDS.AEpMatch.ColumnMotivationDetailCode, 70);
+                grdGiftDetails.AddTextColumn(Catalog.GetString("Cost Centre"), FMainDS.AEpMatch.ColumnCostCentreCode, 150);
+                grdGiftDetails.AddTextColumn(Catalog.GetString("Amount"), FMainDS.AEpMatch.ColumnGiftTransactionAmount, 70);
+            }
         }
 
         private void AllTransactionsFocusedRowChanged(System.Object sender, EventArgs e)
@@ -139,6 +150,10 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
 
         private void GiftDetailsFocusedRowChanged(System.Object sender, EventArgs e)
+        {
+        }
+
+        private void AddGiftDetail(System.Object sender, EventArgs e)
         {
         }
     }
