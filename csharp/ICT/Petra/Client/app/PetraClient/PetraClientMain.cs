@@ -256,6 +256,10 @@ namespace Ict.Petra.Client.App.PetraClient
                         String.Format("Install new Petra patch"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
                         MessageBoxDefaultButton.Button1) == DialogResult.Yes)
                 {
+                    // reset the caches in IsolatedStorage. This can help if things have changed drastically in the database
+                    // TODO: run this also after the software has been reinstalled with the InnoSetup installer? Remember the current patch number in the IsolatedStorage?
+                    TDataCache.ClearAllCaches();
+
                     // create the temp directory; using the Petra tmp directory, so that we don't need to change the drive in the batch file
                     string TempPath = TClientSettings.PathTemp + Path.DirectorySeparatorChar + "petrapatch";
                     Directory.CreateDirectory(TempPath);

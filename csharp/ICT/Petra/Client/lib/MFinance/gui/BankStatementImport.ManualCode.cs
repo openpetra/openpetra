@@ -33,12 +33,26 @@ using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Client.MFinance.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
     /// manual methods for the generated window
     public partial class TFrmBankStatementImport
     {
+        private Int32 FLedgerNumber;
+
+        /// <summary>
+        /// use this ledger
+        /// </summary>
+        public Int32 LedgerNumber
+        {
+            set
+            {
+                FLedgerNumber = value;
+            }
+        }
+
         private BankImportTDS FMainDS = new BankImportTDS();
 
         private void InitializeManualCode()
@@ -53,8 +67,8 @@ namespace Ict.Petra.Client.MFinance.Gui
         {
             // load the transactions of the selected statement, and the matches
             FMainDS =
-                TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(Convert.ToInt32(tbcSelectStatement.ComboBox.
-                        SelectedValue));
+                TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(
+                    Convert.ToInt32(tbcSelectStatement.ComboBox.SelectedValue), FLedgerNumber);
 
             grdAllTransactions.Columns.Clear();
             grdAllTransactions.AddTextColumn(Catalog.GetString("Nr"), FMainDS.AEpTransaction.ColumnOrder, 40);
@@ -67,6 +81,9 @@ namespace Ict.Petra.Client.MFinance.Gui
             myDataView.AllowNew = false;
             grdAllTransactions.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdAllTransactions.AutoSizeCells();
+
+            TFinanceControls.InitialiseMotivationDetailList(ref cmbMotivationDetail, FLedgerNumber, true);
+            TFinanceControls.InitialiseCostCentreList(ref cmbGiftCostCentre, FLedgerNumber, true, false, true, true);
         }
 
         private void PopulateStatementCombobox()
@@ -124,7 +141,52 @@ namespace Ict.Petra.Client.MFinance.Gui
 
         private void MotivationDetailChanged(System.Object sender, EventArgs e)
         {
-            // TODO
+            // look for the motivation detail.
+            // if the associated cost centre is a summary cost centre,
+            // the user can select from a list of the reporting costcentres
+            // else make the costcentre readonly.
+            if (cmbMotivationDetail.SelectedIndex == -1)
+            {
+                cmbGiftCostCentre.Enabled = false;
+                return;
+            }
+
+            DataView v = new DataView(FMainDS.AMotivationDetail);
+            v.RowFilter = AMotivationDetailTable.GetMotivationDetailCodeDBName() +
+                          " = '" + cmbMotivationDetail.GetSelectedString() + "'";
+
+            if (v.Count == 0)
+            {
+                cmbGiftCostCentre.Enabled = false;
+                return;
+            }
+
+            AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)v[0].Row;
+
+            v = new DataView(FMainDS.ACostCentre);
+            v.RowFilter = ACostCentreTable.GetCostCentreCodeDBName() +
+                          " = '" + motivationDetailRow.CostCentreCode + "'";
+
+            if (v.Count == 0)
+            {
+                cmbGiftCostCentre.Enabled = false;
+                return;
+            }
+
+            ACostCentreRow costCentreRow = (ACostCentreRow)v[0].Row;
+
+            if (costCentreRow.PostingCostCentreFlag)
+            {
+                cmbGiftCostCentre.SelectedValue = costCentreRow.CostCentreCode;
+                cmbGiftCostCentre.Enabled = false;
+            }
+            else
+            {
+                FMainDS.ACostCentre.DefaultView.RowFilter = ACostCentreTable.GetCostCentreToReportToDBName() +
+                                                            " = '" + costCentreRow.CostCentreCode + "'";
+                cmbGiftCostCentre.Enabled = true;
+                cmbGiftCostCentre.Update();
+            }
         }
 
         private void NewTransactionCategory(System.Object sender, EventArgs e)

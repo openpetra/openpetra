@@ -313,7 +313,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
         AEpStatementTable GetImportedBankStatements(DateTime AStartDate);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
-        BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey);
+        BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey,
+                                                             Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
         bool CommitMatches(BankImportTDS AMainDS);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>

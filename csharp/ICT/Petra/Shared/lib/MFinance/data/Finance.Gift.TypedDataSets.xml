@@ -29,7 +29,7 @@
             <CustomField name="PartnerKey" type="Int64"/>
         </Table>
         <Table sqltable="a_ep_transaction">
-            <CustomField name="NumberOnStatement" type="Int32"/>
+<!--            <CustomField name="NumberOnStatement" type="Int32"/>
             <CustomField name="DetailKey" type="Int32"/>
             <CustomField name="OriginalAmountOnStatement" type="Double"/>
             <CustomField name="GiftLedgerNumber" type="Int32"/>
@@ -39,9 +39,11 @@
             <CustomField name="DonorKey" type="Int64"/>
             <CustomField name="DonorShortName" type="string"/>
             <CustomField name="RecipientDescription" type="string"/>
-            <PrimaryKey thisFields="a_statement_key_i, a_order_i, DetailKey"/>
+            <PrimaryKey thisFields="a_statement_key_i, a_order_i, DetailKey"/> -->
         </Table>
         <Table sqltable="a_ep_match"/>
+        <Table sqltable="a_cost_centre"/>
+        <Table sqltable="a_motivation_detail"/>
     </DataSet> 
 
     <DataSet name="NewDonorTDS">

@@ -1648,9 +1648,10 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
-        public BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey)
+        public BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey,
+                                                                    Int32 ALedgerNumber)
         {
-            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.GetBankStatementTransactionsAndMatches(AStatementKey);
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
         }
 
         /// generated method from connector

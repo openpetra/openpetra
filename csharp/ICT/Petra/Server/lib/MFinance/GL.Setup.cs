@@ -478,6 +478,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             newCostCentre.CostCentreName = TYml2Xml.GetElementName(ACurrentNode);
             newCostCentre.CostCentreActiveFlag = TYml2Xml.GetAttributeRecursive(ACurrentNode, "active").ToLower() == "true";
             newCostCentre.CostCentreType = TYml2Xml.GetAttributeRecursive(ACurrentNode, "type");
+            newCostCentre.PostingCostCentreFlag = (ACurrentNode.ChildNodes.Count == 0);
 
             if ((AParentCostCentreCode != null) && (AParentCostCentreCode.Length != 0))
             {
