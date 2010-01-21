@@ -63,6 +63,15 @@ namespace Ict.Petra.Client.MFinance.Gui
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      this.rbtUnmatched.Text = Catalog.GetString("Unmatched");
+      this.rbtGift.Text = Catalog.GetString("Gift");
+      this.rbtGL.Text = Catalog.GetString("GL");
+      this.rgrTransactionCategory.Text = Catalog.GetString("Transaction Category");
+      this.txtDonorKey.ButtonText = Catalog.GetString("Find");
+      this.lblDonorKey.Text = Catalog.GetString("Donor:");
+      this.lblMotivationDetail.Text = Catalog.GetString("Motivation Detail:");
+      this.lblGiftAccount.Text = Catalog.GetString("Account:");
+      this.lblGiftCostCentre.Text = Catalog.GetString("Cost Centre:");
       this.tpgAll.Text = Catalog.GetString("All");
       this.tpgUnmatched.Text = Catalog.GetString("Unmatched");
       this.tpgGifts.Text = Catalog.GetString("Gifts");

@@ -308,8 +308,7 @@ namespace Ict.Petra.Client.CommonDialogs
 #if  TESTMODE
 #else
                     MessageBox.Show(
-                        "Too many users are logged in." + "\r\n" + "\r\n" +
-                        " Please contact petra-admin@ict-software.org to order more licenses if necessary.",
+                        "Too many users are logged in.",
                         "Too many users",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);

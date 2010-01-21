@@ -90,7 +90,8 @@ namespace Ict.Common.IO
             filename = AFilename;
 
             // file should be in unicode encoding
-            TextReader reader = new StreamReader(filename, true);
+            // StreamReader DetectEncodingFromByteOrderMarks does not work for ANSI?
+            TextReader reader = new StreamReader(filename, TTextFile.GetFileEncoding(filename), false);
             lines = reader.ReadToEnd().Replace("\r", "").Split(new char[] { '\n' });
             reader.Close();
             currentLine = -1;

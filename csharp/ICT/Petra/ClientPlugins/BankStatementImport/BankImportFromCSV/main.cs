@@ -73,7 +73,8 @@ namespace Plugin.BankImportFromCSV
             }
 
             string BankStatementFilename = DialogOpen.FileName;
-            StreamReader dataFile = new StreamReader(BankStatementFilename);
+
+            StreamReader dataFile = new StreamReader(BankStatementFilename, TTextFile.GetFileEncoding(BankStatementFilename), false);
 
             string FileStructureConfig = TAppSettingsManager.GetValueStatic("BankImportCSV.FileStructure.Config", "");
 

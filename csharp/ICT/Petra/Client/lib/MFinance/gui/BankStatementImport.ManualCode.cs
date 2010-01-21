@@ -41,8 +41,10 @@ namespace Ict.Petra.Client.MFinance.Gui
     {
         private void InitializeManualCode()
         {
+            pnlDetails.Visible = false;
             tbcSelectStatement.ComboBox.SelectedValueChanged += new EventHandler(SelectBankStatement);
             PopulateStatementCombobox();
+            tbcSelectStatement.ComboBox.SelectedIndex = tbcSelectStatement.ComboBox.Items.Count - 1;
         }
 
         private void SelectBankStatement(System.Object sender, EventArgs e)
@@ -112,8 +114,32 @@ namespace Ict.Petra.Client.MFinance.Gui
             {
                 PopulateStatementCombobox();
 
-                // TODO: select the loaded bank statement and display all transactions
+                // select the loaded bank statement and display all transactions
+                tbcSelectStatement.ComboBox.SelectedValue = StatementKey;
             }
+        }
+
+        private void MotivationDetailChanged(System.Object sender, EventArgs e)
+        {
+            // TODO
+        }
+
+        private void NewTransactionCategory(System.Object sender, EventArgs e)
+        {
+            pnlGiftEdit.Visible = rbtGift.Checked;
+        }
+
+        private void AllTransactionsFocusedRowChanged(System.Object sender, EventArgs e)
+        {
+            pnlDetails.Visible = true;
+
+            // TODO store current selections in the a_ep_match table
+
+            // TODO load selections from the a_ep_match table for the new row
+        }
+
+        private void GiftDetailsFocusedRowChanged(System.Object sender, EventArgs e)
+        {
         }
     }
 }

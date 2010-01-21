@@ -13,7 +13,8 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlStatementInfo, tabTransactions]
+            Controls: [tabTransactions]
+            # add to Controls: pnlStatementInfo
         pnlStatementInfo:
             # Controls: [txtStartBalance, txtEndBalance, txtSumDebit, txtSumCredit, txtNumberMatchedTransactions]
         tabTransactions:
@@ -21,17 +22,54 @@ RootNode:
             Controls: [tpgAll, tpgUnmatched, tpgGifts, tpgGL]
             Dock: Fill
         tpgAll:
-            Controls: [grdAllTransactions]
+            Dock: Fill
+            Controls: [sptTransactionDetails]
+        sptTransactionDetails:
+            Panel1: grdAllTransactions
+            Panel2: pnlDetails
+            SplitterDistance: 50
+            SplitterOrientation: horizontal
+            Dock: Fill
+        grdAllTransactions:
+            Dock: Fill
+            ActionFocusRow: AllTransactionsFocusedRowChanged
+        pnlDetails:
+            Dock: Fill
+            Visible: false
+            Controls: [rgrTransactionCategory, pnlHostCategorySpecificEdit]
+        rgrTransactionCategory:
+            OptionalValues: [Unmatched, Gift, GL]
+            ControlsOrientation: vertical
+            NoLabel: true
+            OnChange: NewTransactionCategory
+            Dock: Left
+        pnlHostCategorySpecificEdit:
+            Controls: [pnlGiftEdit]
+            #pnlGLEdit
+            Dock: Fill
+        pnlGiftEdit:
+            Dock: Fill
+            Visible: true
+            Controls: [txtDonorKey, grdGiftDetails, pnlGiftDetails]
+        txtDonorKey: {Label=Donor, Type=PartnerKey, Dock=Top}
+        grdGiftDetails:
+            Dock: Top
+            ActionFocusRow: GiftDetailsFocusedRowChanged
+        pnlGiftDetails: 
+            Controls: [cmbMotivationDetail, cmbGiftAccount, cmbGiftCostCentre]
+        cmbMotivationDetail: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged}
+        cmbGiftAccount: {Label=Account, List=UserDefinedList, ReadOnly=true}
+        cmbGiftCostCentre: {Label=Cost Centre, List=UserDefinedList}
+        pnlGLEdit:
+            Dock: Fill
+            Visible: false
+            #Controls: [cmbGLAccountCode, cmbGLCostCentre]
         tpgUnmatched:
-#            Controls: 
+#            Controls:
 #                Row0: [grdUnmatchedTransactions]
 #                Row1: [rgrMoveUnmatchedTransaction]
         tpgGifts:
         tpgGL:
-        grdAllTransactions:
-            Dock: Fill
-        grdUnmatchedTransactions:
-            Dock: Top
     Menu:
         mniFile:
             mniImportNewStatement:

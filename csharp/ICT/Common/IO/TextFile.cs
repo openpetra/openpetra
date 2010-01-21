@@ -25,6 +25,7 @@
  ************************************************************************/
 using System;
 using System.IO;
+using System.Text;
 
 namespace Ict.Common.IO
 {
@@ -171,6 +172,46 @@ namespace Ict.Common.IO
             }
 
             return true;
+        }
+
+        /// StreamReader DetectEncodingFromByteOrderMarks does not work for ANSI?
+        /// therefore we have to detect the encoding by comparing the first bytes of the file
+        public static Encoding GetFileEncoding(String AFilename)
+        {
+            FileInfo fileinfo = new FileInfo(AFilename);
+
+            FileStream fs = fileinfo.OpenRead();
+
+            Encoding[] UnicodeEncodings =
+            {
+                Encoding.BigEndianUnicode, Encoding.Unicode, Encoding.UTF8, Encoding.UTF32
+            };
+
+            foreach (Encoding testEncoding in UnicodeEncodings)
+            {
+                byte[] encodingpreamble = testEncoding.GetPreamble();
+                byte[] filepreamble = new byte[encodingpreamble.Length];
+                fs.Position = 0;
+                bool equal = (fs.Read(filepreamble, 0, encodingpreamble.Length) == encodingpreamble.Length);
+
+                for (int i = 0; equal && i < encodingpreamble.Length; i++)
+                {
+                    equal = (encodingpreamble[i] == filepreamble[i]);
+                }
+
+                if (equal)
+                {
+                    fs.Close();
+                    return testEncoding;
+                }
+            }
+
+            if (fs != null)
+            {
+                fs.Close();
+            }
+
+            return Encoding.Default;
         }
     }
 }

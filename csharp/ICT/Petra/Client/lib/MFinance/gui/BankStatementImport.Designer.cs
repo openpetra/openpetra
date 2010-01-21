@@ -70,11 +70,30 @@ namespace Ict.Petra.Client.MFinance.Gui
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmBankStatementImport));
 
             this.pnlContent = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.pnlStatementInfo = new System.Windows.Forms.Panel();
             this.tabTransactions = new Ict.Common.Controls.TTabVersatile();
             this.tpgAll = new System.Windows.Forms.TabPage();
+            this.sptTransactionDetails = new System.Windows.Forms.SplitContainer();
             this.grdAllTransactions = new Ict.Common.Controls.TSgrdDataGridPaged();
+            this.pnlDetails = new System.Windows.Forms.Panel();
+            this.rgrTransactionCategory = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.rbtUnmatched = new System.Windows.Forms.RadioButton();
+            this.rbtGift = new System.Windows.Forms.RadioButton();
+            this.rbtGL = new System.Windows.Forms.RadioButton();
+            this.pnlHostCategorySpecificEdit = new System.Windows.Forms.Panel();
+            this.pnlGiftEdit = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtDonorKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
+            this.lblDonorKey = new System.Windows.Forms.Label();
+            this.grdGiftDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
+            this.pnlGiftDetails = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.cmbMotivationDetail = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.lblMotivationDetail = new System.Windows.Forms.Label();
+            this.cmbGiftAccount = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.lblGiftAccount = new System.Windows.Forms.Label();
+            this.cmbGiftCostCentre = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.lblGiftCostCentre = new System.Windows.Forms.Label();
             this.tpgUnmatched = new System.Windows.Forms.TabPage();
             this.tpgGifts = new System.Windows.Forms.TabPage();
             this.tpgGL = new System.Windows.Forms.TabPage();
@@ -96,10 +115,19 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
 
             this.pnlContent.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
-            this.pnlStatementInfo.SuspendLayout();
             this.tabTransactions.SuspendLayout();
             this.tpgAll.SuspendLayout();
+            this.sptTransactionDetails.SuspendLayout();
+            this.sptTransactionDetails.Panel1.SuspendLayout();
+            this.sptTransactionDetails.Panel2.SuspendLayout();
+            this.pnlDetails.SuspendLayout();
+            this.rgrTransactionCategory.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.pnlHostCategorySpecificEdit.SuspendLayout();
+            this.pnlGiftEdit.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.pnlGiftDetails.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.tpgUnmatched.SuspendLayout();
             this.tpgGifts.SuspendLayout();
             this.tpgGL.SuspendLayout();
@@ -113,31 +141,222 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlContent.AutoSize = true;
+            this.pnlContent.Controls.Add(this.tabTransactions);
+            //
+            // tpgAll
+            //
+            this.tpgAll.Name = "tpgAll";
+            this.tpgAll.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgAll.Controls.Add(this.sptTransactionDetails);
+            //
+            // sptTransactionDetails
+            //
+            this.sptTransactionDetails.Name = "sptTransactionDetails";
+            this.sptTransactionDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sptTransactionDetails.SplitterDistance = 50;
+            this.sptTransactionDetails.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.sptTransactionDetails.Panel1.Controls.Add(this.grdAllTransactions);
+            this.sptTransactionDetails.Panel2.Controls.Add(this.pnlDetails);
+            //
+            // grdAllTransactions
+            //
+            this.grdAllTransactions.Name = "grdAllTransactions";
+            this.grdAllTransactions.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdAllTransactions.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.AllTransactionsFocusedRowChanged);
+            //
+            // pnlDetails
+            //
+            this.pnlDetails.Name = "pnlDetails";
+            this.pnlDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlDetails.AutoSize = true;
+            this.pnlDetails.Controls.Add(this.pnlHostCategorySpecificEdit);
+            this.pnlDetails.Controls.Add(this.rgrTransactionCategory);
+            //
+            // rgrTransactionCategory
+            //
+            this.rgrTransactionCategory.Name = "rgrTransactionCategory";
+            this.rgrTransactionCategory.Dock = System.Windows.Forms.DockStyle.Left;
+            this.rgrTransactionCategory.AutoSize = true;
             //
             // tableLayoutPanel1
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.AutoSize = true;
-            this.pnlContent.Controls.Add(this.tableLayoutPanel1);
+            this.rgrTransactionCategory.Controls.Add(this.tableLayoutPanel1);
             //
-            // pnlStatementInfo
+            // rbtUnmatched
             //
-            this.pnlStatementInfo.Location = new System.Drawing.Point(2,2);
-            this.pnlStatementInfo.Name = "pnlStatementInfo";
-            this.pnlStatementInfo.AutoSize = true;
+            this.rbtUnmatched.Location = new System.Drawing.Point(2,2);
+            this.rbtUnmatched.Name = "rbtUnmatched";
+            this.rbtUnmatched.AutoSize = true;
+            this.rbtUnmatched.CheckedChanged += new System.EventHandler(this.NewTransactionCategory);
+            this.rbtUnmatched.Text = "Unmatched";
+            this.rbtUnmatched.Checked = true;
             //
-            // tpgAll
+            // rbtGift
             //
-            this.tpgAll.Location = new System.Drawing.Point(2,2);
-            this.tpgAll.Name = "tpgAll";
-            this.tpgAll.AutoSize = true;
-            this.tpgAll.Controls.Add(this.grdAllTransactions);
+            this.rbtGift.Location = new System.Drawing.Point(2,2);
+            this.rbtGift.Name = "rbtGift";
+            this.rbtGift.AutoSize = true;
+            this.rbtGift.CheckedChanged += new System.EventHandler(this.NewTransactionCategory);
+            this.rbtGift.Text = "Gift";
             //
-            // grdAllTransactions
+            // rbtGL
             //
-            this.grdAllTransactions.Name = "grdAllTransactions";
-            this.grdAllTransactions.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rbtGL.Location = new System.Drawing.Point(2,2);
+            this.rbtGL.Name = "rbtGL";
+            this.rbtGL.AutoSize = true;
+            this.rbtGL.CheckedChanged += new System.EventHandler(this.NewTransactionCategory);
+            this.rbtGL.Text = "GL";
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.rbtUnmatched, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.rbtGift, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.rbtGL, 0, 2);
+            this.rgrTransactionCategory.Text = "Transaction Category";
+            //
+            // pnlHostCategorySpecificEdit
+            //
+            this.pnlHostCategorySpecificEdit.Name = "pnlHostCategorySpecificEdit";
+            this.pnlHostCategorySpecificEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlHostCategorySpecificEdit.AutoSize = true;
+            this.pnlHostCategorySpecificEdit.Controls.Add(this.pnlGiftEdit);
+            //
+            // pnlGiftEdit
+            //
+            this.pnlGiftEdit.Name = "pnlGiftEdit";
+            this.pnlGiftEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlGiftEdit.AutoSize = true;
+            //
+            // tableLayoutPanel2
+            //
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
+            this.pnlGiftEdit.Controls.Add(this.tableLayoutPanel2);
+            //
+            // txtDonorKey
+            //
+            this.txtDonorKey.Name = "txtDonorKey";
+            this.txtDonorKey.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtDonorKey.AutoSize = true;
+            this.txtDonorKey.ASpecialSetting = true;
+            this.txtDonorKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.txtDonorKey.ButtonWidth = 40;
+            this.txtDonorKey.MaxLength = 32767;
+            this.txtDonorKey.ReadOnly = false;
+            this.txtDonorKey.TextBoxWidth = 80;
+            this.txtDonorKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
+            this.txtDonorKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
+            this.txtDonorKey.PartnerClass = "";
+            this.txtDonorKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtDonorKey.ButtonText = "Find";
+            //
+            // lblDonorKey
+            //
+            this.lblDonorKey.Location = new System.Drawing.Point(2,2);
+            this.lblDonorKey.Name = "lblDonorKey";
+            this.lblDonorKey.AutoSize = true;
+            this.lblDonorKey.Text = "Donor:";
+            this.lblDonorKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // grdGiftDetails
+            //
+            this.grdGiftDetails.Name = "grdGiftDetails";
+            this.grdGiftDetails.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grdGiftDetails.AutoSize = true;
+            this.grdGiftDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.GiftDetailsFocusedRowChanged);
+            //
+            // pnlGiftDetails
+            //
+            this.pnlGiftDetails.Location = new System.Drawing.Point(2,2);
+            this.pnlGiftDetails.Name = "pnlGiftDetails";
+            this.pnlGiftDetails.AutoSize = true;
+            //
+            // tableLayoutPanel3
+            //
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
+            this.pnlGiftDetails.Controls.Add(this.tableLayoutPanel3);
+            //
+            // cmbMotivationDetail
+            //
+            this.cmbMotivationDetail.Location = new System.Drawing.Point(2,2);
+            this.cmbMotivationDetail.Name = "cmbMotivationDetail";
+            this.cmbMotivationDetail.Size = new System.Drawing.Size(300, 28);
+            this.cmbMotivationDetail.SelectedValueChanged += new System.EventHandler(this.MotivationDetailChanged);
+            this.cmbMotivationDetail.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
+            //
+            // lblMotivationDetail
+            //
+            this.lblMotivationDetail.Location = new System.Drawing.Point(2,2);
+            this.lblMotivationDetail.Name = "lblMotivationDetail";
+            this.lblMotivationDetail.AutoSize = true;
+            this.lblMotivationDetail.Text = "Motivation Detail:";
+            this.lblMotivationDetail.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // cmbGiftAccount
+            //
+            this.cmbGiftAccount.Location = new System.Drawing.Point(2,2);
+            this.cmbGiftAccount.Name = "cmbGiftAccount";
+            this.cmbGiftAccount.Size = new System.Drawing.Size(300, 28);
+            this.cmbGiftAccount.Enabled = false;
+            this.cmbGiftAccount.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
+            //
+            // lblGiftAccount
+            //
+            this.lblGiftAccount.Location = new System.Drawing.Point(2,2);
+            this.lblGiftAccount.Name = "lblGiftAccount";
+            this.lblGiftAccount.AutoSize = true;
+            this.lblGiftAccount.Text = "Account:";
+            this.lblGiftAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // cmbGiftCostCentre
+            //
+            this.cmbGiftCostCentre.Location = new System.Drawing.Point(2,2);
+            this.cmbGiftCostCentre.Name = "cmbGiftCostCentre";
+            this.cmbGiftCostCentre.Size = new System.Drawing.Size(300, 28);
+            this.cmbGiftCostCentre.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
+            //
+            // lblGiftCostCentre
+            //
+            this.lblGiftCostCentre.Location = new System.Drawing.Point(2,2);
+            this.lblGiftCostCentre.Name = "lblGiftCostCentre";
+            this.lblGiftCostCentre.AutoSize = true;
+            this.lblGiftCostCentre.Text = "Cost Centre:";
+            this.lblGiftCostCentre.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 3;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.lblMotivationDetail, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblGiftAccount, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.lblGiftCostCentre, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.cmbMotivationDetail, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.cmbGiftAccount, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.cmbGiftCostCentre, 1, 2);
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.lblDonorKey, 0, 0);
+            this.tableLayoutPanel2.SetColumnSpan(this.grdGiftDetails, 2);
+            this.tableLayoutPanel2.Controls.Add(this.grdGiftDetails, 0, 1);
+            this.tableLayoutPanel2.SetColumnSpan(this.pnlGiftDetails, 2);
+            this.tableLayoutPanel2.Controls.Add(this.pnlGiftDetails, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.txtDonorKey, 1, 0);
             this.tpgAll.Text = "All";
             this.tpgAll.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -173,13 +392,6 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tabTransactions.Controls.Add(this.tpgUnmatched);
             this.tabTransactions.Controls.Add(this.tpgGifts);
             this.tabTransactions.Controls.Add(this.tpgGL);
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.pnlStatementInfo, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.tabTransactions, 0, 1);
             //
             // tbbImportNewStatement
             //
@@ -325,20 +537,48 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tpgGL.ResumeLayout(false);
             this.tpgGifts.ResumeLayout(false);
             this.tpgUnmatched.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.pnlGiftDetails.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.pnlGiftEdit.ResumeLayout(false);
+            this.pnlHostCategorySpecificEdit.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.rgrTransactionCategory.ResumeLayout(false);
+            this.pnlDetails.ResumeLayout(false);
+            this.sptTransactionDetails.Panel2.ResumeLayout(false);
+            this.sptTransactionDetails.Panel1.ResumeLayout(false);
+            this.sptTransactionDetails.ResumeLayout(false);
             this.tpgAll.ResumeLayout(false);
             this.tabTransactions.ResumeLayout(false);
-            this.pnlStatementInfo.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
         private System.Windows.Forms.Panel pnlContent;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Panel pnlStatementInfo;
         private Ict.Common.Controls.TTabVersatile tabTransactions;
         private System.Windows.Forms.TabPage tpgAll;
+        private System.Windows.Forms.SplitContainer sptTransactionDetails;
         private Ict.Common.Controls.TSgrdDataGridPaged grdAllTransactions;
+        private System.Windows.Forms.Panel pnlDetails;
+        private System.Windows.Forms.GroupBox rgrTransactionCategory;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.RadioButton rbtUnmatched;
+        private System.Windows.Forms.RadioButton rbtGift;
+        private System.Windows.Forms.RadioButton rbtGL;
+        private System.Windows.Forms.Panel pnlHostCategorySpecificEdit;
+        private System.Windows.Forms.Panel pnlGiftEdit;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtDonorKey;
+        private System.Windows.Forms.Label lblDonorKey;
+        private Ict.Common.Controls.TSgrdDataGridPaged grdGiftDetails;
+        private System.Windows.Forms.Panel pnlGiftDetails;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbMotivationDetail;
+        private System.Windows.Forms.Label lblMotivationDetail;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbGiftAccount;
+        private System.Windows.Forms.Label lblGiftAccount;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbGiftCostCentre;
+        private System.Windows.Forms.Label lblGiftCostCentre;
         private System.Windows.Forms.TabPage tpgUnmatched;
         private System.Windows.Forms.TabPage tpgGifts;
         private System.Windows.Forms.TabPage tpgGL;
