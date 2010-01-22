@@ -1976,6 +1976,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
 
 
         /// generated method from connector
+        public string CreateAnnualGiftReceipts(Int32 ALedgerNumber,
+                                               DateTime AStartDate,
+                                               DateTime AEndDate,
+                                               string AHTMLTemplate)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TReceiptingWebConnector.CreateAnnualGiftReceipts(ALedgerNumber, AStartDate, AEndDate, AHTMLTemplate);
+        }
+
+        /// generated method from connector
         public GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber)
         {
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber);
