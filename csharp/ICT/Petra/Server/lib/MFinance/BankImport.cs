@@ -28,6 +28,7 @@ using System.Data;
 using System.IO;
 using System.Xml;
 using System.Collections.Specialized;
+using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.DB;
@@ -36,6 +37,8 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Server.MFinance.GL;
 
 namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 {
@@ -174,6 +177,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             try
             {
+                AEpStatementAccess.LoadByPrimaryKey(ResultDataset, AStatementKey, Transaction);
+
                 ACostCentreAccess.LoadViaALedger(ResultDataset, ALedgerNumber, Transaction);
 
                 // TODO load Motivation Groups as well
@@ -300,13 +305,87 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         }
 
         /// <summary>
-        /// create a gift batch for the matched gifts
+        /// create a gift batch for the matched gifts, and return the gift batch number
         /// </summary>
         /// <returns>the gift batch number</returns>
         static public Int32 CreateGiftBatch(BankImportTDS AMainDS, Int32 ALedgerNumber, Int32 AGiftBatchNumber)
         {
-            // TODO: create a gift batch and return the gift batch number
-            // or use the preselected gift batch
+            AEpStatementRow stmt = AMainDS.AEpStatement[0];
+
+            // TODO: optional: use the preselected gift batch, AGiftBatchNumber
+
+            Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            if (!TFinancialYear.IsValidPeriod(ALedgerNumber, stmt.Date, out DateEffectivePeriodNumber, out DateEffectiveYearNumber, Transaction))
+            {
+                TLogging.Log(
+                    String.Format("Cannot create a gift batch for date {0} since it is not in an open period of the ledger.",
+                        stmt.Date.ToShortDateString()));
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                return -1;
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            GiftBatchTDS GiftDS = TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber);
+
+            AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
+            giftbatchRow.GlEffectiveDate = stmt.Date;
+            giftbatchRow.BatchDescription = String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString());
+            giftbatchRow.BatchPeriod = DateEffectivePeriodNumber;
+            giftbatchRow.BatchYear = DateEffectiveYearNumber;
+
+            foreach (AEpTransactionRow transactionRow in AMainDS.AEpTransaction.Rows)
+            {
+                DataView v = AMainDS.AEpMatch.DefaultView;
+                v.RowFilter = AEpMatchTable.GetActionDBName() + " = '" + MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT + "' and " +
+                              AEpMatchTable.GetMatchTextDBName() + " = '" + transactionRow.MatchText + "'";
+
+                if (v.Count > 0)
+                {
+                    AGiftRow gift = GiftDS.AGift.NewRowTyped();
+                    gift.LedgerNumber = giftbatchRow.LedgerNumber;
+                    gift.BatchNumber = giftbatchRow.BatchNumber;
+                    gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
+                    giftbatchRow.LastGiftNumber++;
+
+                    AEpMatchRow match = (AEpMatchRow)v[0].Row;
+                    gift.DonorKey = match.DonorKey;
+                    GiftDS.AGift.Rows.Add(gift);
+
+                    foreach (DataRowView r in v)
+                    {
+                        match = (AEpMatchRow)r.Row;
+
+                        AGiftDetailRow detail = GiftDS.AGiftDetail.NewRowTyped();
+                        detail.LedgerNumber = gift.LedgerNumber;
+                        detail.BatchNumber = gift.BatchNumber;
+                        detail.GiftTransactionNumber = gift.GiftTransactionNumber;
+                        detail.DetailNumber = gift.LastDetailNumber + 1;
+                        gift.LastDetailNumber++;
+
+                        detail.GiftTransactionAmount = match.GiftTransactionAmount;
+                        detail.MotivationGroupCode = match.MotivationGroupCode;
+                        detail.MotivationDetailCode = match.MotivationDetailCode;
+                        detail.GiftCommentOne = transactionRow.Description;
+                        detail.CostCentreCode = match.CostCentreCode;
+
+                        GiftDS.AGiftDetail.Rows.Add(detail);
+                    }
+                }
+            }
+
+            TVerificationResultCollection VerificationResult;
+
+            TSubmitChangesResult result = TTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult);
+
+            if (result == TSubmitChangesResult.scrOK)
+            {
+                return giftbatchRow.BatchNumber;
+            }
+
+            TLogging.Log("Problems storing Gift Batch");
             return -1;
         }
 

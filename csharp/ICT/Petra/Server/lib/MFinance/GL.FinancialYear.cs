@@ -44,11 +44,17 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADateToTest"></param>
         /// <param name="APeriodNumber"></param>
+        /// <param name="AYearNr"></param>
         /// <param name="ATransaction"></param>
         /// <returns></returns>
-        public static bool IsValidPeriod(Int32 ALedgerNumber, DateTime ADateToTest, out Int32 APeriodNumber, TDBTransaction ATransaction)
+        public static bool IsValidPeriod(Int32 ALedgerNumber,
+            DateTime ADateToTest,
+            out Int32 APeriodNumber,
+            out Int32 AYearNr,
+            TDBTransaction ATransaction)
         {
             APeriodNumber = -1;
+            AYearNr = -1;
             AAccountingPeriodTable table = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, ATransaction);
 
             foreach (AAccountingPeriodRow row in table.Rows)
@@ -63,6 +69,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             && (row.AccountingPeriodNumber <= LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods)))
                     {
                         APeriodNumber = row.AccountingPeriodNumber;
+                        AYearNr = LedgerTable[0].CurrentFinancialYear;
                         return true;
                     }
                 }

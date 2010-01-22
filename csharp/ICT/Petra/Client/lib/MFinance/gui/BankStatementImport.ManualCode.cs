@@ -67,6 +67,9 @@ namespace Ict.Petra.Client.MFinance.Gui
 
         private void SelectBankStatement(System.Object sender, EventArgs e)
         {
+            // TODO: check if we want to save the changed matches?
+            SaveMatches(null, null);
+
             // load the transactions of the selected statement, and the matches
             FMainDS =
                 TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(
@@ -425,6 +428,21 @@ namespace Ict.Petra.Client.MFinance.Gui
 
         private void CreateGiftBatch(System.Object sender, EventArgs e)
         {
+            GetValuesFromScreen();
+
+            // TODO: should we first ask? also when closing the window?
+            SaveMatches(null, null);
+
+            Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS, FLedgerNumber, -1);
+
+            if (GiftBatchNumber != -1)
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("Please check Gift Batch {0}"), GiftBatchNumber));
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("Problem: No gift batch has been created"));
+            }
         }
     }
 }

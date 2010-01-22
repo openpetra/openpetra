@@ -741,6 +741,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
 
         private BankImportTDSAGiftDetailTable TableAGiftDetail;
         private BankImportTDSPBankingDetailsTable TablePBankingDetails;
+        private AEpStatementTable TableAEpStatement;
         private AEpTransactionTable TableAEpTransaction;
         private AEpMatchTable TableAEpMatch;
         private ACostCentreTable TableACostCentre;
@@ -779,6 +780,15 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             get
             {
                 return this.TablePBankingDetails;
+            }
+        }
+
+        /// auto generated
+        public AEpStatementTable AEpStatement
+        {
+            get
+            {
+                return this.TableAEpStatement;
             }
         }
 
@@ -829,6 +839,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         {
             this.Tables.Add(new BankImportTDSAGiftDetailTable("AGiftDetail"));
             this.Tables.Add(new BankImportTDSPBankingDetailsTable("PBankingDetails"));
+            this.Tables.Add(new AEpStatementTable("AEpStatement"));
             this.Tables.Add(new AEpTransactionTable("AEpTransaction"));
             this.Tables.Add(new AEpMatchTable("AEpMatch"));
             this.Tables.Add(new ACostCentreTable("ACostCentre"));
@@ -845,6 +856,10 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             if ((ds.Tables.IndexOf("PBankingDetails") != -1))
             {
                 this.Tables.Add(new BankImportTDSPBankingDetailsTable("PBankingDetails"));
+            }
+            if ((ds.Tables.IndexOf("AEpStatement") != -1))
+            {
+                this.Tables.Add(new AEpStatementTable("AEpStatement"));
             }
             if ((ds.Tables.IndexOf("AEpTransaction") != -1))
             {
@@ -877,6 +892,10 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             {
                 this.TablePBankingDetails.InitVars();
             }
+            if ((this.TableAEpStatement != null))
+            {
+                this.TableAEpStatement.InitVars();
+            }
             if ((this.TableAEpTransaction != null))
             {
                 this.TableAEpTransaction.InitVars();
@@ -901,6 +920,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.DataSetName = "BankImportTDS";
             this.TableAGiftDetail = ((BankImportTDSAGiftDetailTable)(this.Tables["AGiftDetail"]));
             this.TablePBankingDetails = ((BankImportTDSPBankingDetailsTable)(this.Tables["PBankingDetails"]));
+            this.TableAEpStatement = ((AEpStatementTable)(this.Tables["AEpStatement"]));
             this.TableAEpTransaction = ((AEpTransactionTable)(this.Tables["AEpTransaction"]));
             this.TableAEpMatch = ((AEpMatchTable)(this.Tables["AEpMatch"]));
             this.TableACostCentre = ((ACostCentreTable)(this.Tables["ACostCentre"]));
@@ -924,6 +944,20 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 this.FConstraints.Add(new TTypedConstraint("FKEpMatch5", "ACostCentre", new string[] {
                                 "a_ledger_number_i", "a_cost_centre_code_c"}, "AEpMatch", new string[] {
                                 "a_ledger_number_i", "a_cost_centre_code_c"}));
+            }
+            if (((this.TablePBankingDetails != null)
+                        && (this.TableAEpStatement != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKEpStatement1", "PBankingDetails", new string[] {
+                                "p_banking_details_key_i"}, "AEpStatement", new string[] {
+                                "a_bank_account_key_i"}));
+            }
+            if (((this.TableAEpStatement != null)
+                        && (this.TableAEpTransaction != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKEpTransaction1", "AEpStatement", new string[] {
+                                "a_statement_key_i"}, "AEpTransaction", new string[] {
+                                "a_statement_key_i"}));
             }
             if (((this.TableAEpMatch != null)
                         && (this.TableAEpTransaction != null)))
