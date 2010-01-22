@@ -31,6 +31,7 @@ using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.MFinance.Logic;
@@ -54,6 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
 
         private BankImportTDS FMainDS = new BankImportTDS();
+        private DataView FMatchView = null;
 
         private void InitializeManualCode()
         {
@@ -84,6 +86,16 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             TFinanceControls.InitialiseMotivationDetailList(ref cmbMotivationDetail, FLedgerNumber, true);
             TFinanceControls.InitialiseCostCentreList(ref cmbGiftCostCentre, FLedgerNumber, true, false, true, true);
+            TFinanceControls.InitialiseAccountList(ref cmbGiftAccount, FLedgerNumber, true, false, true, false);
+
+            grdGiftDetails.Columns.Clear();
+            grdGiftDetails.AddTextColumn(Catalog.GetString("Motivation"), FMainDS.AEpMatch.ColumnMotivationDetailCode, 70);
+            grdGiftDetails.AddTextColumn(Catalog.GetString("Cost Centre"), FMainDS.AEpMatch.ColumnCostCentreCode, 150);
+            grdGiftDetails.AddTextColumn(Catalog.GetString("Amount"), FMainDS.AEpMatch.ColumnGiftTransactionAmount, 70);
+            FMatchView = FMainDS.AEpMatch.DefaultView;
+            FMatchView.AllowNew = false;
+            grdGiftDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMatchView);
+            grdGiftDetails.AutoSizeCells();
         }
 
         private void PopulateStatementCombobox()
@@ -102,6 +114,8 @@ namespace Ict.Petra.Client.MFinance.Gui
             tbcSelectStatement.ComboBox.ValueMember = AEpStatementTable.GetStatementKeyDBName();
             tbcSelectStatement.ComboBox.DataSource = stmts.DefaultView;
             tbcSelectStatement.ComboBox.EndUpdate();
+
+            tbcSelectStatement.ComboBox.SelectedIndex = -1;
         }
 
         private void ImportNewStatement(System.Object sender, EventArgs e)
@@ -141,13 +155,15 @@ namespace Ict.Petra.Client.MFinance.Gui
 
         private void MotivationDetailChanged(System.Object sender, EventArgs e)
         {
+            cmbGiftCostCentre.Enabled = false;
+            cmbGiftAccount.Enabled = false;
+
             // look for the motivation detail.
             // if the associated cost centre is a summary cost centre,
             // the user can select from a list of the reporting costcentres
             // else make the costcentre readonly.
             if (cmbMotivationDetail.SelectedIndex == -1)
             {
-                cmbGiftCostCentre.Enabled = false;
                 return;
             }
 
@@ -163,6 +179,8 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)v[0].Row;
 
+            cmbGiftAccount.Filter = AAccountTable.GetAccountCodeDBName() + " = '" + motivationDetailRow.AccountCode + "'";
+
             v = new DataView(FMainDS.ACostCentre);
             v.RowFilter = ACostCentreTable.GetCostCentreCodeDBName() +
                           " = '" + motivationDetailRow.CostCentreCode + "'";
@@ -177,28 +195,58 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             if (costCentreRow.PostingCostCentreFlag)
             {
-                cmbGiftCostCentre.SelectedValue = costCentreRow.CostCentreCode;
-                cmbGiftCostCentre.Enabled = false;
+                cmbGiftCostCentre.Filter = ACostCentreTable.GetCostCentreCodeDBName() +
+                                           " = '" + costCentreRow.CostCentreCode + "'";
             }
             else
             {
-                FMainDS.ACostCentre.DefaultView.RowFilter = ACostCentreTable.GetCostCentreToReportToDBName() +
-                                                            " = '" + costCentreRow.CostCentreCode + "'";
+                cmbGiftCostCentre.Filter = ACostCentreTable.GetCostCentreToReportToDBName() +
+                                           " = '" + costCentreRow.CostCentreCode + "'";
                 cmbGiftCostCentre.Enabled = true;
-                cmbGiftCostCentre.Update();
             }
         }
 
         private void NewTransactionCategory(System.Object sender, EventArgs e)
         {
+            GetValuesFromScreen();
+            CurrentlySelectedMatch = null;
+
+            rbtGiftWasChecked = rbtGift.Checked;
+
             pnlGiftEdit.Visible = rbtGift.Checked;
 
             if (rbtGift.Checked)
             {
-                grdGiftDetails.Columns.Clear();
-                grdGiftDetails.AddTextColumn(Catalog.GetString("Motivation"), FMainDS.AEpMatch.ColumnMotivationDetailCode, 70);
-                grdGiftDetails.AddTextColumn(Catalog.GetString("Cost Centre"), FMainDS.AEpMatch.ColumnCostCentreCode, 150);
-                grdGiftDetails.AddTextColumn(Catalog.GetString("Amount"), FMainDS.AEpMatch.ColumnGiftTransactionAmount, 70);
+                // select first detail
+                grdGiftDetails.Selection.ResetSelection(false);
+                grdGiftDetails.Selection.SelectRow(1, true);
+                GiftDetailsFocusedRowChanged(null, null);
+                AEpMatchRow match = GetSelectedMatch();
+                txtDonorKey.Text = StringHelper.FormatStrToPartnerKeyString(match.DonorKey.ToString());
+            }
+        }
+
+        private AEpMatchRow CurrentlySelectedMatch = null;
+        private bool rbtGiftWasChecked = false;
+
+        /// store current selections in the a_ep_match table
+        private void GetValuesFromScreen()
+        {
+            if (CurrentlySelectedMatch == null)
+            {
+                return;
+            }
+
+            if (rbtGiftWasChecked)
+            {
+                for (int i = 0; i < FMatchView.Count; i++)
+                {
+                    AEpMatchRow match = (AEpMatchRow)FMatchView[i].Row;
+                    match.DonorKey = Convert.ToInt64(txtDonorKey.Text);
+                    match.Action = MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT;
+                }
+
+                GetGiftDetailValuesFromScreen();
             }
         }
 
@@ -206,16 +254,103 @@ namespace Ict.Petra.Client.MFinance.Gui
         {
             pnlDetails.Visible = true;
 
-            // TODO store current selections in the a_ep_match table
+            GetValuesFromScreen();
 
-            // TODO load selections from the a_ep_match table for the new row
+            CurrentlySelectedMatch = null;
+
+            // load selections from the a_ep_match table for the new row
+            FMatchView.RowFilter = AEpMatchTable.GetMatchTextDBName() +
+                                   " = '" + ((AEpTransactionRow)grdAllTransactions.SelectedDataRowsAsDataRowView[0].Row).MatchText + "'";
+
+            AEpMatchRow match = (AEpMatchRow)FMatchView[0].Row;
+
+            if (match.Action == MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT)
+            {
+                rbtGift.Checked = true;
+                DisplayGiftDetails();
+            }
+            else
+            {
+                rbtUnmatched.Checked = true;
+            }
+
+            rbtGiftWasChecked = rbtGift.Checked;
         }
 
         private void GiftDetailsFocusedRowChanged(System.Object sender, EventArgs e)
         {
+            GetGiftDetailValuesFromScreen();
+            CurrentlySelectedMatch = GetSelectedMatch();
+            DisplayGiftDetails();
+        }
+
+        private AEpMatchRow GetSelectedMatch()
+        {
+            DataRowView[] SelectedGridRow = grdGiftDetails.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
+            {
+                return (AEpMatchRow)SelectedGridRow[0].Row;
+            }
+
+            return null;
+        }
+
+        private void DisplayGiftDetails()
+        {
+            AEpMatchRow matchRow = GetSelectedMatch();
+
+            if (matchRow != null)
+            {
+                txtAmount.Text = matchRow.GiftTransactionAmount.ToString();
+
+                if (matchRow.IsMotivationDetailCodeNull())
+                {
+                    cmbMotivationDetail.SelectedIndex = -1;
+                }
+                else
+                {
+                    cmbMotivationDetail.SetSelectedString(matchRow.MotivationDetailCode);
+                }
+
+                if (matchRow.IsAccountCodeNull())
+                {
+                    cmbGiftAccount.SelectedIndex = -1;
+                }
+                else
+                {
+                    cmbGiftAccount.SetSelectedString(matchRow.AccountCode);
+                }
+
+                if (matchRow.IsCostCentreCodeNull())
+                {
+                    cmbGiftCostCentre.SelectedIndex = -1;
+                }
+                else
+                {
+                    cmbGiftCostCentre.SetSelectedString(matchRow.CostCentreCode);
+                }
+            }
+        }
+
+        private void GetGiftDetailValuesFromScreen()
+        {
+            if (CurrentlySelectedMatch != null)
+            {
+                // TODO: support more motivation groups.
+                CurrentlySelectedMatch.MotivationGroupCode = FMainDS.AMotivationDetail[0].MotivationGroupCode;
+                CurrentlySelectedMatch.MotivationDetailCode = cmbMotivationDetail.GetSelectedString();
+                CurrentlySelectedMatch.AccountCode = cmbGiftAccount.GetSelectedString();
+                CurrentlySelectedMatch.CostCentreCode = cmbGiftCostCentre.GetSelectedString();
+                CurrentlySelectedMatch.GiftTransactionAmount = Convert.ToDouble(txtAmount.Text);
+            }
         }
 
         private void AddGiftDetail(System.Object sender, EventArgs e)
+        {
+        }
+
+        private void RemoveGiftDetail(System.Object sender, EventArgs e)
         {
         }
     }

@@ -69,7 +69,8 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.rgrTransactionCategory.Text = Catalog.GetString("Transaction Category");
       this.txtDonorKey.ButtonText = Catalog.GetString("Find");
       this.btnAddGiftDetail.Text = Catalog.GetString("&Add");
-      this.btnRemoveGiftDetail.Text = Catalog.GetString("Remove Gift Detail");
+      this.btnRemoveGiftDetail.Text = Catalog.GetString("&Delete");
+      this.lblAmount.Text = Catalog.GetString("Amount:");
       this.lblMotivationDetail.Text = Catalog.GetString("Motivation Detail:");
       this.lblGiftAccount.Text = Catalog.GetString("Account:");
       this.lblGiftCostCentre.Text = Catalog.GetString("Cost Centre:");
@@ -165,6 +166,10 @@ namespace Ict.Petra.Client.MFinance.Gui
         if (e.ActionName == "actAddGiftDetail")
         {
             btnAddGiftDetail.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actRemoveGiftDetail")
+        {
+            btnRemoveGiftDetail.Enabled = e.Enabled;
         }
         if (e.ActionName == "actImportNewStatement")
         {

@@ -184,60 +184,73 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 // load the matches or create new matches
                 foreach (AEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
                 {
-                    if (!row.IsEpMatchKeyNull())
+                    // find a match with the same match text, or create a new one
+                    row.MatchText = CalculateMatchText(row);
+
+                    AEpMatchTable tempTable = new AEpMatchTable();
+                    AEpMatchRow tempRow = tempTable.NewRowTyped(false);
+                    tempRow.MatchText = row.MatchText;
+
+                    tempTable = AEpMatchAccess.LoadUsingTemplate(tempRow, Transaction);
+
+                    if (tempTable.Count > 0)
                     {
-                        // load existing match
-                        AEpMatchTable tempTable = AEpMatchAccess.LoadByPrimaryKey(row.EpMatchKey, Transaction);
+                        // update the recent date
+                        bool update = false;
+
+                        foreach (AEpMatchRow tempRow2 in tempTable.Rows)
+                        {
+                            if (tempRow2.RecentMatch < row.DateEffective)
+                            {
+                                tempRow2.RecentMatch = row.DateEffective;
+                                update = true;
+                            }
+                        }
+
+                        if (update)
+                        {
+                            AEpMatchAccess.SubmitChanges(tempTable, Transaction, out VerificationResult);
+                        }
+
+                        row.EpMatchKey = tempTable[0].EpMatchKey;
 
                         ResultDataset.AEpMatch.Merge(tempTable);
                     }
                     else
                     {
-                        // find a match with the same match text, or create a new one
-                        string matchText = CalculateMatchText(row);
+                        // create new match
+                        tempRow = tempTable.NewRowTyped(true);
+                        tempRow.EpMatchKey = -1;
+                        tempRow.Detail = 0;
+                        tempRow.MatchText = row.MatchText;
+                        tempRow.GiftTransactionAmount = row.TransactionAmount;
+                        tempRow.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
 
-                        AEpMatchTable tempTable = new AEpMatchTable();
-                        AEpMatchRow tempRow = tempTable.NewRowTyped(false);
-                        tempRow.MatchText = matchText;
-                        tempTable = AEpMatchAccess.LoadUsingTemplate(tempRow, Transaction);
+                        // fuzzy search for the partner. only return if unique result
+                        string sql =
+                            "SELECT p_partner_key_n, p_partner_short_name_c FROM p_partner WHERE p_partner_short_name_c LIKE '{0}%' OR p_partner_short_name_c LIKE '{1}%'";
+                        string[] names = row.AccountName.Split(new char[] { ' ' });
 
-                        if (tempTable.Count > 0)
+                        if (names.Length > 1)
                         {
-                            // update the recent date
-                            bool update = false;
+                            string optionShortName1 = names[0] + ", " + names[1];
+                            string optionShortName2 = names[1] + ", " + names[0];
 
-                            foreach (AEpMatchRow tempRow2 in tempTable.Rows)
+                            DataTable partner = DBAccess.GDBAccessObj.SelectDT(String.Format(sql,
+                                    optionShortName1,
+                                    optionShortName2), "partner", Transaction);
+
+                            if (partner.Rows.Count == 1)
                             {
-                                if (tempRow2.RecentMatch < row.DateEffective)
-                                {
-                                    tempRow2.RecentMatch = row.DateEffective;
-                                    update = true;
-                                }
+                                tempRow.DonorKey = Convert.ToInt64(partner.Rows[0][0]);
                             }
-
-                            if (update)
-                            {
-                                AEpMatchAccess.SubmitChanges(tempTable, Transaction, out VerificationResult);
-                            }
-
-                            row.EpMatchKey = tempTable[0].EpMatchKey;
-
-                            ResultDataset.AEpMatch.Merge(tempTable);
                         }
-                        else
-                        {
-                            // create new match
-                            tempRow = tempTable.NewRowTyped(true);
-                            tempRow.EpMatchKey = -1;
-                            tempRow.Detail = 0;
-                            tempRow.MatchText = matchText;
-                            tempRow.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
-                            tempTable.Rows.Add(tempRow);
-                            AEpMatchAccess.SubmitChanges(tempTable, Transaction, out VerificationResult);
-                            row.EpMatchKey = tempTable[0].EpMatchKey;
 
-                            ResultDataset.AEpMatch.Merge(tempTable);
-                        }
+                        tempTable.Rows.Add(tempRow);
+                        AEpMatchAccess.SubmitChanges(tempTable, Transaction, out VerificationResult);
+                        row.EpMatchKey = tempTable[0].EpMatchKey;
+
+                        ResultDataset.AEpMatch.Merge(tempTable);
                     }
                 }
 
@@ -247,9 +260,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             }
             catch (Exception e)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                TLogging.Log("Exception in BankImport, GetBankStatementTransactionsAndMatches; " + e.Message);
+                TLogging.Log(e.GetType().ToString() + " in BankImport, GetBankStatementTransactionsAndMatches; " + e.Message);
                 TLogging.Log(e.StackTrace);
+                DBAccess.GDBAccessObj.RollbackTransaction();
                 throw e;
             }
 

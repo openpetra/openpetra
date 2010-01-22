@@ -448,7 +448,7 @@ namespace Ict.Common
         /// constructor
         /// </summary>
         /// <param name="msg">Message</param>
-        public EDBConcurrencyException(String msg)
+        public EDBConcurrencyException(String msg) : base(msg)
         {
         }
 
@@ -481,12 +481,12 @@ namespace Ict.Common
         /// <param name="ALastModificationUser">who has changed last</param>
         /// <param name="ALastModification">when was the last change</param>
         public EDBConcurrencyException(String msg, String ADBOperation, String ADBTable, String ALastModificationUser, DateTime ALastModification)
+            : base(msg)
         {
             FDBOperation = ADBOperation;
             FDBTable = ADBTable;
             FLastModificationUser = ALastModificationUser;
             FLastModification = ALastModification;
-            new EDBConcurrencyException(msg);
         }
 
         /// <summary>
@@ -527,6 +527,24 @@ namespace Ict.Common
             String ADBTable,
             String ALastModificationUser,
             DateTime ALastModification) : base(msg, ADBOperation, ADBTable, ALastModificationUser, ALastModification)
+        {
+        }
+
+        /// <summary>
+        /// constructor for serialization
+        /// </summary>
+        /// <param name="info">for serialization</param>
+        /// <param name="context">for serialization</param>
+        public EDBConcurrencyRowDeletedException(SerializationInfo info, StreamingContext context)
+        {
+        }
+
+        /// <summary>
+        /// for serialization
+        /// </summary>
+        /// <param name="info">for serialization</param>
+        /// <param name="context">for serialization</param>
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
         }
     }

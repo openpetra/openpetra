@@ -4720,6 +4720,10 @@
                 format="9999999"
                 label="order"
                 notnull="yes"/>
+    <tablefield name="a_match_text_c"
+                type="varchar"
+                format="X(50)"
+                descr="this is a calculated text that uniquely identifies this transaction so that it can be recognised next month. TODO: should have a link table a_ep_match between a_ep_transaction and a_ep_match_detail"/>
     <tablefield name="a_account_name_c"
                 type="varchar"
                 descr="This can be a summary of title, first name, last name etc. of the other party"

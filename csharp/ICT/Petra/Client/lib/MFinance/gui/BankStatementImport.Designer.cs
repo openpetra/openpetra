@@ -91,6 +91,8 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.btnRemoveGiftDetail = new System.Windows.Forms.Button();
             this.pnlEditGiftDetail = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtAmount = new System.Windows.Forms.TextBox();
+            this.lblAmount = new System.Windows.Forms.Label();
             this.cmbMotivationDetail = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblMotivationDetail = new System.Windows.Forms.Label();
             this.cmbGiftAccount = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
@@ -298,7 +300,8 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.btnRemoveGiftDetail.Location = new System.Drawing.Point(2,2);
             this.btnRemoveGiftDetail.Name = "btnRemoveGiftDetail";
             this.btnRemoveGiftDetail.AutoSize = true;
-            this.btnRemoveGiftDetail.Text = "Remove Gift Detail";
+            this.btnRemoveGiftDetail.Click += new System.EventHandler(this.RemoveGiftDetail);
+            this.btnRemoveGiftDetail.Text = "&Delete";
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 2;
@@ -319,6 +322,20 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.AutoSize = true;
             this.pnlEditGiftDetail.Controls.Add(this.tableLayoutPanel3);
+            //
+            // txtAmount
+            //
+            this.txtAmount.Location = new System.Drawing.Point(2,2);
+            this.txtAmount.Name = "txtAmount";
+            this.txtAmount.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblAmount
+            //
+            this.lblAmount.Location = new System.Drawing.Point(2,2);
+            this.lblAmount.Name = "lblAmount";
+            this.lblAmount.AutoSize = true;
+            this.lblAmount.Text = "Amount:";
+            this.lblAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // cmbMotivationDetail
             //
@@ -369,16 +386,19 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 3;
+            this.tableLayoutPanel3.RowCount = 4;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Controls.Add(this.lblMotivationDetail, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblGiftAccount, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.lblGiftCostCentre, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.cmbMotivationDetail, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.cmbGiftAccount, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.cmbGiftCostCentre, 1, 2);
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.lblAmount, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblMotivationDetail, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.lblGiftAccount, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.lblGiftCostCentre, 0, 3);
+            this.tableLayoutPanel3.Controls.Add(this.txtAmount, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.cmbMotivationDetail, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.cmbGiftAccount, 1, 2);
+            this.tableLayoutPanel3.Controls.Add(this.cmbGiftCostCentre, 1, 3);
             this.tpgAll.Text = "All";
             this.tpgAll.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -600,6 +620,8 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.Button btnRemoveGiftDetail;
         private System.Windows.Forms.Panel pnlEditGiftDetail;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.TextBox txtAmount;
+        private System.Windows.Forms.Label lblAmount;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbMotivationDetail;
         private System.Windows.Forms.Label lblMotivationDetail;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbGiftAccount;
