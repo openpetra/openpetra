@@ -41,6 +41,7 @@ OpenPetra:
                     Gift:
                         EnteringGifts: {Description: Just a prototype at the moment, ActionOpenScreen=TFrmBankStatementImport}
                         GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=Gift.TFrmGiftBatch}
+                        PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=Gift.TFrmGiftReceiptPrinting}
                     AP: {Label=Accounts Payable}
                         AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=AccountsPayable.TFrmAPMain}
                     Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}

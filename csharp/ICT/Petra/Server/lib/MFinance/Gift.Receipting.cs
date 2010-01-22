@@ -127,7 +127,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
-            return ResultDocument;
+            return ResultDocument.Replace("<pagebreak>", "</body><body>");
         }
 
         private static string GetStringOrEmpty(object obj)
@@ -161,8 +161,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             string msg = AHTMLTemplate;
-            msg = msg.Replace("#DONORTITLE", Calculations.FormatShortName(ADonorName, eShortNameFormat.eOnlyTitle));
-            msg = msg.Replace("#DONORNAME", Calculations.FormatShortName(ADonorName, eShortNameFormat.eReverseWithoutTitle));
+            msg = msg.Replace("#TITLE", Calculations.FormatShortName(ADonorName, eShortNameFormat.eOnlyTitle));
+            msg = msg.Replace("#NAME", Calculations.FormatShortName(ADonorName, eShortNameFormat.eReverseWithoutTitle));
             msg = msg.Replace("#STREETNAME", GetStringOrEmpty(Location[0].StreetName));
             msg = msg.Replace("#LOCATION", GetStringOrEmpty(Location[0].Locality));
             msg = msg.Replace("#ADDRESS3", GetStringOrEmpty(Location[0].Address3));
@@ -187,6 +187,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string RowTemplate;
             msg = TPrinterHtml.GetTableRow(msg, "#AMOUNT", out RowTemplate);
             string rowTexts = "";
+            double sum = 0;
 
             foreach (DataRow rowGifts in ADonations.Rows)
             {
@@ -195,6 +196,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 string commentOne = rowGifts["CommentOne"].ToString();
                 string accountDesc = rowGifts["AccountDesc"].ToString();
                 string costcentreDesc = rowGifts["CostCentreDesc"].ToString();
+                sum += amount;
 
                 rowTexts += RowTemplate.
                             Replace("#DONATIONDATE", dateEffective.ToShortDateString()).
@@ -203,6 +205,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             Replace("#ACCOUNTDESC", accountDesc).
                             Replace("#COSTCENTREDESC", costcentreDesc);
             }
+
+            msg = msg.Replace("#OVERALLAMOUNT", String.Format("{0:C}", sum));
 
             return msg.Replace("#ROWTEMPLATE", rowTexts);
         }

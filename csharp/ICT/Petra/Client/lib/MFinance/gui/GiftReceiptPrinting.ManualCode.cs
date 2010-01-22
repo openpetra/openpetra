@@ -1,0 +1,122 @@
+﻿/*************************************************************************
+ *
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * @Authors:
+ *       timop
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
+using System;
+using System.Windows.Forms;
+using System.IO;
+using System.Xml;
+using System.Drawing.Printing;
+using Mono.Unix;
+using Ict.Common.Printing;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
+
+namespace Ict.Petra.Client.MFinance.Gui.Gift
+{
+    public partial class TFrmGiftReceiptPrinting
+    {
+        private Int32 FLedgerNumber;
+
+        /// <summary>
+        /// use this ledger
+        /// </summary>
+        public Int32 LedgerNumber
+        {
+            set
+            {
+                FLedgerNumber = value;
+            }
+        }
+
+        private void InitializeManualCode()
+        {
+            dtpStartDate.Value = new DateTime(DateTime.Now.Year - 1, 1, 1);
+            dtpEndDate.Value = new DateTime(DateTime.Now.Year - 1, 12, 31);
+        }
+
+        private Int32 FNumberOfPages = 0;
+        private TGfxPrinter FGfxPrinter = null;
+
+        private void GenerateLetters(System.Object sender, EventArgs e)
+        {
+            System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
+            bool printerInstalled = printDocument.PrinterSettings.IsValid;
+
+            if (!printerInstalled)
+            {
+                MessageBox.Show(Catalog.GetString("There is no printer, so printing is not possible"));
+                return;
+            }
+
+            OpenFileDialog DialogOpen = new OpenFileDialog();
+
+            DialogOpen.Filter = Catalog.GetString("HTML file (*.html)|*.html;*.htm");
+            DialogOpen.RestoreDirectory = true;
+            DialogOpen.Title = Catalog.GetString("Select the template for the gift receipt");
+
+            if (DialogOpen.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            string letterTemplateFilename = DialogOpen.FileName;
+
+            StreamReader sr = new StreamReader(letterTemplateFilename);
+
+            string htmlTemplate = sr.ReadToEnd();
+
+            sr.Close();
+
+            string AllLetters = TRemote.MFinance.Gift.WebConnectors.CreateAnnualGiftReceipts(FLedgerNumber,
+                dtpStartDate.Value,
+                dtpEndDate.Value,
+                htmlTemplate);
+
+            FGfxPrinter = new TGfxPrinter(printDocument);
+            try
+            {
+                TPrinterHtml htmlPrinter = new TPrinterHtml(AllLetters,
+                    System.IO.Path.GetDirectoryName(letterTemplateFilename),
+                    FGfxPrinter);
+                FGfxPrinter.Init(eOrientation.ePortrait, htmlPrinter);
+                this.ppvLetters.InvalidatePreview();
+                this.ppvLetters.Document = FGfxPrinter.Document;
+                this.ppvLetters.Zoom = 1;
+                FGfxPrinter.Document.EndPrint += new PrintEventHandler(this.EndPrint);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void EndPrint(object ASender, PrintEventArgs AEv)
+        {
+            FNumberOfPages = FGfxPrinter.NumberOfPages;
+
+            //RefreshPagePosition();
+        }
+    }
+}

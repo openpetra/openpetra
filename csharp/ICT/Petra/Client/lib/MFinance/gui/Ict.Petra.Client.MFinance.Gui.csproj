@@ -51,6 +51,9 @@
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Common.Printing">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Printing.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common.Verification">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
     </Reference>
@@ -213,6 +216,13 @@
     <Compile Include="GiftBatch.ManualCode.cs">
       <DependentUpon>GiftBatch.cs</DependentUpon>
     </Compile>
+    <Compile Include="GiftReceiptPrinting.cs" />
+    <Compile Include="GiftReceiptPrinting.Designer.cs">
+      <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GiftReceiptPrinting.ManualCode.cs">
+      <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>
+    </Compile>
     <Compile Include="GLAccountHierarchy.cs" />
     <Compile Include="GLAccountHierarchy.Designer.cs">
       <DependentUpon>GLAccountHierarchy.cs</DependentUpon>
@@ -314,6 +324,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GiftBatch.resx">
       <DependentUpon>GiftBatch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GiftReceiptPrinting.resx">
+      <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GLAccountHierarchy.resx">
       <DependentUpon>GLAccountHierarchy.cs</DependentUpon>
