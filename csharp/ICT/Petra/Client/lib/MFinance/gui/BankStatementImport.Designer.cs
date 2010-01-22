@@ -106,6 +106,9 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tbbImportNewStatement = new System.Windows.Forms.ToolStripButton();
             this.tbbSeparator0 = new System.Windows.Forms.ToolStripSeparator();
             this.tbcSelectStatement = new System.Windows.Forms.ToolStripComboBox();
+            this.tbbSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbbSaveMatches = new System.Windows.Forms.ToolStripButton();
+            this.tbbCreateGiftBatch = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniImportNewStatement = new System.Windows.Forms.ToolStripMenuItem();
@@ -453,6 +456,26 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tbcSelectStatement.Name = "tbcSelectStatement";
             this.tbcSelectStatement.AutoSize = true;
             //
+            // tbbSeparator1
+            //
+            this.tbbSeparator1.Name = "tbbSeparator1";
+            this.tbbSeparator1.AutoSize = true;
+            this.tbbSeparator1.Text = "Separator";
+            //
+            // tbbSaveMatches
+            //
+            this.tbbSaveMatches.Name = "tbbSaveMatches";
+            this.tbbSaveMatches.AutoSize = true;
+            this.tbbSaveMatches.Click += new System.EventHandler(this.SaveMatches);
+            this.tbbSaveMatches.Text = "Save Matches";
+            //
+            // tbbCreateGiftBatch
+            //
+            this.tbbCreateGiftBatch.Name = "tbbCreateGiftBatch";
+            this.tbbCreateGiftBatch.AutoSize = true;
+            this.tbbCreateGiftBatch.Click += new System.EventHandler(this.CreateGiftBatch);
+            this.tbbCreateGiftBatch.Text = "Create Gift Batch";
+            //
             // tbrMain
             //
             this.tbrMain.Name = "tbrMain";
@@ -461,7 +484,10 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbImportNewStatement,
                         tbbSeparator0,
-                        tbcSelectStatement});
+                        tbcSelectStatement,
+                        tbbSeparator1,
+                        tbbSaveMatches,
+                        tbbCreateGiftBatch});
             //
             // mniImportNewStatement
             //
@@ -635,6 +661,9 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.ToolStripButton tbbImportNewStatement;
         private System.Windows.Forms.ToolStripSeparator tbbSeparator0;
         private System.Windows.Forms.ToolStripComboBox tbcSelectStatement;
+        private System.Windows.Forms.ToolStripSeparator tbbSeparator1;
+        private System.Windows.Forms.ToolStripButton tbbSaveMatches;
+        private System.Windows.Forms.ToolStripButton tbbCreateGiftBatch;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniImportNewStatement;

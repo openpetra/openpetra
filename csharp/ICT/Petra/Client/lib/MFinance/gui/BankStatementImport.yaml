@@ -16,6 +16,10 @@ RootNode:
         actRemoveGiftDetail:
             Label: &Delete
             ActionClick: RemoveGiftDetail
+        actSaveMatches:
+            ActionClick: SaveMatches
+        actCreateGiftBatch:
+            ActionClick: CreateGiftBatch
     Controls:
         pnlContent:
             Dock: Fill
@@ -93,3 +97,6 @@ RootNode:
         tbbImportNewStatement:
         tbbSeparator:
         tbcSelectStatement:
+        tbbSeparator:
+        tbbSaveMatches:
+        tbbCreateGiftBatch:

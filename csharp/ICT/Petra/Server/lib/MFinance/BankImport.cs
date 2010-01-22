@@ -223,6 +223,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         tempRow.EpMatchKey = -1;
                         tempRow.Detail = 0;
                         tempRow.MatchText = row.MatchText;
+                        tempRow.LedgerNumber = ALedgerNumber;
                         tempRow.GiftTransactionAmount = row.TransactionAmount;
                         tempRow.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
 
@@ -266,6 +267,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 throw e;
             }
 
+            ResultDataset.AcceptChanges();
+
             return ResultDataset;
         }
 
@@ -276,9 +279,24 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// <returns></returns>
         static public bool CommitMatches(BankImportTDS AMainDS)
         {
-            // TODO: store into match table
+            TVerificationResultCollection VerificationResult;
 
-            return false;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            try
+            {
+                AEpMatchAccess.SubmitChanges(AMainDS.AEpMatch, Transaction, out VerificationResult);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.GetType().ToString() + " in BankImport, CommitMatches; " + e.Message);
+                TLogging.Log(e.StackTrace);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

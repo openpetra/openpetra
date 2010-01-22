@@ -204,6 +204,7 @@ namespace Plugin.BankImportFromCSV
                     out VerificationResult) == TSubmitChangesResult.scrOK)
             {
                 AStatementKey = stmtTable[0].StatementKey;
+                return true;
             }
 
             AStatementKey = -1;

@@ -346,11 +346,84 @@ namespace Ict.Petra.Client.MFinance.Gui
             }
         }
 
+        private Int32 NewMatchKey = -1;
+
         private void AddGiftDetail(System.Object sender, EventArgs e)
         {
+            GetValuesFromScreen();
+
+            // get a new detail number
+            Int32 newDetailNumber = 0;
+            double amount = 0;
+            AEpMatchRow match = null;
+
+            for (int i = 0; i < FMatchView.Count; i++)
+            {
+                match = (AEpMatchRow)FMatchView[i].Row;
+
+                if (match.Detail >= newDetailNumber)
+                {
+                    newDetailNumber = match.Detail + 1;
+                }
+
+                amount += match.GiftTransactionAmount;
+            }
+
+            if (match != null)
+            {
+                AEpMatchRow newRow = FMainDS.AEpMatch.NewRowTyped();
+                newRow.EpMatchKey = NewMatchKey--;
+                newRow.MatchText = match.MatchText;
+                newRow.Detail = newDetailNumber;
+                newRow.LedgerNumber = match.LedgerNumber;
+                newRow.AccountCode = match.AccountCode;
+                newRow.CostCentreCode = match.CostCentreCode;
+                newRow.DonorKey = match.DonorKey;
+                newRow.GiftTransactionAmount = ((AEpTransactionRow)grdAllTransactions.SelectedDataRowsAsDataRowView[0].Row).TransactionAmount -
+                                               amount;
+                FMainDS.AEpMatch.Rows.Add(newRow);
+            }
         }
 
         private void RemoveGiftDetail(System.Object sender, EventArgs e)
+        {
+            GetValuesFromScreen();
+
+            if (CurrentlySelectedMatch == null)
+            {
+                MessageBox.Show(Catalog.GetString("Please select a row before deleting a detail"));
+                return;
+            }
+
+            // we should never allow to delete all details, otherwise we have nothing to copy from
+            // also cannot delete the first detail, since there is the foreign key from a_ep_transaction on epmatchkey?
+            if (((AEpTransactionRow)grdAllTransactions.SelectedDataRowsAsDataRowView[0].Row).EpMatchKey == CurrentlySelectedMatch.EpMatchKey)
+            {
+                MessageBox.Show(Catalog.GetString("Cannot delete the first detail"));
+            }
+            else
+            {
+                FMainDS.AEpMatch.Rows.Remove(CurrentlySelectedMatch);
+                CurrentlySelectedMatch = null;
+            }
+        }
+
+        private void SaveMatches(System.Object sender, EventArgs e)
+        {
+            GetValuesFromScreen();
+
+            if (TRemote.MFinance.ImportExport.WebConnectors.CommitMatches(FMainDS))
+            {
+                FMainDS.AcceptChanges();
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "The matches could not be stored. Please ask your System Administrator to check the log file on the server."));
+            }
+        }
+
+        private void CreateGiftBatch(System.Object sender, EventArgs e)
         {
         }
     }

@@ -80,6 +80,9 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.tpgGL.Text = Catalog.GetString("GL");
       this.tbbImportNewStatement.Text = Catalog.GetString("&Import new statement");
       this.tbbSeparator0.Text = Catalog.GetString("Separator");
+      this.tbbSeparator1.Text = Catalog.GetString("Separator");
+      this.tbbSaveMatches.Text = Catalog.GetString("Save Matches");
+      this.tbbCreateGiftBatch.Text = Catalog.GetString("Create Gift Batch");
       this.mniImportNewStatement.Text = Catalog.GetString("&Import new statement");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
@@ -175,6 +178,14 @@ namespace Ict.Petra.Client.MFinance.Gui
         {
             tbbImportNewStatement.Enabled = e.Enabled;
             mniImportNewStatement.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actSaveMatches")
+        {
+            tbbSaveMatches.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actCreateGiftBatch")
+        {
+            tbbCreateGiftBatch.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {
