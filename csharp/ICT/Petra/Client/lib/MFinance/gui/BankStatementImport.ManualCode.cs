@@ -51,6 +51,10 @@ namespace Ict.Petra.Client.MFinance.Gui
             set
             {
                 FLedgerNumber = value;
+
+                // we can only load the statements when the ledger number is known
+                PopulateStatementCombobox();
+                tbcSelectStatement.ComboBox.SelectedIndex = tbcSelectStatement.ComboBox.Items.Count - 1;
             }
         }
 
@@ -61,8 +65,6 @@ namespace Ict.Petra.Client.MFinance.Gui
         {
             pnlDetails.Visible = false;
             tbcSelectStatement.ComboBox.SelectedValueChanged += new EventHandler(SelectBankStatement);
-            PopulateStatementCombobox();
-            tbcSelectStatement.ComboBox.SelectedIndex = tbcSelectStatement.ComboBox.Items.Count - 1;
         }
 
         private void SelectBankStatement(System.Object sender, EventArgs e)

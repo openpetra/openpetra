@@ -246,6 +246,9 @@ namespace Ict.Petra.Client.App.PetraClient
 
             string PatchStatusMessage;
 
+            // TODO: run this only if necessary. seem adding cost centre does not update the cache?
+            TDataCache.ClearAllCaches();
+
             if (patchTools.CheckForRecentPatch(false, out PatchStatusMessage))
             {
                 // todo: display a list of all patches that will be installed? or confusing with different builds?

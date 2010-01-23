@@ -344,19 +344,27 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 if (v.Count > 0)
                 {
-                    AGiftRow gift = GiftDS.AGift.NewRowTyped();
-                    gift.LedgerNumber = giftbatchRow.LedgerNumber;
-                    gift.BatchNumber = giftbatchRow.BatchNumber;
-                    gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
-                    giftbatchRow.LastGiftNumber++;
-
-                    AEpMatchRow match = (AEpMatchRow)v[0].Row;
-                    gift.DonorKey = match.DonorKey;
-                    GiftDS.AGift.Rows.Add(gift);
-
+// TODO: gift batch screen only supports one gift detail at the moment
+//                    AGiftRow gift = GiftDS.AGift.NewRowTyped();
+//                    gift.LedgerNumber = giftbatchRow.LedgerNumber;
+//                    gift.BatchNumber = giftbatchRow.BatchNumber;
+//                    gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
+//                    giftbatchRow.LastGiftNumber++;
+//
+//                    AEpMatchRow match = (AEpMatchRow)v[0].Row;
+//                    gift.DonorKey = match.DonorKey;
+//                    GiftDS.AGift.Rows.Add(gift);
                     foreach (DataRowView r in v)
                     {
-                        match = (AEpMatchRow)r.Row;
+                        AEpMatchRow match = (AEpMatchRow)r.Row;
+
+                        AGiftRow gift = GiftDS.AGift.NewRowTyped();
+                        gift.LedgerNumber = giftbatchRow.LedgerNumber;
+                        gift.BatchNumber = giftbatchRow.BatchNumber;
+                        gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
+                        gift.DonorKey = match.DonorKey;
+                        giftbatchRow.LastGiftNumber++;
+                        GiftDS.AGift.Rows.Add(gift);
 
                         AGiftDetailRow detail = GiftDS.AGiftDetail.NewRowTyped();
                         detail.LedgerNumber = gift.LedgerNumber;
