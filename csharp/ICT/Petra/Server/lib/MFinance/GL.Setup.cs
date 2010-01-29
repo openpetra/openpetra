@@ -533,11 +533,30 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// import basic data for new ledger
         /// </summary>
         public static bool ImportNewLedger(Int32 ALedgerNumber,
+            string AXmlLedgerDetails,
             string AXmlAccountHierarchy,
             string AXmlCostCentreHierarchy,
-            string AXmlInitialBalances)
+            string AXmlMotivationDetails
+            )
         {
             // TODO ImportNewLedger
+
+            // if this ledger already exists, delete all tables first?
+            // Or try to reuse existing balances etc?
+
+            // first create/modify ledger
+            // set ForexGainsLossesAccount; there is no foreign key, so no problem
+
+            // create the calendar for the ledger, automatically calculating the dates of the forwarding periods
+
+            // create the partner with special type LEDGER from the ledger number, with 6 trailing zeros
+
+            // create/modify accounts (might need to drop motivation details)
+
+            // create/modify costcentres (might need to drop motivation details)
+
+            // create/modify motivation details
+
             return false;
         }
 

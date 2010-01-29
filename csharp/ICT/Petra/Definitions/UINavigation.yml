@@ -75,7 +75,8 @@ OpenPetra:
             MoreFunctions:
                 SetupPartnerModule:
         # Department
-        Finance: {Icon=accounts_small.ico, LedgerNumber=43, Namespace=Ict.Petra.Client.MFinance.Gui}
+        # SpecialType LEDGER means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
+        Finance: {Icon=accounts_small.ico, SpecialType=LEDGER, LedgerNumber=43, Namespace=Ict.Petra.Client.MFinance.Gui}
             # Module
             GeneralLedger:
                 # Sub Module
@@ -151,3 +152,15 @@ OpenPetra:
         ConferenceManagement: {Icon=conference_small.ico}
         FinancialDevelopment: {Icon=develope_small.ico}
         SystemManager: {Icon=sysman_small.ico}
+            Finance:
+                LedgerOperations:
+                    DeleteLedger:
+                    ImportLedgerStructure:
+                ExchangeRates:
+                    ManageCurrencies:
+                    ManageExchangeRates:
+            Users:
+                CreateNewUser:
+                DeleteUser:
+                ModifyUserPermissions:
+                ImportUserPermissions:
