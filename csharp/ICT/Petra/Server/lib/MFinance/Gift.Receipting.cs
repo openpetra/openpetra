@@ -205,7 +205,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 sum += amount;
 
                 rowTexts += RowTemplate.
-                            Replace("#DONATIONDATE", dateEntered.ToShortDateString()).
+                            Replace("#DONATIONDATE", dateEntered.ToString("dd.MM.yyyy")).
                             Replace("#AMOUNT", String.Format("{0:C}", amount)).
                             Replace("#COMMENTONE", commentOne).
                             Replace("#ACCOUNTDESC", accountDesc).

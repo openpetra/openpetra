@@ -1,3 +1,9 @@
+DELETE FROM a_ep_transaction;
+DELETE FROM a_ep_match;
+DELETE FROM a_ep_statement;
+DELETE FROM a_gift_detail;
+DELETE FROM a_gift;
+DELETE FROM a_gift_batch;
 DELETE FROM a_transaction;
 DELETE FROM a_general_ledger_master_period;
 DELETE FROM a_general_ledger_master;
