@@ -137,7 +137,7 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// format the sql query so that it works for PostgreSQL
+        /// format the sql query so that it works for SQLite
         /// see also the comments for TDataBase.FormatQueryRDBMSSpecific
         /// </summary>
         /// <param name="ASqlQuery"></param>

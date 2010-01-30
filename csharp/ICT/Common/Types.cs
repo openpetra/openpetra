@@ -107,6 +107,9 @@ namespace Ict.Common
         /// <summary>The PostgreSQL RDBMS</summary>
         PostgreSQL,
 
+        /// <summary>The MySQL RDBMS</summary>
+        MySQL,
+
         /// <summary>Using ODBC to access legacy Progress databases</summary>
         ProgressODBC,
 
@@ -273,6 +276,11 @@ namespace Ict.Common
             if (ADBType.ToLower() == "postgresql")
             {
                 return TDBType.PostgreSQL;
+            }
+
+            if (ADBType.ToLower() == "mysql")
+            {
+                return TDBType.MySQL;
             }
 
             if (ADBType.ToLower() == "sqlite")

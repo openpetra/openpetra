@@ -389,6 +389,10 @@ namespace Ict.Common.DB
             {
                 FDataBaseRDBMS = (IDataBaseRDBMS) new TPostgreSQL();
             }
+            else if (FDbType == TDBType.MySQL)
+            {
+                FDataBaseRDBMS = (IDataBaseRDBMS) new TMySQL();
+            }
             else if (FDbType == TDBType.SQLite)
             {
                 FDataBaseRDBMS = (IDataBaseRDBMS) new TSQLite();

@@ -58,6 +58,7 @@
     <Compile Include="Access.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="Connection.cs" />
+    <Compile Include="MySQL.cs" />
     <Compile Include="PostgreSQL.cs" />
     <Compile Include="ProgressODBC.cs" />
     <Compile Include="SQLite.cs" />
