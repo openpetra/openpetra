@@ -10,6 +10,7 @@
         <Table sqltable="a_gift_detail">
             <CustomField name="DonorKey" type="Int64"/>
             <CustomField name="DonorName" type="string"/>
+            <CustomField name="DateEntered" type="DateTime"/>
             <CustomField name="RecipientDescription" type="string"/>
             <CustomField name="AccountCode" type="string"/>
         </Table>

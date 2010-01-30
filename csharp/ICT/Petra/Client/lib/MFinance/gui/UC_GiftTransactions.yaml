@@ -32,8 +32,9 @@ RootNode:
             Dock: Fill
             #TODO: support split gifts, and deal with gift details properly
             # TODO: add to columns: DetailNumber
-            Columns: [GiftTransactionNumber, DonorKey, DonorName, GiftAmount, RecipientDescription, MotivationGroupCode, MotivationDetailCode]
+            Columns: [GiftTransactionNumber, DetailNumber, DateEntered, DonorKey, DonorName, GiftTransactionAmount, RecipientDescription, MotivationGroupCode, MotivationDetailCode]
             CustomColumns:
+                DateEntered: {Label=Date Entered, Type=DateTime}
                 DonorKey: {Label=Donor Key, Type=PartnerKey}
                 DonorName: {Label=Donor Name, Type=String}
                 RecipientDescription: {Label=Recipient, Type=String}

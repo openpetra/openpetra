@@ -270,9 +270,11 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnDonorNameId = 30;
         /// used for generic TTypedDataTable functions
-        public static short ColumnRecipientDescriptionId = 31;
+        public static short ColumnDateEnteredId = 31;
         /// used for generic TTypedDataTable functions
-        public static short ColumnAccountCodeId = 32;
+        public static short ColumnRecipientDescriptionId = 32;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAccountCodeId = 33;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -310,8 +312,9 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                     new TTypedColumnInfo(28, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
                     new TTypedColumnInfo(29, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(30, "DonorName", "DonorName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(31, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(32, "AccountCode", "AccountCode", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(31, "DateEntered", "DateEntered", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(32, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(33, "AccountCode", "AccountCode", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
                     0, 1, 2, 3
@@ -341,6 +344,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public DataColumn ColumnDonorKey;
         ///
         public DataColumn ColumnDonorName;
+        ///
+        public DataColumn ColumnDateEntered;
         ///
         public DataColumn ColumnRecipientDescription;
         ///
@@ -380,6 +385,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("DonorKey", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("DonorName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("DateEntered", typeof(DateTime)));
             this.Columns.Add(new System.Data.DataColumn("RecipientDescription", typeof(string)));
             this.Columns.Add(new System.Data.DataColumn("AccountCode", typeof(string)));
         }
@@ -418,6 +424,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
             this.ColumnDonorKey = this.Columns["DonorKey"];
             this.ColumnDonorName = this.Columns["DonorName"];
+            this.ColumnDateEntered = this.Columns["DateEntered"];
             this.ColumnRecipientDescription = this.Columns["RecipientDescription"];
             this.ColumnAccountCode = this.Columns["AccountCode"];
             this.PrimaryKey = new System.Data.DataColumn[4] {
@@ -500,6 +507,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
 
         /// get character length for column
         public static short GetDonorNameLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateEnteredDBName()
+        {
+            return "DateEntered";
+        }
+
+        /// get character length for column
+        public static short GetDateEnteredLength()
         {
             return -1;
         }
@@ -596,6 +615,32 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         ///
+        public DateTime DateEntered
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateEntered.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return DateTime.MinValue;
+                }
+                else
+                {
+                    return ((DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateEntered)
+                            || (((DateTime)(this[this.myTable.ColumnDateEntered])) != value)))
+                {
+                    this[this.myTable.ColumnDateEntered] = value;
+                }
+            }
+        }
+
+        ///
         public string RecipientDescription
         {
             get
@@ -681,6 +726,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.SetNull(this.myTable.ColumnModificationId);
             this.SetNull(this.myTable.ColumnDonorKey);
             this.SetNull(this.myTable.ColumnDonorName);
+            this.SetNull(this.myTable.ColumnDateEntered);
             this.SetNull(this.myTable.ColumnRecipientDescription);
             this.SetNull(this.myTable.ColumnAccountCode);
         }
@@ -707,6 +753,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public void SetDonorNameNull()
         {
             this.SetNull(this.myTable.ColumnDonorName);
+        }
+
+        /// test for NULL value
+        public bool IsDateEnteredNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateEntered);
+        }
+
+        /// assign NULL value
+        public void SetDateEnteredNull()
+        {
+            this.SetNull(this.myTable.ColumnDateEntered);
         }
 
         /// test for NULL value

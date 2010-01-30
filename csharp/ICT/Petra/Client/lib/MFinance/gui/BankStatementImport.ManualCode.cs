@@ -60,6 +60,7 @@ namespace Ict.Petra.Client.MFinance.Gui
 
         private BankImportTDS FMainDS = new BankImportTDS();
         private DataView FMatchView = null;
+        private DataView FTransactionView = null;
 
         private void InitializeManualCode()
         {
@@ -84,10 +85,12 @@ namespace Ict.Petra.Client.MFinance.Gui
             grdAllTransactions.AddTextColumn(Catalog.GetString("Date Effective"), FMainDS.AEpTransaction.ColumnDateEffective, 70);
             grdAllTransactions.AddTextColumn(Catalog.GetString("Transaction Amount"), FMainDS.AEpTransaction.ColumnTransactionAmount, 70);
 
-            DataView myDataView = FMainDS.AEpTransaction.DefaultView;
-            myDataView.AllowNew = false;
-            grdAllTransactions.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            FTransactionView = FMainDS.AEpTransaction.DefaultView;
+            FTransactionView.AllowNew = false;
+            FTransactionView.Sort = AEpTransactionTable.GetOrderDBName() + " ASC";
+            grdAllTransactions.DataSource = new DevAge.ComponentModel.BoundDataView(FTransactionView);
             grdAllTransactions.AutoSizeCells();
+            rbtListAll.Checked = true;
 
             TFinanceControls.InitialiseMotivationDetailList(ref cmbMotivationDetail, FLedgerNumber, true);
             TFinanceControls.InitialiseCostCentreList(ref cmbGiftCostCentre, FLedgerNumber, true, false, true, true);
@@ -217,6 +220,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             CurrentlySelectedMatch = null;
 
             rbtGiftWasChecked = rbtGift.Checked;
+            rbtUnmatchedWasChecked = rbtUnmatched.Checked;
 
             pnlGiftEdit.Visible = rbtGift.Checked;
 
@@ -233,6 +237,7 @@ namespace Ict.Petra.Client.MFinance.Gui
 
         private AEpMatchRow CurrentlySelectedMatch = null;
         private bool rbtGiftWasChecked = false;
+        private bool rbtUnmatchedWasChecked = false;
 
         /// store current selections in the a_ep_match table
         private void GetValuesFromScreen()
@@ -253,6 +258,15 @@ namespace Ict.Petra.Client.MFinance.Gui
 
                 GetGiftDetailValuesFromScreen();
             }
+
+            if (rbtUnmatched.Checked)
+            {
+                for (int i = 0; i < FMatchView.Count; i++)
+                {
+                    AEpMatchRow match = (AEpMatchRow)FMatchView[i].Row;
+                    match.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+                }
+            }
         }
 
         private void AllTransactionsFocusedRowChanged(System.Object sender, EventArgs e)
@@ -272,6 +286,9 @@ namespace Ict.Petra.Client.MFinance.Gui
             if (match.Action == MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT)
             {
                 rbtGift.Checked = true;
+
+                txtDonorKey.Text = StringHelper.FormatStrToPartnerKeyString(match.DonorKey.ToString());
+
                 DisplayGiftDetails();
             }
             else
@@ -280,6 +297,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             }
 
             rbtGiftWasChecked = rbtGift.Checked;
+            rbtUnmatchedWasChecked = rbtUnmatched.Checked;
         }
 
         private void GiftDetailsFocusedRowChanged(System.Object sender, EventArgs e)
@@ -348,6 +366,7 @@ namespace Ict.Petra.Client.MFinance.Gui
                 CurrentlySelectedMatch.AccountCode = cmbGiftAccount.GetSelectedString();
                 CurrentlySelectedMatch.CostCentreCode = cmbGiftCostCentre.GetSelectedString();
                 CurrentlySelectedMatch.GiftTransactionAmount = Convert.ToDouble(txtAmount.Text);
+                CurrentlySelectedMatch.DonorKey = Convert.ToInt64(txtDonorKey.Text);
             }
         }
 
@@ -444,6 +463,24 @@ namespace Ict.Petra.Client.MFinance.Gui
             else
             {
                 MessageBox.Show(Catalog.GetString("Problem: No gift batch has been created"));
+            }
+        }
+
+        private void TransactionFilterChanged(System.Object sender, EventArgs e)
+        {
+            if (FTransactionView == null)
+            {
+                return;
+            }
+
+            if (rbtListAll.Checked)
+            {
+                FTransactionView.RowFilter = "";
+            }
+            else if (rbtListGift.Checked)
+            {
+                // TODO: allow splitting a transaction, one part is GL/AP, the other is a donation?
+                //       at Top Level: split transaction, results into 2 rows in aeptransaction (not stored). Merge Transactions again?
             }
         }
     }

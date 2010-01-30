@@ -336,6 +336,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             giftbatchRow.BatchPeriod = DateEffectivePeriodNumber;
             giftbatchRow.BatchYear = DateEffectiveYearNumber;
 
+            double HashTotal = 0.0;
+
             foreach (AEpTransactionRow transactionRow in AMainDS.AEpTransaction.Rows)
             {
                 DataView v = AMainDS.AEpMatch.DefaultView;
@@ -363,6 +365,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         gift.BatchNumber = giftbatchRow.BatchNumber;
                         gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
                         gift.DonorKey = match.DonorKey;
+                        gift.DateEntered = transactionRow.DateEffective;
                         giftbatchRow.LastGiftNumber++;
                         GiftDS.AGift.Rows.Add(gift);
 
@@ -374,6 +377,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         gift.LastDetailNumber++;
 
                         detail.GiftTransactionAmount = match.GiftTransactionAmount;
+                        HashTotal += match.GiftTransactionAmount;
                         detail.MotivationGroupCode = match.MotivationGroupCode;
                         detail.MotivationDetailCode = match.MotivationDetailCode;
                         detail.GiftCommentOne = transactionRow.Description;
@@ -383,6 +387,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     }
                 }
             }
+
+            giftbatchRow.HashTotal = HashTotal;
 
             TVerificationResultCollection VerificationResult;
 

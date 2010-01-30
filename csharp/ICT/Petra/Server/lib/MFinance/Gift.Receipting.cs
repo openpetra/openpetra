@@ -101,6 +101,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 parameters[3] = new OdbcParameter("DonorKey", OdbcType.BigInt);
                 parameters[3].Value = donorKey;
 
+                // TODO: should we print each gift detail, or just one row per gift?
                 DataTable donations = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Donations", Transaction, parameters);
 
                 if (donations.Rows.Count > 0)
@@ -196,7 +197,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             foreach (DataRow rowGifts in ADonations.Rows)
             {
-                DateTime dateEffective = Convert.ToDateTime(rowGifts["DateEffective"]);
+                DateTime dateEntered = Convert.ToDateTime(rowGifts["DateEntered"]);
                 Double amount = Convert.ToDouble(rowGifts["Amount"]);
                 string commentOne = rowGifts["CommentOne"].ToString();
                 string accountDesc = rowGifts["AccountDesc"].ToString();
@@ -204,7 +205,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 sum += amount;
 
                 rowTexts += RowTemplate.
-                            Replace("#DONATIONDATE", dateEffective.ToShortDateString()).
+                            Replace("#DONATIONDATE", dateEntered.ToShortDateString()).
                             Replace("#AMOUNT", String.Format("{0:C}", amount)).
                             Replace("#COMMENTONE", commentOne).
                             Replace("#ACCOUNTDESC", accountDesc).
@@ -212,6 +213,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             msg = msg.Replace("#OVERALLAMOUNT", String.Format("{0:C}", sum));
+
+            msg = msg.Replace("#TOTALAMOUNTINWORDS", String.Format("{0:C}", sum));
 
             return msg.Replace("#ROWTEMPLATE", rowTexts);
         }

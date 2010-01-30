@@ -279,6 +279,7 @@ namespace Ict.Petra.Client.MFinance.Gui
     protected void OpenScreenImportBankStatements(object sender, EventArgs e)
     {
         Ict.Petra.Client.MFinance.Gui.TFrmBankStatementImport frm = new Ict.Petra.Client.MFinance.Gui.TFrmBankStatementImport(this.Handle);
+        frm.LedgerNumber = FLedgerNumber;
         frm.Show();
     }
 

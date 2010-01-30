@@ -23,17 +23,16 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [tabTransactions]
+            Controls: [rgrSelectTransaction, sptTransactionDetails]
             # add to Controls: pnlStatementInfo
+        rgrSelectTransaction:
+            Dock: Top
+            OptionalValues: [ListAll, ListUnmatched, ListGift, ListGL]
+            ControlsOrientation: horizontal
+            NoLabel: true
+            OnChange: TransactionFilterChanged
         pnlStatementInfo:
             # Controls: [txtStartBalance, txtEndBalance, txtSumDebit, txtSumCredit, txtNumberMatchedTransactions]
-        tabTransactions:
-            # todo: Accounts Payable tab?
-            Controls: [tpgAll, tpgUnmatched, tpgGifts, tpgGL]
-            Dock: Fill
-        tpgAll:
-            Dock: Fill
-            Controls: [sptTransactionDetails]
         sptTransactionDetails:
             Panel1: grdAllTransactions
             Panel2: pnlDetails
@@ -84,12 +83,6 @@ RootNode:
             Dock: Fill
             Visible: false
             #Controls: [cmbGLAccountCode, cmbGLCostCentre]
-        tpgUnmatched:
-#            Controls:
-#                Row0: [grdUnmatchedTransactions]
-#                Row1: [rgrMoveUnmatchedTransaction]
-        tpgGifts:
-        tpgGL:
     Menu:
         mniFile:
             mniImportNewStatement:

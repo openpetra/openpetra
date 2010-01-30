@@ -175,6 +175,12 @@ namespace Plugin.BankImportFromCSV
 
                     if (UseAs.ToLower() == "description")
                     {
+                        // remove everything after DTA; it is not relevant and confused matching
+                        if (Value.IndexOf(" DTA ") > 0)
+                        {
+                            Value = Value.Substring(0, Value.IndexOf(" DTA "));
+                        }
+
                         row.Description = Value;
                     }
 

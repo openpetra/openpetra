@@ -38,8 +38,10 @@ using Ict.Petra.Shared.MFinance.Gift;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.App.ClientDomain;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
@@ -145,7 +147,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 0,
                 0);
 
+            DataView giftView = new DataView(MainDS.AGift);
+
+            // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
+            foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+            {
+                // get the gift
+                giftView.RowFilter = AGiftTable.GetGiftTransactionNumberDBName() + " = " + giftDetail.GiftTransactionNumber.ToString();
+
+                AGiftRow giftRow = (AGiftRow)giftView[0].Row;
+
+                StringCollection shortName = new StringCollection();
+                shortName.Add(PPartnerTable.GetPartnerShortNameDBName());
+                PPartnerTable partner = PPartnerAccess.LoadByPrimaryKey(giftRow.DonorKey, shortName, Transaction);
+
+                giftDetail.DonorKey = giftRow.DonorKey;
+                giftDetail.DonorName = partner[0].PartnerShortName;
+                giftDetail.DateEntered = giftRow.DateEntered;
+            }
+
             DBAccess.GDBAccessObj.RollbackTransaction();
+
             return MainDS;
         }
 

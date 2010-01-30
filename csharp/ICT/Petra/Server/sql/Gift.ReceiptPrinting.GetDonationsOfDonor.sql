@@ -1,4 +1,4 @@
-SELECT a_gift_batch.a_gl_effective_date_d AS DateEffective, 
+SELECT a_gift.a_date_entered_d AS DateEntered, 
         a_gift_detail.a_gift_transaction_amount_n AS Amount, 
         a_gift_detail.a_gift_comment_one_c AS CommentOne,
         a_account.a_account_code_short_desc_c AS AccountDesc,
@@ -16,8 +16,10 @@ WHERE a_gift_batch.a_ledger_number_i = ?
    AND a_motivation_detail.a_ledger_number_i = a_gift_batch.a_ledger_number_i
    AND a_motivation_detail.a_motivation_group_code_c = a_gift_detail.a_motivation_group_code_c
    AND a_motivation_detail.a_motivation_detail_code_c = a_gift_detail.a_motivation_detail_code_c
-   AND a_motivation_detail.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c
-   AND a_motivation_detail.a_account_code_c = a_account.a_account_code_c
    AND a_motivation_detail.a_tax_deductable_l = 1
    AND a_motivation_detail.a_receipt_l = 1
-ORDER BY a_gift_batch.a_gl_effective_date_d ASC
+   AND a_cost_centre.a_ledger_number_i = a_gift_batch.a_ledger_number_i
+   AND a_cost_centre.a_cost_centre_code_c = a_motivation_detail.a_cost_centre_code_c 
+   AND a_account.a_ledger_number_i = a_gift_batch.a_ledger_number_i
+   AND a_account.a_account_code_c = a_motivation_detail.a_account_code_c
+ORDER BY a_gift.a_date_entered_d ASC

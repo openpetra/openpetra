@@ -63,6 +63,11 @@ namespace Ict.Petra.Client.MFinance.Gui
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      this.rbtListAll.Text = Catalog.GetString("ListAll");
+      this.rbtListUnmatched.Text = Catalog.GetString("ListUnmatched");
+      this.rbtListGift.Text = Catalog.GetString("ListGift");
+      this.rbtListGL.Text = Catalog.GetString("ListGL");
+      this.rgrSelectTransaction.Text = Catalog.GetString("Select Transaction");
       this.rbtUnmatched.Text = Catalog.GetString("Unmatched");
       this.rbtGift.Text = Catalog.GetString("Gift");
       this.rbtGL.Text = Catalog.GetString("GL");
@@ -74,10 +79,6 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.lblMotivationDetail.Text = Catalog.GetString("Motivation Detail:");
       this.lblGiftAccount.Text = Catalog.GetString("Account:");
       this.lblGiftCostCentre.Text = Catalog.GetString("Cost Centre:");
-      this.tpgAll.Text = Catalog.GetString("All");
-      this.tpgUnmatched.Text = Catalog.GetString("Unmatched");
-      this.tpgGifts.Text = Catalog.GetString("Gifts");
-      this.tpgGL.Text = Catalog.GetString("GL");
       this.tbbImportNewStatement.Text = Catalog.GetString("&Import new statement");
       this.tbbSeparator0.Text = Catalog.GetString("Separator");
       this.tbbSeparator1.Text = Catalog.GetString("Separator");

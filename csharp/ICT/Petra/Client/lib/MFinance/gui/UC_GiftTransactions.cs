@@ -111,9 +111,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       FPetraUtilsObject.SetStatusBarText(txtDetailCostCentreCode, Catalog.GetString("Enter a cost centre code"));
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Gift Transaction Number", FMainDS.AGiftDetail.ColumnGiftTransactionNumber);
+      grdDetails.AddTextColumn("Gift Number", FMainDS.AGiftDetail.ColumnDetailNumber);
+      grdDetails.AddTextColumn("Date Entered", FMainDS.AGiftDetail.ColumnDateEntered);
       grdDetails.AddTextColumn("Donor Key", FMainDS.AGiftDetail.ColumnDonorKey);
       grdDetails.AddTextColumn("Donor Name", FMainDS.AGiftDetail.ColumnDonorName);
-      grdDetails.AddTextColumn("Gift Amount", FMainDS.AGiftDetail.ColumnGiftAmount);
+      grdDetails.AddTextColumn("Transaction Gift Amount", FMainDS.AGiftDetail.ColumnGiftTransactionAmount);
       grdDetails.AddTextColumn("Recipient", FMainDS.AGiftDetail.ColumnRecipientDescription);
       grdDetails.AddTextColumn("Motivation Group", FMainDS.AGiftDetail.ColumnMotivationGroupCode);
       grdDetails.AddTextColumn("Motivation Detail", FMainDS.AGiftDetail.ColumnMotivationDetailCode);
