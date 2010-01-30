@@ -54,6 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NumberToWords.cs" />
     <Compile Include="ArrayList.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CommandLineProcessing.cs" />

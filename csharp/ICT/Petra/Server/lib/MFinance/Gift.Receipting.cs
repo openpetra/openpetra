@@ -214,7 +214,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             msg = msg.Replace("#OVERALLAMOUNT", String.Format("{0:C}", sum));
 
-            msg = msg.Replace("#TOTALAMOUNTINWORDS", String.Format("{0:C}", sum));
+            // TODO allow other currencies. use a_currency table, and transaction currency
+            msg = msg.Replace("#TOTALAMOUNTINWORDS", NumberToWords.AmountToWords(sum, "Euro", "Cent"));
 
             return msg.Replace("#ROWTEMPLATE", rowTexts);
         }
