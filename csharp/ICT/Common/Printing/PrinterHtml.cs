@@ -407,8 +407,8 @@ namespace Ict.Common.Printing
                     // todo: embed image into text flow
                     if (FPrinter.CurrentXPos > AXPos)
                     {
-                    	FPrinter.LineFeed();
-                    	FPrinter.CurrentXPos = AXPos;
+                        FPrinter.LineFeed();
+                        FPrinter.CurrentXPos = AXPos;
                     }
 
                     if (TXMLParser.HasAttribute(curNode, "width") && TXMLParser.HasAttribute(curNode, "height"))
