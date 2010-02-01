@@ -842,6 +842,21 @@
             <copy file="${path::get-temp-path()}/demodata-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql" overwrite="true"/>
         </if>
     </target>
+
+    <target name="createMySQLDB">
+        <property name="DBMS.Type" value="mysql"/>
+        <property name="DBMS.Password" value="CHANGEME"/>
+        <call target="recreateDatabase"/>
+        <call target="resetDatabase"/>
+
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-MySQL.sql" overwrite="true"/>
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-MySQL.sql" overwrite="true"/>
+            <!-- this currently only works on Linux -->
+            TODO<exec program="mysqldump" commandline="openpetra --no-create-info --user=petraserver --password=TOBESETBYINSTALLER > ${path::get-temp-path()}/demodata-MySQL.sql" />
+            <copy file="${path::get-temp-path()}/demodata-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-MySQL.sql" overwrite="true"/>
+        </if>
+    </target>
     
     <target name="createPatch">
         <ExecDotNet program="${PetraToolsExe.dir}/PatchToolConsole.exe" commandline="-action:create -OpenPetra.PathTemp:u:/tmp/patch -deliverypath:u:/delivery -appname:openpetraorg-win -oldversion:${OldVersion} -newversion:${NewVersion}" failonerror="true">
@@ -864,7 +879,7 @@
         <call target="setupLinuxServer"/>
     </target>
 
-    <target name="buildReleaseLinuxServer" depends="refreshSudo, switchToDebug, createPostgreSQLDB">
+    <target name="buildReleaseLinuxServer" depends="refreshSudo, switchToDebug, createPostgreSQLDB, createMySQLDB">
         <!-- build the tar.gz file without client files, and without sqlite. this is for the hosted server -->
         <property name="SkipCompileClient" value="true"/>
         <call target="compileRelease"/>
