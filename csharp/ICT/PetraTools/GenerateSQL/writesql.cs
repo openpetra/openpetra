@@ -225,6 +225,15 @@ public class TWriteSQL
             // also no sequences in Mysql
             // see http://dev.mysql.com/doc/refman/5.0/en/information-functions.html for a workaround
             // look for CREATE TABLE sequence and LAST_INSERT_ID
+            ArrayList Sequences = AStore.GetSequences();
+
+            foreach (TSequence seq in Sequences)
+            {
+                string createStmt = "CREATE TABLE " + seq.strName + " (sequence INTEGER AUTO_INCREMENT, dummy INTEGER, PRIMARY KEY(sequence));";
+                ASw.WriteLine(createStmt);
+                createStmt = "INSERT INTO " + seq.strName + " VALUES(NULL, -1);";
+                ASw.WriteLine(createStmt);
+            }
         }
         else
         {
@@ -333,6 +342,10 @@ public class TWriteSQL
             {
                 result += String.Format("  {0} INTEGER PRIMARY KEY AUTOINCREMENT ", field.strName);
             }
+            else if (ATargetDatabase == eDatabaseType.MySQL)
+            {
+                result += String.Format("  {0} INTEGER AUTO_INCREMENT UNIQUE ", field.strName);
+            }
         }
         else
         {
@@ -394,14 +407,6 @@ public class TWriteSQL
         if (field.bNotNull)
         {
             result += String.Format(" NOT NULL");
-        }
-
-        if (field.bAutoIncrement)
-        {
-            if (ATargetDatabase == eDatabaseType.MySQL)
-            {
-                result += String.Format(" AUTO_INCREMENT UNIQUE");
-            }
         }
 
         if ((field.strCheck != null) && (field.strCheck.Length != 0))

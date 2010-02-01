@@ -30,6 +30,7 @@ using System.Data.Odbc;
 using System.Data.Common;
 using System.Collections;
 using System.Text.RegularExpressions;
+using MySql.Data.MySqlClient;
 
 namespace Ict.Common.DB
 {
@@ -55,17 +56,51 @@ namespace Ict.Common.DB
             ref String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler)
         {
-            return null;
+            if (AConnectionString == "")
+            {
+                AConnectionString = "SERVER=" + AServer + ";" + "DATABASE=" + ADatabaseName + ";" + "UID=" + AUsername + ";" + "PASSWORD=";
+            }
+
+            MySqlConnection TheConnection = null;
+
+            try
+            {
+                TheConnection = new MySqlConnection(AConnectionString + APassword + ";");
+            }
+            catch (Exception exp)
+            {
+                ArrayList ExceptionList = new ArrayList();
+                ExceptionList.Add((("Error establishing a DB connection to: " + AConnectionString) + Environment.NewLine));
+                ExceptionList.Add((("Exception thrown :- " + exp.ToString()) + Environment.NewLine));
+                TLogging.Log(ExceptionList, true);
+            }
+
+            if (TheConnection != null)
+            {
+                // TODO: need to test this
+                TheConnection.StateChange += AStateChangeEventHandler;
+            }
+
+            return TheConnection;
         }
 
         /// <summary>
-        /// format an error message if the exception is of type MysqlException
+        /// format an error message if the exception is of type MySqlException
         /// </summary>
         /// <param name="AException"></param>
         /// <param name="AErrorMessage"></param>
         /// <returns>true if this is an NpgsqlException</returns>
         public bool LogException(Exception AException, ref string AErrorMessage)
         {
+            if (AException is MySqlException)
+            {
+                MySqlException exp = (MySqlException)AException;
+                AErrorMessage = AErrorMessage +
+                                "Message: " + exp.Message + Environment.NewLine +
+                                "MySQL Error Number: " + exp.Number.ToString() + Environment.NewLine;
+                return true;
+            }
+
             return false;
         }
 
@@ -77,7 +112,30 @@ namespace Ict.Common.DB
         /// <returns></returns>
         public String FormatQueryRDBMSSpecific(String ASqlQuery)
         {
-            return ASqlQuery;
+            string ReturnValue = ASqlQuery;
+
+            ReturnValue = ReturnValue.Replace("PUB_", "");
+            ReturnValue = ReturnValue.Replace("PUB.", "");
+            ReturnValue = ReturnValue.Replace("pub_", "");
+            ReturnValue = ReturnValue.Replace("pub.", "");
+
+            // replacing the quotes would give trouble with importing initial database, with LOAD FROM
+            //ReturnValue = ReturnValue.Replace("\"", "'");
+
+            Match m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
+
+            while (m.Success)
+            {
+                // needs to be 'yyyy-MM-dd'
+                ReturnValue = ReturnValue.Replace("#" + m.Groups[1] + "-" + m.Groups[2] + "-" + m.Groups[3] + "#",
+                    "'" + m.Groups[1] + "-" + m.Groups[2] + "-" + m.Groups[3] + "'");
+                m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
+            }
+
+            ReturnValue = ReturnValue.Replace("_l = true", "_l = 1");
+            ReturnValue = ReturnValue.Replace("_l = false", "_l = 0");
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -88,7 +146,159 @@ namespace Ict.Common.DB
         /// <returns>Array of MysqlParameter (converted from <paramref name="AParameterArray" />.</returns>
         public DbParameter[] ConvertOdbcParameters(DbParameter[] AParameterArray, ref string ASqlStatement)
         {
-            return null;
+            MySqlParameter[] ReturnValue = new MySqlParameter[AParameterArray.Length];
+            OdbcParameter[] AParameterArrayOdbc;
+            string ParamName = "";
+
+            if (!(AParameterArray is MySqlParameter[]))
+            {
+                AParameterArrayOdbc = (OdbcParameter[])AParameterArray;
+
+                // Parameter Type change and Parameter Name assignment
+                for (int Counter = 0; Counter < AParameterArray.Length; Counter++)
+                {
+                    ParamName = AParameterArrayOdbc[Counter].ParameterName;
+
+                    if (ParamName == "")
+                    {
+                        ParamName = "param" + Counter.ToString();
+#if DEBUGMODE_TODO
+                        if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                        {
+                            TLogging.Log("Assigned Parameter Name '" + ParamName + "' for Parameter with Value '" +
+                                AParameterArrayOdbc[Counter].Value.ToString() + "'.");
+                        }
+#endif
+                    }
+
+                    switch (AParameterArrayOdbc[Counter].OdbcType)
+                    {
+                        case OdbcType.Decimal:
+
+                            ReturnValue[Counter] = new MySqlParameter(
+                            ParamName,
+                            MySqlDbType.Decimal, AParameterArrayOdbc[Counter].Size);
+
+                            break;
+
+                        case OdbcType.VarChar:
+                            ReturnValue[Counter] = new MySqlParameter(
+                            ParamName,
+                            MySqlDbType.String, AParameterArrayOdbc[Counter].Size);
+
+                            break;
+
+                        case OdbcType.Bit:
+                            ReturnValue[Counter] = new MySqlParameter(
+                            ParamName,
+                            MySqlDbType.Bit);
+
+                            break;
+
+                        case OdbcType.Date:
+                            ReturnValue[Counter] = new MySqlParameter(
+                            ParamName,
+                            MySqlDbType.Date);
+
+                            break;
+
+                        case OdbcType.Int:
+                            ReturnValue[Counter] = new MySqlParameter(
+                            ParamName,
+                            MySqlDbType.Int32);
+
+                            break;
+
+                        case OdbcType.BigInt:
+                            ReturnValue[Counter] = new MySqlParameter(
+                            ParamName,
+                            MySqlDbType.Int64);
+
+                            break;
+
+                        default:
+                            ReturnValue[Counter] = new MySqlParameter(
+                            ParamName,
+                            MySqlDbType.Int32);
+
+                            break;
+                    }
+
+                    ReturnValue[Counter].Value = AParameterArrayOdbc[Counter].Value;
+                }
+            }
+            else
+            {
+                ReturnValue = (MySqlParameter[])AParameterArray;
+            }
+
+            if (ASqlStatement.Contains("?"))
+            {
+                string SQLSelectBeforeQMark;
+                string SQLSelectAfterQMark;
+                string SQLSelectStatementRepl = "";
+                int QMarkPos = 0;
+                int LastQMarkPos = 0;
+                int NextQMarkPos = 0;
+                int ParamCounter = 0;
+
+                /* SQL Syntax change from ODBC style to MySQL style: Replace '?' with
+                 * '?xxx' (where xxx is the name of the Parameter).
+                 */
+                while (ASqlStatement.IndexOf("?", QMarkPos + 1) > 0)
+                {
+                    QMarkPos = ASqlStatement.IndexOf("?", QMarkPos + 1);
+
+                    ////                        TLogging.Log("QMarkPos: " + QMarkPos.ToString() +
+                    ////                            "; ParamCounter: " + ParamCounter.ToString() +
+                    ////                            "; LastQMarkPos: " + LastQMarkPos.ToString());
+
+                    if (ParamCounter > 0)
+                    {
+                        SQLSelectBeforeQMark = ASqlStatement.Substring(
+                            LastQMarkPos + 1, QMarkPos - LastQMarkPos - 1);
+                    }
+                    else
+                    {
+                        SQLSelectBeforeQMark = ASqlStatement.Substring(
+                            0, QMarkPos);
+                    }
+
+                    NextQMarkPos = ASqlStatement.IndexOf("?", QMarkPos + 1);
+
+                    if (NextQMarkPos > 0)
+                    {
+                        SQLSelectAfterQMark = "";
+                    }
+                    else
+                    {
+                        SQLSelectAfterQMark = ASqlStatement.Substring(
+                            QMarkPos + 1, ASqlStatement.Length - QMarkPos - 1);
+                    }
+
+                    SQLSelectStatementRepl = SQLSelectStatementRepl +
+                                             SQLSelectBeforeQMark +
+                                             "?" + ReturnValue[ParamCounter].ParameterName +
+                                             SQLSelectAfterQMark;
+
+                    LastQMarkPos = QMarkPos;
+
+                    ////                        TLogging.Log("QMarkPos: " + QMarkPos.ToString() +
+                    ////                            "; ParamCounter: " + ParamCounter.ToString() +
+                    ////                            "; LastQMarkPos: " + LastQMarkPos.ToString() + Environment.NewLine +
+                    ////                            "SQLSelectBeforeQMark: " + SQLSelectBeforeQMark + Environment.NewLine +
+                    ////                            "SQLSelectAfterQMark: " + SQLSelectAfterQMark + Environment.NewLine +
+                    ////                            "SQLSelectStatementRepl: " + SQLSelectStatementRepl + Environment.NewLine);
+
+                    ParamCounter++;
+                }
+
+                ASqlStatement = SQLSelectStatementRepl;
+
+                //                TLogging.Log("new statement: " + SQLSelectStatementRepl);
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -102,7 +312,38 @@ namespace Ict.Common.DB
         /// <returns></returns>
         public IDbCommand NewCommand(ref string ACommandText, IDbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
         {
-            return null;
+            IDbCommand ObjReturn = null;
+
+            ACommandText = FormatQueryRDBMSSpecific(ACommandText);
+
+            if (DBAccess.GDBAccessObj.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                TLogging.Log("Query formatted for MySQL: " + ACommandText);
+            }
+
+            MySqlParameter[] MySQLParametersArray = null;
+
+            if ((AParametersArray != null)
+                && (AParametersArray.Length > 0))
+            {
+                if (AParametersArray != null)
+                {
+                    MySQLParametersArray = (MySqlParameter[])ConvertOdbcParameters(AParametersArray, ref ACommandText);
+                }
+            }
+
+            ObjReturn = new MySqlCommand(ACommandText, (MySqlConnection)AConnection);
+
+            if (MySQLParametersArray != null)
+            {
+                // add parameters
+                foreach (DbParameter param in MySQLParametersArray)
+                {
+                    ObjReturn.Parameters.Add(param);
+                }
+            }
+
+            return ObjReturn;
         }
 
         /// <summary>
@@ -111,7 +352,9 @@ namespace Ict.Common.DB
         /// <returns></returns>
         public IDbDataAdapter NewAdapter()
         {
-            return null;
+            IDbDataAdapter TheAdapter = new MySqlDataAdapter();
+
+            return TheAdapter;
         }
 
         /// <summary>
@@ -128,6 +371,7 @@ namespace Ict.Common.DB
             Int32 AMaxRecords,
             string ADataTableName)
         {
+            ((MySqlDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
         }
 
         /// <summary>
@@ -143,6 +387,7 @@ namespace Ict.Common.DB
             Int32 AStartRecord,
             Int32 AMaxRecords)
         {
+            ((MySqlDataAdapter)TheAdapter).Fill(AFillDataTable);
         }
 
         /// <summary>
@@ -167,7 +412,11 @@ namespace Ict.Common.DB
         /// <returns>Sequence Value.</returns>
         public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
         {
-            return -1;
+            string stmt = "INSERT INTO " + ASequenceName + " VALUES(NULL, -1);";
+            MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)AConnection);
+
+            cmd.ExecuteNonQuery();
+            return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase, AConnection);
         }
 
         /// <summary>
@@ -181,7 +430,10 @@ namespace Ict.Common.DB
         /// <returns>Sequence Value.</returns>
         public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
         {
-            return -1;
+            string stmt = "SELECT MAX(sequence) FROM " + ASequenceName + ";";
+            MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)AConnection);
+
+            return Convert.ToInt64(cmd.ExecuteScalar());
         }
     }
 }

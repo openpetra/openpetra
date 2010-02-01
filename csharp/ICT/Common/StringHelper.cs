@@ -596,7 +596,7 @@ namespace Ict.Common
 
             // force quotes for integers that have leading 0; this is needed for account codes etc
             // unfortunately, Excel still does not treat the column as text
-            bool forceQuotes = value.StartsWith("0") && StringHelper.IsStringPositiveInteger(value);
+            bool forceQuotes = value.StartsWith("0") && value.Length > 1 && StringHelper.IsStringPositiveInteger(value);
 
             // only use quotes if the value contains the separator or it contains double quotes
             // TODO: allow option to always use quotes, or define to use single or double quotes

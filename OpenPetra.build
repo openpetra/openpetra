@@ -302,13 +302,34 @@
              <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS openpetra;" database="template1"/>
              <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE openpetra;" database="template1"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver;" database="openpetra" failonerror="false"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER';" database="openpetra" failonerror="false"/>
+             <property name="tempfile" value="${path::get-temp-path()}/userpermissions.sql"/>
+             <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+                 <!-- at least on Mac, the tmp directory of the current user is returned, which the postgres user has no access to -->
+                 <property name="tempfile" value="/tmp/userpermissions.sql"/>
+             </if>
+             <psql exe="${PostgreSQL.exe}" 
+                sqlcommand="select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
+                outputfile="${tempfile}"
+                database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="openpetra"/>
+
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver;" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver;" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON s_login_s_login_process_id_r_seq TO petraserver;"  database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver;" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_general_ledger_master TO petraserver;" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_statement_number TO petraserver;" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_match_number TO petraserver;" database="openpetra"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <echo message="this will now take a while..."/>
-             <exec program="cmd.exe" commandline="/C &quot;echo drop database if exists petra; | ${MySQL.exe} -u root&quot;"/>
-             <exec program="cmd.exe" commandline="/C &quot;echo create database if not exists petra; | ${MySQL.exe} -u root&quot;"/>
+             <exec program="cmd.exe" commandline="/C &quot;echo drop database if exists petra; | &quot;${MySQL.exe}&quot; -u root --password=petra&quot;"/>
+             <exec program="cmd.exe" commandline="/C &quot;echo create database if not exists petra; | &quot;${MySQL.exe}&quot; -u root --password=petra&quot;"/>
              <!-- add -v before -u if you want to see the sql commands... -->
-             <exec program="cmd.exe" commandline="/C &quot;${MySQL.exe}&quot; -u root petra &lt; ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql"/>
+             <exec program="cmd.exe" commandline="/C &quot;${MySQL.exe}&quot; -u root --password=petra petra &lt; ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql"/>
+             <exec program="cmd.exe" commandline="/C &quot;echo GRANT SELECT,UPDATE,DELETE,INSERT ON * TO petraserver IDENTIFIED BY 'TOBESETBYINSTALLER'; | &quot;${MySQL.exe}&quot; -u root --password=petra petra&quot;"/>
         </if>
     </target>
 
@@ -363,34 +384,16 @@
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver;" database="openpetra" failonerror="false"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER';" database="openpetra" failonerror="false"/>
-             <property name="tempfile" value="${path::get-temp-path()}/userpermissions.sql"/>
-             <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-                 <!-- at least on Mac, the tmp directory of the current user is returned, which the postgres user has no access to -->
-                 <property name="tempfile" value="/tmp/userpermissions.sql"/>
-             </if>
-             <psql exe="${PostgreSQL.exe}" 
-                sqlcommand="select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
-                outputfile="${tempfile}"
-                database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="openpetra"/>
-
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON s_login_s_login_process_id_r_seq TO petraserver;"  database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_general_ledger_master TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_statement_number TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_match_number TO petraserver;" database="openpetra"/>
-
              <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/clean.sql" database="openpetra"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="openpetra"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/init.sql.local" database="openpetra"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" database="openpetra"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
-             <!-- todo -->
+             <exec program="cmd.exe" commandline="/C &quot;${MySQL.exe}&quot; -u root --password=petra petra &lt; ${DemoData.Dir}/clean.sql"/>
+             <exec program="cmd.exe" commandline="/C &quot;${MySQL.exe}&quot; -u root --password=petra petra &lt; ${BaseData.Dir}/clean.sql"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${BaseData.Dir}/init.sql.local -database:petra -username:root -password:petra" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${DemoData.Dir}/init.sql.local -database:petra -username:root -password:petra" failonerror="true"/>
         </if>
     </target>
 
