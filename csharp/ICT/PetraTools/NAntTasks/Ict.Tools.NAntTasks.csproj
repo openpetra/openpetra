@@ -52,6 +52,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="ExecCmd.cs" />
     <Compile Include="ExecDotNet.cs" />
+    <Compile Include="Mysql.cs" />
     <Compile Include="Postgresql.cs" />
   </ItemGroup>
 </Project>
