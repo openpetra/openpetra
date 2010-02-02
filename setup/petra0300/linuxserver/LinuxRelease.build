@@ -52,6 +52,8 @@
                     tofile="${setupDir}/bin30/System.Data.SQLite.dll"/>
         <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/Npgsql/Npgsql.dll"
                     tofile="${setupDir}/bin30/Npgsql.dll"/>
+        <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/MySQL/mysql.data.dll"
+                    tofile="${setupDir}/bin30/MySql.Data.dll"/>
         <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml"
                     tofile="${setupDir}/bin30/UINavigation.yml"/>
 

@@ -61,6 +61,7 @@
         <call target="compileTemplate"/>
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/Debug/System.Data.SQLite.dll" overwrite="true"/>
+            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/MySQL/mysql.data.dll" tofile="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/Debug/MySql.Data.dll" overwrite="true"/>
         </if>
     </target>
     <target name="compileTesting" description="compile the Testing module">
@@ -160,6 +161,7 @@
                 <!-- requires sqlite 3.6.1 or higher to be installed on the linux system -->
                 <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" 
                       tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/System.Data.SQLite.dll" overwrite="true"/>
+                <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/MySQL/mysql.data.dll" tofile="${OpenPetraRoot.dir}/csharp/ICT/Server/_bin/${Output.dir}/MySql.Data.dll" overwrite="true"/>
             </if>
             <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
             <if test="${file::exists(language.file)}">
@@ -325,10 +327,10 @@
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <echo message="this will now take a while..."/>
-             <mysql exe="${MySQL.exe}" sqlcommand="drop database if exists openpetra;" user="root" password="petra"/>
-             <mysql exe="${MySQL.exe}" sqlcommand="create database if not exists openpetra;" user="root" password="petra"/>
-             <mysql exe="${MySQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="openpetra" user="root" password="petra"/>
-             <mysql exe="${MySQL.exe}" sqlcommand="GRANT SELECT,UPDATE,DELETE,INSERT ON * TO petraserver IDENTIFIED BY 'TOBESETBYINSTALLER';" database="openpetra" user="root" password="petra"/>
+             <mysql exe="${MySQL.exe}" sqlcommand="drop database if exists openpetra;" user="root" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlcommand="create database if not exists openpetra;" user="root" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="openpetra" user="root" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlcommand="GRANT SELECT,UPDATE,DELETE,INSERT ON * TO petraserver IDENTIFIED BY 'TOBESETBYINSTALLER';" database="openpetra" user="root" password="${DBMS.Password}"/>
         </if>
     </target>
 
@@ -389,10 +391,10 @@
              <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" database="openpetra"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
-             <mysql exe="${MySQL.exe}" sqlfile="${DemoData.Dir}/clean.sql" database="openpetra" user="root" password="petra"/>
-             <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="openpetra" user="root" password="petra"/>
-             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${BaseData.Dir}/init.sql.local -database:openpetra -username:root -password:petra" failonerror="true"/>
-             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${DemoData.Dir}/init.sql.local -database:openpetra -username:root -password:petra" failonerror="true"/>
+             <mysql exe="${MySQL.exe}" sqlfile="${DemoData.Dir}/clean.sql" database="openpetra" user="root" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="openpetra" user="root" password="${DBMS.Password}"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${BaseData.Dir}/init.sql.local -database:openpetra -username:root -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${DemoData.Dir}/init.sql.local -database:openpetra -username:root -password:${DBMS.Password}" failonerror="true"/>
         </if>
     </target>
 
