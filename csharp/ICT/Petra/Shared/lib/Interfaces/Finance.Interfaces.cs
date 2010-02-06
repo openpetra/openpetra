@@ -449,9 +449,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                                        string AXmlHierarchy);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
         bool ImportNewLedger(Int32 ALedgerNumber,
+                             string AXmlLedgerDetails,
                              string AXmlAccountHierarchy,
                              string AXmlCostCentreHierarchy,
-                             string AXmlInitialBalances);
+                             string AXmlMotivationDetails);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
         bool CanDeleteAccount(Int32 ALedgerNumber,
                               string AAccountCode);
