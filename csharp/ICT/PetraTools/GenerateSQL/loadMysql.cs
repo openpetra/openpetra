@@ -71,7 +71,7 @@ public class TLoadMysql
             else if (line.Trim().ToUpper().StartsWith("COPY"))
             {
                 // pgsql: COPY p_language FROM 'c:/p_language.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
-                // mysql: LOAD DATA INFILE 'c:/p_language.csv' INTO TABLE p_language FIELDS TERMINATED BY ',' ENCLOSED BY '"' ESCAPED BY '"';
+                // mysql: LOAD DATA LOCAL INFILE 'c:/p_language.csv' INTO TABLE p_language FIELDS TERMINATED BY ',' ENCLOSED BY '"' ESCAPED BY '"';
 
                 // need to fix the NULL value from ? to NULL
                 string DataFilename = line.Substring(line.IndexOf("'") + 1);
@@ -130,7 +130,7 @@ public class TLoadMysql
 
                 // see also http://dev.mysql.com/doc/refman/5.1/en/insert-speed.html
                 string stmt = String.Format(
-                    "LOAD DATA INFILE '{0}' INTO TABLE {1} FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"';",
+                    "LOAD DATA LOCAL INFILE '{0}' INTO TABLE {1} FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"';",
                     DataFilename + ".local",
                     TableName);
                 DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, Transaction);
