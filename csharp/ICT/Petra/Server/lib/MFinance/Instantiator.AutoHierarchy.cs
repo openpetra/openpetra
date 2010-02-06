@@ -2366,11 +2366,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
 
         /// generated method from connector
         public bool ImportNewLedger(Int32 ALedgerNumber,
+                                    string AXmlLedgerDetails,
                                     string AXmlAccountHierarchy,
                                     string AXmlCostCentreHierarchy,
-                                    string AXmlInitialBalances)
+                                    string AXmlMotivationDetails)
         {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ImportNewLedger(ALedgerNumber, AXmlAccountHierarchy, AXmlCostCentreHierarchy, AXmlInitialBalances);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ImportNewLedger(ALedgerNumber, AXmlLedgerDetails, AXmlAccountHierarchy, AXmlCostCentreHierarchy, AXmlMotivationDetails);
         }
 
         /// generated method from connector
