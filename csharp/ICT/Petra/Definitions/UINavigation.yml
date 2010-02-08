@@ -33,6 +33,7 @@ OpenPetra:
                         FindPartner: {ActionClick=TFrmPartnerMain.FindPartner}
                     Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
+                        ExportPartners: {ActionClick=TFrmPartnerMain.ExportPartners}
                 Ledger43: {Label=German Ledger (43), LedgerNumber=43, Namespace=Ict.Petra.Client.MFinance.Gui}
                     GL: 
                         ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=GL.TFrmGLAccountHierarchy}

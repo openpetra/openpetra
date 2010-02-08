@@ -989,6 +989,12 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
             return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ImportPartners(AXmlPartnerData, out AVerificationResult);
         }
 
+        /// generated method from connector
+        public string ExportPartners()
+        {
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ExportPartners();
+        }
+
     }
 }
 

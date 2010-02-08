@@ -105,6 +105,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// export partners into file
+        public static void ExportPartners(IntPtr AParentFormHandle)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            doc.LoadXml(TRemote.MPartner.ImportExport.WebConnectors.ExportPartners());
+            TImportExportDialogs.ExportWithDialog(doc, Catalog.GetString("Save Partners into File"));
+        }
+
         /// <summary>
         /// open partner find screen
         /// </summary>
