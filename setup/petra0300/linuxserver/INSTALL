@@ -5,8 +5,9 @@ required packages:
  one of the following RDBMS:
    sqlite3 (requires > 3.6.1)
    postgresql (recommended, default)
+   mysql
 
-The default configuration for the server is to use postgresql.
+The default configuration for the server is to use postgresql. But mysql should now work as well.
 
 Notes for sqlite:
 If you want to use sqlite, you need to change the symbolic link:
@@ -18,6 +19,12 @@ If you use sqlite, it will automatically create a copy of the demo database, and
 Notes for postgresql:
 To load the initial database: 
 sudo ./initpg.sh
+
+Notes for mysql:
+If you want to use mysql, you need to change the symbolic link:
+cd etc30; rm PetraServerConsole.config; ln -s PetraServerConsole-mysql.config PetraServerConsole.config
+To load the initial database (you need to know the db password for root, or change the script):
+./initmysql.sh
 
 firewall: 
 in order for clients to connect from outside, you need to open ports 9000 and above (or what you have defined in your config files).

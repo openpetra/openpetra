@@ -123,6 +123,8 @@
 						tofile="${setupDir}/openpetraorg-server.sh"/>
 			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/initpg.sh"
 						tofile="${setupDir}/initpg.sh"/>
+			<copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/initmysql.sh"
+						tofile="${setupDir}/initmysql.sh"/>
 
 			<!-- change the executable flag -->
 			<ExecCmd program="sh" commandline="/C &quot;chmod a+x ${setupDir}/*.sh&quot;"/>

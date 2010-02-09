@@ -231,8 +231,9 @@ public class TWriteSQL
             {
                 string createStmt = "CREATE TABLE " + seq.strName + " (sequence INTEGER AUTO_INCREMENT, dummy INTEGER, PRIMARY KEY(sequence));";
                 ASw.WriteLine(createStmt);
-                createStmt = "INSERT INTO " + seq.strName + " VALUES(NULL, -1);";
-                ASw.WriteLine(createStmt);
+                // the following line would cause trouble later when loading the demo/base data
+                //createStmt = "INSERT INTO " + seq.strName + " VALUES(NULL, -1);";
+                //ASw.WriteLine(createStmt);
             }
         }
         else
