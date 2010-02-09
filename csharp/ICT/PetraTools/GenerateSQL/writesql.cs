@@ -97,7 +97,7 @@ public class TWriteSQL
             DumpIndexes(sw, Table, true);
         }
 
-        WriteSequences(sw, ATargetDatabase, AStore);
+        WriteSequences(sw, ATargetDatabase, AStore, true);
 
         sw.Close();
         System.Console.WriteLine("Success: file written: {0}", AOutputFile);
@@ -175,7 +175,7 @@ public class TWriteSQL
             }
         }
 
-        WriteSequences(sw, ATargetDatabase, AStore);
+        WriteSequences(sw, ATargetDatabase, AStore, false);
 
         sw.Close();
         outPutFileStream.Close();
@@ -212,7 +212,10 @@ public class TWriteSQL
         System.Console.WriteLine("Success: file written: {0}", CreateConstraintsAndIndexesFile);
     }
 
-    private static Boolean WriteSequences(StreamWriter ASw, eDatabaseType ATargetDatabase, TDataDefinitionStore AStore)
+    private static Boolean WriteSequences(StreamWriter ASw,
+        eDatabaseType ATargetDatabase,
+        TDataDefinitionStore AStore,
+        bool AWithSequenceInitialisation)
     {
         if (ATargetDatabase == eDatabaseType.Sqlite)
         {
@@ -231,9 +234,13 @@ public class TWriteSQL
             {
                 string createStmt = "CREATE TABLE " + seq.strName + " (sequence INTEGER AUTO_INCREMENT, dummy INTEGER, PRIMARY KEY(sequence));";
                 ASw.WriteLine(createStmt);
-                // the following line would cause trouble later when loading the demo/base data
-                //createStmt = "INSERT INTO " + seq.strName + " VALUES(NULL, -1);";
-                //ASw.WriteLine(createStmt);
+
+                if (AWithSequenceInitialisation)
+                {
+                    // the following line would cause trouble later when loading the demo/base data
+                    createStmt = "INSERT INTO " + seq.strName + " VALUES(NULL, -1);";
+                    ASw.WriteLine(createStmt);
+                }
             }
         }
         else

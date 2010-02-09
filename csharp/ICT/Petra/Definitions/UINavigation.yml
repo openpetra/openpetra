@@ -52,6 +52,9 @@ OpenPetra:
                     Setup:
                         SetupCurrencies: {Description: Not functional yet, ActionOpenScreen=Setup.TFrmSetupCurrency}
                         SetupDailyExchangeRate: {Description=Not functional yet, ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
+                Database:
+                    ImportExport:
+                        ExportAllData: {ActionClick=TSysManMain.ExportAllData}
             Favourites:
             CustomGroup:
 
@@ -165,3 +168,6 @@ OpenPetra:
                 DeleteUser:
                 ModifyUserPermissions:
                 ImportUserPermissions:
+            Database:
+                ImportExport:
+                    ExportAllData: {ActionClick=TSysManMain.ExportAllData}

@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.App.Core", "Petra\Server\app\Core\Ict.Petra.Server.App.Core.csproj", "{F053BB7D-E40D-4434-B99C-FC803F65E10A}"
@@ -82,6 +82,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MCommon.DataCascading", "Petra\Server\lib\MCommon\data\Ict.Petra.Server.MCommon.DataCascading.csproj", "{2E02BD3D-BB0A-456D-A3D0-AC05FC9114E9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPartner.WebConnectors", "Petra\Server\lib\MPartner\Ict.Petra.Server.MPartner.WebConnectors.csproj", "{B7E0E43A-F197-46C0-9F5E-260FFDF2C877}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MSysMan.WebConnectors", "Petra\Server\lib\MSysMan\Ict.Petra.Server.MSysMan.WebConnectors.csproj", "{88C4BED3-FB27-46F8-85A7-F461989B7A34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -253,5 +255,9 @@ Global
 		{FD074084-1FB7-4C92-BD2A-09E7369EC81D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD074084-1FB7-4C92-BD2A-09E7369EC81D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD074084-1FB7-4C92-BD2A-09E7369EC81D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88C4BED3-FB27-46F8-85A7-F461989B7A34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88C4BED3-FB27-46F8-85A7-F461989B7A34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88C4BED3-FB27-46F8-85A7-F461989B7A34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88C4BED3-FB27-46F8-85A7-F461989B7A34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

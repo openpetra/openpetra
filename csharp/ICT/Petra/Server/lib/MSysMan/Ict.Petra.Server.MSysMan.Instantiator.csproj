@@ -82,5 +82,9 @@
       <Project>{1403E8FE-F02E-4BF9-8648-D803397A26E0}</Project>
       <Name>Ict.Petra.Server.MSysMan.UIConnectors</Name>
     </ProjectReference>
+    <ProjectReference Include="Ict.Petra.Server.MSysMan.WebConnectors.csproj">
+      <Project>{88C4BED3-FB27-46F8-85A7-F461989B7A34}</Project>
+      <Name>Ict.Petra.Server.MSysMan.WebConnectors</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

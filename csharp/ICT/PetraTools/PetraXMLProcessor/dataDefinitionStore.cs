@@ -680,13 +680,19 @@ namespace Ict.Tools.DBXML
                 field.ExistsStrInitialValue = true;
                 field.iOrder = grpTableField.List.Count;
                 grpTableField.List.Add(field);
-                constr = new TConstraint();
-                constr.strName = this.strName + "_fkcr";
-                constr.strType = "foreignkey";
-                constr.strThisFields = StringHelper.StrSplit("s_created_by_c", ",");
-                constr.strOtherTable = "s_user";
-                constr.strOtherFields = StringHelper.StrSplit("s_user_id_c", ",");
-                grpConstraint.List.Add(constr);
+
+                if (this.strName != "s_user")
+                {
+                    // avoid circular reference inside table. MySQL does not like that
+                    constr = new TConstraint();
+                    constr.strName = this.strName + "_fkcr";
+                    constr.strType = "foreignkey";
+                    constr.strThisFields = StringHelper.StrSplit("s_created_by_c", ",");
+                    constr.strOtherTable = "s_user";
+                    constr.strOtherFields = StringHelper.StrSplit("s_user_id_c", ",");
+                    grpConstraint.List.Add(constr);
+                }
+
                 field = new TTableField();
                 field.strName = "s_date_modified_d";
                 field.strTableName = this.strName;
@@ -715,13 +721,18 @@ namespace Ict.Tools.DBXML
                 field.ExistsStrInitialValue = true;
                 field.iOrder = grpTableField.List.Count;
                 grpTableField.List.Add(field);
-                constr = new TConstraint();
-                constr.strName = this.strName + "_fkmd";
-                constr.strType = "foreignkey";
-                constr.strThisFields = StringHelper.StrSplit("s_modified_by_c", ",");
-                constr.strOtherTable = "s_user";
-                constr.strOtherFields = StringHelper.StrSplit("s_user_id_c", ",");
-                grpConstraint.List.Add(constr);
+
+                if (this.strName != "s_user")
+                {
+                    // avoid circular reference inside table. MySQL does not like that
+                    constr = new TConstraint();
+                    constr.strName = this.strName + "_fkmd";
+                    constr.strType = "foreignkey";
+                    constr.strThisFields = StringHelper.StrSplit("s_modified_by_c", ",");
+                    constr.strOtherTable = "s_user";
+                    constr.strOtherFields = StringHelper.StrSplit("s_user_id_c", ",");
+                    grpConstraint.List.Add(constr);
+                }
             }
 
             field = new TTableField();

@@ -383,6 +383,16 @@
                 </Children>
             </SubNamespace>
             <SubNamespace>
+                <Name>ImportExport</Name>
+                <Description>Import and Export Sub-System</Description>
+                <Children>
+                    <SubNamespace>
+                        <Name>WebConnectors</Name>
+                        <Description>Web Connectors</Description>
+                    </SubNamespace>
+                </Children>
+            </SubNamespace>
+            <SubNamespace>
                 <Name>PrintManagement</Name>
                 <Description>Print Management Sub-System</Description>
                 <Children>

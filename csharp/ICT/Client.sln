@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 # SharpDevelop 3.0.0.3800
@@ -43,6 +43,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MFinance.Logic", "Petra\Client\lib\MFinance\logic\Ict.Petra.Client.MFinance.Logic.csproj", "{45767519-3EC2-4143-B0CC-252033363D35}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MReporting.Gui.MFinance", "Petra\Client\lib\MReporting\gui\MFinance\Ict.Petra.Client.MReporting.Gui.MFinance.csproj", "{5669E7C8-72A2-47D5-BEBE-C4DCD8099F59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MSysMan.Gui", "Petra\Client\lib\MSysMan\gui\Ict.Petra.Client.MSysMan.Gui.csproj", "{84F5D8D3-FC70-40C0-9116-5621035F77B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -134,5 +136,9 @@ Global
 		{5669E7C8-72A2-47D5-BEBE-C4DCD8099F59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5669E7C8-72A2-47D5-BEBE-C4DCD8099F59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5669E7C8-72A2-47D5-BEBE-C4DCD8099F59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84F5D8D3-FC70-40C0-9116-5621035F77B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84F5D8D3-FC70-40C0-9116-5621035F77B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84F5D8D3-FC70-40C0-9116-5621035F77B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84F5D8D3-FC70-40C0-9116-5621035F77B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

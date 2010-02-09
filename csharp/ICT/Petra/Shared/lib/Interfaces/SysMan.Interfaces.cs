@@ -12,6 +12,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance;
 using Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance;
+using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport;
 using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.UIConnectors;
@@ -20,6 +21,7 @@ using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.SystemDefaults;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults;
 using Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager;
@@ -42,6 +44,12 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan
 
         /// <summary>access to sub namespace</summary>
         ITableMaintenanceNamespace TableMaintenance
+        {
+            get;
+        }
+
+        /// <summary>access to sub namespace</summary>
+        IImportExportNamespace ImportExport
         {
             get;
         }
@@ -220,6 +228,34 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance.UIConnectors
         TSubmitChangesResult SubmitChanges(ref DataTable AInspectTable,
                                            ref DataTable AResponseTable,
                                            out TVerificationResultCollection AVerificationResult);
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MSysMan.ImportExport
+{
+    /// <summary>auto generated</summary>
+    public interface IImportExportNamespace : IInterface
+    {
+        /// <summary>access to sub namespace</summary>
+        IImportExportWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IImportExportWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        string ExportAllTables();
     }
 
 }

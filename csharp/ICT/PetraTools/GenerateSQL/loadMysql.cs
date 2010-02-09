@@ -85,7 +85,7 @@ public class TLoadMysql
 
                 while (!sData.EndOfStream)
                 {
-                    string CSVDataQuestionMark = sData.ReadLine();
+                    string CSVDataQuestionMark = sData.ReadLine().Trim();
                     string CSVDataNULL = string.Empty;
 
                     while (CSVDataQuestionMark.Length > 0)
@@ -130,7 +130,7 @@ public class TLoadMysql
 
                 // see also http://dev.mysql.com/doc/refman/5.1/en/insert-speed.html
                 string stmt = String.Format(
-                    "LOAD DATA LOCAL INFILE '{0}' INTO TABLE {1} FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"';",
+                    "LOAD DATA LOCAL INFILE '{0}' INTO TABLE {1} FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"' LINES TERMINATED BY '\r\n';",
                     DataFilename + ".local",
                     TableName);
                 DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, Transaction);

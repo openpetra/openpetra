@@ -397,10 +397,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             XmlNode rootNode = PartnerData.FirstChild.NextSibling;
 
+            Int32 groupCounter = 0;
+
             foreach (string category in PartnerCategories.Keys)
             {
                 // get category data
-                XmlElement groupNode = PartnerData.CreateElement("PartnerGroup");
+                groupCounter++;
+                XmlElement groupNode = PartnerData.CreateElement("PartnerGroup" + groupCounter.ToString());
                 rootNode.AppendChild(groupNode);
 
                 Int32 partnerCounter = 0;

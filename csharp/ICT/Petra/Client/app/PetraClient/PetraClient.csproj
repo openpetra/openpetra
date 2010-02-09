@@ -178,6 +178,10 @@
       <Project>{2B06F76C-A8FE-4F0A-A312-B53055F9E77A}</Project>
       <Name>Ict.Petra.Client.MPartner.Gui</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\lib\MSysMan\gui\Ict.Petra.Client.MSysMan.Gui.csproj">
+      <Project>{84F5D8D3-FC70-40C0-9116-5621035F77B5}</Project>
+      <Name>Ict.Petra.Client.MSysMan.Gui</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\Ict.Petra.Client.App.Core.csproj">
       <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
       <Name>Ict.Petra.Client.App.Core</Name>

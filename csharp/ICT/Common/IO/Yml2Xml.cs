@@ -175,7 +175,17 @@ namespace Ict.Common.IO
                     attributesYml += ", ";
                 }
 
-                attributesYml += attrToWrite.Name + "=" + attrToWrite.Value;
+                attributesYml += attrToWrite.Name + "=";
+
+                if (attrToWrite.Value.Contains(",") || attrToWrite.Value.Contains(":") || attrToWrite.Value.Contains("=")
+                    || attrToWrite.Value.Contains("\""))
+                {
+                    attributesYml += "\"" + attrToWrite.Value.Replace("\"", "\\\"") + "\"";
+                }
+                else
+                {
+                    attributesYml += attrToWrite.Value;
+                }
             }
 
             if (attributesYml.Length > 0)
