@@ -73,6 +73,7 @@
     <Compile Include="Security.Principal.cs" />
     <Compile Include="Security.Types.cs" />
     <Compile Include="StaticData.cs" />
+    <Compile Include="TableList.cs" />
     <Compile Include="TypeConverter.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="Utilities.cs" />

@@ -122,6 +122,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 "outputshared") + "\\lib\\MCommon\\data\\",
                             "Ict.Petra.Shared.MCommon.Data",
                             "Common.Tables");
+                        TGenerateTableList.WriteTableList(store, cmdLine.GetOptValue("outputshared") + Path.DirectorySeparatorChar + "TableList.cs");
                     }
                     else if (cmdLine.GetOptValue("do") == "dataaccess")
                     {

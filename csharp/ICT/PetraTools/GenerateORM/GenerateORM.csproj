@@ -52,6 +52,7 @@
     <Compile Include="codeGenerationDataset.cs" />
     <Compile Include="codeGenerationPetra.cs" />
     <Compile Include="codeGenerationTable.cs" />
+    <Compile Include="generateTableList.cs" />
     <Compile Include="main.cs" />
   </ItemGroup>
   <ItemGroup>

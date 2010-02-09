@@ -58,6 +58,7 @@
     <Compile Include="CSParser.cs" />
     <Compile Include="CSProjTools.cs" />
     <Compile Include="ParseXAML.cs" />
+    <Compile Include="InsertIntoRegion.cs" />
     <Compile Include="ProcessTemplate.cs" />
     <Compile Include="ProcessXAML.cs" />
     <Compile Include="WriterInterfaces.cs" />

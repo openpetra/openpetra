@@ -30,25 +30,32 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Tools.DBXML;
 
-namespace GenerateSQL
+namespace Ict.Tools.CodeGeneration.DataStore
 {
-	/// <summary>
-	/// produces an ordered list of tables, ordered by foreign key dependancies
-	/// </summary>
-	public class TTableList
-	{
-		public void CreateTableList(TDataDefinitionStore AStore)
-		{
-			ArrayList tables = AStore.GetTables();
-			
-			tables.Sort(TTableComparer);
-			
-			foreach(TTable t in tables)
-			{
-				
-			}
-		}
-	}
-	
-	
+    /// <summary>
+    /// produces an ordered list of tables, ordered by foreign key dependancies
+    /// </summary>
+    public class TGenerateTableList
+    {
+        /// <summary>
+        /// write an ordered list of tables, ordered by foreign key dependancies
+        /// </summary>
+        /// <param name="AStore"></param>
+        /// <param name="AFilename"></param>
+        public static void WriteTableList(TDataDefinitionStore AStore, string AFilename)
+        {
+            ArrayList tables = AStore.GetTables();
+
+            tables.Sort(new TTableComparer());
+
+            string namesCodelet = string.Empty;
+
+            foreach (TTable t in tables)
+            {
+                namesCodelet += "INDENT" + "list.Add(\"" + t.strDotNetName + "\");" + Environment.NewLine;
+            }
+
+            TInsertIntoRegion.InsertIntoRegion(AFilename, "CamelCaseTableNames", namesCodelet);
+        }
+    }
 }

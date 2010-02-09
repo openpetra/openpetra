@@ -821,6 +821,63 @@ namespace Ict.Tools.DBXML
     }
 
     /// <summary>
+    /// compares two tables, defines which is depending on the other.
+    /// in the end, we get a list of tables, in the order that you need when you populate the database with constraints enabled.
+    /// first the tables that depend on nothing, and then the tables that depend on them.
+    /// deleting the database can be done the other way round
+    /// </summary>
+    public class TTableComparer : IComparer
+    {
+        /// <summary>
+        /// compare two nodes; checking foreign keys
+        /// </summary>
+        /// <param name="node1"></param>
+        /// <param name="node2"></param>
+        /// <returns>+1 if node1 refers to node2, -1 if node1 is refered from node2,
+        /// if they have no connection compare the names</returns>
+        public int Compare(Object node1, Object node2)
+        {
+            TTable t1 = (TTable)node1;
+            TTable t2 = (TTable)node2;
+
+            if (t1.strName == t2.strName)
+            {
+                return 0;
+            }
+
+            ArrayList referencedFrom = t1.GetReferences();
+
+            foreach (TConstraint c in referencedFrom)
+            {
+                if (c.strThisTable == t2.strName)
+                {
+//                              if (t1.strName == "a_cost_centre" || t2.strName == "a_cost_centre")
+//                              {
+//                              Console.WriteLine(t1.strName + " < " + t2.strName);
+//                              }
+                    return -1;
+                }
+            }
+
+            referencedFrom = t2.GetReferences();
+
+            foreach (TConstraint c in referencedFrom)
+            {
+                if (c.strThisTable == t1.strName)
+                {
+//                        if (t1.strName == "a_cost_centre" || t2.strName == "a_cost_centre")
+//                        {
+//                            Console.WriteLine(t1.strName + " > " + t2.strName);
+//                        }
+                    return +1;
+                }
+            }
+
+            return t1.strName.CompareTo(t2.strName);
+        }
+    }
+
+    /// <summary>
     /// this describes a column of a table
     /// </summary>
     public class TTableField : TXMLElement
