@@ -54,40 +54,40 @@ using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 
 namespace QuickSQLTests
-{	
-	/// <summary>
-	/// check which partners have a costcentre but noone from the family is linked to it, so that donations 
-	/// would go to that local costcentre
-	/// </summary>
-	public class GetMissingLinkedPartnersCosCentre
-	{
-		/// <summary>
-		/// run the statements
-		/// </summary>
-		/// <param name="transaction"></param>
-		public static void Run(TDBTransaction ATransaction)
-		{
-            // get all partners that have a cost centre, but the cost centre is not linked to a family
-			string sqlcommand = 
-				"select pub_p_person.p_partner_key_n, pub_p_person.p_family_key_n, pub_p_person.p_first_name_c, pub_p_person.p_family_name_c " +
-				"from pub_p_person, pub_a_cost_centre " +
-				"where pub_p_person.p_partner_key_n = pub_a_cost_centre.a_cost_centre_code_c " +
-				"and not exists (SELECT * from pub_a_valid_ledger_number where pub_a_valid_ledger_number.a_cost_centre_code_c = pub_a_cost_centre.a_cost_centre_code_c)";
-			
-			PPersonTable persons = new PPersonTable();
-			
-			DBAccess.GDBAccessObj.SelectDT((DataTable)persons, sqlcommand, ATransaction, null, -1, -1);
-			
-			// now check if any member at all of that family is linked to a cost centre
-			foreach (PPersonRow person in persons.Rows)
-			{
-				PPersonRow templateRow = persons.NewRowTyped(false);
+{
+/// <summary>
+/// check which partners have a costcentre but noone from the family is linked to it, so that donations
+/// would go to that local costcentre
+/// </summary>
+public class GetMissingLinkedPartnersCosCentre
+{
+    /// <summary>
+    /// run the statements
+    /// </summary>
+    /// <param name="transaction"></param>
+    public static void Run(TDBTransaction ATransaction)
+    {
+        // get all partners that have a cost centre, but the cost centre is not linked to a family
+        string sqlcommand =
+            "select pub_p_person.p_partner_key_n, pub_p_person.p_family_key_n, pub_p_person.p_first_name_c, pub_p_person.p_family_name_c " +
+            "from pub_p_person, pub_a_cost_centre " +
+            "where pub_p_person.p_partner_key_n = pub_a_cost_centre.a_cost_centre_code_c " +
+            "and not exists (SELECT * from pub_a_valid_ledger_number where pub_a_valid_ledger_number.a_cost_centre_code_c = pub_a_cost_centre.a_cost_centre_code_c)";
 
-				if (AValidLedgerNumberAccess.CountViaPPartnerPartnerKey(person.FamilyKey, ATransaction) == 0)
-				{
-					Console.WriteLine("Problem with partner " + person.PartnerKey.ToString() + " " + person.FirstName + " " + person.FamilyName);
-				}
-			}
-		}
-	}
+        PPersonTable persons = new PPersonTable();
+
+        DBAccess.GDBAccessObj.SelectDT((DataTable)persons, sqlcommand, ATransaction, null, -1, -1);
+
+        // now check if any member at all of that family is linked to a cost centre
+        foreach (PPersonRow person in persons.Rows)
+        {
+            PPersonRow templateRow = persons.NewRowTyped(false);
+
+            if (AValidLedgerNumberAccess.CountViaPPartnerPartnerKey(person.FamilyKey, ATransaction) == 0)
+            {
+                Console.WriteLine("Problem with partner " + person.PartnerKey.ToString() + " " + person.FirstName + " " + person.FamilyName);
+            }
+        }
+    }
+}
 }

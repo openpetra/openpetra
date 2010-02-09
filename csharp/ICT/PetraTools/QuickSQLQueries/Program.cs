@@ -30,53 +30,52 @@ using Ict.Common;
 using Ict.Common.DB;
 
 namespace QuickSQLTests
-{	
-	class Program
-	{
-		
-		/// establish connection to database
-	    public static bool InitDBConnection()
-	    {
-	        TDataBase db = new TDataBase();
-	
-	        new TLogging("debug.log");
-	        db.DebugLevel = Convert.ToInt16(TAppSettingsManager.GetValueStatic("DebugLevel", "0"));
-	        
-	        StreamReader sr = new StreamReader("u:\\secret.txt");
-	
-	        db.EstablishDBConnection(TDBType.ProgressODBC,
-				sr.ReadLine(), // DSN
-	            "",
-	            "",
-	            sr.ReadLine(), // username
-	            sr.ReadLine(), // password
-	            "");
-	        DBAccess.GDBAccessObj = db;
-	        
-	        sr.Close();
-	
-	        return true;
-	    }
-		
-		public static void Main(string[] args)
-		{
-			try
-			{
-				InitDBConnection();
-	
-	            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+{
+class Program
+{
+    /// establish connection to database
+    public static bool InitDBConnection()
+    {
+        TDataBase db = new TDataBase();
 
-	            GetMissingLinkedPartnersCosCentre.Run(transaction);
-				
-	            DBAccess.GDBAccessObj.RollbackTransaction();
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e.Message);
-				Console.WriteLine(e.StackTrace);
-			}
-			Console.Write("Press any key to continue . . . ");
-			Console.ReadKey(true);
-		}
-	}
+        new TLogging("debug.log");
+        db.DebugLevel = Convert.ToInt16(TAppSettingsManager.GetValueStatic("DebugLevel", "0"));
+
+        StreamReader sr = new StreamReader("u:\\secret.txt");
+
+        db.EstablishDBConnection(TDBType.ProgressODBC,
+            sr.ReadLine(),                     // DSN
+            "",
+            "",
+            sr.ReadLine(),         // username
+            sr.ReadLine(),         // password
+            "");
+        DBAccess.GDBAccessObj = db;
+
+        sr.Close();
+
+        return true;
+    }
+
+    public static void Main(string[] args)
+    {
+        try
+        {
+            InitDBConnection();
+
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            GetMissingLinkedPartnersCosCentre.Run(transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+        }
+        Console.Write("Press any key to continue . . . ");
+        Console.ReadKey(true);
+    }
+}
 }
