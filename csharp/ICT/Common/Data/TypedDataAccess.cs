@@ -836,7 +836,7 @@ namespace Ict.Common.Data
             }
             else if (obj.GetType() == typeof(System.Decimal))
             {
-                // hardly ever used... p_person.p_christian_since_year_i number(4)
+                // hardly ever used... p_person.p_believer_since_year_i number(4)
                 newType = OdbcType.Decimal;
                 Length = 24;
             }

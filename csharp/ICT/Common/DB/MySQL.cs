@@ -182,6 +182,9 @@ namespace Ict.Common.DB
                             break;
 
                         case OdbcType.VarChar:
+
+                            // seems we need to escape a forward slash to avoid exception later
+                            AParameterArrayOdbc[Counter].Value = AParameterArrayOdbc[Counter].Value.ToString().Replace("/", "\\/");
                             ReturnValue[Counter] = new MySqlParameter(
                             ParamName,
                             MySqlDbType.String, AParameterArrayOdbc[Counter].Size);
@@ -199,6 +202,13 @@ namespace Ict.Common.DB
                             ReturnValue[Counter] = new MySqlParameter(
                             ParamName,
                             MySqlDbType.Date);
+
+                            break;
+
+                        case OdbcType.DateTime:
+                            ReturnValue[Counter] = new MySqlParameter(
+                            ParamName,
+                            MySqlDbType.DateTime);
 
                             break;
 

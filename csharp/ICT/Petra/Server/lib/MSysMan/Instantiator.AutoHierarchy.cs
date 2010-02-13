@@ -1629,6 +1629,12 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors
             return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ExportAllTables();
         }
 
+        /// generated method from connector
+        public bool ResetDatabase(string ANewDatabaseData)
+        {
+            return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ResetDatabase(ANewDatabaseData);
+        }
+
     }
 }
 

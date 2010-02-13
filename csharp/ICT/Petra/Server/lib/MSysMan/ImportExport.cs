@@ -31,9 +31,11 @@ using System.Data.Odbc;
 using System.Xml;
 using System.IO;
 using System.Reflection;
+using System.Globalization;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 {
@@ -131,7 +133,16 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                         if (col.DataType == typeof(DateTime))
                         {
-                            rowNode.SetAttribute(colName, Convert.ToDateTime(row[col]).ToString("yyyy-MM-dd HH:mm:ss"));
+                            DateTime d = Convert.ToDateTime(row[col]);
+
+                            if (d.TimeOfDay == TimeSpan.Zero)
+                            {
+                                rowNode.SetAttribute(colName, d.ToString("yyyy-MM-dd"));
+                            }
+                            else
+                            {
+                                rowNode.SetAttribute(colName, d.ToString("yyyy-MM-dd HH:mm:ss"));
+                            }
                         }
                         else
                         {
@@ -140,6 +151,226 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// this will reset the current database, and load the data from the given XmlDocument
+        /// </summary>
+        /// <param name="ANewDatabaseData"></param>
+        /// <returns></returns>
+        public static bool ResetDatabase(string ANewDatabaseData)
+        {
+            List <string>tables = TTableList.GetDBNames();
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            try
+            {
+                tables.Reverse();
+
+                foreach (string table in tables)
+                {
+                    DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM pub_" + table, Transaction, false);
+                }
+
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(ANewDatabaseData);
+
+                tables.Reverse();
+
+                // one transaction to import the user table and user permissions. otherwise logging in will not be possible if other import fails?
+                bool success = true;
+                success = success && LoadTable("s_user", doc, Transaction);
+                success = success && LoadTable("s_module", doc, Transaction);
+                success = success && LoadTable("s_user_module_access_permission", doc, Transaction);
+                success = success && LoadTable("s_system_defaults", doc, Transaction);
+
+                if (!success)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    return false;
+                }
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+                tables.Remove("s_user");
+                tables.Remove("s_module");
+                tables.Remove("s_user_module_access_permission");
+                tables.Remove("s_system_defaults");
+
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                foreach (string table in tables)
+                {
+                    LoadTable(table, doc, Transaction);
+                }
+
+                // TODO: what about sequences? they should be set appropriately, not lagging behind the imported data?
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem in ResetDatabase: " + e.Message);
+                TLogging.Log(e.StackTrace);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                return false;
+            }
+
+            return true;
+        }
+
+        private static XmlNode FindNode(XmlDocument ADoc, string ATableName)
+        {
+            XmlNode rootNode = ADoc.FirstChild.NextSibling;
+
+            foreach (XmlNode ModuleNode in rootNode.ChildNodes)
+            {
+                foreach (XmlNode TableNode in ModuleNode.ChildNodes)
+                {
+                    if (TableNode.Name == ATableName + "Table")
+                    {
+                        return TableNode;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static bool LoadTable(string ATableName, XmlDocument ADoc, TDBTransaction ATransaction)
+        {
+            XmlNode TableNode = FindNode(ADoc, StringHelper.UpperCamelCase(ATableName, false, false));
+
+            if (TableNode == null)
+            {
+                TLogging.Log("tablenode null");
+                return false;
+            }
+
+            if (TableNode.ChildNodes.Count == 0)
+            {
+                TLogging.Log("no children");
+                return false;
+            }
+
+            DataTable table = DBAccess.GDBAccessObj.SelectDT("Select * from " + ATableName, ATableName, ATransaction);
+            List <OdbcParameter>Parameters = new List <OdbcParameter>();
+
+            foreach (DataColumn col in table.Columns)
+            {
+                col.ColumnName = StringHelper.UpperCamelCase(col.ColumnName, true, true);
+            }
+
+            string InsertStatement = "INSERT INTO pub_" + ATableName + "() VALUES ";
+
+            bool firstRow = true;
+
+            foreach (XmlNode RowNode in TableNode.ChildNodes)
+            {
+                if (!firstRow)
+                {
+                    InsertStatement += ",";
+                }
+
+                firstRow = false;
+
+                InsertStatement += "(";
+
+                bool firstColumn = true;
+
+                foreach (DataColumn col in table.Columns)
+                {
+                    if (!firstColumn)
+                    {
+                        InsertStatement += ",";
+                    }
+
+                    firstColumn = false;
+
+                    if (TYml2Xml.HasAttribute(RowNode, col.ColumnName))
+                    {
+                        string strValue = TYml2Xml.GetAttribute(RowNode, col.ColumnName);
+
+                        if (col.DataType == typeof(DateTime))
+                        {
+                            OdbcParameter p;
+
+                            if (strValue.Length == "yyyy-MM-dd".Length)
+                            {
+                                p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.Date);
+                                p.Value = DateTime.ParseExact(strValue, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                            }
+                            else
+                            {
+                                p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.DateTime);
+                                p.Value = DateTime.ParseExact(strValue, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                            }
+
+                            Parameters.Add(p);
+                        }
+                        else if (col.DataType == typeof(String))
+                        {
+                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.VarChar);
+                            p.Value = strValue;
+                            Parameters.Add(p);
+                        }
+                        else if (col.DataType == typeof(Int32))
+                        {
+                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.Int);
+                            p.Value = Convert.ToInt32(strValue);
+                            Parameters.Add(p);
+                        }
+                        else if (col.DataType == typeof(Int64))
+                        {
+                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.Decimal);
+                            p.Value = Convert.ToInt64(strValue);
+                            Parameters.Add(p);
+                        }
+                        else if (col.DataType == typeof(double))
+                        {
+                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.Decimal);
+                            p.Value = Convert.ToDouble(strValue);
+                            Parameters.Add(p);
+                        }
+                        else if (col.DataType == typeof(bool))
+                        {
+                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.Bit);
+                            p.Value = Convert.ToBoolean(strValue);
+                            Parameters.Add(p);
+                        }
+                        else if (col.DataType == typeof(Decimal))
+                        {
+                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.Decimal);
+                            p.Value = Convert.ToDecimal(strValue);
+                            Parameters.Add(p);
+                        }
+                        else
+                        {
+                            // should not get here?
+                            throw new Exception("error in ResetDatabase, LoadTable: " + col.DataType.ToString() + " has not yet been implemented");
+                        }
+
+                        InsertStatement += "?";
+                    }
+                    else
+                    {
+                        InsertStatement += "NULL"; // DEFAULT
+                    }
+                }
+
+                InsertStatement += ")";
+            }
+
+            try
+            {
+                DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement, ATransaction, false, Parameters.ToArray());
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("error in ResetDatabase, LoadTable " + ATableName + ":" + e.Message);
+                return false;
+            }
+            return true;
         }
     }
 }

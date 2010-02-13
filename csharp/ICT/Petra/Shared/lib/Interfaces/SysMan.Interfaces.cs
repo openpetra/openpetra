@@ -256,6 +256,8 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
         string ExportAllTables();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        bool ResetDatabase(string ANewDatabaseData);
     }
 
 }

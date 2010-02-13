@@ -266,6 +266,13 @@ namespace Ict.Common.DB
 
                             break;
 
+                        case OdbcType.DateTime:
+                            ReturnValue[Counter] = new NpgsqlParameter(
+                            ParamName,
+                            NpgsqlDbType.Date);
+
+                            break;
+
                         case OdbcType.Int:
                             ReturnValue[Counter] = new NpgsqlParameter(
                             ParamName,
