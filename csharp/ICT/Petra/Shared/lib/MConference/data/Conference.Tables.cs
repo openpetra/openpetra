@@ -43,7 +43,7 @@ namespace Ict.Petra.Shared.MConference.Data
     public class PcConferenceTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 266;
+        public static short TableId = 265;
         /// used for generic TTypedDataTable functions
         public static short ColumnConferenceKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -750,7 +750,7 @@ namespace Ict.Petra.Shared.MConference.Data
     public class PcCostTypeTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 267;
+        public static short TableId = 266;
         /// used for generic TTypedDataTable functions
         public static short ColumnCostTypeCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -1457,7 +1457,7 @@ namespace Ict.Petra.Shared.MConference.Data
     public class PcConferenceOptionTypeTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 268;
+        public static short TableId = 267;
         /// used for generic TTypedDataTable functions
         public static short ColumnOptionTypeCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -2222,7 +2222,7 @@ namespace Ict.Petra.Shared.MConference.Data
     public class PcConferenceOptionTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 269;
+        public static short TableId = 268;
         /// used for generic TTypedDataTable functions
         public static short ColumnConferenceKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -2813,7 +2813,7 @@ namespace Ict.Petra.Shared.MConference.Data
     public class PcDiscountCriteriaTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 270;
+        public static short TableId = 269;
         /// used for generic TTypedDataTable functions
         public static short ColumnDiscountCriteriaCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -3520,7 +3520,7 @@ namespace Ict.Petra.Shared.MConference.Data
     public class PcDiscountTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 271;
+        public static short TableId = 270;
         /// used for generic TTypedDataTable functions
         public static short ColumnConferenceKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -4343,7 +4343,7 @@ namespace Ict.Petra.Shared.MConference.Data
     public class PcAttendeeTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 272;
+        public static short TableId = 271;
         /// used for generic TTypedDataTable functions
         public static short ColumnConferenceKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -5572,7 +5572,7 @@ namespace Ict.Petra.Shared.MConference.Data
     public class PcConferenceCostTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 273;
+        public static short TableId = 272;
         /// used for generic TTypedDataTable functions
         public static short ColumnConferenceKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -6163,7 +6163,7 @@ namespace Ict.Petra.Shared.MConference.Data
     public class PcExtraCostTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 274;
+        public static short TableId = 273;
         /// used for generic TTypedDataTable functions
         public static short ColumnConferenceKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -7044,7 +7044,7 @@ namespace Ict.Petra.Shared.MConference.Data
     public class PcEarlyLateTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 275;
+        public static short TableId = 274;
         /// used for generic TTypedDataTable functions
         public static short ColumnConferenceKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -7809,7 +7809,7 @@ namespace Ict.Petra.Shared.MConference.Data
     public class PcGroupTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 276;
+        public static short TableId = 275;
         /// used for generic TTypedDataTable functions
         public static short ColumnConferenceKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -8458,7 +8458,7 @@ namespace Ict.Petra.Shared.MConference.Data
     public class PcSupplementTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 277;
+        public static short TableId = 276;
         /// used for generic TTypedDataTable functions
         public static short ColumnConferenceKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -9107,7 +9107,7 @@ namespace Ict.Petra.Shared.MConference.Data
     public class PcConferenceVenueTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 283;
+        public static short TableId = 282;
         /// used for generic TTypedDataTable functions
         public static short ColumnConferenceKeyId = 0;
         /// used for generic TTypedDataTable functions

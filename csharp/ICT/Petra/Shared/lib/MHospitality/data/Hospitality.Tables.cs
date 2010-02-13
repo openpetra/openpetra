@@ -43,7 +43,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
     public class PcBuildingTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 278;
+        public static short TableId = 277;
         /// used for generic TTypedDataTable functions
         public static short ColumnVenueKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -634,7 +634,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
     public class PcRoomTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 279;
+        public static short TableId = 278;
         /// used for generic TTypedDataTable functions
         public static short ColumnVenueKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -1863,7 +1863,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
     public class PcRoomAllocTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 280;
+        public static short TableId = 279;
         /// used for generic TTypedDataTable functions
         public static short ColumnKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -2976,7 +2976,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
     public class PcRoomAttributeTypeTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 281;
+        public static short TableId = 280;
         /// used for generic TTypedDataTable functions
         public static short ColumnCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -3625,7 +3625,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
     public class PcRoomAttributeTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 282;
+        public static short TableId = 281;
         /// used for generic TTypedDataTable functions
         public static short ColumnVenueKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -4274,7 +4274,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
     public class PhRoomBookingTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 284;
+        public static short TableId = 283;
         /// used for generic TTypedDataTable functions
         public static short ColumnBookingKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -4807,7 +4807,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
     public class PhBookingTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 285;
+        public static short TableId = 284;
         /// used for generic TTypedDataTable functions
         public static short ColumnKeyId = 0;
         /// used for generic TTypedDataTable functions

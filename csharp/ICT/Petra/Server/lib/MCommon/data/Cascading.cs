@@ -3599,22 +3599,6 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
     }
 
     /// auto generated
-    public class AFinStatementGroupCascading : TTypedDataAccess
-    {
-        /// cascading delete
-        public static void DeleteByPrimaryKey(Int32 ALedgerNumber, String AFinStatementGroup, String AAccountCode, String AReportSection, TDBTransaction ATransaction, bool AWithCascDelete)
-        {
-            AFinStatementGroupAccess.DeleteByPrimaryKey(ALedgerNumber, AFinStatementGroup, AAccountCode, AReportSection, ATransaction);
-        }
-
-        /// cascading delete
-        public static void DeleteUsingTemplate(AFinStatementGroupRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
-        {
-            AFinStatementGroupAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
-        }
-    }
-
-    /// auto generated
     public class AFormCascading : TTypedDataAccess
     {
         /// cascading delete
@@ -4728,12 +4712,30 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
         /// cascading delete
         public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, TDBTransaction ATransaction, bool AWithCascDelete)
         {
+            int countRow;
+            if ((AWithCascDelete == true))
+            {
+                AProcessedFeeTable MyAProcessedFeeTable = AProcessedFeeAccess.LoadViaAGiftDetail(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_gift_transaction_number_i,a_detail_number_i,a_fee_code_c", ","), ATransaction);
+                for (countRow = 0; (countRow != MyAProcessedFeeTable.Rows.Count); countRow = (countRow + 1))
+                {
+                    AProcessedFeeCascading.DeleteUsingTemplate(MyAProcessedFeeTable[countRow], null, ATransaction, AWithCascDelete);
+                }
+            }
             AGiftDetailAccess.DeleteByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, ATransaction);
         }
 
         /// cascading delete
         public static void DeleteUsingTemplate(AGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascDelete)
         {
+            int countRow;
+            if ((AWithCascDelete == true))
+            {
+                AProcessedFeeTable MyAProcessedFeeTable = AProcessedFeeAccess.LoadViaAGiftDetailTemplate(ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_batch_number_i,a_gift_transaction_number_i,a_detail_number_i,a_fee_code_c", ","), ATransaction);
+                for (countRow = 0; (countRow != MyAProcessedFeeTable.Rows.Count); countRow = (countRow + 1))
+                {
+                    AProcessedFeeCascading.DeleteUsingTemplate(MyAProcessedFeeTable[countRow], null, ATransaction, AWithCascDelete);
+                }
+            }
             AGiftDetailAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
     }

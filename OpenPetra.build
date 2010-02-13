@@ -379,19 +379,16 @@
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordsalt)}'/>
 
         <if test="${DBMS.Type=='sqlite'}">
-             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/clean.sql -password:${DBMS.Password}" failonerror="true"/>
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/clean.sql -password:${DBMS.Password}" failonerror="true"/>
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-             <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/clean.sql" database="openpetra"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="openpetra"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/init.sql.local" database="openpetra"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" database="openpetra"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
-             <mysql exe="${MySQL.exe}" sqlfile="${DemoData.Dir}/clean.sql" database="openpetra" user="root" password="${DBMS.Password}"/>
              <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="openpetra" user="root" password="${DBMS.Password}"/>
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${BaseData.Dir}/init.sql.local -database:openpetra -username:root -password:${DBMS.Password}" failonerror="true"/>
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${DemoData.Dir}/init.sql.local -database:openpetra -username:root -password:${DBMS.Password}" failonerror="true"/>

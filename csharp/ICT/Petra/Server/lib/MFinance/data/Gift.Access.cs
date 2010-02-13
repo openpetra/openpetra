@@ -2278,6 +2278,814 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
         }
     }
 
+    /// Stores administrative fees and grants which have been calculated on gifts.
+    public class AProcessedFeeAccess : TTypedDataAccess
+    {
+
+        /// CamelCase version of table name
+        public const string DATATABLENAME = "AProcessedFee";
+
+        /// original table name in database
+        public const string DBTABLENAME = "a_processed_fee";
+
+        /// this method is called by all overloads
+        public static void LoadAll(DataSet ADataSet, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            DBAccess.GDBAccessObj.Select(ADataSet, ((GenerateSelectClause(AFieldList, AProcessedFeeTable.TableId) + " FROM PUB_a_processed_fee") +
+                            GenerateOrderByClause(AOrderBy)), TTypedDataTable.GetTableName(AProcessedFeeTable.TableId), ATransaction, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadAll(DataSet AData, TDBTransaction ATransaction)
+        {
+            LoadAll(AData, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadAll(DataSet AData, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadAll(AData, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            DBAccess.GDBAccessObj.SelectDT(Data, GenerateSelectClause(AFieldList, AProcessedFeeTable.TableId) + " FROM PUB_a_processed_fee" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadAll(TDBTransaction ATransaction)
+        {
+            return LoadAll(null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadAll(StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadAll(AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
+        public static void LoadByPrimaryKey(DataSet ADataSet, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, String AFeeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadByPrimaryKey(AProcessedFeeTable.TableId, ADataSet, new System.Object[5]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFeeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadByPrimaryKey(DataSet AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, String AFeeCode, TDBTransaction ATransaction)
+        {
+            LoadByPrimaryKey(AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFeeCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadByPrimaryKey(DataSet AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, String AFeeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadByPrimaryKey(AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFeeCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, String AFeeCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadByPrimaryKey(AProcessedFeeTable.TableId, Data, new System.Object[5]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFeeCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, String AFeeCode, TDBTransaction ATransaction)
+        {
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFeeCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, String AFeeCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadByPrimaryKey(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFeeCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, AProcessedFeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadUsingTemplate(AProcessedFeeTable.TableId, ADataSet, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, AProcessedFeeRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, AProcessedFeeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadUsingTemplate(AProcessedFeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadUsingTemplate(AProcessedFeeTable.TableId, Data, ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadUsingTemplate(AProcessedFeeRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadUsingTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadUsingTemplate(AProcessedFeeRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadUsingTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadUsingTemplate(AProcessedFeeRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadUsingTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
+        public static void LoadUsingTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadUsingTemplate(AProcessedFeeTable.TableId, ADataSet, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadUsingTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadUsingTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadUsingTemplate(AProcessedFeeTable.TableId, Data, ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadUsingTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadUsingTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadUsingTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// this method is called by all overloads
+        public static int CountAll(TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_a_processed_fee", ATransaction, false));
+        }
+
+        /// check if a row exists by using the primary key
+        public static bool Exists(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, String AFeeCode, TDBTransaction ATransaction)
+        {
+            return Exists(AProcessedFeeTable.TableId, new System.Object[5]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFeeCode}, ATransaction);
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(AProcessedFeeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_processed_fee" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AProcessedFeeTable.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false,
+                   GetParametersForWhereClause(AProcessedFeeTable.TableId, ATemplateRow)));
+        }
+
+        /// this method is called by all overloads
+        public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_a_processed_fee" + GenerateWhereClause(TTypedDataTable.GetColumnStringList(AProcessedFeeTable.TableId), ASearchCriteria)), ATransaction, false,
+            GetParametersForWhereClause(AProcessedFeeTable.TableId, ASearchCriteria)));
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentre(DataSet ADataSet, Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AProcessedFeeTable.TableId, ACostCentreTable.TableId, ADataSet, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+                new System.Object[2]{ALedgerNumber, ACostCentreCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentre(DataSet AData, Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentre(AData, ALedgerNumber, ACostCentreCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentre(DataSet AData, Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentre(AData, ALedgerNumber, ACostCentreCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadViaForeignKey(AProcessedFeeTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+                new System.Object[2]{ALedgerNumber, ACostCentreCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction)
+        {
+            return LoadViaACostCentre(ALedgerNumber, ACostCentreCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaACostCentre(ALedgerNumber, ACostCentreCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(DataSet ADataSet, ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AProcessedFeeTable.TableId, ACostCentreTable.TableId, ADataSet, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(DataSet AData, ACostCentreRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentreTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(DataSet AData, ACostCentreRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentreTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadViaForeignKey(AProcessedFeeTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadViaACostCentreTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaACostCentreTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaACostCentreTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AProcessedFeeTable.TableId, ACostCentreTable.TableId, ADataSet, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentreTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaACostCentreTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaACostCentreTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadViaForeignKey(AProcessedFeeTable.TableId, ACostCentreTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadViaACostCentreTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaACostCentreTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaACostCentre(Int32 ALedgerNumber, String ACostCentreCode, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AProcessedFeeTable.TableId, ACostCentreTable.TableId, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+                new System.Object[2]{ALedgerNumber, ACostCentreCode}, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaACostCentreTemplate(ACostCentreRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AProcessedFeeTable.TableId, ACostCentreTable.TableId, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+                ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaACostCentreTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AProcessedFeeTable.TableId, ACostCentreTable.TableId, new string[2]{"a_ledger_number_i", "a_cost_centre_code_c"},
+                ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
+        public static void LoadViaALedger(DataSet ADataSet, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AProcessedFeeTable.TableId, ALedgerTable.TableId, ADataSet, new string[1]{"a_ledger_number_i"},
+                new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaALedger(DataSet AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        {
+            LoadViaALedger(AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedger(DataSet AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedger(AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadViaForeignKey(AProcessedFeeTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
+                new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
+        {
+            return LoadViaALedger(ALedgerNumber, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaALedger(ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet ADataSet, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AProcessedFeeTable.TableId, ALedgerTable.TableId, ADataSet, new string[1]{"a_ledger_number_i"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadViaForeignKey(AProcessedFeeTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadViaALedgerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaALedgerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaALedgerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AProcessedFeeTable.TableId, ALedgerTable.TableId, ADataSet, new string[1]{"a_ledger_number_i"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadViaForeignKey(AProcessedFeeTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadViaALedgerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaALedgerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AProcessedFeeTable.TableId, ALedgerTable.TableId, new string[1]{"a_ledger_number_i"},
+                new System.Object[1]{ALedgerNumber}, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AProcessedFeeTable.TableId, ALedgerTable.TableId, new string[1]{"a_ledger_number_i"},
+                ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AProcessedFeeTable.TableId, ALedgerTable.TableId, new string[1]{"a_ledger_number_i"},
+                ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountingPeriod(DataSet ADataSet, Int32 ALedgerNumber, Int32 AAccountingPeriodNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AProcessedFeeTable.TableId, AAccountingPeriodTable.TableId, ADataSet, new string[2]{"a_ledger_number_i", "a_period_number_i"},
+                new System.Object[2]{ALedgerNumber, AAccountingPeriodNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountingPeriod(DataSet AData, Int32 ALedgerNumber, Int32 AAccountingPeriodNumber, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountingPeriod(AData, ALedgerNumber, AAccountingPeriodNumber, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountingPeriod(DataSet AData, Int32 ALedgerNumber, Int32 AAccountingPeriodNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountingPeriod(AData, ALedgerNumber, AAccountingPeriodNumber, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAAccountingPeriod(Int32 ALedgerNumber, Int32 AAccountingPeriodNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadViaForeignKey(AProcessedFeeTable.TableId, AAccountingPeriodTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_period_number_i"},
+                new System.Object[2]{ALedgerNumber, AAccountingPeriodNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAAccountingPeriod(Int32 ALedgerNumber, Int32 AAccountingPeriodNumber, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountingPeriod(ALedgerNumber, AAccountingPeriodNumber, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAAccountingPeriod(Int32 ALedgerNumber, Int32 AAccountingPeriodNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountingPeriod(ALedgerNumber, AAccountingPeriodNumber, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountingPeriodTemplate(DataSet ADataSet, AAccountingPeriodRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AProcessedFeeTable.TableId, AAccountingPeriodTable.TableId, ADataSet, new string[2]{"a_ledger_number_i", "a_period_number_i"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountingPeriodTemplate(DataSet AData, AAccountingPeriodRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountingPeriodTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountingPeriodTemplate(DataSet AData, AAccountingPeriodRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountingPeriodTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAAccountingPeriodTemplate(AAccountingPeriodRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadViaForeignKey(AProcessedFeeTable.TableId, AAccountingPeriodTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_period_number_i"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAAccountingPeriodTemplate(AAccountingPeriodRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountingPeriodTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAAccountingPeriodTemplate(AAccountingPeriodRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountingPeriodTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAAccountingPeriodTemplate(AAccountingPeriodRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountingPeriodTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountingPeriodTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AProcessedFeeTable.TableId, AAccountingPeriodTable.TableId, ADataSet, new string[2]{"a_ledger_number_i", "a_period_number_i"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountingPeriodTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountingPeriodTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountingPeriodTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountingPeriodTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAAccountingPeriodTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadViaForeignKey(AProcessedFeeTable.TableId, AAccountingPeriodTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_period_number_i"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAAccountingPeriodTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountingPeriodTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAAccountingPeriodTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountingPeriodTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaAAccountingPeriod(Int32 ALedgerNumber, Int32 AAccountingPeriodNumber, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AProcessedFeeTable.TableId, AAccountingPeriodTable.TableId, new string[2]{"a_ledger_number_i", "a_period_number_i"},
+                new System.Object[2]{ALedgerNumber, AAccountingPeriodNumber}, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaAAccountingPeriodTemplate(AAccountingPeriodRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AProcessedFeeTable.TableId, AAccountingPeriodTable.TableId, new string[2]{"a_ledger_number_i", "a_period_number_i"},
+                ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaAAccountingPeriodTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AProcessedFeeTable.TableId, AAccountingPeriodTable.TableId, new string[2]{"a_ledger_number_i", "a_period_number_i"},
+                ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftDetail(DataSet ADataSet, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AProcessedFeeTable.TableId, AGiftDetailTable.TableId, ADataSet, new string[4]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i", "a_detail_number_i"},
+                new System.Object[4]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftDetail(DataSet AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftDetail(AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftDetail(DataSet AData, Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftDetail(AData, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAGiftDetail(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadViaForeignKey(AProcessedFeeTable.TableId, AGiftDetailTable.TableId, Data, new string[4]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i", "a_detail_number_i"},
+                new System.Object[4]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAGiftDetail(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, TDBTransaction ATransaction)
+        {
+            return LoadViaAGiftDetail(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAGiftDetail(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAGiftDetail(ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftDetailTemplate(DataSet ADataSet, AGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AProcessedFeeTable.TableId, AGiftDetailTable.TableId, ADataSet, new string[4]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i", "a_detail_number_i"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftDetailTemplate(DataSet AData, AGiftDetailRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftDetailTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftDetailTemplate(DataSet AData, AGiftDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftDetailTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAGiftDetailTemplate(AGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadViaForeignKey(AProcessedFeeTable.TableId, AGiftDetailTable.TableId, Data, new string[4]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i", "a_detail_number_i"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAGiftDetailTemplate(AGiftDetailRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadViaAGiftDetailTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAGiftDetailTemplate(AGiftDetailRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAGiftDetailTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAGiftDetailTemplate(AGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAGiftDetailTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftDetailTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AProcessedFeeTable.TableId, AGiftDetailTable.TableId, ADataSet, new string[4]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i", "a_detail_number_i"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftDetailTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftDetailTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAGiftDetailTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAGiftDetailTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAGiftDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AProcessedFeeTable Data = new AProcessedFeeTable();
+            LoadViaForeignKey(AProcessedFeeTable.TableId, AGiftDetailTable.TableId, Data, new string[4]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i", "a_detail_number_i"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAGiftDetailTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadViaAGiftDetailTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AProcessedFeeTable LoadViaAGiftDetailTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAGiftDetailTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaAGiftDetail(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AProcessedFeeTable.TableId, AGiftDetailTable.TableId, new string[4]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i", "a_detail_number_i"},
+                new System.Object[4]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber}, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaAGiftDetailTemplate(AGiftDetailRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AProcessedFeeTable.TableId, AGiftDetailTable.TableId, new string[4]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i", "a_detail_number_i"},
+                ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaAGiftDetailTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AProcessedFeeTable.TableId, AGiftDetailTable.TableId, new string[4]{"a_ledger_number_i", "a_batch_number_i", "a_gift_transaction_number_i", "a_detail_number_i"},
+                ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
+        public static void DeleteByPrimaryKey(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber, String AFeeCode, TDBTransaction ATransaction)
+        {
+            DeleteByPrimaryKey(AProcessedFeeTable.TableId, new System.Object[5]{ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, AFeeCode}, ATransaction);
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(AProcessedFeeRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            DeleteUsingTemplate(AProcessedFeeTable.TableId, ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static void DeleteUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            DeleteUsingTemplate(AProcessedFeeTable.TableId, ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
+        public static bool SubmitChanges(AProcessedFeeTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
+        {
+            return SubmitChanges(AProcessedFeeTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+        }
+    }
+
     /// Templates of gift batches which can be copied into the gift system.
     public class ARecurringGiftBatchAccess : TTypedDataAccess
     {

@@ -1399,7 +1399,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     public class AArCategoryTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 184;
+        public static short TableId = 183;
         /// used for generic TTypedDataTable functions
         public static short ColumnArCategoryCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -1990,7 +1990,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     public class AArArticleTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 185;
+        public static short TableId = 184;
         /// used for generic TTypedDataTable functions
         public static short ColumnArArticleCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -2755,7 +2755,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     public class AArArticlePriceTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 186;
+        public static short TableId = 185;
         /// used for generic TTypedDataTable functions
         public static short ColumnArArticleCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -3404,7 +3404,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     public class AArDiscountTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 187;
+        public static short TableId = 186;
         /// used for generic TTypedDataTable functions
         public static short ColumnArDiscountCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -4865,7 +4865,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     public class AArDiscountPerCategoryTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 188;
+        public static short TableId = 187;
         /// used for generic TTypedDataTable functions
         public static short ColumnArCategoryCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -5456,7 +5456,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     public class AArDefaultDiscountTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 189;
+        public static short TableId = 188;
         /// used for generic TTypedDataTable functions
         public static short ColumnArCategoryCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -6163,7 +6163,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     public class AArInvoiceTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 190;
+        public static short TableId = 189;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -7276,7 +7276,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     public class AArInvoiceDetailTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 191;
+        public static short TableId = 190;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -8389,7 +8389,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     public class AArInvoiceDiscountTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 192;
+        public static short TableId = 191;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -9038,7 +9038,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
     public class AArInvoiceDetailDiscountTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 193;
+        public static short TableId = 192;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions

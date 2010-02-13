@@ -110,6 +110,9 @@ public class TWriteSQL
             FileMode.Create, FileAccess.Write);
         sw = new StreamWriter(outPutFileStream);
 
+        Tables.Sort(new TTableComparer());
+        Tables.Reverse();
+
         foreach (TTable Table in Tables)
         {
             sw.WriteLine("DROP TABLE IF EXISTS " + Table.strName + " CASCADE;");

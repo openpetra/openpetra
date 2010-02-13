@@ -123,6 +123,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
                             "Ict.Petra.Shared.MCommon.Data",
                             "Common.Tables");
                         TGenerateTableList.WriteTableList(store, cmdLine.GetOptValue("outputshared") + Path.DirectorySeparatorChar + "TableList.cs");
+                        TGenerateTableList.WriteDBClean(store, Path.GetDirectoryName(cmdLine.GetOptValue(
+                                    "petraxml")) + Path.DirectorySeparatorChar + "basedata" + Path.DirectorySeparatorChar + "clean.sql");
                     }
                     else if (cmdLine.GetOptValue("do") == "dataaccess")
                     {
