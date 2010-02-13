@@ -821,59 +821,75 @@ namespace Ict.Tools.DBXML
     }
 
     /// <summary>
-    /// compares two tables, defines which is depending on the other.
+    /// sort the tables by dependency of the constraints, using topological sort.
     /// in the end, we get a list of tables, in the order that you need when you populate the database with constraints enabled.
     /// first the tables that depend on nothing, and then the tables that depend on them.
     /// deleting the database can be done the other way round
     /// </summary>
-    public class TTableComparer : IComparer
+    public class TTableSort
     {
-        /// <summary>
-        /// compare two nodes; checking foreign keys
-        /// </summary>
-        /// <param name="node1"></param>
-        /// <param name="node2"></param>
-        /// <returns>+1 if node1 refers to node2, -1 if node1 is refered from node2,
-        /// if they have no connection compare the names</returns>
-        public int Compare(Object node1, Object node2)
+        private static TTable GetTableWithoutUnsatisfiedDependancies(ArrayList ASortedList, ArrayList AUnsortedTables)
         {
-            TTable t1 = (TTable)node1;
-            TTable t2 = (TTable)node2;
-
-            if (t1.strName == t2.strName)
+            foreach (TTable t in AUnsortedTables)
             {
-                return 0;
-            }
-
-            ArrayList referencedFrom = t1.GetReferences();
-
-            foreach (TConstraint c in referencedFrom)
-            {
-                if (c.strThisTable == t2.strName)
+                // find a table that has no dependancies on Tables that are still in ATables
+                foreach (TConstraint c in t.grpConstraint.List)
                 {
-//                              if (t1.strName == "a_cost_centre" || t2.strName == "a_cost_centre")
-//                              {
-//                              Console.WriteLine(t1.strName + " < " + t2.strName);
-//                              }
-                    return -1;
+                    bool unsatisfiedDependancy = false;
+
+                    if (c.strType == "foreignkey")
+                    {
+                        foreach (TTable t2 in AUnsortedTables)
+                        {
+                            if (t2.strName == c.strOtherTable)
+                            {
+                                unsatisfiedDependancy = true;
+                            }
+                        }
+                    }
+
+                    if (!unsatisfiedDependancy)
+                    {
+                        return t;
+                    }
                 }
             }
 
-            referencedFrom = t2.GetReferences();
+            return null;
+        }
 
-            foreach (TConstraint c in referencedFrom)
+        /// <summary>
+        /// sort by dependancies
+        /// </summary>
+        /// <param name="AStore"></param>
+        /// <param name="AOrigTables"></param>
+        /// <returns></returns>
+        public static ArrayList TopologicalSort(TDataDefinitionStore AStore, ArrayList AOrigTables)
+        {
+            ArrayList Result = new ArrayList();
+            ArrayList Tables = new ArrayList(AOrigTables);
+
+            while (Tables.Count > 0)
             {
-                if (c.strThisTable == t1.strName)
+                TTable t = GetTableWithoutUnsatisfiedDependancies(Result, Tables);
+
+                if (t == null)
                 {
-//                        if (t1.strName == "a_cost_centre" || t2.strName == "a_cost_centre")
-//                        {
-//                            Console.WriteLine(t1.strName + " > " + t2.strName);
-//                        }
-                    return +1;
+                    string msg = string.Empty;
+
+                    foreach (TTable t2 in Tables)
+                    {
+                        msg += t2.strName + ";";
+                    }
+
+                    throw new Exception("Problem with TopologicalSort, tables " + msg);
                 }
+
+                Result.Add(t);
+                Tables.Remove(t);
             }
 
-            return t1.strName.CompareTo(t2.strName);
+            return Result;
         }
     }
 

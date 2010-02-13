@@ -46,7 +46,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
         {
             ArrayList tables = AStore.GetTables();
 
-            tables.Sort(new TTableComparer());
+            tables = TTableSort.TopologicalSort(AStore, tables);
 
             string namesCodelet = string.Empty;
 
@@ -65,11 +65,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
         /// <param name="AFilename"></param>
         public static void WriteDBClean(TDataDefinitionStore AStore, string AFilename)
         {
-            StreamWriter sw = new StreamWriter(AFilename);
+            StreamWriter sw = new StreamWriter(AFilename + ".new");
 
             sw.WriteLine("-- Generated with nant generateORMTables");
             ArrayList tables = AStore.GetTables();
-            tables.Sort(new TTableComparer());
+            tables = TTableSort.TopologicalSort(AStore, tables);
             tables.Reverse();
 
             foreach (TTable t in tables)
@@ -78,6 +78,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
             }
 
             sw.Close();
+
+            TTextFile.UpdateFile(AFilename);
         }
     }
 }
