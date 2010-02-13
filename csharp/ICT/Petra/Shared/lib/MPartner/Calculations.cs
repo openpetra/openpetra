@@ -71,6 +71,7 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>
         /// check the validity of each location and update the icon for each location (current address, old address, future address)
+        /// for the current date
         /// </summary>
         /// <param name="APartnerLocationsDS">the dataset with the locations</param>
         public static void DeterminePartnerLocationsDateStatus(DataSet APartnerLocationsDS)
@@ -87,19 +88,18 @@ namespace Ict.Petra.Shared.MPartner
                 ProcessDT = APartnerLocationsDS.Tables["PartnerLocation"];
             }
 
-            DeterminePartnerLocationsDateStatus(ProcessDT);
+            DeterminePartnerLocationsDateStatus(ProcessDT, DateTime.Today);
         }
 
         /// <summary>
         /// check the validity of each location and update the icon of each location (current address, old address, future address)
         /// </summary>
         /// <param name="APartnerLocationsDT">the datatable to check</param>
-        public static void DeterminePartnerLocationsDateStatus(DataTable APartnerLocationsDT)
+        /// <param name="ADateToCheck"></param>
+        public static void DeterminePartnerLocationsDateStatus(DataTable APartnerLocationsDT, DateTime ADateToCheck)
         {
             System.DateTime pDateEffective;
             System.DateTime pDateGoodUntil;
-            System.DateTime pDateToday;
-            pDateToday = (DateTime.Today).Date;
 
             /*
              *  Add custom DataColumn if its not part of the DataTable yet
@@ -124,11 +124,11 @@ namespace Ict.Petra.Shared.MPartner
                     // Current Address: Icon = 1,
                     // Future Address:  Icon = 2,
                     // Expired Address: Icon = 3.
-                    if ((pDateEffective <= pDateToday) && ((pDateGoodUntil >= pDateToday) || (pDateGoodUntil == new DateTime(9999, 12, 31))))
+                    if ((pDateEffective <= ADateToCheck) && ((pDateGoodUntil >= ADateToCheck) || (pDateGoodUntil == new DateTime(9999, 12, 31))))
                     {
                         pRow[PartnerEditTDSPPartnerLocationTable.GetIconDBName()] = ((object)1);
                     }
-                    else if (pDateEffective > pDateToday)
+                    else if (pDateEffective > ADateToCheck)
                     {
                         pRow[PartnerEditTDSPPartnerLocationTable.GetIconDBName()] = ((object)2);
                     }
