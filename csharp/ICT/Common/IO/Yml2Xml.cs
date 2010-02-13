@@ -152,12 +152,13 @@ namespace Ict.Common.IO
                 }
             }
 
-            // only write attributes if they are different from the parent node
+            // only write attributes if they are different from the parent node; 
+            // always write explicitly defined empty attributes
             List <XmlAttribute>attributesToWrite = new List <XmlAttribute>();
 
             foreach (XmlAttribute attr in ANode.Attributes)
             {
-                if ((ANode.ParentNode == null) || (TYml2Xml.GetAttribute(ANode.ParentNode, attr.Name) != attr.Value))
+                if ((ANode.ParentNode == null) || (attr.Value == String.Empty) || (TYml2Xml.GetAttribute(ANode.ParentNode, attr.Name) != attr.Value))
                 {
                     if (!((ANode.Name == XMLELEMENT) && (attr.Name == "name")))
                     {

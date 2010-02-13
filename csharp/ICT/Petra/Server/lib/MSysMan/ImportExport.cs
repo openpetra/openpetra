@@ -117,8 +117,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             Int32 RowCounter = 0;
 
-            // TODO: automatically filter column values that are the same and group the data?
+            ConvertColumnNames(table.Columns);
 
+            // TODO: automatically filter column values that are the same and group the data?
             foreach (DataRow row in table.Rows)
             {
                 RowCounter++;
@@ -129,24 +130,22 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 {
                     if (row[col].GetType() != typeof(DBNull))
                     {
-                        string colName = StringHelper.UpperCamelCase(col.ColumnName, true, true);
-
                         if (col.DataType == typeof(DateTime))
                         {
                             DateTime d = Convert.ToDateTime(row[col]);
 
                             if (d.TimeOfDay == TimeSpan.Zero)
                             {
-                                rowNode.SetAttribute(colName, d.ToString("yyyy-MM-dd"));
+                                rowNode.SetAttribute(col.ColumnName, d.ToString("yyyy-MM-dd"));
                             }
                             else
                             {
-                                rowNode.SetAttribute(colName, d.ToString("yyyy-MM-dd HH:mm:ss"));
+                                rowNode.SetAttribute(col.ColumnName, d.ToString("yyyy-MM-dd HH:mm:ss"));
                             }
                         }
                         else
                         {
-                            rowNode.SetAttribute(colName, row[col].ToString());
+                            rowNode.SetAttribute(col.ColumnName, row[col].ToString());
                         }
                     }
                 }
@@ -243,23 +242,20 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             if (TableNode == null)
             {
-                TLogging.Log("tablenode null");
+                // TLogging.Log("tablenode null: " + ATableName);
                 return false;
             }
 
             if (TableNode.ChildNodes.Count == 0)
             {
-                TLogging.Log("no children");
+                // TLogging.Log("no children: " + ATableName);
                 return false;
             }
 
             DataTable table = DBAccess.GDBAccessObj.SelectDT("Select * from " + ATableName, ATableName, ATransaction);
             List <OdbcParameter>Parameters = new List <OdbcParameter>();
 
-            foreach (DataColumn col in table.Columns)
-            {
-                col.ColumnName = StringHelper.UpperCamelCase(col.ColumnName, true, true);
-            }
+            ConvertColumnNames(table.Columns);
 
             string InsertStatement = "INSERT INTO pub_" + ATableName + "() VALUES ";
 
@@ -371,6 +367,22 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 return false;
             }
             return true;
+        }
+
+        private static void ConvertColumnNames(DataColumnCollection AColumns)
+        {
+            foreach (DataColumn col in AColumns)
+            {
+                string colName = StringHelper.UpperCamelCase(col.ColumnName, true, true);
+
+                if (AColumns.Contains(colName))
+                {
+                    // this column is not unique. happens in p_recent_partner, columns p_when_d and p_when_t
+                    colName = StringHelper.UpperCamelCase(col.ColumnName, true, false);
+                }
+
+                col.ColumnName = colName;
+            }
         }
     }
 }
