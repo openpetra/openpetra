@@ -65,7 +65,8 @@ class Program
 
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            GetMissingLinkedPartnersCosCentre.Run(transaction);
+            //GetMissingLinkedPartnersCosCentre.Run(transaction);
+            CheckGiftRecipientLedgerNumber.Run(transaction);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
         }
