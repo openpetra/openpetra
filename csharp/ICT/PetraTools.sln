@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 # SharpDevelop 3.0.0.3800
@@ -37,8 +37,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatchTool", "PetraTools\PatchTool\PatchTool.csproj", "{B3976248-2013-44E4-8937-EB17E2EC1DB8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatchToolConsole", "PetraTools\PatchTool\PatchToolConsole.csproj", "{B3976248-2013-44E4-8937-EB17E2EC1DA9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickSQLQueries", "PetraTools\QuickSQLQueries\QuickSQLQueries.csproj", "{EEF796B1-545D-4122-B75B-031E71A01E66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -118,9 +116,5 @@ Global
 		{B3976248-2013-44E4-8937-EB17E2EC1DA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3976248-2013-44E4-8937-EB17E2EC1DA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3976248-2013-44E4-8937-EB17E2EC1DA9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EEF796B1-545D-4122-B75B-031E71A01E66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EEF796B1-545D-4122-B75B-031E71A01E66}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EEF796B1-545D-4122-B75B-031E71A01E66}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EEF796B1-545D-4122-B75B-031E71A01E66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
