@@ -200,7 +200,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 foreach (string table in tables)
                 {
-                    LoadTable(table, doc, Transaction);
+                	LoadTable(table, doc, Transaction);
                 }
 
                 // TODO: what about sequences? they should be set appropriately, not lagging behind the imported data?
@@ -364,7 +364,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             catch (Exception e)
             {
                 TLogging.Log("error in ResetDatabase, LoadTable " + ATableName + ":" + e.Message);
-                return false;
+                throw e;
             }
             return true;
         }

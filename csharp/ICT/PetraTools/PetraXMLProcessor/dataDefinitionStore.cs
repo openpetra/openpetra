@@ -832,12 +832,12 @@ namespace Ict.Tools.DBXML
         {
             foreach (TTable t in AUnsortedTables)
             {
+                bool unsatisfiedDependancy = false;
+
                 // find a table that has no dependancies on Tables that are still in ATables
                 foreach (TConstraint c in t.grpConstraint.List)
                 {
-                    bool unsatisfiedDependancy = false;
-
-                    if (c.strType == "foreignkey")
+                    if ((c.strType == "foreignkey") && (c.strOtherTable != t.strName))
                     {
                         foreach (TTable t2 in AUnsortedTables)
                         {
@@ -847,15 +847,32 @@ namespace Ict.Tools.DBXML
                             }
                         }
                     }
+                }
 
-                    if (!unsatisfiedDependancy)
-                    {
-                        return t;
-                    }
+                if (!unsatisfiedDependancy)
+                {
+                    return t;
                 }
             }
 
             return null;
+        }
+
+        private static Int32 GetTableIndex(ArrayList ATables, string ADBName)
+        {
+            Int32 i = 0;
+
+            foreach (TTable t in ATables)
+            {
+                if (t.strName == ADBName)
+                {
+                    return i;
+                }
+
+                i++;
+            }
+
+            return -1;
         }
 
         /// <summary>
@@ -868,6 +885,10 @@ namespace Ict.Tools.DBXML
         {
             ArrayList Result = new ArrayList();
             ArrayList Tables = new ArrayList(AOrigTables);
+
+            // manually put s_user first. it does depend on p_partner, but we are not using that at the moment
+            Result.Add(Tables[GetTableIndex(Tables, "s_user")]);
+            Tables.RemoveAt(GetTableIndex(Tables, "s_user"));
 
             while (Tables.Count > 0)
             {
