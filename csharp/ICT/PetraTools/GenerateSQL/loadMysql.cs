@@ -130,7 +130,7 @@ public class TLoadMysql
 
                 // see also http://dev.mysql.com/doc/refman/5.1/en/insert-speed.html
                 string stmt = String.Format(
-                    "LOAD DATA LOCAL INFILE '{0}' INTO TABLE {1} FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"' LINES TERMINATED BY '\r\n';",
+                    "LOAD DATA LOCAL INFILE '{0}' INTO TABLE {1} FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"' LINES TERMINATED BY '" + Environment.NewLine + "';",
                     DataFilename + ".local",
                     TableName);
                 DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, Transaction);
