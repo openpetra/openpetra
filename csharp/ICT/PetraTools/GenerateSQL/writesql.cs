@@ -110,7 +110,7 @@ public class TWriteSQL
             FileMode.Create, FileAccess.Write);
         sw = new StreamWriter(outPutFileStream);
 
-        Tables.Sort(new TTableComparer());
+        Tables = TTableSort.TopologicalSort(AStore, Tables);
         Tables.Reverse();
 
         foreach (TTable Table in Tables)
