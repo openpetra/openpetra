@@ -809,6 +809,7 @@
 
     <target name="createSQLiteDB">
         <property name="DBMS.Type" value="sqlite"/>
+        <property name="DBMS.Password" value="CHANGEME"/>
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
                 <!-- Linux version of sqlite does not work with encryption; 
                      use it only for testing purposes; 
