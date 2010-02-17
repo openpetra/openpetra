@@ -55,6 +55,7 @@ OpenPetra:
                 Database:
                     ImportExport:
                         ExportAllData: {ActionClick=TSysManMain.ExportAllData}
+                        ResetDatabase: {ActionClick=TSysManMain.ImportAllData}
             Favourites:
             CustomGroup:
 

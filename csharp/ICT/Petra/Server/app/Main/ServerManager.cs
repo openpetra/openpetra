@@ -497,20 +497,22 @@ namespace Ict.Petra.Server.App.Main
                     TSrvSetting.DBPassword,
                     "");
 
-                // now check if the database is uptodate; otherwise run db patch against it
+                string DBPatchVersion = "0.0.9-0";
                 TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-                string DBPatchVersion =
-                    Convert.ToString(DBAccess.GDBAccessObj.ExecuteScalar(
-                            "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                            transaction));
-                DBAccess.GDBAccessObj.RollbackTransaction();
 
-                // just for the moment, need to fix a problem with the earliest versions
-                // TODO remove this fix after a while
-                if (DBPatchVersion == "3.0.0")
+                try
                 {
-                    DBPatchVersion = "0.0.2-0";
+                    // now check if the database is uptodate; otherwise run db patch against it
+                    DBPatchVersion =
+                        Convert.ToString(DBAccess.GDBAccessObj.ExecuteScalar(
+                                "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                                transaction));
                 }
+                catch (Exception)
+                {
+                    // this can happen when connecting to an old Petra 2.x database
+                }
+                DBAccess.GDBAccessObj.RollbackTransaction();
 
                 TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
                 TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
