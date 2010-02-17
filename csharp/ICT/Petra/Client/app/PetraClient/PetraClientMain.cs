@@ -301,8 +301,7 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             ExceptionHandling.GApplicationShutdownCallback = Shutdown.SaveUserDefaultsAndDisconnectAndStop;
 
-            FLogging = new TLogging(TAppSettingsManager.GetValueStatic("OpenPetra.PathTemp",
-                    Path.GetTempPath()) + Path.DirectorySeparatorChar + "PetraClient.log");
+            FLogging = new TLogging(TClientSettings.GetPathTemp() + Path.DirectorySeparatorChar + "PetraClient.log");
 
             // seems not to work to load culture from config file etc
             // need to set environment variable before starting PetraClient?

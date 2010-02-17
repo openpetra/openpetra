@@ -266,6 +266,29 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
+        /// get temp path in the user directory. this is called from PetraClientMain directly
+        public static string GetPathTemp()
+        {
+            UPathTemp = TAppSettingsManager.GetValueStatic("OpenPetra.PathTemp", Path.GetTempPath());
+
+            if (UPathTemp.Contains("{userappdata}"))
+            {
+                // on Windows, we cannot store the database in userappdata during installation, because
+                // the setup has to be run as administrator.
+                // therefore the first time the user starts Petra, we need to prepare his environment
+                // see also http://www.vincenzo.net/isxkb/index.php?title=Vista_considerations#Best_Practices
+                UPathTemp = UPathTemp.Replace("{userappdata}",
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+
+                if (!Directory.Exists(Path.GetDirectoryName(UPathTemp)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(UPathTemp));
+                }
+            }
+
+            return UPathTemp;
+        }
+
         /// <summary>
         /// Loads settings from .NET Configuration File and Command Line.
         ///
@@ -292,22 +315,7 @@ namespace Ict.Petra.Client.App.Core
             //
             // Parse settings from the Application Configuration File
             //
-            UPathTemp = FAppSettings.GetValue("OpenPetra.PathTemp");
-
-            if (UPathTemp.Contains("{userappdata}"))
-            {
-                // on Windows, we cannot store the database in userappdata during installation, because
-                // the setup has to be run as administrator.
-                // therefore the first time the user starts Petra, we need to prepare his environment
-                // see also http://www.vincenzo.net/isxkb/index.php?title=Vista_considerations#Best_Practices
-                UPathTemp = UPathTemp.Replace("{userappdata}",
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-
-                if (!Directory.Exists(Path.GetDirectoryName(UPathTemp)))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(UPathTemp));
-                }
-            }
+            UPathTemp = GetPathTemp();
 
             UBehaviourSeveralClients = "OnlyOneWithQuestion";
 
