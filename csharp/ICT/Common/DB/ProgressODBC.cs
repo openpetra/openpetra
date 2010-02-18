@@ -190,7 +190,14 @@ namespace Ict.Common.DB
 
             ACommandText = FormatQueryRDBMSSpecific(ACommandText);
 
-            ObjReturn = new OdbcCommand(ACommandText, (OdbcConnection)AConnection, (OdbcTransaction)ATransaction.WrappedTransaction);
+            if (ATransaction == null)
+            {
+                ObjReturn = new OdbcCommand(ACommandText, (OdbcConnection)AConnection);
+            }
+            else
+            {
+                ObjReturn = new OdbcCommand(ACommandText, (OdbcConnection)AConnection, (OdbcTransaction)ATransaction.WrappedTransaction);
+            }
 
             if (AParametersArray != null)
             {

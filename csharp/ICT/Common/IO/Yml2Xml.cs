@@ -152,7 +152,7 @@ namespace Ict.Common.IO
                 }
             }
 
-            // only write attributes if they are different from the parent node; 
+            // only write attributes if they are different from the parent node;
             // always write explicitly defined empty attributes
             List <XmlAttribute>attributesToWrite = new List <XmlAttribute>();
 
