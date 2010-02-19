@@ -265,7 +265,26 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             {
                 if (!firstRow)
                 {
-                    InsertStatement += ",";
+                    if (CommonTypes.ParseDBType(DBAccess.GDBAccessObj.DBType) == TDBType.SQLite)
+                    {
+                        // SQLite does not support INSERT of several rows at the same time
+                        try
+                        {
+                            DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement, ATransaction, false, Parameters.ToArray());
+                        }
+                        catch (Exception e)
+                        {
+                            TLogging.Log("error in ResetDatabase, LoadTable " + ATableName + ":" + e.Message);
+                            throw e;
+                        }
+
+                        InsertStatement = "INSERT INTO pub_" + ATableName + "() VALUES ";
+                        Parameters = new List <OdbcParameter>();
+                    }
+                    else
+                    {
+                        InsertStatement += ",";
+                    }
                 }
 
                 firstRow = false;

@@ -390,9 +390,7 @@ namespace Ict.Petra.Server.App.Main
 
             if ((System.Reflection.Assembly.GetEntryAssembly() != null) && (System.Reflection.Assembly.GetEntryAssembly().GetName() != null))
             {
-                ServerAssemblyVersion = new Version(0, 0, 0, 0);
-
-                // ServerAssemblyVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+                ServerAssemblyVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
 
                 // retrieve the current version of the server from the file version.txt in the bin directory
                 // this is easier to manage than to check the assembly version in case you only need to quickly update the client

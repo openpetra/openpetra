@@ -157,6 +157,9 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("=false", "=0");
             ReturnValue = ReturnValue.Replace("=true", "=1");
 
+            // INSERT INTO table () VALUES
+            ReturnValue = ReturnValue.Replace("() VALUES", " VALUES");
+
             Match m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
 
             while (m.Success)

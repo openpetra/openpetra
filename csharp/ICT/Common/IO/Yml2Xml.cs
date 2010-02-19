@@ -209,7 +209,7 @@ namespace Ict.Common.IO
         /// </summary>
         public static bool Xml2Yml(XmlDocument ADoc, string AOutYMLFile)
         {
-            StreamWriter sw = new StreamWriter(AOutYMLFile);
+            StreamWriter sw = new StreamWriter(AOutYMLFile, false, System.Text.Encoding.UTF8);
 
             WriteXmlNode2Yml(sw, 0, ADoc.DocumentElement);
 
