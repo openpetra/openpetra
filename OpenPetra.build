@@ -11,6 +11,7 @@
     <property name="PetraRelease" value="0300"/>
     <property name="SkipCompileClient" value="false" unless="${property::exists('SkipCompileClient')}"/>
     <property name="SkipCompileServer" value="false" unless="${property::exists('SkipCompileServer')}"/>
+    <property name="BuildClientArchive" value="false" unless="${property::exists('BuildClientArchive')}"/>
     <property name="ThirdParty.dir" value="${OpenPetraRoot.dir}/csharp/ThirdParty/"/>
     <property name="PetraToolsExe.dir" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}"/>
     <property name="PetraXML.file" value="${OpenPetraRoot.dir}/db/petra.xml"/>
@@ -335,13 +336,13 @@
     </target>
 
     <target name="resetDatabase" depends="" description="useful for debugging the creation of fresh database"> <!-- depends: recreateDatabase --> 
-		 <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-			 <property name="OpenPetraRoot.dir" value="${path::get-full-path(OpenPetraRoot.dir)}"/>
-		 </if>
-		 <if test="${framework::get-target-framework() == 'net-2.0'}" >
-		    <!-- GetRealPath resolves problems with substed path for psql to load from; cannot find such file or path -->
-			<property name="OpenPetraRoot.dir" value="${string::replace(script::GetRealPath(OpenPetraRoot.dir), '\', '/')}"/>
-	     </if>
+         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+             <property name="OpenPetraRoot.dir" value="${path::get-full-path(OpenPetraRoot.dir)}"/>
+         </if>
+         <if test="${framework::get-target-framework() == 'net-2.0'}" >
+            <!-- GetRealPath resolves problems with substed path for psql to load from; cannot find such file or path -->
+            <property name="OpenPetraRoot.dir" value="${string::replace(script::GetRealPath(OpenPetraRoot.dir), '\', '/')}"/>
+         </if>
          <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
          <property name="DemoData.Dir" value="${OpenPetraRoot.dir}/db/${SelectedDemo}"/>
 
@@ -583,7 +584,7 @@
         <!-- compile the language file for delivery -->
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES" failonerror="false"/>
         <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.PofileWithPath} -o ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES/i18n.mo"/>
-	</target>
+    </target>
 
     <target name="translation">
 
@@ -610,18 +611,18 @@
         <property name="solutionName" value="ServerAdmin"/>
         <call target="translationTemplate"/>
 
-		<call target="translationCompilePOFile"/>
+        <call target="translationCompilePOFile"/>
     </target>
 
-	<target name="loc">
-		<property name="ourCodeDir" value="${OpenPetraRoot.dir}/csharp/ICT/"/>
-		<echo message="logical lines of code: ${script::CountLinesOfCode(ourCodeDir)}"/>
-	</target>
+    <target name="loc">
+        <property name="ourCodeDir" value="${OpenPetraRoot.dir}/csharp/ICT/"/>
+        <echo message="logical lines of code: ${script::CountLinesOfCode(ourCodeDir)}"/>
+    </target>
 
-	<target name="ploc">
-		<property name="ourCodeDir" value="${OpenPetraRoot.dir}/csharp/ICT/"/>
-		<echo message="physical lines of code, without comments: ${script::CountPhysicalLinesOfCode(ourCodeDir)}"/>
-	</target>
+    <target name="ploc">
+        <property name="ourCodeDir" value="${OpenPetraRoot.dir}/csharp/ICT/"/>
+        <echo message="physical lines of code, without comments: ${script::CountPhysicalLinesOfCode(ourCodeDir)}"/>
+    </target>
     
     <target name="uncrustifyTemplate">
         <attrib normal="true">
@@ -821,11 +822,13 @@
         <copy file="${SQLitedb.file}" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db" overwrite="true"/>
     </target>
 
-	<target name="refreshSudo">
-		<!-- make sure that sudo is working, this is called before buildRelease on Linux -->
-        <exec program="sudo" commandline="-u postgres echo refresh sudo" />
-	</target>
-	
+    <target name="refreshSudo">
+        <!-- make sure that sudo is working, this is called before buildRelease on Linux -->
+        <if test="${platform::is-unix()}">
+            <exec program="sudo" commandline="-u postgres echo refresh sudo" />
+        </if>
+    </target>
+    
     <target name="createPostgreSQLDB">
         <property name="DBMS.Type" value="postgresql"/>
         <call target="recreateDatabase"/>
@@ -863,7 +866,7 @@
     </target>
     
     <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, translationCompilePOFile, setupStandalone, setupRemote, setupLinuxServer"/>
-	<!-- problem: one version for mac and Windows? what about patching? generateWinforms; 2 versions? -->
+    <!-- problem: one version for mac and Windows? what about patching? generateWinforms; 2 versions? -->
     <target name="buildReleaseLinux" depends="refreshSudo, switchToDebug, createPostgreSQLDB, createMySQLDB, createSQLiteDB, generateWinforms, compileRelease, translationCompilePOFile, setupLinuxServer"/>
 
     <target name="buildReleaseWindowsClient" depends="switchToDebug">
@@ -872,6 +875,7 @@
         <call target="compileRelease"/>
         <call target="translationCompilePOFile"/>
         <call target="setupRemote"/>
+        <property name="BuildClientArchive" value="true"/>
         <call target="setupLinuxServer"/>
     </target>
 
@@ -883,10 +887,10 @@
         <call target="setupLinuxServer"/>
     </target>
     <target name="buildRelease">
-        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+        <if test="${platform::is-unix()}">
             <call target="buildReleaseLinux"/>
         </if>
-        <if test="${framework::get-target-framework() == 'net-2.0'}" >
+        <if test="${platform::is-windows()}">
             <call target="buildReleaseWindows"/>
         </if>
     </target>
