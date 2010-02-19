@@ -13,7 +13,7 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <BaseIntermediateOutputPath>../../_bin/ObjCode/</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\Server\_bin\Release\</BaseIntermediateOutputPath>
     <DocumentationFile>..\..\_bin\Debug\Plugin.AuthenticationPhpBB.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
@@ -24,22 +24,22 @@
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>../../_bin/Debug/</OutputPath>
+    <OutputPath>..\..\Server\_bin\Debug\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <IntermediateOutputPath>../../_bin/Debug/</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\Server\_bin\Debug\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>../../_bin/Release/</OutputPath>
+    <OutputPath>..\..\Server\_bin\Release\</OutputPath>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
-    <IntermediateOutputPath>../../_bin/Release/</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\Server\_bin\Release\</IntermediateOutputPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
