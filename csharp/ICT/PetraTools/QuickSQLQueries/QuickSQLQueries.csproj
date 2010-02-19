@@ -102,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheckGiftRecipientLedgerNumber.cs" />
+    <Compile Include="FixInvalidLocations.cs" />
     <Compile Include="GetMissingLinkedPartnersCostcentre.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>

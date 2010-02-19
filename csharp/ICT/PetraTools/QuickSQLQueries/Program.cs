@@ -65,6 +65,7 @@ class Program
 
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
+            //FixInvalidLocations.Run(transaction);
             //GetMissingLinkedPartnersCosCentre.Run(transaction);
             CheckGiftRecipientLedgerNumber.Run(transaction);
 
