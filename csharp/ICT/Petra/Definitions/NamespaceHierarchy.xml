@@ -370,6 +370,10 @@
                         <Name>UserDefaults</Name>
                         <Description>User Defaults</Description>
                     </SubNamespace>
+                    <SubNamespace>
+                        <Name>WebConnectors</Name>
+                        <Description>WebConnectors</Description>
+                    </SubNamespace>
                 </Children>
             </SubNamespace>
             <SubNamespace>

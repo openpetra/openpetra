@@ -41,5 +41,10 @@ namespace Ict.Petra.Shared.Interfaces.Plugins.MSysMan
         /// otherwise returns false and an error message
         /// </summary>
         bool AuthenticateUser(string AUsername, string APassword, out string AMessage);
+        
+        /// <summary>
+        /// this will allow the system administrator to change the password of the user
+        /// </summary>
+        bool SetPassword(string AUsername, string APassword);
     }
 }

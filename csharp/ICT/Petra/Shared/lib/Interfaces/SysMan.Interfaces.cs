@@ -20,6 +20,7 @@ using Ict.Petra.Shared.Interfaces.MSysMan.Application.ServerLookups;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.SystemDefaults;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults;
+using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement.UIConnectors;
@@ -140,6 +141,12 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance
             get;
         }
 
+        /// <summary>access to sub namespace</summary>
+        IMaintenanceWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
     }
 
 }
@@ -186,6 +193,19 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults.TMaintenanceUserDefaultsNamespace)</summary>
         void ReloadUserDefaults(System.String AUserName,
                                 out Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable);
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IMaintenanceWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
+        bool SetUserPassword(string AUsername,
+                             string APassword);
     }
 
 }

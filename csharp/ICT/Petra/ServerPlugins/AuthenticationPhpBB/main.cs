@@ -88,5 +88,13 @@ namespace Plugin.AuthenticationPhpBB
 
             return false;
         }
+
+        /// <summary>
+        /// not implemented here. change the password in the forum
+        /// </summary>
+        public bool SetPassword(string AUsername, string APassword)
+        {
+            return false;
+        }
     }
 }

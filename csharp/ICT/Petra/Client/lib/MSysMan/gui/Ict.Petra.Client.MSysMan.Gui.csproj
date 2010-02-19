@@ -75,5 +75,9 @@
       <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
       <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\CommonDialogs\Ict.Petra.Client.CommonDialogs.csproj">
+      <Project>{BE0FD127-A9A9-4291-A5E0-71A45AC2FDBD}</Project>
+      <Name>Ict.Petra.Client.CommonDialogs</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

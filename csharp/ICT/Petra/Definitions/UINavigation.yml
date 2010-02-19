@@ -165,10 +165,12 @@ OpenPetra:
                     ManageCurrencies:
                     ManageExchangeRates:
             Users:
-                CreateNewUser:
-                DeleteUser:
-                ModifyUserPermissions:
-                ImportUserPermissions:
+                Functions:
+                    CreateNewUser:
+                    DeleteUser:
+                    ModifyUserPermissions:
+                    ImportUserPermissions:
+                    SetPassword: {ActionClick=TSysManMain.SetUserPassword}
             Database:
                 ImportExport:
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}

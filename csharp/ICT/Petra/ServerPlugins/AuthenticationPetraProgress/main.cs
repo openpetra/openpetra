@@ -25,8 +25,11 @@
  ************************************************************************/
 using System;
 using System.Data;
+using System.Data.Odbc;
+using System.Collections.Generic;
 using System.Web.Security;
 using Ict.Common;
+using Ict.Common.DB;
 using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared;
@@ -68,6 +71,44 @@ namespace Plugin.AuthenticationPetraProgress
             {
                 return true;
             }
+        }
+
+        /// <summary>
+        /// this allows the system administrator to change the password of the user. sets password2 in the Progress database
+        /// </summary>
+        public bool SetPassword(string AUsername, string APassword)
+        {
+            TPetraPrincipal tempPrincipal;
+            SUserRow UserDR = TUserManager.LoadUser(AUsername, out tempPrincipal);
+
+            if (UserDR != null)
+            {
+                string NewPasswordHash = FormsAuthentication.HashPasswordForStoringInConfigFile(APassword, "MD5").Substring(0, 16);
+
+                TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
+                OdbcParameter parameter = new OdbcParameter("userid", OdbcType.VarChar);
+                parameter.Value = NewPasswordHash;
+                parameters.Add(parameter);
+
+                try
+                {
+                    DBAccess.GDBAccessObj.ExecuteNonQuery("UPDATE pub_s_user SET s_password2_c = ?", t, false, parameters.ToArray());
+                }
+                catch (Exception e)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    throw new Exception("Plugin.AuthenticationPetraProgress, SetPassword " + e.Message);
+                }
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else
+            {
+                throw new Exception("Plugin.AuthenticationPetraProgress, SetPassword " + Catalog.GetString("Invalid User ID"));
+            }
+
+            return true;
         }
     }
 }

@@ -30,6 +30,7 @@ using Mono.Unix;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MSysMan.Gui
 {
@@ -79,6 +80,40 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     else
                     {
                         MessageBox.Show(Catalog.GetString("Failed import of database. Please check the Server.log file on the server"));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// change the password of a user
+        /// </summary>
+        public static void SetUserPassword(IntPtr AParentFormHandle)
+        {
+            PetraInputBox input = new PetraInputBox(
+                Catalog.GetString("Change the password of a user"),
+                Catalog.GetString("Please enter the user name:"),
+                "", false);
+
+            if (input.ShowDialog() == DialogResult.OK)
+            {
+                string username = input.GetAnswer();
+                input = new PetraInputBox(
+                    Catalog.GetString("Change the password of a user"),
+                    Catalog.GetString("Please enter the new password:"),
+                    "", true);
+
+                if (input.ShowDialog() == DialogResult.OK)
+                {
+                    string password = input.GetAnswer();
+
+                    if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password))
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));
+                    }
+                    else
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString("There was a problem setting the password for user {0}"), username));
                     }
                 }
             }

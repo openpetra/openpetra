@@ -46,21 +46,45 @@
     <Reference Include="Ict.Common">
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Common.Data">
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common.DB">
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.Interfaces.Plugins">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.Plugins.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MSysMan.DataTables">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ImportExport.cs" />
+    <Compile Include="UserManagement.cs" />
     <Compile Include="WebConnectors.Assembly.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\app\Core\Ict.Petra.Server.App.Core.csproj">
+      <Project>{F053BB7D-E40D-4434-B99C-FC803F65E10A}</Project>
+      <Name>Ict.Petra.Server.App.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="data\Ict.Petra.Server.MSysMan.DataAccess.csproj">
+      <Project>{CF8F3805-344B-4B75-8498-C93205B2A2A9}</Project>
+      <Name>Ict.Petra.Server.MSysMan.DataAccess</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
