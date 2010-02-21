@@ -143,6 +143,12 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                                 rowNode.SetAttribute(col.ColumnName, d.ToString("yyyy-MM-dd HH:mm:ss"));
                             }
                         }
+                        else if ((col.DataType == typeof(double)) || (col.DataType == typeof(decimal)))
+                        {
+                            // store decimals always with decimal point, no thousands separator
+                            double dval = Convert.ToDouble(row[col]);
+                            rowNode.SetAttribute(col.ColumnName, dval.ToString("G", CultureInfo.InvariantCulture));
+                        }
                         else
                         {
                             rowNode.SetAttribute(col.ColumnName, row[col].ToString());
@@ -344,7 +350,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         else if (col.DataType == typeof(double))
                         {
                             OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.Decimal);
-                            p.Value = Convert.ToDouble(strValue);
+                            p.Value = Convert.ToDouble(strValue.Replace(",", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator));
                             Parameters.Add(p);
                         }
                         else if (col.DataType == typeof(bool))
