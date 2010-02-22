@@ -98,14 +98,14 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             {
                 if ((type.Namespace == namespaceName) && type.Name.EndsWith("Table"))
                 {
-                    ExportTable(moduleNode, type, Transaction);
+                    ExportTable(moduleNode, asm, type, Transaction);
                 }
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
         }
 
-        private static void ExportTable(XmlNode AModuleNode, Type ATableType, TDBTransaction ATransaction)
+        private static void ExportTable(XmlNode AModuleNode, Assembly AAsm, Type ATableType, TDBTransaction ATransaction)
         {
             MethodInfo mi = ATableType.GetMethod("GetTableDBName", BindingFlags.Static | BindingFlags.Public);
             string TableDBName = mi.Invoke(null, null).ToString();
@@ -115,13 +115,31 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             AModuleNode.AppendChild(tableNode);
 
+            // for SQLite the table is not sorted by primary key. Therefore do it manually
+            DataView v = table.DefaultView;
+            DataTable t = (DataTable)AAsm.CreateInstance(ATableType.Namespace + "." + ATableType.Name);
+            string sortOrderPrimaryKey = String.Empty;
+
+            foreach (DataColumn c in t.PrimaryKey)
+            {
+                if (sortOrderPrimaryKey.Length > 0)
+                {
+                    sortOrderPrimaryKey += ",";
+                }
+
+                sortOrderPrimaryKey += c.ColumnName;
+            }
+
+            v.Sort = sortOrderPrimaryKey;
+
             Int32 RowCounter = 0;
 
             ConvertColumnNames(table.Columns);
 
             // TODO: automatically filter column values that are the same and group the data?
-            foreach (DataRow row in table.Rows)
+            foreach (DataRowView rv in v)
             {
+                DataRow row = rv.Row;
                 RowCounter++;
                 XmlElement rowNode = AModuleNode.OwnerDocument.CreateElement("Row" + RowCounter.ToString());
                 tableNode.AppendChild(rowNode);
