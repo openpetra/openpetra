@@ -39,8 +39,8 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="mysql.data">
-      <HintPath>..\..\..\ThirdParty\MySQL\mysql.data.dll</HintPath>
+    <Reference Include="MySql.Data">
+      <HintPath>..\..\..\ThirdParty\MySQL\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Npgsql">
       <HintPath>..\..\..\ThirdParty\Npgsql\Npgsql.dll</HintPath>

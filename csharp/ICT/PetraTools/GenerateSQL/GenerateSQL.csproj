@@ -42,8 +42,8 @@
     <Reference Include="Ict.Common.DB">
       <HintPath>..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
     </Reference>
-    <Reference Include="mysql.data">
-      <HintPath>..\..\..\ThirdParty\MySQL\mysql.data.dll</HintPath>
+    <Reference Include="MySql.Data">
+      <HintPath>..\..\..\ThirdParty\MySQL\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

@@ -289,6 +289,14 @@
         return AReleaseVersion.Substring(0, AReleaseVersion.IndexOf("-"));
     }
 
+    [Function("ChangeProjectFileXBuild")]
+    public static bool ChangeProjectFileXBuild(string filename)
+    {
+        ReplaceInFile(filename, "RegEx:<HintPath>(.*)\\ThirdParty\\Mono\\Mono.Posix.dll</HintPath>", "");
+        ReplaceInFile(filename, "RegEx:<HintPath>(.*)\\Common\\_bin\\Debug\\ICSharpCode.SharpZipLib.dll</HintPath>", "");
+        return true;
+    }
+
     [Function("ChangeProjectFileRelease")]
     public static bool ChangeProjectFileRelease(string filename, bool makerelease)
     {

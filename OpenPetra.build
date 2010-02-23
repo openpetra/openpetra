@@ -23,6 +23,22 @@
 
     <property name="IctNAntTasks.file" value="${ThirdParty.dir}/NAnt/Ict.Tools.NAntTasks.dll"/>
     <if test="${not file::exists(IctNAntTasks.file)}">
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.dll" overwrite="true"/>
+            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/MySQL/mysql.data.dll" tofile="${OpenPetraRoot.dir}/csharp/ThirdParty/MySQL/MySql.Data.dll" overwrite="true"/>
+            <if test="${property::exists('xbuild')}">
+                <foreach item="File" property="filename">
+                    <in>
+                        <items>
+                            <include name="${OpenPetraRoot.dir}/csharp/ICT/**.csproj" />
+                        </items>
+                    </in>
+                    <do>
+                        <if test='${script::ChangeProjectFileXBuild(filename, false)}'/>
+                    </do>
+                </foreach>
+            </if>
+        </if>
         <call target="compileCommon"/>
         <call target="compilePetraTools"/>
         <copy file="${PetraToolsExe.dir}/Ict.Tools.NAntTasks.dll" tofile="${IctNAntTasks.file}"/>
@@ -60,10 +76,6 @@
     <target name="compilePetraTools" description="compile the PetraTools">
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools.sln"/>
         <call target="compileTemplate"/>
-        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/Debug/System.Data.SQLite.dll" overwrite="true"/>
-            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/MySQL/mysql.data.dll" tofile="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/Debug/MySql.Data.dll" overwrite="true"/>
-        </if>
     </target>
     <target name="compileTesting" description="compile the Testing module">
         <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Testing/Reporting/app.config"/>
@@ -108,6 +120,13 @@
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <if test="${property::exists('mdtool')}"> <!-- to allow generateWinforms on Mono on Windows; don't build at all -->
                 <exec program="${mdtool}" commandline="build --buildfile:${solution.file}">
+                   <environment>
+                      <variable name="MONO_PATH" value="${NAntBin.dir}"/> <!-- variable does not exist yet; otherwise: value="${NAntBin.dir}:${environment::get-variable('MONO_PATH')}" -->
+                   </environment>
+                </exec>
+            </if>
+            <if test="${property::exists('xbuild')}">
+                <exec program="${xbuild}" commandline="${solution.file}">
                    <environment>
                       <variable name="MONO_PATH" value="${NAntBin.dir}"/> <!-- variable does not exist yet; otherwise: value="${NAntBin.dir}:${environment::get-variable('MONO_PATH')}" -->
                    </environment>
@@ -158,12 +177,6 @@
                     <include name="Mono.Security.dll" />
                 </fileset>
             </copy>
-            <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-                <!-- requires sqlite 3.6.1 or higher to be installed on the linux system -->
-                <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" 
-                      tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/System.Data.SQLite.dll" overwrite="true"/>
-                <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/MySQL/mysql.data.dll" tofile="${OpenPetraRoot.dir}/csharp/ICT/Server/_bin/${Output.dir}/MySql.Data.dll" overwrite="true"/>
-            </if>
             <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
             <if test="${file::exists(language.file)}">
                 <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
