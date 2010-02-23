@@ -34,7 +34,7 @@
                         </items>
                     </in>
                     <do>
-                        <if test='${script::ChangeProjectFileXBuild(filename, false)}'/>
+                        <if test='${script::ChangeProjectFileXBuild(filename)}'/>
                     </do>
                 </foreach>
             </if>

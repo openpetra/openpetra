@@ -292,8 +292,8 @@
     [Function("ChangeProjectFileXBuild")]
     public static bool ChangeProjectFileXBuild(string filename)
     {
-        ReplaceInFile(filename, "RegEx:<HintPath>(.*)\\ThirdParty\\Mono\\Mono.Posix.dll</HintPath>", "");
-        ReplaceInFile(filename, "RegEx:<HintPath>(.*)\\Common\\_bin\\Debug\\ICSharpCode.SharpZipLib.dll</HintPath>", "");
+        ReplaceInFile(filename, "RegEx:<HintPath>.*ThirdParty.*Mono.*dll</HintPath>", "");
+        ReplaceInFile(filename, "RegEx:<HintPath>.*ThirdParty.*ICSharpCode.*dll</HintPath>", "");
         return true;
     }
 

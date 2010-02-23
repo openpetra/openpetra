@@ -43,7 +43,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\..\Common\_bin\Debug\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\..\..\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.Posix">
