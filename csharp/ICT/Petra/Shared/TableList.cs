@@ -394,5 +394,46 @@ namespace Ict.Petra.Shared
             #endregion
             return list;
         }
+
+        /// <summary>
+        /// get the names of the sequences of the whole database
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> GetDBSequenceNames()
+        {
+            List<string> list = new List<string>();
+            #region DBSequenceNames
+            list.Add("seq_application");
+            list.Add("seq_contact");
+            list.Add("seq_extract_number");
+            list.Add("seq_location_number");
+            list.Add("seq_pe_evaluation_number");
+            list.Add("seq_report_number");
+            list.Add("seq_general_ledger_master");
+            list.Add("seq_budget");
+            list.Add("seq_bank_details");
+            list.Add("seq_document");
+            list.Add("seq_past_experience");
+            list.Add("seq_staff_data");
+            list.Add("seq_job");
+            list.Add("seq_job_assignment");
+            list.Add("seq_data_label");
+            list.Add("seq_foundation_proposal");
+            list.Add("seq_proposal_detail");
+            list.Add("seq_form_letter_insert");
+            list.Add("seq_modification1");
+            list.Add("seq_modification2");
+            list.Add("seq_workflow");
+            list.Add("seq_file_info");
+            list.Add("seq_person_skill");
+            list.Add("seq_booking");
+            list.Add("seq_room_alloc");
+            list.Add("seq_ar_invoice");
+            list.Add("seq_match_number");
+            list.Add("seq_statement_number");
+
+            #endregion
+            return list;
+        }
     }
 }

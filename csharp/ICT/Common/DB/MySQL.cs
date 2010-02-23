@@ -442,5 +442,18 @@ namespace Ict.Common.DB
 
             return Convert.ToInt64(cmd.ExecuteScalar());
         }
+
+        /// <summary>
+        /// restart a sequence with the given value
+        /// </summary>
+        public void RestartSequence(String ASequenceName,
+            TDBTransaction ATransaction,
+            TDataBase ADatabase,
+            IDbConnection AConnection,
+            Int64 ARestartValue)
+        {
+            ADatabase.ExecuteNonQuery("DELETE FROM " + ASequenceName + ";", ATransaction, false);
+            ADatabase.ExecuteNonQuery("INSERT INTO " + ASequenceName + " VALUES(" + ARestartValue.ToString() + ", -1);", ATransaction, false);
+        }
     }
 }

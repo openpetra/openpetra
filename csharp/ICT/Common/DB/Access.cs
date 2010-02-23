@@ -202,6 +202,11 @@ namespace Ict.Common.DB
         /// <param name="AConnection"></param>
         /// <returns>Sequence Value.</returns>
         System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection);
+
+        /// <summary>
+        /// restart a sequence with the given value
+        /// </summary>
+        void RestartSequence(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection, Int64 ARestartValue);
     }
 
     /// <summary>
@@ -1506,6 +1511,14 @@ namespace Ict.Common.DB
         public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction)
         {
             return FDataBaseRDBMS.GetCurrentSequenceValue(ASequenceName, ATransaction, this, FSqlConnection);
+        }
+
+        /// <summary>
+        /// restart a sequence with the given value
+        /// </summary>
+        public void RestartSequence(String ASequenceName, TDBTransaction ATransaction, Int64 ARestartValue)
+        {
+            FDataBaseRDBMS.RestartSequence(ASequenceName, ATransaction, this, FSqlConnection, ARestartValue);
         }
 
         #endregion

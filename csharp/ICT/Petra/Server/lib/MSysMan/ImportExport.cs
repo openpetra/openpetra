@@ -67,6 +67,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             ExportTables(rootNode, "MPersonnel", "Units");
             ExportTables(rootNode, "MConference", "");
             ExportTables(rootNode, "MHospitality", "");
+            ExportSequences(rootNode);
             return TXMLParser.XmlToString(OpenPetraData);
         }
 
@@ -177,6 +178,29 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         }
 
         /// <summary>
+        /// export the sequences
+        /// </summary>
+        /// <param name="ARootNode"></param>
+        private static void ExportSequences(XmlNode ARootNode)
+        {
+            XmlElement sequencesNode = ARootNode.OwnerDocument.CreateElement("Sequences");
+
+            ARootNode.AppendChild(sequencesNode);
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            foreach (string seq in TTableList.GetDBSequenceNames())
+            {
+                XmlElement sequenceNode = ARootNode.OwnerDocument.CreateElement(StringHelper.UpperCamelCase(seq, false, false));
+                sequencesNode.AppendChild(sequenceNode);
+
+                sequenceNode.SetAttribute("value", DBAccess.GDBAccessObj.GetCurrentSequenceValue(seq, Transaction).ToString());
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+        }
+
+        /// <summary>
         /// this will reset the current database, and load the data from the given XmlDocument
         /// </summary>
         /// <param name="ANewDatabaseData"></param>
@@ -227,7 +251,11 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     LoadTable(table, doc, Transaction);
                 }
 
-                // TODO: what about sequences? they should be set appropriately, not lagging behind the imported data?
+                // set sequences appropriately, not lagging behind the imported data
+                foreach (string seq in TTableList.GetDBSequenceNames())
+                {
+                    LoadSequence(seq, doc, Transaction);
+                }
 
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
@@ -250,7 +278,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             {
                 foreach (XmlNode TableNode in ModuleNode.ChildNodes)
                 {
-                    if (TableNode.Name == ATableName + "Table")
+                    if (TableNode.Name == ATableName)
                     {
                         return TableNode;
                     }
@@ -260,9 +288,24 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             return null;
         }
 
+        private static bool LoadSequence(string ASequenceName, XmlDocument ADoc, TDBTransaction ATransaction)
+        {
+            XmlNode SequenceNode = FindNode(ADoc, StringHelper.UpperCamelCase(ASequenceName, false, false));
+
+            if (SequenceNode == null)
+            {
+                TLogging.Log("SequenceNode null: " + ASequenceName);
+                return false;
+            }
+
+            DBAccess.GDBAccessObj.RestartSequence(ASequenceName, ATransaction, Convert.ToInt64(TYml2Xml.GetAttribute(SequenceNode, "value")));
+
+            return true;
+        }
+
         private static bool LoadTable(string ATableName, XmlDocument ADoc, TDBTransaction ATransaction)
         {
-            XmlNode TableNode = FindNode(ADoc, StringHelper.UpperCamelCase(ATableName, false, false));
+            XmlNode TableNode = FindNode(ADoc, StringHelper.UpperCamelCase(ATableName, false, false) + "Table");
 
             if (TableNode == null)
             {
@@ -279,9 +322,11 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             DataTable table = DBAccess.GDBAccessObj.SelectDT("Select * from " + ATableName, ATableName, ATransaction);
             List <OdbcParameter>Parameters = new List <OdbcParameter>();
 
-            ConvertColumnNames(table.Columns);
-
             string InsertStatement = "INSERT INTO pub_" + ATableName + "() VALUES ";
+
+            string OrigInsertStatement = InsertStatement;
+
+            ConvertColumnNames(table.Columns);
 
             bool firstRow = true;
 
@@ -302,7 +347,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                             throw e;
                         }
 
-                        InsertStatement = "INSERT INTO pub_" + ATableName + "() VALUES ";
+                        InsertStatement = OrigInsertStatement;
                         Parameters = new List <OdbcParameter>();
                     }
                     else
@@ -368,7 +413,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         else if (col.DataType == typeof(double))
                         {
                             OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.Decimal);
-                            p.Value = Convert.ToDouble(strValue.Replace(",", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator));
+                            p.Value = Convert.ToDouble(strValue, CultureInfo.InvariantCulture);
                             Parameters.Add(p);
                         }
                         else if (col.DataType == typeof(bool))
@@ -380,7 +425,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         else if (col.DataType == typeof(Decimal))
                         {
                             OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.Decimal);
-                            p.Value = Convert.ToDecimal(strValue);
+                            p.Value = Convert.ToDecimal(strValue, CultureInfo.InvariantCulture);
                             Parameters.Add(p);
                         }
                         else

@@ -56,6 +56,17 @@ namespace Ict.Tools.CodeGeneration.DataStore
             }
 
             TInsertIntoRegion.InsertIntoRegion(AFilename, "DBTableNames", namesCodelet);
+
+            ArrayList Sequences = AStore.GetSequences();
+
+            namesCodelet = string.Empty;
+
+            foreach (TSequence s in Sequences)
+            {
+                namesCodelet += "INDENT" + "list.Add(\"" + s.strName + "\");" + Environment.NewLine;
+            }
+
+            TInsertIntoRegion.InsertIntoRegion(AFilename, "DBSequenceNames", namesCodelet);
         }
 
         /// <summary>

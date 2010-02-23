@@ -510,5 +510,17 @@ namespace Ict.Common.DB
         {
             return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT last_value FROM " + ASequenceName + "", ATransaction, false));
         }
+
+        /// <summary>
+        /// restart a sequence with the given value
+        /// </summary>
+        public void RestartSequence(String ASequenceName,
+            TDBTransaction ATransaction,
+            TDataBase ADatabase,
+            IDbConnection AConnection,
+            Int64 ARestartValue)
+        {
+            ADatabase.ExecuteScalar("ALTER SEQUENCE " + ASequenceName + " RESTART WITH " + ARestartValue.ToString(), ATransaction, false);
+        }
     }
 }

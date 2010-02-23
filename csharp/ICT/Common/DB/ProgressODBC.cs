@@ -373,5 +373,17 @@ namespace Ict.Common.DB
 
             return -1;
         }
+
+        /// <summary>
+        /// restart a sequence with the given value has not been implemented
+        /// </summary>
+        public void RestartSequence(String ASequenceName,
+            TDBTransaction ATransaction,
+            TDataBase ADatabase,
+            IDbConnection AConnection,
+            Int64 ARestartValue)
+        {
+            // not implemented
+        }
     }
 }
