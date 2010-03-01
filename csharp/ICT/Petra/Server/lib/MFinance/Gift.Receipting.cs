@@ -167,7 +167,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             string msg = AHTMLTemplate;
-            msg = msg.Replace("#TITLE", Calculations.FormatShortName(ADonorName, eShortNameFormat.eOnlyTitle));
+
+            if (ADonorName.Contains(","))
+            {
+                msg = msg.Replace("#TITLE", Calculations.FormatShortName(ADonorName, eShortNameFormat.eOnlyTitle));
+            }
+            else
+            {
+                // organisations have no title
+                msg = msg.Replace("#TITLE", "");
+            }
+
             msg = msg.Replace("#NAME", Calculations.FormatShortName(ADonorName, eShortNameFormat.eReverseWithoutTitle));
             msg = msg.Replace("#STREETNAME", GetStringOrEmpty(Location[0].StreetName));
             msg = msg.Replace("#LOCATION", GetStringOrEmpty(Location[0].Locality));
@@ -213,6 +223,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             msg = msg.Replace("#OVERALLAMOUNT", String.Format("{0:C}", sum));
+
+            if ((ADonations.Rows.Count == 1) && msg.Contains("#DONATIONDATE"))
+            {
+                // this is a receipt for just one gift
+                msg = msg.Replace("#DONATIONDATE", Convert.ToDateTime(ADonations.Rows[0]["DateEntered"]).ToString("dd.MM.yyyy"));
+            }
 
             // TODO allow other currencies. use a_currency table, and transaction currency
             msg = msg.Replace("#TOTALAMOUNTINWORDS", NumberToWords.AmountToWords(sum, "Euro", "Cent"));
