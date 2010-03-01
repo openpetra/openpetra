@@ -125,7 +125,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
-            // TODO
+            GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+            FPetraUtilsObject.SetChangedFlag();
+            grdDetails.Refresh();
         }
 
         private void PostBatch(System.Object sender, EventArgs e)

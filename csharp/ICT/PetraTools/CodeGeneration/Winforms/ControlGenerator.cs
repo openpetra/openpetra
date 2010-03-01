@@ -534,7 +534,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".Text.Length == 0";
             }
 
-            if (AFieldTypeDotNet.ToLower().Contains("int"))
+            if (AFieldTypeDotNet.ToLower().Contains("int64"))
+            {
+                return "Convert.ToInt64(" + ctrl.controlName + ".Text)";
+            }
+            else if (AFieldTypeDotNet.ToLower().Contains("int"))
             {
                 return "Convert.ToInt32(" + ctrl.controlName + ".Text)";
             }
@@ -836,7 +840,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".Text.Length == 0";
             }
 
-            if (AFieldTypeDotNet.ToLower().Contains("int"))
+            if (AFieldTypeDotNet.ToLower().Contains("int64"))
+            {
+                return "Convert.ToInt64(" + ctrl.controlName + ".Text)";
+            }
+            else if (AFieldTypeDotNet.ToLower().Contains("int"))
             {
                 return "Convert.ToInt32(" + ctrl.controlName + ".Text)";
             }

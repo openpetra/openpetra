@@ -435,6 +435,7 @@ namespace Ict.Petra.Client.CommonControls
             set
             {
                 this.txtAutoPopulated.txtTextBox.Text = value;
+                UpdateDisplayedValue();
             }
         }
 
@@ -1334,6 +1335,17 @@ namespace Ict.Petra.Client.CommonControls
             {
                 this.TxtAutoPopulated_SetLabel(currentText, out result);
                 this.txtAutoPopulated.lblLabel.Text = result;
+            }
+        }
+
+        /// <summary>
+        /// readonly property for the label
+        /// </summary>
+        public string LabelText
+        {
+            get
+            {
+                return this.txtAutoPopulated.lblLabel.Text;
             }
         }
 

@@ -37,8 +37,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     public partial class TUC_GiftTransactions
     {
-        private Int32 FLedgerNumber;
-        private Int32 FBatchNumber;
+        private Int32 FLedgerNumber = -1;
+        private Int32 FBatchNumber = -1;
 
         /// <summary>
         /// load the gifts into the grid
@@ -47,10 +47,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ABatchNumber"></param>
         public void LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
+            if ((FLedgerNumber != -1) && (FBatchNumber != -1))
+            {
+                GetDataFromControls();
+            }
+
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
-
-            GetDataFromControls();
 
             FPreviouslySelectedDetailRow = null;
 
@@ -112,6 +115,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// get the details of the current gift
+        /// </summary>
+        /// <returns></returns>
+        private AGiftRow GetGiftRow(Int32 AGiftTransactionNumber)
+        {
+            return (AGiftRow)FMainDS.AGift.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, AGiftTransactionNumber });
+        }
+
+        /// <summary>
         /// add a new transaction
         /// </summary>
         /// <param name="sender"></param>
@@ -165,13 +177,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             // show cost centre
             MotivationDetailChanged(null, null);
+
+            dtpDateEntered.Value = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
+            txtDetailDonorKey.Text = String.Format("{0:0000000000}", ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey);
         }
 
         private void GetDetailDataFromControlsManual(AGiftDetailRow ARow)
         {
             ARow.CostCentreCode = txtDetailCostCentreCode.Text;
 
-            // TODO: GetGiftRow(); set donor key
+            AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
+            giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
+            giftRow.DateEntered = dtpDateEntered.Value;
+
+            ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered = giftRow.DateEntered;
+            ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey = giftRow.DonorKey;
+            ((GiftBatchTDSAGiftDetailRow)ARow).DonorName = txtDetailDonorKey.LabelText;
         }
     }
 }

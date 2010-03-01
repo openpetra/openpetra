@@ -37,9 +37,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TUC_GLTransactions
     {
-        private Int32 FLedgerNumber;
-        private Int32 FBatchNumber;
-        private Int32 FJournalNumber;
+        private Int32 FLedgerNumber = -1;
+        private Int32 FBatchNumber = -1;
+        private Int32 FJournalNumber = -1;
 
         /// <summary>
         /// load the transactions into the grid
@@ -49,11 +49,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AJournalNumber"></param>
         public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
+            if (FBatchNumber != -1)
+            {
+                GetDataFromControls();
+            }
+
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
             FJournalNumber = AJournalNumber;
-
-            GetDataFromControls();
 
             FPreviouslySelectedDetailRow = null;
 

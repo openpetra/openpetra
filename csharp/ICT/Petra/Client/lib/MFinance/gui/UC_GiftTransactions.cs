@@ -72,6 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.btnRemove.Text = Catalog.GetString("Remove");
       this.txtDetailDonorKey.ButtonText = Catalog.GetString("Find");
       this.lblDetailDonorKey.Text = Catalog.GetString("Donor:");
+      this.lblDateEntered.Text = Catalog.GetString("Date Entered:");
       this.lblDetailGiftTransactionAmount.Text = Catalog.GetString("Amount:");
       this.txtDetailRecipientKey.ButtonText = Catalog.GetString("Find");
       this.lblDetailRecipientKey.Text = Catalog.GetString("Recipient:");
@@ -265,7 +266,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ARow.BeginEdit();
             ARow.GiftTransactionAmount = Convert.ToDouble(txtDetailGiftTransactionAmount.Text);
-            ARow.RecipientKey = Convert.ToInt32(txtDetailRecipientKey.Text);
+            ARow.RecipientKey = Convert.ToInt64(txtDetailRecipientKey.Text);
             ARow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
             ARow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();
             GetDetailDataFromControlsManual(ARow);
