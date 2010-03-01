@@ -59,7 +59,7 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\core\Ict.Petra.ServerAdmin.App.Core.csproj">
+    <ProjectReference Include="..\Core\Ict.Petra.ServerAdmin.App.Core.csproj">
       <Project>{BC8061E2-9434-4912-8E29-83F7E5052092}</Project>
       <Name>Ict.Petra.ServerAdmin.App.Core</Name>
     </ProjectReference>
