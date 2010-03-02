@@ -93,7 +93,7 @@
         <copy todir="${setupDir}/reports30">
             <fileset basedir="${OpenPetraRoot.dir}/XmlReports/">
                 <include name="*.dtd" />
-                <include name="*.xml" />
+                <include name="**/*.xml" />
             </fileset>
         </copy>
 

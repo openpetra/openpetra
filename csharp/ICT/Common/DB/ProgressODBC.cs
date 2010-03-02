@@ -29,6 +29,7 @@ using System.Data.Common;
 using System.Data.Odbc;
 using System.Text;
 using System.Collections;
+using System.Text.RegularExpressions;
 using Ict.Common;
 
 namespace Ict.Common.DB
@@ -137,6 +138,16 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace(" = false", " = 0");
             ReturnValue = ReturnValue.Replace(" = FALSE", " = 0");
             ReturnValue = ReturnValue.Replace("\"", "'");
+
+            Match m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
+
+            while (m.Success)
+            {
+                // needs to be 'MM/dd/yyyy'
+                ReturnValue = ReturnValue.Replace("#" + m.Groups[1] + "-" + m.Groups[2] + "-" + m.Groups[3] + "#",
+                    "'" + m.Groups[2] + "/" + m.Groups[3] + "/" + m.Groups[1] + "'");
+                m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
+            }
 
             // some special cases require double quotes
             ReturnValue = ReturnValue.Replace("'_Sequence'", "\"_Sequence\"");

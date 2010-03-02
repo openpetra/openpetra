@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+	<report id="ConferencePayments">
+		<description>
+			Check all registered participants of a conference and see who has not paid yet.
+			Using the gift system, not considering cancelled batches, but making no difference between unposted and posted batches.
+			This will be solved differently as soon as we use a proper Accounts Receivable system.
+		</description>
+		<reportparameters>
+			<reportparameter name="param_ledger_number_i"/>
+			<reportparameter name="param_conference_key_n"/>
+			<reportparameter name="param_start_date_payments"/>
+			<reportparameter name="param_motivations"/> <!-- comma separated list, GROUP,DETAIL,GROUP2,DETAIL2,... -->
+		</reportparameters>
+		
+		<reportheader/>
+		<pageheader>
+			<field whichfield="title1"><value text ="Outstanding Payments for Conference" /></field>
+		</pageheader>
+
+		<calculations>
+		
+			<!-- Find registered participants who have not paid yet -->
+			<calculation id="GetParticipantsWithoutPayment"
+					returns="PartnerKey, PartnerName, DateRegistered"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					SELECT PUB_p_partner.p_partner_key_n AS PartnerKey, 
+						   PUB_p_partner.p_partner_short_name_c AS PartnerName, 
+						   PUB_pm_short_term_application.pm_st_app_date_d AS DateRegistered
+					FROM PUB_pm_short_term_application, PUB_p_partner
+					WHERE PUB_pm_short_term_application.pm_st_confirmed_option_n = {{param_conference_key_n}}
+					AND PUB_p_partner.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n
+					AND NOT EXISTS (SELECT *
+						FROM PUB_a_gift_batch, PUB_a_gift, PUB_a_gift_detail
+						WHERE PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+						AND PUB_a_gift_batch.a_gl_effective_date_d &gt;= {#param_start_date_payments#}
+						AND PUB_a_gift_batch.a_batch_status_c &lt;&gt; "Cancelled"
+						AND PUB_a_gift.a_ledger_number_i = PUB_a_gift_batch.a_ledger_number_i
+						AND PUB_a_gift.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i
+						AND PUB_a_gift.p_donor_key_n = PUB_pm_short_term_application.p_partner_key_n
+						AND PUB_a_gift_detail.a_ledger_number_i = PUB_a_gift.a_ledger_number_i
+						AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+						AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+						AND
+						</value>
+						<value function="csv" text="PUB_a_gift_detail.a_motivation_group_code_c,PUB_a_gift_detail.a_motivation_detail_code_c" 
+									variable="param_motivations"/>
+						<value>
+						)
+					ORDER BY 3					
+					</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="PartnerKey" 
+					returnsFormat="partnerkey" returns="text">
+				<caption><value text="Partner Key"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PartnerKey"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+
+			<calculation id="PartnerName" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Participant"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PartnerName"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+
+			<calculation id="DateRegistered" 
+					returnsFormat="formatteddate" returns="text">
+				<caption><value text="Registration Date"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="DateRegistered"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+		</calculations>
+
+		<levels>		
+		
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="participants" calculation="GetParticipantsWithoutPayment"/>
+				</detail>
+			</level> <!-- main -->
+
+			<level name="participants" identification="PartnerKey">
+				<detail>
+					<field whichfield="columns"/>
+				</detail>
+			</level>
+		</levels>
+	</report><!-- ConferencePayments -->
+	
+</reports>

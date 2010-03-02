@@ -524,6 +524,11 @@ namespace Ict.Tools.CodeGeneration
         /// <returns></returns>
         public static List <ClassNode>GetWebConnectorClasses(string AServerNamespace)
         {
+            if (AServerNamespace.Split('.').Length < 4)
+            {
+                return null;
+            }
+
             string ModuleName = AServerNamespace.Split('.')[3];
 
             List <CSParser>CSFiles = new List <CSParser>();

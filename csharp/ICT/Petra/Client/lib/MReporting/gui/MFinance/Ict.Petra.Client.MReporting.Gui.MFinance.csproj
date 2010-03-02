@@ -110,6 +110,13 @@
     <Compile Include="AccountDetail.ManualCode.cs">
       <DependentUpon>AccountDetail.cs</DependentUpon>
     </Compile>
+    <Compile Include="ARConferencePayments.cs" />
+    <Compile Include="ARConferencePayments.Designer.cs">
+      <DependentUpon>ARConferencePayments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ARConferencePayments.ManualCode.cs">
+      <DependentUpon>ARConferencePayments.cs</DependentUpon>
+    </Compile>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BalanceSheet.cs" />
     <Compile Include="BalanceSheet.Designer.cs">
@@ -127,6 +134,9 @@
     </Compile>
     <EmbeddedResource Include="AccountDetail.resx">
       <DependentUpon>AccountDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ARConferencePayments.resx">
+      <DependentUpon>ARConferencePayments.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="BalanceSheet.resx">
       <DependentUpon>BalanceSheet.cs</DependentUpon>

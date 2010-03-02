@@ -695,14 +695,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             List <ClassNode>WebConnectorClasses = CSParser.GetWebConnectorClasses(ServerWebConnectorNamespace);
 
-            HandleWebConnector("Create", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
-            HandleWebConnector("Create", "DETAIL", FCodeStorage.GetAttribute("DetailTable"), ServerWebConnectorNamespace, WebConnectorClasses);
-            HandleWebConnector("Load", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
+            if (WebConnectorClasses != null)
+            {
+                HandleWebConnector("Create", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
+                HandleWebConnector("Create", "DETAIL", FCodeStorage.GetAttribute("DetailTable"), ServerWebConnectorNamespace, WebConnectorClasses);
+                HandleWebConnector("Load", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
 
-            FTemplate.SetCodelet("WEBCONNECTORTDS", "TRemote." +
-                ServerWebConnectorNamespace.Substring("Ict.Petra.Server.".Length));
-            FTemplate.SetCodelet("WEBCONNECTORTDS", "TRemote." +
-                ServerWebConnectorNamespace.Substring("Ict.Petra.Server.".Length));
+                FTemplate.SetCodelet("WEBCONNECTORTDS", "TRemote." +
+                    ServerWebConnectorNamespace.Substring("Ict.Petra.Server.".Length));
+                FTemplate.SetCodelet("WEBCONNECTORTDS", "TRemote." +
+                    ServerWebConnectorNamespace.Substring("Ict.Petra.Server.".Length));
+            }
         }
 
         /*

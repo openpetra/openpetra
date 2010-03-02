@@ -125,8 +125,16 @@ namespace Ict.Common.IO
             {
                 if (!File.Exists(absoluteUri.AbsolutePath))
                 {
-                    return File.Open(FXmlFilePath + Path.DirectorySeparatorChar + Path.GetFileName(
-                            absoluteUri.AbsolutePath), FileMode.Open, FileAccess.Read);
+                    string dtdFilename = FXmlFilePath + Path.DirectorySeparatorChar + Path.GetFileName(absoluteUri.AbsolutePath);
+
+                    if (!File.Exists(dtdFilename))
+                    {
+                        // we have some reports in a directory below where the reports.dtd is
+                        dtdFilename = FXmlFilePath + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + Path.GetFileName(
+                            absoluteUri.AbsolutePath);
+                    }
+
+                    return File.Open(dtdFilename, FileMode.Open, FileAccess.Read);
                 }
 
                 return base.GetEntity(absoluteUri, role, ofObjectToReturn);
