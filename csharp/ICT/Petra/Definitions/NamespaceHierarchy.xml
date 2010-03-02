@@ -219,6 +219,16 @@
                 </Children>
             </SubNamespace>
             <SubNamespace>
+                <Name>AccountsReceivable</Name>
+                <Description>Accounts Receivable Sub-System</Description>
+                <Children>
+                    <SubNamespace>
+                        <Name>WebConnectors</Name>
+                        <Description>Connectors for Web Services (stateless, simple)</Description>
+                    </SubNamespace>
+                </Children>
+            </SubNamespace>
+            <SubNamespace>
                 <Name>Budget</Name>
                 <Description>Budget Sub-System</Description>
                 <Children>

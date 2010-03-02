@@ -10,6 +10,7 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable;
+using Ict.Petra.Shared.Interfaces.MFinance.AccountsReceivable;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget;
 using Ict.Petra.Shared.Interfaces.MFinance.Cacheable;
 using Ict.Petra.Shared.Interfaces.MFinance.ImportExport;
@@ -21,6 +22,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.Reporting;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.AccountsReceivable.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
@@ -37,6 +39,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 #endregion
 namespace Ict.Petra.Shared.Interfaces.MFinance
@@ -46,6 +49,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance
     {
         /// <summary>access to sub namespace</summary>
         IAccountsPayableNamespace AccountsPayable
+        {
+            get;
+        }
+
+        /// <summary>access to sub namespace</summary>
+        IAccountsReceivableNamespace AccountsReceivable
         {
             get;
         }
@@ -223,6 +232,32 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors
                             AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
                             DateTime APostingDate,
                             out TVerificationResultCollection AVerifications);
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsReceivable
+{
+    /// <summary>auto generated</summary>
+    public interface IAccountsReceivableNamespace : IInterface
+    {
+        /// <summary>access to sub namespace</summary>
+        IAccountsReceivableWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsReceivable.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IAccountsReceivableWebConnectorsNamespace : IInterface
+    {
     }
 
 }
