@@ -58,6 +58,30 @@ namespace Ict.Common.IO
             }
         }
 
+        /// remove carriage return
+        public static void Dos2Unix(String filename)
+        {
+            StreamReader sr = new StreamReader(filename);
+            string lines = sr.ReadToEnd();
+
+            sr.Close();
+            StreamWriter sw = new StreamWriter(filename);
+            sw.Write(lines.Replace("\r", ""));
+            sw.Close();
+        }
+
+        /// add carriage return
+        public static void Unix2Dos(String filename)
+        {
+            StreamReader sr = new StreamReader(filename);
+            string lines = sr.ReadToEnd();
+
+            sr.Close();
+            StreamWriter sw = new StreamWriter(filename);
+            sw.Write(lines.Replace("\r", "").Replace("\n", "\r\n"));
+            sw.Close();
+        }
+
         /// <summary>
         /// check if the two text files have the same content
         /// </summary>
@@ -65,6 +89,18 @@ namespace Ict.Common.IO
         /// <param name="filename2"></param>
         /// <returns></returns>
         public static bool SameContent(String filename1, String filename2)
+        {
+            return SameContent(filename1, filename2, true);
+        }
+
+        /// <summary>
+        /// check if the two text files have the same content
+        /// </summary>
+        /// <param name="filename1"></param>
+        /// <param name="filename2"></param>
+        /// <param name="AIgnoreNewLine"></param>
+        /// <returns></returns>
+        public static bool SameContent(String filename1, String filename2, bool AIgnoreNewLine)
         {
             StreamReader sr1;
             StreamReader sr2;
@@ -84,15 +120,24 @@ namespace Ict.Common.IO
             sr1 = new StreamReader(filename1);
             sr2 = new StreamReader(filename2);
 
-            /* don't compare the length, there might be different line endings
-             * if (sr1.BaseStream.Length <> sr2.BaseStream.Length) then
-             * begin
-             * sr1.Close();
-             * sr2.Close();
-             * result := false;
-             * exit;
-             * end;
-             */
+            if (!AIgnoreNewLine)
+            {
+                // compare the length only when you want the line endings to be the same.
+                // otherwise the length would be different anyways
+                if (sr1.BaseStream.Length != sr2.BaseStream.Length)
+                {
+                    sr1.Close();
+                    sr2.Close();
+                    return false;
+                }
+
+                line = sr1.ReadToEnd();
+                line2 = sr2.ReadToEnd();
+                sr1.Close();
+                sr2.Close();
+                return line == line2;
+            }
+
             line = "start";
             line2 = "start";
 
@@ -140,7 +185,7 @@ namespace Ict.Common.IO
         {
             string NewFilename = AOrigFilename + ".new";
 
-            if (SameContent(AOrigFilename, NewFilename) == true)
+            if (SameContent(AOrigFilename, NewFilename, false) == true)
             {
                 System.IO.File.Delete(NewFilename);
                 return false;

@@ -184,6 +184,7 @@ public class TFixProjectReferences : TCSProjTools
         }
 
         doc.Save(AFilename + ".new");
+        TTextFile.Unix2Dos(AFilename + ".new");
         TTextFile.UpdateFile(AFilename);
     }
 

@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-# SharpDevelop 3.0.0.3800
+# SharpDevelop 3.1.0.4977
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.App.Core", "Petra\Client\app\Core\Ict.Petra.Client.App.Core.csproj", "{69E21FFC-F815-451A-96BB-66499CDDEB6E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.App.Core.RemoteObjects", "Petra\Client\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj", "{A3E8D62A-D07D-44D9-A286-68220B3AA94F}"
