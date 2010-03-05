@@ -258,7 +258,8 @@ namespace Ict.Petra.Server.MFinance.GL
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            if (!TFinancialYear.IsValidPeriod(Batch.LedgerNumber, Batch.DateEffective, out DateEffectivePeriodNumber, out DateEffectiveYearNumber,
+            if (!TFinancialYear.IsValidPostingPeriod(Batch.LedgerNumber, Batch.DateEffective, out DateEffectivePeriodNumber,
+                    out DateEffectiveYearNumber,
                     Transaction))
             {
                 AVerifications.Add(new TVerificationResult(

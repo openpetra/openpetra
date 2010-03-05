@@ -2203,12 +2203,31 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
 
 
         /// generated method from connector
+        public Int32 FieldChangeAdjustment(Int32 ALedgerNumber,
+                                           Int64 ARecipientKey,
+                                           DateTime AStartDate,
+                                           DateTime AEndDate,
+                                           Int64 AOldField,
+                                           DateTime ADateCorrection,
+                                           bool AWithReceipt)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector.FieldChangeAdjustment(ALedgerNumber, ARecipientKey, AStartDate, AEndDate, AOldField, ADateCorrection, AWithReceipt);
+        }
+
+        /// generated method from connector
         public string CreateAnnualGiftReceipts(Int32 ALedgerNumber,
                                                DateTime AStartDate,
                                                DateTime AEndDate,
                                                string AHTMLTemplate)
         {
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TReceiptingWebConnector.CreateAnnualGiftReceipts(ALedgerNumber, AStartDate, AEndDate, AHTMLTemplate);
+        }
+
+        /// generated method from connector
+        public GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber,
+                                             DateTime ADateEffective)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber, ADateEffective);
         }
 
         /// generated method from connector

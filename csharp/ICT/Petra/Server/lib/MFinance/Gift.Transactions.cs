@@ -42,6 +42,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.App.ClientDomain;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
@@ -56,8 +57,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// and immediately store the batch and the new number in the database
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="ADateEffective"></param>
         /// <returns></returns>
-        public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber)
+        public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber, DateTime ADateEffective)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
             ALedgerTable LedgerTable;
@@ -69,8 +71,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             NewRow.LedgerNumber = ALedgerNumber;
             LedgerTable[0].LastGiftBatchNumber++;
             NewRow.BatchNumber = LedgerTable[0].LastGiftBatchNumber;
-            NewRow.BatchPeriod = LedgerTable[0].CurrentPeriod;
-            NewRow.BatchYear = LedgerTable[0].CurrentFinancialYear;
+
+            Int32 BatchYear, BatchPeriod;
+
+            // if DateEffective is outside the range of open periods, use the most fitting date
+            TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out BatchYear, out BatchPeriod, Transaction, true);
+            NewRow.BatchYear = BatchYear;
+            NewRow.BatchPeriod = BatchPeriod;
+            NewRow.GlEffectiveDate = ADateEffective;
+            NewRow.ExchangeRateToBase = 1.0;
+
             NewRow.BankAccountCode = DomainManager.GSystemDefaultsCache.GetStringDefault(
                 SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
 
@@ -102,6 +112,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             DBAccess.GDBAccessObj.CommitTransaction();
             return MainDS;
+        }
+
+        /// <summary>
+        /// create a new batch with a consecutive batch number in the ledger,
+        /// and immediately store the batch and the new number in the database
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber)
+        {
+            return CreateAGiftBatch(ALedgerNumber, DateTime.Today);
         }
 
         /// <summary>
@@ -301,6 +322,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // TODO: support foreign currencies
                 transaction.AmountInBaseCurrency = transaction.TransactionAmount;
 
+                // TODO: account and costcentre based on linked costcentre, current commitment, and Motivation detail
+                // Careful: modify gift cost centre and account and recipient field only when the amount is positive.
+                // adjustments and reversals must remain on the original value
                 transaction.AccountCode = giftbatch.BankAccountCode;
                 transaction.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
                     ALedgerNumber);
@@ -331,6 +355,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 GLDataset.ATransaction.Rows.Add(transactionGiftAccount);
 
                 // TODO: for other currencies a post to a_ledger.a_forex_gains_losses_account_c ???
+
+                // TODO: do the fee calculation, a_fees_payable, a_fees_receivable
             }
 
             journal.LastTransactionNumber = TransactionCounter - 1;

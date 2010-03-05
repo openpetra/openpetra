@@ -402,11 +402,22 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
     /// <summary>auto generated</summary>
     public interface IGiftWebConnectorsNamespace : IInterface
     {
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TReceiptingWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector)</summary>
+        Int32 FieldChangeAdjustment(Int32 ALedgerNumber,
+                                    Int64 ARecipientKey,
+                                    DateTime AStartDate,
+                                    DateTime AEndDate,
+                                    Int64 AOldField,
+                                    DateTime ADateCorrection,
+                                    bool AWithReceipt);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
         string CreateAnnualGiftReceipts(Int32 ALedgerNumber,
                                         DateTime AStartDate,
                                         DateTime AEndDate,
                                         string AHTMLTemplate);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
+        GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber,
+                                      DateTime ADateEffective);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
         GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>

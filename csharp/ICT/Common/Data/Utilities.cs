@@ -354,5 +354,18 @@ namespace Ict.Common.Data
                 // TLogging.Log('CopyModificationIDsOver: Row #' + Counter.ToString + ': no matching Row in ADestinationDT found!');
             }
         }
+
+        /// <summary>
+        /// copy all values from one row to the other; must have the same columns
+        /// </summary>
+        /// <param name="ASourceRow"></param>
+        /// <param name="ADestinationRow"></param>
+        public static void CopyAllColumnValues(DataRow ASourceRow, DataRow ADestinationRow)
+        {
+            for (Int32 col = 0; col < ASourceRow.Table.Columns.Count; col++)
+            {
+                ADestinationRow[col] = ASourceRow[col];
+            }
+        }
     }
 }

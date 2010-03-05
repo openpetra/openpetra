@@ -317,7 +317,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            if (!TFinancialYear.IsValidPeriod(ALedgerNumber, stmt.Date, out DateEffectivePeriodNumber, out DateEffectiveYearNumber, Transaction))
+            if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, stmt.Date, out DateEffectivePeriodNumber, out DateEffectiveYearNumber,
+                    Transaction))
             {
                 TLogging.Log(
                     String.Format("Cannot create a gift batch for date {0} since it is not in an open period of the ledger.",
@@ -328,13 +329,10 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
-            GiftBatchTDS GiftDS = TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber);
+            GiftBatchTDS GiftDS = TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber, stmt.Date);
 
             AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
-            giftbatchRow.GlEffectiveDate = stmt.Date;
             giftbatchRow.BatchDescription = String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString());
-            giftbatchRow.BatchPeriod = DateEffectivePeriodNumber;
-            giftbatchRow.BatchYear = DateEffectiveYearNumber;
 
             double HashTotal = 0.0;
 

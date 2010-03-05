@@ -331,7 +331,8 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            if (!TFinancialYear.IsValidPeriod(ALedgerNumber, APostingDate, out DateEffectivePeriodNumber, out DateEffectiveYearNumber, Transaction))
+            if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, APostingDate, out DateEffectivePeriodNumber, out DateEffectiveYearNumber,
+                    Transaction))
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post the AP documents in Ledger {0}"), ALedgerNumber),

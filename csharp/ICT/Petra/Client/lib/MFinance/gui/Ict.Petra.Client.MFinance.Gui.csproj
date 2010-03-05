@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{B8226A6F-E8BE-41B3-8509-0FD128B16574}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -216,6 +216,13 @@
     <Compile Include="GiftBatch.ManualCode.cs">
       <DependentUpon>GiftBatch.cs</DependentUpon>
     </Compile>
+    <Compile Include="GiftFieldAdjustment.cs" />
+    <Compile Include="GiftFieldAdjustment.Designer.cs">
+      <DependentUpon>GiftFieldAdjustment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GiftFieldAdjustment.ManualCode.cs">
+      <DependentUpon>GiftFieldAdjustment.cs</DependentUpon>
+    </Compile>
     <Compile Include="GiftReceiptPrinting.cs" />
     <Compile Include="GiftReceiptPrinting.Designer.cs">
       <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>
@@ -324,6 +331,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GiftBatch.resx">
       <DependentUpon>GiftBatch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GiftFieldAdjustment.resx">
+      <DependentUpon>GiftFieldAdjustment.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GiftReceiptPrinting.resx">
       <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>

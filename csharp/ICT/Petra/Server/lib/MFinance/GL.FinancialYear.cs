@@ -39,6 +39,66 @@ namespace Ict.Petra.Server.MFinance.GL
     public class TFinancialYear
     {
         /// <summary>
+        /// using the calendar of the ledger to determine the financial period at the given date.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADateEffective"></param>
+        /// <param name="AFinancialYear"></param>
+        /// <param name="AFinancialPeriod"></param>
+        /// <param name="ATransaction"></param>
+        /// <param name="ADoFixDate">do you want to fix the date if it is outside the open periods;
+        /// if the date is outside of the open periods, the date will be changed to the most appropriate date:
+        /// if the original date is before the posting period, the first available date in the posting period will be returned,
+        /// otherwise the last possible date</param>
+        /// <returns>false if date needed to change</returns>
+        public static bool GetLedgerDatePostingPeriod(Int32 ALedgerNumber,
+            ref DateTime ADateToTest,
+            out Int32 AFinancialYear,
+            out Int32 AFinancialPeriod,
+            TDBTransaction ATransaction,
+            bool ADoFixDate)
+        {
+            AFinancialPeriod = -1;
+            AFinancialYear = -1;
+            AAccountingPeriodTable table = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, ATransaction);
+
+            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ATransaction);
+
+            foreach (AAccountingPeriodRow row in table.Rows)
+            {
+                if ((row.PeriodStartDate <= ADateToTest) && (ADateToTest <= row.PeriodEndDate))
+                {
+                    // check if this period is either the current period or one of the forward posting periods
+                    if ((LedgerTable.Count == 1)
+                        && ((row.AccountingPeriodNumber >= LedgerTable[0].CurrentPeriod)
+                            && (row.AccountingPeriodNumber <= LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods)))
+                    {
+                        AFinancialPeriod = row.AccountingPeriodNumber;
+                        AFinancialYear = LedgerTable[0].CurrentFinancialYear;
+                        return true;
+                    }
+                }
+            }
+
+            if (ADoFixDate)
+            {
+                AAccountingPeriodRow ValidPeriodRow = table[0];
+                ADateToTest = ValidPeriodRow.PeriodStartDate;
+
+                if (ADateToTest > table[0].PeriodStartDate)
+                {
+                    ValidPeriodRow = table[table.Rows.Count - 1];
+                    ADateToTest = ValidPeriodRow.PeriodEndDate;
+                }
+
+                AFinancialYear = LedgerTable[0].CurrentFinancialYear;
+                AFinancialPeriod = ValidPeriodRow.AccountingPeriodNumber;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// check if the given date is in one of the open accounting periods of the given ledger, ie current or forward posting periods
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -47,35 +107,13 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="AYearNr"></param>
         /// <param name="ATransaction"></param>
         /// <returns></returns>
-        public static bool IsValidPeriod(Int32 ALedgerNumber,
+        public static bool IsValidPostingPeriod(Int32 ALedgerNumber,
             DateTime ADateToTest,
             out Int32 APeriodNumber,
             out Int32 AYearNr,
             TDBTransaction ATransaction)
         {
-            APeriodNumber = -1;
-            AYearNr = -1;
-            AAccountingPeriodTable table = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, ATransaction);
-
-            foreach (AAccountingPeriodRow row in table.Rows)
-            {
-                if ((row.PeriodStartDate <= ADateToTest) && (ADateToTest <= row.PeriodEndDate))
-                {
-                    // check if this period is either the current period or one of the forward posting periods
-                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ATransaction);
-
-                    if ((LedgerTable.Count == 1)
-                        && ((row.AccountingPeriodNumber >= LedgerTable[0].CurrentPeriod)
-                            && (row.AccountingPeriodNumber <= LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods)))
-                    {
-                        APeriodNumber = row.AccountingPeriodNumber;
-                        AYearNr = LedgerTable[0].CurrentFinancialYear;
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateToTest, out AYearNr, out APeriodNumber, ATransaction, false);
         }
 
         /// <summary>
