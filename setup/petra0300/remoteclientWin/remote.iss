@@ -22,7 +22,6 @@ Name: {app}/bin30; permissions: users-full
 Name: {app}/bin30/locale/de/LC_MESSAGES; permissions: users-full
 Name: {app}/patches30; permissions: users-full
 Name: {app}/manuals30; permissions: users-full
-Name: {app}/reports30; permissions: users-full
 Name: {app}/resources30; permissions: users-full
 Name: {app}/etc30; permissions: users-full
 Name: {userappdata}/OpenPetra.org/tmp30
@@ -46,8 +45,6 @@ Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_Client\Release\Ict.Petra.Sh
 Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ICT\Petra\Definitions\UINavigation.yml; DestDir: {app}/bin30
 Source: ..\i18n\*.mo; DestDir: {app}/bin30; Flags: recursesubdirs createallsubdirs
-Source: ..\..\..\XmlReports\reports.dtd; DestDir: {app}/reports30
-Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30
 Source: PetraClientRemote.config; DestDir: {app}/etc30; DestName: PetraClient-Remote.config
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
