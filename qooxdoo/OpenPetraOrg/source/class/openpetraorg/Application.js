@@ -45,13 +45,14 @@ qx.Class.define("openpetraorg.Application",
       {
         hostname = "localhost";
       }
-      openpetraorg.Application.WEBSERVICE = new openpetraorg.soap.Client("http://"+hostname+":8081/server.asmx");
+
+      openpetraorg.Application.WEBSERVICE = new openpetraorg.soap.Client("http://"+hostname+"/server.asmx");
       
       var windowManager = new qx.ui.window.Manager(); 
       openpetraorg.Application.DESKTOP = new qx.ui.window.Desktop(windowManager);
       openpetraorg.Application.DESKTOP.set({decorator: "main", backgroundColor: "background-pane"});     
       this.getRoot().add(openpetraorg.Application.DESKTOP, {height: "100%", width: "100%"});
-      
+
       // show modal login dialog
       var loginDialog = new openpetraorg.MCommon.LoginDialog();
       openpetraorg.Application.DESKTOP.add(loginDialog, {left: "30%", top: "30%"});

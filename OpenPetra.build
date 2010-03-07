@@ -65,6 +65,7 @@
         <echo message="generateWinforms: generates the User Interface using System.Windows.Forms"/>
         <echo message="cleanPetra: prepare for a clean build"/>
         <echo message="compilePetra: build all Petra C# code"/>
+        <echo message="compileQx: compile the javascript webclient, using Qooxdoo"/>
         <echo message="startPetraServer: run a local Petra Server"/>
         <echo message="stopPetraServer: stop the local Petra Server"/>
         <echo message="startPetraClient: run the Petra Client"/>
@@ -438,7 +439,7 @@
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <exec program="mono" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
-                    commandline="PetraClient.exe -AutoLogin:demo"
+                    commandline="PetraClient.exe"
                     spawn="true">
                <environment>
                   <variable name="LANGUAGE" value="${SelectedLanguage}"/>
@@ -448,7 +449,7 @@
         <if test="${framework::get-target-framework() == 'net-2.0'}" >
             <exec program="cmd.exe" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
-                    commandline="/C start PetraClient.exe -AutoLogin:demo"
+                    commandline="/C start PetraClient.exe"
                     spawn="true">
                <environment>
                   <variable name="LANGUAGE" value="${SelectedLanguage}"/>
@@ -486,7 +487,20 @@
             </environment>
         </exec>
     </target>
-    <target name="startSOAPServer" description="only supports postgresql server at the moment, not sqlite; would need microsoft xsp">
+
+    <target name="compileQx" description="compile the javascript webclient, using Qooxdoo">
+        <!-- todo: support linux -->
+        <exec program="cmd.exe" 
+                workingdir="${WebServerInstall.dir}/OpenPetraOrg"
+                commandline="/C generate.py source-all"
+                spawn="true">
+            <environment>
+                <!-- requires Python 2.x -->
+                <variable name="PATH" path="${environment::get-variable('PATH')};${Python.dir}"/>
+            </environment>
+        </exec>
+    </target>
+    <target name="startSOAPServer" description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
         <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
                     tofile="${WebServerInstall.dir}/server.asmx" overwrite="true"/>
         <mkdir dir="${WebServerInstall.dir}/bin" failonerror="false"/>
@@ -506,20 +520,14 @@
         <!-- TODO: run on linux as well? -->
         <exec program="cmd.exe" 
                 workingdir="${WebServerInstall.dir}"
-                commandline="/C start xsp2 --verbose --root . --port 8081 --applications /:."
+                commandline="/C start xsp2.bat --verbose --root . --port 8081 --applications /:."
                 spawn="true">
             <environment>
                 <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
-                <variable name="MONO_OPTIONS" value="--debug xsp2"/>
+                <variable name="MONO_OPTIONS" value="--debug"/>
             </environment>
         </exec>
         <echo message="in your browser, go to http://localhost:8081/server.asmx"/>
-        
-        <!-- todo: 
-          set path for python
-          cd U:\openpetraorg\qooxdoo\OpenPetraOrg
-          generate.py source-all
-        -->
         
         <echo message="in your browser, go to http://localhost:8081/OpenPetraOrg/source/"/>
     </target>

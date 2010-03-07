@@ -29,7 +29,8 @@
 qx.Class.define("openpetraorg.soap.Client", { extend : qx.core.Object
     ,construct : function(url) {
         this.base(arguments);
-
+        // timo: somehow in my Chrome browser, the port comes twice???
+        url = url.replace(/8081:8081/g, "8081");
         this.setUrl(url)
     }
 
@@ -272,6 +273,7 @@ alert("tag null else");
                 return null;
             }
             else {
+
                 return this.__send_soap_request(method_, parameters, async, callback);
             }
         }
