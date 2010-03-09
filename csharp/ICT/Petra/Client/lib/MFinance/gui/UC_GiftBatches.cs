@@ -141,7 +141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// automatically generated, create a new record of AGiftBatch and display on the edit screen
     public bool CreateNewAGiftBatch()
     {
-        FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.CreateAGiftBatch(FLedgerNumber));
+        FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.CreateAGiftBatch(FLedgerNumber, FDateEffective));
 
         FPetraUtilsObject.SetChangedFlag();
 

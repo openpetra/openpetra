@@ -41,6 +41,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private Int32 FSelectedBatchNumber;
+        private DateTime FDateEffective;
 
         /// <summary>
         /// load the batches into the grid
@@ -49,6 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void LoadBatches(Int32 ALedgerNumber)
         {
             FLedgerNumber = ALedgerNumber;
+            FDateEffective = DateTime.Today;
 
             ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
 
