@@ -770,7 +770,7 @@ public class TGetTreasurerData
             subject,
             MessageBody);
 
-        // msg.Bcc.Add(ASenderEmailAddress);
+        msg.Bcc.Add(ASenderEmailAddress);
 
         return msg;
     }
