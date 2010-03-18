@@ -19,7 +19,7 @@
     <property name="SQLitedb.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.db"/>
     <property name="TargetLanguage.Pofile" value="${Translation.TargetLanguage}.po"/>
     <property name="TargetLanguage.PofileWithPath" value="${OpenPetraRoot.dir}/i18n/${Translation.TargetLanguage}.po"/>
-    <property name="WebServerInstall.dir" value="${OpenPetraRoot.dir}/qooxdoo/"/>
+    <property name="WebServerInstall.dir" value="${OpenPetraRoot.dir}/webserver/"/>
 
     <property name="IctNAntTasks.file" value="${ThirdParty.dir}/NAnt/Ict.Tools.NAntTasks.dll"/>
     <if test="${not file::exists(IctNAntTasks.file)}">
@@ -69,7 +69,7 @@
         <echo message="startPetraServer: run a local Petra Server"/>
         <echo message="stopPetraServer: stop the local Petra Server"/>
         <echo message="startPetraClient: run the Petra Client"/>
-        <echo message="startSOAPServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)"/>
+        <echo message="startWebServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)"/>
         <echo message="buildRelease: requires this parameter: -D:ReleaseID=0.0.2.0"/>
         <echo message="createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0"/>
     </target>
@@ -500,7 +500,7 @@
             </environment>
         </exec>
     </target>
-    <target name="startSOAPServer" description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
+    <target name="startWebServer" description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
         <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
                     tofile="${WebServerInstall.dir}/server.asmx" overwrite="true"/>
         <mkdir dir="${WebServerInstall.dir}/bin" failonerror="false"/>
@@ -529,7 +529,8 @@
         </exec>
         <echo message="in your browser, go to http://localhost:8081/server.asmx"/>
         
-        <echo message="in your browser, go to http://localhost:8081/OpenPetraOrg/source/"/>
+        <echo message="in your browser, go to http://localhost:8081/OpenPetraOrg.qx/source for the qooxdoo test"/>
+        <echo message="                 or to http://localhost:8081/OpenPetraOrg.ext for the extjs test"/>
     </target>
 
     <target name="generateORMTables">
