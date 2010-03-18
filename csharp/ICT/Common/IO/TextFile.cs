@@ -25,16 +25,20 @@
  ************************************************************************/
 using System;
 using System.IO;
+using System.Text;
 
-namespace Ict.Tools.CodeGeneration
+namespace Ict.Common.IO
 {
+    /// <summary>
+    /// delegate to apply an operation on the file
+    /// </summary>
     public delegate void ProcessFileType(string filename);
 
     /// Some useful functions for dealing with text files;
     /// only used for PetraTools at the moment
     public class TTextFile
     {
-        // todo: exclude directory names, e.g. CSV, see PetraTools\ProgressConverter\AnalyseProgressFiles.cs
+        /// todo: exclude directory names, e.g. CSV, see PetraTools\ProgressConverter\AnalyseProgressFiles.cs
         public static void RecurseFilesAndDirectories(string APath, string AExt, ProcessFileType func)
         {
             string[] listOfDirectories = System.IO.Directory.GetDirectories(APath);
@@ -54,7 +58,49 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// remove carriage return
+        public static void Dos2Unix(String filename)
+        {
+            StreamReader sr = new StreamReader(filename);
+            string lines = sr.ReadToEnd();
+
+            sr.Close();
+            StreamWriter sw = new StreamWriter(filename);
+            sw.Write(lines.Replace("\r", ""));
+            sw.Close();
+        }
+
+        /// add carriage return
+        public static void Unix2Dos(String filename)
+        {
+            StreamReader sr = new StreamReader(filename);
+            string lines = sr.ReadToEnd();
+
+            sr.Close();
+            StreamWriter sw = new StreamWriter(filename);
+            sw.Write(lines.Replace("\r", "").Replace("\n", "\r\n"));
+            sw.Close();
+        }
+
+        /// <summary>
+        /// check if the two text files have the same content
+        /// </summary>
+        /// <param name="filename1"></param>
+        /// <param name="filename2"></param>
+        /// <returns></returns>
         public static bool SameContent(String filename1, String filename2)
+        {
+            return SameContent(filename1, filename2, true);
+        }
+
+        /// <summary>
+        /// check if the two text files have the same content
+        /// </summary>
+        /// <param name="filename1"></param>
+        /// <param name="filename2"></param>
+        /// <param name="AIgnoreNewLine"></param>
+        /// <returns></returns>
+        public static bool SameContent(String filename1, String filename2, bool AIgnoreNewLine)
         {
             StreamReader sr1;
             StreamReader sr2;
@@ -74,15 +120,24 @@ namespace Ict.Tools.CodeGeneration
             sr1 = new StreamReader(filename1);
             sr2 = new StreamReader(filename2);
 
-            /* don't compare the length, there might be different line endings
-             * if (sr1.BaseStream.Length <> sr2.BaseStream.Length) then
-             * begin
-             * sr1.Close();
-             * sr2.Close();
-             * result := false;
-             * exit;
-             * end;
-             */
+            if (!AIgnoreNewLine)
+            {
+                // compare the length only when you want the line endings to be the same.
+                // otherwise the length would be different anyways
+                if (sr1.BaseStream.Length != sr2.BaseStream.Length)
+                {
+                    sr1.Close();
+                    sr2.Close();
+                    return false;
+                }
+
+                line = sr1.ReadToEnd();
+                line2 = sr2.ReadToEnd();
+                sr1.Close();
+                sr2.Close();
+                return line == line2;
+            }
+
             line = "start";
             line2 = "start";
 
@@ -130,7 +185,7 @@ namespace Ict.Tools.CodeGeneration
         {
             string NewFilename = AOrigFilename + ".new";
 
-            if (SameContent(AOrigFilename, NewFilename) == true)
+            if (SameContent(AOrigFilename, NewFilename, false) == true)
             {
                 System.IO.File.Delete(NewFilename);
                 return false;
@@ -162,6 +217,46 @@ namespace Ict.Tools.CodeGeneration
             }
 
             return true;
+        }
+
+        /// StreamReader DetectEncodingFromByteOrderMarks does not work for ANSI?
+        /// therefore we have to detect the encoding by comparing the first bytes of the file
+        public static Encoding GetFileEncoding(String AFilename)
+        {
+            FileInfo fileinfo = new FileInfo(AFilename);
+
+            FileStream fs = fileinfo.OpenRead();
+
+            Encoding[] UnicodeEncodings =
+            {
+                Encoding.BigEndianUnicode, Encoding.Unicode, Encoding.UTF8, Encoding.UTF32
+            };
+
+            foreach (Encoding testEncoding in UnicodeEncodings)
+            {
+                byte[] encodingpreamble = testEncoding.GetPreamble();
+                byte[] filepreamble = new byte[encodingpreamble.Length];
+                fs.Position = 0;
+                bool equal = (fs.Read(filepreamble, 0, encodingpreamble.Length) == encodingpreamble.Length);
+
+                for (int i = 0; equal && i < encodingpreamble.Length; i++)
+                {
+                    equal = (encodingpreamble[i] == filepreamble[i]);
+                }
+
+                if (equal)
+                {
+                    fs.Close();
+                    return testEncoding;
+                }
+            }
+
+            if (fs != null)
+            {
+                fs.Close();
+            }
+
+            return Encoding.Default;
         }
     }
 }

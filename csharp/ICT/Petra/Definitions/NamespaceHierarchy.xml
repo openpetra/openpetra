@@ -219,6 +219,16 @@
                 </Children>
             </SubNamespace>
             <SubNamespace>
+                <Name>AccountsReceivable</Name>
+                <Description>Accounts Receivable Sub-System</Description>
+                <Children>
+                    <SubNamespace>
+                        <Name>WebConnectors</Name>
+                        <Description>Connectors for Web Services (stateless, simple)</Description>
+                    </SubNamespace>
+                </Children>
+            </SubNamespace>
+            <SubNamespace>
                 <Name>Budget</Name>
                 <Description>Budget Sub-System</Description>
                 <Children>
@@ -231,6 +241,16 @@
             <SubNamespace>
                 <Name>Cacheable</Name>
                 <Description>Cacheable DataTables</Description>
+            </SubNamespace>
+            <SubNamespace>
+                <Name>ImportExport</Name>
+                <Description>ImportExport Sub-System</Description>
+                <Children>
+                    <SubNamespace>
+                        <Name>WebConnectors</Name>
+                        <Description>Connectors for Web Services (stateless, simple)</Description>
+                    </SubNamespace>
+                </Children>
             </SubNamespace>
             <SubNamespace>
                 <Name>Gift</Name>
@@ -360,6 +380,10 @@
                         <Name>UserDefaults</Name>
                         <Description>User Defaults</Description>
                     </SubNamespace>
+                    <SubNamespace>
+                        <Name>WebConnectors</Name>
+                        <Description>WebConnectors</Description>
+                    </SubNamespace>
                 </Children>
             </SubNamespace>
             <SubNamespace>
@@ -369,6 +393,16 @@
                     <SubNamespace>
                         <Name>UIConnectors</Name>
                         <Description>User Interface Connectors</Description>
+                    </SubNamespace>
+                </Children>
+            </SubNamespace>
+            <SubNamespace>
+                <Name>ImportExport</Name>
+                <Description>Import and Export Sub-System</Description>
+                <Children>
+                    <SubNamespace>
+                        <Name>WebConnectors</Name>
+                        <Description>Web Connectors</Description>
                     </SubNamespace>
                 </Children>
             </SubNamespace>

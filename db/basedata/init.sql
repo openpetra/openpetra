@@ -22,6 +22,9 @@ COPY p_location FROM '{#ABSOLUTEBASEDATAPATH}/p_location.csv' WITH DELIMITER AS 
 COPY a_sub_system FROM '{#ABSOLUTEBASEDATAPATH}/a_sub_system.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_budget_type FROM '{#ABSOLUTEBASEDATAPATH}/a_budget_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_frequency FROM '{#ABSOLUTEBASEDATAPATH}/a_frequency.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_business FROM '{#ABSOLUTEBASEDATAPATH}/p_business.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_reason_subscription_cancelled FROM '{#ABSOLUTEBASEDATAPATH}/p_reason_subscription_cancelled.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_reason_subscription_given FROM '{#ABSOLUTEBASEDATAPATH}/p_reason_subscription_given.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 
 INSERT INTO s_system_status(s_user_id_c,s_system_login_status_l) VALUES('SYSADMIN', true);
 INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c) VALUES(0, 'INVALID PARTNER');

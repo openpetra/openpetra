@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{5F8FBEF6-2E30-4E12-B3E4-80BC29932B7D}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -56,7 +56,6 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +73,7 @@
     <Compile Include="Security.Principal.cs" />
     <Compile Include="Security.Types.cs" />
     <Compile Include="StaticData.cs" />
+    <Compile Include="TableList.cs" />
     <Compile Include="TypeConverter.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="Utilities.cs" />

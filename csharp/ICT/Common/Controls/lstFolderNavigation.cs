@@ -162,9 +162,14 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// this function checks if the user has access to the navigation node
+        /// </summary>
+        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
+
+        /// <summary>
         /// add a folder to the list
         /// </summary>
-        public void AddFolder(XmlNode AFolderNode)
+        public void AddFolder(XmlNode AFolderNode, string AUserId, CheckAccessPermissionDelegate AHasAccessPermission)
         {
             TRbtNavigationButton rbt = new TRbtNavigationButton();
 
@@ -184,6 +189,8 @@ namespace Ict.Common.Controls
             }
 
             rbt.CheckedChanged += new System.EventHandler(this.FolderCheckedChanged);
+
+            rbt.Enabled = AHasAccessPermission(AFolderNode, AUserId);
         }
 
         /// <summary>

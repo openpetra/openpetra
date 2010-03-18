@@ -527,22 +527,22 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             if (rbtAllTransactions.Checked)
             {
                 HtmlDocument =
-                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Kompletter Kontoauszug, " + ShortCodeOfBank + ", " + DateOfStatement));
+                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Kompletter Kontoauszug, ") + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtUnmatchedGifts.Checked)
             {
                 HtmlDocument =
-                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Unerkannte Kontobewegungen, " + ShortCodeOfBank + ", " + DateOfStatement));
+                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Unerkannte Kontobewegungen, ") + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtMatchedGifts.Checked)
             {
                 HtmlDocument =
-                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Erkannte Kontobewegungen, " + ShortCodeOfBank + ", " + DateOfStatement));
+                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Erkannte Kontobewegungen, ") + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtOther.Checked)
             {
                 HtmlDocument =
-                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Sonstige Kontobewegungen, " + ShortCodeOfBank + ", " + DateOfStatement));
+                    TGiftMatching.PrintHTML(ref FMainDS, Catalog.GetString("Sonstige Kontobewegungen, ") + ShortCodeOfBank + ", " + DateOfStatement);
             }
 
             if (HtmlDocument.Length == 0)

@@ -73,17 +73,29 @@ public class TGetTreasurerData
 
         TDBType dbtype = CommonTypes.ParseDBType(settings.GetValue("Server.RDBMSType"));
 
-        if (dbtype != TDBType.ProgressODBC)
+        if (dbtype == TDBType.PostgreSQL)
         {
-            throw new Exception("at the moment only Progress ODBC db is supported");
+            db.EstablishDBConnection(dbtype,
+                settings.GetValue("Server.ServerName"),
+                settings.GetValue("Server.ServerPort"),
+                ADBUsername,
+                ADBPassword,
+                "");
+        }
+        else if (dbtype == TDBType.ProgressODBC)
+        {
+            db.EstablishDBConnection(dbtype,
+                settings.GetValue("Server.ODBC_DSN"),
+                "",
+                ADBUsername,
+                ADBPassword,
+                "");
+        }
+        else
+        {
+            throw new Exception("unsupported database type");
         }
 
-        db.EstablishDBConnection(dbtype,
-            settings.GetValue("Server.ODBC_DSN"),
-            "",
-            ADBUsername,
-            ADBPassword,
-            "");
         DBAccess.GDBAccessObj = db;
 
         //db.DebugLevel = 10;
@@ -102,7 +114,7 @@ public class TGetTreasurerData
         TreasurerTable.Columns.Add(new DataColumn("TreasurerKey", typeof(Int64)));
         TreasurerTable.Columns.Add(new DataColumn("TreasurerName", typeof(string)));
         TreasurerTable.Columns.Add(new DataColumn("RecipientKey", typeof(Int64)));
-        TreasurerTable.Columns.Add(new DataColumn("Transition", typeof(bool)));
+        TreasurerTable.Columns.Add(new DataColumn("Transition", typeof(string)));
         TreasurerTable.Columns.Add(new DataColumn("ExWorker", typeof(bool)));
 
         DataSet ResultDataset = new DataSet();
@@ -151,12 +163,16 @@ public class TGetTreasurerData
         string stmt = TDataBase.ReadSqlFile("GetAllGiftsForRecipientPerMonthByMotivation.sql");
 
         OdbcParameter[] parameters = new OdbcParameter[6];
-        parameters[0] = new OdbcParameter("Ledger", ALedgerNumber);
+        parameters[0] = new OdbcParameter("Ledger", OdbcType.Int);
+        parameters[0].Value = ALedgerNumber;
         parameters[1] = new OdbcParameter("MotivationGroup", AMotivationGroup);
         parameters[2] = new OdbcParameter("MotivationDetail", AMotivationDetail);
-        parameters[3] = new OdbcParameter("StartDate", AStartDate);
-        parameters[4] = new OdbcParameter("EndDate", AEndDate);
-        parameters[5] = new OdbcParameter("HomeOffice", ALedgerNumber * 1000000L);
+        parameters[3] = new OdbcParameter("StartDate", OdbcType.Date);
+        parameters[3].Value = AStartDate;
+        parameters[4] = new OdbcParameter("EndDate", OdbcType.Date);
+        parameters[4].Value = AEndDate;
+        parameters[5] = new OdbcParameter("HomeOffice", OdbcType.BigInt);
+        parameters[5].Value = ALedgerNumber * 1000000L;
         DataTable ResultTable = DBAccess.GDBAccessObj.SelectDT(stmt, GIFTSTABLE, transaction,
             parameters);
 
@@ -211,8 +227,6 @@ public class TGetTreasurerData
             if (yearNr != currentFinancialYear)
             {
                 // substract the years to get the right date
-                TLogging.Log("substract year " + yearNr.ToString() + " " + currentFinancialYear.ToString() + " " + monthDate.Year.ToString() + " " +
-                    row["RecipientKey"].ToString());
                 monthDate = monthDate.AddYears(-1 * (currentFinancialYear - yearNr));
             }
 
@@ -274,7 +288,7 @@ public class TGetTreasurerData
             recipients.Add(recipientKey);
 
             // first check if the worker has a valid commitment period, or is in TRANSITION
-            bool bTransition = false;
+            string sTransition = "";
             bool bExWorker = false;
 
             OdbcParameter[] parameters = new OdbcParameter[4];
@@ -297,7 +311,7 @@ public class TGetTreasurerData
             {
                 if (CommitmentsTable.Rows[0][0].ToString() == "TRANSITION")
                 {
-                    bTransition = true;
+                    sTransition = "TRANSITION";
                 }
             }
 
@@ -312,12 +326,12 @@ public class TGetTreasurerData
 
             if (TreasurerTable.Rows.Count >= 1)
             {
-                TreasurerTable.Columns.Add(new DataColumn("Transition", typeof(bool)));
+                TreasurerTable.Columns.Add(new DataColumn("Transition", typeof(string)));
                 TreasurerTable.Columns.Add(new DataColumn("ExWorker", typeof(bool)));
 
                 foreach (DataRow r in TreasurerTable.Rows)
                 {
-                    r["Transition"] = bTransition;
+                    r["Transition"] = sTransition;
                     r["ExWorker"] = bExWorker;
                     r["TreasurerName"] = GetPartnerShortName(Convert.ToInt64(r["TreasurerKey"]), transaction);
                 }
@@ -328,7 +342,7 @@ public class TGetTreasurerData
             {
                 DataRow InvalidTreasurer = Result.Tables[TREASURERTABLE].NewRow();
                 InvalidTreasurer["RecipientKey"] = row["RecipientKey"];
-                InvalidTreasurer["Transition"] = bTransition;
+                InvalidTreasurer["Transition"] = sTransition;
                 InvalidTreasurer["ExWorker"] = bExWorker;
                 Result.Tables[TREASURERTABLE].Rows.Add(InvalidTreasurer);
             }
@@ -483,6 +497,8 @@ public class TGetTreasurerData
 
         string LedgerCountryCode = ((ALedgerTable)ATreasurerData.Tables[ALedgerTable.GetTableName()])[0].CountryCode;
 
+        Int64 PreviousTreasurerKey = -1;
+
         foreach (DataRowView rowview in view)
         {
             DataRow row = rowview.Row;
@@ -490,17 +506,28 @@ public class TGetTreasurerData
             string treasurerName = "";
             Int64 treasurerKey = -1;
             string errorMessage = "NOTREASURER";
+            bool SeveralLettersForSameTreasurer = false;
 
             if (row["TreasurerKey"] != System.DBNull.Value)
             {
                 treasurerName = row["TreasurerName"].ToString();
                 treasurerKey = Convert.ToInt64(row["TreasurerKey"]);
+                SeveralLettersForSameTreasurer = (treasurerKey == PreviousTreasurerKey);
+                PreviousTreasurerKey = treasurerKey;
                 errorMessage = String.Empty;
             }
 
-            if (Convert.ToBoolean(row["ExWorker"]) == true)
+            if ((Convert.ToBoolean(row["ExWorker"]) == true) || (row["Transition"].ToString().Length > 0))
             {
-                errorMessage = "EXWORKER";
+                if (Convert.ToBoolean(row["ExWorker"]) == true)
+                {
+                    errorMessage = "EXWORKER";
+                }
+                else
+                {
+                    errorMessage = "TRANSITION-NO_DONATIONS";
+                }
+
                 bool bRecentGift = false;
 
                 // check if there has been a gift in the last month of the reporting period
@@ -534,7 +561,12 @@ public class TGetTreasurerData
                     errorMessage = "NOADDRESS";
                 }
 
-                letter.HtmlMessage = GenerateLetterText(ATreasurerData, row, LedgerCountryCode, "letter", out letter.Subject);
+                letter.HtmlMessage = GenerateLetterText(ATreasurerData,
+                    row,
+                    LedgerCountryCode,
+                    "letter",
+                    SeveralLettersForSameTreasurer,
+                    out letter.Subject);
             }
             else
             {
@@ -546,7 +578,7 @@ public class TGetTreasurerData
             letter.SubjectShortName = row["RecipientName"].ToString();
             letter.SubjectKey = Convert.ToInt64(row["RecipientKey"]);
             letter.ErrorMessage = errorMessage;
-            letter.Transition = Convert.ToBoolean(row["Transition"]);
+            letter.Transition = row["Transition"].ToString().Length > 0;
             messages.Add(letter);
         }
 
@@ -606,6 +638,7 @@ public class TGetTreasurerData
         DataRow row,
         string ALedgerCountryCode,
         string ALetterOrEmail,
+        bool APreviousLetterSameTreasurer,
         out string ASubject)
     {
         string treasurerName = row["TreasurerName"].ToString();
@@ -620,8 +653,13 @@ public class TGetTreasurerData
 
         reader.Close();
 
+        msg = msg.Replace("#MARKMULTIPLELETTERS", APreviousLetterSameTreasurer ? "*" : "");
         msg = msg.Replace("#RECIPIENTNAME", Calculations.FormatShortName(row["RecipientName"].ToString(), eShortNameFormat.eReverseWithoutTitle));
-        msg = msg.Replace("#RECIPIENTEMAIL", GetStringOrEmpty(row["TreasurerEmail"]));
+        msg =
+            msg.Replace("#RECIPIENTINITIALS",
+                Calculations.FormatShortName(row["RecipientName"].ToString(), eShortNameFormat.eReverseLastnameInitialsOnly));
+        msg = msg.Replace("#RECIPIENTKEY", row["RecipientKey"].ToString());
+        msg = msg.Replace("#TREASUREREMAIL", GetStringOrEmpty(row["TreasurerEmail"]));
         msg = msg.Replace("#TREASURERTITLE", Calculations.FormatShortName(treasurerName, eShortNameFormat.eOnlyTitle));
         msg = msg.Replace("#TREASURERNAME", Calculations.FormatShortName(treasurerName, eShortNameFormat.eReverseWithoutTitle));
         msg = msg.Replace("#STREETNAME", GetStringOrEmpty(row["TreasurerStreetName"]));
@@ -631,7 +669,7 @@ public class TGetTreasurerData
         msg = msg.Replace("#BUILDING2", GetStringOrEmpty(row["TreasurerBuilding2"]));
         msg = msg.Replace("#CITY", GetStringOrEmpty(row["TreasurerCity"]));
         msg = msg.Replace("#POSTALCODE", GetStringOrEmpty(row["TreasurerPostalCode"]));
-        msg = msg.Replace("#DATE", DateTime.Now.ToLongDateString());
+        msg = msg.Replace("#DATE", DateTime.Now.ToString("d. MMMM yyyy"));
 
         // according to German Post, there is no country code in front of the post code
         // if country code is same for the address of the recipient and this office, then COUNTRYNAME is cleared
@@ -644,7 +682,7 @@ public class TGetTreasurerData
             msg = msg.Replace("#COUNTRYNAME", "");
         }
 
-        bool bTransition = Convert.ToBoolean(row["Transition"]);
+        bool bTransition = row["Transition"].ToString().Length > 0;
 
         if (bTransition)
         {
@@ -725,14 +763,14 @@ public class TGetTreasurerData
         string treasurerName = row["TreasurerName"].ToString();
         string treasurerEmail = row["TreasurerEmail"].ToString();
         string subject;
-        string MessageBody = GenerateLetterText(ATreasurerData, row, "", "email", out subject);
+        string MessageBody = GenerateLetterText(ATreasurerData, row, "", "email", false, out subject);
 
         MailMessage msg = new MailMessage(ASenderEmailAddress,
             treasurerEmail,
             subject,
             MessageBody);
 
-        // msg.Bcc.Add(ASenderEmailAddress);
+        msg.Bcc.Add(ASenderEmailAddress);
 
         return msg;
     }

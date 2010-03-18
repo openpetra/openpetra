@@ -86,6 +86,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailDonorKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.lblDetailDonorKey = new System.Windows.Forms.Label();
+            this.dtpDateEntered = new System.Windows.Forms.DateTimePicker();
+            this.lblDateEntered = new System.Windows.Forms.Label();
             this.txtDetailGiftTransactionAmount = new System.Windows.Forms.TextBox();
             this.lblDetailGiftTransactionAmount = new System.Windows.Forms.Label();
             this.txtCurrencyCode = new System.Windows.Forms.TextBox();
@@ -260,6 +262,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailDonorKey.Text = "Donor:";
             this.lblDetailDonorKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
+            // dtpDateEntered
+            //
+            this.dtpDateEntered.Location = new System.Drawing.Point(2,2);
+            this.dtpDateEntered.Name = "dtpDateEntered";
+            this.dtpDateEntered.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDateEntered
+            //
+            this.lblDateEntered.Location = new System.Drawing.Point(2,2);
+            this.lblDateEntered.Name = "lblDateEntered";
+            this.lblDateEntered.AutoSize = true;
+            this.lblDateEntered.Text = "Date Entered:";
+            this.lblDateEntered.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
             // txtDetailGiftTransactionAmount
             //
             this.txtDetailGiftTransactionAmount.Location = new System.Drawing.Point(2,2);
@@ -372,7 +388,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 6;
+            this.tableLayoutPanel3.RowCount = 7;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -380,23 +397,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.Controls.Add(this.lblDetailDonorKey, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblDetailGiftTransactionAmount, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.lblDetailRecipientKey, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.lblDetailMotivationGroupCode, 0, 3);
-            this.tableLayoutPanel3.Controls.Add(this.lblDetailMotivationDetailCode, 0, 4);
-            this.tableLayoutPanel3.Controls.Add(this.lblDetailCostCentreCode, 0, 5);
+            this.tableLayoutPanel3.Controls.Add(this.lblDateEntered, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailGiftTransactionAmount, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailRecipientKey, 0, 3);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailMotivationGroupCode, 0, 4);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailMotivationDetailCode, 0, 5);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailCostCentreCode, 0, 6);
             this.tableLayoutPanel3.SetColumnSpan(this.txtDetailDonorKey, 3);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailDonorKey, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.txtDetailGiftTransactionAmount, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.dtpDateEntered, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.txtDetailGiftTransactionAmount, 1, 2);
             this.tableLayoutPanel3.SetColumnSpan(this.txtDetailRecipientKey, 3);
-            this.tableLayoutPanel3.Controls.Add(this.txtDetailRecipientKey, 1, 2);
-            this.tableLayoutPanel3.Controls.Add(this.cmbDetailMotivationGroupCode, 1, 3);
-            this.tableLayoutPanel3.Controls.Add(this.cmbDetailMotivationDetailCode, 1, 4);
-            this.tableLayoutPanel3.Controls.Add(this.txtDetailCostCentreCode, 1, 5);
+            this.tableLayoutPanel3.Controls.Add(this.txtDetailRecipientKey, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.cmbDetailMotivationGroupCode, 1, 4);
+            this.tableLayoutPanel3.Controls.Add(this.cmbDetailMotivationDetailCode, 1, 5);
+            this.tableLayoutPanel3.Controls.Add(this.txtDetailCostCentreCode, 1, 6);
             this.tableLayoutPanel3.SetColumnSpan(this.txtCurrencyCode, 2);
-            this.tableLayoutPanel3.Controls.Add(this.txtCurrencyCode, 2, 1);
-            this.tableLayoutPanel3.Controls.Add(this.lblDetailAccountCode, 2, 5);
-            this.tableLayoutPanel3.Controls.Add(this.txtDetailAccountCode, 3, 5);
+            this.tableLayoutPanel3.Controls.Add(this.txtCurrencyCode, 2, 2);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailAccountCode, 2, 6);
+            this.tableLayoutPanel3.Controls.Add(this.txtDetailAccountCode, 3, 6);
 
             //
             // TUC_GiftTransactions
@@ -437,6 +456,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtDetailDonorKey;
         private System.Windows.Forms.Label lblDetailDonorKey;
+        private System.Windows.Forms.DateTimePicker dtpDateEntered;
+        private System.Windows.Forms.Label lblDateEntered;
         private System.Windows.Forms.TextBox txtDetailGiftTransactionAmount;
         private System.Windows.Forms.Label lblDetailGiftTransactionAmount;
         private System.Windows.Forms.TextBox txtCurrencyCode;

@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblPetra.Name = "lblPetra";
             this.lblPetra.Size = new System.Drawing.Size(164, 31);
             this.lblPetra.TabIndex = 0;
-            this.lblPetra.Text = " P E T R A ";
+            this.lblPetra.Text = " O P E N P E T R A ";
             this.lblPetra.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 
             //

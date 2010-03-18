@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{BE0FD127-A9A9-4291-A5E0-71A45AC2FDBD}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -83,12 +83,19 @@
     <Compile Include="LoginDialog.Designer.cs">
       <DependentUpon>LoginDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="PetraInputBox.cs" />
+    <Compile Include="PetraInputBox.Designer.cs">
+      <DependentUpon>PetraInputBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PetraLogoAndVersionInfo.cs" />
     <Compile Include="UC_PetraLogoAndVersionInfo.Designer.cs">
       <DependentUpon>UC_PetraLogoAndVersionInfo.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="LoginDialog.resx">
       <DependentUpon>LoginDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PetraInputBox.resx">
+      <DependentUpon>PetraInputBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_PetraLogoAndVersionInfo.resx">
       <DependentUpon>UC_PetraLogoAndVersionInfo.cs</DependentUpon>

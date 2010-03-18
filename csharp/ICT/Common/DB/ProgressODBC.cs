@@ -29,6 +29,7 @@ using System.Data.Common;
 using System.Data.Odbc;
 using System.Text;
 using System.Collections;
+using System.Text.RegularExpressions;
 using Ict.Common;
 
 namespace Ict.Common.DB
@@ -43,12 +44,14 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="ADSN">The DSN defining the connection to the database server</param>
         /// <param name="APort">not in use</param>
+        /// <param name="ADatabaseName">not in use</param>
         /// <param name="AUsername">odbc user name</param>
         /// <param name="APassword">The password for opening the database</param>
         /// <param name="AConnectionString">not in use</param>
         /// <param name="AStateChangeEventHandler">for connection state changes</param>
         /// <returns>the connection</returns>
         public IDbConnection GetConnection(String ADSN, String APort,
+            String ADatabaseName,
             String AUsername, ref String APassword,
             ref String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler)
@@ -119,7 +122,7 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// format the sql query so that it works for PostgreSQL
+        /// format the sql query so that it works for Progress ODBC
         /// see also the comments for TDataBase.FormatQueryRDBMSSpecific
         /// </summary>
         /// <param name="ASqlQuery"></param>
@@ -135,6 +138,16 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace(" = false", " = 0");
             ReturnValue = ReturnValue.Replace(" = FALSE", " = 0");
             ReturnValue = ReturnValue.Replace("\"", "'");
+
+            Match m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
+
+            while (m.Success)
+            {
+                // needs to be 'MM/dd/yyyy'
+                ReturnValue = ReturnValue.Replace("#" + m.Groups[1] + "-" + m.Groups[2] + "-" + m.Groups[3] + "#",
+                    "'" + m.Groups[2] + "/" + m.Groups[3] + "/" + m.Groups[1] + "'");
+                m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
+            }
 
             // some special cases require double quotes
             ReturnValue = ReturnValue.Replace("'_Sequence'", "\"_Sequence\"");
@@ -188,7 +201,14 @@ namespace Ict.Common.DB
 
             ACommandText = FormatQueryRDBMSSpecific(ACommandText);
 
-            ObjReturn = new OdbcCommand(ACommandText, (OdbcConnection)AConnection, (OdbcTransaction)ATransaction.WrappedTransaction);
+            if (ATransaction == null)
+            {
+                ObjReturn = new OdbcCommand(ACommandText, (OdbcConnection)AConnection);
+            }
+            else
+            {
+                ObjReturn = new OdbcCommand(ACommandText, (OdbcConnection)AConnection, (OdbcTransaction)ATransaction.WrappedTransaction);
+            }
 
             if (AParametersArray != null)
             {
@@ -363,6 +383,18 @@ namespace Ict.Common.DB
             }
 
             return -1;
+        }
+
+        /// <summary>
+        /// restart a sequence with the given value has not been implemented
+        /// </summary>
+        public void RestartSequence(String ASequenceName,
+            TDBTransaction ATransaction,
+            TDataBase ADatabase,
+            IDbConnection AConnection,
+            Int64 ARestartValue)
+        {
+            // not implemented
         }
     }
 }

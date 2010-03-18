@@ -47,12 +47,14 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="AServer">The Database file</param>
         /// <param name="APort">the port that the db server is running on</param>
+        /// <param name="ADatabaseName">not in use</param>
         /// <param name="AUsername">not in use</param>
         /// <param name="APassword">The password for opening the database</param>
         /// <param name="AConnectionString">not in use</param>
         /// <param name="AStateChangeEventHandler">for connection state changes</param>
         /// <returns>the connection</returns>
         public IDbConnection GetConnection(String AServer, String APort,
+            String ADatabaseName,
             String AUsername, ref String APassword,
             ref String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler)
@@ -135,7 +137,7 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// format the sql query so that it works for PostgreSQL
+        /// format the sql query so that it works for SQLite
         /// see also the comments for TDataBase.FormatQueryRDBMSSpecific
         /// </summary>
         /// <param name="ASqlQuery"></param>
@@ -154,6 +156,9 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("= true", "= 1");
             ReturnValue = ReturnValue.Replace("=false", "=0");
             ReturnValue = ReturnValue.Replace("=true", "=1");
+
+            // INSERT INTO table () VALUES
+            ReturnValue = ReturnValue.Replace("() VALUES", " VALUES");
 
             Match m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
 
@@ -341,6 +346,19 @@ namespace Ict.Common.DB
             SQLiteCommand cmd = new SQLiteCommand(stmt, (SQLiteConnection)AConnection);
 
             return Convert.ToInt64(cmd.ExecuteScalar());
+        }
+
+        /// <summary>
+        /// restart a sequence with the given value
+        /// </summary>
+        public void RestartSequence(String ASequenceName,
+            TDBTransaction ATransaction,
+            TDataBase ADatabase,
+            IDbConnection AConnection,
+            Int64 ARestartValue)
+        {
+            ADatabase.ExecuteNonQuery("DELETE FROM " + ASequenceName + ";", ATransaction, false);
+            ADatabase.ExecuteNonQuery("INSERT INTO " + ASequenceName + " VALUES(" + ARestartValue.ToString() + ", -1);", ATransaction, false);
         }
     }
 }

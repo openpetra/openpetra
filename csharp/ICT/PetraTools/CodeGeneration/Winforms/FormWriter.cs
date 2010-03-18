@@ -69,6 +69,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new MenuItemGenerator());
                 AvailableControlGenerators.Add(new MenuItemSeparatorGenerator());
                 AvailableControlGenerators.Add(new ToolbarButtonGenerator());
+                AvailableControlGenerators.Add(new ToolbarComboBoxGenerator());
                 AvailableControlGenerators.Add(new ToolbarSeparatorGenerator());
                 AvailableControlGenerators.Add(new StatusBarGenerator());
 
@@ -95,7 +96,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new MenuGenerator());
                 AvailableControlGenerators.Add(new MenuItemGenerator());
                 AvailableControlGenerators.Add(new MenuItemSeparatorGenerator());
+                AvailableControlGenerators.Add(new ToolbarTextBoxGenerator());
+                AvailableControlGenerators.Add(new ToolbarLabelGenerator());
                 AvailableControlGenerators.Add(new ToolbarButtonGenerator());
+                AvailableControlGenerators.Add(new ToolbarComboBoxGenerator());
                 AvailableControlGenerators.Add(new ToolbarSeparatorGenerator());
                 AvailableControlGenerators.Add(new StatusBarGenerator());
                 AvailableControlGenerators.Add(new ToolBarGenerator());
@@ -115,6 +119,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new TcmbAutoPopulatedGenerator());
                 AvailableControlGenerators.Add(new TcmbAutoCompleteGenerator());
                 AvailableControlGenerators.Add(new TCmbVersatileGenerator());
+                AvailableControlGenerators.Add(new PrintPreviewGenerator());
+                AvailableControlGenerators.Add(new PrintPreviewWithToolbarGenerator());
                 AvailableControlGenerators.Add(new RadioGroupComplexGenerator());
                 AvailableControlGenerators.Add(new RadioGroupSimpleGenerator());
                 AvailableControlGenerators.Add(new RadioGroupNoBorderGenerator());
@@ -198,6 +204,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (ALabelText.Trim() == "-")
             {
                 // menu separators etc
+                return false;
+            }
+
+            if (StringHelper.TryStrToInt32(ALabelText, -1).ToString() == ALabelText)
+            {
+                // don't translate digits?
                 return false;
             }
 
@@ -683,14 +695,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             List <ClassNode>WebConnectorClasses = CSParser.GetWebConnectorClasses(ServerWebConnectorNamespace);
 
-            HandleWebConnector("Create", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
-            HandleWebConnector("Create", "DETAIL", FCodeStorage.GetAttribute("DetailTable"), ServerWebConnectorNamespace, WebConnectorClasses);
-            HandleWebConnector("Load", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
+            if (WebConnectorClasses != null)
+            {
+                HandleWebConnector("Create", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
+                HandleWebConnector("Create", "DETAIL", FCodeStorage.GetAttribute("DetailTable"), ServerWebConnectorNamespace, WebConnectorClasses);
+                HandleWebConnector("Load", "MASTER", FCodeStorage.GetAttribute("MasterTable"), ServerWebConnectorNamespace, WebConnectorClasses);
 
-            FTemplate.SetCodelet("WEBCONNECTORTDS", "TRemote." +
-                ServerWebConnectorNamespace.Substring("Ict.Petra.Server.".Length));
-            FTemplate.SetCodelet("WEBCONNECTORTDS", "TRemote." +
-                ServerWebConnectorNamespace.Substring("Ict.Petra.Server.".Length));
+                FTemplate.SetCodelet("WEBCONNECTORTDS", "TRemote." +
+                    ServerWebConnectorNamespace.Substring("Ict.Petra.Server.".Length));
+                FTemplate.SetCodelet("WEBCONNECTORTDS", "TRemote." +
+                    ServerWebConnectorNamespace.Substring("Ict.Petra.Server.".Length));
+            }
         }
 
         /*
@@ -772,6 +787,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.HasAttribute("MasterTable"))
             {
                 FTemplate.AddToCodelet("MASTERTABLE", FCodeStorage.GetAttribute("MasterTable"));
+
+                if (FCodeStorage.HasAttribute("MasterTableType"))
+                {
+                    FTemplate.AddToCodelet("MASTERTABLETYPE", FCodeStorage.GetAttribute("MasterTableType"));
+                }
+                else
+                {
+                    FTemplate.AddToCodelet("MASTERTABLETYPE", FCodeStorage.GetAttribute("MasterTable"));
+                }
             }
 
             if (FCodeStorage.HasAttribute("DetailTable"))

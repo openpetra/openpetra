@@ -99,7 +99,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPreferredName.Text = Catalog.GetString("&Preferred Name:");
             this.lblPreviousName.Text = Catalog.GetString("P&revious Name:");
             this.grpBelieverSince.Text = Catalog.GetString("Believer since");
-            this.txtBelieverSince.Text = Catalog.GetString("8888");
             this.lblBelieverSince.Text = Catalog.GetString("&Year:");
             this.lblComment.Text = Catalog.GetString("Comment:");
             #endregion

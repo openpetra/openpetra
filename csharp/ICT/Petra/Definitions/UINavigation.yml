@@ -34,6 +34,7 @@ OpenPetra:
                         EditPartner2: {ActionOpenScreen=TFrmPartnerEdit2}
                     Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
+                        ExportPartners: {ActionClick=TFrmPartnerMain.ExportPartners}
                 Ledger43: {Label=German Ledger (43), LedgerNumber=43, Namespace=Ict.Petra.Client.MFinance.Gui}
                     GL: 
                         ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=GL.TFrmGLAccountHierarchy}
@@ -42,6 +43,7 @@ OpenPetra:
                     Gift:
                         EnteringGifts: {Description: Just a prototype at the moment, ActionOpenScreen=TFrmBankStatementImport}
                         GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=Gift.TFrmGiftBatch}
+                        PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=Gift.TFrmGiftReceiptPrinting}
                     AP: {Label=Accounts Payable}
                         AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=AccountsPayable.TFrmAPMain}
                     Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
@@ -51,6 +53,10 @@ OpenPetra:
                     Setup:
                         SetupCurrencies: {Description: Not functional yet, ActionOpenScreen=Setup.TFrmSetupCurrency}
                         SetupDailyExchangeRate: {Description=Not functional yet, ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
+                Database: {Namespace=Ict.Petra.Client.MSysMan.Gui}
+                    ImportExport:
+                        ExportAllData: {ActionClick=TSysManMain.ExportAllData}
+                        ResetDatabase: {ActionClick=TSysManMain.ImportAllData}
             Favourites:
             CustomGroup:
 
@@ -75,7 +81,8 @@ OpenPetra:
             MoreFunctions:
                 SetupPartnerModule:
         # Department
-        Finance: {Icon=accounts_small.ico, LedgerNumber=43, Namespace=Ict.Petra.Client.MFinance.Gui}
+        # SpecialType LEDGER means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
+        Finance: {Icon=accounts_small.ico, SpecialType=LEDGER, LedgerNumber=43, Namespace=Ict.Petra.Client.MFinance.Gui}
             # Module
             GeneralLedger:
                 # Sub Module
@@ -150,4 +157,22 @@ OpenPetra:
         Personnel: {Icon=personel_small.ico}
         ConferenceManagement: {Icon=conference_small.ico}
         FinancialDevelopment: {Icon=develope_small.ico}
-        SystemManager: {Icon=sysman_small.ico}
+        SystemManager: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
+            Finance:
+                LedgerOperations:
+                    DeleteLedger:
+                    ImportLedgerStructure:
+                ExchangeRates:
+                    ManageCurrencies:
+                    ManageExchangeRates:
+            Users:
+                Functions:
+                    CreateNewUser:
+                    DeleteUser:
+                    ModifyUserPermissions:
+                    ImportUserPermissions:
+                    SetPassword: {ActionClick=TSysManMain.SetUserPassword}
+            Database:
+                ImportExport:
+                    ExportAllData: {ActionClick=TSysManMain.ExportAllData}
+                    ResetDatabase: {ActionClick=TSysManMain.ImportAllData}

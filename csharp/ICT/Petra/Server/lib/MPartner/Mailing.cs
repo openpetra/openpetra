@@ -117,12 +117,12 @@ namespace Ict.Petra.Server.MPartner
                             new OdbcParameter("MailingAddressOnly1", AMailingAddressesOnly),
                             new OdbcParameter("MailingAddressOnly2", AMailingAddressesOnly),
                             new OdbcParameter("IncludeCurrentAddresses", AIncludeCurrentAddresses),
-                            new OdbcParameter("TodaysDate1", DateTime.Now.Day),
-                            new OdbcParameter("TodaysDate2", DateTime.Now.Day),
+                            new OdbcParameter("TodaysDate1", DateTime.Now),
+                            new OdbcParameter("TodaysDate2", DateTime.Now),
                             new OdbcParameter("IncludeFutureAddresses", AIncludeFutureAddresses),
-                            new OdbcParameter("TodaysDate3", DateTime.Now.Day),
+                            new OdbcParameter("TodaysDate3", DateTime.Now),
                             new OdbcParameter("IncludeExpiredAddresses", AIncludeExpiredAddresses),
-                            new OdbcParameter("TodaysDate4", DateTime.Now.Day)
+                            new OdbcParameter("TodaysDate4", DateTime.Now)
                         };
 
                         /*
@@ -215,7 +215,7 @@ namespace Ict.Petra.Server.MPartner
         /// Returns the Primary Key of the Location and the Location and PartnerLocation DataRows
         /// of the 'Best Address' of a Partner.
         /// </summary>
-        /// <param name="APartnerKey">PartneKey of the Partner for which the 'Best Address'
+        /// <param name="APartnerKey">PartnerKey of the Partner for which the 'Best Address'
         /// should be loaded for.</param>
         /// <param name="ABestAddressPK">Primary Key of the 'Best Address' Location</param>
         /// <param name="ALocationDR">DataRow containing the 'Best Address' Location</param>
@@ -261,7 +261,7 @@ namespace Ict.Petra.Server.MPartner
 
                         if (PartnerLocationDT.Rows.Count > 1)
                         {
-                            Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationDT);
+                            Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationDT, DateTime.Today);
                             ABestAddressPK = Calculations.DetermineBestAddress(PartnerLocationDT);
                         }
                         else if (PartnerLocationDT.Rows.Count == 1)

@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{20ADC145-9621-4EDB-B5F6-6FFF07AD6EFB}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -39,6 +39,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="MySql.Data">
+      <HintPath>..\..\..\ThirdParty\MySQL\MySql.Data.dll</HintPath>
+    </Reference>
     <Reference Include="Npgsql">
       <HintPath>..\..\..\ThirdParty\Npgsql\Npgsql.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -58,6 +61,7 @@
     <Compile Include="Access.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="Connection.cs" />
+    <Compile Include="MySQL.cs" />
     <Compile Include="PostgreSQL.cs" />
     <Compile Include="ProgressODBC.cs" />
     <Compile Include="SQLite.cs" />

@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{495C3C4B-264E-4A20-9F0D-BF6D797C05EE}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -52,6 +52,7 @@
     <Compile Include="codeGenerationDataset.cs" />
     <Compile Include="codeGenerationPetra.cs" />
     <Compile Include="codeGenerationTable.cs" />
+    <Compile Include="generateTableList.cs" />
     <Compile Include="main.cs" />
   </ItemGroup>
   <ItemGroup>

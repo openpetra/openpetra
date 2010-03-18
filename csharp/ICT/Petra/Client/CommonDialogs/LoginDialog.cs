@@ -33,6 +33,8 @@ using System.Data;
 using System.Data.Odbc;
 using System.Resources;
 using System.Runtime.InteropServices;
+using System.IO;
+using System.IO.IsolatedStorage;
 using Microsoft.Win32;
 using Mono.Unix;
 using System.Security.Principal;
@@ -115,8 +117,9 @@ namespace Ict.Petra.Client.CommonDialogs
             #endregion
 
             this.Text = PETRA_LOGIN_FORMTITLE;
-            this.Height = 142;
-            pnlLoginControls.Top = 46;
+
+            //this.Height = 142;
+            //pnlLoginControls.Top = 46;
         }
 
         private void TxtUserName_Leave(System.Object sender, System.EventArgs e)
@@ -231,6 +234,8 @@ namespace Ict.Petra.Client.CommonDialogs
             String ConnectionError;
             this.Cursor = Cursors.WaitCursor;
 
+            StoreUserName(FSelUserName);
+
             if (ConnectToPetraServer(FSelUserName, FSelPassWord, out ConnectionError))
             {
                 prbLogin.Value = 90;
@@ -308,8 +313,7 @@ namespace Ict.Petra.Client.CommonDialogs
 #if  TESTMODE
 #else
                     MessageBox.Show(
-                        "Too many users are logged in." + "\r\n" + "\r\n" +
-                        " Please contact petra-admin@ict-software.org to order more licenses if necessary.",
+                        "Too many users are logged in.",
                         "Too many users",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
@@ -389,10 +393,6 @@ namespace Ict.Petra.Client.CommonDialogs
         /// <returns>void</returns>
         private void GetUsers()
         {
-            // TODO: remember previously used user name in registry?
-            //       the user name is not always equals the windows login name
-            //       add a checkbox to avoid remembering the login name?
-
             // in some countries, don't give a clue about the username
             if (TAppSettingsManager.ToBoolean(TAppSettingsManager.GetValueStatic("UseWindowsUserID"), false))
             {
@@ -401,7 +401,107 @@ namespace Ict.Petra.Client.CommonDialogs
 
                 // get rid of the domain and the back slash
                 UserNameStr = UserNameStr.Substring(UserNameStr.IndexOf("\\") + 1);
+
+                ReadRememberedUserName(ref UserNameStr);
+
                 txtUserName.Text = UserNameStr;
+            }
+            else
+            {
+                chkRememberUserName.Visible = false;
+            }
+        }
+
+        /// remember previously used user name in registry?
+        /// the user name is not always equals the windows login name
+        /// there is a a checkbox to avoid remembering the login name
+        /// do not use registry, but isolated storage
+        private void ReadRememberedUserName(ref string AUsername)
+        {
+            IsolatedStorageFileStream stream = null;
+            StreamReader sr = null;
+
+            try
+            {
+                IsolatedStorageFile MyIsolatedStorageFile = IsolatedStorageFile.GetStore(
+                    IsolatedStorageScope.User | IsolatedStorageScope.Assembly |
+                    IsolatedStorageScope.Roaming, null, null);
+
+                MyIsolatedStorageFile.CreateDirectory("OpenPetra/Settings");
+                stream = new IsolatedStorageFileStream("OpenPetra/Settings/username.txt",
+                    FileMode.Open,
+                    FileAccess.Read,
+                    MyIsolatedStorageFile);
+
+                sr = new StreamReader(stream);
+                string storedUserName = sr.ReadLine();
+                chkRememberUserName.Checked = true;
+
+                if (storedUserName == "DONTREMEMBER")
+                {
+                    chkRememberUserName.Checked = false;
+                }
+                else
+                {
+                    AUsername = storedUserName;
+                }
+            }
+            finally
+            {
+                if (sr != null)
+                {
+                    sr.Close();
+                }
+
+                if (stream != null)
+                {
+                    stream.Close();
+                }
+            }
+        }
+
+        private void StoreUserName(string AUsername)
+        {
+            IsolatedStorageFileStream stream = null;
+            StreamWriter sw = null;
+
+            try
+            {
+                IsolatedStorageFile MyIsolatedStorageFile = IsolatedStorageFile.GetStore(
+                    IsolatedStorageScope.User | IsolatedStorageScope.Assembly |
+                    IsolatedStorageScope.Roaming, null, null);
+
+                MyIsolatedStorageFile.CreateDirectory("OpenPetra/Settings");
+                stream = new IsolatedStorageFileStream("OpenPetra/Settings/username.txt",
+                    FileMode.OpenOrCreate,
+                    FileAccess.Write,
+                    MyIsolatedStorageFile);
+
+                sw = new StreamWriter(stream);
+
+                if (chkRememberUserName.Visible && chkRememberUserName.Checked)
+                {
+                    sw.WriteLine(AUsername);
+                }
+                else
+                {
+                    sw.WriteLine("DONTREMEMBER");
+                }
+            }
+            catch
+            {
+            }
+            finally
+            {
+                if (sw != null)
+                {
+                    sw.Close();
+                }
+
+                if (stream != null)
+                {
+                    stream.Close();
+                }
             }
         }
 

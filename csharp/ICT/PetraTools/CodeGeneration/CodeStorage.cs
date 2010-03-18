@@ -267,7 +267,7 @@ namespace Ict.Tools.CodeGeneration
                     collectionNode = (XmlNode)FXmlNodes[AParentName];
                 }
             }
-            else if (prefix == "tbb")
+            else if ((prefix == "tbb") || (prefix == "tbc"))
             {
                 collectionNode = (XmlNode)FXmlNodes["Toolbar"];
             }
@@ -375,6 +375,11 @@ namespace Ict.Tools.CodeGeneration
 
             if (table == null)
             {
+                if (!AShowWarningNonExistingField)
+                {
+                    return null;
+                }
+
                 throw new Exception("Cannot find table: " + tablename);
             }
 

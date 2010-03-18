@@ -17471,7 +17471,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
         }
     }
 
-    /// Any bank details for a partner can be store in this table
+    /// Any bank details for a partner can be stored in this table
     public class PBankingDetailsAccess : TTypedDataAccess
     {
 

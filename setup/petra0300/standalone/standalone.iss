@@ -27,37 +27,32 @@ Name: {app}/sql30
 Name: {userappdata}/OpenPetra.org/tmp30
 Name: {userappdata}/OpenPetra.org/reports30
 [Files]
-Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.Extensions.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\DevAge\DevAge.Core.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\DevAge\DevAge.Windows.Forms.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\SQLite\System.Data.SQLite.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\Mono\intl.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\Mono\Mono.Posix.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\Mono\Mono.Security.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\Mono\MonoPosixHelper.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\pango-sharp.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\atk-sharp.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\gdk-sharp.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\glib-sharp.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\gtk-sharp.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\iconv.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\libxml2.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Common*dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Petra.Client*dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_Client\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_ServerAdmin\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Server\_bin\Release\Ict.Petra.Server*dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\ServerAdmin\_bin\Release\Ict.Petra.ServerAdmin*dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\ServerAdmin\_bin\Release\PetraServerAdminConsole.exe; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Server\_bin\Release\PetraServerConsole.exe; DestDir: {app}/bin30
+Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.Extensions.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\DevAge\DevAge.Core.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\DevAge\DevAge.Windows.Forms.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\SQLite\System.Data.SQLite.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\Mono\intl.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\Mono\Mono.Posix.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\Mono\Mono.Security.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\Mono\MonoPosixHelper.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\gtk-sharp\iconv.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\gtk-sharp\libxml2.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Common*dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Petra.Client*dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_Client\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_ServerAdmin\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ICT\Petra\Server\_bin\Release\Ict.Petra.Server*dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ICT\Petra\ServerAdmin\_bin\Release\Ict.Petra.ServerAdmin*dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ICT\Petra\ServerAdmin\_bin\Release\PetraServerAdminConsole.exe; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ICT\Petra\Server\_bin\Release\PetraServerConsole.exe; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ICT\Petra\Definitions\UINavigation.yml; DestDir: {app}/bin30
 Source: ..\i18n\*.mo; DestDir: {app}/bin30; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\XmlReports\reports.dtd; DestDir: {app}/reports30
-Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30
+Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30; Flags: recursesubdirs createallsubdirs
 ; Source: ..\..\..\csharp\ICT\Petra\Server\sql\*.sql; DestDir: {app}/sql30
 Source: PetraServerAdminConsole.config; DestDir: {app}; DestName: PetraServerAdminConsole-3.0.config
 Source: PetraClient.config; DestDir: {app}; DestName: PetraClient-3.0.config
@@ -69,6 +64,8 @@ Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
 Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
 Source: ..\..\..\resources\*.png; DestDir: {app}/resources30
 Source: ..\..\..\LICENSE; DestDir: {app}
+Source: version.txt; DestDir: {app}/bin30
+
 [Icons]
 Name: {group}\{cm:cmIconStandaloneLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconStandaloneComment}; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-3.0.config"" -AutoLogin:demo"
 Name: {group}\{cm:cmIconReleaseNotesLabel}; Filename: {app}\manuals30\{cm:cmReleaseNotesFile}; WorkingDir: {app}/manuals30; Comment: {cm:cmIconReleaseNotesComment}
@@ -122,7 +119,7 @@ begin
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'sql30', ExpandConstant('{app}/sql30'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerConsole.exe.config', ExpandConstant('{app}/PetraServerConsole-3.0.config'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerAdminConsole.exe.config', ExpandConstant('{app}/PetraServerAdminConsole-3.0.config'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Petra.PathTemp" value="TOREPLACE"', 'Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'OpenPetra.PathTemp" value="TOREPLACE"', 'OpenPetra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', 'Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"', true);
   end;
 

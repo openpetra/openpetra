@@ -37,6 +37,7 @@ using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
 
 namespace Ict.Petra.Server.App.Core.Security
 {
@@ -239,15 +240,12 @@ namespace Ict.Petra.Server.App.Core.Security
             out Int32 AProcessID,
             out Boolean ASystemEnabled)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             SSystemStatusTable SystemStatusDT;
-            SUserRow UserDR;
             TVerificationResultCollection VerificationResults;
             DateTime LoginDateTime;
             TPetraPrincipal PetraPrincipal;
 
-            UserDR = LoadUser(AUserID, out PetraPrincipal);
+            SUserRow UserDR = LoadUser(AUserID, out PetraPrincipal);
 
             // Already assign the global variable here, because it is needed for SUserAccess.SubmitChanges later in this function
             UserInfo.GUserInfo = PetraPrincipal;
@@ -280,9 +278,11 @@ namespace Ict.Petra.Server.App.Core.Security
             }
 
             // Check SystemLoginStatus (Petra enabled/disabled) in the SystemStatus table (always holds only one record)
+            Boolean NewTransaction = false;
+
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
                 SystemStatusDT = SSystemStatusAccess.LoadAll(ReadTransaction);
@@ -332,12 +332,38 @@ namespace Ict.Petra.Server.App.Core.Security
                 }
             }
 
-            // TODO 1 oChristianK cSecurity : Perform user authentication by verifying password hash in the DB
-            // see also http://ict.om.org/PetraWiki/current/index.php/Todo_Petra.NET#Implement_Security_.7B2.7D_.5BChristian.5D
-            if (FormsAuthentication.HashPasswordForStoringInConfigFile(String.Concat(APassword, UserDR.PasswordSalt), "SHA1") != UserDR.PasswordHash)
+            string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser");
+
+            if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
-                // todo: increase failed logins
-                throw new EPasswordWrongException(Catalog.GetString("Invalid User ID/Password."));
+                // TODO 1 oChristianK cSecurity : Perform user authentication by verifying password hash in the DB
+                // see also ICTPetraWiki: Todo_Petra.NET#Implement_Security_.7B2.7D_.5BChristian.5D
+                if (FormsAuthentication.HashPasswordForStoringInConfigFile(String.Concat(APassword,
+                            UserDR.PasswordSalt), "SHA1") != UserDR.PasswordHash)
+                {
+                    // todo: increase failed logins
+                    throw new EPasswordWrongException(Catalog.GetString("Invalid User ID/Password."));
+                }
+            }
+            else
+            {
+                // namespace of the class TUserAuthentication, eg. Plugin.AuthenticationPhpBB
+                // the dll has to be in the normal application directory
+                string Namespace = UserAuthenticationMethod;
+                string NameOfDll = Namespace + ".dll";
+                string NameOfClass = Namespace + ".TUserAuthentication";
+                string ErrorMessage;
+
+                // dynamic loading of dll
+                System.Reflection.Assembly assemblyToUse = System.Reflection.Assembly.LoadFrom(NameOfDll);
+                System.Type CustomClass = assemblyToUse.GetType(NameOfClass);
+
+                IUserAuthentication auth = (IUserAuthentication)Activator.CreateInstance(CustomClass);
+
+                if (!auth.AuthenticateUser(AUserID, APassword, out ErrorMessage))
+                {
+                    throw new EPasswordWrongException(ErrorMessage);
+                }
             }
 
             // Save successful login

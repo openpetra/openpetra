@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SysMan.Plugins.cs" />
     <Compile Include="Ict.Petra.Shared.Interfaces.Plugins.AssemblyInfo.cs" />
     <Compile Include="Finance.Plugins.cs" />
   </ItemGroup>

@@ -43,4 +43,25 @@ namespace Ict.Petra.Shared.Interfaces.Plugins.MFinance
         /// <returns></returns>
         bool WriteFile(string AXMLFilename, XmlNode data);
     }
+
+    /// <summary>
+    /// this should be implemented for all sorts of bank file formats that contain the bank statements
+    /// </summary>
+    public interface IImportBankStatement
+    {
+        /// <summary>
+        /// should return the text for the filter for AEpTransactionTable to get all the gifts, by transaction type
+        /// </summary>
+        /// <returns></returns>
+        string GetFilterGifts();
+
+        /// <summary>
+        /// this can ask the user to select a file, or could connect directly to the bank, etc;
+        /// it should get the data of one or several bank statements and store the transactions in the tables
+        /// a_ep_statement and a_ep_transaction in the database
+        /// </summary>
+        /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
+        /// <returns></returns>
+        bool ImportBankStatement(out Int32 AStatementKey);
+    }
 }

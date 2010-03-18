@@ -190,8 +190,18 @@ namespace Ict.Common.Printing
                 // Paper Size Width is inch/100
                 //printer.Inch2Twips(printer.Document.PrinterSettings.PaperSizes[0].Width*100);
                 //float edge = printer.Cm2Twips(1.5f);
-                float pageRightMargin = TGfxPrinter.Cm2Inch(1.0f);
-                float pageLeftMargin = TGfxPrinter.Cm2Inch(1.3f);
+                float pageRightMargin = TGfxPrinter.Cm2Inch(1.3f) - printer.RightMargin;
+                float pageLeftMargin = TGfxPrinter.Cm2Inch(2.5f) - printer.LeftMargin;
+
+                if (pageRightMargin < 0)
+                {
+                    pageRightMargin = printer.RightMargin;
+                }
+
+                if (pageLeftMargin < 0)
+                {
+                    pageLeftMargin = printer.LeftMargin;
+                }
 
                 XmlNode BodyNode = TXMLParser.FindNodeRecursive(FHtmlDoc.DocumentElement, "body");
 
@@ -209,7 +219,7 @@ namespace Ict.Common.Printing
                             // TODO: PixelToInch? support not just 0px left margin
                             if (detail[1] == "0px")
                             {
-                                pageLeftMargin = 0;
+                                pageLeftMargin = printer.LeftMargin;
                             }
                         }
                         else if (detail[0] == "margin-right")
@@ -217,18 +227,18 @@ namespace Ict.Common.Printing
                             // TODO: PixelToInch? support not just 0px right margin
                             if (detail[1] == "0px")
                             {
-                                pageRightMargin = 0;
+                                pageRightMargin = printer.RightMargin;
                             }
                         }
                     }
                 }
 
                 // TODO set the margins and the font sizes in the HTML file???
-                printer.FPageXPos = printer.LeftMargin + pageLeftMargin;
+                printer.FPageXPos = pageLeftMargin;
 
                 if (printer.CurrentPageNr == 1)
                 {
-                    printer.FPageWidthAvailable = printer.Width - (pageRightMargin + pageLeftMargin);
+                    printer.FPageWidthAvailable = printer.Width - ((pageRightMargin) + (pageLeftMargin));
                     printer.FDefaultFont = new System.Drawing.Font("Arial", 12);
                     printer.FDefaultBoldFont = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
                     printer.CurrentRelativeFontSize = 0;
@@ -395,7 +405,11 @@ namespace Ict.Common.Printing
                     src = System.IO.Path.Combine(FPath, src);
 
                     // todo: embed image into text flow
-                    FPrinter.LineFeed();
+                    if (FPrinter.CurrentXPos > AXPos)
+                    {
+                        FPrinter.LineFeed();
+                        FPrinter.CurrentXPos = AXPos;
+                    }
 
                     if (TXMLParser.HasAttribute(curNode, "width") && TXMLParser.HasAttribute(curNode, "height"))
                     {

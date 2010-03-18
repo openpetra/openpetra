@@ -73,26 +73,34 @@ class Program
 
             if (operation == "load")
             {
-                System.Console.WriteLine("Reading xml file {0}...", xmlfile);
-                TDataDefinitionParser parser = new TDataDefinitionParser(xmlfile);
-                TDataDefinitionStore store = new TDataDefinitionStore();
-
-                if (parser.ParseDocument(ref store))
+                if (dbms == TWriteSQL.eDatabaseType.MySQL)
                 {
-                    if (dbms == TWriteSQL.eDatabaseType.Sqlite)
+                    TLoadMysql.LoadData(cmdLine.GetOptValue("database"), cmdLine.GetOptValue("username"),
+                        cmdLine.GetOptValue("password"), cmdLine.GetOptValue("sqlfile"));
+                }
+                else if (dbms == TWriteSQL.eDatabaseType.Sqlite)
+                {
+                    System.Console.WriteLine("Reading xml file {0}...", xmlfile);
+                    TDataDefinitionParser parser = new TDataDefinitionParser(xmlfile);
+                    TDataDefinitionStore store = new TDataDefinitionStore();
+
+                    if (parser.ParseDocument(ref store))
                     {
-                        // we want to write directly to the database
-                        string password = "";
-
-                        if (cmdLine.IsFlagSet("password"))
+                        if (dbms == TWriteSQL.eDatabaseType.Sqlite)
                         {
-                            password = cmdLine.GetOptValue("password");
-                        }
+                            // we want to write directly to the database
+                            string password = "";
 
-                        TSQLiteWriter.ExecuteLoadScript(store, outputfile,
-                            cmdLine.GetOptValue("datapath"),
-                            cmdLine.GetOptValue("sqlfile"),
-                            password);
+                            if (cmdLine.IsFlagSet("password"))
+                            {
+                                password = cmdLine.GetOptValue("password");
+                            }
+
+                            TSQLiteWriter.ExecuteLoadScript(store, outputfile,
+                                cmdLine.GetOptValue("datapath"),
+                                cmdLine.GetOptValue("sqlfile"),
+                                password);
+                        }
                     }
                 }
             }

@@ -43,6 +43,7 @@ namespace Ict.Common
         private static String UODBCDsn;
         private static String UPostgreSQLServer;
         private static String UPostgreSQLServerPort;
+        private static String UPostgreSQLDatabaseName;
         private static String UDBUsername;
         private static String UDBPassword;
         private static String UServerLogFile;
@@ -263,6 +264,17 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// the name of the PostgreSQL database
+        /// </summary>
+        public static string PostgreSQLDatabaseName
+        {
+            get
+            {
+                return UPostgreSQLDatabaseName;
+            }
+        }
+
+        /// <summary>
         /// Initialises the internal variables that hold the Server Settings.
         ///
         /// </summary>
@@ -275,6 +287,7 @@ namespace Ict.Common
             String AODBCDsn,
             String APostreSQLServer,
             String APostreSQLServerPort,
+            String APostgreSQLDatabaseName,
             String ADBUsername,
             String ADBPassword,
             System.Int16 ABaseIPAddress,
@@ -296,6 +309,7 @@ namespace Ict.Common
             UODBCDsn = AODBCDsn;
             UPostgreSQLServer = APostreSQLServer;
             UPostgreSQLServerPort = APostreSQLServerPort;
+            UPostgreSQLDatabaseName = APostgreSQLDatabaseName;
             UDBUsername = ADBUsername;
             UDBPassword = ADBPassword;
             UBaseIPAddress = ABaseIPAddress;

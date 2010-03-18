@@ -30,7 +30,6 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using System.Text;
-using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
 
@@ -72,6 +71,7 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>
         /// check the validity of each location and update the icon for each location (current address, old address, future address)
+        /// for the current date
         /// </summary>
         /// <param name="APartnerLocationsDS">the dataset with the locations</param>
         public static void DeterminePartnerLocationsDateStatus(DataSet APartnerLocationsDS)
@@ -88,19 +88,18 @@ namespace Ict.Petra.Shared.MPartner
                 ProcessDT = APartnerLocationsDS.Tables["PartnerLocation"];
             }
 
-            DeterminePartnerLocationsDateStatus(ProcessDT);
+            DeterminePartnerLocationsDateStatus(ProcessDT, DateTime.Today);
         }
 
         /// <summary>
         /// check the validity of each location and update the icon of each location (current address, old address, future address)
         /// </summary>
         /// <param name="APartnerLocationsDT">the datatable to check</param>
-        public static void DeterminePartnerLocationsDateStatus(DataTable APartnerLocationsDT)
+        /// <param name="ADateToCheck"></param>
+        public static void DeterminePartnerLocationsDateStatus(DataTable APartnerLocationsDT, DateTime ADateToCheck)
         {
             System.DateTime pDateEffective;
             System.DateTime pDateGoodUntil;
-            System.DateTime pDateToday;
-            pDateToday = (DateTime.Today).Date;
 
             /*
              *  Add custom DataColumn if its not part of the DataTable yet
@@ -125,11 +124,11 @@ namespace Ict.Petra.Shared.MPartner
                     // Current Address: Icon = 1,
                     // Future Address:  Icon = 2,
                     // Expired Address: Icon = 3.
-                    if ((pDateEffective <= pDateToday) && ((pDateGoodUntil >= pDateToday) || (pDateGoodUntil == new DateTime(9999, 12, 31))))
+                    if ((pDateEffective <= ADateToCheck) && ((pDateGoodUntil >= ADateToCheck) || (pDateGoodUntil == new DateTime(9999, 12, 31))))
                     {
                         pRow[PartnerEditTDSPPartnerLocationTable.GetIconDBName()] = ((object)1);
                     }
-                    else if (pDateEffective > pDateToday)
+                    else if (pDateEffective > ADateToCheck)
                     {
                         pRow[PartnerEditTDSPPartnerLocationTable.GetIconDBName()] = ((object)2);
                     }
@@ -338,7 +337,7 @@ namespace Ict.Petra.Shared.MPartner
             }
             catch (Exception Exp)
             {
-                MessageBox.Show("Exception occured in DeterminePartnerShortName: " + Exp.ToString());
+                TLogging.Log("Exception occured in DeterminePartnerShortName (" + AName + "): " + Exp.ToString());
             }
             return ShortName;
         }
@@ -660,7 +659,13 @@ namespace Ict.Petra.Shared.MPartner
         /// </summary>
         public static string FormatShortName(string AShortname, eShortNameFormat AFormat)
         {
+            if (AShortname.Length == 0)
+            {
+                return "";
+            }
+
             StringCollection names = StringHelper.StrSplit(AShortname, ",");
+
             string resultValue = "";
 
             if (AFormat == eShortNameFormat.eShortname)
@@ -683,12 +688,20 @@ namespace Ict.Petra.Shared.MPartner
             }
             else if (AFormat == eShortNameFormat.eOnlyTitle)
             {
-                return names[names.Count - 1];
+                if (names.Count > 0)
+                {
+                    return names[names.Count - 1];
+                }
+            }
+            else if (AFormat == eShortNameFormat.eOnlySurname)
+            {
+                return names[0];
             }
             else if (AFormat == eShortNameFormat.eReverseWithoutTitle)
             {
                 if (names.Count > 1)
                 {
+                    // remove the title
                     names.RemoveAt(names.Count - 1);
                 }
 
@@ -696,13 +709,28 @@ namespace Ict.Petra.Shared.MPartner
                 {
                     if (resultValue.Length > 0)
                     {
-                        resultValue = ", " + resultValue;
+                        resultValue = " " + resultValue;
                     }
 
                     resultValue = name + resultValue;
                 }
 
                 return resultValue;
+            }
+            else if (AFormat == eShortNameFormat.eReverseLastnameInitialsOnly)
+            {
+                if (names.Count > 1)
+                {
+                    // remove the title
+                    names.RemoveAt(names.Count - 1);
+                }
+
+                if (names.Count > 1)
+                {
+                    return names[1] + " " + names[0].Substring(0, 1) + ".";
+                }
+
+                return names[0].Substring(0, 1) + ".";
             }
 
             return "";

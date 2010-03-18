@@ -3183,9 +3183,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MniHelpVideoTutorial_Click(System.Object sender, System.EventArgs e)
         {
-// TODO no link to ict-software.org
+            // TODO: there is no such tutorial for OpenPetra
             const String NETWORKINSTALL_TUTORIALPATH = "I:\\Petra\\";
-            const String TUTORIAL_URL = "http://www.ict-software.org/petra/downloads/2.2/training/";
+            const String TUTORIAL_URL = "http://www.openpetra.org/petra/downloads/2.2/training/";
             const String TUTORIAL_NAME = "Petra-2.2PartnerEditDemo.exe";
             const String BRowSER_EXE = "IExplore.exe";
             String ExePath;

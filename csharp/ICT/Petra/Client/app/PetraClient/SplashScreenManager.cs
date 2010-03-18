@@ -162,6 +162,10 @@ public class TSplashScreenManager
         {
             FSplashScreenForm.ShowMessageBox(AMessage);
         }
+        else
+        {
+            MessageBox.Show(AMessage);
+        }
     }
 
     /// <summary>
@@ -174,6 +178,10 @@ public class TSplashScreenManager
         if (FSplashScreenForm != null)
         {
             FSplashScreenForm.ShowMessageBox(AMessage, ATitle);
+        }
+        else
+        {
+            MessageBox.Show(AMessage, ATitle);
         }
     }
 
@@ -188,6 +196,10 @@ public class TSplashScreenManager
         if (FSplashScreenForm != null)
         {
             FSplashScreenForm.ShowMessageBox(AMessage, ATitle, AMessageBoxIcon);
+        }
+        else
+        {
+            MessageBox.Show(AMessage, ATitle, MessageBoxButtons.OK, AMessageBoxIcon);
         }
     }
 
@@ -205,8 +217,10 @@ public class TSplashScreenManager
             FSplashScreenForm.ShowMessageBox(AMessage, ATitle, AMessageBoxButtons);
             return FSplashScreenForm.MessageBoxDialogResult;
         }
-
-        return DialogResult.Cancel;
+        else
+        {
+            return MessageBox.Show(AMessage, ATitle, AMessageBoxButtons);
+        }
     }
 
     /// <summary>
@@ -225,8 +239,10 @@ public class TSplashScreenManager
             FSplashScreenForm.ShowMessageBox(AMessage, ATitle, AMessageBoxButtons, AMessageBoxIcon);
             return FSplashScreenForm.MessageBoxDialogResult;
         }
-
-        return DialogResult.Cancel;
+        else
+        {
+            return MessageBox.Show(AMessage, ATitle, AMessageBoxButtons, AMessageBoxIcon);
+        }
     }
 
     /// <summary>
@@ -247,8 +263,10 @@ public class TSplashScreenManager
             FSplashScreenForm.ShowMessageBox(AMessage, ATitle, AMessageBoxButtons, AMessageBoxIcon, AMessageBoxDefaultButton);
             return FSplashScreenForm.MessageBoxDialogResult;
         }
-
-        return DialogResult.Cancel;
+        else
+        {
+            return MessageBox.Show(AMessage, ATitle, AMessageBoxButtons, AMessageBoxIcon, AMessageBoxDefaultButton);
+        }
     }
 
     #endregion

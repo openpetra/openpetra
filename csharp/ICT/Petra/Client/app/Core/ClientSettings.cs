@@ -266,6 +266,29 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
+        /// get temp path in the user directory. this is called from PetraClientMain directly
+        public static string GetPathTemp()
+        {
+            UPathTemp = TAppSettingsManager.GetValueStatic("OpenPetra.PathTemp", Path.GetTempPath());
+
+            if (UPathTemp.Contains("{userappdata}"))
+            {
+                // on Windows, we cannot store the database in userappdata during installation, because
+                // the setup has to be run as administrator.
+                // therefore the first time the user starts Petra, we need to prepare his environment
+                // see also http://www.vincenzo.net/isxkb/index.php?title=Vista_considerations#Best_Practices
+                UPathTemp = UPathTemp.Replace("{userappdata}",
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+
+                if (!Directory.Exists(Path.GetDirectoryName(UPathTemp)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(UPathTemp));
+                }
+            }
+
+            return UPathTemp;
+        }
+
         /// <summary>
         /// Loads settings from .NET Configuration File and Command Line.
         ///
@@ -292,22 +315,7 @@ namespace Ict.Petra.Client.App.Core
             //
             // Parse settings from the Application Configuration File
             //
-            UPathTemp = FAppSettings.GetValue("Petra.PathTemp");
-
-            if (UPathTemp.Contains("{userappdata}"))
-            {
-                // on Windows, we cannot store the database in userappdata during installation, because
-                // the setup has to be run as administrator.
-                // therefore the first time the user starts Petra, we need to prepare his environment
-                // see also http://www.vincenzo.net/isxkb/index.php?title=Vista_considerations#Best_Practices
-                UPathTemp = UPathTemp.Replace("{userappdata}",
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-
-                if (!Directory.Exists(Path.GetDirectoryName(UPathTemp)))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(UPathTemp));
-                }
-            }
+            UPathTemp = GetPathTemp();
 
             UBehaviourSeveralClients = "OnlyOneWithQuestion";
 
@@ -330,8 +338,8 @@ namespace Ict.Petra.Client.App.Core
             UPetra_Path_RemotePatches = "";
             UPetra_Path_Dat = "";
             UPetra_Path_Patches = "";
-            UPetraWebsite_Link = FAppSettings.GetValue("Petra.Website", "http://www.ict-software.org/petra/index.php");
-            UPetraPatches_Link = FAppSettings.GetValue("Petra.PatchesSite", "http://www.ict-software.org/petra/index.php?page=PetraPatches");
+            UPetraWebsite_Link = FAppSettings.GetValue("Petra.Website", "http://www.openpetra.org");
+            UPetraPatches_Link = FAppSettings.GetValue("Petra.PatchesSite", "http://www.example.org/index.php?page=OpenPetraPatches");
 
             if (URunAsStandalone == true)
             {
@@ -352,9 +360,9 @@ namespace Ict.Petra.Client.App.Core
 
             if (URunAsRemote == true)
             {
-                UPetra_Path_Patches = FAppSettings.GetValue("Petra.Path.Patches");
-                UPetra_Path_Dat = FAppSettings.GetValue("Petra.Path.Dat");
-                UPetra_Path_RemotePatches = FAppSettings.GetValue("Petra.Path.RemotePatches");
+                UPetra_Path_Patches = FAppSettings.GetValue("OpenPetra.Path.Patches");
+                UPetra_Path_Dat = FAppSettings.GetValue("OpenPetra.Path.Dat");
+                UPetra_Path_RemotePatches = FAppSettings.GetValue("OpenPetra.Path.RemotePatches");
 
                 // check whether the config file refers to http: or samba directory
                 // or should we check for http anyways?

@@ -314,8 +314,6 @@ namespace Ict.Petra.Server.App.Main
             String ServerName;
             String ServerIPAddresses;
             String ODBCDsnAppSetting;
-            String PostreSQLServer;
-            String PostreSQLServerPort;
             TDBType RDBMSTypeAppSetting;
             Int16 ServerBaseIPAddress;
             Int16 ServerDebugLevel;
@@ -338,11 +336,10 @@ namespace Ict.Petra.Server.App.Main
             // Server.ODBC_DSN
             ODBCDsnAppSetting = AppSettingsManager.GetValue("Server.ODBC_DSN", false);
 
-            // Server.PostreSQLServer
-            PostreSQLServer = AppSettingsManager.GetValue("Server.PostgreSQLServer", "localhost");
-
-            // Server.PostreSQLServerPort
-            PostreSQLServerPort = AppSettingsManager.GetValue("Server.PostgreSQLServerPort", "5432");
+            string PostgreSQLServer = AppSettingsManager.GetValue("Server.PostgreSQLServer", "localhost");
+            string PostgreSQLServerPort = AppSettingsManager.GetValue("Server.PostgreSQLServerPort", "5432");
+            string PostgreSQLUserName = AppSettingsManager.GetValue("Server.PostgreSQLUserName", "petraserver");
+            string PostgreSQLDatabaseName = AppSettingsManager.GetValue("Server.PostgreSQLDatabaseName", "openpetra");
 
             if (AppSettingsManager.HasValue("Server.LogFile"))
             {
@@ -389,12 +386,23 @@ namespace Ict.Petra.Server.App.Main
             ODBCDsn = "petra2_3";
             ODBCPassword = ServerCredentials;
 
-            // Store Server configuration in the static TSrvSetting class
             Version ServerAssemblyVersion;
 
             if ((System.Reflection.Assembly.GetEntryAssembly() != null) && (System.Reflection.Assembly.GetEntryAssembly().GetName() != null))
             {
                 ServerAssemblyVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+
+                // retrieve the current version of the server from the file version.txt in the bin directory
+                // this is easier to manage than to check the assembly version in case you only need to quickly update the client
+                string BinPath = Environment.CurrentDirectory;
+
+                if (File.Exists(BinPath + Path.DirectorySeparatorChar + "version.txt"))
+                {
+                    StreamReader srVersion = new StreamReader(BinPath + Path.DirectorySeparatorChar + "version.txt");
+                    TFileVersionInfo v = new TFileVersionInfo(srVersion.ReadLine());
+                    ServerAssemblyVersion = new Version(v.FileMajorPart, v.FileMinorPart, v.FileBuildPart, v.FilePrivatePart);
+                    srVersion.Close();
+                }
             }
             else
             {
@@ -402,6 +410,7 @@ namespace Ict.Petra.Server.App.Main
                 ServerAssemblyVersion = new Version(0, 0, 0, 0);
             }
 
+            // Store Server configuration in the static TSrvSetting class
             FServerSettings = new TSrvSetting(
                 CmdLineArgs.ApplicationName,
                 CmdLineArgs.ConfigurationFile,
@@ -409,10 +418,11 @@ namespace Ict.Petra.Server.App.Main
                 Utilities.DetermineExecutingOS(),
                 RDBMSTypeAppSetting,
                 ODBCDsn,
-                PostreSQLServer,
-                PostreSQLServerPort,
-                "petraserver", // TSrvSetting.PostgreSQLUsername
-                ServerCredentials, // TSrvSetting.PostgreSQLPassword
+                PostgreSQLServer,
+                PostgreSQLServerPort,
+                PostgreSQLDatabaseName,
+                PostgreSQLUserName,
+                ServerCredentials,
                 ServerBaseIPAddress,
                 ServerDebugLevel,
                 ServerLogFile,
@@ -480,24 +490,27 @@ namespace Ict.Petra.Server.App.Main
                 DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
                     TSrvSetting.PostgreSQLServer,
                     TSrvSetting.PostgreSQLServerPort,
+                    TSrvSetting.PostgreSQLDatabaseName,
                     TSrvSetting.DBUsername,
                     TSrvSetting.DBPassword,
                     "");
 
-                // now check if the database is uptodate; otherwise run db patch against it
+                string DBPatchVersion = "0.0.9-0";
                 TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-                string DBPatchVersion =
-                    Convert.ToString(DBAccess.GDBAccessObj.ExecuteScalar(
-                            "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                            transaction));
-                DBAccess.GDBAccessObj.RollbackTransaction();
 
-                // just for the moment, need to fix a problem with the earliest versions
-                // TODO remove this fix after a while
-                if (DBPatchVersion == "3.0.0")
+                try
                 {
-                    DBPatchVersion = "0.0.2-0";
+                    // now check if the database is uptodate; otherwise run db patch against it
+                    DBPatchVersion =
+                        Convert.ToString(DBAccess.GDBAccessObj.ExecuteScalar(
+                                "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                                transaction));
                 }
+                catch (Exception)
+                {
+                    // this can happen when connecting to an old Petra 2.x database
+                }
+                DBAccess.GDBAccessObj.RollbackTransaction();
 
                 TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
                 TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
@@ -537,6 +550,7 @@ namespace Ict.Petra.Server.App.Main
                             DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
                                 TSrvSetting.PostgreSQLServer,
                                 TSrvSetting.PostgreSQLServerPort,
+                                TSrvSetting.PostgreSQLDatabaseName,
                                 TSrvSetting.DBUsername,
                                 TSrvSetting.DBPassword,
                                 "");

@@ -10,8 +10,10 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable;
+using Ict.Petra.Shared.Interfaces.MFinance.AccountsReceivable;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget;
 using Ict.Petra.Shared.Interfaces.MFinance.Cacheable;
+using Ict.Petra.Shared.Interfaces.MFinance.ImportExport;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift;
 using Ict.Petra.Shared.Interfaces.MFinance.GL;
 using Ict.Petra.Shared.Interfaces.MFinance.ICH;
@@ -20,7 +22,9 @@ using Ict.Petra.Shared.Interfaces.MFinance.Reporting;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.AccountsReceivable.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
@@ -31,9 +35,11 @@ using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
 #region ManualCode
 using System.Xml;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 #endregion
 namespace Ict.Petra.Shared.Interfaces.MFinance
@@ -48,6 +54,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance
         }
 
         /// <summary>access to sub namespace</summary>
+        IAccountsReceivableNamespace AccountsReceivable
+        {
+            get;
+        }
+
+        /// <summary>access to sub namespace</summary>
         IBudgetNamespace Budget
         {
             get;
@@ -55,6 +67,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance
 
         /// <summary>access to sub namespace</summary>
         ICacheableNamespace Cacheable
+        {
+            get;
+        }
+
+        /// <summary>access to sub namespace</summary>
+        IImportExportNamespace ImportExport
         {
             get;
         }
@@ -219,6 +237,32 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors
 }
 
 
+namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsReceivable
+{
+    /// <summary>auto generated</summary>
+    public interface IAccountsReceivableNamespace : IInterface
+    {
+        /// <summary>access to sub namespace</summary>
+        IAccountsReceivableWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsReceivable.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IAccountsReceivableWebConnectorsNamespace : IInterface
+    {
+    }
+
+}
+
+
 namespace Ict.Petra.Shared.Interfaces.MFinance.Budget
 {
     /// <summary>auto generated</summary>
@@ -276,6 +320,51 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Cacheable
 }
 
 
+namespace Ict.Petra.Shared.Interfaces.MFinance.ImportExport
+{
+    /// <summary>auto generated</summary>
+    public interface IImportExportNamespace : IInterface
+    {
+        /// <summary>access to sub namespace</summary>
+        IImportExportWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IImportExportWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
+        TSubmitChangesResult StoreNewBankStatement(AEpStatementTable AStmtTable,
+                                                   AEpTransactionTable ATransTable,
+                                                   out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
+        AEpStatementTable GetImportedBankStatements(DateTime AStartDate);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
+        BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey,
+                                                             Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
+        bool CommitMatches(BankImportTDS AMainDS);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
+        Int32 CreateGiftBatch(BankImportTDS AMainDS,
+                              Int32 ALedgerNumber,
+                              Int32 AGiftBatchNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
+        Int32 CreateGLBatch(BankImportTDS AMainDS,
+                            Int32 ALedgerNumber,
+                            Int32 ABatchNumber);
+    }
+
+}
+
+
 namespace Ict.Petra.Shared.Interfaces.MFinance.Gift
 {
     /// <summary>auto generated</summary>
@@ -313,17 +402,33 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
     /// <summary>auto generated</summary>
     public interface IGiftWebConnectorsNamespace : IInterface
     {
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector)</summary>
+        Int32 FieldChangeAdjustment(Int32 ALedgerNumber,
+                                    Int64 ARecipientKey,
+                                    DateTime AStartDate,
+                                    DateTime AEndDate,
+                                    Int64 AOldField,
+                                    DateTime ADateCorrection,
+                                    bool AWithReceipt);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
+        string CreateAnnualGiftReceipts(Int32 ALedgerNumber,
+                                        DateTime AStartDate,
+                                        DateTime AEndDate,
+                                        string AHTMLTemplate);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
+        GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber,
+                                      DateTime ADateEffective);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
         GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
         GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
         GiftBatchTDS LoadTransactions(Int32 ALedgerNumber,
                                       Int32 ABatchNumber);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
         TSubmitChangesResult SaveGiftBatchTDS(ref GiftBatchTDS AInspectDS,
                                               out TVerificationResultCollection AVerificationResult);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
         bool PostGiftBatch(Int32 ALedgerNumber,
                            Int32 ABatchNumber,
                            out TVerificationResultCollection AVerifications);
@@ -390,9 +495,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                                        string AXmlHierarchy);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
         bool ImportNewLedger(Int32 ALedgerNumber,
+                             string AXmlLedgerDetails,
                              string AXmlAccountHierarchy,
                              string AXmlCostCentreHierarchy,
-                             string AXmlInitialBalances);
+                             string AXmlMotivationDetails);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
         bool CanDeleteAccount(Int32 ALedgerNumber,
                               string AAccountCode);

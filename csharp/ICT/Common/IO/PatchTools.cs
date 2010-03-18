@@ -35,7 +35,6 @@ using System.Collections.Specialized;
 using System.Threading;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using System.Net;
 using System.Text;
 
 namespace Ict.Common.IO
@@ -181,19 +180,26 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// returns the version numbers of the patch;
+        /// e.g. Patch-win_2.2.35_2.2.43.zip should return 2.2.35 and 2.2.43
+        /// </summary>
+        /// <param name="APatchZipFile"></param>
+        /// <returns></returns>
+        public static StringCollection GetVersionsFromDiffZipName(string APatchZipFile)
+        {
+            return StringHelper.StrSplit(Path.GetFileNameWithoutExtension(APatchZipFile).Substring(Path.GetFileNameWithoutExtension(APatchZipFile).
+                    IndexOf("_") + 1), "_");
+        }
+
+        /// <summary>
         /// what is the latest patch; look at the name of the diff file
         /// </summary>
         /// <param name="APatchZipFile"></param>
         /// <returns></returns>
         public static TFileVersionInfo GetLatestPatchVersionFromDiffZipName(String APatchZipFile)
         {
-            StringCollection versions;
+            StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
 
-            // example Patch2.2.35_2.2.43.zip
-            // Latest Version in this example should be 2.2.4.3
-            versions = StringHelper.StrSplit(Path.GetFileNameWithoutExtension(APatchZipFile).Substring(5), "_");
-
-            // Length of 'Patch'
             return new TFileVersionInfo(versions[1]);
         }
 
@@ -204,14 +210,8 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public static TFileVersionInfo GetStartVersionFromDiffZipName(String APatchZipFile)
         {
-            StringCollection versions;
+            StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
 
-            // example Patch2.2.35_2.2.43.zip
-            // Start Version in this example should be 2.2.3.5
-
-            versions = StringHelper.StrSplit(Path.GetFileNameWithoutExtension(APatchZipFile).Substring(5), "_");
-
-            // Length of 'Patch'
             return new TFileVersionInfo(versions[0]);
         }
 
@@ -222,15 +222,9 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public Boolean PatchApplies(String APatchZipFile)
         {
-            StringCollection versions;
-            TFileVersionInfo patchStartVersion;
+            StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
+            TFileVersionInfo patchStartVersion = new TFileVersionInfo(versions[0]);
 
-            // example Patch2.2.35_2.2.43.zip
-            // should compare the first versionnumber in the patch with the current version (self)
-            versions = StringHelper.StrSplit(Path.GetFileNameWithoutExtension(APatchZipFile).Substring(5), "_");
-
-            // Length of 'Patch'
-            patchStartVersion = new TFileVersionInfo(versions[0]);
             return patchStartVersion.Compare(this) == 0;
         }
     }
@@ -311,10 +305,15 @@ namespace Ict.Common.IO
         protected SortedList FListOfNewPatches;
 
         /// <summary>todoComment</summary>
-        protected string FBinPath;
+        protected string FInstallPath;
 
-        /// <summary>todoComment</summary>
-        protected string FServerBinPath;
+        /// <summary>eg. bin30 has postfix 30</summary>
+        protected string FVersionPostFix;
+
+        /// <summary>
+        /// calculated from FInstallPath and FVersionPostFix
+        /// </summary>
+        protected string FBinPath;
 
         /// <summary>todoComment</summary>
         protected string FTmpPath;
@@ -323,16 +322,10 @@ namespace Ict.Common.IO
         protected string FDatPath;
 
         /// <summary>todoComment</summary>
-        protected string FDBPath;
-
-        /// <summary>todoComment</summary>
         protected string FPatchesPath;
 
         /// <summary>todoComment</summary>
         protected string FRemotePatchesPath;
-
-        /// <summary>todoComment</summary>
-        protected string FMainExecutable;
 
         /// <summary>todoComment</summary>
         protected TFileVersionInfo FCurrentlyInstalledVersion;
@@ -990,25 +983,17 @@ namespace Ict.Common.IO
         /// constructor;
         /// to be used to actually install patches
         /// </summary>
-        public TPatchTools(String ABinPath,
-            String AServerBinPath,
+        public TPatchTools(String AInstallPath,
+            String AVersionPostFix,
             String ATmpPath,
             String ADatPath,
             String ADBPath,
             String APatchesPath,
-            String ARemotePatchesPath,
-            String AMainExecutable) : base()
+            String ARemotePatchesPath) : base()
         {
-            FBinPath = Path.GetFullPath(ABinPath);
-
-            if (AServerBinPath.Length > 0)
-            {
-                FServerBinPath = Path.GetFullPath(AServerBinPath);
-            }
-            else
-            {
-                FServerBinPath = ABinPath; // for patchtool.exe on a remote machine
-            }
+            FInstallPath = Path.GetFullPath(AInstallPath);
+            FVersionPostFix = AVersionPostFix;
+            FBinPath = FInstallPath + Path.DirectorySeparatorChar + "bin" + FVersionPostFix;
 
             if (ATmpPath.Length > 0)
             {
@@ -1019,15 +1004,9 @@ namespace Ict.Common.IO
                 FTmpPath = "";
             }
 
-            FDatPath = Path.GetFullPath(ADatPath);
-
-            if (ADBPath.Length > 0)
+            if (ADatPath.Length > 0)
             {
-                FDBPath = Path.GetFullPath(ADBPath);
-            }
-            else
-            {
-                FDBPath = "";
+                FDatPath = Path.GetFullPath(ADatPath);
             }
 
             if (APatchesPath.Length > 0)
@@ -1052,67 +1031,7 @@ namespace Ict.Common.IO
                 FRemotePatchesPath = "";
             }
 
-            FMainExecutable = AMainExecutable;
             FListOfNewPatches = new SortedList();
-        }
-
-        /// <summary>
-        /// read from a website;
-        /// used to check for available patches
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        public static string ReadWebsite(string url)
-        {
-            string ReturnValue;
-
-            byte[] buf;
-            WebClient client;
-            client = new WebClient();
-            ReturnValue = null;
-            try
-            {
-                buf = client.DownloadData(url);
-
-                if ((buf != null) && (buf.Length > 0))
-                {
-                    ReturnValue = Encoding.ASCII.GetString(buf, 0, buf.Length);
-                }
-            }
-            catch (System.Net.WebException e)
-            {
-                TLogging.Log("Trying to download: " + url + Environment.NewLine +
-                    e.Message, TLoggingType.ToLogfile);
-            }
-            finally
-            {
-            }
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// download a patch or other file from a website;
-        /// used for patching the program
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="filename"></param>
-        /// <returns></returns>
-        public static Boolean DownloadFile(string url, string filename)
-        {
-            Boolean ReturnValue;
-            WebClient client;
-
-            client = new WebClient();
-            ReturnValue = false;
-            try
-            {
-                client.DownloadFile(url, filename);
-                ReturnValue = true;
-            }
-            finally
-            {
-            }
-            return ReturnValue;
         }
 
         /// <summary>
@@ -1137,9 +1056,7 @@ namespace Ict.Common.IO
         /// <paramref name="AShowStatus" /> is false.</param>
         public Boolean CheckForRecentPatch(bool AShowStatus, out string AStatusMessage)
         {
-            const string ProblemMessage = "There is a problem connecting to {0}\r\r" +
-                                          "Please ask your System Administrator to look at the FAQ on the Petra Website\r\n" +
-                                          "or contact petra-support@ict-software.org.";
+            const string ProblemMessage = "There is a problem connecting to {0}";
 
             string localname;
             TFileVersionInfo fileStartVersion;
@@ -1147,25 +1064,25 @@ namespace Ict.Common.IO
             string directoryListing;
             string searchPattern;
             string filesignature;
-            StreamReader sr;
-            StreamWriter sw;
 
             AStatusMessage = "";
             FListOfNewPatches = new SortedList();
 
             // first get the version of the currently installed binaries
-            FCurrentlyInstalledVersion = new TFileVersionInfo(FileVersionInfo.GetVersionInfo(FBinPath + Path.DirectorySeparatorChar + FMainExecutable));
-
-            // check for an .orig file, in case the main file has been patched manually
-            if (File.Exists(FBinPath + Path.DirectorySeparatorChar + FMainExecutable + ".orig"))
+            // read from version.txt in the bin directory; it contains the currently installed version in RPM style (e.g. 3.0.0-14)
+            if (!File.Exists(FBinPath + Path.DirectorySeparatorChar + "version.txt"))
             {
-                FCurrentlyInstalledVersion =
-                    new TFileVersionInfo(FileVersionInfo.GetVersionInfo(FBinPath + Path.DirectorySeparatorChar + FMainExecutable + ".orig"));
+                throw new Exception(String.Format("Cannot search for new patch, since I cannot find file {0}", FBinPath +
+                        Path.DirectorySeparatorChar + "version.txt"));
             }
+
+            StreamReader srVersion = new StreamReader(FBinPath + Path.DirectorySeparatorChar + "version.txt");
+            FCurrentlyInstalledVersion = new TFileVersionInfo(srVersion.ReadLine());
+            srVersion.Close();
 
             if (FRemotePatchesPath.StartsWith("http://"))
             {
-                directoryListing = ReadWebsite(FRemotePatchesPath);
+                directoryListing = THTTPUtils.ReadWebsite(FRemotePatchesPath);
 
                 if (directoryListing == null)
                 {
@@ -1208,14 +1125,17 @@ namespace Ict.Common.IO
                             FListOfNewPatches.Add(LocalName, LocalName);
                         }
                     }
-                    else if (filename.ToLower().EndsWith(".r")
-                             || filename.ToLower().EndsWith(".dll")
+                    else if (filename.Contains("Setup") && filename.EndsWith(".exe"))
+                    {
+                        // ignore setup executable
+                    }
+                    else if (filename.ToLower().EndsWith(".dll")
                              || filename.ToLower().EndsWith(".exe"))
                     {
-                        // download .r/.dll/.exe files from the netpatches directory if there is no file with same date already
+                        // download .dll/.exe files from the netpatches directory if there is no file with same date already
                         if (System.IO.File.Exists(FPatchesPath + Path.DirectorySeparatorChar + filename + ".signature"))
                         {
-                            sr = new StreamReader(FPatchesPath + Path.DirectorySeparatorChar + filename + ".signature");
+                            StreamReader sr = new StreamReader(FPatchesPath + Path.DirectorySeparatorChar + filename + ".signature");
 
                             if (sr.ReadLine().Trim() == filesignature.Trim())
                             {
@@ -1249,8 +1169,8 @@ namespace Ict.Common.IO
                                 }
                             }
 
-                            DownloadFile(FRemotePatchesPath + "/" + filename, localFile);
-                            sw = new StreamWriter(FPatchesPath + Path.DirectorySeparatorChar + filename + ".signature");
+                            THTTPUtils.DownloadFile(FRemotePatchesPath + "/" + filename, localFile);
+                            StreamWriter sw = new StreamWriter(FPatchesPath + Path.DirectorySeparatorChar + filename + ".signature");
                             sw.WriteLine(filesignature);
                             sw.Close();
                         }
@@ -1282,7 +1202,7 @@ namespace Ict.Common.IO
             }
 
             // create a list of patches that should be installed
-            string[]  patchfiles = System.IO.Directory.GetFiles(FPatchesPath, "Patch*.zip");
+            string[] patchfiles = System.IO.Directory.GetFiles(FPatchesPath, "Patch*.zip");
 
             foreach (string filename in patchfiles)
             {
@@ -1391,7 +1311,8 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// this procedure makes sure that the latest version of the patch tool is being used; the latest available executable and required dlls are copied to the patch tmp directory
+        /// this procedure makes sure that the latest version of the patch tool is being used;
+        /// the latest available executable and required dlls are copied to the patch tmp directory
         /// </summary>
         /// <returns>void</returns>
         public void CopyLatestPatchProgram(String APatchDirectory)
@@ -1399,27 +1320,26 @@ namespace Ict.Common.IO
             String remotename;
             ArrayList PatchExecutableFiles;
 
-            // copy the PatchTool.exe and Ict.Common.dll and Ict.Common.IO.dll from bin23 to a temp directory
-            System.IO.File.Copy(FBinPath + Path.DirectorySeparatorChar + "Borland.Delphi.dll",
-                APatchDirectory + Path.DirectorySeparatorChar + "Borland.Delphi.dll",
-                true);
-            System.IO.File.Copy(FBinPath + Path.DirectorySeparatorChar + "Ict.Common.dll",
-                APatchDirectory + Path.DirectorySeparatorChar + "Ict.Common.dll",
-                true);
-            System.IO.File.Copy(FBinPath + Path.DirectorySeparatorChar + "Ict.Common.IO.dll",
-                APatchDirectory + Path.DirectorySeparatorChar + "Ict.Common.IO.dll",
-                true);
-            System.IO.File.Copy(FBinPath + Path.DirectorySeparatorChar + "ICSharpCode.SharpZipLib.dll",
-                APatchDirectory + Path.DirectorySeparatorChar + "ICSharpCode.SharpZipLib.dll",
-                true);
-            System.IO.File.Copy(FServerBinPath + Path.DirectorySeparatorChar + "patchtool.exe",
-                APatchDirectory + Path.DirectorySeparatorChar + "patchtool.exe",
-                true);
             PatchExecutableFiles = new ArrayList();
-            PatchExecutableFiles.Add("dotnet-code" + Path.DirectorySeparatorChar + "Ict.Common.dll");
-            PatchExecutableFiles.Add("dotnet-code" + Path.DirectorySeparatorChar + "Ict.Common.IO.dll");
-            PatchExecutableFiles.Add("dotnet-code" + Path.DirectorySeparatorChar + "ICSharpCode.SharpZipLib.dll");
-            PatchExecutableFiles.Add("dotnet-code" + Path.DirectorySeparatorChar + "server" + Path.DirectorySeparatorChar + "patchtool.exe");
+            string binPath = "openpetraorg" + Path.DirectorySeparatorChar + "bin" + FVersionPostFix + Path.DirectorySeparatorChar;
+            PatchExecutableFiles.Add(binPath + "Ict.Common.dll");
+            PatchExecutableFiles.Add(binPath + "Ict.Common.IO.dll");
+            PatchExecutableFiles.Add(binPath + "ICSharpCode.SharpZipLib.dll");
+            PatchExecutableFiles.Add(binPath + "PatchTool.exe");
+            PatchExecutableFiles.Add(binPath + "intl.dll");
+            PatchExecutableFiles.Add(binPath + "Mono.Posix.dll");
+            PatchExecutableFiles.Add(binPath + "Mono.Security.dll");
+            PatchExecutableFiles.Add(binPath + "MonoPosixHelper.dll");
+
+            // copy the PatchTool.exe and required files from the currently installed application to a temp directory
+            foreach (string patchExeFile in PatchExecutableFiles)
+            {
+                if (File.Exists(FInstallPath + patchExeFile.Substring("openpetraorg".Length)))
+                {
+                    System.IO.File.Copy(FInstallPath + patchExeFile.Substring("openpetraorg".Length),
+                        APatchDirectory + Path.DirectorySeparatorChar + Path.GetFileName(patchExeFile), true);
+                }
+            }
 
             // check for the latest version of those files in the new patches
             foreach (string patch in FListOfNewPatches.GetValueList())
@@ -1429,7 +1349,7 @@ namespace Ict.Common.IO
                 if (FRemotePatchesPath.StartsWith("http://"))
                 {
                     remotename = FRemotePatchesPath + "/" + Path.GetFileName(patch);
-                    DownloadFile(remotename, patch);
+                    THTTPUtils.DownloadFile(remotename, patch);
                 }
                 else if (!System.IO.File.Exists(patch) && (FRemotePatchesPath.Length > 0))
                 {

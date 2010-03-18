@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{B8226A6F-E8BE-41B3-8509-0FD128B16574}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -51,11 +51,17 @@
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Common.Printing">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Printing.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common.Verification">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.Interfaces">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.Interfaces.Plugins">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.Plugins.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
@@ -193,6 +199,9 @@
     <Compile Include="BankStatementImport.Designer.cs">
       <DependentUpon>BankStatementImport.cs</DependentUpon>
     </Compile>
+    <Compile Include="BankStatementImport.ManualCode.cs">
+      <DependentUpon>BankStatementImport.cs</DependentUpon>
+    </Compile>
     <Compile Include="FinanceMain.cs" />
     <Compile Include="FinanceMain.Designer.cs">
       <DependentUpon>FinanceMain.cs</DependentUpon>
@@ -206,6 +215,20 @@
     </Compile>
     <Compile Include="GiftBatch.ManualCode.cs">
       <DependentUpon>GiftBatch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GiftFieldAdjustment.cs" />
+    <Compile Include="GiftFieldAdjustment.Designer.cs">
+      <DependentUpon>GiftFieldAdjustment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GiftFieldAdjustment.ManualCode.cs">
+      <DependentUpon>GiftFieldAdjustment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GiftReceiptPrinting.cs" />
+    <Compile Include="GiftReceiptPrinting.Designer.cs">
+      <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GiftReceiptPrinting.ManualCode.cs">
+      <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>
     </Compile>
     <Compile Include="GLAccountHierarchy.cs" />
     <Compile Include="GLAccountHierarchy.Designer.cs">
@@ -308,6 +331,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GiftBatch.resx">
       <DependentUpon>GiftBatch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GiftFieldAdjustment.resx">
+      <DependentUpon>GiftFieldAdjustment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GiftReceiptPrinting.resx">
+      <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GLAccountHierarchy.resx">
       <DependentUpon>GLAccountHierarchy.cs</DependentUpon>

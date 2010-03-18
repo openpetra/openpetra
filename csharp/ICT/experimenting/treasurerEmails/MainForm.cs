@@ -51,6 +51,8 @@ public partial class MainForm : Form
         //
         InitializeComponent();
 
+        this.txtSmtpPassword.TextBox.PasswordChar = '*';
+
         grdAllWorkers.Columns.Add("id", "ID");
         grdAllWorkers.Columns.Add("sendas", "Send As");
         grdAllWorkers.Columns.Add("treasurer", "Treasurer");
@@ -370,7 +372,13 @@ public partial class MainForm : Form
 
     private TSmtpSender CreateConnection()
     {
-        return new TSmtpSender();
+        TAppSettingsManager settings = new TAppSettingsManager();
+
+        return new TSmtpSender(settings.GetValue("SmtpHost"),
+            settings.GetInt16("SmtpPort", 25),
+            true,
+            settings.GetValue("SmtpUser", ""),
+            txtSmtpPassword.Text, "");
     }
 
     void BtnSendOneEmailClick(object sender, EventArgs e)

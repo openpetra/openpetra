@@ -43,7 +43,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     public class AApSupplierTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 175;
+        public static short TableId = 174;
         /// used for generic TTypedDataTable functions
         public static short ColumnPartnerKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -1156,7 +1156,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     public class AApDocumentTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 176;
+        public static short TableId = 175;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -2501,7 +2501,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     public class ACrdtNoteInvoiceLinkTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 177;
+        public static short TableId = 176;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -3150,7 +3150,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     public class AApDocumentDetailTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 178;
+        public static short TableId = 177;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -4147,7 +4147,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     public class AApPaymentTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 179;
+        public static short TableId = 178;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -5086,7 +5086,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     public class AApDocumentPaymentTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 180;
+        public static short TableId = 179;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -5735,7 +5735,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     public class AEpPaymentTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 181;
+        public static short TableId = 180;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -6500,7 +6500,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     public class AEpDocumentPaymentTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 182;
+        public static short TableId = 181;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -7149,7 +7149,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     public class AApAnalAttribTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 183;
+        public static short TableId = 182;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions

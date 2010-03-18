@@ -29,6 +29,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
 
 namespace FixProjectFiles
@@ -183,7 +184,8 @@ public class TFixProjectReferences : TCSProjTools
         }
 
         doc.Save(AFilename + ".new");
-        Ict.Tools.CodeGeneration.TTextFile.UpdateFile(AFilename);
+        TTextFile.Unix2Dos(AFilename + ".new");
+        TTextFile.UpdateFile(AFilename);
     }
 
     /// <summary>

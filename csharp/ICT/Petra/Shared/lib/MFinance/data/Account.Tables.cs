@@ -1102,7 +1102,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnStatementKeyId = 0;
         /// used for generic TTypedDataTable functions
-        public static short ColumnBankKeyId = 1;
+        public static short ColumnBankAccountKeyId = 1;
         /// used for generic TTypedDataTable functions
         public static short ColumnDateId = 2;
         /// used for generic TTypedDataTable functions
@@ -1112,15 +1112,17 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnEndBalanceId = 5;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 6;
+        public static short ColumnCurrencyCodeId = 6;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 7;
+        public static short ColumnDateCreatedId = 7;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 8;
+        public static short ColumnCreatedById = 8;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 9;
+        public static short ColumnDateModifiedId = 9;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 10;
+        public static short ColumnModifiedById = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 11;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1128,16 +1130,17 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AEpStatement", "a_ep_statement",
                 new TTypedColumnInfo[] {
                     new TTypedColumnInfo(0, "StatementKey", "a_statement_key_i", "Bank statement", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "BankKey", "p_bank_key_n", "p_bank_key_n", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(1, "BankAccountKey", "a_bank_account_key_i", "banking details", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(2, "Date", "a_date_d", "Date", OdbcType.Date, -1, true),
                     new TTypedColumnInfo(3, "IdFromBank", "a_id_from_bank_c", "Id from Bank", OdbcType.VarChar, 40, false),
                     new TTypedColumnInfo(4, "Filename", "a_filename_c", "filename of statement", OdbcType.VarChar, 40, false),
                     new TTypedColumnInfo(5, "EndBalance", "a_end_balance_n", "End balance", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(6, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(10, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(6, "CurrencyCode", "a_currency_code_c", "a_currency_code_c", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(7, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(8, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(9, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(10, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(11, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -1165,8 +1168,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
 
         /// auto generated unique identifier for bank statements
         public DataColumn ColumnStatementKey;
-        /// The bank that issued this statement
-        public DataColumn ColumnBankKey;
+        /// this is the bank account that this statement is for; this is necessary because you can have several accounts at the same bank
+        public DataColumn ColumnBankAccountKey;
         /// The date of this statement
         public DataColumn ColumnDate;
         /// This is the ID that the bank uses for this statement; it can be used to find the paper version of the bank statement
@@ -1175,6 +1178,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public DataColumn ColumnFilename;
         /// The end balance of the bank account after the statement
         public DataColumn ColumnEndBalance;
+        /// This defines the currency of the transactions on this statement
+        public DataColumn ColumnCurrencyCode;
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
         /// User ID of who created this record.
@@ -1190,11 +1195,12 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         protected override void InitClass()
         {
             this.Columns.Add(new System.Data.DataColumn("a_statement_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("p_bank_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("a_bank_account_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_id_from_bank_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_filename_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_end_balance_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -1206,11 +1212,12 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public override void InitVars()
         {
             this.ColumnStatementKey = this.Columns["a_statement_key_i"];
-            this.ColumnBankKey = this.Columns["p_bank_key_n"];
+            this.ColumnBankAccountKey = this.Columns["a_bank_account_key_i"];
             this.ColumnDate = this.Columns["a_date_d"];
             this.ColumnIdFromBank = this.Columns["a_id_from_bank_c"];
             this.ColumnFilename = this.Columns["a_filename_c"];
             this.ColumnEndBalance = this.Columns["a_end_balance_n"];
+            this.ColumnCurrencyCode = this.Columns["a_currency_code_c"];
             this.ColumnDateCreated = this.Columns["s_date_created_d"];
             this.ColumnCreatedBy = this.Columns["s_created_by_c"];
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
@@ -1289,15 +1296,15 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         }
 
         /// get the name of the field in the database for this column
-        public static string GetBankKeyDBName()
+        public static string GetBankAccountKeyDBName()
         {
-            return "p_bank_key_n";
+            return "a_bank_account_key_i";
         }
 
         /// get character length for column
-        public static short GetBankKeyLength()
+        public static short GetBankAccountKeyLength()
         {
-            return 10;
+            return -1;
         }
 
         /// get the name of the field in the database for this column
@@ -1346,6 +1353,18 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public static short GetEndBalanceLength()
         {
             return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCurrencyCodeDBName()
+        {
+            return "a_currency_code_c";
+        }
+
+        /// get character length for column
+        public static short GetCurrencyCodeLength()
+        {
+            return 16;
         }
 
         /// get the name of the field in the database for this column
@@ -1449,28 +1468,28 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             }
         }
 
-        /// The bank that issued this statement
-        public Int64 BankKey
+        /// this is the bank account that this statement is for; this is necessary because you can have several accounts at the same bank
+        public Int32 BankAccountKey
         {
             get
             {
                 object ret;
-                ret = this[this.myTable.ColumnBankKey.Ordinal];
+                ret = this[this.myTable.ColumnBankAccountKey.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
                     throw new System.Data.StrongTypingException("Error: DB null", null);
                 }
                 else
                 {
-                    return ((Int64)(ret));
+                    return ((Int32)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnBankKey)
-                            || (((Int64)(this[this.myTable.ColumnBankKey])) != value)))
+                if ((this.IsNull(this.myTable.ColumnBankAccountKey)
+                            || (((Int32)(this[this.myTable.ColumnBankAccountKey])) != value)))
                 {
-                    this[this.myTable.ColumnBankKey] = value;
+                    this[this.myTable.ColumnBankAccountKey] = value;
                 }
             }
         }
@@ -1575,6 +1594,32 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                             || (((Double)(this[this.myTable.ColumnEndBalance])) != value)))
                 {
                     this[this.myTable.ColumnEndBalance] = value;
+                }
+            }
+        }
+
+        /// This defines the currency of the transactions on this statement
+        public String CurrencyCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCurrencyCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCurrencyCode)
+                            || (((String)(this[this.myTable.ColumnCurrencyCode])) != value)))
+                {
+                    this[this.myTable.ColumnCurrencyCode] = value;
                 }
             }
         }
@@ -1713,11 +1758,12 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public virtual void InitValues()
         {
             this.SetNull(this.myTable.ColumnStatementKey);
-            this.SetNull(this.myTable.ColumnBankKey);
+            this.SetNull(this.myTable.ColumnBankAccountKey);
             this[this.myTable.ColumnDate.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnIdFromBank);
             this.SetNull(this.myTable.ColumnFilename);
             this.SetNull(this.myTable.ColumnEndBalance);
+            this.SetNull(this.myTable.ColumnCurrencyCode);
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnCreatedBy);
             this.SetNull(this.myTable.ColumnDateModified);
@@ -1738,15 +1784,15 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         }
 
         /// test for NULL value
-        public bool IsBankKeyNull()
+        public bool IsBankAccountKeyNull()
         {
-            return this.IsNull(this.myTable.ColumnBankKey);
+            return this.IsNull(this.myTable.ColumnBankAccountKey);
         }
 
         /// assign NULL value
-        public void SetBankKeyNull()
+        public void SetBankAccountKeyNull()
         {
-            this.SetNull(this.myTable.ColumnBankKey);
+            this.SetNull(this.myTable.ColumnBankAccountKey);
         }
 
         /// test for NULL value
@@ -1795,6 +1841,18 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public void SetEndBalanceNull()
         {
             this.SetNull(this.myTable.ColumnEndBalance);
+        }
+
+        /// test for NULL value
+        public bool IsCurrencyCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnCurrencyCode);
+        }
+
+        /// assign NULL value
+        public void SetCurrencyCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnCurrencyCode);
         }
 
         /// test for NULL value
@@ -1931,15 +1989,19 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnRestrictedId = 32;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 33;
+        public static short ColumnAccountCodeId = 33;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 34;
+        public static short ColumnKeyMinistryKeyId = 34;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 35;
+        public static short ColumnDateCreatedId = 35;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 36;
+        public static short ColumnCreatedById = 36;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 37;
+        public static short ColumnDateModifiedId = 37;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 38;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 39;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -1952,9 +2014,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(3, "Action", "a_action_c", "a_action_c", OdbcType.VarChar, 40, true),
                     new TTypedColumnInfo(4, "RecentMatch", "a_recent_match_d", "Date", OdbcType.Date, -1, true),
                     new TTypedColumnInfo(5, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(6, "RecipientLedgerNumber", "a_recipient_ledger_number_n", "Recipient Ledger", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(7, "MotivationGroupCode", "a_motivation_group_code_c", "Motivation Group", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(8, "MotivationDetailCode", "a_motivation_detail_code_c", "Motivation Detail", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(6, "RecipientLedgerNumber", "a_recipient_ledger_number_n", "Recipient Ledger", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(7, "MotivationGroupCode", "a_motivation_group_code_c", "Motivation Group", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(8, "MotivationDetailCode", "a_motivation_detail_code_c", "Motivation Detail", OdbcType.VarChar, 16, false),
                     new TTypedColumnInfo(9, "CommentOneType", "a_comment_one_type_c", "Comment Type", OdbcType.VarChar, 24, false),
                     new TTypedColumnInfo(10, "GiftCommentOne", "a_gift_comment_one_c", "Comment One", OdbcType.VarChar, 160, false),
                     new TTypedColumnInfo(11, "ConfidentialGiftFlag", "a_confidential_gift_flag_l", "Confidential Gift", OdbcType.Bit, -1, true),
@@ -1979,11 +2041,13 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(30, "DonorShortName", "p_donor_short_name_c", "p_donor_short_name_c", OdbcType.VarChar, 500, false),
                     new TTypedColumnInfo(31, "RecipientShortName", "p_recipient_short_name_c", "p_recipient_short_name_c", OdbcType.VarChar, 500, false),
                     new TTypedColumnInfo(32, "Restricted", "a_restricted_l", "Gift Restricted", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(33, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(34, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(35, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(36, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(37, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(33, "AccountCode", "a_account_code_c", "Account Code", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(34, "KeyMinistryKey", "a_key_ministry_key_n", "Key Ministry", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(35, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(36, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(37, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(38, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(39, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0
@@ -2077,6 +2141,10 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public DataColumn ColumnRecipientShortName;
         /// Indicates whether or not the gift has restricted access. If it does then the access will be controlled by s_group_gift
         public DataColumn ColumnRestricted;
+        /// This identifies the account the financial transaction must be stored against
+        public DataColumn ColumnAccountCode;
+        /// Key ministry to which this transaction applies (just for fund transfers)
+        public DataColumn ColumnKeyMinistryKey;
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
         /// User ID of who created this record.
@@ -2124,6 +2192,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("p_donor_short_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_recipient_short_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_restricted_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_account_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_key_ministry_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -2167,6 +2237,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.ColumnDonorShortName = this.Columns["p_donor_short_name_c"];
             this.ColumnRecipientShortName = this.Columns["p_recipient_short_name_c"];
             this.ColumnRestricted = this.Columns["a_restricted_l"];
+            this.ColumnAccountCode = this.Columns["a_account_code_c"];
+            this.ColumnKeyMinistryKey = this.Columns["a_key_ministry_key_n"];
             this.ColumnDateCreated = this.Columns["s_date_created_d"];
             this.ColumnCreatedBy = this.Columns["s_created_by_c"];
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
@@ -2626,6 +2698,30 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public static short GetRestrictedLength()
         {
             return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAccountCodeDBName()
+        {
+            return "a_account_code_c";
+        }
+
+        /// get character length for column
+        public static short GetAccountCodeLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetKeyMinistryKeyDBName()
+        {
+            return "a_key_ministry_key_n";
+        }
+
+        /// get character length for column
+        public static short GetKeyMinistryKeyLength()
+        {
+            return 10;
         }
 
         /// get the name of the field in the database for this column
@@ -3561,6 +3657,58 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             }
         }
 
+        /// This identifies the account the financial transaction must be stored against
+        public String AccountCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAccountCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAccountCode)
+                            || (((String)(this[this.myTable.ColumnAccountCode])) != value)))
+                {
+                    this[this.myTable.ColumnAccountCode] = value;
+                }
+            }
+        }
+
+        /// Key ministry to which this transaction applies (just for fund transfers)
+        public Int64 KeyMinistryKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnKeyMinistryKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnKeyMinistryKey)
+                            || (((Int64)(this[this.myTable.ColumnKeyMinistryKey])) != value)))
+                {
+                    this[this.myTable.ColumnKeyMinistryKey] = value;
+                }
+            }
+        }
+
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -3727,6 +3875,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.SetNull(this.myTable.ColumnDonorShortName);
             this.SetNull(this.myTable.ColumnRecipientShortName);
             this[this.myTable.ColumnRestricted.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnAccountCode);
+            this.SetNull(this.myTable.ColumnKeyMinistryKey);
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnCreatedBy);
             this.SetNull(this.myTable.ColumnDateModified);
@@ -4131,6 +4281,30 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         }
 
         /// test for NULL value
+        public bool IsAccountCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnAccountCode);
+        }
+
+        /// assign NULL value
+        public void SetAccountCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnAccountCode);
+        }
+
+        /// test for NULL value
+        public bool IsKeyMinistryKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnKeyMinistryKey);
+        }
+
+        /// assign NULL value
+        public void SetKeyMinistryKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnKeyMinistryKey);
+        }
+
+        /// test for NULL value
         public bool IsDateCreatedNull()
         {
             return this.IsNull(this.myTable.ColumnDateCreated);
@@ -4202,7 +4376,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnOrderId = 1;
         /// used for generic TTypedDataTable functions
-        public static short ColumnStatementBankAccountKeyId = 2;
+        public static short ColumnMatchTextId = 2;
         /// used for generic TTypedDataTable functions
         public static short ColumnAccountNameId = 3;
         /// used for generic TTypedDataTable functions
@@ -4232,17 +4406,15 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnEpMatchKeyId = 16;
         /// used for generic TTypedDataTable functions
-        public static short ColumnMatchingStatusId = 17;
+        public static short ColumnDateCreatedId = 17;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 18;
+        public static short ColumnCreatedById = 18;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 19;
+        public static short ColumnDateModifiedId = 19;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 20;
+        public static short ColumnModifiedById = 20;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 21;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 22;
+        public static short ColumnModificationIdId = 21;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -4251,7 +4423,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                 new TTypedColumnInfo[] {
                     new TTypedColumnInfo(0, "StatementKey", "a_statement_key_i", "Bank statement", OdbcType.Int, -1, true),
                     new TTypedColumnInfo(1, "Order", "a_order_i", "order", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "StatementBankAccountKey", "a_statement_bank_account_key_i", "banking details", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(2, "MatchText", "a_match_text_c", "a_match_text_c", OdbcType.VarChar, 100, false),
                     new TTypedColumnInfo(3, "AccountName", "a_account_name_c", "Account Name", OdbcType.VarChar, 160, false),
                     new TTypedColumnInfo(4, "Title", "a_title_c", "Title", OdbcType.VarChar, 64, false),
                     new TTypedColumnInfo(5, "FirstName", "a_first_name_c", "First Name", OdbcType.VarChar, 64, false),
@@ -4266,12 +4438,11 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(14, "Description", "a_description_c", "description", OdbcType.VarChar, 512, false),
                     new TTypedColumnInfo(15, "DateEffective", "a_date_effective_d", "Date", OdbcType.Date, -1, true),
                     new TTypedColumnInfo(16, "EpMatchKey", "a_ep_match_key_i", "a_ep_match_key_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(17, "MatchingStatus", "a_matching_status_c", "a_matching_status_c", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(17, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(18, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(19, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(20, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(21, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -4301,8 +4472,8 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public DataColumn ColumnStatementKey;
         /// to complete the primary key
         public DataColumn ColumnOrder;
-        /// this is the bank account that this transaction is for; this is necessary because one statement can contain transactions to several accounts at the same bank?
-        public DataColumn ColumnStatementBankAccountKey;
+        /// this is a calculated text that uniquely identifies this transaction so that it can be recognised next month. TODO: should have a link table a_ep_match between a_ep_transaction and a_ep_match_detail
+        public DataColumn ColumnMatchText;
         /// This can be a summary of title, first name, last name etc. of the other party
         public DataColumn ColumnAccountName;
         ///
@@ -4331,8 +4502,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public DataColumn ColumnDateEffective;
         /// set this value to the match (either new match or set automatically)
         public DataColumn ColumnEpMatchKey;
-        /// This defines if the match was automatically set, was created new, or this is not a recurring transaction or has not been processed yet
-        public DataColumn ColumnMatchingStatus;
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
         /// User ID of who created this record.
@@ -4349,7 +4518,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         {
             this.Columns.Add(new System.Data.DataColumn("a_statement_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_order_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_statement_bank_account_key_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_match_text_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_account_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_title_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_first_name_c", typeof(String)));
@@ -4364,7 +4533,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_date_effective_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_ep_match_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_matching_status_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -4377,7 +4545,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         {
             this.ColumnStatementKey = this.Columns["a_statement_key_i"];
             this.ColumnOrder = this.Columns["a_order_i"];
-            this.ColumnStatementBankAccountKey = this.Columns["a_statement_bank_account_key_i"];
+            this.ColumnMatchText = this.Columns["a_match_text_c"];
             this.ColumnAccountName = this.Columns["a_account_name_c"];
             this.ColumnTitle = this.Columns["a_title_c"];
             this.ColumnFirstName = this.Columns["a_first_name_c"];
@@ -4392,7 +4560,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.ColumnDescription = this.Columns["a_description_c"];
             this.ColumnDateEffective = this.Columns["a_date_effective_d"];
             this.ColumnEpMatchKey = this.Columns["a_ep_match_key_i"];
-            this.ColumnMatchingStatus = this.Columns["a_matching_status_c"];
             this.ColumnDateCreated = this.Columns["s_date_created_d"];
             this.ColumnCreatedBy = this.Columns["s_created_by_c"];
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
@@ -4483,15 +4650,15 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         }
 
         /// get the name of the field in the database for this column
-        public static string GetStatementBankAccountKeyDBName()
+        public static string GetMatchTextDBName()
         {
-            return "a_statement_bank_account_key_i";
+            return "a_match_text_c";
         }
 
         /// get character length for column
-        public static short GetStatementBankAccountKeyLength()
+        public static short GetMatchTextLength()
         {
-            return -1;
+            return 100;
         }
 
         /// get the name of the field in the database for this column
@@ -4663,18 +4830,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         }
 
         /// get the name of the field in the database for this column
-        public static string GetMatchingStatusDBName()
-        {
-            return "a_matching_status_c";
-        }
-
-        /// get character length for column
-        public static short GetMatchingStatusLength()
-        {
-            return 40;
-        }
-
-        /// get the name of the field in the database for this column
         public static string GetDateCreatedDBName()
         {
             return "s_date_created_d";
@@ -4801,28 +4956,28 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             }
         }
 
-        /// this is the bank account that this transaction is for; this is necessary because one statement can contain transactions to several accounts at the same bank?
-        public Int32 StatementBankAccountKey
+        /// this is a calculated text that uniquely identifies this transaction so that it can be recognised next month. TODO: should have a link table a_ep_match between a_ep_transaction and a_ep_match_detail
+        public String MatchText
         {
             get
             {
                 object ret;
-                ret = this[this.myTable.ColumnStatementBankAccountKey.Ordinal];
+                ret = this[this.myTable.ColumnMatchText.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                    return String.Empty;
                 }
                 else
                 {
-                    return ((Int32)(ret));
+                    return ((String)(ret));
                 }
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnStatementBankAccountKey)
-                            || (((Int32)(this[this.myTable.ColumnStatementBankAccountKey])) != value)))
+                if ((this.IsNull(this.myTable.ColumnMatchText)
+                            || (((String)(this[this.myTable.ColumnMatchText])) != value)))
                 {
-                    this[this.myTable.ColumnStatementBankAccountKey] = value;
+                    this[this.myTable.ColumnMatchText] = value;
                 }
             }
         }
@@ -5191,32 +5346,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             }
         }
 
-        /// This defines if the match was automatically set, was created new, or this is not a recurring transaction or has not been processed yet
-        public String MatchingStatus
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnMatchingStatus.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnMatchingStatus)
-                            || (((String)(this[this.myTable.ColumnMatchingStatus])) != value)))
-                {
-                    this[this.myTable.ColumnMatchingStatus] = value;
-                }
-            }
-        }
-
         /// The date the record was created.
         public System.DateTime DateCreated
         {
@@ -5352,7 +5481,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         {
             this.SetNull(this.myTable.ColumnStatementKey);
             this.SetNull(this.myTable.ColumnOrder);
-            this.SetNull(this.myTable.ColumnStatementBankAccountKey);
+            this.SetNull(this.myTable.ColumnMatchText);
             this.SetNull(this.myTable.ColumnAccountName);
             this.SetNull(this.myTable.ColumnTitle);
             this.SetNull(this.myTable.ColumnFirstName);
@@ -5367,7 +5496,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.SetNull(this.myTable.ColumnDescription);
             this[this.myTable.ColumnDateEffective.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnEpMatchKey);
-            this.SetNull(this.myTable.ColumnMatchingStatus);
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnCreatedBy);
             this.SetNull(this.myTable.ColumnDateModified);
@@ -5400,15 +5528,15 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         }
 
         /// test for NULL value
-        public bool IsStatementBankAccountKeyNull()
+        public bool IsMatchTextNull()
         {
-            return this.IsNull(this.myTable.ColumnStatementBankAccountKey);
+            return this.IsNull(this.myTable.ColumnMatchText);
         }
 
         /// assign NULL value
-        public void SetStatementBankAccountKeyNull()
+        public void SetMatchTextNull()
         {
-            this.SetNull(this.myTable.ColumnStatementBankAccountKey);
+            this.SetNull(this.myTable.ColumnMatchText);
         }
 
         /// test for NULL value
@@ -5577,18 +5705,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public void SetEpMatchKeyNull()
         {
             this.SetNull(this.myTable.ColumnEpMatchKey);
-        }
-
-        /// test for NULL value
-        public bool IsMatchingStatusNull()
-        {
-            return this.IsNull(this.myTable.ColumnMatchingStatus);
-        }
-
-        /// assign NULL value
-        public void SetMatchingStatusNull()
-        {
-            this.SetNull(this.myTable.ColumnMatchingStatus);
         }
 
         /// test for NULL value
@@ -12691,31 +12807,29 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnBudgetTypeCodeId = 13;
         /// used for generic TTypedDataTable functions
-        public static short ColumnFinStatementGroupId = 14;
+        public static short ColumnPostingStatusId = 14;
         /// used for generic TTypedDataTable functions
-        public static short ColumnPostingStatusId = 15;
+        public static short ColumnSystemAccountFlagId = 15;
         /// used for generic TTypedDataTable functions
-        public static short ColumnSystemAccountFlagId = 16;
+        public static short ColumnBudgetControlFlagId = 16;
         /// used for generic TTypedDataTable functions
-        public static short ColumnBudgetControlFlagId = 17;
+        public static short ColumnValidCcComboId = 17;
         /// used for generic TTypedDataTable functions
-        public static short ColumnValidCcComboId = 18;
+        public static short ColumnForeignCurrencyFlagId = 18;
         /// used for generic TTypedDataTable functions
-        public static short ColumnForeignCurrencyFlagId = 19;
+        public static short ColumnForeignCurrencyCodeId = 19;
         /// used for generic TTypedDataTable functions
-        public static short ColumnForeignCurrencyCodeId = 20;
+        public static short ColumnBankingDetailsKeyId = 20;
         /// used for generic TTypedDataTable functions
-        public static short ColumnBankingDetailsKeyId = 21;
+        public static short ColumnDateCreatedId = 21;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 22;
+        public static short ColumnCreatedById = 22;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 23;
+        public static short ColumnDateModifiedId = 23;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 24;
+        public static short ColumnModifiedById = 24;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 25;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 26;
+        public static short ColumnModificationIdId = 25;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -12736,19 +12850,18 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(11, "ConsolidationAccountFlag", "a_consolidation_account_flag_l", "Consolidation Account", OdbcType.Bit, -1, false),
                     new TTypedColumnInfo(12, "IntercompanyAccountFlag", "a_intercompany_account_flag_l", "Intercompany Account", OdbcType.Bit, -1, false),
                     new TTypedColumnInfo(13, "BudgetTypeCode", "a_budget_type_code_c", "Budget Type Code", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(14, "FinStatementGroup", "a_fin_statement_group_c", "Financial Statement Group", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(15, "PostingStatus", "a_posting_status_l", "Posting Status", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(16, "SystemAccountFlag", "a_system_account_flag_l", "System Account", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(17, "BudgetControlFlag", "a_budget_control_flag_l", "Budget Control", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(18, "ValidCcCombo", "a_valid_cc_combo_c", "Valid Cost Centre Combinations", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(19, "ForeignCurrencyFlag", "a_foreign_currency_flag_l", "a_foreign_currency_flag_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(20, "ForeignCurrencyCode", "a_foreign_currency_code_c", "Currency Code", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(21, "BankingDetailsKey", "p_banking_details_key_i", "Banking Details for this account", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(22, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(23, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(24, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(25, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(26, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(14, "PostingStatus", "a_posting_status_l", "Posting Status", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(15, "SystemAccountFlag", "a_system_account_flag_l", "System Account", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(16, "BudgetControlFlag", "a_budget_control_flag_l", "Budget Control", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(17, "ValidCcCombo", "a_valid_cc_combo_c", "Valid Cost Centre Combinations", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(18, "ForeignCurrencyFlag", "a_foreign_currency_flag_l", "a_foreign_currency_flag_l", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(19, "ForeignCurrencyCode", "a_foreign_currency_code_c", "Currency Code", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(20, "BankingDetailsKey", "p_banking_details_key_i", "Banking Details for this account", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(21, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(22, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(23, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(24, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(25, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1
@@ -12803,8 +12916,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// The type of budget.  See the a_budget_type table.
         public DataColumn ColumnBudgetTypeCode;
         ///
-        public DataColumn ColumnFinStatementGroup;
-        ///
         public DataColumn ColumnPostingStatus;
         ///
         public DataColumn ColumnSystemAccountFlag;
@@ -12846,7 +12957,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_consolidation_account_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_intercompany_account_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_budget_type_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_fin_statement_group_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_posting_status_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_system_account_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_budget_control_flag_l", typeof(Boolean)));
@@ -12878,7 +12988,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.ColumnConsolidationAccountFlag = this.Columns["a_consolidation_account_flag_l"];
             this.ColumnIntercompanyAccountFlag = this.Columns["a_intercompany_account_flag_l"];
             this.ColumnBudgetTypeCode = this.Columns["a_budget_type_code_c"];
-            this.ColumnFinStatementGroup = this.Columns["a_fin_statement_group_c"];
             this.ColumnPostingStatus = this.Columns["a_posting_status_l"];
             this.ColumnSystemAccountFlag = this.Columns["a_system_account_flag_l"];
             this.ColumnBudgetControlFlag = this.Columns["a_budget_control_flag_l"];
@@ -13115,18 +13224,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
 
         /// get character length for column
         public static short GetBudgetTypeCodeLength()
-        {
-            return 16;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFinStatementGroupDBName()
-        {
-            return "a_fin_statement_group_c";
-        }
-
-        /// get character length for column
-        public static short GetFinStatementGroupLength()
         {
             return 16;
         }
@@ -13655,32 +13752,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         }
 
         ///
-        public String FinStatementGroup
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnFinStatementGroup.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnFinStatementGroup)
-                            || (((String)(this[this.myTable.ColumnFinStatementGroup])) != value)))
-                {
-                    this[this.myTable.ColumnFinStatementGroup] = value;
-                }
-            }
-        }
-
-        ///
         public Boolean PostingStatus
         {
             get
@@ -14009,7 +14080,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this[this.myTable.ColumnConsolidationAccountFlag.Ordinal] = false;
             this[this.myTable.ColumnIntercompanyAccountFlag.Ordinal] = false;
             this.SetNull(this.myTable.ColumnBudgetTypeCode);
-            this.SetNull(this.myTable.ColumnFinStatementGroup);
             this[this.myTable.ColumnPostingStatus.Ordinal] = true;
             this[this.myTable.ColumnSystemAccountFlag.Ordinal] = false;
             this[this.myTable.ColumnBudgetControlFlag.Ordinal] = false;
@@ -14190,18 +14260,6 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public void SetBudgetTypeCodeNull()
         {
             this.SetNull(this.myTable.ColumnBudgetTypeCode);
-        }
-
-        /// test for NULL value
-        public bool IsFinStatementGroupNull()
-        {
-            return this.IsNull(this.myTable.ColumnFinStatementGroup);
-        }
-
-        /// assign NULL value
-        public void SetFinStatementGroupNull()
-        {
-            this.SetNull(this.myTable.ColumnFinStatementGroup);
         }
 
         /// test for NULL value
@@ -30424,951 +30482,12 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         }
     }
 
-    /// Defines the different groups of accounts for financial statements and defines the attributes of each group.  Currently unused in Petra release 1.
-    [Serializable()]
-    public class AFinStatementGroupTable : TTypedDataTable
-    {
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 133;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnLedgerNumberId = 0;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnAccountCodeId = 1;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnFinStatementGroupId = 2;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnReportSectionId = 3;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnContraFinStatementGroupId = 4;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnHeadingId = 5;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnIndentById = 6;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnNumberOfBlankLinesId = 7;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnRankingInSectionId = 8;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 9;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 10;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 11;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 12;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 13;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AFinStatementGroup", "a_fin_statement_group",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "AccountCode", "a_account_code_c", "Account Code", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(2, "FinStatementGroup", "a_fin_statement_group_c", "Group", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(3, "ReportSection", "a_report_section_c", "Section", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(4, "ContraFinStatementGroup", "a_contra_fin_statement_group_c", "Contra Group", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(5, "Heading", "a_heading_c", "Heading", OdbcType.VarChar, 60, false),
-                    new TTypedColumnInfo(6, "IndentBy", "a_indent_by_i", "Indent", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "NumberOfBlankLines", "a_number_of_blank_lines_i", "Blank Lines", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(8, "RankingInSection", "a_ranking_in_section_i", "Ranking", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(9, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(12, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(13, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 2, 1, 3
-                }));
-            return true;
-        }
-
-        /// constructor
-        public AFinStatementGroupTable() :
-                base("AFinStatementGroup")
-        {
-        }
-
-        /// constructor
-        public AFinStatementGroupTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public AFinStatementGroupTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
-
-        ///
-        public DataColumn ColumnLedgerNumber;
-        /// This identifies the account the financial transaction must be stored against
-        public DataColumn ColumnAccountCode;
-        ///
-        public DataColumn ColumnFinStatementGroup;
-        ///
-        public DataColumn ColumnReportSection;
-        ///
-        public DataColumn ColumnContraFinStatementGroup;
-        ///
-        public DataColumn ColumnHeading;
-        ///
-        public DataColumn ColumnIndentBy;
-        ///
-        public DataColumn ColumnNumberOfBlankLines;
-        ///
-        public DataColumn ColumnRankingInSection;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
-        /// create the columns
-        protected override void InitClass()
-        {
-            this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_account_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_fin_statement_group_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_report_section_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_contra_fin_statement_group_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_heading_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_indent_by_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_number_of_blank_lines_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_ranking_in_section_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
-        }
-
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
-            this.ColumnAccountCode = this.Columns["a_account_code_c"];
-            this.ColumnFinStatementGroup = this.Columns["a_fin_statement_group_c"];
-            this.ColumnReportSection = this.Columns["a_report_section_c"];
-            this.ColumnContraFinStatementGroup = this.Columns["a_contra_fin_statement_group_c"];
-            this.ColumnHeading = this.Columns["a_heading_c"];
-            this.ColumnIndentBy = this.Columns["a_indent_by_i"];
-            this.ColumnNumberOfBlankLines = this.Columns["a_number_of_blank_lines_i"];
-            this.ColumnRankingInSection = this.Columns["a_ranking_in_section_i"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
-            this.ColumnModificationId = this.Columns["s_modification_id_c"];
-            this.PrimaryKey = new System.Data.DataColumn[4] {
-                    ColumnLedgerNumber,ColumnFinStatementGroup,ColumnAccountCode,ColumnReportSection};
-        }
-
-        /// Access a typed row by index
-        public AFinStatementGroupRow this[int i]
-        {
-            get
-            {
-                return ((AFinStatementGroupRow)(this.Rows[i]));
-            }
-        }
-
-        /// create a new typed row
-        public AFinStatementGroupRow NewRowTyped(bool AWithDefaultValues)
-        {
-            AFinStatementGroupRow ret = ((AFinStatementGroupRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-
-        /// create a new typed row, always with default values
-        public AFinStatementGroupRow NewRowTyped()
-        {
-            return this.NewRowTyped(true);
-        }
-
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new AFinStatementGroupRow(builder);
-        }
-
-        /// get typed set of changes
-        public AFinStatementGroupTable GetChangesTyped()
-        {
-            return ((AFinStatementGroupTable)(base.GetChangesTypedInternal()));
-        }
-
-        /// return the CamelCase name of the table
-        public static string GetTableName()
-        {
-            return "AFinStatementGroup";
-        }
-
-        /// return the name of the table as it is used in the database
-        public static string GetTableDBName()
-        {
-            return "a_fin_statement_group";
-        }
-
-        /// get an odbc parameter for the given column
-        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
-        {
-            return CreateOdbcParameter(TableId, AColumnNr);
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetLedgerNumberDBName()
-        {
-            return "a_ledger_number_i";
-        }
-
-        /// get character length for column
-        public static short GetLedgerNumberLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetAccountCodeDBName()
-        {
-            return "a_account_code_c";
-        }
-
-        /// get character length for column
-        public static short GetAccountCodeLength()
-        {
-            return 16;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFinStatementGroupDBName()
-        {
-            return "a_fin_statement_group_c";
-        }
-
-        /// get character length for column
-        public static short GetFinStatementGroupLength()
-        {
-            return 16;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetReportSectionDBName()
-        {
-            return "a_report_section_c";
-        }
-
-        /// get character length for column
-        public static short GetReportSectionLength()
-        {
-            return 16;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetContraFinStatementGroupDBName()
-        {
-            return "a_contra_fin_statement_group_c";
-        }
-
-        /// get character length for column
-        public static short GetContraFinStatementGroupLength()
-        {
-            return 16;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetHeadingDBName()
-        {
-            return "a_heading_c";
-        }
-
-        /// get character length for column
-        public static short GetHeadingLength()
-        {
-            return 60;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetIndentByDBName()
-        {
-            return "a_indent_by_i";
-        }
-
-        /// get character length for column
-        public static short GetIndentByLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetNumberOfBlankLinesDBName()
-        {
-            return "a_number_of_blank_lines_i";
-        }
-
-        /// get character length for column
-        public static short GetNumberOfBlankLinesLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetRankingInSectionDBName()
-        {
-            return "a_ranking_in_section_i";
-        }
-
-        /// get character length for column
-        public static short GetRankingInSectionLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-
-        /// get character length for column
-        public static short GetDateCreatedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-
-        /// get character length for column
-        public static short GetDateModifiedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
-        }
-
-    }
-
-    /// Defines the different groups of accounts for financial statements and defines the attributes of each group.  Currently unused in Petra release 1.
-    [Serializable()]
-    public class AFinStatementGroupRow : System.Data.DataRow
-    {
-        private AFinStatementGroupTable myTable;
-
-        /// Constructor
-        public AFinStatementGroupRow(System.Data.DataRowBuilder rb) :
-                base(rb)
-        {
-            this.myTable = ((AFinStatementGroupTable)(this.Table));
-        }
-
-        ///
-        public Int32 LedgerNumber
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnLedgerNumber.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnLedgerNumber)
-                            || (((Int32)(this[this.myTable.ColumnLedgerNumber])) != value)))
-                {
-                    this[this.myTable.ColumnLedgerNumber] = value;
-                }
-            }
-        }
-
-        /// This identifies the account the financial transaction must be stored against
-        public String AccountCode
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnAccountCode.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnAccountCode)
-                            || (((String)(this[this.myTable.ColumnAccountCode])) != value)))
-                {
-                    this[this.myTable.ColumnAccountCode] = value;
-                }
-            }
-        }
-
-        ///
-        public String FinStatementGroup
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnFinStatementGroup.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnFinStatementGroup)
-                            || (((String)(this[this.myTable.ColumnFinStatementGroup])) != value)))
-                {
-                    this[this.myTable.ColumnFinStatementGroup] = value;
-                }
-            }
-        }
-
-        ///
-        public String ReportSection
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnReportSection.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnReportSection)
-                            || (((String)(this[this.myTable.ColumnReportSection])) != value)))
-                {
-                    this[this.myTable.ColumnReportSection] = value;
-                }
-            }
-        }
-
-        ///
-        public String ContraFinStatementGroup
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnContraFinStatementGroup.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnContraFinStatementGroup)
-                            || (((String)(this[this.myTable.ColumnContraFinStatementGroup])) != value)))
-                {
-                    this[this.myTable.ColumnContraFinStatementGroup] = value;
-                }
-            }
-        }
-
-        ///
-        public String Heading
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnHeading.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnHeading)
-                            || (((String)(this[this.myTable.ColumnHeading])) != value)))
-                {
-                    this[this.myTable.ColumnHeading] = value;
-                }
-            }
-        }
-
-        ///
-        public Int32 IndentBy
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnIndentBy.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnIndentBy)
-                            || (((Int32)(this[this.myTable.ColumnIndentBy])) != value)))
-                {
-                    this[this.myTable.ColumnIndentBy] = value;
-                }
-            }
-        }
-
-        ///
-        public Int32 NumberOfBlankLines
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnNumberOfBlankLines.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnNumberOfBlankLines)
-                            || (((Int32)(this[this.myTable.ColumnNumberOfBlankLines])) != value)))
-                {
-                    this[this.myTable.ColumnNumberOfBlankLines] = value;
-                }
-            }
-        }
-
-        ///
-        public Int32 RankingInSection
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnRankingInSection.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnRankingInSection)
-                            || (((Int32)(this[this.myTable.ColumnRankingInSection])) != value)))
-                {
-                    this[this.myTable.ColumnRankingInSection] = value;
-                }
-            }
-        }
-
-        /// The date the record was created.
-        public System.DateTime DateCreated
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnDateCreated.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return DateTime.MinValue;
-                }
-                else
-                {
-                    return ((System.DateTime)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
-                {
-                    this[this.myTable.ColumnDateCreated] = value;
-                }
-            }
-        }
-
-        /// User ID of who created this record.
-        public String CreatedBy
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnCreatedBy.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnCreatedBy)
-                            || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
-                {
-                    this[this.myTable.ColumnCreatedBy] = value;
-                }
-            }
-        }
-
-        /// The date the record was modified.
-        public System.DateTime DateModified
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnDateModified.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return DateTime.MinValue;
-                }
-                else
-                {
-                    return ((System.DateTime)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
-                {
-                    this[this.myTable.ColumnDateModified] = value;
-                }
-            }
-        }
-
-        /// User ID of who last modified this record.
-        public String ModifiedBy
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnModifiedBy.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnModifiedBy)
-                            || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
-                {
-                    this[this.myTable.ColumnModifiedBy] = value;
-                }
-            }
-        }
-
-        /// This identifies the current version of the record.
-        public String ModificationId
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnModificationId.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnModificationId)
-                            || (((String)(this[this.myTable.ColumnModificationId])) != value)))
-                {
-                    this[this.myTable.ColumnModificationId] = value;
-                }
-            }
-        }
-
-        /// set default values
-        public virtual void InitValues()
-        {
-            this[this.myTable.ColumnLedgerNumber.Ordinal] = 0;
-            this.SetNull(this.myTable.ColumnAccountCode);
-            this.SetNull(this.myTable.ColumnFinStatementGroup);
-            this.SetNull(this.myTable.ColumnReportSection);
-            this.SetNull(this.myTable.ColumnContraFinStatementGroup);
-            this.SetNull(this.myTable.ColumnHeading);
-            this.SetNull(this.myTable.ColumnIndentBy);
-            this[this.myTable.ColumnNumberOfBlankLines.Ordinal] = 0;
-            this[this.myTable.ColumnRankingInSection.Ordinal] = 0;
-            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
-            this.SetNull(this.myTable.ColumnCreatedBy);
-            this.SetNull(this.myTable.ColumnDateModified);
-            this.SetNull(this.myTable.ColumnModifiedBy);
-            this.SetNull(this.myTable.ColumnModificationId);
-        }
-
-        /// test for NULL value
-        public bool IsLedgerNumberNull()
-        {
-            return this.IsNull(this.myTable.ColumnLedgerNumber);
-        }
-
-        /// assign NULL value
-        public void SetLedgerNumberNull()
-        {
-            this.SetNull(this.myTable.ColumnLedgerNumber);
-        }
-
-        /// test for NULL value
-        public bool IsAccountCodeNull()
-        {
-            return this.IsNull(this.myTable.ColumnAccountCode);
-        }
-
-        /// assign NULL value
-        public void SetAccountCodeNull()
-        {
-            this.SetNull(this.myTable.ColumnAccountCode);
-        }
-
-        /// test for NULL value
-        public bool IsFinStatementGroupNull()
-        {
-            return this.IsNull(this.myTable.ColumnFinStatementGroup);
-        }
-
-        /// assign NULL value
-        public void SetFinStatementGroupNull()
-        {
-            this.SetNull(this.myTable.ColumnFinStatementGroup);
-        }
-
-        /// test for NULL value
-        public bool IsReportSectionNull()
-        {
-            return this.IsNull(this.myTable.ColumnReportSection);
-        }
-
-        /// assign NULL value
-        public void SetReportSectionNull()
-        {
-            this.SetNull(this.myTable.ColumnReportSection);
-        }
-
-        /// test for NULL value
-        public bool IsContraFinStatementGroupNull()
-        {
-            return this.IsNull(this.myTable.ColumnContraFinStatementGroup);
-        }
-
-        /// assign NULL value
-        public void SetContraFinStatementGroupNull()
-        {
-            this.SetNull(this.myTable.ColumnContraFinStatementGroup);
-        }
-
-        /// test for NULL value
-        public bool IsHeadingNull()
-        {
-            return this.IsNull(this.myTable.ColumnHeading);
-        }
-
-        /// assign NULL value
-        public void SetHeadingNull()
-        {
-            this.SetNull(this.myTable.ColumnHeading);
-        }
-
-        /// test for NULL value
-        public bool IsIndentByNull()
-        {
-            return this.IsNull(this.myTable.ColumnIndentBy);
-        }
-
-        /// assign NULL value
-        public void SetIndentByNull()
-        {
-            this.SetNull(this.myTable.ColumnIndentBy);
-        }
-
-        /// test for NULL value
-        public bool IsNumberOfBlankLinesNull()
-        {
-            return this.IsNull(this.myTable.ColumnNumberOfBlankLines);
-        }
-
-        /// assign NULL value
-        public void SetNumberOfBlankLinesNull()
-        {
-            this.SetNull(this.myTable.ColumnNumberOfBlankLines);
-        }
-
-        /// test for NULL value
-        public bool IsRankingInSectionNull()
-        {
-            return this.IsNull(this.myTable.ColumnRankingInSection);
-        }
-
-        /// assign NULL value
-        public void SetRankingInSectionNull()
-        {
-            this.SetNull(this.myTable.ColumnRankingInSection);
-        }
-
-        /// test for NULL value
-        public bool IsDateCreatedNull()
-        {
-            return this.IsNull(this.myTable.ColumnDateCreated);
-        }
-
-        /// assign NULL value
-        public void SetDateCreatedNull()
-        {
-            this.SetNull(this.myTable.ColumnDateCreated);
-        }
-
-        /// test for NULL value
-        public bool IsCreatedByNull()
-        {
-            return this.IsNull(this.myTable.ColumnCreatedBy);
-        }
-
-        /// assign NULL value
-        public void SetCreatedByNull()
-        {
-            this.SetNull(this.myTable.ColumnCreatedBy);
-        }
-
-        /// test for NULL value
-        public bool IsDateModifiedNull()
-        {
-            return this.IsNull(this.myTable.ColumnDateModified);
-        }
-
-        /// assign NULL value
-        public void SetDateModifiedNull()
-        {
-            this.SetNull(this.myTable.ColumnDateModified);
-        }
-
-        /// test for NULL value
-        public bool IsModifiedByNull()
-        {
-            return this.IsNull(this.myTable.ColumnModifiedBy);
-        }
-
-        /// assign NULL value
-        public void SetModifiedByNull()
-        {
-            this.SetNull(this.myTable.ColumnModifiedBy);
-        }
-
-        /// test for NULL value
-        public bool IsModificationIdNull()
-        {
-            return this.IsNull(this.myTable.ColumnModificationId);
-        }
-
-        /// assign NULL value
-        public void SetModificationIdNull()
-        {
-            this.SetNull(this.myTable.ColumnModificationId);
-        }
-    }
-
     /// The form description for user definable forms such as receipts
     [Serializable()]
     public class AFormTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 134;
+        public static short TableId = 133;
         /// used for generic TTypedDataTable functions
         public static short ColumnFormCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -32307,7 +31426,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class AFormElementTypeTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 135;
+        public static short TableId = 134;
         /// used for generic TTypedDataTable functions
         public static short ColumnFormCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -32956,7 +32075,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class AFormElementTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 136;
+        public static short TableId = 135;
         /// used for generic TTypedDataTable functions
         public static short ColumnFormCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -33953,7 +33072,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class AFreeformAnalysisTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 137;
+        public static short TableId = 136;
         /// used for generic TTypedDataTable functions
         public static short ColumnAnalysisTypeCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -34602,7 +33721,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class AGeneralLedgerMasterTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 138;
+        public static short TableId = 137;
         /// used for generic TTypedDataTable functions
         public static short ColumnGlmSequenceId = 0;
         /// used for generic TTypedDataTable functions
@@ -35775,7 +34894,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class AGeneralLedgerMasterPeriodTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 139;
+        public static short TableId = 138;
         /// used for generic TTypedDataTable functions
         public static short ColumnGlmSequenceId = 0;
         /// used for generic TTypedDataTable functions
@@ -36598,7 +35717,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class AIchStewardshipTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 140;
+        public static short TableId = 139;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -37653,7 +36772,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class AMethodOfGivingTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 141;
+        public static short TableId = 140;
         /// used for generic TTypedDataTable functions
         public static short ColumnMethodOfGivingCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -38413,1009 +37532,12 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         }
     }
 
-    /// Stores administrative fees and grants which have been calculated on gifts.
-    [Serializable()]
-    public class AProcessedFeeTable : TTypedDataTable
-    {
-        /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 146;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnLedgerNumberId = 0;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnFeeCodeId = 1;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnCostCentreCodeId = 2;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnPeriodNumberId = 3;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnPeriodicAmountId = 4;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnBatchNumberId = 5;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnGiftTransactionNumberId = 6;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDetailNumberId = 7;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnProcessedDateId = 8;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnTimestampId = 9;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 10;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 11;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 12;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 13;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 14;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AProcessedFee", "a_processed_fee",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "FeeCode", "a_fee_code_c", "Fee Code", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(2, "CostCentreCode", "a_cost_centre_code_c", "Cost Centre", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(3, "PeriodNumber", "a_period_number_i", "Period Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "PeriodicAmount", "a_periodic_amount_n", "Total Amount", OdbcType.Decimal, 24, true),
-                    new TTypedColumnInfo(5, "BatchNumber", "a_batch_number_i", "a_batch_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(6, "GiftTransactionNumber", "a_gift_transaction_number_i", "a_gift_transaction_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(7, "DetailNumber", "a_detail_number_i", "a_detail_number_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(8, "ProcessedDate", "a_processed_date_d", "Processed Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "Timestamp", "s_timestamp_i", "Time", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(10, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(13, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(14, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
-                },
-                new int[] {
-                    0, 5, 6, 7, 1
-                }));
-            return true;
-        }
-
-        /// constructor
-        public AProcessedFeeTable() :
-                base("AProcessedFee")
-        {
-        }
-
-        /// constructor
-        public AProcessedFeeTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public AProcessedFeeTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
-
-        /// This is used as a key field in most of the accounting system files
-        public DataColumn ColumnLedgerNumber;
-        /// the fee which the calculated amounts are stored against.
-        public DataColumn ColumnFeeCode;
-        /// Cost centre code which the fee will be charged against.
-        public DataColumn ColumnCostCentreCode;
-        /// Period number
-        public DataColumn ColumnPeriodNumber;
-        /// Total Amount of the fee for the given period.
-        public DataColumn ColumnPeriodicAmount;
-        /// Number of the gift batch containing this detail.
-        public DataColumn ColumnBatchNumber;
-        /// Identifies a gift transaction within a gift batch.
-        public DataColumn ColumnGiftTransactionNumber;
-        /// Identifies a gift detail within a gift transaction.   When a donor gives a donation to multiple recipients (a split gift), a gift detail record is created for each recipient.
-        public DataColumn ColumnDetailNumber;
-        /// Date ""admin fee calculations"" have been run to fee total has been created as a transaction in the general ledger.
-        public DataColumn ColumnProcessedDate;
-        /// System generated time stamp.
-        public DataColumn ColumnTimestamp;
-        /// The date the record was created.
-        public DataColumn ColumnDateCreated;
-        /// User ID of who created this record.
-        public DataColumn ColumnCreatedBy;
-        /// The date the record was modified.
-        public DataColumn ColumnDateModified;
-        /// User ID of who last modified this record.
-        public DataColumn ColumnModifiedBy;
-        /// This identifies the current version of the record.
-        public DataColumn ColumnModificationId;
-
-        /// create the columns
-        protected override void InitClass()
-        {
-            this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_fee_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_period_number_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_periodic_amount_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("a_batch_number_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_number_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_detail_number_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_processed_date_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_timestamp_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
-        }
-
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
-            this.ColumnFeeCode = this.Columns["a_fee_code_c"];
-            this.ColumnCostCentreCode = this.Columns["a_cost_centre_code_c"];
-            this.ColumnPeriodNumber = this.Columns["a_period_number_i"];
-            this.ColumnPeriodicAmount = this.Columns["a_periodic_amount_n"];
-            this.ColumnBatchNumber = this.Columns["a_batch_number_i"];
-            this.ColumnGiftTransactionNumber = this.Columns["a_gift_transaction_number_i"];
-            this.ColumnDetailNumber = this.Columns["a_detail_number_i"];
-            this.ColumnProcessedDate = this.Columns["a_processed_date_d"];
-            this.ColumnTimestamp = this.Columns["s_timestamp_i"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
-            this.ColumnModificationId = this.Columns["s_modification_id_c"];
-            this.PrimaryKey = new System.Data.DataColumn[5] {
-                    ColumnLedgerNumber,ColumnBatchNumber,ColumnGiftTransactionNumber,ColumnDetailNumber,ColumnFeeCode};
-        }
-
-        /// Access a typed row by index
-        public AProcessedFeeRow this[int i]
-        {
-            get
-            {
-                return ((AProcessedFeeRow)(this.Rows[i]));
-            }
-        }
-
-        /// create a new typed row
-        public AProcessedFeeRow NewRowTyped(bool AWithDefaultValues)
-        {
-            AProcessedFeeRow ret = ((AProcessedFeeRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-
-        /// create a new typed row, always with default values
-        public AProcessedFeeRow NewRowTyped()
-        {
-            return this.NewRowTyped(true);
-        }
-
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new AProcessedFeeRow(builder);
-        }
-
-        /// get typed set of changes
-        public AProcessedFeeTable GetChangesTyped()
-        {
-            return ((AProcessedFeeTable)(base.GetChangesTypedInternal()));
-        }
-
-        /// return the CamelCase name of the table
-        public static string GetTableName()
-        {
-            return "AProcessedFee";
-        }
-
-        /// return the name of the table as it is used in the database
-        public static string GetTableDBName()
-        {
-            return "a_processed_fee";
-        }
-
-        /// get an odbc parameter for the given column
-        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
-        {
-            return CreateOdbcParameter(TableId, AColumnNr);
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetLedgerNumberDBName()
-        {
-            return "a_ledger_number_i";
-        }
-
-        /// get character length for column
-        public static short GetLedgerNumberLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetFeeCodeDBName()
-        {
-            return "a_fee_code_c";
-        }
-
-        /// get character length for column
-        public static short GetFeeCodeLength()
-        {
-            return 16;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetCostCentreCodeDBName()
-        {
-            return "a_cost_centre_code_c";
-        }
-
-        /// get character length for column
-        public static short GetCostCentreCodeLength()
-        {
-            return 24;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetPeriodNumberDBName()
-        {
-            return "a_period_number_i";
-        }
-
-        /// get character length for column
-        public static short GetPeriodNumberLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetPeriodicAmountDBName()
-        {
-            return "a_periodic_amount_n";
-        }
-
-        /// get character length for column
-        public static short GetPeriodicAmountLength()
-        {
-            return 24;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetBatchNumberDBName()
-        {
-            return "a_batch_number_i";
-        }
-
-        /// get character length for column
-        public static short GetBatchNumberLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetGiftTransactionNumberDBName()
-        {
-            return "a_gift_transaction_number_i";
-        }
-
-        /// get character length for column
-        public static short GetGiftTransactionNumberLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDetailNumberDBName()
-        {
-            return "a_detail_number_i";
-        }
-
-        /// get character length for column
-        public static short GetDetailNumberLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetProcessedDateDBName()
-        {
-            return "a_processed_date_d";
-        }
-
-        /// get character length for column
-        public static short GetProcessedDateLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetTimestampDBName()
-        {
-            return "s_timestamp_i";
-        }
-
-        /// get character length for column
-        public static short GetTimestampLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateCreatedDBName()
-        {
-            return "s_date_created_d";
-        }
-
-        /// get character length for column
-        public static short GetDateCreatedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetCreatedByDBName()
-        {
-            return "s_created_by_c";
-        }
-
-        /// get character length for column
-        public static short GetCreatedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetDateModifiedDBName()
-        {
-            return "s_date_modified_d";
-        }
-
-        /// get character length for column
-        public static short GetDateModifiedLength()
-        {
-            return -1;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModifiedByDBName()
-        {
-            return "s_modified_by_c";
-        }
-
-        /// get character length for column
-        public static short GetModifiedByLength()
-        {
-            return 20;
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetModificationIdDBName()
-        {
-            return "s_modification_id_c";
-        }
-
-        /// get character length for column
-        public static short GetModificationIdLength()
-        {
-            return 150;
-        }
-
-    }
-
-    /// Stores administrative fees and grants which have been calculated on gifts.
-    [Serializable()]
-    public class AProcessedFeeRow : System.Data.DataRow
-    {
-        private AProcessedFeeTable myTable;
-
-        /// Constructor
-        public AProcessedFeeRow(System.Data.DataRowBuilder rb) :
-                base(rb)
-        {
-            this.myTable = ((AProcessedFeeTable)(this.Table));
-        }
-
-        /// This is used as a key field in most of the accounting system files
-        public Int32 LedgerNumber
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnLedgerNumber.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnLedgerNumber)
-                            || (((Int32)(this[this.myTable.ColumnLedgerNumber])) != value)))
-                {
-                    this[this.myTable.ColumnLedgerNumber] = value;
-                }
-            }
-        }
-
-        /// the fee which the calculated amounts are stored against.
-        public String FeeCode
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnFeeCode.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnFeeCode)
-                            || (((String)(this[this.myTable.ColumnFeeCode])) != value)))
-                {
-                    this[this.myTable.ColumnFeeCode] = value;
-                }
-            }
-        }
-
-        /// Cost centre code which the fee will be charged against.
-        public String CostCentreCode
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnCostCentreCode.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnCostCentreCode)
-                            || (((String)(this[this.myTable.ColumnCostCentreCode])) != value)))
-                {
-                    this[this.myTable.ColumnCostCentreCode] = value;
-                }
-            }
-        }
-
-        /// Period number
-        public Int32 PeriodNumber
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPeriodNumber.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPeriodNumber)
-                            || (((Int32)(this[this.myTable.ColumnPeriodNumber])) != value)))
-                {
-                    this[this.myTable.ColumnPeriodNumber] = value;
-                }
-            }
-        }
-
-        /// Total Amount of the fee for the given period.
-        public Double PeriodicAmount
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnPeriodicAmount.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Double)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnPeriodicAmount)
-                            || (((Double)(this[this.myTable.ColumnPeriodicAmount])) != value)))
-                {
-                    this[this.myTable.ColumnPeriodicAmount] = value;
-                }
-            }
-        }
-
-        /// Number of the gift batch containing this detail.
-        public Int32 BatchNumber
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnBatchNumber.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnBatchNumber)
-                            || (((Int32)(this[this.myTable.ColumnBatchNumber])) != value)))
-                {
-                    this[this.myTable.ColumnBatchNumber] = value;
-                }
-            }
-        }
-
-        /// Identifies a gift transaction within a gift batch.
-        public Int32 GiftTransactionNumber
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnGiftTransactionNumber.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnGiftTransactionNumber)
-                            || (((Int32)(this[this.myTable.ColumnGiftTransactionNumber])) != value)))
-                {
-                    this[this.myTable.ColumnGiftTransactionNumber] = value;
-                }
-            }
-        }
-
-        /// Identifies a gift detail within a gift transaction.   When a donor gives a donation to multiple recipients (a split gift), a gift detail record is created for each recipient.
-        public Int32 DetailNumber
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnDetailNumber.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnDetailNumber)
-                            || (((Int32)(this[this.myTable.ColumnDetailNumber])) != value)))
-                {
-                    this[this.myTable.ColumnDetailNumber] = value;
-                }
-            }
-        }
-
-        /// Date ""admin fee calculations"" have been run to fee total has been created as a transaction in the general ledger.
-        public System.DateTime ProcessedDate
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnProcessedDate.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return DateTime.MinValue;
-                }
-                else
-                {
-                    return ((System.DateTime)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnProcessedDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnProcessedDate])) != value)))
-                {
-                    this[this.myTable.ColumnProcessedDate] = value;
-                }
-            }
-        }
-
-        /// System generated time stamp.
-        public Int32 Timestamp
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnTimestamp.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    throw new System.Data.StrongTypingException("Error: DB null", null);
-                }
-                else
-                {
-                    return ((Int32)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnTimestamp)
-                            || (((Int32)(this[this.myTable.ColumnTimestamp])) != value)))
-                {
-                    this[this.myTable.ColumnTimestamp] = value;
-                }
-            }
-        }
-
-        /// The date the record was created.
-        public System.DateTime DateCreated
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnDateCreated.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return DateTime.MinValue;
-                }
-                else
-                {
-                    return ((System.DateTime)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
-                {
-                    this[this.myTable.ColumnDateCreated] = value;
-                }
-            }
-        }
-
-        /// User ID of who created this record.
-        public String CreatedBy
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnCreatedBy.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnCreatedBy)
-                            || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
-                {
-                    this[this.myTable.ColumnCreatedBy] = value;
-                }
-            }
-        }
-
-        /// The date the record was modified.
-        public System.DateTime DateModified
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnDateModified.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return DateTime.MinValue;
-                }
-                else
-                {
-                    return ((System.DateTime)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
-                {
-                    this[this.myTable.ColumnDateModified] = value;
-                }
-            }
-        }
-
-        /// User ID of who last modified this record.
-        public String ModifiedBy
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnModifiedBy.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnModifiedBy)
-                            || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
-                {
-                    this[this.myTable.ColumnModifiedBy] = value;
-                }
-            }
-        }
-
-        /// This identifies the current version of the record.
-        public String ModificationId
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnModificationId.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnModificationId)
-                            || (((String)(this[this.myTable.ColumnModificationId])) != value)))
-                {
-                    this[this.myTable.ColumnModificationId] = value;
-                }
-            }
-        }
-
-        /// set default values
-        public virtual void InitValues()
-        {
-            this[this.myTable.ColumnLedgerNumber.Ordinal] = 0;
-            this.SetNull(this.myTable.ColumnFeeCode);
-            this.SetNull(this.myTable.ColumnCostCentreCode);
-            this[this.myTable.ColumnPeriodNumber.Ordinal] = 0;
-            this[this.myTable.ColumnPeriodicAmount.Ordinal] = 0;
-            this.SetNull(this.myTable.ColumnBatchNumber);
-            this.SetNull(this.myTable.ColumnGiftTransactionNumber);
-            this.SetNull(this.myTable.ColumnDetailNumber);
-            this.SetNull(this.myTable.ColumnProcessedDate);
-            this.SetNull(this.myTable.ColumnTimestamp);
-            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
-            this.SetNull(this.myTable.ColumnCreatedBy);
-            this.SetNull(this.myTable.ColumnDateModified);
-            this.SetNull(this.myTable.ColumnModifiedBy);
-            this.SetNull(this.myTable.ColumnModificationId);
-        }
-
-        /// test for NULL value
-        public bool IsLedgerNumberNull()
-        {
-            return this.IsNull(this.myTable.ColumnLedgerNumber);
-        }
-
-        /// assign NULL value
-        public void SetLedgerNumberNull()
-        {
-            this.SetNull(this.myTable.ColumnLedgerNumber);
-        }
-
-        /// test for NULL value
-        public bool IsFeeCodeNull()
-        {
-            return this.IsNull(this.myTable.ColumnFeeCode);
-        }
-
-        /// assign NULL value
-        public void SetFeeCodeNull()
-        {
-            this.SetNull(this.myTable.ColumnFeeCode);
-        }
-
-        /// test for NULL value
-        public bool IsCostCentreCodeNull()
-        {
-            return this.IsNull(this.myTable.ColumnCostCentreCode);
-        }
-
-        /// assign NULL value
-        public void SetCostCentreCodeNull()
-        {
-            this.SetNull(this.myTable.ColumnCostCentreCode);
-        }
-
-        /// test for NULL value
-        public bool IsPeriodNumberNull()
-        {
-            return this.IsNull(this.myTable.ColumnPeriodNumber);
-        }
-
-        /// assign NULL value
-        public void SetPeriodNumberNull()
-        {
-            this.SetNull(this.myTable.ColumnPeriodNumber);
-        }
-
-        /// test for NULL value
-        public bool IsPeriodicAmountNull()
-        {
-            return this.IsNull(this.myTable.ColumnPeriodicAmount);
-        }
-
-        /// assign NULL value
-        public void SetPeriodicAmountNull()
-        {
-            this.SetNull(this.myTable.ColumnPeriodicAmount);
-        }
-
-        /// test for NULL value
-        public bool IsBatchNumberNull()
-        {
-            return this.IsNull(this.myTable.ColumnBatchNumber);
-        }
-
-        /// assign NULL value
-        public void SetBatchNumberNull()
-        {
-            this.SetNull(this.myTable.ColumnBatchNumber);
-        }
-
-        /// test for NULL value
-        public bool IsGiftTransactionNumberNull()
-        {
-            return this.IsNull(this.myTable.ColumnGiftTransactionNumber);
-        }
-
-        /// assign NULL value
-        public void SetGiftTransactionNumberNull()
-        {
-            this.SetNull(this.myTable.ColumnGiftTransactionNumber);
-        }
-
-        /// test for NULL value
-        public bool IsDetailNumberNull()
-        {
-            return this.IsNull(this.myTable.ColumnDetailNumber);
-        }
-
-        /// assign NULL value
-        public void SetDetailNumberNull()
-        {
-            this.SetNull(this.myTable.ColumnDetailNumber);
-        }
-
-        /// test for NULL value
-        public bool IsProcessedDateNull()
-        {
-            return this.IsNull(this.myTable.ColumnProcessedDate);
-        }
-
-        /// assign NULL value
-        public void SetProcessedDateNull()
-        {
-            this.SetNull(this.myTable.ColumnProcessedDate);
-        }
-
-        /// test for NULL value
-        public bool IsTimestampNull()
-        {
-            return this.IsNull(this.myTable.ColumnTimestamp);
-        }
-
-        /// assign NULL value
-        public void SetTimestampNull()
-        {
-            this.SetNull(this.myTable.ColumnTimestamp);
-        }
-
-        /// test for NULL value
-        public bool IsDateCreatedNull()
-        {
-            return this.IsNull(this.myTable.ColumnDateCreated);
-        }
-
-        /// assign NULL value
-        public void SetDateCreatedNull()
-        {
-            this.SetNull(this.myTable.ColumnDateCreated);
-        }
-
-        /// test for NULL value
-        public bool IsCreatedByNull()
-        {
-            return this.IsNull(this.myTable.ColumnCreatedBy);
-        }
-
-        /// assign NULL value
-        public void SetCreatedByNull()
-        {
-            this.SetNull(this.myTable.ColumnCreatedBy);
-        }
-
-        /// test for NULL value
-        public bool IsDateModifiedNull()
-        {
-            return this.IsNull(this.myTable.ColumnDateModified);
-        }
-
-        /// assign NULL value
-        public void SetDateModifiedNull()
-        {
-            this.SetNull(this.myTable.ColumnDateModified);
-        }
-
-        /// test for NULL value
-        public bool IsModifiedByNull()
-        {
-            return this.IsNull(this.myTable.ColumnModifiedBy);
-        }
-
-        /// assign NULL value
-        public void SetModifiedByNull()
-        {
-            this.SetNull(this.myTable.ColumnModifiedBy);
-        }
-
-        /// test for NULL value
-        public bool IsModificationIdNull()
-        {
-            return this.IsNull(this.myTable.ColumnModificationId);
-        }
-
-        /// assign NULL value
-        public void SetModificationIdNull()
-        {
-            this.SetNull(this.myTable.ColumnModificationId);
-        }
-    }
-
     /// Various ways a transaction may originate, depending on the subsystem.
     [Serializable()]
     public class ATransactionTypeTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 147;
+        public static short TableId = 146;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -40412,7 +38534,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class APreviousYearBatchTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 148;
+        public static short TableId = 147;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -41583,7 +39705,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class APreviousYearJournalTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 149;
+        public static short TableId = 148;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -42986,7 +41108,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class APreviousYearTransactionTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 150;
+        public static short TableId = 149;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -44853,7 +42975,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class APrevYearTransAnalAttribTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 151;
+        public static short TableId = 150;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -45734,7 +43856,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class APrevYearCorpExRateTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 152;
+        public static short TableId = 151;
         /// used for generic TTypedDataTable functions
         public static short ColumnFromCurrencyCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -46441,7 +44563,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class AThisYearOldBatchTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 153;
+        public static short TableId = 152;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -47554,7 +45676,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class AThisYearOldJournalTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 154;
+        public static short TableId = 153;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -48957,7 +47079,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class AThisYearOldTransactionTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 155;
+        public static short TableId = 154;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -50882,7 +49004,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class AThisyearoldTransAnalAttribTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 156;
+        public static short TableId = 155;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -51763,7 +49885,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class ARecurringBatchTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 157;
+        public static short TableId = 156;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -53050,7 +51172,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class ARecurringJournalTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 158;
+        public static short TableId = 157;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -54337,7 +52459,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class ARecurringTransactionTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 159;
+        public static short TableId = 158;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -56320,7 +54442,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class ARecurringTransAnalAttribTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 160;
+        public static short TableId = 159;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -57201,7 +55323,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class ABatchTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 167;
+        public static short TableId = 166;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -58314,7 +56436,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class AJournalTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 168;
+        public static short TableId = 167;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -59717,7 +57839,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class ATransactionTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 169;
+        public static short TableId = 168;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -61700,7 +59822,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class ATransAnalAttribTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 170;
+        public static short TableId = 169;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -62581,7 +60703,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class ASuspenseAccountTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 171;
+        public static short TableId = 170;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -63114,7 +61236,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class ASpecialTransTypeTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 172;
+        public static short TableId = 171;
         /// used for generic TTypedDataTable functions
         public static short ColumnSubSystemCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -63821,7 +61943,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class ASystemInterfaceTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 173;
+        public static short TableId = 172;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -64412,7 +62534,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class ACurrencyLanguageTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 174;
+        public static short TableId = 173;
         /// used for generic TTypedDataTable functions
         public static short ColumnCurrencyCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -65293,7 +63415,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
     public class AKeyFocusAreaTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 301;
+        public static short TableId = 300;
         /// used for generic TTypedDataTable functions
         public static short ColumnKeyFocusAreaId = 0;
         /// used for generic TTypedDataTable functions

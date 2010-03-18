@@ -23083,7 +23083,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
     }
 
-    /// Any bank details for a partner can be store in this table
+    /// Any bank details for a partner can be stored in this table
     [Serializable()]
     public class PBankingDetailsTable : TTypedDataTable
     {
@@ -23552,7 +23552,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
 
     }
 
-    /// Any bank details for a partner can be store in this table
+    /// Any bank details for a partner can be stored in this table
     [Serializable()]
     public class PBankingDetailsRow : System.Data.DataRow
     {
@@ -31578,7 +31578,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PDataLabelTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 236;
+        public static short TableId = 235;
         /// used for generic TTypedDataTable functions
         public static short ColumnKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -32865,7 +32865,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PDataLabelUseTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 237;
+        public static short TableId = 236;
         /// used for generic TTypedDataTable functions
         public static short ColumnDataLabelKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -33456,7 +33456,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PDataLabelValuePartnerTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 238;
+        public static short TableId = 237;
         /// used for generic TTypedDataTable functions
         public static short ColumnPartnerKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -34511,7 +34511,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PDataLabelLookupCategoryTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 240;
+        public static short TableId = 239;
         /// used for generic TTypedDataTable functions
         public static short ColumnCategoryCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -35102,7 +35102,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PDataLabelLookupTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 241;
+        public static short TableId = 240;
         /// used for generic TTypedDataTable functions
         public static short ColumnCategoryCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -35751,7 +35751,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PTaxTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 286;
+        public static short TableId = 285;
         /// used for generic TTypedDataTable functions
         public static short ColumnPartnerKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -36516,7 +36516,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PInterestCategoryTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 287;
+        public static short TableId = 286;
         /// used for generic TTypedDataTable functions
         public static short ColumnCategoryId = 0;
         /// used for generic TTypedDataTable functions
@@ -37223,7 +37223,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PInterestTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 288;
+        public static short TableId = 287;
         /// used for generic TTypedDataTable functions
         public static short ColumnInterestId = 0;
         /// used for generic TTypedDataTable functions
@@ -37814,7 +37814,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PPartnerInterestTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 289;
+        public static short TableId = 288;
         /// used for generic TTypedDataTable functions
         public static short ColumnPartnerKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -38637,7 +38637,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PPartnerMergeTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 290;
+        public static short TableId = 289;
         /// used for generic TTypedDataTable functions
         public static short ColumnMergeFromId = 0;
         /// used for generic TTypedDataTable functions
@@ -39286,7 +39286,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PReminderCategoryTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 291;
+        public static short TableId = 290;
         /// used for generic TTypedDataTable functions
         public static short ColumnCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -39993,7 +39993,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PPartnerReminderTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 292;
+        public static short TableId = 291;
         /// used for generic TTypedDataTable functions
         public static short ColumnPartnerKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -41454,7 +41454,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PPartnerFieldOfServiceTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 293;
+        public static short TableId = 292;
         /// used for generic TTypedDataTable functions
         public static short ColumnKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -42509,7 +42509,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PPartnerShortCodeTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 294;
+        public static short TableId = 293;
         /// used for generic TTypedDataTable functions
         public static short ColumnPartnerKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -43216,7 +43216,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PProcessTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 295;
+        public static short TableId = 294;
         /// used for generic TTypedDataTable functions
         public static short ColumnProcessCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -43807,7 +43807,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PStateTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 296;
+        public static short TableId = 295;
         /// used for generic TTypedDataTable functions
         public static short ColumnProcessCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -44514,7 +44514,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PActionTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 297;
+        public static short TableId = 296;
         /// used for generic TTypedDataTable functions
         public static short ColumnProcessCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -45221,7 +45221,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PPartnerStateTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 298;
+        public static short TableId = 297;
         /// used for generic TTypedDataTable functions
         public static short ColumnPartnerKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -46102,7 +46102,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PPartnerActionTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 299;
+        public static short TableId = 298;
         /// used for generic TTypedDataTable functions
         public static short ColumnPartnerKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -47331,7 +47331,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PFirstContactTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 300;
+        public static short TableId = 299;
         /// used for generic TTypedDataTable functions
         public static short ColumnFirstContactCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -47922,7 +47922,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PPartnerSetTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 306;
+        public static short TableId = 305;
         /// used for generic TTypedDataTable functions
         public static short ColumnPartnerSetIdId = 0;
         /// used for generic TTypedDataTable functions
@@ -48513,7 +48513,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PPartnerSetPartnerTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 307;
+        public static short TableId = 306;
         /// used for generic TTypedDataTable functions
         public static short ColumnPartnerSetIdId = 0;
         /// used for generic TTypedDataTable functions
@@ -49104,7 +49104,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PPartnerCommentTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 320;
+        public static short TableId = 319;
         /// used for generic TTypedDataTable functions
         public static short ColumnPartnerKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -49811,7 +49811,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PProposalSubmissionTypeTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 321;
+        public static short TableId = 320;
         /// used for generic TTypedDataTable functions
         public static short ColumnSubmissionTypeCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -50344,7 +50344,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PFoundationTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 322;
+        public static short TableId = 321;
         /// used for generic TTypedDataTable functions
         public static short ColumnPartnerKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -51573,7 +51573,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PFoundationProposalStatusTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 323;
+        public static short TableId = 322;
         /// used for generic TTypedDataTable functions
         public static short ColumnStatusCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -52106,7 +52106,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PFoundationProposalTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 324;
+        public static short TableId = 323;
         /// used for generic TTypedDataTable functions
         public static short ColumnFoundationPartnerKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -53103,7 +53103,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PFoundationProposalDetailTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 325;
+        public static short TableId = 324;
         /// used for generic TTypedDataTable functions
         public static short ColumnFoundationPartnerKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -54042,7 +54042,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PFoundationDeadlineTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 326;
+        public static short TableId = 325;
         /// used for generic TTypedDataTable functions
         public static short ColumnFoundationPartnerKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -54691,7 +54691,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PFileInfoTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 334;
+        public static short TableId = 333;
         /// used for generic TTypedDataTable functions
         public static short ColumnKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -55630,7 +55630,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PPartnerFileTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 335;
+        public static short TableId = 334;
         /// used for generic TTypedDataTable functions
         public static short ColumnFileInfoKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -56163,7 +56163,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PmPersonFileTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 336;
+        public static short TableId = 335;
         /// used for generic TTypedDataTable functions
         public static short ColumnFileInfoKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -56696,7 +56696,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PPartnerContactFileTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 337;
+        public static short TableId = 336;
         /// used for generic TTypedDataTable functions
         public static short ColumnFileInfoKeyId = 0;
         /// used for generic TTypedDataTable functions

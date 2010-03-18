@@ -536,13 +536,13 @@ namespace Ict.Petra.Server.App.Main
                         new String[] { AUserName, "User does not exist in DB", AClientComputerName, AClientIPAddress }));
                 throw;
             }
-            catch (EPasswordWrongException)
+            catch (EPasswordWrongException PasswordWrongException)
             {
                 TLogging.Log(String.Format(AUTHENTICATION_FAILED,
                         new String[] { AUserName, "Password is wrong", AClientComputerName, AClientIPAddress }));
 
                 // for security reasons we don't distinguish between a nonexisting user and a wrong password when informing the Client!
-                throw new EUserNotExistantException("Invalid User ID/Password.");
+                throw new EUserNotExistantException(PasswordWrongException.Message);
             }
             catch (EAccessDeniedException)
             {

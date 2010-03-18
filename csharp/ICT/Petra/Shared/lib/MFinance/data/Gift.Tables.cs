@@ -43,7 +43,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class AMethodOfPaymentTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 142;
+        public static short TableId = 141;
         /// used for generic TTypedDataTable functions
         public static short ColumnMethodOfPaymentCodeId = 0;
         /// used for generic TTypedDataTable functions
@@ -808,7 +808,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class AMotivationGroupTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 143;
+        public static short TableId = 142;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -1573,7 +1573,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class AMotivationDetailTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 144;
+        public static short TableId = 143;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -3440,7 +3440,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class AMotivationDetailFeeTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 145;
+        public static short TableId = 144;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -4084,12 +4084,1009 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
     }
 
+    /// Stores administrative fees and grants which have been calculated on gifts.
+    [Serializable()]
+    public class AProcessedFeeTable : TTypedDataTable
+    {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 145;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLedgerNumberId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFeeCodeId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCostCentreCodeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPeriodNumberId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPeriodicAmountId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBatchNumberId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnGiftTransactionNumberId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDetailNumberId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnProcessedDateId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTimestampId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateCreatedId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCreatedById = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnDateModifiedId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModifiedById = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 14;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AProcessedFee", "a_processed_fee",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(1, "FeeCode", "a_fee_code_c", "Fee Code", OdbcType.VarChar, 16, true),
+                    new TTypedColumnInfo(2, "CostCentreCode", "a_cost_centre_code_c", "Cost Centre", OdbcType.VarChar, 24, true),
+                    new TTypedColumnInfo(3, "PeriodNumber", "a_period_number_i", "Period Number", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(4, "PeriodicAmount", "a_periodic_amount_n", "Total Amount", OdbcType.Decimal, 24, true),
+                    new TTypedColumnInfo(5, "BatchNumber", "a_batch_number_i", "a_batch_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(6, "GiftTransactionNumber", "a_gift_transaction_number_i", "a_gift_transaction_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(7, "DetailNumber", "a_detail_number_i", "a_detail_number_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(8, "ProcessedDate", "a_processed_date_d", "Processed Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(9, "Timestamp", "s_timestamp_i", "Time", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(10, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(11, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(12, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(13, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(14, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                },
+                new int[] {
+                    0, 5, 6, 7, 1
+                }));
+            return true;
+        }
+
+        /// constructor
+        public AProcessedFeeTable() :
+                base("AProcessedFee")
+        {
+        }
+
+        /// constructor
+        public AProcessedFeeTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public AProcessedFeeTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// This is used as a key field in most of the accounting system files
+        public DataColumn ColumnLedgerNumber;
+        /// the fee which the calculated amounts are stored against.
+        public DataColumn ColumnFeeCode;
+        /// Cost centre code which the fee will be charged against.
+        public DataColumn ColumnCostCentreCode;
+        /// Period number
+        public DataColumn ColumnPeriodNumber;
+        /// Total Amount of the fee for the given period.
+        public DataColumn ColumnPeriodicAmount;
+        /// Number of the gift batch containing this detail.
+        public DataColumn ColumnBatchNumber;
+        /// Identifies a gift transaction within a gift batch.
+        public DataColumn ColumnGiftTransactionNumber;
+        /// Identifies a gift detail within a gift transaction.   When a donor gives a donation to multiple recipients (a split gift), a gift detail record is created for each recipient.
+        public DataColumn ColumnDetailNumber;
+        /// Date ""admin fee calculations"" have been run to fee total has been created as a transaction in the general ledger.
+        public DataColumn ColumnProcessedDate;
+        /// System generated time stamp.
+        public DataColumn ColumnTimestamp;
+        /// The date the record was created.
+        public DataColumn ColumnDateCreated;
+        /// User ID of who created this record.
+        public DataColumn ColumnCreatedBy;
+        /// The date the record was modified.
+        public DataColumn ColumnDateModified;
+        /// User ID of who last modified this record.
+        public DataColumn ColumnModifiedBy;
+        /// This identifies the current version of the record.
+        public DataColumn ColumnModificationId;
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_fee_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_period_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_periodic_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_batch_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_detail_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_processed_date_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_timestamp_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
+            this.ColumnFeeCode = this.Columns["a_fee_code_c"];
+            this.ColumnCostCentreCode = this.Columns["a_cost_centre_code_c"];
+            this.ColumnPeriodNumber = this.Columns["a_period_number_i"];
+            this.ColumnPeriodicAmount = this.Columns["a_periodic_amount_n"];
+            this.ColumnBatchNumber = this.Columns["a_batch_number_i"];
+            this.ColumnGiftTransactionNumber = this.Columns["a_gift_transaction_number_i"];
+            this.ColumnDetailNumber = this.Columns["a_detail_number_i"];
+            this.ColumnProcessedDate = this.Columns["a_processed_date_d"];
+            this.ColumnTimestamp = this.Columns["s_timestamp_i"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.PrimaryKey = new System.Data.DataColumn[5] {
+                    ColumnLedgerNumber,ColumnBatchNumber,ColumnGiftTransactionNumber,ColumnDetailNumber,ColumnFeeCode};
+        }
+
+        /// Access a typed row by index
+        public AProcessedFeeRow this[int i]
+        {
+            get
+            {
+                return ((AProcessedFeeRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public AProcessedFeeRow NewRowTyped(bool AWithDefaultValues)
+        {
+            AProcessedFeeRow ret = ((AProcessedFeeRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public AProcessedFeeRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new AProcessedFeeRow(builder);
+        }
+
+        /// get typed set of changes
+        public AProcessedFeeTable GetChangesTyped()
+        {
+            return ((AProcessedFeeTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
+        {
+            return "AProcessedFee";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "a_processed_fee";
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLedgerNumberDBName()
+        {
+            return "a_ledger_number_i";
+        }
+
+        /// get character length for column
+        public static short GetLedgerNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFeeCodeDBName()
+        {
+            return "a_fee_code_c";
+        }
+
+        /// get character length for column
+        public static short GetFeeCodeLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCostCentreCodeDBName()
+        {
+            return "a_cost_centre_code_c";
+        }
+
+        /// get character length for column
+        public static short GetCostCentreCodeLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPeriodNumberDBName()
+        {
+            return "a_period_number_i";
+        }
+
+        /// get character length for column
+        public static short GetPeriodNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPeriodicAmountDBName()
+        {
+            return "a_periodic_amount_n";
+        }
+
+        /// get character length for column
+        public static short GetPeriodicAmountLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetBatchNumberDBName()
+        {
+            return "a_batch_number_i";
+        }
+
+        /// get character length for column
+        public static short GetBatchNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetGiftTransactionNumberDBName()
+        {
+            return "a_gift_transaction_number_i";
+        }
+
+        /// get character length for column
+        public static short GetGiftTransactionNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDetailNumberDBName()
+        {
+            return "a_detail_number_i";
+        }
+
+        /// get character length for column
+        public static short GetDetailNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetProcessedDateDBName()
+        {
+            return "a_processed_date_d";
+        }
+
+        /// get character length for column
+        public static short GetProcessedDateLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetTimestampDBName()
+        {
+            return "s_timestamp_i";
+        }
+
+        /// get character length for column
+        public static short GetTimestampLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateCreatedDBName()
+        {
+            return "s_date_created_d";
+        }
+
+        /// get character length for column
+        public static short GetDateCreatedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCreatedByDBName()
+        {
+            return "s_created_by_c";
+        }
+
+        /// get character length for column
+        public static short GetCreatedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetDateModifiedDBName()
+        {
+            return "s_date_modified_d";
+        }
+
+        /// get character length for column
+        public static short GetDateModifiedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetModifiedByDBName()
+        {
+            return "s_modified_by_c";
+        }
+
+        /// get character length for column
+        public static short GetModifiedByLength()
+        {
+            return 20;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetModificationIdDBName()
+        {
+            return "s_modification_id_c";
+        }
+
+        /// get character length for column
+        public static short GetModificationIdLength()
+        {
+            return 150;
+        }
+
+    }
+
+    /// Stores administrative fees and grants which have been calculated on gifts.
+    [Serializable()]
+    public class AProcessedFeeRow : System.Data.DataRow
+    {
+        private AProcessedFeeTable myTable;
+
+        /// Constructor
+        public AProcessedFeeRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((AProcessedFeeTable)(this.Table));
+        }
+
+        /// This is used as a key field in most of the accounting system files
+        public Int32 LedgerNumber
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLedgerNumber.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLedgerNumber)
+                            || (((Int32)(this[this.myTable.ColumnLedgerNumber])) != value)))
+                {
+                    this[this.myTable.ColumnLedgerNumber] = value;
+                }
+            }
+        }
+
+        /// the fee which the calculated amounts are stored against.
+        public String FeeCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFeeCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFeeCode)
+                            || (((String)(this[this.myTable.ColumnFeeCode])) != value)))
+                {
+                    this[this.myTable.ColumnFeeCode] = value;
+                }
+            }
+        }
+
+        /// Cost centre code which the fee will be charged against.
+        public String CostCentreCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCostCentreCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCostCentreCode)
+                            || (((String)(this[this.myTable.ColumnCostCentreCode])) != value)))
+                {
+                    this[this.myTable.ColumnCostCentreCode] = value;
+                }
+            }
+        }
+
+        /// Period number
+        public Int32 PeriodNumber
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPeriodNumber.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPeriodNumber)
+                            || (((Int32)(this[this.myTable.ColumnPeriodNumber])) != value)))
+                {
+                    this[this.myTable.ColumnPeriodNumber] = value;
+                }
+            }
+        }
+
+        /// Total Amount of the fee for the given period.
+        public Double PeriodicAmount
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPeriodicAmount.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Double)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPeriodicAmount)
+                            || (((Double)(this[this.myTable.ColumnPeriodicAmount])) != value)))
+                {
+                    this[this.myTable.ColumnPeriodicAmount] = value;
+                }
+            }
+        }
+
+        /// Number of the gift batch containing this detail.
+        public Int32 BatchNumber
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnBatchNumber.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnBatchNumber)
+                            || (((Int32)(this[this.myTable.ColumnBatchNumber])) != value)))
+                {
+                    this[this.myTable.ColumnBatchNumber] = value;
+                }
+            }
+        }
+
+        /// Identifies a gift transaction within a gift batch.
+        public Int32 GiftTransactionNumber
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnGiftTransactionNumber.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnGiftTransactionNumber)
+                            || (((Int32)(this[this.myTable.ColumnGiftTransactionNumber])) != value)))
+                {
+                    this[this.myTable.ColumnGiftTransactionNumber] = value;
+                }
+            }
+        }
+
+        /// Identifies a gift detail within a gift transaction.   When a donor gives a donation to multiple recipients (a split gift), a gift detail record is created for each recipient.
+        public Int32 DetailNumber
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDetailNumber.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDetailNumber)
+                            || (((Int32)(this[this.myTable.ColumnDetailNumber])) != value)))
+                {
+                    this[this.myTable.ColumnDetailNumber] = value;
+                }
+            }
+        }
+
+        /// Date ""admin fee calculations"" have been run to fee total has been created as a transaction in the general ledger.
+        public System.DateTime ProcessedDate
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnProcessedDate.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return DateTime.MinValue;
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnProcessedDate)
+                            || (((System.DateTime)(this[this.myTable.ColumnProcessedDate])) != value)))
+                {
+                    this[this.myTable.ColumnProcessedDate] = value;
+                }
+            }
+        }
+
+        /// System generated time stamp.
+        public Int32 Timestamp
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnTimestamp.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnTimestamp)
+                            || (((Int32)(this[this.myTable.ColumnTimestamp])) != value)))
+                {
+                    this[this.myTable.ColumnTimestamp] = value;
+                }
+            }
+        }
+
+        /// The date the record was created.
+        public System.DateTime DateCreated
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateCreated.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return DateTime.MinValue;
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateCreated)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                {
+                    this[this.myTable.ColumnDateCreated] = value;
+                }
+            }
+        }
+
+        /// User ID of who created this record.
+        public String CreatedBy
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCreatedBy.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCreatedBy)
+                            || (((String)(this[this.myTable.ColumnCreatedBy])) != value)))
+                {
+                    this[this.myTable.ColumnCreatedBy] = value;
+                }
+            }
+        }
+
+        /// The date the record was modified.
+        public System.DateTime DateModified
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDateModified.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return DateTime.MinValue;
+                }
+                else
+                {
+                    return ((System.DateTime)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDateModified)
+                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                {
+                    this[this.myTable.ColumnDateModified] = value;
+                }
+            }
+        }
+
+        /// User ID of who last modified this record.
+        public String ModifiedBy
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnModifiedBy.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnModifiedBy)
+                            || (((String)(this[this.myTable.ColumnModifiedBy])) != value)))
+                {
+                    this[this.myTable.ColumnModifiedBy] = value;
+                }
+            }
+        }
+
+        /// This identifies the current version of the record.
+        public String ModificationId
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnModificationId.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnModificationId)
+                            || (((String)(this[this.myTable.ColumnModificationId])) != value)))
+                {
+                    this[this.myTable.ColumnModificationId] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this[this.myTable.ColumnLedgerNumber.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnFeeCode);
+            this.SetNull(this.myTable.ColumnCostCentreCode);
+            this[this.myTable.ColumnPeriodNumber.Ordinal] = 0;
+            this[this.myTable.ColumnPeriodicAmount.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnBatchNumber);
+            this.SetNull(this.myTable.ColumnGiftTransactionNumber);
+            this.SetNull(this.myTable.ColumnDetailNumber);
+            this.SetNull(this.myTable.ColumnProcessedDate);
+            this.SetNull(this.myTable.ColumnTimestamp);
+            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnCreatedBy);
+            this.SetNull(this.myTable.ColumnDateModified);
+            this.SetNull(this.myTable.ColumnModifiedBy);
+            this.SetNull(this.myTable.ColumnModificationId);
+        }
+
+        /// test for NULL value
+        public bool IsLedgerNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// assign NULL value
+        public void SetLedgerNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnLedgerNumber);
+        }
+
+        /// test for NULL value
+        public bool IsFeeCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnFeeCode);
+        }
+
+        /// assign NULL value
+        public void SetFeeCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnFeeCode);
+        }
+
+        /// test for NULL value
+        public bool IsCostCentreCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnCostCentreCode);
+        }
+
+        /// assign NULL value
+        public void SetCostCentreCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnCostCentreCode);
+        }
+
+        /// test for NULL value
+        public bool IsPeriodNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnPeriodNumber);
+        }
+
+        /// assign NULL value
+        public void SetPeriodNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnPeriodNumber);
+        }
+
+        /// test for NULL value
+        public bool IsPeriodicAmountNull()
+        {
+            return this.IsNull(this.myTable.ColumnPeriodicAmount);
+        }
+
+        /// assign NULL value
+        public void SetPeriodicAmountNull()
+        {
+            this.SetNull(this.myTable.ColumnPeriodicAmount);
+        }
+
+        /// test for NULL value
+        public bool IsBatchNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnBatchNumber);
+        }
+
+        /// assign NULL value
+        public void SetBatchNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnBatchNumber);
+        }
+
+        /// test for NULL value
+        public bool IsGiftTransactionNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnGiftTransactionNumber);
+        }
+
+        /// assign NULL value
+        public void SetGiftTransactionNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnGiftTransactionNumber);
+        }
+
+        /// test for NULL value
+        public bool IsDetailNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnDetailNumber);
+        }
+
+        /// assign NULL value
+        public void SetDetailNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnDetailNumber);
+        }
+
+        /// test for NULL value
+        public bool IsProcessedDateNull()
+        {
+            return this.IsNull(this.myTable.ColumnProcessedDate);
+        }
+
+        /// assign NULL value
+        public void SetProcessedDateNull()
+        {
+            this.SetNull(this.myTable.ColumnProcessedDate);
+        }
+
+        /// test for NULL value
+        public bool IsTimestampNull()
+        {
+            return this.IsNull(this.myTable.ColumnTimestamp);
+        }
+
+        /// assign NULL value
+        public void SetTimestampNull()
+        {
+            this.SetNull(this.myTable.ColumnTimestamp);
+        }
+
+        /// test for NULL value
+        public bool IsDateCreatedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateCreated);
+        }
+
+        /// assign NULL value
+        public void SetDateCreatedNull()
+        {
+            this.SetNull(this.myTable.ColumnDateCreated);
+        }
+
+        /// test for NULL value
+        public bool IsCreatedByNull()
+        {
+            return this.IsNull(this.myTable.ColumnCreatedBy);
+        }
+
+        /// assign NULL value
+        public void SetCreatedByNull()
+        {
+            this.SetNull(this.myTable.ColumnCreatedBy);
+        }
+
+        /// test for NULL value
+        public bool IsDateModifiedNull()
+        {
+            return this.IsNull(this.myTable.ColumnDateModified);
+        }
+
+        /// assign NULL value
+        public void SetDateModifiedNull()
+        {
+            this.SetNull(this.myTable.ColumnDateModified);
+        }
+
+        /// test for NULL value
+        public bool IsModifiedByNull()
+        {
+            return this.IsNull(this.myTable.ColumnModifiedBy);
+        }
+
+        /// assign NULL value
+        public void SetModifiedByNull()
+        {
+            this.SetNull(this.myTable.ColumnModifiedBy);
+        }
+
+        /// test for NULL value
+        public bool IsModificationIdNull()
+        {
+            return this.IsNull(this.myTable.ColumnModificationId);
+        }
+
+        /// assign NULL value
+        public void SetModificationIdNull()
+        {
+            this.SetNull(this.myTable.ColumnModificationId);
+        }
+    }
+
     /// Templates of gift batches which can be copied into the gift system.
     [Serializable()]
     public class ARecurringGiftBatchTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 161;
+        public static short TableId = 160;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -5144,7 +6141,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class ARecurringGiftTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 162;
+        public static short TableId = 161;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -6373,7 +7370,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class ARecurringGiftDetailTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 163;
+        public static short TableId = 162;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -8008,7 +9005,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class AGiftBatchTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 164;
+        public static short TableId = 163;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -9411,7 +10408,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class AGiftTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 165;
+        public static short TableId = 164;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions
@@ -10930,7 +11927,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class AGiftDetailTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 166;
+        public static short TableId = 165;
         /// used for generic TTypedDataTable functions
         public static short ColumnLedgerNumberId = 0;
         /// used for generic TTypedDataTable functions

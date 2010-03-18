@@ -301,7 +301,7 @@ namespace Ict.Petra.Client.App.Core
                             {
                                 try
                                 {
-                                    // $IFDEF DEBUGMODE TLogging.Log('KeepAliveThread: Keeping Object ' + ObjectEnum.Value.ToString + ' alive', [ToLogFile]); $ENDIF
+                                    // TLogging.Log("KeepAliveThread: Keeping Object " + ObjectEnum.Key.ToString() + " alive", TLoggingType.ToLogfile);
 
                                     /*
                                      * The following call is the key to the whole concept of keeping
@@ -311,12 +311,14 @@ namespace Ict.Petra.Client.App.Core
                                      */
                                     ((MarshalByRefObject)ObjectEnum.Value).GetLifetimeService();
 
-                                    // $IFDEF DEBUGMODE TLogging.Log('KeepAliveThread: Kept Object ' + ObjectEnum.Value.ToString + ' alive', [ToLogFile]); $ENDIF
+                                    // TLogging.Log("KeepAliveThread: Kept Object " + ObjectEnum.Value.ToString() + " alive", TLoggingType.ToLogfile);
                                 }
                                 catch (Exception Exp)
                                 {
 #if DEBUGMODE
-                                    TLogging.Log("KeepAliveThread: Could not contact PetraServer!\r\n" + Exp.ToString(), TLoggingType.ToLogfile);
+                                    TLogging.Log(
+                                        "KeepAliveThread: " + ObjectEnum.Key.ToString() + " Could not contact PetraServer!\r\n" + Exp.ToString(),
+                                        TLoggingType.ToLogfile);
 #endif
                                 }
                             }

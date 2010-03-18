@@ -50,6 +50,8 @@ class Program
                 Environment.Exit(-1);
             }
 
+            new TLogging("debug.log");
+
             TDataBase db = new TDataBase();
 
             TDBType dbtype = TDBType.ProgressODBC;
@@ -67,12 +69,13 @@ class Program
             db.EstablishDBConnection(dbtype,
                 settings.GetOptValue("Server.ODBC_DSN"),
                 "",
+                "",
                 settings.GetOptValue("username"),
                 settings.GetOptValue("password"),
                 "");
             DBAccess.GDBAccessObj = db;
 
-            //db.DebugLevel = 10;
+            db.DebugLevel = 10;
 
             string sqlText = "";
 

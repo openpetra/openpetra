@@ -29,6 +29,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
 
 namespace FixProjectFiles

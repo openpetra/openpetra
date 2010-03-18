@@ -606,8 +606,7 @@ namespace Ict.Petra.Client.CommonForms
             if (FDetailEditMode)
             {
                 MessageBox.Show(
-                    Catalog.GetString("You need to finish editing by choosing the 'Done' button") + Environment.NewLine +
-                    Catalog.GetString("before you can close the window!"),
+                    Catalog.GetString("You need to finish editing by choosing the 'Done' button\nbefore you can close the window!"),
                     Catalog.GetString("Need to Finish Editing!"));
                 ReturnValue = true;
             }

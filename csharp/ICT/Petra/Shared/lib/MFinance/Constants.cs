@@ -83,6 +83,21 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>Bank statements</summary>
         public const String BANK_STMT_STATUS_MATCHED = "MATCHED";
 
+        /// <summary>Bank statements</summary>
+        public const String BANK_STMT_STATUS_MATCHED_GIFT = "MATCHED-GIFT";
+
+        /// <summary>Bank statements</summary>
+        public const String BANK_STMT_STATUS_MATCHED_GL = "MATCHED-GL";
+
+        /// <summary>Bank statements</summary>
+        public const String BANK_STMT_STATUS_MATCHED_AP = "MATCHED-AP";
+
+        /// <summary>Bank statements</summary>
+        public const String BANK_STMT_STATUS_NO_MATCHING = "DONT-MATCH";
+
+        /// <summary>Bank statements</summary>
+        public const String BANK_STMT_STATUS_UNMATCHED = "UNMATCHED";
+
         /// <summary>Sub Systems, General Ledger</summary>
         public const String SUB_SYSTEM_GL = "GL";
 

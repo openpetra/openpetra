@@ -25,6 +25,7 @@ using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance;
 using Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance;
+using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport;
 using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.UIConnectors;
@@ -32,13 +33,16 @@ using Ict.Petra.Shared.Interfaces.MSysMan.Application.ServerLookups;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.SystemDefaults;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults;
+using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager;
 using Ict.Petra.Server.MSysMan.Instantiator.Application;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance;
 using Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance;
+using Ict.Petra.Server.MSysMan.Instantiator.ImportExport;
 using Ict.Petra.Server.MSysMan.Instantiator.PrintManagement;
 using Ict.Petra.Server.MSysMan.Instantiator.Security;
 using Ict.Petra.Server.MSysMan.Instantiator.Application.UIConnectors;
@@ -46,13 +50,16 @@ using Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults;
+using Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance.UIConnectors;
+using Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.PrintManagement.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Security.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager;
 using Ict.Petra.Server.MSysMan.Application;
 using Ict.Petra.Server.MSysMan.Maintenance;
 //using Ict.Petra.Server.MSysMan.TableMaintenance;
+using Ict.Petra.Server.MSysMan.ImportExport;
 //using Ict.Petra.Server.MSysMan.PrintManagement;
 using Ict.Petra.Server.MSysMan.Security;
 //using Ict.Petra.Server.MSysMan.Application.UIConnectors;
@@ -60,7 +67,9 @@ using Ict.Petra.Server.MSysMan.Application.ServerLookups;
 //using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults;
 //using Ict.Petra.Server.MSysMan.Maintenance.UIConnectors;
 //using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults;
+using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
 using Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors;
+using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 //using Ict.Petra.Server.MSysMan.PrintManagement.UIConnectors;
 //using Ict.Petra.Server.MSysMan.Security.UIConnectors;
 //using Ict.Petra.Server.MSysMan.Security.UserManager;
@@ -167,6 +176,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
         private TApplicationNamespace FApplicationSubNamespace;
         private TMaintenanceNamespace FMaintenanceSubNamespace;
         private TTableMaintenanceNamespace FTableMaintenanceSubNamespace;
+        private TImportExportNamespace FImportExportSubNamespace;
         private TPrintManagementNamespace FPrintManagementSubNamespace;
         private TSecurityNamespace FSecuritySubNamespace;
 
@@ -323,6 +333,37 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
 
 
                 return FTableMaintenanceSubNamespace;
+            }
+
+        }
+
+
+        /// <summary>The 'ImportExport' subnamespace contains further subnamespaces.</summary>
+        public IImportExportNamespace ImportExport
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'MSysMan.ImportExport' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'MSysMan.ImportExport' sub-namespace
+                //
+
+                // accessing TImportExportNamespace the first time? > instantiate the object
+                if (FImportExportSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TImportExportNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.MSysMan.Instantiator.ImportExport') should be automatically contructable.
+                    FImportExportSubNamespace = new TImportExportNamespace();
+                }
+
+
+                return FImportExportSubNamespace;
             }
 
         }
@@ -720,6 +761,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance
         private TMaintenanceSystemDefaultsNamespace FMaintenanceSystemDefaultsSubNamespace;
         private TMaintenanceUIConnectorsNamespace FMaintenanceUIConnectorsSubNamespace;
         private TMaintenanceUserDefaultsNamespace FMaintenanceUserDefaultsSubNamespace;
+        private TMaintenanceWebConnectorsNamespace FMaintenanceWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TMaintenanceNamespace()
@@ -874,6 +916,37 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance
 
 
                 return (IMaintenanceUserDefaultsNamespace)FMaintenanceUserDefaultsSubNamespace;
+            }
+
+        }
+
+
+        /// <summary>The 'MaintenanceWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IMaintenanceWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'Maintenance.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'Maintenance.WebConnectors' sub-namespace
+                //
+
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FMaintenanceWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.Maintenance.Instantiator.WebConnectors') should be automatically contructable.
+                    FMaintenanceWebConnectorsSubNamespace = new TMaintenanceWebConnectorsNamespace();
+                }
+
+
+                return (IMaintenanceWebConnectorsNamespace)FMaintenanceWebConnectorsSubNamespace;
             }
 
         }
@@ -1175,6 +1248,91 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults
 }
 
 
+namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
+{
+
+    /// <summary>auto generated class </summary>
+    public class TMaintenanceWebConnectorsNamespace : MarshalByRefObject, IMaintenanceWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TMaintenanceWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TMaintenanceWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TMaintenanceWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+
+        /// generated method from connector
+        public bool SetUserPassword(string AUsername,
+                                    string APassword)
+        {
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SetUserPassword(AUsername, APassword);
+        }
+
+    }
+}
+
+
 namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance
 {
 
@@ -1394,6 +1552,207 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance.UIConnectors
 
 #endif
             return ReturnValue;
+        }
+
+    }
+}
+
+
+namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport
+{
+
+    /// <summary>auto generated class </summary>
+    public class TImportExportNamespace : MarshalByRefObject, IImportExportNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+        private TImportExportWebConnectorsNamespace FImportExportWebConnectorsSubNamespace;
+
+        /// <summary>Constructor</summary>
+        public TImportExportNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TImportExportNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TImportExportNamespace object exists until this AppDomain is unloaded!
+        }
+
+
+        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>The 'ImportExportWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IImportExportWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'ImportExport.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'ImportExport.WebConnectors' sub-namespace
+                //
+
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FImportExportWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.ImportExport.Instantiator.WebConnectors') should be automatically contructable.
+                    FImportExportWebConnectorsSubNamespace = new TImportExportWebConnectorsNamespace();
+                }
+
+
+                return (IImportExportWebConnectorsNamespace)FImportExportWebConnectorsSubNamespace;
+            }
+
+        }
+
+
+    }
+}
+
+
+namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors
+{
+
+    /// <summary>auto generated class </summary>
+    public class TImportExportWebConnectorsNamespace : MarshalByRefObject, IImportExportWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TImportExportWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TImportExportWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TImportExportWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+
+        /// generated method from connector
+        public string ExportAllTables()
+        {
+            return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ExportAllTables();
+        }
+
+        /// generated method from connector
+        public bool ResetDatabase(string ANewDatabaseData)
+        {
+            return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ResetDatabase(ANewDatabaseData);
         }
 
     }

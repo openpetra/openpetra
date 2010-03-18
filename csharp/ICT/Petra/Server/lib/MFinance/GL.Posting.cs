@@ -255,10 +255,12 @@ namespace Ict.Petra.Server.MFinance.GL
                         TResultSeverity.Resv_Critical));
             }
 
-            Int32 DateEffectivePeriodNumber;
+            Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            if (!TFinancialYear.IsValidPeriod(Batch.LedgerNumber, Batch.DateEffective, out DateEffectivePeriodNumber, Transaction))
+            if (!TFinancialYear.IsValidPostingPeriod(Batch.LedgerNumber, Batch.DateEffective, out DateEffectivePeriodNumber,
+                    out DateEffectiveYearNumber,
+                    Transaction))
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),

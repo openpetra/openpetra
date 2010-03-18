@@ -100,6 +100,7 @@ qx.Class.define("openpetraorg.soap.RemoteImpl", { extend : qx.ui.table.model.Rem
                 }
                 else {
                     if (this.__mapper != null) {
+                        var i;
                         for (i=0;i<r.length;++i) {
                             this.__mapper(r[i]);
                         }

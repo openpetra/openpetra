@@ -1,0 +1,7 @@
+"BAD-ADDR","The mailing was returned due to partner no longer being at that address",?,?,?,?,?
+"COMPLETE","The subscription has ended",?,?,?,?,?
+"DIED","The Partner has died",?,?,?,?,?
+"DISCONT","Publication no longer produced",?,?,?,?,?
+"OFFICE","The Office has discontinued the subscription",?,?,?,?,?
+"OTHER","Unknown",?,?,?,?,?
+"REQUEST","Partner requested to discontinue subscription.",?,?,?,?,?

@@ -615,7 +615,7 @@ namespace Ict.Petra.Client.MFinance.Gui
                         mniPetraConferenceModule,
                         mniPetraFinDevModule,
                         mniPetraSysManModule});
-            this.mniPetraModules.Text = "&Petra";
+            this.mniPetraModules.Text = "&OpenPetra";
             //
             // mniHelpPetraHelp
             //

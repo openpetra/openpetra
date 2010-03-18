@@ -11,57 +11,53 @@ VersionInfoCompany=OM International
 VersionInfoDescription=Administration Software for Charities
 VersionInfoCopyright=2009 OM International
 OutputBaseFilename=OpenPetraRemoteSetup-{#RELEASEVERSION}
+PrivilegesRequired=admin
 
 [Languages]
 Name: en; MessagesFile: compiler:Default.isl,..\language\lang-en.isl
 Name: de; MessagesFile: compiler:Languages\German.isl,..\language\lang-de.isl
 
 [Dirs]
-Name: {app}/bin30
-Name: {app}/bin30/locale/de/LC_MESSAGES
-Name: {app}/manuals30
-Name: {app}/reports30
-Name: {app}/resources30
+Name: {app}/bin30; permissions: users-full
+Name: {app}/bin30/locale/de/LC_MESSAGES; permissions: users-full
+Name: {app}/patches30; permissions: users-full
+Name: {app}/manuals30; permissions: users-full
+Name: {app}/resources30; permissions: users-full
+Name: {app}/etc30; permissions: users-full
 Name: {userappdata}/OpenPetra.org/tmp30
 Name: {userappdata}/OpenPetra.org/reports30
 
 [Files]
-Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.Extensions.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\DevAge\DevAge.Core.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\DevAge\DevAge.Windows.Forms.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\SQLite\System.Data.SQLite.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\Mono\intl.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\Mono\Mono.Posix.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\Mono\Mono.Security.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\Mono\MonoPosixHelper.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\pango-sharp.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\atk-sharp.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\gdk-sharp.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\glib-sharp.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\gtk-sharp.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\iconv.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\libxml2.dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Common*dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Petra.Client*dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_Client\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: {app}/bin30
+Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.Extensions.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\DevAge\DevAge.Core.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\DevAge\DevAge.Windows.Forms.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\SQLite\System.Data.SQLite.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\Mono\intl.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\Mono\Mono.Posix.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\Mono\Mono.Security.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\Mono\MonoPosixHelper.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Common*dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Petra.Client*dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_Client\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ICT\Petra\Definitions\UINavigation.yml; DestDir: {app}/bin30
 Source: ..\i18n\*.mo; DestDir: {app}/bin30; Flags: recursesubdirs createallsubdirs
-Source: ..\..\..\XmlReports\reports.dtd; DestDir: {app}/reports30
-Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30
-Source: PetraClientRemote.config; DestDir: {app}; DestName: PetraClient-Remote-3.0.config
+Source: PetraClientRemote.config; DestDir: {app}/etc30; DestName: PetraClient-Remote.config
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
 Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
 Source: ..\..\..\resources\*.png; DestDir: {app}/resources30
 Source: ..\..\..\LICENSE; DestDir: {app}
+Source: version.txt; DestDir: {app}/bin30
+Source: ..\..\..\csharp\ICT\Testing\secretkey.txt; DestDir: {app}/etc30; DestName: secretkey.dat
+
 [Icons]
-Name: {group}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-Remote-3.0.config"" -AutoLogin:demo"
+Name: {group}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClient-Remote.config"" -AutoLogin:demo"
 Name: {group}\{cm:cmIconReleaseNotesLabel}; Filename: {app}\manuals30\{cm:cmReleaseNotesFile}; WorkingDir: {app}/manuals30; Comment: {cm:cmIconReleaseNotesComment}
-Name: {commondesktop}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: Start OpenPetra.org; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-Remote-3.0.config"" -AutoLogin:demo"; Tasks: iconDesktop
+Name: {commondesktop}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: Start OpenPetra.org; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClient-Remote.config"" -AutoLogin:demo"; Tasks: iconDesktop
 
 [Tasks]
 Name: iconDesktop; Description: {cm:cmIconTask}
@@ -82,13 +78,13 @@ var
 
 // This page will ask the user for the Server and Port to find Petra listening on.
 function CreatePage_PetraServerConnection(const afterId: Integer; AStrServer: String; ANETPort: Integer): TWizardPage;
-var 
+var
   currentY: integer;
   lblHeader, lblHostName, lblNET: TNewStaticText;
 begin
-  Result := CreateCustomPage(afterId, 
+  Result := CreateCustomPage(afterId,
     ExpandConstant('{cm:cmPetraServerConnectionTitle}'), ExpandConstant('{cm:cmPetraServerConnectionSubTitle}'));
-  
+
   lblHeader := TNewStaticText.Create(Result);
   with lblHeader do begin
     AutoSize := False;
@@ -98,9 +94,9 @@ begin
     Parent := Result.Surface;
   end;
   WizardForm.AdjustLabelHeight(lblHeader);
-  
+
   currentY := lblHeader.Top + lblHeader.Height + ScaleY(8);
-  
+
   lblHostName := TNewStaticText.Create(Result);
   lblHostName.Width := ScaleX(10);
   lblHostName.Top := currentY;
@@ -153,7 +149,7 @@ begin
     result :=  IsDotNetInstalled();
   end
   else if (CurPageID = PetraServerConnectionPage.ID) then
-  begin  
+  begin
     strServer := ctrlPetraServerConnectionHostName.Text;
     NetPort := StrToInt(ctrlPetraServerConnectionNET.Text);
     result := (Length(strServer) > 0) and (NETPort > 0);
@@ -170,10 +166,12 @@ var
 begin
   if CurStep=ssPostInstall then
   begin
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'Petra.PathTemp" value="TOREPLACE"', 'Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', 'Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'PETRAHOST', strServer, true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-Remote-3.0.config'), 'PETRAPORT', IntToStr(NetPort), true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.PathTemp" value="TOREPLACE"', ExpandConstant('Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.Path.Patches" value="TOREPLACE"', ExpandConstant('Petra.Path.Patches" value="{app}/patches30"'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.Path.RemotePatches" value="TOREPLACE"', 'Petra.Path.RemotePatches" value="http://www.example.org/OpenPetraPatches/"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', ExpandConstant('Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'PETRAHOST', strServer, true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'PETRAPORT', IntToStr(NetPort), true);
   end;
 
   // allow the .net remoting communication between client and server

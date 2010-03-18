@@ -423,6 +423,59 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.SetControlProperty(ctrl.controlName, "FixedRows", "0");
         }
     }
+
+    public class PrintPreviewGenerator : TControlGenerator
+    {
+        public PrintPreviewGenerator()
+            : base("ppv", typeof(PrintPreviewControl))
+        {
+            FGenerateLabel = false;
+        }
+    }
+
+    /// this will generate the printpreview with a toolbar for navigating through pages and printing all or specific pages
+    public class PrintPreviewWithToolbarGenerator : GroupBoxGenerator
+    {
+        public PrintPreviewWithToolbarGenerator()
+            : base("pre")
+        {
+        }
+
+        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+        }
+
+        public override StringCollection FindContainedControls(IFormWriter writer, XmlNode curNode)
+        {
+            // add the toolbar and the print preview control
+            TControlDef ctrl = writer.CodeStorage.FindOrCreateControl(curNode.Name, null);
+
+            TControlDef toolbar = writer.CodeStorage.FindOrCreateControl("tbr" + ctrl.controlName.Substring(
+                    ctrl.controlTypePrefix.Length), ctrl.controlName);
+            TControlDef ttxCurrentPage = writer.CodeStorage.FindOrCreateControl("ttxCurrentPage", toolbar.controlName);
+
+            ttxCurrentPage.SetAttribute("OnChange", "CurrentPageTextChanged");
+            TControlDef tblTotalNumberPages = writer.CodeStorage.FindOrCreateControl("tblTotalNumberPages", toolbar.controlName);
+            TControlDef tbbPrevPage = writer.CodeStorage.FindOrCreateControl("tbbPrevPage", toolbar.controlName);
+            tbbPrevPage.SetAttribute("ActionClick", "PrevPageClick");
+            TControlDef tbbNextPage = writer.CodeStorage.FindOrCreateControl("tbbNextPage", toolbar.controlName);
+            tbbNextPage.SetAttribute("ActionClick", "NextPageClick");
+            TControlDef tbbPrintCurrentPage = writer.CodeStorage.FindOrCreateControl("tbbPrintCurrentPage", toolbar.controlName);
+            tbbPrintCurrentPage.SetAttribute("ActionClick", "PrintCurrentPage");
+            TControlDef tbbPrint = writer.CodeStorage.FindOrCreateControl("tbbPrint", toolbar.controlName);
+            tbbPrint.SetAttribute("ActionClick", "PrintAllPages");
+
+            TControlDef printPreview = writer.CodeStorage.FindOrCreateControl("ppv" + ctrl.controlName.Substring(
+                    ctrl.controlTypePrefix.Length), ctrl.controlName);
+            printPreview.SetAttribute("Dock", "Fill");
+
+            StringCollection Controls = new StringCollection();
+            Controls.Add(toolbar.controlName);
+            Controls.Add(printPreview.controlName);
+            return Controls;
+        }
+    }
     public class TextBoxGenerator : TControlGenerator
     {
         public TextBoxGenerator()
@@ -481,7 +534,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".Text.Length == 0";
             }
 
-            if (AFieldTypeDotNet.ToLower().Contains("int"))
+            if (AFieldTypeDotNet.ToLower().Contains("int64"))
+            {
+                return "Convert.ToInt64(" + ctrl.controlName + ".Text)";
+            }
+            else if (AFieldTypeDotNet.ToLower().Contains("int"))
             {
                 return "Convert.ToInt32(" + ctrl.controlName + ".Text)";
             }
@@ -783,7 +840,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".Text.Length == 0";
             }
 
-            if (AFieldTypeDotNet.ToLower().Contains("int"))
+            if (AFieldTypeDotNet.ToLower().Contains("int64"))
+            {
+                return "Convert.ToInt64(" + ctrl.controlName + ".Text)";
+            }
+            else if (AFieldTypeDotNet.ToLower().Contains("int"))
             {
                 return "Convert.ToInt32(" + ctrl.controlName + ".Text)";
             }
@@ -1376,6 +1437,34 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
     }
 
+    public class ToolbarTextBoxGenerator : TControlGenerator
+    {
+        public ToolbarTextBoxGenerator()
+            : base("ttx", typeof(ToolStripTextBox))
+        {
+            FAutoSize = true;
+            FLocation = false;
+            FGenerateLabel = false;
+            FChangeEventName = "TextChanged";
+        }
+    }
+    public class ToolbarLabelGenerator : TControlGenerator
+    {
+        public ToolbarLabelGenerator()
+            : base("tbl", typeof(ToolStripLabel))
+        {
+            FAutoSize = true;
+            FLocation = false;
+            FGenerateLabel = false;
+        }
+
+        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+
+            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+        }
+    }
     public class ToolbarButtonGenerator : TControlGenerator
     {
         public ToolbarButtonGenerator(string APrefix, System.Type AType)
@@ -1406,6 +1495,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
             base.SetControlProperties(writer, ctrl);
 
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+        }
+    }
+
+    public class ToolbarComboBoxGenerator : TControlGenerator
+    {
+        public ToolbarComboBoxGenerator(string APrefix, System.Type AType)
+            : base(APrefix, AType)
+        {
+            FAutoSize = true;
+            FLocation = false;
+        }
+
+        public ToolbarComboBoxGenerator()
+            : this("tbc", typeof(ToolStripComboBox))
+        {
         }
     }
 

@@ -601,5 +601,47 @@ namespace Ict.Common.Testing
             Assert.AreEqual(";", separator);
             Thread.CurrentThread.CurrentCulture = oldCulture;
         }
+
+        [Test]
+        public void TestAmountToWords()
+        {
+            CultureInfo oldCulture = Thread.CurrentThread.CurrentCulture;
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
+
+            // see also Java GPL code: NumericalChameleon: http://www.jonelo.de/java/nc/
+            // and use the NumericalChameleon executable to get the right words?
+
+            Assert.AreEqual("one hundred and twenty-three Euro", NumberToWords.AmountToWords(123, "Euro", "Cent"));
+            Assert.AreEqual("one thousand two hundred and thirty Euro", NumberToWords.AmountToWords(1230, "Euro", "Cent"));
+            Assert.AreEqual("three hundred and eighty Euro", NumberToWords.AmountToWords(380, "Euro", "Cent"));
+            Assert.AreEqual("twelve thousand three hundred Euro", NumberToWords.AmountToWords(12300, "Euro", "Cent"));
+            Assert.AreEqual("one hundred and twenty-three thousand Euro", NumberToWords.AmountToWords(123000, "Euro", "Cent"));
+            Assert.AreEqual("one hundred and twenty-three thousand one Euro", NumberToWords.AmountToWords(123001, "Euro", "Cent"));
+            Assert.AreEqual("one hundred and twenty-three thousand one hundred and one Euro", NumberToWords.AmountToWords(123101, "Euro", "Cent"));
+            Assert.AreEqual("one hundred and twenty-three thousand one hundred and thirty-one Euro",
+                NumberToWords.AmountToWords(123131, "Euro", "Cent"));
+            Assert.AreEqual("one hundred and twenty-three thousand two hundred and thirteen Euro", NumberToWords.AmountToWords(123213, "Euro", "Cent"));
+            Assert.AreEqual("three Euro twenty-three Cent", NumberToWords.AmountToWords(3.23, "Euro", "Cent"));
+            Assert.AreEqual("three Euro seventy-five Cent", NumberToWords.AmountToWords(3.75, "Euro", "Cent"));
+            Assert.AreEqual("zero Euro one Cent", NumberToWords.AmountToWords(0.01, "Euro", "Cent"));
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE", false);
+
+            Assert.AreEqual("Einhundertdreiundzwanzig Euro", NumberToWords.AmountToWords(123, "Euro", "Cent"));
+            Assert.AreEqual("Eintausendzweihundertdreißig Euro", NumberToWords.AmountToWords(1230, "Euro", "Cent"));
+            Assert.AreEqual("Dreihundertachtzig Euro", NumberToWords.AmountToWords(380, "Euro", "Cent"));
+            Assert.AreEqual("Zwölftausenddreihundert Euro", NumberToWords.AmountToWords(12300, "Euro", "Cent"));
+            Assert.AreEqual("Einhundertdreiundzwanzigtausend Euro", NumberToWords.AmountToWords(123000, "Euro", "Cent"));
+            Assert.AreEqual("Einhundertdreiundzwanzigtausendeins Euro", NumberToWords.AmountToWords(123001, "Euro", "Cent"));
+            Assert.AreEqual("Einhundertdreiundzwanzigtausendeinhunderteins Euro", NumberToWords.AmountToWords(123101, "Euro", "Cent"));
+            Assert.AreEqual("Einhundertdreiundzwanzigtausendeinhunderteinunddreißig Euro", NumberToWords.AmountToWords(123131, "Euro", "Cent"));
+            Assert.AreEqual("Einhundertdreiundzwanzigtausendzweihundertdreizehn Euro", NumberToWords.AmountToWords(123213, "Euro", "Cent"));
+            Assert.AreEqual("Drei Euro Dreiundzwanzig Cent", NumberToWords.AmountToWords(3.23, "Euro", "Cent"));
+            Assert.AreEqual("Drei Euro Fünfundsiebzig Cent", NumberToWords.AmountToWords(3.75, "Euro", "Cent"));
+            Assert.AreEqual("Null Euro Ein Cent", NumberToWords.AmountToWords(0.01, "Euro", "Cent"));
+
+            Thread.CurrentThread.CurrentCulture = oldCulture;
+        }
     }
 }

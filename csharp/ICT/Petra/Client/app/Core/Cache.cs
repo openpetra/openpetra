@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.App.Core
     public class TDataCache
     {
         /// <summary>Subdirectory under the Folder that .NET determines to be the 'IsolatedStorage' folder for the current User of the Operating System</summary>
-        public const String CACHEFILESDIR = "Petra/Cache";
+        public const String CACHEFILESDIR = "OpenPetra/Cache";
 
         /// <summary>File Extension for Cacheable DataTables that are persisted in a file</summary>
         public const String CACHEABLEDT_FILE_EXTENSION = ".cdt";
@@ -1008,6 +1008,20 @@ namespace Ict.Petra.Client.App.Core
 #if DEBUGMODE
             TLogging.Log("Done. File size is " + CacheDTSizeOnDisk.ToString() + " bytes.");
 #endif
+        }
+
+        /// <summary>
+        /// this should be called to reset all caches, for example when a new patch is installed
+        /// </summary>
+        public static void ClearAllCaches()
+        {
+            UIsolatedStorageFile.Remove();
+
+            UIsolatedStorageFile = IsolatedStorageFile.GetStore(
+                IsolatedStorageScope.User | IsolatedStorageScope.Assembly |
+                IsolatedStorageScope.Roaming, null, null);
+
+            UIsolatedStorageFile.CreateDirectory(CACHEFILESDIR);
         }
     }
 }

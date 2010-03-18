@@ -132,9 +132,23 @@ namespace Ict.Plugins.Finance.SwiftParser
                 TTransaction transaction = new TTransaction();
 
                 // valuta date (YYMMDD)
-                transaction.valueDate = new DateTime(2000 + Convert.ToInt32(swiftData.Substring(0, 2)),
-                    Convert.ToInt32(swiftData.Substring(2, 2)),
-                    Convert.ToInt32(swiftData.Substring(4, 2)));
+                try
+                {
+                    transaction.valueDate = new DateTime(2000 + Convert.ToInt32(swiftData.Substring(0, 2)),
+                        Convert.ToInt32(swiftData.Substring(2, 2)),
+                        Convert.ToInt32(swiftData.Substring(4, 2)));
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    // we have had the situation in the bank file with a date 30 Feb 2010.
+                    // probably because the instruction by the donor is to transfer the money on the 30 day each month
+                    // use the last day of the month
+                    int year = 2000 + Convert.ToInt32(swiftData.Substring(0, 2));
+                    int month = Convert.ToInt32(swiftData.Substring(2, 2));
+                    int day = DateTime.DaysInMonth(year, month);
+                    transaction.valueDate = new DateTime(year, month, day);
+                }
+
                 swiftData = swiftData.Substring(6);
 
                 // posting date (MMDD)

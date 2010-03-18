@@ -71,16 +71,6 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.btnAccept.Text = Catalog.GetString("&Accept");
       this.mniFileSearch.Text = Catalog.GetString("&Search");
       this.mniFileWorkWithLastPartner.Text = Catalog.GetString("&Work with Last Partner...");
-      this.mniFileRecentPartner1.Text = Catalog.GetString("0");
-      this.mniFileRecentPartner2.Text = Catalog.GetString("1");
-      this.mniFileRecentPartner3.Text = Catalog.GetString("2");
-      this.mniFileRecentPartner4.Text = Catalog.GetString("3");
-      this.mniFileRecentPartner5.Text = Catalog.GetString("4");
-      this.mniFileRecentPartner6.Text = Catalog.GetString("5");
-      this.mniFileRecentPartner7.Text = Catalog.GetString("6");
-      this.mniFileRecentPartner8.Text = Catalog.GetString("7");
-      this.mniFileRecentPartner9.Text = Catalog.GetString("8");
-      this.mniFileRecentPartner10.Text = Catalog.GetString("9");
       this.mniFileRecentPartners.Text = Catalog.GetString("&Recent Partners");
       this.mniFileNewPartner.Text = Catalog.GetString("&New Partner...");
       this.mniFileViewPartner.Text = Catalog.GetString("&View Partner");
@@ -130,7 +120,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.mniPetraConferenceModule.Text = Catalog.GetString("C&onference");
       this.mniPetraFinDevModule.Text = Catalog.GetString("Financial &Development");
       this.mniPetraSysManModule.Text = Catalog.GetString("&System Manager");
-      this.mniPetraModules.Text = Catalog.GetString("&Petra");
+      this.mniPetraModules.Text = Catalog.GetString("&OpenPetra");
       this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
       this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");

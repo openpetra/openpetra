@@ -66,7 +66,6 @@ public class TWriteSQL
     {
         System.Console.WriteLine("Writing file to {0}...", AOutputFile);
 
-        // write the loader program to load the triggers into the database
         FileStream outPutFileStream = new FileStream(AOutputFile, FileMode.Create, FileAccess.Write);
         StreamWriter sw = new StreamWriter(outPutFileStream);
         ArrayList Tables = AStore.GetTables();
@@ -98,30 +97,7 @@ public class TWriteSQL
             DumpIndexes(sw, Table, true);
         }
 
-        if (ATargetDatabase == eDatabaseType.Sqlite)
-        {
-            // see http://www.mail-archive.com/sqlite-users@sqlite.org/msg05123.html
-            // see http://www.sqlite.org/faq.html#q1
-            // no sequences in sqlite
-        }
-        else if (ATargetDatabase == eDatabaseType.MySQL)
-        {
-            // also no sequences in Mysql
-            // see http://dev.mysql.com/doc/refman/5.0/en/information-functions.html for a workaround
-            // look for CREATE TABLE sequence and LAST_INSERT_ID
-        }
-        else
-        {
-            ArrayList Sequences = AStore.GetSequences();
-
-            foreach (TSequence Sequence in Sequences)
-            {
-                if (!WriteSequence(sw, Sequence))
-                {
-                    Environment.Exit(1);
-                }
-            }
-        }
+        WriteSequences(sw, ATargetDatabase, AStore, true);
 
         sw.Close();
         System.Console.WriteLine("Success: file written: {0}", AOutputFile);
@@ -133,6 +109,9 @@ public class TWriteSQL
             removeAllTablesFile,
             FileMode.Create, FileAccess.Write);
         sw = new StreamWriter(outPutFileStream);
+
+        Tables = TTableSort.TopologicalSort(AStore, Tables);
+        Tables.Reverse();
 
         foreach (TTable Table in Tables)
         {
@@ -183,6 +162,104 @@ public class TWriteSQL
         sw.Close();
         outPutFileStream.Close();
         System.Console.WriteLine("Success: file written: {0}", LoadDataFile);
+
+        string CreateTablesFile = System.IO.Path.GetDirectoryName(AOutputFile) +
+                                  System.IO.Path.DirectorySeparatorChar +
+                                  "createtables-" + ATargetDatabase.ToString() + ".sql";
+        outPutFileStream = new FileStream(CreateTablesFile,
+            FileMode.Create, FileAccess.Write);
+        sw = new StreamWriter(outPutFileStream);
+
+        foreach (TTable Table in Tables)
+        {
+            if (!WriteTable(ATargetDatabase, sw, Table))
+            {
+                Environment.Exit(1);
+            }
+        }
+
+        WriteSequences(sw, ATargetDatabase, AStore, false);
+
+        sw.Close();
+        outPutFileStream.Close();
+        System.Console.WriteLine("Success: file written: {0}", CreateTablesFile);
+
+        string CreateConstraintsAndIndexesFile = System.IO.Path.GetDirectoryName(AOutputFile) +
+                                                 System.IO.Path.DirectorySeparatorChar +
+                                                 "createconstraints-" + ATargetDatabase.ToString() + ".sql";
+        outPutFileStream = new FileStream(CreateConstraintsAndIndexesFile,
+            FileMode.Create, FileAccess.Write);
+        sw = new StreamWriter(outPutFileStream);
+
+        foreach (TTable Table in Tables)
+        {
+            if (ATargetDatabase == eDatabaseType.Sqlite)
+            {
+                // see http://www.sqlite.org/omitted.html:
+                // sqlite does not support Alter table add constraint
+            }
+            else
+            {
+                DumpConstraints(sw, Table, true, true);
+            }
+        }
+
+        foreach (TTable Table in Tables)
+        {
+            // Dump indexes
+            DumpIndexes(sw, Table, true);
+        }
+
+        sw.Close();
+        outPutFileStream.Close();
+        System.Console.WriteLine("Success: file written: {0}", CreateConstraintsAndIndexesFile);
+    }
+
+    private static Boolean WriteSequences(StreamWriter ASw,
+        eDatabaseType ATargetDatabase,
+        TDataDefinitionStore AStore,
+        bool AWithSequenceInitialisation)
+    {
+        if (ATargetDatabase == eDatabaseType.Sqlite)
+        {
+            // see http://www.mail-archive.com/sqlite-users@sqlite.org/msg05123.html
+            // see http://www.sqlite.org/faq.html#q1
+            // no sequences in sqlite
+        }
+        else if (ATargetDatabase == eDatabaseType.MySQL)
+        {
+            // also no sequences in Mysql
+            // see http://dev.mysql.com/doc/refman/5.0/en/information-functions.html for a workaround
+            // look for CREATE TABLE sequence and LAST_INSERT_ID
+            ArrayList Sequences = AStore.GetSequences();
+
+            foreach (TSequence seq in Sequences)
+            {
+                string createStmt = "CREATE TABLE " + seq.strName + " (sequence INTEGER AUTO_INCREMENT, dummy INTEGER, PRIMARY KEY(sequence));";
+                ASw.WriteLine(createStmt);
+
+                if (AWithSequenceInitialisation)
+                {
+                    // the following line would cause trouble later when loading the demo/base data
+                    createStmt = "INSERT INTO " + seq.strName + " VALUES(NULL, -1);";
+                    ASw.WriteLine(createStmt);
+                }
+            }
+        }
+        else
+        {
+            ArrayList Sequences = AStore.GetSequences();
+
+            foreach (TSequence Sequence in Sequences)
+            {
+                if (!WriteSequence(ASw, Sequence))
+                {
+                    Environment.Exit(1);
+                }
+            }
+        }
+
+        return true;
     }
 
     public static Boolean WriteSequence(StreamWriter ASw, TSequence ASequence)
@@ -276,6 +353,10 @@ public class TWriteSQL
             {
                 result += String.Format("  {0} INTEGER PRIMARY KEY AUTOINCREMENT ", field.strName);
             }
+            else if (ATargetDatabase == eDatabaseType.MySQL)
+            {
+                result += String.Format("  {0} INTEGER AUTO_INCREMENT UNIQUE ", field.strName);
+            }
         }
         else
         {
@@ -337,14 +418,6 @@ public class TWriteSQL
         if (field.bNotNull)
         {
             result += String.Format(" NOT NULL");
-        }
-
-        if (field.bAutoIncrement)
-        {
-            if (ATargetDatabase == eDatabaseType.MySQL)
-            {
-                result += String.Format(" AUTO_INCREMENT UNIQUE");
-            }
         }
 
         if ((field.strCheck != null) && (field.strCheck.Length != 0))

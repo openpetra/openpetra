@@ -7,8 +7,11 @@
     <property name="Output.dir" value="Debug" unless="${property::exists('Output.dir')}"/>
     <property name="Configuration" value="DEBUG" unless="${property::exists('Configuration')}"/>
     <property name="ReleaseID" value="0.0.0.99" unless="${property::exists('ReleaseID')}"/>
-    <property name="ReleaseVersion" value="0.0.0-99" unless="${property::exists('ReleaseVersion')}"/>
+    <property name="ReleaseVersion" value="${script::CalculateRPMVersionFromDLLVersion(ReleaseID)}"/>
     <property name="PetraRelease" value="0300"/>
+    <property name="SkipCompileClient" value="false" unless="${property::exists('SkipCompileClient')}"/>
+    <property name="SkipCompileServer" value="false" unless="${property::exists('SkipCompileServer')}"/>
+    <property name="BuildClientArchive" value="false" unless="${property::exists('BuildClientArchive')}"/>
     <property name="ThirdParty.dir" value="${OpenPetraRoot.dir}/csharp/ThirdParty/"/>
     <property name="PetraToolsExe.dir" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}"/>
     <property name="PetraXML.file" value="${OpenPetraRoot.dir}/db/petra.xml"/>
@@ -20,6 +23,22 @@
 
     <property name="IctNAntTasks.file" value="${ThirdParty.dir}/NAnt/Ict.Tools.NAntTasks.dll"/>
     <if test="${not file::exists(IctNAntTasks.file)}">
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.dll" overwrite="true"/>
+            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/MySQL/mysql.data.dll" tofile="${OpenPetraRoot.dir}/csharp/ThirdParty/MySQL/MySql.Data.dll" overwrite="true"/>
+            <if test="${property::exists('xbuild')}">
+                <foreach item="File" property="filename">
+                    <in>
+                        <items>
+                            <include name="${OpenPetraRoot.dir}/csharp/ICT/**.csproj" />
+                        </items>
+                    </in>
+                    <do>
+                        <if test='${script::ChangeProjectFileXBuild(filename)}'/>
+                    </do>
+                </foreach>
+            </if>
+        </if>
         <call target="compileCommon"/>
         <call target="compilePetraTools"/>
         <copy file="${PetraToolsExe.dir}/Ict.Tools.NAntTasks.dll" tofile="${IctNAntTasks.file}"/>
@@ -34,6 +53,7 @@
         <echo message="dbdoc: generates database design documentation using sql2diagram"/>
         <echo message="ndoc: todo"/>
         <echo message="uncrustify: beautify the code according to coding style guide"/>
+        <echo message="loc, ploc: count the lines of code, to be used for COCOMO etc"/>
         <echo message="checkcode: todo"/>
         <echo message="fixProjectFiles: use this for broken GUIDs in sln and csproj files"/>
         <echo message="recreateDatabase: needed after changes in table structure in petra.xml"/>
@@ -45,19 +65,18 @@
         <echo message="generateWinforms: generates the User Interface using System.Windows.Forms"/>
         <echo message="cleanPetra: prepare for a clean build"/>
         <echo message="compilePetra: build all Petra C# code"/>
+        <echo message="compileQx: compile the javascript webclient, using Qooxdoo"/>
         <echo message="startPetraServer: run a local Petra Server"/>
         <echo message="stopPetraServer: stop the local Petra Server"/>
         <echo message="startPetraClient: run the Petra Client"/>
         <echo message="startSOAPServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)"/>
-        <echo message="buildRelease: requires these parameters: -D:ReleaseID=0.0.2.0 -D:ReleaseVersion=0.0.2-0"/>
+        <echo message="buildRelease: requires this parameter: -D:ReleaseID=0.0.2.0"/>
+        <echo message="createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0"/>
     </target>
     
     <target name="compilePetraTools" description="compile the PetraTools">
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools.sln"/>
         <call target="compileTemplate"/>
-        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/Debug/System.Data.SQLite.dll" overwrite="true"/>
-        </if>
     </target>
     <target name="compileTesting" description="compile the Testing module">
         <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Testing/Reporting/app.config"/>
@@ -97,11 +116,18 @@
                 tofile="${appconfigfileBin}"/>
         </if>
     </target>
-    <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServerAdmin, compilePetraServer, compilePetraClient"/>
+    <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServer, compilePetraClient"/>
     <target name="compileTemplate">
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <if test="${property::exists('mdtool')}"> <!-- to allow generateWinforms on Mono on Windows; don't build at all -->
                 <exec program="${mdtool}" commandline="build --buildfile:${solution.file}">
+                   <environment>
+                      <variable name="MONO_PATH" value="${NAntBin.dir}"/> <!-- variable does not exist yet; otherwise: value="${NAntBin.dir}:${environment::get-variable('MONO_PATH')}" -->
+                   </environment>
+                </exec>
+            </if>
+            <if test="${property::exists('xbuild')}">
+                <exec program="${xbuild}" commandline="${solution.file}">
                    <environment>
                       <variable name="MONO_PATH" value="${NAntBin.dir}"/> <!-- variable does not exist yet; otherwise: value="${NAntBin.dir}:${environment::get-variable('MONO_PATH')}" -->
                    </environment>
@@ -121,40 +147,43 @@
         <call target="compileTemplate"/>
     </target>
     <target name="compilePetraServer" description="compile Ict/Petra/Server">
-        <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/PetraServerConsole/app.config"/>
-        <if test="${not file::exists(appconfigfile)}">
-            <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/PetraServerConsole/app-sample-${DBMS.Type}.config"
-                tofile="${appconfigfile}"/>
-            <!-- app.config is part of the PetraServerConsole project and will be copied to _bin/${Output.dir}/PetraServerConsole.exe.config -->
-        </if>
+        <!-- if this is just for the remote client build, we might want to skip the building of the server -->
+        <if test="${not SkipCompileServer}">
+            <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/PetraServerConsole/app.config"/>
+            <if test="${not file::exists(appconfigfile)}">
+                <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/PetraServerConsole/app-sample-${DBMS.Type}.config"
+                    tofile="${appconfigfile}"/>
+                <!-- app.config is part of the PetraServerConsole project and will be copied to _bin/${Output.dir}/PetraServerConsole.exe.config -->
+            </if>
 
-        <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Server.sln"/>
-        <call target="compileTemplate"/>
+            <call target="compilePetraServerAdmin"/>
 
-        <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/PetraServerConsole.exe.config"/>
-        <if test="${not file::exists(appconfigfileBin)}">
-            <!-- mdbuild does not seem to copy the app file -->
-            <copy file="${appconfigfile}"
-                tofile="${appconfigfileBin}"/>
-        </if>
+            <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Server.sln"/>
+            <call target="compileTemplate"/>
 
-        <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}">
-            <fileset basedir="${ThirdParty.dir}/Mono">
-                <include name="intl.dll" />
-                <include name="MonoPosixHelper.dll" />
-                <include name="Mono.Security.dll" />
-            </fileset>
-        </copy>
-        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-            <!-- requires sqlite 3.6.1 or higher to be installed on the linux system -->
-            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" 
-                  tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/System.Data.SQLite.dll" overwrite="true"/>
-        </if>
-        <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
-        <if test="${file::exists(language.file)}">
-            <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
-            <copy file="${language.file}"
-                tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo" overwrite="true"/>
+            <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ServerPlugins.sln"/>
+            <call target="compileTemplate"/>
+
+            <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/PetraServerConsole.exe.config"/>
+            <if test="${not file::exists(appconfigfileBin)}">
+                <!-- mdbuild does not seem to copy the app file -->
+                <copy file="${appconfigfile}"
+                    tofile="${appconfigfileBin}"/>
+            </if>
+
+            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}">
+                <fileset basedir="${ThirdParty.dir}/Mono">
+                    <include name="intl.dll" />
+                    <include name="MonoPosixHelper.dll" />
+                    <include name="Mono.Security.dll" />
+                </fileset>
+            </copy>
+            <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
+            <if test="${file::exists(language.file)}">
+                <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
+                <copy file="${language.file}"
+                    tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo" overwrite="true"/>
+            </if>
         </if>
     </target>
     <target name="compilePetraServerAdmin" description="compile Ict/Petra/ServerAdmin">
@@ -174,31 +203,36 @@
         </if>
     </target>
     <target name="compilePetraClient" description="compile Ict/Petra/Client">
-        <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/app.config"/>
-        <if test="${not file::exists(appconfigfile)}">
-            <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/app-sample.config"
-                tofile="${appconfigfile}"/>
-            <!-- app.config is part of the PetraClient project and will be copied to _bin/${Output.dir}/PetraClient.exe.config -->
-        </if>
-        <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Client.sln"/>
-        <call target="compileTemplate"/>
-        <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/PetraClient.exe.config"/>
-        <if test="${not file::exists(appconfigfileBin)}">
-            <!-- mdbuild does not seem to copy the app file -->
-            <copy file="${appconfigfile}"
-                tofile="${appconfigfileBin}"/>
-        </if>
-        <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}">
-            <fileset basedir="${ThirdParty.dir}/Mono">
-                <include name="intl.dll" />
-                <include name="MonoPosixHelper.dll" />
-            </fileset>
-        </copy>
-        <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
-        <if test="${file::exists(language.file)}">
-            <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
-            <copy file="${language.file}"
-                tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo" overwrite="true"/>
+        <!-- if this is just for the server build, we might want to skip the building of the client -->
+        <if test="${not SkipCompileClient}">
+            <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/app.config"/>
+            <if test="${not file::exists(appconfigfile)}">
+                <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/app-sample.config"
+                    tofile="${appconfigfile}"/>
+                <!-- app.config is part of the PetraClient project and will be copied to _bin/${Output.dir}/PetraClient.exe.config -->
+            </if>
+            <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Client.sln"/>
+            <call target="compileTemplate"/>
+            <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/PetraClient.exe.config"/>
+            <if test="${not file::exists(appconfigfileBin)}">
+                <!-- mdbuild does not seem to copy the app file -->
+                <copy file="${appconfigfile}"
+                    tofile="${appconfigfileBin}"/>
+            </if>
+            <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ClientPlugins.sln"/>
+            <call target="compileTemplate"/>
+            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}">
+                <fileset basedir="${ThirdParty.dir}/Mono">
+                    <include name="intl.dll" />
+                    <include name="MonoPosixHelper.dll" />
+                </fileset>
+            </copy>
+            <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
+            <if test="${file::exists(language.file)}">
+                <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
+                <copy file="${language.file}"
+                    tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo" overwrite="true"/>
+            </if>
         </if>
     </target>
     <target name="cleanPetra" description="remove all compiled code of Petra">
@@ -230,7 +264,7 @@
         <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/*.txt" /></fileset></delete>
     </target>
     
-    <target name="createSQLStatements" depends="compilePetraTools" description="Create the SQL files.">
+    <target name="createSQLStatements" depends="compileCommon, compilePetraTools" description="Create the SQL files.">
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
         <!-- we don't need SQL statements for sqlite, but only for the other DBMS -->
         <if test="${DBMS.Type!='sqlite'}">
@@ -282,27 +316,47 @@
         </if>
         <if test="${DBMS.Type=='postgresql'}">
              <echo message="please run sudo ls before calling this, then you don't need to enter a password for postgres user"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS petra;" database="template1"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE petra;" database="template1"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="petra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS openpetra;" database="template1"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE openpetra;" database="template1"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver;" database="openpetra" failonerror="false"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER';" database="openpetra" failonerror="false"/>
+             <property name="tempfile" value="${path::get-temp-path()}/userpermissions.sql"/>
+             <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+                 <!-- at least on Mac, the tmp directory of the current user is returned, which the postgres user has no access to -->
+                 <property name="tempfile" value="/tmp/userpermissions.sql"/>
+             </if>
+             <psql exe="${PostgreSQL.exe}" 
+                sqlcommand="select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
+                outputfile="${tempfile}"
+                database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="openpetra"/>
+
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver;" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver;" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON s_login_s_login_process_id_r_seq TO petraserver;"  database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver;" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_general_ledger_master TO petraserver;" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_statement_number TO petraserver;" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_match_number TO petraserver;" database="openpetra"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <echo message="this will now take a while..."/>
-             <exec program="cmd.exe" commandline="/C &quot;echo drop database if exists petra; | ${MySQL.exe} -u root&quot;"/>
-             <exec program="cmd.exe" commandline="/C &quot;echo create database if not exists petra; | ${MySQL.exe} -u root&quot;"/>
-             <!-- add -v before -u if you want to see the sql commands... -->
-             <exec program="cmd.exe" commandline="/C &quot;${MySQL.exe}&quot; -u root petra &lt; ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql"/>
+             <mysql exe="${MySQL.exe}" sqlcommand="drop database if exists openpetra;" user="root" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlcommand="create database if not exists openpetra;" user="root" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="openpetra" user="root" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlcommand="GRANT SELECT,UPDATE,DELETE,INSERT ON * TO petraserver IDENTIFIED BY 'TOBESETBYINSTALLER';" database="openpetra" user="root" password="${DBMS.Password}"/>
         </if>
     </target>
 
     <target name="resetDatabase" depends="" description="useful for debugging the creation of fresh database"> <!-- depends: recreateDatabase --> 
-		 <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-			 <property name="OpenPetraRoot.dir" value="${path::get-full-path(OpenPetraRoot.dir)}"/>
-		 </if>
-		 <if test="${framework::get-target-framework() == 'net-2.0'}" >
-		    <!-- GetRealPath resolves problems with substed path for psql to load from; cannot find such file or path -->
-			<property name="OpenPetraRoot.dir" value="${string::replace(script::GetRealPath(OpenPetraRoot.dir), '\', '/')}"/>
-	     </if>
+         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+             <property name="OpenPetraRoot.dir" value="${path::get-full-path(OpenPetraRoot.dir)}"/>
+         </if>
+         <if test="${framework::get-target-framework() == 'net-2.0'}" >
+            <!-- GetRealPath resolves problems with substed path for psql to load from; cannot find such file or path -->
+            <property name="OpenPetraRoot.dir" value="${string::replace(script::GetRealPath(OpenPetraRoot.dir), '\', '/')}"/>
+         </if>
          <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
          <property name="DemoData.Dir" value="${OpenPetraRoot.dir}/db/${SelectedDemo}"/>
 
@@ -340,38 +394,19 @@
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordsalt)}'/>
 
         <if test="${DBMS.Type=='sqlite'}">
-             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/clean.sql -password:${DBMS.Password}" failonerror="true"/>
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/clean.sql -password:${DBMS.Password}" failonerror="true"/>
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver;" database="petra" failonerror="false"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER';" database="petra"/>
-             <property name="tempfile" value="${path::get-temp-path()}/userpermissions.sql"/>
-             <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-                 <!-- at least on Mac, the tmp directory of the current user is returned, which the postgres user has no access to -->
-                 <property name="tempfile" value="/tmp/userpermissions.sql"/>
-             </if>
-             <psql exe="${PostgreSQL.exe}" 
-                sqlcommand="select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
-                outputfile="${tempfile}"
-                database="petra"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="petra"/>
-
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver;" database="petra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver;" database="petra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON s_login_s_login_process_id_r_seq TO petraserver;"  database="petra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver;" database="petra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_general_ledger_master TO petraserver;" database="petra"/>
-
-             <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/clean.sql" database="petra"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="petra"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/init.sql.local" database="petra"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" database="petra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/init.sql.local" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" database="openpetra"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
-             <!-- todo -->
+             <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="openpetra" user="root" password="${DBMS.Password}"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${BaseData.Dir}/init.sql.local -database:openpetra -username:root -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${DemoData.Dir}/init.sql.local -database:openpetra -username:root -password:${DBMS.Password}" failonerror="true"/>
         </if>
     </target>
 
@@ -404,7 +439,7 @@
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <exec program="mono" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
-                    commandline="PetraClient.exe -AutoLogin:demo"
+                    commandline="PetraClient.exe"
                     spawn="true">
                <environment>
                   <variable name="LANGUAGE" value="${SelectedLanguage}"/>
@@ -414,7 +449,7 @@
         <if test="${framework::get-target-framework() == 'net-2.0'}" >
             <exec program="cmd.exe" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
-                    commandline="/C start PetraClient.exe -AutoLogin:demo"
+                    commandline="/C start PetraClient.exe"
                     spawn="true">
                <environment>
                   <variable name="LANGUAGE" value="${SelectedLanguage}"/>
@@ -452,7 +487,20 @@
             </environment>
         </exec>
     </target>
-    <target name="startSOAPServer" description="only supports postgresql server at the moment, not sqlite; would need microsoft xsp">
+
+    <target name="compileQx" description="compile the javascript webclient, using Qooxdoo">
+        <!-- todo: support linux -->
+        <exec program="cmd.exe" 
+                workingdir="${WebServerInstall.dir}/OpenPetraOrg"
+                commandline="/C generate.py source-all"
+                spawn="true">
+            <environment>
+                <!-- requires Python 2.x -->
+                <variable name="PATH" path="${environment::get-variable('PATH')};${Python.dir}"/>
+            </environment>
+        </exec>
+    </target>
+    <target name="startSOAPServer" description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
         <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
                     tofile="${WebServerInstall.dir}/server.asmx" overwrite="true"/>
         <mkdir dir="${WebServerInstall.dir}/bin" failonerror="false"/>
@@ -472,20 +520,14 @@
         <!-- TODO: run on linux as well? -->
         <exec program="cmd.exe" 
                 workingdir="${WebServerInstall.dir}"
-                commandline="/C start xsp2 --verbose --root . --port 8081 --applications /:."
+                commandline="/C start xsp2.bat --verbose --root . --port 8081 --applications /:."
                 spawn="true">
             <environment>
                 <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
-                <variable name="MONO_OPTIONS" value="--debug xsp2"/>
+                <variable name="MONO_OPTIONS" value="--debug"/>
             </environment>
         </exec>
         <echo message="in your browser, go to http://localhost:8081/server.asmx"/>
-        
-        <!-- todo: 
-          set path for python
-          cd U:\openpetraorg\qooxdoo\OpenPetraOrg
-          generate.py source-all
-        -->
         
         <echo message="in your browser, go to http://localhost:8081/OpenPetraOrg/source/"/>
     </target>
@@ -559,6 +601,12 @@
         <exec program="${Poedit.gettext}" workingdir="${WorkingDir}" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${collectedGettext.file} -o ${TargetLanguage.Pofile}"/>
     </target>
 
+    <target name="translationCompilePOFile">
+        <!-- compile the language file for delivery -->
+        <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES" failonerror="false"/>
+        <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.PofileWithPath} -o ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES/i18n.mo"/>
+    </target>
+
     <target name="translation">
 
         <!-- create initial version of .po file if it does not exist yet -->
@@ -575,14 +623,26 @@
         <call target="translationTemplate"/>
         <property name="solutionName" value="Client"/>
         <call target="translationTemplate"/>
+        <property name="solutionName" value="ClientPlugins"/>
+        <call target="translationTemplate"/>
         <property name="solutionName" value="Server"/>
+        <call target="translationTemplate"/>
+        <property name="solutionName" value="ServerPlugins"/>
         <call target="translationTemplate"/>
         <property name="solutionName" value="ServerAdmin"/>
         <call target="translationTemplate"/>
 
-        <!-- compile the language file for delivery -->
-        <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES" failonerror="false"/>
-        <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.PofileWithPath} -o ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES/i18n.mo"/>
+        <call target="translationCompilePOFile"/>
+    </target>
+
+    <target name="loc">
+        <property name="ourCodeDir" value="${OpenPetraRoot.dir}/csharp/ICT/"/>
+        <echo message="logical lines of code: ${script::CountLinesOfCode(ourCodeDir)}"/>
+    </target>
+
+    <target name="ploc">
+        <property name="ourCodeDir" value="${OpenPetraRoot.dir}/csharp/ICT/"/>
+        <echo message="physical lines of code, without comments: ${script::CountPhysicalLinesOfCode(ourCodeDir)}"/>
     </target>
     
     <target name="uncrustifyTemplate">
@@ -626,6 +686,14 @@
         <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin"/>
         <call target="uncrustifyTemplate"/>
     </target>
+    <target name="uncrustifyPetraServerPlugins">
+        <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerPlugins"/>
+        <call target="uncrustifyTemplate"/>
+    </target>
+    <target name="uncrustifyPetraClientPlugins">
+        <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/ClientPlugins"/>
+        <call target="uncrustifyTemplate"/>
+    </target>
     <target name="uncrustifyExperimenting">
         <property name="uncrustifyFilesPath" value="${OpenPetraRoot.dir}/csharp/ICT/Experimenting"/>
         <call target="uncrustifyTemplate"/>
@@ -639,7 +707,7 @@
         <call target="uncrustifyTemplate"/>
     </target>
     
-    <target name="uncrustify" depends="uncrustifyCommon, uncrustifyPetraShared, uncrustifyPetraServer, uncrustifyPetraClient, uncrustifyPetraServerAdmin, uncrustifyExperimenting, uncrustifyPetraTools, uncrustifyTesting"/>
+    <target name="uncrustify" depends="uncrustifyCommon, uncrustifyPetraShared, uncrustifyPetraServer, uncrustifyPetraServerPlugins, uncrustifyPetraClient, uncrustifyPetraClientPlugins, uncrustifyPetraServerAdmin, uncrustifyExperimenting, uncrustifyPetraTools, uncrustifyTesting"/>
     
     <target name="checkCode" description="check for correct file headers, missing xml comment generation, copyright, licensing, etc">
         <foreach item="File" property="filename">
@@ -659,7 +727,7 @@
     </target>
 
     <target name="fixProjectFiles">
-        <ExecDotNet program="${PetraToolsExe.dir}/FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools,Testing"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools,Testing,ServerPlugins,ClientPlugins"/>
     </target>
     
     <target name="switchToDebug">
@@ -726,7 +794,7 @@
             </do>
         </foreach>
 
-        <nant buildfile="OpenPetra.build" target="cleanPetra compilePetra">
+        <nant buildfile="OpenPetra.build" target="cleanPetra compileCommon compilePetraTools compilePetra">
             <properties>
                 <property name="Output.dir" value="Release"/>
                 <property name="Configuration" value="RELEASE"/>
@@ -751,10 +819,12 @@
               workingdir="${path::get-directory-name(Current.File)}"/>
     </target>
     <target name="setupStandalone">
+        <echo file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/version.txt">${ReleaseVersion}</echo>
         <property name="SetupOriginal.File" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/standalone.iss"/>
         <call target="setupTemplate"/>
     </target>
     <target name="setupRemote">
+        <echo file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin/version.txt">${ReleaseVersion}</echo>
         <property name="SetupOriginal.File" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin/remote.iss"/>
         <call target="setupTemplate"/>
     </target>
@@ -773,25 +843,75 @@
         <copy file="${SQLitedb.file}" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db" overwrite="true"/>
     </target>
 
-    <target name="createPostgreSQLDB">
-        <property name="DBMS.Type" value="postgresql"/>
-        <property name="DBMS.Password" value="CHANGEME"/>
-        <call target="recreateDatabase"/>
-        <call target="resetDatabase"/>
-        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-            <!-- this currently only works on Linux -->
-            <ExecCmd program="sh" superuser="postgres" commandline="/C ${pgdump.exe} --format=c petra -f ${path::get-temp-path()}/demo-pg.bak"/>
-            <copy file="${path::get-temp-path()}/demo-pg.bak" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo-pg.bak" overwrite="true"/>
+    <target name="refreshSudo">
+        <!-- make sure that sudo is working, this is called before buildRelease on Linux -->
+        <if test="${platform::is-unix()}">
+            <exec program="sudo" commandline="-u postgres echo refresh sudo" />
         </if>
     </target>
     
-    <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, translation, setupStandalone, setupRemote"/>
-    <target name="buildReleaseLinux" depends="switchToDebug, createSQLiteDB, createPostgreSQLDB, generateWinforms, compileRelease, translation, setupLinuxServer"/>
-    <target name="buildRelease">
+    <target name="createPostgreSQLDB">
+        <property name="DBMS.Type" value="postgresql"/>
+        <call target="recreateDatabase"/>
+        <call target="resetDatabase"/>
+
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" overwrite="true"/>
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" overwrite="true"/>
+            <!-- this currently only works on Linux -->
+            <exec program="sudo" commandline="-u postgres /usr/bin/pg_dump --data-only --file=${path::get-temp-path()}/demodata-PostgreSQL.sql openpetra" />
+            <copy file="${path::get-temp-path()}/demodata-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql" overwrite="true"/>
+        </if>
+    </target>
+
+    <target name="createMySQLDB">
+        <property name="DBMS.Type" value="mysql"/>
+        <call target="recreateDatabase"/>
+        <call target="resetDatabase"/>
+
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-MySQL.sql" overwrite="true"/>
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-MySQL.sql" overwrite="true"/>
+            <!-- this currently only works on Linux -->
+            <exec program="mysqldump" commandline="openpetra --no-create-info --user=root --password=${DBMS.Password}  --result-file=${path::get-temp-path()}/demodata-MySQL.sql" />
+            <copy file="${path::get-temp-path()}/demodata-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-MySQL.sql" overwrite="true"/>
+        </if>
+    </target>
+    
+    <target name="createPatch">
+        <ExecDotNet program="${PetraToolsExe.dir}/PatchToolConsole.exe" commandline="-action:create -OpenPetra.PathTemp:u:/tmp/patch -deliverypath:u:/delivery -appname:openpetraorg-win -oldversion:${OldVersion} -newversion:${NewVersion}" failonerror="true">
+            <environment>
+                <variable name="PATH" path="${environment::get-variable('PATH')};${OpenPetraRoot.dir}/csharp/ThirdParty/bsdiff"/>
+            </environment>
+        </ExecDotNet>
+    </target>
+    
+    <target name="buildReleaseWindows" depends="switchToDebug, createSQLiteDB, compileRelease, translationCompilePOFile, setupStandalone, setupRemote, setupLinuxServer"/>
+    <!-- problem: one version for mac and Windows? what about patching? generateWinforms; 2 versions? -->
+    <target name="buildReleaseLinux" depends="refreshSudo, switchToDebug, createPostgreSQLDB, createMySQLDB, createSQLiteDB, generateWinforms, compileRelease, translationCompilePOFile, setupLinuxServer"/>
+
+    <target name="buildReleaseWindowsClient" depends="switchToDebug">
+        <!-- build the Remote Client installer, and the tar.gz file for future patches. this is for the hosted server -->
+        <property name="SkipCompileServer" value="true"/>
+        <call target="compileRelease"/>
+        <call target="translationCompilePOFile"/>
+        <call target="setupRemote"/>
+        <property name="BuildClientArchive" value="true"/>
+        <call target="setupLinuxServer"/>
+    </target>
+
+    <target name="buildReleaseLinuxServer" depends="refreshSudo, switchToDebug, createPostgreSQLDB, createMySQLDB, createSQLiteDB">
+        <!-- build the tar.gz file without client files, and without sqlite. this is for the hosted server -->
+        <property name="SkipCompileClient" value="true"/>
+        <call target="compileRelease"/>
+        <call target="translationCompilePOFile"/>
+        <call target="setupLinuxServer"/>
+    </target>
+    <target name="buildRelease">
+        <if test="${platform::is-unix()}">
             <call target="buildReleaseLinux"/>
         </if>
-        <if test="${framework::get-target-framework() == 'net-2.0'}" >
+        <if test="${platform::is-windows()}">
             <call target="buildReleaseWindows"/>
         </if>
     </target>

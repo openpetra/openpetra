@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-06-16 14:12+0200\n"
-"PO-Revision-Date: 2009-09-28 14:29+0200\n"
+"PO-Revision-Date: 2009-12-25 20:31+0100\n"
 "Last-Translator: Timotheus Pokorra <timotheus.pokorra@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: de\n"
@@ -33,7 +33,7 @@ msgstr "Ungültige Eingabe"
 
 #, csharp-format
 msgid "'{0}' cannot be later or equal than '{1}'."
-msgstr "'{0}' darf nicht nach order gleich dem '{1}' sein."
+msgstr "'{0}' darf nicht nach oder gleich dem '{1}' sein."
 
 #, csharp-format
 msgid "{0} must be a date.'"
@@ -60,7 +60,7 @@ msgid "'{0}' cannot be earlier or equal than '{1}'."
 msgstr "'{0}' darf nicht vor oder gleich dem {1} sein."
 
 msgid "Invalid number entered."
-msgstr "Ungültige Zahleingabe."
+msgstr "Es wurde keine gültige Zahl eingegeben."
 
 #, csharp-format
 msgid "'{0}' must be an Integer (= a number without a fraction)."
@@ -102,7 +102,7 @@ msgstr "Datenbank:"
 msgid "Petra Login"
 msgstr "Petra Anmeldung"
 
-msgid " P E T R A "
+msgid " O P E N P E T R A "
 msgstr "O P E N P E T R A"
 
 msgid "Version"
@@ -112,7 +112,7 @@ msgid "© 1995 - 2009 by OM International"
 msgstr "© 1995 - 2009 by OM International"
 
 msgid "Standalone / Network / Remote"
-msgstr ""
+msgstr "Einzelplatz / Netzwerk / Remote"
 
 msgid "Closes this window"
 msgstr "Schliesst dieses Fenster"
@@ -127,7 +127,7 @@ msgid "Petra &Main Menu"
 msgstr "Petra &Hauptmenü"
 
 msgid "Pa&rtner"
-msgstr ""
+msgstr "Pa&rtner"
 
 msgid "&Finance"
 msgstr "&Finanzen"
@@ -142,10 +142,10 @@ msgid "Financial &Development"
 msgstr "Finanz &Planung"
 
 msgid "&System Manager"
-msgstr ""
+msgstr "&Systemeinstellungen"
 
-msgid "&Petra"
-msgstr ""
+msgid "&OpenPetra"
+msgstr "&OpenPetra"
 
 msgid "&Petra Help"
 msgstr "&Petra Hilfe"
@@ -174,20 +174,8 @@ msgstr "&Personal"
 msgid "C&onference Management"
 msgstr "K&onferenzen"
 
-msgid "Form &List"
-msgstr ""
-
-msgid "USERNAME"
-msgstr "BENUTZER"
-
-msgid "01-JAN-1900 00:00:00"
-msgstr ""
-
 msgid "Failed Logins:"
 msgstr "Fehlgeschlagene Logins:"
-
-msgid "0"
-msgstr ""
 
 msgid "User:"
 msgstr "Benutzer:"
@@ -196,10 +184,10 @@ msgid "Last Failed Login:"
 msgstr "Letzter fehlgeschlagener Login:"
 
 msgid "Last Login:"
-msgstr "Letzer Login:"
+msgstr "Letzter Login:"
 
 msgid "Go to Finance Module"
-msgstr "Gehe zum Modul Finanzbuchhaltung"
+msgstr "Gehe zur Finanzbuchhaltung"
 
 msgid "Go to Partner Module"
 msgstr "Gehe zum Modul Partner"
@@ -245,256 +233,229 @@ msgid "Finance Data"
 msgstr ""
 
 msgid "&New Partner..."
-msgstr ""
+msgstr "&Neuer Partner..."
 
 msgid "Deacti&vate Partner..."
-msgstr ""
+msgstr "Partner deakti&vieren"
 
 msgid "&Delete THIS Partner..."
-msgstr ""
+msgstr "&Diesen Partner Löschen"
 
 msgid "Copy Partner's Partner &Key"
-msgstr ""
+msgstr "Partnerschlüssel &kopieren"
 
 msgid "Copy Partner's &Address..."
-msgstr ""
+msgstr "&Adresse des Partners kopieren"
 
 msgid "&Send Email"
-msgstr ""
+msgstr "Email &schicken"
 
 msgid "P&rint Section..."
-msgstr ""
+msgstr "Absatz d&rucken"
 
 msgid "&Export Partner"
-msgstr ""
+msgstr "Partner &exportieren"
 
 msgid "&Save"
-msgstr ""
+msgstr "&Speichern"
 
 msgid "&Print..."
-msgstr ""
+msgstr "Drucken... (&P)"
 
 msgid "Find New &Address..."
-msgstr ""
+msgstr "Neue &Adresse suchen..."
 
 msgid "Undo &Current Field"
-msgstr ""
+msgstr "Aktuelles Feld rückgängig"
 
 msgid "&Undo Screen"
-msgstr ""
+msgstr "Bildschirm rückgängig"
 
 msgid "&Find..."
-msgstr ""
+msgstr "Suchen..."
 
 msgid "&Edit"
-msgstr ""
+msgstr "&Bearbeiten"
 
 msgid "&Partner Data"
-msgstr ""
+msgstr "&Partner Daten"
 
 msgid "P&ersonnel Data"
-msgstr ""
+msgstr "P&ersonal Daten"
 
 msgid "&Finance Data"
-msgstr ""
+msgstr "&Finanz Daten"
 
 msgid "&Expanded"
-msgstr ""
+msgstr "&Ausgeklappt"
 
 msgid "&Collapsed"
-msgstr ""
+msgstr "&Eingeklappt"
 
 msgid "&Upper Screen Part"
-msgstr ""
+msgstr "Oberer Fensterteil"
 
 msgid "View"
-msgstr ""
+msgstr "Betrachten"
 
 msgid "&Addresses"
-msgstr ""
+msgstr "&Adressen"
 
 msgid "Partner &Details"
-msgstr ""
+msgstr "Partner &Details"
 
 msgid "Foundation Details"
-msgstr ""
+msgstr "Details von Stiftungen"
 
 msgid "&Subscriptions"
-msgstr ""
+msgstr "&Abonnements"
 
 msgid "Special &Types"
-msgstr ""
+msgstr "Typisierung nach Kategorien"
 
 msgid "&Contacts..."
-msgstr ""
+msgstr "Kontakte..."
 
 msgid "Family &Members..."
-msgstr ""
+msgstr "Familien&mitglieder..."
 
 msgid "&Relationships..."
-msgstr ""
+msgstr "Verknüpfungen..."
 
 msgid "&Interests..."
-msgstr ""
+msgstr "&Interessen..."
 
 msgid "R&eminders..."
-msgstr ""
+msgstr "&Erinnerungen..."
 
 msgid "&Notes"
-msgstr ""
+msgstr "&Notizen"
 
 msgid "&Local Partner Data"
-msgstr ""
+msgstr "&Lokale Partnerdaten"
 
 msgid "&Worker Field..."
-msgstr ""
+msgstr "Feld des Arbeiters..."
 
 msgid "&Personnel/Individual Data"
-msgstr ""
+msgstr "&Personaldaten"
 
 msgid "Donor &History..."
-msgstr ""
+msgstr "Bisher gespendet..."
 
 msgid "Recipient Histor&y..."
-msgstr ""
+msgstr "Bisher erhaltene Spenden..."
 
 msgid "Finance Reports"
-msgstr ""
+msgstr "Finanzberichte"
 
 msgid "Ban&k Accounts"
-msgstr ""
+msgstr "Ban&kkonten"
 
 msgid "&Gift Receipting"
-msgstr ""
+msgstr "Spendenbuchhaltun&g"
 
 msgid "&Finance Details..."
-msgstr ""
+msgstr "&Finanzdaten..."
 
 msgid "Maintain"
-msgstr ""
+msgstr "Bearbeiten"
 
 msgid "Partner Edit"
-msgstr ""
+msgstr "Partner Bearbeiten"
 
 msgid "Find by Bank Details"
-msgstr ""
+msgstr "Mit Bankdaten suchen"
 
 msgid "Find by Partner Details"
-msgstr ""
+msgstr "Mit Partnerdaten suchen"
 
 msgid "&Cancel"
-msgstr ""
+msgstr "Abbrechen"
 
 msgid "Fully load Data"
-msgstr ""
+msgstr "Daten komplett laden"
 
 msgid "&Accept"
-msgstr ""
+msgstr "Übernehmen"
 
 msgid "&Search"
-msgstr ""
+msgstr "&Suchen"
 
 msgid "&Work with Last Partner..."
-msgstr ""
-
-msgid "1"
-msgstr ""
-
-msgid "2"
-msgstr ""
-
-msgid "3"
-msgstr ""
-
-msgid "4"
-msgstr ""
-
-msgid "5"
-msgstr ""
-
-msgid "6"
-msgstr ""
-
-msgid "7"
-msgstr ""
-
-msgid "8"
-msgstr ""
-
-msgid "9"
-msgstr ""
+msgstr "&Wieder mit dem letzten Partner arbeiten..."
 
 msgid "&Recent Partners"
-msgstr ""
+msgstr "Bishe&r bearbeitete Partner"
 
 msgid "&View Partner"
-msgstr ""
+msgstr "Schnellansicht"
 
 msgid "&Edit Partner"
-msgstr ""
+msgstr "Partner b&earbeiten"
 
 msgid "Mer&ge Partners..."
-msgstr ""
+msgstr "Partner zusammenfü&gen..."
 
 msgid "&Delete Partner"
-msgstr ""
+msgstr "Partner löschen"
 
 msgid "Send E&mail to Partner"
-msgstr ""
+msgstr "E&mail an Partner schicken"
 
 msgid "&Print Partner"
-msgstr ""
+msgstr "&Partner drucken"
 
 msgid "E&xport Partner"
-msgstr ""
+msgstr "Partner e&xportieren"
 
 msgid "&Import Partner"
-msgstr ""
+msgstr "Partner &importieren"
 
 msgid "&Addresses..."
-msgstr ""
+msgstr "&Adressen"
 
 msgid "Partner &Details..."
-msgstr ""
+msgstr "Partner &Details..."
 
 msgid "Foundation Details..."
-msgstr ""
+msgstr "Stiftungsdetails..."
 
 msgid "&Subscriptions..."
-msgstr ""
+msgstr "Abonnements..."
 
 msgid "Special &Types..."
-msgstr ""
+msgstr "&Typisierung nach Kategorien..."
 
 msgid "&Notes..."
-msgstr ""
+msgstr "&Notizen..."
 
 msgid "&Local Partner Data..."
-msgstr ""
+msgstr "&Lokale Partner Daten..."
 
 msgid "&Personnel/Individual Data..."
-msgstr ""
+msgstr "&Personal Daten..."
 
 msgid "Donor  &History..."
-msgstr ""
+msgstr "Bis&herige Spenden vom Partner..."
 
 msgid "Recipient  Histor&y..."
-msgstr ""
+msgstr "Spenden für den Partner..."
 
 msgid "&Generate Extract From Found Partners..."
-msgstr ""
+msgstr "Erzeuge eine Liste von gefunden Partnern..."
 
 msgid "&Extracts..."
-msgstr ""
+msgstr "&Listen..."
 
 msgid "&Duplicate  Address Check..."
-msgstr ""
+msgstr "Prüfe doppelte Adressen..."
 
 msgid "&Merge  Addresses..."
-msgstr ""
+msgstr "Adressen zusammenfügen..."
 
 msgid "Find Partners at &Location..."
-msgstr ""
+msgstr "Partner nach Adresse finden..."
 
 msgid "Subscription Expiry &Notices..."
 msgstr ""
@@ -731,9 +692,6 @@ msgid "P&revious Name:"
 msgstr ""
 
 msgid "Believer since"
-msgstr ""
-
-msgid "8888"
 msgstr ""
 
 msgid "&Year:"
@@ -3246,6 +3204,7 @@ msgstr "Standardreport"
 
 msgid "ICH Processing"
 msgstr "ICH Verarbeitung"
+
 msgid "Cannot open CSV file, because it is missing the header line"
 msgstr ""
 
@@ -3580,5 +3539,35 @@ msgid "Manage Cost Centres"
 msgstr ""
 
 msgid "Accounts Payable Payment Batch"
+msgstr ""
+
+msgid ""
+"You need to finish editing by choosing the 'Done' button\n"
+"before you can close the window!"
+msgstr ""
+
+msgid "Load Partners from File"
+msgstr ""
+
+msgid "Import of partners failed!"
+msgstr ""
+
+msgid "Partner(s) have been imported successfully"
+msgstr ""
+
+msgid "Import Partners"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Please make sure that you have logged in to your network drive\n"
+"and can access the directory\n"
+"{0}\n"
+"If this is the case and you still get this message,\n"
+"you might use an IP address rather than a hostname for the server.\n"
+"Please ask your local System Administrator for help."
+msgstr ""
+
+msgid "Cannot check for patches"
 msgstr ""
 

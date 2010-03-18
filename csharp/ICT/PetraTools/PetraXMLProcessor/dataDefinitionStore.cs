@@ -680,13 +680,19 @@ namespace Ict.Tools.DBXML
                 field.ExistsStrInitialValue = true;
                 field.iOrder = grpTableField.List.Count;
                 grpTableField.List.Add(field);
-                constr = new TConstraint();
-                constr.strName = this.strName + "_fkcr";
-                constr.strType = "foreignkey";
-                constr.strThisFields = StringHelper.StrSplit("s_created_by_c", ",");
-                constr.strOtherTable = "s_user";
-                constr.strOtherFields = StringHelper.StrSplit("s_user_id_c", ",");
-                grpConstraint.List.Add(constr);
+
+                if (this.strName != "s_user")
+                {
+                    // avoid circular reference inside table. MySQL does not like that
+                    constr = new TConstraint();
+                    constr.strName = this.strName + "_fkcr";
+                    constr.strType = "foreignkey";
+                    constr.strThisFields = StringHelper.StrSplit("s_created_by_c", ",");
+                    constr.strOtherTable = "s_user";
+                    constr.strOtherFields = StringHelper.StrSplit("s_user_id_c", ",");
+                    grpConstraint.List.Add(constr);
+                }
+
                 field = new TTableField();
                 field.strName = "s_date_modified_d";
                 field.strTableName = this.strName;
@@ -715,13 +721,18 @@ namespace Ict.Tools.DBXML
                 field.ExistsStrInitialValue = true;
                 field.iOrder = grpTableField.List.Count;
                 grpTableField.List.Add(field);
-                constr = new TConstraint();
-                constr.strName = this.strName + "_fkmd";
-                constr.strType = "foreignkey";
-                constr.strThisFields = StringHelper.StrSplit("s_modified_by_c", ",");
-                constr.strOtherTable = "s_user";
-                constr.strOtherFields = StringHelper.StrSplit("s_user_id_c", ",");
-                grpConstraint.List.Add(constr);
+
+                if (this.strName != "s_user")
+                {
+                    // avoid circular reference inside table. MySQL does not like that
+                    constr = new TConstraint();
+                    constr.strName = this.strName + "_fkmd";
+                    constr.strType = "foreignkey";
+                    constr.strThisFields = StringHelper.StrSplit("s_modified_by_c", ",");
+                    constr.strOtherTable = "s_user";
+                    constr.strOtherFields = StringHelper.StrSplit("s_user_id_c", ",");
+                    grpConstraint.List.Add(constr);
+                }
             }
 
             field = new TTableField();
@@ -806,6 +817,100 @@ namespace Ict.Tools.DBXML
 
             grpIndex.List.Add(AIndex);
             return true;
+        }
+    }
+
+    /// <summary>
+    /// sort the tables by dependency of the constraints, using topological sort.
+    /// in the end, we get a list of tables, in the order that you need when you populate the database with constraints enabled.
+    /// first the tables that depend on nothing, and then the tables that depend on them.
+    /// deleting the database can be done the other way round
+    /// </summary>
+    public class TTableSort
+    {
+        private static TTable GetTableWithoutUnsatisfiedDependancies(ArrayList ASortedList, ArrayList AUnsortedTables)
+        {
+            foreach (TTable t in AUnsortedTables)
+            {
+                bool unsatisfiedDependancy = false;
+
+                // find a table that has no dependancies on Tables that are still in ATables
+                foreach (TConstraint c in t.grpConstraint.List)
+                {
+                    if ((c.strType == "foreignkey") && (c.strOtherTable != t.strName))
+                    {
+                        foreach (TTable t2 in AUnsortedTables)
+                        {
+                            if (t2.strName == c.strOtherTable)
+                            {
+                                unsatisfiedDependancy = true;
+                            }
+                        }
+                    }
+                }
+
+                if (!unsatisfiedDependancy)
+                {
+                    return t;
+                }
+            }
+
+            return null;
+        }
+
+        private static Int32 GetTableIndex(ArrayList ATables, string ADBName)
+        {
+            Int32 i = 0;
+
+            foreach (TTable t in ATables)
+            {
+                if (t.strName == ADBName)
+                {
+                    return i;
+                }
+
+                i++;
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// sort by dependancies
+        /// </summary>
+        /// <param name="AStore"></param>
+        /// <param name="AOrigTables"></param>
+        /// <returns></returns>
+        public static ArrayList TopologicalSort(TDataDefinitionStore AStore, ArrayList AOrigTables)
+        {
+            ArrayList Result = new ArrayList();
+            ArrayList Tables = new ArrayList(AOrigTables);
+
+            // manually put s_user first. it does depend on p_partner, but we are not using that at the moment
+            Result.Add(Tables[GetTableIndex(Tables, "s_user")]);
+            Tables.RemoveAt(GetTableIndex(Tables, "s_user"));
+
+            while (Tables.Count > 0)
+            {
+                TTable t = GetTableWithoutUnsatisfiedDependancies(Result, Tables);
+
+                if (t == null)
+                {
+                    string msg = string.Empty;
+
+                    foreach (TTable t2 in Tables)
+                    {
+                        msg += t2.strName + ";";
+                    }
+
+                    throw new Exception("Problem with TopologicalSort, tables " + msg);
+                }
+
+                Result.Add(t);
+                Tables.Remove(t);
+            }
+
+            return Result;
         }
     }
 

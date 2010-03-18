@@ -75,15 +75,43 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             XmlDocument doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Load Partners from File"));
 
+            if (doc == null)
+            {
+                return;
+            }
+
             TVerificationResultCollection VerificationResult;
 
             if (!TRemote.MPartner.ImportExport.WebConnectors.ImportPartners(TXMLParser.XmlToString(doc), out VerificationResult))
             {
-                // TODO: show verification details
-                MessageBox.Show(Catalog.GetString(
-                        "Import of partners failed!"),
-                    Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string ErrorMessages = String.Empty;
+
+                if (VerificationResult != null)
+                {
+                    foreach (TVerificationResult verif in VerificationResult)
+                    {
+                        ErrorMessages += "[" + verif.FResultContext + "] " +
+                                         verif.FResultTextCaption + ": " +
+                                         verif.FResultText + Environment.NewLine;
+                    }
+                }
+
+                MessageBox.Show(ErrorMessages, Catalog.GetString("Import of partners failed!"));
             }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("Partner(s) have been imported successfully"), Catalog.GetString(
+                        "Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        /// export partners into file
+        public static void ExportPartners(IntPtr AParentFormHandle)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            doc.LoadXml(TRemote.MPartner.ImportExport.WebConnectors.ExportPartners());
+            TImportExportDialogs.ExportWithDialog(doc, Catalog.GetString("Save Partners into File"));
         }
 
         /// <summary>

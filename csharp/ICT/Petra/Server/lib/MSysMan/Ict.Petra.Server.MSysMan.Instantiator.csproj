@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{65837962-CBC5-4E5A-B75E-9ADCBD9DDD49}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -81,6 +81,10 @@
     <ProjectReference Include="Ict.Petra.Server.MSysMan.UIConnectors.csproj">
       <Project>{1403E8FE-F02E-4BF9-8648-D803397A26E0}</Project>
       <Name>Ict.Petra.Server.MSysMan.UIConnectors</Name>
+    </ProjectReference>
+    <ProjectReference Include="Ict.Petra.Server.MSysMan.WebConnectors.csproj">
+      <Project>{88C4BED3-FB27-46F8-85A7-F461989B7A34}</Project>
+      <Name>Ict.Petra.Server.MSysMan.WebConnectors</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

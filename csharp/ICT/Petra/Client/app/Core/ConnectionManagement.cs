@@ -28,8 +28,10 @@ using System.Collections;
 using System.Net.Sockets;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Lifetime;
+using System.IO;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.Interfaces.MPartner;
@@ -322,6 +324,18 @@ namespace Ict.Petra.Client.App.Core
                     exeVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
                 }
 
+                // if there is a version.txt in the bin directory, use that.
+                // this allows better debugging etc
+                string BinPath = TClientSettings.Petra_Path_Bin;
+
+                if (File.Exists(BinPath + Path.DirectorySeparatorChar + "version.txt"))
+                {
+                    StreamReader srVersion = new StreamReader(BinPath + Path.DirectorySeparatorChar + "version.txt");
+                    TFileVersionInfo v = new TFileVersionInfo(srVersion.ReadLine());
+                    exeVersion = new Version(v.FileMajorPart, v.FileMinorPart, v.FileBuildPart, v.FilePrivatePart);
+                    srVersion.Close();
+                }
+
                 AClientManager.ConnectClient(AUserName, APassword,
                     TClientInfo.ClientComputerName,
                     TClientInfo.ClientIPAddress,
@@ -337,7 +351,6 @@ namespace Ict.Petra.Client.App.Core
                     out ASystemEnabled,
                     out Ict.Petra.Shared.UserInfo.GUserInfo);
 
-                // System.Version.Create('0.9.1.0'),
                 if (ARemotingURLs.ContainsKey(SharedConstants.REMOTINGURL_IDENTIFIER_TESTOBJECT))
                 {
                     FRemotingURL_TestObject = (String)ARemotingURLs[SharedConstants.REMOTINGURL_IDENTIFIER_TESTOBJECT];

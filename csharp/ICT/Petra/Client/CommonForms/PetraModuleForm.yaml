@@ -16,7 +16,7 @@ RootNode:
     Menu:
         mniPetraModules:
            Order: AlwaysLast
-           Label: &Petra
+           Label: &OpenPetra
            mniPetraMainMenu: {Action=actMainMenu}
            mniPetraPartnerModule: {Action=actPartnerModule}
            mniPetraFinanceModule: {Action=actFinanceModule}

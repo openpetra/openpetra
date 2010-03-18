@@ -39,6 +39,12 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="Ict.Common.DB">
+      <HintPath>..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>..\..\..\ThirdParty\MySQL\MySql.Data.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite">
@@ -49,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="loadMysql.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="sqlite.cs" />
     <Compile Include="writesql.cs" />

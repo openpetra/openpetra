@@ -28,7 +28,6 @@ using System.Collections;
 using System.Data;
 using System.Data.Odbc;
 using System.Threading;
-using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;

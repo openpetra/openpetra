@@ -75,6 +75,8 @@ partial class MainForm
         this.tbrEmails = new System.Windows.Forms.ToolStrip();
         this.btnSendOneEmail = new System.Windows.Forms.ToolStripButton();
         this.btnSendAllEmails = new System.Windows.Forms.ToolStripButton();
+        this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+        this.txtSmtpPassword = new System.Windows.Forms.ToolStripTextBox();
         this.tpgLetters = new System.Windows.Forms.TabPage();
         this.sptLetters = new System.Windows.Forms.SplitContainer();
         this.grdLetters = new System.Windows.Forms.DataGridView();
@@ -302,7 +304,9 @@ partial class MainForm
         //
         this.tbrEmails.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                 this.btnSendOneEmail,
-                this.btnSendAllEmails
+                this.btnSendAllEmails,
+                this.toolStripLabel1,
+                this.txtSmtpPassword
             });
         this.tbrEmails.Location = new System.Drawing.Point(0, 0);
         this.tbrEmails.Name = "tbrEmails";
@@ -331,6 +335,19 @@ partial class MainForm
         this.btnSendAllEmails.Size = new System.Drawing.Size(80, 22);
         this.btnSendAllEmails.Text = "Send all Emails";
         this.btnSendAllEmails.Click += new System.EventHandler(this.BtnSendAllEmailsClick);
+
+        //
+        // toolStripLabel1
+        //
+        this.toolStripLabel1.Name = "toolStripLabel1";
+        this.toolStripLabel1.Size = new System.Drawing.Size(84, 22);
+        this.toolStripLabel1.Text = "Email Password:";
+
+        //
+        // txtSmtpPassword
+        //
+        this.txtSmtpPassword.Name = "txtSmtpPassword";
+        this.txtSmtpPassword.Size = new System.Drawing.Size(100, 25);
 
         //
         // tpgLetters
@@ -801,6 +818,9 @@ partial class MainForm
         this.ResumeLayout(false);
         this.PerformLayout();
     }
+
+    private System.Windows.Forms.ToolStripTextBox txtSmtpPassword;
+    private System.Windows.Forms.ToolStripLabel toolStripLabel1;
 
     private System.Windows.Forms.Label label11;
     private System.Windows.Forms.TextBox txtPagesSent;

@@ -160,9 +160,17 @@ namespace Ict.Common.Controls
 
                 if (!FGUIAssemblies.Keys.Contains(strNamespace))
                 {
+                    // work around dlls containing several namespaces, eg Ict.Petra.Client.MFinance.Gui contains AR as well
+                    string DllName = strNamespace;
+
+                    if (!System.IO.File.Exists(DllName + ".dll"))
+                    {
+                        DllName = DllName.Substring(0, DllName.LastIndexOf("."));
+                    }
+
                     try
                     {
-                        FGUIAssemblies.Add(strNamespace, Assembly.LoadFrom(strNamespace + ".dll"));
+                        FGUIAssemblies.Add(strNamespace, Assembly.LoadFrom(DllName + ".dll"));
                     }
                     catch (Exception exp)
                     {
@@ -212,6 +220,11 @@ namespace Ict.Common.Controls
                         Cursor = Cursors.Default;
                         return;
                     }
+
+                    // TODO: check if user has permissions for this screen?
+                    // needs to be implemented as a static function of the screen, GetRequiredPermission returns the permission that is needed (eg PTNRUSER)
+                    // also use something similar as in lstFolderNavigation: CheckAccessPermissionDelegate?
+                    // delegate as a static function that is available from everywhere?
 
                     System.Object screen = Activator.CreateInstance(classType, new object[] { this.Handle });
 

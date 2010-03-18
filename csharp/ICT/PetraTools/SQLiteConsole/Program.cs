@@ -53,6 +53,7 @@ class TSQLiteConsole
             ADBFile,
             "",
             "",
+            "",
             ADBPassword,
             "");
         DBAccess.GDBAccessObj = db;

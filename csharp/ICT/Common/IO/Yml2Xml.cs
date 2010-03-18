@@ -29,6 +29,7 @@ using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Text;
 using Ict.Common;
 using Ict.Common.IO;
 
@@ -90,7 +91,8 @@ namespace Ict.Common.IO
             filename = AFilename;
 
             // file should be in unicode encoding
-            TextReader reader = new StreamReader(filename, true);
+            // StreamReader DetectEncodingFromByteOrderMarks does not work for ANSI?
+            TextReader reader = new StreamReader(filename, TTextFile.GetFileEncoding(filename), false);
             lines = reader.ReadToEnd().Replace("\r", "").Split(new char[] { '\n' });
             reader.Close();
             currentLine = -1;
@@ -114,6 +116,11 @@ namespace Ict.Common.IO
         /// </summary>
         public static bool CheckName(string AElementName)
         {
+            if ((AElementName.Length > 0) && Char.IsDigit(AElementName[0]))
+            {
+                return false;
+            }
+
             try
             {
                 new XmlDocument().CreateElement(AElementName);
@@ -126,32 +133,38 @@ namespace Ict.Common.IO
         }
 
         private static Int32 DEFAULTINDENT = 4;
-        private static void WriteXmlNode2Yml(StreamWriter sw, Int32 ACurrentIndent, XmlNode ANode)
+        private static void WriteXmlNode2Yml(StringBuilder AYmlDocument,
+            Int32 ACurrentIndent,
+            XmlNode ANode,
+            SortedList <string, string>AInheritedAttributes)
         {
             string Indent = "".PadLeft(ACurrentIndent);
 
             if (ACurrentIndent == 0)
             {
-                sw.Write(ROOTNODEINTERNAL + ":");
+                AYmlDocument.Append(ROOTNODEINTERNAL + ":");
             }
             else
             {
                 if ((ANode.Name == XMLELEMENT) && TXMLParser.HasAttribute(ANode, "name"))
                 {
-                    sw.Write(Indent + TXMLParser.GetAttribute(ANode, "name") + ":");
+                    AYmlDocument.Append(Indent + TXMLParser.GetAttribute(ANode, "name") + ":");
                 }
                 else
                 {
-                    sw.Write(Indent + ANode.Name + ":");
+                    AYmlDocument.Append(Indent + ANode.Name + ":");
                 }
             }
 
-            // only write attributes if they are different from the parent node
+            // only write attributes if they are different from the parent node;
+            // always write explicitly defined empty attributes
             List <XmlAttribute>attributesToWrite = new List <XmlAttribute>();
 
             foreach (XmlAttribute attr in ANode.Attributes)
             {
-                if ((ANode.ParentNode == null) || (TYml2Xml.GetAttribute(ANode.ParentNode, attr.Name) != attr.Value))
+                if ((ANode.ParentNode == null) || (attr.Value == String.Empty)
+                    || !AInheritedAttributes.ContainsKey(attr.Name)
+                    || (AInheritedAttributes[attr.Name] != attr.Value))
                 {
                     if (!((ANode.Name == XMLELEMENT) && (attr.Name == "name")))
                     {
@@ -160,30 +173,64 @@ namespace Ict.Common.IO
                 }
             }
 
-            string attributesYml = "";
+            StringBuilder attributesYml = new StringBuilder(400);
+            bool firstAttribute = true;
 
             foreach (XmlAttribute attrToWrite in attributesToWrite)
             {
-                if (attributesYml.Length > 0)
+                if (!firstAttribute)
                 {
-                    attributesYml += ", ";
+                    attributesYml.Append(", ");
                 }
 
-                attributesYml += attrToWrite.Name + "=" + attrToWrite.Value;
+                firstAttribute = false;
+
+                attributesYml.Append(attrToWrite.Name + "=");
+
+                if (attrToWrite.Value.Contains(",") || attrToWrite.Value.Contains(":") || attrToWrite.Value.Contains("=")
+                    || attrToWrite.Value.Contains("\""))
+                {
+                    attributesYml.Append("\"" + attrToWrite.Value.Replace("\"", "\\\"") + "\"");
+                }
+                else
+                {
+                    attributesYml.Append(attrToWrite.Value);
+                }
             }
 
-            if (attributesYml.Length > 0)
+            if (!firstAttribute)
             {
-                sw.WriteLine("{" + attributesYml + "}");
+                AYmlDocument.Append("{" + attributesYml.ToString() + "}" + Environment.NewLine);
             }
             else
             {
-                sw.WriteLine();
+                AYmlDocument.Append(Environment.NewLine);
             }
 
             foreach (XmlNode childNode in ANode.ChildNodes)
             {
-                WriteXmlNode2Yml(sw, ACurrentIndent + DEFAULTINDENT, childNode);
+                // make a deep copy of the sorted list, so that we don't modify the original list
+                SortedList <string, string>NewAttributesList = new SortedList <string, string>();
+
+                foreach (string key in AInheritedAttributes.Keys)
+                {
+                    NewAttributesList.Add(key, AInheritedAttributes[key]);
+                }
+
+                // add only the attributes written in this loop
+                foreach (XmlAttribute attrToWrite in attributesToWrite)
+                {
+                    if (NewAttributesList.ContainsKey(attrToWrite.Name))
+                    {
+                        NewAttributesList[attrToWrite.Name] = attrToWrite.Value;
+                    }
+                    else
+                    {
+                        NewAttributesList.Add(attrToWrite.Name, attrToWrite.Value);
+                    }
+                }
+
+                WriteXmlNode2Yml(AYmlDocument, ACurrentIndent + DEFAULTINDENT, childNode, NewAttributesList);
             }
         }
 
@@ -192,9 +239,13 @@ namespace Ict.Common.IO
         /// </summary>
         public static bool Xml2Yml(XmlDocument ADoc, string AOutYMLFile)
         {
-            StreamWriter sw = new StreamWriter(AOutYMLFile);
+            StringBuilder sb = new StringBuilder(1024 * 1024 * 5);
 
-            WriteXmlNode2Yml(sw, 0, ADoc.DocumentElement);
+            WriteXmlNode2Yml(sb, 0, ADoc.DocumentElement, new SortedList <string, string>());
+
+            StreamWriter sw = new StreamWriter(AOutYMLFile, false, System.Text.Encoding.UTF8);
+
+            sw.Write(sb.ToString());
 
             sw.Close();
 
@@ -1005,7 +1056,7 @@ namespace Ict.Common.IO
         {
             XmlNode newElement = TXMLParser.GetChild(parent, nodeName);
 
-            if (nodeName.Contains("Separator"))
+            if (nodeName.Contains("Separator") || nodeName.Contains(TYml2Xml.XMLELEMENT))
             {
                 // special case: separators have the same name
                 newElement = null;

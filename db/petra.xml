@@ -4030,7 +4030,7 @@
     <!-- Explicit Indexes on table p_banking_type  -->
   </table>
   <table name="p_banking_details"
-         descr="Any bank details for a partner can be store in this table"
+         descr="Any bank details for a partner can be stored in this table"
          area="Petra Data"
          label="Banking Details"
          dumpname="p_bnkdet"
@@ -4349,12 +4349,13 @@
                 format="9999999"
                 label="Bank statement"
                 notnull="yes"/>
-    <tablefield name="p_bank_key_n"
-                type="number"
-                length="10"
-                descr="The bank that issued this statement"
-                format=""
-                notnull="yes"/>
+    <tablefield name="a_bank_account_key_i"
+                type="integer"
+                descr="this is the bank account that this statement is for; this is necessary because you can have several accounts at the same bank"
+                format="9999999"
+                label="banking details"
+                />
+                <!-- TODO: a_bank_account_key_i should be NOT NULL -->
     <tablefield name="a_date_d"
                 type="date"
                 descr="The date of this statement"
@@ -4380,15 +4381,25 @@
                 descr="The end balance of the bank account after the statement"
                 format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
                 label="End balance"/>
+    <tablefield name="a_currency_code_c"
+                type="varchar"
+                descr="This defines the currency of the transactions on this statement"
+                format="X(8)"
+                notnull="yes"/>
     <!-- Constraints on table a_ep_statement -->
     <primarykey name="a_ep_statement_pk"
                 descr=""
                 thisFields="a_statement_key_i"/>
     <foreignkey name="a_ep_statement_fk1"
                 descr=""
-                thisFields="p_bank_key_n"
-                otherTable="p_bank"
-                otherFields="p_partner_key_n"/>
+                thisFields="a_bank_account_key_i"
+                otherTable="p_banking_details"
+                otherFields="p_banking_details_key_i"/>
+    <foreignkey name="a_ep_statement_fk2"
+                descr=""
+                thisFields="a_currency_code_c"
+                otherTable="a_currency"
+                otherFields="a_currency_code_c"/>
   </table>
   <table name="a_ep_match"
          descr="the matches that can be used to identify recurring gift or GL transactions"
@@ -4436,7 +4447,6 @@
                 format="9999999999"
                 label="Recipient Ledger"
                 help="Enter the ledger number"
-                notnull="yes"
                 initial="0"/>
     <tablefield name="a_motivation_group_code_c"
                 type="varchar"
@@ -4445,8 +4455,7 @@
                 label="Motivation Group"
                 valueexpression="a_motivation_group_code_c NE &quot;&quot;&quot;&quot;"
                 valuemessage="Some data must be entered"
-                help="Enter a motivation group code"
-                notnull="yes"/>
+                help="Enter a motivation group code"/>
     <tablefield name="a_motivation_detail_code_c"
                 type="varchar"
                 descr="This defines the motivation detail within a motivation group."
@@ -4454,8 +4463,7 @@
                 label="Motivation Detail"
                 valueexpression="a_motivation_detail_code_c NE &quot;&quot;&quot;&quot;"
                 valuemessage="Some data must be entered"
-                help="Enter a motivation detail code"
-                notnull="yes"/>
+                help="Enter a motivation detail code"/>
     <tablefield name="a_comment_one_type_c"
                 type="varchar"
                 descr="Used to decide whose reports will see this comment"
@@ -4615,6 +4623,19 @@
                 label="Gift Restricted"
                 help="Should access to this gift be restricted to some people?"
                 initial="no"/>
+    <tablefield name="a_account_code_c"
+                type="varchar"
+                descr="This identifies the account the financial transaction must be stored against"
+                format="X(8)"
+                label="Account Code"
+                help="Enter an account code."/>
+    <tablefield name="a_key_ministry_key_n"
+                type="number"
+                typedotnet="Int64"
+                descr="Key ministry to which this transaction applies (just for fund transfers)"
+                length="10"
+                format="9999999999"
+                label="Key Ministry"/>
     <!-- Constraints on table a_ep_match -->
     <primarykey name="a_ep_match_pk"
                 descr=""
@@ -4662,6 +4683,16 @@
                 thisFields="p_donor_key_n"
                 otherTable="p_partner"
                 otherFields="p_partner_key_n"/>
+    <foreignkey name="a_ep_match_fk9"
+                descr=""
+                thisFields="a_ledger_number_i, a_account_code_c"
+                otherTable="a_account"
+                otherFields="a_ledger_number_i, a_account_code_c"/>
+    <foreignkey name="a_ep_match_fk10"
+                descr=""
+                thisFields="a_key_ministry_key_n"
+                otherTable="p_unit"
+                otherFields="p_partner_key_n"/>
     <!-- Explicit Indexes on table  a_ep_match  -->
     <index name="a_match_text_k"
            descr=""
@@ -4689,12 +4720,10 @@
                 format="9999999"
                 label="order"
                 notnull="yes"/>
-    <tablefield name="a_statement_bank_account_key_i"
-                type="integer"
-                descr="this is the bank account that this transaction is for; this is necessary because one statement can contain transactions to several accounts at the same bank?"
-                format="9999999"
-                label="banking details"
-                notnull="yes"/>
+    <tablefield name="a_match_text_c"
+                type="varchar"
+                format="X(50)"
+                descr="this is a calculated text that uniquely identifies this transaction so that it can be recognised next month. TODO: should have a link table a_ep_match between a_ep_transaction and a_ep_match_detail"/>
     <tablefield name="a_account_name_c"
                 type="varchar"
                 descr="This can be a summary of title, first name, last name etc. of the other party"
@@ -4770,10 +4799,6 @@
     <tablefield name="a_ep_match_key_i"
                 type="integer"
                 descr="set this value to the match (either new match or set automatically)"/>
-    <tablefield name="a_matching_status_c"
-                type="varchar"
-                format="X(20)"
-                descr="This defines if the match was automatically set, was created new, or this is not a recurring transaction or has not been processed yet"/>
     <!-- Constraints on table a_ep_transaction -->
     <primarykey name="a_ep_transaction_pk"
                 descr=""
@@ -4784,11 +4809,6 @@
                 otherTable="a_ep_statement"
                 otherFields="a_statement_key_i"/>
     <foreignkey name="a_ep_transaction_fk2"
-                descr=""
-                thisFields="a_statement_bank_account_key_i"
-                otherTable="p_banking_details"
-                otherFields="p_banking_details_key_i"/>
-    <foreignkey name="a_ep_transaction_fk3"
                 descr=""
                 thisFields="a_ep_match_key_i"
                 otherTable="a_ep_match"
@@ -7875,11 +7895,6 @@
                 format="X(8)"
                 label="Budget Type Code"
                 help="Select a type of budgeting for this account."/>
-    <tablefield name="a_fin_statement_group_c"
-                type="varchar"
-                descr=""
-                format="X(8)"
-                label="Financial Statement Group"/>
     <tablefield name="a_posting_status_l"
                 type="bit"
                 descr=""
@@ -9237,79 +9252,6 @@
                 otherFields="a_ledger_number_i, a_account_code_c"/>
     <!-- Explicit Indexes on table a_fees_receivable  -->
   </table>
-  <table name="a_fin_statement_group"
-         descr="Defines the different groups of accounts for financial statements and defines the attributes of each group.  Currently unused in Petra release 1."
-         area="Petra Data"
-         label="Financial Statement Groups"
-         dumpname="a_fin_st"
-         group="account">
-    <tablefield name="a_ledger_number_i"
-                type="integer"
-                descr=""
-                format="&gt;&gt;&gt;9"
-                label="Ledger Number"
-                columnlabel="Ledger"
-                notnull="yes"
-                initial="0"/>
-    <tablefield name="a_account_code_c"
-                type="varchar"
-                descr="This identifies the account the financial transaction must be stored against"
-                format="X(8)"
-                label="Account Code"
-                help="Enter an account code"
-                notnull="yes"/>
-    <tablefield name="a_fin_statement_group_c"
-                type="varchar"
-                descr=""
-                format="X(8)"
-                label="Group"
-                notnull="yes"/>
-    <tablefield name="a_report_section_c"
-                type="varchar"
-                descr=""
-                format="X(8)"
-                label="Section"
-                notnull="yes"/>
-    <tablefield name="a_contra_fin_statement_group_c"
-                type="varchar"
-                descr=""
-                format="X(8)"
-                label="Contra Group"/>
-    <tablefield name="a_heading_c"
-                type="varchar"
-                descr=""
-                format="X(30)"
-                label="Heading"/>
-    <tablefield name="a_indent_by_i"
-                type="integer"
-                descr=""
-                format="99"
-                label="Indent"
-                help="Indent the heading by this number of spaces"/>
-    <tablefield name="a_number_of_blank_lines_i"
-                type="integer"
-                descr=""
-                format="-&gt;,&gt;&gt;&gt;,&gt;&gt;9"
-                label="Blank Lines"
-                help="Number of blank lines to appear after line"
-                initial="0"/>
-    <tablefield name="a_ranking_in_section_i"
-                type="integer"
-                descr=""
-                format="-&gt;,&gt;&gt;&gt;,&gt;&gt;9"
-                label="Ranking"
-                initial="0"/>
-    <!-- Constraints on table a_fin_statement_group -->
-    <primarykey name="a_fin_statement_group_pk"
-                descr=""
-                thisFields="a_ledger_number_i, a_fin_statement_group_c, a_account_code_c, a_report_section_c"/>
-    <foreignkey name="a_fin_statement_group_fk1"
-                descr=""
-                thisFields="a_ledger_number_i, a_account_code_c"
-                otherTable="a_account"
-                otherFields="a_ledger_number_i, a_account_code_c"/>
-    <!-- Explicit Indexes on table a_fin_statement_group  -->
-  </table>
   <table name="a_form"
          descr="The form description for user definable forms such as receipts"
          area="Petra Data"
@@ -10357,7 +10299,7 @@
          area="Petra Data"
          label="Processed Fees"
          dumpname="a_proces"
-         group="account">
+         group="gift">
     <tablefield name="a_ledger_number_i"
                 type="integer"
                 descr="This is used as a key field in most of the accounting system files"
@@ -10440,6 +10382,11 @@
                 thisFields="a_ledger_number_i, a_period_number_i"
                 otherTable="a_accounting_period"
                 otherFields="a_ledger_number_i, a_accounting_period_number_i"/>
+    <foreignkey name="a_processed_fee_fk3"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i, a_detail_number_i"
+                otherTable="a_gift_detail"
+                otherFields="a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i, a_detail_number_i"/>
     <!-- Explicit Indexes on table a_processed_fee  -->
     <index name="a_processed_fee_k"
            descr="key"
@@ -27167,6 +27114,13 @@
             maxval="999999999"/>
   <sequence name="seq_match_number"
             descr="for matching transactions on bank statement. used in a_ep_match"
+            initial="0"
+            increment="1"
+            cycleonlimit="no"
+            minval="0"
+            maxval="999999999"/>
+  <sequence name="seq_statement_number"
+            descr="for bank statements. used in a_ep_statement"
             initial="0"
             increment="1"
             cycleonlimit="no"

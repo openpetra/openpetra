@@ -3,7 +3,7 @@
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * @Authors:
- *       >>>> Put your full name or just a shortname here <<<<
+ *       timop
  *
  * Copyright 2004-2009 by OM International
  *
