@@ -31,6 +31,7 @@ OpenPetra:
                         ImportPartners: {ActionClick=TFrmPartnerMain.ImportPartners}
                     MaintainPartner:
                         FindPartner: {ActionClick=TFrmPartnerMain.FindPartner}
+                        EditPartner2: {ActionOpenScreen=TFrmPartnerEdit2}
                     Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
                 Ledger43: {Label=German Ledger (43), LedgerNumber=43, Namespace=Ict.Petra.Client.MFinance.Gui}
