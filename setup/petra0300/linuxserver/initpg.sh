@@ -31,12 +31,11 @@ touch /tmp/grantpermissions-PostgreSQL.sql
 chown postgres /tmp/grantpermissions-PostgreSQL.sql
 sudo -u postgres psql openpetra -c "select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);" -t -o /tmp/grantpermissions-PostgreSQL.sql
 sudo chown `whoami` /tmp/grantpermissions-PostgreSQL.sql
-echo "GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver;" >> /tmp/grantpermissions-PostgreSQL.sql
-echo "GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver;" >> /tmp/grantpermissions-PostgreSQL.sql
-echo "GRANT SELECT,UPDATE,USAGE ON s_login_s_login_process_id_r_seq TO petraserver;" >> /tmp/grantpermissions-PostgreSQL.sql
-echo "GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver;" >> /tmp/grantpermissions-PostgreSQL.sql
-echo "GRANT SELECT,UPDATE,USAGE ON seq_general_ledger_master TO petraserver;" >> /tmp/grantpermissions-PostgreSQL.sql
-echo "GRANT SELECT,UPDATE,USAGE ON seq_statement_number TO petraserver;" >> /tmp/grantpermissions-PostgreSQL.sql
-echo "GRANT SELECT,UPDATE,USAGE ON seq_match_number TO petraserver;" >> /tmp/grantpermissions-PostgreSQL.sql
 sudo -u postgres psql openpetra -q < /tmp/grantpermissions-PostgreSQL.sql
 rm /tmp/grantpermissions-PostgreSQL.sql
+
+touch /tmp/grantpermissions-PostgreSQL-seq.sql
+chown postgres /tmp/grantpermissions-PostgreSQL-seq.sql
+sudo -u postgres psql openpetra -c "select 'GRANT SELECT,UPDATE,USAGE ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'S' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);" -t -o /tmp/grantpermissions-PostgreSQL-seq.sql
+sudo -u postgres psql openpetra -q < /tmp/grantpermissions-PostgreSQL-seq.sql
+rm /tmp/grantpermissions-PostgreSQL-seq.sql

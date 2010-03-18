@@ -168,6 +168,9 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("pub.", "public.");
             ReturnValue = ReturnValue.Replace("\"", "'");
 
+            // INSERT INTO table () VALUES
+            ReturnValue = ReturnValue.Replace("() VALUES", " VALUES");
+
             Match m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
 
             while (m.Success)
@@ -520,7 +523,7 @@ namespace Ict.Common.DB
             IDbConnection AConnection,
             Int64 ARestartValue)
         {
-            ADatabase.ExecuteScalar("ALTER SEQUENCE " + ASequenceName + " RESTART WITH " + ARestartValue.ToString(), ATransaction, false);
+            ADatabase.ExecuteScalar("SELECT pg_catalog.setval('" + ASequenceName + "', " + ARestartValue.ToString() + ", false);", ATransaction, false);
         }
     }
 }
