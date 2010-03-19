@@ -126,7 +126,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new RadioGroupNoBorderGenerator());
                 AvailableControlGenerators.Add(new RadioButtonGenerator());
                 AvailableControlGenerators.Add(new NumericUpDownGenerator());
-                AvailableControlGenerators.Add(new GridGenerator());
+                AvailableControlGenerators.Add(new WinformsGridGenerator());
+                AvailableControlGenerators.Add(new SourceGridGenerator());
             }
         }
 

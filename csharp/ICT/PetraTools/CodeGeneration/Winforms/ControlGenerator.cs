@@ -613,12 +613,25 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
     }
-    public class GridGenerator : TControlGenerator
+    public class SourceGridGenerator : TControlGenerator
     {
-        public GridGenerator()
+        public SourceGridGenerator()
             : base("grd", typeof(Ict.Common.Controls.TSgrdDataGridPaged))
         {
             FGenerateLabel = false;
+        }
+
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (base.ControlFitsNode(curNode))
+            {
+                if (TYml2Xml.GetAttribute(curNode, "Type").ToLower() != "winforms")
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
@@ -789,7 +802,193 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
     }
+    public class WinformsGridGenerator : TControlGenerator
+    {
+        public WinformsGridGenerator()
+            : base("grd", typeof(System.Windows.Forms.DataGridView))
+        {
+            FGenerateLabel = false;
+        }
 
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (base.ControlFitsNode(curNode))
+            {
+                if (TYml2Xml.GetAttribute(curNode, "Type").ToLower() == "winforms")
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        
+        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "SelectedRowActivates"))
+            {
+                // TODO: this function needs to be called by the manual code at the moment when eg a search finishes
+                // TODO: call "Activate" + TYml2Xml.GetAttribute(ctrl.xmlNode, "SelectedRowActivates")
+            }
+
+            StringCollection Columns = TYml2Xml.GetElements(ctrl.xmlNode, "Columns");
+
+            if (Columns.Count > 0)
+            {
+                writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Columns.Clear();" + Environment.NewLine);
+
+                foreach (string ColumnFieldName in Columns)
+                {
+                    bool IsDetailNotMaster;
+                    TTableField field = null;
+
+                    // customfield, eg. UC_GLTransactions, ATransaction.DateEntered and ATransaction.AnalysisAttributes
+                    // there needs to be a list of CustomColumns
+                    XmlNode CustomColumnsNode = TYml2Xml.GetChild(ctrl.xmlNode, "CustomColumns");
+                    XmlNode CustomColumnNode = null;
+
+                    if (CustomColumnsNode != null)
+                    {
+                        CustomColumnNode = TYml2Xml.GetChild(CustomColumnsNode, ColumnFieldName);
+                    }
+
+                    if (CustomColumnNode != null)
+                    {
+                        string ColumnType = "System.String";
+
+                        /* TODO DateTime (tracker: #58)
+                         * if (TYml2Xml.GetAttribute(CustomColumnNode, "Type") == "System.DateTime")
+                         * {
+                         *  ColumnType = "DateTime";
+                         * }
+                         */
+
+                        // TODO: different behaviour for double???
+                        if (TYml2Xml.GetAttribute(CustomColumnNode, "Type") == "Boolean")
+                        {
+                            ColumnType = "CheckBox";
+                        }
+
+                        writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Columns.Add(" +
+                            "FMainDS." + ctrl.GetAttribute("TableName") + ".Get" +ColumnFieldName + "DBName(), \"" + 
+                            TYml2Xml.GetAttribute(CustomColumnNode, "Label") + "\");" + Environment.NewLine);
+                    }
+                    else if (ctrl.HasAttribute("TableName"))
+                    {
+                        field = FCodeStorage.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster, true);
+                    }
+                    else
+                    {
+                        field = FCodeStorage.GetTableField(null, ColumnFieldName, out IsDetailNotMaster, true);
+                    }
+
+                    if (field != null)
+                    {
+                        string ColumnType = "System.String";
+
+                        /* TODO DateTime (tracker: #58)
+                         * if (field.GetDotNetType() == "System.DateTime")
+                         * {
+                         *  ColumnType = "DateTime";
+                         * }
+                         */
+
+                        // TODO: different behaviour for double???
+                        if (field.GetDotNetType() == "Boolean")
+                        {
+                            ColumnType = "CheckBox";
+                        }
+
+                        writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Columns.Add(" +
+                            TTable.NiceTableName(field.strTableName) + "Table.Get" +
+                            TTable.NiceFieldName(field.strName)  + "DBName(), \"" +
+                            field.strLabel + "\");" + Environment.NewLine);
+                    }
+                }
+            }
+
+            if (ctrl.HasAttribute("ActionLeavingRow"))
+            {
+                AssignEventHandlerToControl(writer, ctrl, "Selection.FocusRowLeaving", "SourceGrid.RowCancelEventHandler",
+                    ctrl.GetAttribute("ActionLeavingRow"));
+            }
+
+            if (ctrl.HasAttribute("ActionFocusRow"))
+            {
+// TODO                AssignEventHandlerToControl(writer, ctrl, "Selection.FocusRowEntered", "SourceGrid.RowEventHandler",
+//                    ctrl.GetAttribute("ActionFocusRow"));
+            }
+
+            if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable") && FCodeStorage.HasAttribute("DatasetType"))
+            {
+                writer.Template.AddToCodelet("SHOWDATA", "");
+
+                if (ctrl.HasAttribute("SortOrder"))
+                {
+                    // SortOrder is comma separated and has DESC or ASC after the column name
+                    string SortOrder = ctrl.GetAttribute("SortOrder");
+
+                    foreach (string SortOrderPart in SortOrder.Split(','))
+                    {
+                        bool temp;
+                        TTableField field = null;
+
+                        if ((SortOrderPart.Split(' ')[0].IndexOf(".") == -1) && ctrl.HasAttribute("TableName"))
+                        {
+                            field = FCodeStorage.GetTableField(null, ctrl.GetAttribute("TableName") + "." + SortOrderPart.Split(
+                                    ' ')[0], out temp, true);
+                        }
+                        else
+                        {
+                            field =
+                                writer.CodeStorage.GetTableField(
+                                    null,
+                                    SortOrderPart.Split(' ')[0],
+                                    out temp, true);
+                        }
+
+                        if (field != null)
+                        {
+                            SortOrder = SortOrder.Replace(SortOrderPart.Split(' ')[0], field.strName);
+                        }
+                    }
+
+                    writer.Template.AddToCodelet("DETAILTABLESORT", SortOrder);
+                }
+
+                if (ctrl.HasAttribute("RowFilter"))
+                {
+                    // this references a field in the table, and assumes there exists a local variable with the same name
+                    // eg. FBatchNumber in GL Journals
+                    string RowFilter = ctrl.GetAttribute("RowFilter");
+
+                    String FilterString = "\"";
+
+                    foreach (string RowFilterPart in RowFilter.Split(','))
+                    {
+                        bool temp;
+                        string columnName =
+                            writer.CodeStorage.GetTableField(
+                                null,
+                                RowFilterPart,
+                                out temp, true).strName;
+
+                        if (FilterString.Length > 1)
+                        {
+                            FilterString += " + \" and ";
+                        }
+
+                        FilterString += columnName + " = \" + F" + TTable.NiceFieldName(columnName) + ".ToString()";
+                    }
+
+                    writer.Template.AddToCodelet("DETAILTABLEFILTER", FilterString);
+                }
+            }
+        }
+    }
+    
     public class TTxtAutoPopulatedButtonLabelGenerator : TControlGenerator
     {
         String FButtonLabelType = "";
