@@ -488,9 +488,9 @@ namespace Ict.Petra.Client.MCommon
                 // perform data binding for user control depending on type etc.
                 PerformDataBinding(ADataLabelRow, DataLabelValuePartnerRow, DataLabelValueApplicationRow, PartnerKeyEditor);
 
-                // TODO? UOfficeSpecificGrid[ARowIndex, 0] = new Cell();
-                // TODO? UOfficeSpecificGrid.LinkedControls.Add(new LinkedControlValue(PartnerKeyEditor, new Position(ARowIndex, 0)));
-                UOfficeSpecificGrid[ARowIndex, 0] = new SourceGrid.Cells.CellControl(PartnerKeyEditor);
+                UOfficeSpecificGrid[ARowIndex, 0] = new SourceGrid.Cells.Cell();
+                UOfficeSpecificGrid.LinkedControls.Add(new LinkedControlValue(PartnerKeyEditor, new Position(ARowIndex, 0)));
+                UOfficeSpecificGrid[ARowIndex, 0].Tag = PartnerKeyEditor;
                 UOfficeSpecificGrid[ARowIndex, 0].ColumnSpan = 3;
 
                 // UOfficeSpecificGrid[ARowIndex, 1].AddController(SourceGrid.Cells.Controllers.Unselectable.Default);
@@ -511,9 +511,9 @@ namespace Ict.Petra.Client.MCommon
                 PerformDataBinding(ADataLabelRow, DataLabelValuePartnerRow, DataLabelValueApplicationRow, LookupValueEditor);
                 LookupValueEditor.TabStop = false;
 
-                // TODO? UOfficeSpecificGrid[ARowIndex, 1] = new Cell();
-                // TODO? UOfficeSpecificGrid.LinkedControls.Add(new LinkedControlValue((Control)LookupValueEditor, new Position(ARowIndex, 1)));
-                UOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.CellControl((Control)LookupValueEditor);
+                UOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
+                UOfficeSpecificGrid.LinkedControls.Add(new LinkedControlValue((Control)LookupValueEditor, new Position(ARowIndex, 1)));
+                UOfficeSpecificGrid[ARowIndex, 1].Tag = LookupValueEditor;
                 UOfficeSpecificGrid[ARowIndex, 1].ColumnSpan = 2;
 
                 // UOfficeSpecificGrid[ARowIndex, 1].AddController(SourceGrid.Cells.Controllers.Unselectable.Default);
@@ -1129,12 +1129,12 @@ namespace Ict.Petra.Client.MCommon
                 // apply partner key value
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_PARTNERKEY)
                 {
-                    // In thoery, the control will update the datasource itself as it is databound.
+                    // In theory, the control will update the datasource itself as it is databound.
                     // In practise, we can't trust the BindingManagerBase to actually do it
                     // So we find the control, and call ResetLabeltext.
                     // This in turn calls UpdateLabeltext in txtBtnLabel(Ict.Common.Controls)
                     // This ensures the new value makes it to the datasource!
-                    CurrentControl = (System.Windows.Forms.UserControl)((CellControl)UOfficeSpecificGrid.GetCell(ARow, AColumn)).Control;
+                    CurrentControl = (System.Windows.Forms.UserControl)((SourceGrid.Cells.Cell)UOfficeSpecificGrid.GetCell(ARow, AColumn)).Tag;
                     ((TtxtAutoPopulatedButtonLabel)CurrentControl).ResetLabelText();
                 }
 

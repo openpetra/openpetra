@@ -48,10 +48,6 @@
       <HintPath>..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="SourceGrid.Extensions">
-      <HintPath>..\..\..\ThirdParty\DevAge\SourceGrid.Extensions.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />

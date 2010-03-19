@@ -209,7 +209,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             foreach (DataColumn myColumn in FMainDS.AApDocumentDetail.PrimaryKey)
             {
                 string value1 = FMainDS.AApDocumentDetail.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;

@@ -987,7 +987,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // MJ??  FLogic.RefreshDataGridEDit(grdRecordList,ucoDetails.GetSelectedInterest);
             if (grdRecordList.DataSource.Count > 1)
             {
-                TmpDataRowView = FLogic.DetermineRecordToSelect((grdRecordList.DataSource as DevAge.ComponentModel.BoundDataView).mDataView,
+                TmpDataRowView = FLogic.DetermineRecordToSelect((grdRecordList.DataSource as DevAge.ComponentModel.BoundDataView).DataView,
                     tmpInterest);
                 TmpRowIndex = grdRecordList.Rows.DataSourceRowToIndex(TmpDataRowView);
                 grdRecordList.Selection.ResetSelection(false);

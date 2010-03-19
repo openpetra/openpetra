@@ -77,7 +77,7 @@ namespace {#NAMESPACE}
             foreach (DataColumn myColumn in FMainDS.{#MASTERTABLE}.PrimaryKey)
             {
                 string value1 = FMainDS.{#MASTERTABLE}.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;
@@ -110,7 +110,7 @@ namespace {#NAMESPACE}
             foreach (DataColumn myColumn in FMainDS.{#MASTERTABLE}.PrimaryKey)
             {
                 string value1 = row[myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView.Table.Rows[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView.Table.Rows[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;

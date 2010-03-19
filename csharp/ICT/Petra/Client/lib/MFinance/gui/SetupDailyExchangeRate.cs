@@ -178,7 +178,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             foreach (DataColumn myColumn in FMainDS.ADailyExchangeRate.PrimaryKey)
             {
                 string value1 = FMainDS.ADailyExchangeRate.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;

@@ -132,7 +132,7 @@ namespace Ict.Petra.Client.MPartner
 
                 if (DataGridExist())
                 {
-                    ChangesDV = new DataView(((DevAge.ComponentModel.BoundDataView)FDataGrid.DataSource).mDataView.Table,
+                    ChangesDV = new DataView(((DevAge.ComponentModel.BoundDataView)FDataGrid.DataSource).DataView.Table,
                         "",
                         "",
                         DataViewRowState.ModifiedCurrent);
@@ -707,7 +707,7 @@ namespace Ict.Petra.Client.MPartner
         {
             System.Int32 CurrentRow;
             DataView AGridDataView;
-            AGridDataView = ((DevAge.ComponentModel.BoundDataView)FDataGrid.DataSource).mDataView;
+            AGridDataView = ((DevAge.ComponentModel.BoundDataView)FDataGrid.DataSource).DataView;
             ARowNumber = 0;
             ASiteKey = Convert.ToInt64(((DataRowView)FDataGrid.SelectedDataRows[0]).Row[PartnerEditTDSFamilyMembersTable.GetPartnerKeyDBName()]);
 

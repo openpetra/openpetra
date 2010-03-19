@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -42,23 +42,11 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="Accessibility" />
-    <Reference Include="DevAge.Core">
-      <HintPath>..\..\..\ThirdParty\DevAge\DevAge.Core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="DevAge.Windows.Forms">
-      <HintPath>..\..\..\ThirdParty\DevAge\DevAge.Windows.Forms.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="Mono.Posix">
       <HintPath>..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
     </Reference>
     <Reference Include="SourceGrid">
       <HintPath>..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="SourceGrid.Extensions">
-      <HintPath>..\..\..\ThirdParty\DevAge\SourceGrid.Extensions.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />

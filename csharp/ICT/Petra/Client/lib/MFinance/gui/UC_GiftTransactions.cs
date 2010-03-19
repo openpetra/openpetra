@@ -156,7 +156,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             foreach (DataColumn myColumn in FMainDS.AGiftDetail.PrimaryKey)
             {
                 string value1 = FMainDS.AGiftDetail.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;

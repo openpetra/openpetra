@@ -1032,9 +1032,9 @@ namespace Ict.Common.Controls
         {
             int RowIndex = -1;
 
-            for (int Counter2 = 0; Counter2 < (this.DataSource as BoundDataView).mDataView.Count; Counter2++)
+            for (int Counter2 = 0; Counter2 < (this.DataSource as BoundDataView).DataView.Count; Counter2++)
             {
-                if ((this.DataSource as BoundDataView).mDataView[Counter2].Row == ADataRowView.Row)
+                if ((this.DataSource as BoundDataView).DataView[Counter2].Row == ADataRowView.Row)
                 {
                     RowIndex = Counter2;
                 }
@@ -1067,7 +1067,7 @@ namespace Ict.Common.Controls
             if ((AKey != FLastKeyCode) || (FAutoFindListRebuildNeeded))
             {
                 // Build a DataView that start with the typed character
-                GridDataTable = ((DevAge.ComponentModel.BoundDataView) base.DataSource).mDataView.Table;
+                GridDataTable = ((DevAge.ComponentModel.BoundDataView) base.DataSource).DataView.Table;
 
                 if ((FAutoFindColumn < 0) || (FAutoFindColumn >= this.Columns.Count))
                 {
@@ -1124,7 +1124,7 @@ namespace Ict.Common.Controls
                 //              MessageBox.Show("SelectClause: " + SelectClause);
                 FAutoFindMatchingDataView = new DataView(GridDataTable,
                     SelectClause,
-                    ((DevAge.ComponentModel.BoundDataView) base.DataSource).mDataView.Sort,
+                    ((DevAge.ComponentModel.BoundDataView) base.DataSource).DataView.Sort,
                     DataViewRowState.CurrentRows);
 
                 //              MessageBox.Show("FAutoFindMatchingDataView.Count: " + FAutoFindMatchingDataView.Count.ToString());

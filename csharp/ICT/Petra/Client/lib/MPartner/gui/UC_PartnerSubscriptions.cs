@@ -953,7 +953,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (grdRecordList.DataSource.Count > 1)
             {
-                TmpDataRowView = FLogic.DetermineRecordToSelect((grdRecordList.DataSource as DevAge.ComponentModel.BoundDataView).mDataView,
+                TmpDataRowView = FLogic.DetermineRecordToSelect((grdRecordList.DataSource as DevAge.ComponentModel.BoundDataView).DataView,
                     tmpPublicationCode);
                 TmpRowIndex = grdRecordList.Rows.DataSourceRowToIndex(TmpDataRowView);
                 grdRecordList.Selection.ResetSelection(false);
@@ -1103,7 +1103,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         // Raise a FocusRowEntered Event for the Subscription with a certain
                         // Publication Code  this updates the Detail UserControl
-                        TmpDataRowView = FLogic.DetermineRecordToSelect((grdRecordList.DataSource as DevAge.ComponentModel.BoundDataView).mDataView,
+                        TmpDataRowView = FLogic.DetermineRecordToSelect((grdRecordList.DataSource as DevAge.ComponentModel.BoundDataView).DataView,
                             SubscrCancelled[UpdateCounter].ToString());
                         TmpRowIndex = grdRecordList.Rows.DataSourceRowToIndex(TmpDataRowView);
                         DataGrid_FocusRowEntered(this, new RowEventArgs(TmpRowIndex + 1));

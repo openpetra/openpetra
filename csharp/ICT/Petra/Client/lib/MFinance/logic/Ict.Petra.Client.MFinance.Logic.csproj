@@ -75,9 +75,6 @@
     <Reference Include="SourceGrid">
       <HintPath>..\..\..\..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
     </Reference>
-    <Reference Include="SourceGrid.Extensions">
-      <HintPath>..\..\..\..\..\..\ThirdParty\DevAge\SourceGrid.Extensions.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
