@@ -315,7 +315,9 @@
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-             <echo message="please run sudo ls before calling this, then you don't need to enter a password for postgres user"/>
+             <if test="${platform::is-unix()}">
+                 <echo message="please run sudo ls before calling this, then you don't need to enter a password for postgres user"/>
+             </if>
              <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS openpetra;" database="template1"/>
              <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE openpetra;" database="template1"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="openpetra"/>
@@ -332,13 +334,11 @@
                 database="openpetra"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="openpetra"/>
 
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON s_login_s_login_process_id_r_seq TO petraserver;"  database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_general_ledger_master TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_statement_number TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_match_number TO petraserver;" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" 
+                sqlcommand="select 'GRANT SELECT,UPDATE,USAGE ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'S' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
+                outputfile="${tempfile}"
+                database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="openpetra"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <echo message="this will now take a while..."/>
