@@ -1,8 +1,8 @@
 NUnit is a unit-testing framework for all .Net languages.
 http://www.nunit.org
 
-currently used version: 2.4.8
-from: http://sourceforge.net/projects/nunit/files/NUnit%20Version%202/NUnit-2.4.8-net-2.0.zip/download
+currently used version: 2.5.3
+from: http://launchpad.net/nunitv2/2.5/2.5.3/+download/NUnit-2.5.3.9345.zip
 
 
 NUnit License
