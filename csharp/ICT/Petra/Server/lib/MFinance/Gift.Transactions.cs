@@ -204,7 +204,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            SubmissionResult = ((GiftBatchTDSAccess)AInspectDS).SubmitChanges(out AVerificationResult);
+            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {

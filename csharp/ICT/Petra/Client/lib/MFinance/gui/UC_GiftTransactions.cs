@@ -68,8 +68,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblLedgerNumber.Text = Catalog.GetString("Ledger:");
       this.lblBatchNumber.Text = Catalog.GetString("Gift Batch:");
-      this.btnNew.Text = Catalog.GetString("&Add");
-      this.btnRemove.Text = Catalog.GetString("Remove");
+      this.btnNewGift.Text = Catalog.GetString("&Add Gift");
+      this.btnNewDetail.Text = Catalog.GetString("Add Detai&l");
+      this.btnDeleteDetail.Text = Catalog.GetString("&Delete Detail");
       this.txtDetailDonorKey.ButtonText = Catalog.GetString("Find");
       this.lblDetailDonorKey.Text = Catalog.GetString("Donor:");
       this.lblDateEntered.Text = Catalog.GetString("Date Entered:");
@@ -135,7 +136,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         // we create the table locally, no dataset
         AGiftDetailRow NewRow = FMainDS.AGiftDetail.NewRowTyped(true);
-        NewRowManual(ref NewRow);
         FMainDS.AGiftDetail.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
@@ -311,9 +311,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
-        if (e.ActionName == "actNew")
+        if (e.ActionName == "actNewGift")
         {
-            btnNew.Enabled = e.Enabled;
+            btnNewGift.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actNewDetail")
+        {
+            btnNewDetail.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actDeleteDetail")
+        {
+            btnDeleteDetail.Enabled = e.Enabled;
         }
     }
 

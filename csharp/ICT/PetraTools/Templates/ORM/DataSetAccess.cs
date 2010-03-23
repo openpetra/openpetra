@@ -21,7 +21,7 @@ namespace {#NAMESPACE}.Access
 {##TYPEDDATASET}
  /// auto generated
 [Serializable()]
-public class {#DATASETNAME}Access : {#DATASETNAME}
+public class {#DATASETNAME}Access
 {
     {#SUBMITCHANGESFUNCTION}
 }
@@ -29,7 +29,7 @@ public class {#DATASETNAME}Access : {#DATASETNAME}
 {##SUBMITCHANGESFUNCTION}
 
 /// auto generated
-public TSubmitChangesResult SubmitChanges(out TVerificationResultCollection AVerificationResult)
+static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS, out TVerificationResultCollection AVerificationResult)
 {
     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
     TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -67,7 +67,7 @@ public TSubmitChangesResult SubmitChanges(out TVerificationResultCollection AVer
 
 {##SUBMITCHANGES}
 if (SubmissionResult == TSubmitChangesResult.scrOK 
-    && !TTypedDataAccess.SubmitChanges({#TABLEVARIABLENAME}, SubmitChangesTransaction,
+    && !TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
             TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
             out AVerificationResult,
             UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD}))

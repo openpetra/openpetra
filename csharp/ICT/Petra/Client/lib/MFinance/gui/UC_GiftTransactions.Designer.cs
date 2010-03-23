@@ -80,8 +80,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlDetailButtons = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnNew = new System.Windows.Forms.Button();
-            this.btnRemove = new System.Windows.Forms.Button();
+            this.btnNewGift = new System.Windows.Forms.Button();
+            this.btnNewDetail = new System.Windows.Forms.Button();
+            this.btnDeleteDetail = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailDonorKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
@@ -202,27 +203,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel2.AutoSize = true;
             this.pnlDetailButtons.Controls.Add(this.tableLayoutPanel2);
             //
-            // btnNew
+            // btnNewGift
             //
-            this.btnNew.Location = new System.Drawing.Point(2,2);
-            this.btnNew.Name = "btnNew";
-            this.btnNew.AutoSize = true;
-            this.btnNew.Click += new System.EventHandler(this.NewRow);
-            this.btnNew.Text = "&Add";
+            this.btnNewGift.Location = new System.Drawing.Point(2,2);
+            this.btnNewGift.Name = "btnNewGift";
+            this.btnNewGift.AutoSize = true;
+            this.btnNewGift.Click += new System.EventHandler(this.NewGift);
+            this.btnNewGift.Text = "&Add Gift";
             //
-            // btnRemove
+            // btnNewDetail
             //
-            this.btnRemove.Location = new System.Drawing.Point(2,2);
-            this.btnRemove.Name = "btnRemove";
-            this.btnRemove.AutoSize = true;
-            this.btnRemove.Text = "Remove";
+            this.btnNewDetail.Location = new System.Drawing.Point(2,2);
+            this.btnNewDetail.Name = "btnNewDetail";
+            this.btnNewDetail.AutoSize = true;
+            this.btnNewDetail.Click += new System.EventHandler(this.NewGiftDetail);
+            this.btnNewDetail.Text = "Add Detai&l";
+            //
+            // btnDeleteDetail
+            //
+            this.btnDeleteDetail.Location = new System.Drawing.Point(2,2);
+            this.btnDeleteDetail.Name = "btnDeleteDetail";
+            this.btnDeleteDetail.AutoSize = true;
+            this.btnDeleteDetail.Click += new System.EventHandler(this.DeleteDetail);
+            this.btnDeleteDetail.Text = "&Delete Detail";
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowCount = 3;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.btnNew, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.btnRemove, 0, 1);
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.btnNewGift, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnNewDetail, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.btnDeleteDetail, 0, 2);
             //
             // pnlDetails
             //
@@ -241,7 +253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.txtDetailDonorKey.Location = new System.Drawing.Point(2,2);
             this.txtDetailDonorKey.Name = "txtDetailDonorKey";
-            this.txtDetailDonorKey.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailDonorKey.Size = new System.Drawing.Size(350, 28);
             this.txtDetailDonorKey.ASpecialSetting = true;
             this.txtDetailDonorKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.txtDetailDonorKey.ButtonWidth = 40;
@@ -450,8 +462,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlDetailButtons;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Button btnNew;
-        private System.Windows.Forms.Button btnRemove;
+        private System.Windows.Forms.Button btnNewGift;
+        private System.Windows.Forms.Button btnNewDetail;
+        private System.Windows.Forms.Button btnDeleteDetail;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtDetailDonorKey;

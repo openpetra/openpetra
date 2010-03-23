@@ -27,7 +27,8 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
     /// TableId for Ict.Common.Data generic functions
     public {#NEW}static short TableId = {#TABLEID};
     {#COLUMNIDS}
-    
+
+{#IFDEF COLUMNINFO}
     private static bool FInitInfoValues = InitInfoValues();
     private static bool InitInfoValues()
     {
@@ -44,6 +45,7 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
             }));
         return true;
     }
+{#ENDIF COLUMNINFO}
 
     /// constructor
     public {#TABLENAME}Table() : 

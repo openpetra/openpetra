@@ -266,7 +266,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class GiftBatchTDSAGiftDetailTable : AGiftDetailTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 5600;
+        public new static short TableId = 165;
         /// used for generic TTypedDataTable functions
         public static short ColumnDonorKeyId = 29;
         /// used for generic TTypedDataTable functions
@@ -277,52 +277,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public static short ColumnRecipientDescriptionId = 32;
         /// used for generic TTypedDataTable functions
         public static short ColumnAccountCodeId = 33;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AGiftDetail", "a_gift_detail",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", "Gift Batch Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "GiftTransactionNumber", "a_gift_transaction_number_i", "Gift Transaction Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "DetailNumber", "a_detail_number_i", "Gift Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "RecipientLedgerNumber", "a_recipient_ledger_number_n", "Recipient Ledger", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(5, "GiftAmount", "a_gift_amount_n", "Gift Amount", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(6, "MotivationGroupCode", "a_motivation_group_code_c", "Motivation Group", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(7, "MotivationDetailCode", "a_motivation_detail_code_c", "Motivation Detail", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(8, "CommentOneType", "a_comment_one_type_c", "Comment Type", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(9, "GiftCommentOne", "a_gift_comment_one_c", "Comment One", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(10, "ConfidentialGiftFlag", "a_confidential_gift_flag_l", "Confidential Gift", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(11, "TaxDeductable", "a_tax_deductable_l", "Tax Deductable", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(12, "RecipientKey", "p_recipient_key_n", "Recipient", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(13, "ChargeFlag", "a_charge_flag_l", "Charge Fee", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(14, "CostCentreCode", "a_cost_centre_code_c", "Cost Centre Code", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(15, "GiftAmountIntl", "a_gift_amount_intl_n", "International Gift Amount", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(16, "ModifiedDetail", "a_modified_detail_l", "Part of a gift detail modification", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(17, "GiftTransactionAmount", "a_gift_transaction_amount_n", "Transaction Gift Amount", OdbcType.Decimal, 24, true),
-                    new TTypedColumnInfo(18, "IchNumber", "a_ich_number_i", "ICH Process Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(19, "MailingCode", "p_mailing_code_c", "Mailing Code", OdbcType.VarChar, 50, false),
-                    new TTypedColumnInfo(20, "CommentTwoType", "a_comment_two_type_c", "Comment Type", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(21, "GiftCommentTwo", "a_gift_comment_two_c", "Comment Two", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(22, "CommentThreeType", "a_comment_three_type_c", "Comment Type", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(23, "GiftCommentThree", "a_gift_comment_three_c", "Comment Three", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(24, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(25, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(26, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(27, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(28, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(29, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(30, "DonorName", "DonorName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(31, "DateEntered", "DateEntered", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(32, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(33, "AccountCode", "AccountCode", "", OdbcType.Int, -1, false)
-                },
-                new int[] {
-                    0, 1, 2, 3
-                }));
-            return true;
-        }
 
         /// constructor
         public GiftBatchTDSAGiftDetailTable() :
@@ -1055,7 +1009,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class BankImportTDSAGiftDetailTable : AGiftDetailTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 5601;
+        public new static short TableId = 165;
         /// used for generic TTypedDataTable functions
         public static short ColumnDonorKeyId = 29;
         /// used for generic TTypedDataTable functions
@@ -1066,52 +1020,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public static short ColumnAlreadyMatchedId = 32;
         /// used for generic TTypedDataTable functions
         public static short ColumnBatchStatusId = 33;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AGiftDetail", "a_gift_detail",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", "Gift Batch Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "GiftTransactionNumber", "a_gift_transaction_number_i", "Gift Transaction Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "DetailNumber", "a_detail_number_i", "Gift Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "RecipientLedgerNumber", "a_recipient_ledger_number_n", "Recipient Ledger", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(5, "GiftAmount", "a_gift_amount_n", "Gift Amount", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(6, "MotivationGroupCode", "a_motivation_group_code_c", "Motivation Group", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(7, "MotivationDetailCode", "a_motivation_detail_code_c", "Motivation Detail", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(8, "CommentOneType", "a_comment_one_type_c", "Comment Type", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(9, "GiftCommentOne", "a_gift_comment_one_c", "Comment One", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(10, "ConfidentialGiftFlag", "a_confidential_gift_flag_l", "Confidential Gift", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(11, "TaxDeductable", "a_tax_deductable_l", "Tax Deductable", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(12, "RecipientKey", "p_recipient_key_n", "Recipient", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(13, "ChargeFlag", "a_charge_flag_l", "Charge Fee", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(14, "CostCentreCode", "a_cost_centre_code_c", "Cost Centre Code", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(15, "GiftAmountIntl", "a_gift_amount_intl_n", "International Gift Amount", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(16, "ModifiedDetail", "a_modified_detail_l", "Part of a gift detail modification", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(17, "GiftTransactionAmount", "a_gift_transaction_amount_n", "Transaction Gift Amount", OdbcType.Decimal, 24, true),
-                    new TTypedColumnInfo(18, "IchNumber", "a_ich_number_i", "ICH Process Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(19, "MailingCode", "p_mailing_code_c", "Mailing Code", OdbcType.VarChar, 50, false),
-                    new TTypedColumnInfo(20, "CommentTwoType", "a_comment_two_type_c", "Comment Type", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(21, "GiftCommentTwo", "a_gift_comment_two_c", "Comment Two", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(22, "CommentThreeType", "a_comment_three_type_c", "Comment Type", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(23, "GiftCommentThree", "a_gift_comment_three_c", "Comment Three", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(24, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(25, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(26, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(27, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(28, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(29, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(30, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(31, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(32, "AlreadyMatched", "AlreadyMatched", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(33, "BatchStatus", "BatchStatus", "", OdbcType.Int, -1, false)
-                },
-                new int[] {
-                    0, 1, 2, 3
-                }));
-            return true;
-        }
 
         /// constructor
         public BankImportTDSAGiftDetailTable() :
@@ -1588,41 +1496,9 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class BankImportTDSPBankingDetailsTable : PBankingDetailsTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 5602;
+        public new static short TableId = 59;
         /// used for generic TTypedDataTable functions
         public static short ColumnPartnerKeyId = 19;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PBankingDetails", "p_banking_details",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "BankingDetailsKey", "p_banking_details_key_i", "p_banking_details_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "BankingType", "p_banking_type_i", "p_banking_type_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "AccountName", "p_account_name_c", "Account Name", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(3, "Title", "p_title_c", "Title", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(4, "FirstName", "p_first_name_c", "First Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(5, "MiddleName", "p_middle_name_c", "Middle Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(6, "LastName", "p_last_name_c", "Last Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(7, "BankKey", "p_bank_key_n", "p_bank_key_n", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(8, "BankAccountNumber", "p_bank_account_number_c", "Account Number", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(9, "Iban", "p_iban_c", "IBAN", OdbcType.VarChar, 128, false),
-                    new TTypedColumnInfo(10, "SecurityCode", "p_security_code_c", "Security Code", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(11, "ValidFromDate", "p_valid_from_date_d", "p_valid_from_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(12, "ExpiryDate", "p_expiry_date_d", "p_expiry_date_d", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(13, "Comment", "p_comment_c", "p_comment_c", OdbcType.VarChar, 510, false),
-                    new TTypedColumnInfo(14, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(15, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(16, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(17, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(18, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(19, "PartnerKey", "PartnerKey", "", OdbcType.Int, -1, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
 
         /// constructor
         public BankImportTDSPBankingDetailsTable() :
@@ -1928,7 +1804,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class NewDonorTDSAGiftTable : AGiftTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 5603;
+        public new static short TableId = 164;
         /// used for generic TTypedDataTable functions
         public static short ColumnDonorShortNameId = 24;
         /// used for generic TTypedDataTable functions
@@ -1941,48 +1817,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public static short ColumnMotivationGroupCodeId = 28;
         /// used for generic TTypedDataTable functions
         public static short ColumnMotivationDetailCodeId = 29;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AGift", "a_gift",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", "Batch Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "GiftTransactionNumber", "a_gift_transaction_number_i", "Transaction Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "GiftStatus", "a_gift_status_c", "Gift Status", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(4, "DateEntered", "a_date_entered_d", "Date Entered", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(5, "HomeAdminChargesFlag", "a_home_admin_charges_flag_l", "Local Admin Charges", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(6, "IltAdminChargesFlag", "a_ilt_admin_charges_flag_l", "IT Admin Charges", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(7, "ReceiptLetterCode", "a_receipt_letter_code_c", "Receipt Letter Code", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(8, "MethodOfGivingCode", "a_method_of_giving_code_c", "Method Of Giving", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(9, "MethodOfPaymentCode", "a_method_of_payment_code_c", "Method of Payment", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(10, "DonorKey", "p_donor_key_n", "Donor", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(11, "AdminCharge", "a_admin_charge_l", "Admin Charge", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(12, "ReceiptNumber", "a_receipt_number_i", "Receipt Number", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(13, "LastDetailNumber", "a_last_detail_number_i", "Last Gift Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(14, "Reference", "a_reference_c", "Reference", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(15, "FirstTimeGift", "a_first_time_gift_l", "Donors first gift flag", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(16, "ReceiptPrinted", "a_receipt_printed_l", "Receipt Printed", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(17, "Restricted", "a_restricted_l", "Gift Restricted", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(18, "BankingDetailsKey", "p_banking_details_key_i", "Bank or Credit Card", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(19, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(20, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(21, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(22, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(23, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(24, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(25, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(26, "DateOfSubscriptionStart", "DateOfSubscriptionStart", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(27, "DateOfFirstGift", "DateOfFirstGift", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(28, "MotivationGroupCode", "MotivationGroupCode", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(29, "MotivationDetailCode", "MotivationDetailCode", "", OdbcType.Int, -1, false)
-                },
-                new int[] {
-                    0, 1, 2
-                }));
-            return true;
-        }
 
         /// constructor
         public NewDonorTDSAGiftTable() :

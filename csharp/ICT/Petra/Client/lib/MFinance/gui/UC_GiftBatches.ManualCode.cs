@@ -150,6 +150,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
+            // ask if the user really wants to post the batch
+            if (MessageBox.Show(Catalog.GetString("Do you really want to post this gift batch?"), Catalog.GetString("Confirm posting of Gift Batch"),
+                    MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
+            {
+                return;
+            }
+
             if (!TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
             {
                 string ErrorMessages = String.Empty;

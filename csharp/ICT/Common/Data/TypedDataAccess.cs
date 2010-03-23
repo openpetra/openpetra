@@ -2023,7 +2023,6 @@ namespace Ict.Common.Data
             bool ResultValue = true;
             bool ExceptionReported = false;
             DataRow TheRow = null;
-            short TableId = Convert.ToInt16(ATable.GetType().GetField("TableId").GetValue(null));
 
             AVerificationResult = null;
 
@@ -2032,6 +2031,8 @@ namespace Ict.Common.Data
             {
                 return true;
             }
+
+            short TableId = Convert.ToInt16(ATable.GetType().GetField("TableId").GetValue(null));
 
             AVerificationResult = new TVerificationResultCollection();
 

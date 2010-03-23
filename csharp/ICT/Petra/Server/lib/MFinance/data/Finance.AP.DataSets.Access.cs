@@ -44,11 +44,11 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
 
      /// auto generated
     [Serializable()]
-    public class AccountsPayableTDSAccess : AccountsPayableTDS
+    public class AccountsPayableTDSAccess
     {
 
         /// auto generated
-        public TSubmitChangesResult SubmitChanges(out TVerificationResultCollection AVerificationResult)
+        static public TSubmitChangesResult SubmitChanges(AccountsPayableTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -60,14 +60,14 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AApSupplier, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AApSupplier, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AApDocument, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AApDocumentDetail, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -83,7 +83,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AApDocumentPayment, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AApDocumentPayment, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -91,7 +91,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AApPayment, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AApPayment, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -99,7 +99,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AApAnalAttrib, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AApAnalAttrib, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -107,7 +107,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AApSupplier, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AApSupplier, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -115,7 +115,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AApDocument, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -123,7 +123,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AApDocumentDetail, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -131,7 +131,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AApDocumentPayment, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AApDocumentPayment, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -139,7 +139,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AApPayment, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AApPayment, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -147,7 +147,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AApAnalAttrib, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AApAnalAttrib, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))

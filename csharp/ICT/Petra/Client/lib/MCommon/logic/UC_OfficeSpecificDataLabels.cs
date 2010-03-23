@@ -1141,7 +1141,7 @@ namespace Ict.Petra.Client.MCommon
                 // apply lookup value
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_LOOKUP)
                 {
-                    CurrentControl = (System.Windows.Forms.UserControl)((CellControl)UOfficeSpecificGrid.GetCell(ARow, AColumn)).Control;
+                    CurrentControl = (System.Windows.Forms.UserControl)((SourceGrid.Cells.Cell)UOfficeSpecificGrid.GetCell(ARow, AColumn)).Tag;
                     ((TCmbAutoPopulated)CurrentControl).SaveValueNow();
 
                     // CurrentControl := (UOfficeSpecificGrid.GetCell(ARow, AColumn) as CellControl).Control as System.Windows.Forms.UserControl;

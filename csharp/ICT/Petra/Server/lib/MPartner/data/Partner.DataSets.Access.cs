@@ -47,11 +47,11 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
 
      /// auto generated
     [Serializable()]
-    public class PartnerEditTDSAccess : PartnerEditTDS
+    public class PartnerEditTDSAccess
     {
 
         /// auto generated
-        public TSubmitChangesResult SubmitChanges(out TVerificationResultCollection AVerificationResult)
+        static public TSubmitChangesResult SubmitChanges(PartnerEditTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -63,14 +63,14 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartner, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartner, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerType, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerType, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -78,7 +78,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PSubscription, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PSubscription, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -86,7 +86,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerLocation, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerLocation, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -94,7 +94,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PLocation, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PLocation, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_location_number", "p_location_key_i"))
@@ -102,7 +102,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPerson, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPerson, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -110,7 +110,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PFamily, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFamily, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -118,7 +118,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PUnit, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PUnit, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -126,7 +126,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(POrganisation, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.POrganisation, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -134,7 +134,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PChurch, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PChurch, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -142,7 +142,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PBank, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PBank, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -150,7 +150,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PBankingDetails, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PBankingDetails, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_bank_details", "p_banking_details_key_i"))
@@ -158,7 +158,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerBankingDetails, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerBankingDetails, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -166,7 +166,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PVenue, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PVenue, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -174,7 +174,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PFoundation, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFoundation, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -182,7 +182,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PFoundationDeadline, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFoundationDeadline, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -190,7 +190,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PFoundationProposal, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFoundationProposal, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_foundation_proposal", "p_foundation_proposal_key_i"))
@@ -198,7 +198,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PFoundationProposalDetail, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFoundationProposalDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_proposal_detail", "p_proposal_detail_id_i"))
@@ -206,7 +206,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerInterest, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerInterest, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -214,7 +214,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PInterest, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PInterest, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -222,7 +222,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerReminder, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerReminder, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -230,7 +230,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerRelationship, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerRelationship, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -238,7 +238,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerContact, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerContact, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_contact", "p_contact_id_i"))
@@ -246,7 +246,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PDataLabelValueApplication, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PDataLabelValueApplication, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -254,7 +254,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PDataLabelValuePartner, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PDataLabelValuePartner, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -262,7 +262,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartner, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartner, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -270,7 +270,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerType, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerType, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -278,7 +278,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PSubscription, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PSubscription, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -286,7 +286,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerLocation, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerLocation, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -294,7 +294,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PLocation, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PLocation, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_location_number", "p_location_key_i"))
@@ -302,7 +302,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPerson, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPerson, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -310,7 +310,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PFamily, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFamily, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -318,7 +318,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PUnit, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PUnit, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -326,7 +326,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(POrganisation, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.POrganisation, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -334,7 +334,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PChurch, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PChurch, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -342,7 +342,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PBank, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PBank, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -350,7 +350,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PBankingDetails, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PBankingDetails, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_bank_details", "p_banking_details_key_i"))
@@ -358,7 +358,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerBankingDetails, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerBankingDetails, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -366,7 +366,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PVenue, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PVenue, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -374,7 +374,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PFoundation, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFoundation, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -382,7 +382,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PFoundationDeadline, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFoundationDeadline, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -390,7 +390,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PFoundationProposal, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFoundationProposal, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_foundation_proposal", "p_foundation_proposal_key_i"))
@@ -398,7 +398,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PFoundationProposalDetail, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFoundationProposalDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_proposal_detail", "p_proposal_detail_id_i"))
@@ -406,7 +406,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerInterest, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerInterest, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -414,7 +414,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PInterest, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PInterest, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -422,7 +422,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerReminder, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerReminder, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -430,7 +430,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerRelationship, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerRelationship, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -438,7 +438,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerContact, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerContact, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_contact", "p_contact_id_i"))
@@ -446,7 +446,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PDataLabelValueApplication, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PDataLabelValueApplication, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -454,7 +454,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PDataLabelValuePartner, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PDataLabelValuePartner, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -485,11 +485,11 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
     }
      /// auto generated
     [Serializable()]
-    public class PartnerAddressAggregateTDSAccess : PartnerAddressAggregateTDS
+    public class PartnerAddressAggregateTDSAccess
     {
 
         /// auto generated
-        public TSubmitChangesResult SubmitChanges(out TVerificationResultCollection AVerificationResult)
+        static public TSubmitChangesResult SubmitChanges(PartnerAddressAggregateTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -501,7 +501,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(SimilarLocationParameters, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.SimilarLocationParameters, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_location_number", "p_location_key_i"))
@@ -509,7 +509,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(SimilarLocationParameters, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.SimilarLocationParameters, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_location_number", "p_location_key_i"))
@@ -540,11 +540,11 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
     }
      /// auto generated
     [Serializable()]
-    public class PartnerInfoTDSAccess : PartnerInfoTDS
+    public class PartnerInfoTDSAccess
     {
 
         /// auto generated
-        public TSubmitChangesResult SubmitChanges(out TVerificationResultCollection AVerificationResult)
+        static public TSubmitChangesResult SubmitChanges(PartnerInfoTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -556,14 +556,14 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PLocation, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PLocation, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_location_number", "p_location_key_i"))
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerLocation, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerLocation, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -571,7 +571,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerType, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerType, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -579,7 +579,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PSubscription, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PSubscription, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -587,7 +587,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PLocation, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PLocation, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_location_number", "p_location_key_i"))
@@ -595,7 +595,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerLocation, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerLocation, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -603,7 +603,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PPartnerType, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerType, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -611,7 +611,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PSubscription, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PSubscription, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))

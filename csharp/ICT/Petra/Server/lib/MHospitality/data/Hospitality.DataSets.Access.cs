@@ -40,17 +40,18 @@ using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MHospitality.Data.Access;
 
 namespace Ict.Petra.Server.MHospitality.Data.Access
 {
 
      /// auto generated
     [Serializable()]
-    public class HospitalityTDSAccess : HospitalityTDS
+    public class HospitalityTDSAccess
     {
 
         /// auto generated
-        public TSubmitChangesResult SubmitChanges(out TVerificationResultCollection AVerificationResult)
+        static public TSubmitChangesResult SubmitChanges(HospitalityTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -62,14 +63,14 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PcBuilding, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PcBuilding, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PcRoom, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PcRoom, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -77,7 +78,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PcRoomAlloc, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PcRoomAlloc, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_room_alloc", "pc_key_i"))
@@ -85,7 +86,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PcRoomAttribute, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PcRoomAttribute, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -93,7 +94,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PhBooking, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PhBooking, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_booking", "ph_key_i"))
@@ -101,7 +102,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PhRoomBooking, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PhRoomBooking, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -109,7 +110,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PcBuilding, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PcBuilding, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -117,7 +118,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PcRoom, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PcRoom, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -125,7 +126,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PcRoomAlloc, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PcRoomAlloc, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_room_alloc", "pc_key_i"))
@@ -133,7 +134,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PcRoomAttribute, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PcRoomAttribute, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -141,7 +142,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PhBooking, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PhBooking, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_booking", "ph_key_i"))
@@ -149,7 +150,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(PhRoomBooking, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PhRoomBooking, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))

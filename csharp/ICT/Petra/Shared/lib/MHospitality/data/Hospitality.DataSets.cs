@@ -34,6 +34,7 @@ using System.Data;
 using System.Data.Odbc;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MHospitality.Data;
 
 namespace Ict.Petra.Shared.MHospitality.Data
 {
