@@ -817,7 +817,7 @@ namespace Ict.Common.Controls
             {
                 DataRowView row = (DataRowView)itemRow;
                 return row[ADataColumn.ColumnName] is double && (double)row[ADataColumn.ColumnName] < 0;
-            }
+            };
             gridColumn.Conditions.Add(selectedConditionNegative);
         }
 
