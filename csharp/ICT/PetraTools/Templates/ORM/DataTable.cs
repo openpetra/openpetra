@@ -2,18 +2,19 @@
  * Do not modify this file manually!
  */
 {#GPLFILEHEADER}
+
+using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Data;
+using System.Data.Odbc;
+using System.Runtime.Serialization;
+using System.Xml;
+using Ict.Common;
+using Ict.Common.Data;
+
 namespace {#NAMESPACE}
 {
-    using System;
-    using System.Collections;
-    using System.ComponentModel;
-    using System.Data;
-    using System.Data.Odbc;
-    using System.Runtime.Serialization;
-    using System.Xml;
-    using Ict.Common;
-    using Ict.Common.Data;
-
     {#TABLELOOP}
 }
 

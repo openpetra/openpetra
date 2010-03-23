@@ -193,6 +193,12 @@ namespace Ict.Tools.CodeGeneration.DataStore
                             cmdLine.GetOptValue("outputNamespace"),
                             store, groups,
                             cmdLine.GetOptValue("outputFilename"));
+
+                        codeGenerationDatasetAccess.CreateTypedDataSets(cmdLine.GetOptValue("input"),
+                            System.IO.Path.GetDirectoryName(cmdLine.GetOptValue("input")).Replace("Shared", "Server"),
+                            cmdLine.GetOptValue("outputNamespace").Replace(".Shared.", ".Server."),
+                            store, groups,
+                            cmdLine.GetOptValue("outputFilename") + ".Access");
                     }
                     else
                     {

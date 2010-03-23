@@ -2004,7 +2004,6 @@ namespace Ict.Common.Data
         /// <summary>
         /// submit those rows in the table that have been modified or created or deleted
         /// </summary>
-        /// <param name="ATableId"></param>
         /// <param name="ATable"></param>
         /// <param name="ATransaction"></param>
         /// <param name="ASelectedOperations"></param>
@@ -2013,7 +2012,7 @@ namespace Ict.Common.Data
         /// <param name="ASequenceName"></param>
         /// <param name="ASequenceField"></param>
         /// <returns></returns>
-        public static bool SubmitChanges(short ATableId,
+        public static bool SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
             eSubmitChangesOperations ASelectedOperations,
@@ -2024,6 +2023,7 @@ namespace Ict.Common.Data
             bool ResultValue = true;
             bool ExceptionReported = false;
             DataRow TheRow = null;
+            short TableId = Convert.ToInt16(ATable.GetType().GetField("TableId").GetValue(null));
 
             AVerificationResult = null;
 
@@ -2047,11 +2047,11 @@ namespace Ict.Common.Data
                             TheRow[ASequenceField] = (System.Object)DBAccess.GDBAccessObj.GetNextSequenceValue(ASequenceName, ATransaction);
                         }
 
-                        TTypedDataAccess.InsertRow(ATableId, ref TheRow, ATransaction, AUserId);
+                        TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId);
                     }
                     else
                     {
-                        bool hasPrimaryKey = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId).Length > 0;
+                        bool hasPrimaryKey = TTypedDataTable.GetPrimaryKeyColumnOrdList(TableId).Length > 0;
 
                         if ((TheRow.RowState == DataRowState.Modified) && ((ASelectedOperations & eSubmitChangesOperations.eUpdate) != 0))
                         {
@@ -2059,12 +2059,12 @@ namespace Ict.Common.Data
                             {
                                 AVerificationResult.Add(new TVerificationResult(
                                         "[DB] NO PRIMARY KEY",
-                                        "Cannot update record because table " + TTypedDataTable.GetTableName(ATableId) + " has no primary key.",
-                                        "Primary Key missing", TTypedDataTable.GetTableNameSQL(ATableId), TResultSeverity.Resv_Critical));
+                                        "Cannot update record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.",
+                                        "Primary Key missing", TTypedDataTable.GetTableNameSQL(TableId), TResultSeverity.Resv_Critical));
                             }
                             else
                             {
-                                TTypedDataAccess.UpdateRow(ATableId, ref TheRow, ATransaction, AUserId);
+                                TTypedDataAccess.UpdateRow(TableId, ref TheRow, ATransaction, AUserId);
                             }
                         }
 
@@ -2074,12 +2074,12 @@ namespace Ict.Common.Data
                             {
                                 AVerificationResult.Add(new TVerificationResult(
                                         "[DB] NO PRIMARY KEY",
-                                        "Cannot delete record because table " + TTypedDataTable.GetTableName(ATableId) + " has no primary key.",
-                                        "Primary Key missing", TTypedDataTable.GetTableNameSQL(ATableId), TResultSeverity.Resv_Critical));
+                                        "Cannot delete record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.",
+                                        "Primary Key missing", TTypedDataTable.GetTableNameSQL(TableId), TResultSeverity.Resv_Critical));
                             }
                             else
                             {
-                                TTypedDataAccess.DeleteRow(ATableId, TheRow, ATransaction);
+                                TTypedDataAccess.DeleteRow(TableId, TheRow, ATransaction);
                             }
                         }
                     }
@@ -2103,14 +2103,14 @@ namespace Ict.Common.Data
         /// <summary>
         /// overloaded version without ASelectedOperations
         /// </summary>
-        public static bool SubmitChanges(short ATableId,
+        public static bool SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
             out TVerificationResultCollection AVerificationResult,
             string AUserId,
             string ASequenceName, string ASequenceField)
         {
-            return SubmitChanges(ATableId,
+            return SubmitChanges(
                 ATable,
                 ATransaction,
                 eSubmitChangesOperations.eAll,
@@ -2123,26 +2123,26 @@ namespace Ict.Common.Data
         /// <summary>
         /// overloaded version without sequence
         /// </summary>
-        public static bool SubmitChanges(short ATableId,
+        public static bool SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
             out TVerificationResultCollection AVerificationResult,
             string AUserId)
         {
-            return SubmitChanges(ATableId, ATable, ATransaction, eSubmitChangesOperations.eAll, out AVerificationResult, AUserId, "", "");
+            return SubmitChanges(ATable, ATransaction, eSubmitChangesOperations.eAll, out AVerificationResult, AUserId, "", "");
         }
 
         /// <summary>
         /// overloaded version without sequence, but with ASelectedOperations
         /// </summary>
-        public static bool SubmitChanges(short ATableId,
+        public static bool SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
             eSubmitChangesOperations ASelectedOperations,
             out TVerificationResultCollection AVerificationResult,
             string AUserId)
         {
-            return SubmitChanges(ATableId, ATable, ATransaction, ASelectedOperations, out AVerificationResult, AUserId, "", "");
+            return SubmitChanges(ATable, ATransaction, ASelectedOperations, out AVerificationResult, AUserId, "", "");
         }
 
         #endregion CalledByORMGenerateCode

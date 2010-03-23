@@ -117,7 +117,10 @@ namespace Ict.Tools.CodeGeneration.DataStore
             return Result;
         }
 
-        private static void AddTableToDataset(string tabletype, string variablename, ProcessTemplate snippetDataset)
+        private static void AddTableToDataset(
+            string tabletype,
+            string variablename,
+            ProcessTemplate snippetDataset)
         {
             string typedTableDeklaration = "private " +
                                            tabletype +
@@ -297,7 +300,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                             tables.Add(table.tableorig, table);
 
-                            AddTableToDataset(tabletype, variablename, snippetDataset);
+                            AddTableToDataset(tabletype, variablename,
+                                snippetDataset);
                         }
 
                         if (curChild.Name.ToLower() == "customrelation")

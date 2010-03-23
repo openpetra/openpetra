@@ -26,12 +26,13 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
+
+using Ict.Common;
+using Ict.Common.Data;
+using System;
+using System.Data;
+using System.Data.Odbc;
+
 namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
 {
-    using Ict.Common;
-    using Ict.Common.Data;
-    using System;
-    using System.Data;
-    using System.Data.Odbc;
-
 }

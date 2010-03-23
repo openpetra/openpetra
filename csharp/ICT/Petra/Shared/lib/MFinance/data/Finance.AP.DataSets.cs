@@ -26,14 +26,16 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
+
+using Ict.Common;
+using Ict.Common.Data;
+using System;
+using System.Data;
+using System.Data.Odbc;
+using Ict.Petra.Shared.MFinance.Account.Data;
+
 namespace Ict.Petra.Shared.MFinance.AP.Data
 {
-    using Ict.Common;
-    using Ict.Common.Data;
-    using System;
-    using System.Data;
-    using System.Data.Odbc;
-    using Ict.Petra.Shared.MFinance.Account.Data;
 
      /// auto generated
     [Serializable()]

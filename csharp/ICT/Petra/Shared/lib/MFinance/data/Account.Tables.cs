@@ -26,17 +26,19 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
+
+using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Data;
+using System.Data.Odbc;
+using System.Runtime.Serialization;
+using System.Xml;
+using Ict.Common;
+using Ict.Common.Data;
+
 namespace Ict.Petra.Shared.MFinance.Account.Data
 {
-    using System;
-    using System.Collections;
-    using System.ComponentModel;
-    using System.Data;
-    using System.Data.Odbc;
-    using System.Runtime.Serialization;
-    using System.Xml;
-    using Ict.Common;
-    using Ict.Common.Data;
 
     /// This contains the settings for one specific bank account
     [Serializable()]

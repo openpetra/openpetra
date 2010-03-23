@@ -2,3 +2,6 @@
 _bin
 app.config
 *.yaml.xml
+*.FileListAbsolute.txt
+*.pdb
+*.pidb

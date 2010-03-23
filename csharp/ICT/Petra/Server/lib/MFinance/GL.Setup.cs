@@ -115,7 +115,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         SubmissionResult = TSubmitChangesResult.scrError;
 
                         // first delete account hierarchy details that are not needed anymore. otherwise we cannot delete the account
-                        if (TTypedDataAccess.SubmitChanges(AAccountHierarchyDetailTable.TableId, AInspectDS.AAccountHierarchyDetail,
+                        if (TTypedDataAccess.SubmitChanges(AInspectDS.AAccountHierarchyDetail,
                                 SubmitChangesTransaction,
                                 TTypedDataAccess.eSubmitChangesOperations.eDelete,
                                 out AVerificationResult,
@@ -125,7 +125,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             if (AAccountAccess.SubmitChanges(AInspectDS.AAccount, SubmitChangesTransaction,
                                     out AVerificationResult))
                             {
-                                if (TTypedDataAccess.SubmitChanges(AAccountHierarchyDetailTable.TableId, AInspectDS.AAccountHierarchyDetail,
+                                if (TTypedDataAccess.SubmitChanges(AInspectDS.AAccountHierarchyDetail,
                                         SubmitChangesTransaction,
                                         TTypedDataAccess.eSubmitChangesOperations.eUpdate | TTypedDataAccess.eSubmitChangesOperations.eInsert,
                                         out AVerificationResult,

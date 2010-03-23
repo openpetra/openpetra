@@ -523,7 +523,8 @@ namespace Ict.Common.DB
             IDbConnection AConnection,
             Int64 ARestartValue)
         {
-            ADatabase.ExecuteScalar("SELECT pg_catalog.setval('" + ASequenceName + "', " + ARestartValue.ToString() + ", false);", ATransaction, false);
+            ADatabase.ExecuteScalar(
+                "SELECT pg_catalog.setval('" + ASequenceName + "', " + ARestartValue.ToString() + ", false);", ATransaction, false);
         }
     }
 }

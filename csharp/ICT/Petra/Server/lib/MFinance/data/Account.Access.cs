@@ -26,24 +26,26 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
+
+using System;
+using System.Collections.Specialized;
+using System.Data;
+using System.Data.Odbc;
+using Ict.Common;
+using Ict.Common.DB;
+using Ict.Common.Verification;
+using Ict.Common.Data;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared.MFinance.AR.Data;
+using Ict.Petra.Shared.MSysMan.Data;
+
 namespace Ict.Petra.Server.MFinance.Account.Data.Access
 {
-    using System;
-    using System.Collections.Specialized;
-    using System.Data;
-    using System.Data.Odbc;
-    using Ict.Common;
-    using Ict.Common.DB;
-    using Ict.Common.Verification;
-    using Ict.Common.Data;
-    using Ict.Petra.Shared;
-    using Ict.Petra.Shared.MFinance.Account.Data;
-    using Ict.Petra.Shared.MPartner.Partner.Data;
-    using Ict.Petra.Shared.MFinance.Gift.Data;
-    using Ict.Petra.Shared.MCommon.Data;
-    using Ict.Petra.Shared.MPartner.Mailroom.Data;
-    using Ict.Petra.Shared.MFinance.AR.Data;
-    using Ict.Petra.Shared.MSysMan.Data;
 
     /// This contains the settings for one specific bank account
     public class AEpAccountAccess : TTypedDataAccess
@@ -849,7 +851,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AEpAccountTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AEpAccountTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -1363,7 +1365,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AEpStatementTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AEpStatementTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID, "seq_statement_number", "a_statement_key_i");
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID, "seq_statement_number", "a_statement_key_i");
         }
     }
 
@@ -3243,7 +3245,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AEpMatchTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AEpMatchTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID, "seq_match_number", "a_ep_match_key_i");
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID, "seq_match_number", "a_ep_match_key_i");
         }
     }
 
@@ -3757,7 +3759,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AEpTransactionTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AEpTransactionTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -4151,7 +4153,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ASubSystemTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ASubSystemTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -5071,7 +5073,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ALedgerTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ALedgerTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -5438,7 +5440,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ALedgerInitFlagTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ALedgerInitFlagTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -5805,7 +5807,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ABudgetTypeTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ABudgetTypeTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -6613,7 +6615,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AAccountTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AAccountTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -6833,7 +6835,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AAccountPropertyCodeTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AAccountPropertyCodeTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -7494,7 +7496,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AAccountPropertyTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AAccountPropertyTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -8008,7 +8010,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AAccountHierarchyTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AAccountHierarchyTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -8816,7 +8818,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AAccountHierarchyDetailTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AAccountHierarchyDetailTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -9183,7 +9185,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ACostCentreTypesTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ACostCentreTypesTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -10200,7 +10202,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ACostCentreTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ACostCentreTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -11008,7 +11010,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AValidLedgerNumberTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AValidLedgerNumberTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -11228,7 +11230,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ABudgetRevisionTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ABudgetRevisionTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -12226,7 +12228,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ABudgetTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ABudgetTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID, "seq_budget", "a_budget_sequence_i");
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID, "seq_budget", "a_budget_sequence_i");
         }
     }
 
@@ -12593,7 +12595,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ABudgetPeriodTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ABudgetPeriodTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -13138,7 +13140,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AAccountingPeriodTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AAccountingPeriodTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -13505,7 +13507,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AAccountingSystemParameterTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AAccountingSystemParameterTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -13725,7 +13727,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AAnalysisStoreTableTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AAnalysisStoreTableTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -14119,7 +14121,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AAnalysisTypeTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AAnalysisTypeTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -14927,7 +14929,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AAnalysisAttributeTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AAnalysisAttributeTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -15441,7 +15443,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ACorporateExchangeRateTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ACorporateExchangeRateTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -15955,7 +15957,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ADailyExchangeRateTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ADailyExchangeRateTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -16175,7 +16177,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(PEmailTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(PEmailTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -16542,7 +16544,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AEmailDestinationTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AEmailDestinationTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -17350,7 +17352,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AFeesPayableTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AFeesPayableTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -18158,7 +18160,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AFeesReceivableTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AFeesReceivableTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -18378,7 +18380,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AFormTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AFormTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -18598,7 +18600,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AFormElementTypeTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AFormElementTypeTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -19112,7 +19114,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AFormElementTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AFormElementTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -19626,7 +19628,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AFreeformAnalysisTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AFreeformAnalysisTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -20330,7 +20332,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AGeneralLedgerMasterTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AGeneralLedgerMasterTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID, "seq_general_ledger_master", "a_glm_sequence_i");
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID, "seq_general_ledger_master", "a_glm_sequence_i");
         }
     }
 
@@ -20697,7 +20699,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AGeneralLedgerMasterPeriodTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AGeneralLedgerMasterPeriodTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -21358,7 +21360,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AIchStewardshipTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AIchStewardshipTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -21578,7 +21580,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AMethodOfGivingTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AMethodOfGivingTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -22386,7 +22388,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ATransactionTypeTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ATransactionTypeTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -22900,7 +22902,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(APreviousYearBatchTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(APreviousYearBatchTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -24149,7 +24151,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(APreviousYearJournalTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(APreviousYearJournalTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -24957,7 +24959,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(APreviousYearTransactionTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(APreviousYearTransactionTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -26059,7 +26061,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(APrevYearTransAnalAttribTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(APrevYearTransAnalAttribTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -26573,7 +26575,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(APrevYearCorpExRateTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(APrevYearCorpExRateTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -27087,7 +27089,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AThisYearOldBatchTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AThisYearOldBatchTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -28189,7 +28191,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AThisYearOldJournalTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AThisYearOldJournalTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -28997,7 +28999,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AThisYearOldTransactionTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AThisYearOldTransactionTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -30246,7 +30248,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AThisyearoldTransAnalAttribTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AThisyearoldTransAnalAttribTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -30907,7 +30909,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ARecurringBatchTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ARecurringBatchTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -32009,7 +32011,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ARecurringJournalTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ARecurringJournalTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -33405,7 +33407,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ARecurringTransactionTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ARecurringTransactionTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -34654,7 +34656,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ARecurringTransAnalAttribTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ARecurringTransAnalAttribTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -35168,7 +35170,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ABatchTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ABatchTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -36270,7 +36272,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AJournalTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AJournalTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -37225,7 +37227,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ATransactionTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ATransactionTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -38474,7 +38476,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ATransAnalAttribTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ATransAnalAttribTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -38988,7 +38990,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ASuspenseAccountTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ASuspenseAccountTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -39649,7 +39651,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ASpecialTransTypeTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ASpecialTransTypeTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -40163,7 +40165,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ASystemInterfaceTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ASystemInterfaceTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -40677,7 +40679,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(ACurrencyLanguageTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ACurrencyLanguageTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -40897,7 +40899,7 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         /// auto generated
         public static bool SubmitChanges(AKeyFocusAreaTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AKeyFocusAreaTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 }

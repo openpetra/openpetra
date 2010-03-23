@@ -204,55 +204,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            AVerificationResult = new TVerificationResultCollection();
+            SubmissionResult = ((GiftBatchTDSAccess)AInspectDS).SubmitChanges(out AVerificationResult);
 
-            try
+            if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
-                SubmissionResult = TSubmitChangesResult.scrOK;
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    if (!AGiftBatchAccess.SubmitChanges(AInspectDS.AGiftBatch, SubmitChangesTransaction,
-                            out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                }
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    if (!AGiftAccess.SubmitChanges(AInspectDS.AGift, SubmitChangesTransaction,
-                            out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                }
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    if (!AGiftDetailAccess.SubmitChanges(AInspectDS.AGiftDetail, SubmitChangesTransaction,
-                            out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                }
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("SaveGiftBatchTDS: exception " + e.Message);
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                throw new Exception(e.ToString() + " " + e.Message);
+                // TODO: check that gifts are in consecutive numbers?
+                // TODO: check that gift details are in consecutive numbers, no gift without gift details?
+                // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
             }
 
             return SubmissionResult;

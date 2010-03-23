@@ -2,15 +2,16 @@
  * Do not modify this file manually!
  */
 {#GPLFILEHEADER}
+
+using Ict.Common;
+using Ict.Common.Data;
+using System;
+using System.Data;
+using System.Data.Odbc;
+{#USINGNAMESPACES}
+
 namespace {#NAMESPACE}
 {
-    using Ict.Common;
-    using Ict.Common.Data;
-    using System;
-    using System.Data;
-    using System.Data.Odbc;
-    {#USINGNAMESPACES}
-
     {#CONTENTDATASETSANDTABLESANDROWS}
 }
 
