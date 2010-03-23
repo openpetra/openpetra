@@ -253,7 +253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.txtDetailDonorKey.Location = new System.Drawing.Point(2,2);
             this.txtDetailDonorKey.Name = "txtDetailDonorKey";
-            this.txtDetailDonorKey.Size = new System.Drawing.Size(350, 28);
+            this.txtDetailDonorKey.Size = new System.Drawing.Size(370, 28);
             this.txtDetailDonorKey.ASpecialSetting = true;
             this.txtDetailDonorKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.txtDetailDonorKey.ButtonWidth = 40;

@@ -770,6 +770,57 @@ namespace Ict.Common.Controls
             this.Columns.Insert(this.Columns.Count, AGridColumn);
         }
 
+        /// <summary>
+        /// add a date column, that is readonly, and only shows the date
+        /// </summary>
+        /// <param name="AColumnTitle"></param>
+        /// <param name="ADataColumn"></param>
+        public void AddDateColumn(String AColumnTitle, DataColumn ADataColumn)
+        {
+            SourceGrid.DataGridColumn gridColumn;
+            gridColumn = Columns.Add(ADataColumn.ColumnName, AColumnTitle, typeof(DateTime));
+            gridColumn.DataCell.Editor.EditableMode = SourceGrid.EditableMode.None;
+        }
+
+        /// <summary>
+        /// add a column that shows a currency value.
+        /// aligns the value to the right.
+        /// prints number in red if it is negative
+        /// </summary>
+        /// <param name="AColumnTitle"></param>
+        /// <param name="ADataColumn"></param>
+        public void AddCurrencyColumn(String AColumnTitle, DataColumn ADataColumn)
+        {
+            SourceGrid.DataGridColumn gridColumn;
+            gridColumn = Columns.Add(ADataColumn.ColumnName, AColumnTitle, typeof(double));
+            SourceGrid.Cells.Editors.TextBox CurrencyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(double));
+
+            //CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.CurrencyTypeConverter(typeof(double));
+            CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.NumberTypeConverter(typeof(double), "N");
+
+            // could also use format string "#,###.00"
+            gridColumn.DataCell.Editor = CurrencyEditor;
+            gridColumn.DataCell.Editor.EditableMode = SourceGrid.EditableMode.None;
+
+            SourceGrid.Cells.Views.Cell view = new SourceGrid.Cells.Views.Cell();
+            view.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleRight;
+            gridColumn.DataCell.View = view;
+
+            SourceGrid.Cells.Views.Cell NegativeNumberView = new SourceGrid.Cells.Views.Cell();
+            NegativeNumberView.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleRight;
+            NegativeNumberView.ForeColor = Color.Red;
+
+            SourceGrid.Conditions.ConditionView selectedConditionNegative =
+                new SourceGrid.Conditions.ConditionView(NegativeNumberView);
+            selectedConditionNegative.EvaluateFunction = delegate(SourceGrid.DataGridColumn column,
+                                                                  int gridRow, object itemRow)
+            {
+                DataRowView row = (DataRowView)itemRow;
+                return row[ADataColumn.ColumnName] is double && (double)row[ADataColumn.ColumnName] < 0;
+            }
+            gridColumn.Conditions.Add(selectedConditionNegative);
+        }
+
         #endregion
 
         #region Overridden Events

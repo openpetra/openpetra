@@ -111,8 +111,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Journal Number", FMainDS.AJournal.ColumnJournalNumber);
       grdDetails.AddTextColumn("Journal Status", FMainDS.AJournal.ColumnJournalStatus);
-      grdDetails.AddTextColumn("Journal Debit Total", FMainDS.AJournal.ColumnJournalDebitTotal);
-      grdDetails.AddTextColumn("Journal Credit Total", FMainDS.AJournal.ColumnJournalCreditTotal);
+      grdDetails.AddCurrencyColumn("Journal Debit Total", FMainDS.AJournal.ColumnJournalDebitTotal);
+      grdDetails.AddCurrencyColumn("Journal Credit Total", FMainDS.AJournal.ColumnJournalCreditTotal);
       grdDetails.AddTextColumn("Transaction Currency", FMainDS.AJournal.ColumnTransactionCurrency);
       grdDetails.AddTextColumn("Journal Description", FMainDS.AJournal.ColumnJournalDescription);
       grdDetails.AddTextColumn("Sub System", FMainDS.AJournal.ColumnSubSystemCode);

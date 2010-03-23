@@ -115,8 +115,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("From Currency Code", FMainDS.ADailyExchangeRate.ColumnFromCurrencyCode);
       grdDetails.AddTextColumn("To Currency Code", FMainDS.ADailyExchangeRate.ColumnToCurrencyCode);
-      grdDetails.AddTextColumn("Date Effective From", FMainDS.ADailyExchangeRate.ColumnDateEffectiveFrom);
-      grdDetails.AddTextColumn("Rate of exchange", FMainDS.ADailyExchangeRate.ColumnRateOfExchange);
+      grdDetails.AddDateColumn("Date Effective From", FMainDS.ADailyExchangeRate.ColumnDateEffectiveFrom);
+      grdDetails.AddCurrencyColumn("Rate of exchange", FMainDS.ADailyExchangeRate.ColumnRateOfExchange);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       DataView myDataView = FMainDS.ADailyExchangeRate.DefaultView;

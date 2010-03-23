@@ -634,6 +634,31 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
+        private void AddColumnToGrid(IFormWriter writer, string AGridControlName, string AColumnType, string ALabel,
+            string ATableName, string AColumnName)
+        {
+            string ColumnType = "Text";
+
+            if (AColumnType.Contains("DateTime"))
+            {
+                ColumnType = "Date";
+            }
+            else if (AColumnType.Contains("Currency"))
+            {
+                ColumnType = "Currency";
+            }
+            else if (AColumnType.Contains("Boolean"))
+            {
+                ColumnType = "CheckBox";
+            }
+
+            writer.Template.AddToCodelet("INITMANUALCODE",
+                AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                "FMainDS." +
+                ATableName + ".Column" +
+                AColumnName + ");" + Environment.NewLine);
+        }
+
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
@@ -667,26 +692,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (CustomColumnNode != null)
                     {
-                        string ColumnType = "Text";
-
-                        /* TODO DateTime (tracker: #58)
-                         * if (TYml2Xml.GetAttribute(CustomColumnNode, "Type") == "System.DateTime")
-                         * {
-                         *  ColumnType = "DateTime";
-                         * }
-                         */
-
-                        // TODO: different behaviour for double???
-                        if (TYml2Xml.GetAttribute(CustomColumnNode, "Type") == "Boolean")
-                        {
-                            ColumnType = "CheckBox";
-                        }
-
-                        writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Add" + ColumnType + "Column(\"" +
-                            TYml2Xml.GetAttribute(CustomColumnNode, "Label") + "\", " +
-                            "FMainDS." +
-                            ctrl.GetAttribute("TableName") + ".Column" +
-                            ColumnFieldName + ");" + Environment.NewLine);
+                        AddColumnToGrid(writer, ctrl.controlName,
+                            TYml2Xml.GetAttribute(CustomColumnNode, "Type"),
+                            TYml2Xml.GetAttribute(CustomColumnNode, "Label"),
+                            ctrl.GetAttribute("TableName"),
+                            ColumnFieldName);
                     }
                     else if (ctrl.HasAttribute("TableName"))
                     {
@@ -699,26 +709,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (field != null)
                     {
-                        string ColumnType = "Text";
-
-                        /* TODO DateTime (tracker: #58)
-                         * if (field.GetDotNetType() == "System.DateTime")
-                         * {
-                         *  ColumnType = "DateTime";
-                         * }
-                         */
-
-                        // TODO: different behaviour for double???
-                        if (field.GetDotNetType() == "Boolean")
-                        {
-                            ColumnType = "CheckBox";
-                        }
-
-                        writer.Template.AddToCodelet("INITMANUALCODE",
-                            ctrl.controlName + ".Add" + ColumnType + "Column(\"" + field.strLabel + "\", " +
-                            "FMainDS." +
-                            TTable.NiceTableName(field.strTableName) + ".Column" +
-                            TTable.NiceFieldName(field.strName) + ");" + Environment.NewLine);
+                        AddColumnToGrid(writer, ctrl.controlName,
+                            field.iDecimals == 10 && field.iLength == 24 ? "Currency" : field.GetDotNetType(),
+                            field.strLabel,
+                            TTable.NiceTableName(field.strTableName),
+                            TTable.NiceFieldName(field.strName));
                     }
                 }
             }
@@ -822,7 +817,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             return false;
         }
-        
+
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
@@ -856,7 +851,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (CustomColumnNode != null)
                     {
-                        string ColumnType = "System.String";
+                        //string ColumnType = "System.String";
 
                         /* TODO DateTime (tracker: #58)
                          * if (TYml2Xml.GetAttribute(CustomColumnNode, "Type") == "System.DateTime")
@@ -868,11 +863,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         // TODO: different behaviour for double???
                         if (TYml2Xml.GetAttribute(CustomColumnNode, "Type") == "Boolean")
                         {
-                            ColumnType = "CheckBox";
+                            //ColumnType = "CheckBox";
                         }
 
                         writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Columns.Add(" +
-                            "FMainDS." + ctrl.GetAttribute("TableName") + ".Get" +ColumnFieldName + "DBName(), \"" + 
+                            "FMainDS." + ctrl.GetAttribute("TableName") + ".Get" + ColumnFieldName + "DBName(), \"" +
                             TYml2Xml.GetAttribute(CustomColumnNode, "Label") + "\");" + Environment.NewLine);
                     }
                     else if (ctrl.HasAttribute("TableName"))
@@ -886,7 +881,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (field != null)
                     {
-                        string ColumnType = "System.String";
+                        //string ColumnType = "System.String";
 
                         /* TODO DateTime (tracker: #58)
                          * if (field.GetDotNetType() == "System.DateTime")
@@ -898,12 +893,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         // TODO: different behaviour for double???
                         if (field.GetDotNetType() == "Boolean")
                         {
-                            ColumnType = "CheckBox";
+                            //ColumnType = "CheckBox";
                         }
 
                         writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Columns.Add(" +
                             TTable.NiceTableName(field.strTableName) + "Table.Get" +
-                            TTable.NiceFieldName(field.strName)  + "DBName(), \"" +
+                            TTable.NiceFieldName(field.strName) + "DBName(), \"" +
                             field.strLabel + "\");" + Environment.NewLine);
                     }
                 }
@@ -988,7 +983,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
     }
-    
+
     public class TTxtAutoPopulatedButtonLabelGenerator : TControlGenerator
     {
         String FButtonLabelType = "";

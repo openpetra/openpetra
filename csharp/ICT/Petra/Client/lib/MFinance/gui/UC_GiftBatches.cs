@@ -125,8 +125,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Batch Number", FMainDS.AGiftBatch.ColumnBatchNumber);
       grdDetails.AddTextColumn("Batch Status", FMainDS.AGiftBatch.ColumnBatchStatus);
-      grdDetails.AddTextColumn("GL Effective Date", FMainDS.AGiftBatch.ColumnGlEffectiveDate);
-      grdDetails.AddTextColumn("Hash Total", FMainDS.AGiftBatch.ColumnHashTotal);
+      grdDetails.AddDateColumn("GL Effective Date", FMainDS.AGiftBatch.ColumnGlEffectiveDate);
+      grdDetails.AddCurrencyColumn("Hash Total", FMainDS.AGiftBatch.ColumnHashTotal);
       grdDetails.AddTextColumn("Batch description", FMainDS.AGiftBatch.ColumnBatchDescription);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 

@@ -131,7 +131,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       FPetraUtilsObject.SetStatusBarText(cmbDetailAccountCode, Catalog.GetString("Reference to the account to use for this detail"));
       FMainDS = new AccountsPayableTDS();
       grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Amount", FMainDS.AApDocumentDetail.ColumnAmount);
+      grdDetails.AddCurrencyColumn("Amount", FMainDS.AApDocumentDetail.ColumnAmount);
       grdDetails.AddTextColumn("Narrative", FMainDS.AApDocumentDetail.ColumnNarrative);
       grdDetails.AddTextColumn("Reference", FMainDS.AApDocumentDetail.ColumnItemRef);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
