@@ -31,9 +31,11 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Xml;
 using System.Data;
-using Ict.Tools.CodeGeneration;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Npgsql;
 
 namespace Ict.Common.DB.Testing
@@ -87,54 +89,64 @@ namespace Ict.Common.DB.Testing
             TLogging.Log("  Database disconnected.");
         }
 
-        /// <summary>
-        /// this method will try to create a gift for a new gift batch before creating the gift batch.
-        /// if the constraints would be checked only when committing the transaction, everything would be fine.
-        /// but usually you get a violation of foreign key constraint a_gift_fk1
-        /// </summary>
-        private void WrongOrderSqlStatements()
+#if EXPERIMENT_NOT_FINISHED
+        [Test]
+        public void TestModifyGiftBatch()
         {
-            TDBTransaction t;
-            string sql;
+            TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            try
-            {
-                // setup test scenario: a gift batch, with 2 gifts, each with 2 gift details
-                t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                sql = "INSERT INTO a_gift(a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i) " +
-                      "VALUES(43, 99999999, 1)";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t, false);
-                sql =
-                    "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i, a_bank_account_code_c, a_batch_year_i, a_currency_code_c, a_bank_cost_centre_c) "
-                    +
-                    "VALUES(43, 99999999, '6000', 1, 'EUR', '4300')";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t, false);
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            catch
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw;
-            }
+            GiftBatchTDS MainDS;
 
-            // UNDO the test
+            ALedgerAccess.LoadAll(MainDS, t);
+
+            MainDS.ALedger[0].LastGiftBatchNumber++;
+
+            AGiftBatchRow batch = MainDS.AGiftBatch.NewRowTyped();
+            batch.LedgerNumber = MainDS.ALedger[0].LedgerNumber;
+            batch.BatchNumber = MainDS.ALedger[0].LastGiftBatchNumber;
+            batch.BankAccountCode = "6000";
+            batch.BatchYear = 1;
+            batch.BatchPeriod = 1;
+            batch.CurrencyCode = "EUR";
+            batch.BankCostCentre = MainDS.ALedger[0].LedgerNumber.ToString() + "00";
+            batch.LastGiftNumber = 2;
+            MainDS.AGiftBatch.Rows.Add(batch);
+
+            AGiftRow gift = MainDS.AGift.NewRowTyped();
+            gift.LedgerNumber = batch.LedgerNumber;
+            gift.BatchNumber = batch.BatchNumber;
+            gift.GiftTransactionNumber = 1;
+            MainDS.AGift.Rows.Add(gift);
+
+            gift = MainDS.AGift.NewRowTyped();
+            gift.LedgerNumber = batch.LedgerNumber;
+            gift.BatchNumber = batch.BatchNumber;
+            gift.GiftTransactionNumber = 2;
+            gift.LastDetailNumber = 1;
+            MainDS.AGift.Rows.Add(gift);
+
+            AGiftDetailRow giftdetail = MainDS.AGiftDetail.NewRowTyped();
+            giftdetail.LedgerNumber = gift.LedgerNumber;
+            giftdetail.BatchNumber = gift.BatchNumber;
+            giftdetail.GiftTransactionNumber = gift.GiftTransactionNumber;
+            giftdetail.DetailNumber = 1;
+            giftdetail.MotivationGroupCode = "GIFT";
+            giftdetail.MotivationDetailCode = "SUPPORT";
+            MainDS.AGiftDetail.Rows.Add(giftdetail);
+
+            MainDS.SubmitChanges(t);
+            DBAccess.GDBAccessObj.CommitTransaction();
+
+            // now delete the first gift, and fix the gift detail of the second gift
             t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            sql = "DELETE FROM a_gift" +
-                  " WHERE a_ledger_number_i = 43 AND a_batch_number_i = 99999999 AND a_gift_transaction_number_i = 1";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t, false);
-            sql = "DELETE FROM a_gift_batch" +
-                  " WHERE a_ledger_number_i = 43 AND a_batch_number_i = 99999999";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t, false);
+            MainDS.AGift.Rows.RemoveAt(0);
+            MainDS.AGift[0].GiftTransactionNumber = 1;
+            MainDS.AGiftDetail[0].GiftTransactionNumber = 1;
+            MainDS.AGiftBatch[0].LastGiftNumber = 1;
+
+            MainDS.SubmitChanges(t);
             DBAccess.GDBAccessObj.CommitTransaction();
         }
-
-        [Test]
-        public void TestOrderStatementsInTransaction()
-        {
-            // see http://nunit.net/blogs/?p=63, we expect an exception to be thrown
-            // also http://nunit.org/index.php?p=exceptionAsserts&r=2.5
-            Assert.Throws(Is.InstanceOf(typeof(Exception)), new TestDelegate(WrongOrderSqlStatements));
-            Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(WrongOrderSqlStatements));
-        }
+#endif
     }
 }
