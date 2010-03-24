@@ -9,3 +9,4 @@ AND PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n
 AND PUB_a_gift_detail.p_recipient_key_n = RecipientPartner.p_partner_key_n
 AND PUB_a_gift_batch.a_gl_effective_date_d = ?
 AND PUB_a_gift_batch.a_batch_status_c <> "Cancelled"
+AND PUB_a_gift_batch.a_ledger_number_i = ?

@@ -282,7 +282,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     ccRow.LedgerNumber = MatchDS.AEpMatch[counter].LedgerNumber;
                     ccRow.CostCentreActiveFlag = true;
                     ccRow.CostCentreCode = MatchDS.AEpMatch[counter].CostCentreCode;
-                    costcentreTable = ACostCentreAccess.LoadUsingTemplate(ccRow, Transaction);
+                    costcentreTable = ACostCentreAccess.LoadUsingTemplate(ccRow, transaction);
 
                     if (costcentreTable.Count == 0)
                     {

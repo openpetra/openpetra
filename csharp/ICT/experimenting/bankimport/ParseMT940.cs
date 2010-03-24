@@ -138,7 +138,7 @@ namespace Ict.Plugins.Finance.SwiftParser
                         Convert.ToInt32(swiftData.Substring(2, 2)),
                         Convert.ToInt32(swiftData.Substring(4, 2)));
                 }
-                catch (ArgumentOutOfRangeException e)
+                catch (ArgumentOutOfRangeException)
                 {
                     // we have had the situation in the bank file with a date 30 Feb 2010.
                     // probably because the instruction by the donor is to transfer the money on the 30 day each month
