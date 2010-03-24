@@ -129,15 +129,16 @@ namespace Ict.Plugins.Finance.SwiftParser
                 ABankName = stmt.bankCode;
 
                 // TODO; use BLZ List?
-                // TODO: use app setting BankAccounts
                 // see http://www.bundesbank.de/zahlungsverkehr/zahlungsverkehr_bankleitzahlen_download.php
-                if (ABankName == "52060410")
+
+                string[] bankAccountData = TAppSettingsManager.GetValueStatic("BankAccounts").Split(new char[] { ',' });
+
+                for (Int32 bankCounter = 0; bankCounter < bankAccountData.Length / 3; bankCounter++)
                 {
-                    ABankName += " (EKK)";
-                }
-                else if (ABankName == "67450048")
-                {
-                    ABankName += " (SPK)";
+                    if (bankAccountData[bankCounter * 3 + 0] == ABankName)
+                    {
+                        ABankName = bankAccountData[bankCounter * 3 + 1];
+                    }
                 }
 
                 if (statementCounter == 0)

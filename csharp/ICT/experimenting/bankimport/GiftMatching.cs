@@ -272,6 +272,30 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                                        MatchText + "'";
                 FSqliteDatabase.Select(MatchDS, checkForMatch, AEpMatchTable.GetTableName(), null);
 
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+                for (Int32 counter = 0; counter < MatchDS.AEpMatch.Rows.Count; counter++)
+                {
+                    // remove matches that refer to inactive cost centres
+                    ACostCentreTable costcentreTable = new ACostCentreTable();
+                    ACostCentreRow ccRow = costcentreTable.NewRowTyped();
+                    ccRow.LedgerNumber = MatchDS.AEpMatch[counter].LedgerNumber;
+                    ccRow.CostCentreActiveFlag = true;
+                    ccRow.CostCentreCode = MatchDS.AEpMatch[counter].CostCentreCode;
+                    costcentreTable = ACostCentreAccess.LoadUsingTemplate(ccRow, Transaction);
+
+                    if (costcentreTable.Count == 0)
+                    {
+                        MatchDS.AEpMatch.Rows.RemoveAt(counter);
+                        counter--;
+                        continue;
+                    }
+
+                    // TODO remove the match if the recipient has no valid commitment anymore
+                }
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
                 Int32 countMatches = 0;
 
                 foreach (AEpMatchRow match in MatchDS.AEpMatch.Rows)
