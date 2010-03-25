@@ -286,8 +286,9 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                     if (costcentreTable.Count == 0)
                     {
-                        MatchDS.AEpMatch.Rows.RemoveAt(counter);
-                        counter--;
+// does not seem to work. this condition is true for each match
+//                        MatchDS.AEpMatch.Rows.RemoveAt(counter);
+//                        counter--;
                         continue;
                     }
 

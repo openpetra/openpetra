@@ -364,7 +364,12 @@ namespace Ict.Common.Data
         {
             for (Int32 col = 0; col < ASourceRow.Table.Columns.Count; col++)
             {
-                ADestinationRow[col] = ASourceRow[col];
+                string columnName = ASourceRow.Table.Columns[col].ColumnName;
+
+                if (ADestinationRow.Table.Columns.Contains(columnName))
+                {
+                    ADestinationRow[ADestinationRow.Table.Columns[columnName].Ordinal] = ASourceRow[col];
+                }
             }
         }
     }

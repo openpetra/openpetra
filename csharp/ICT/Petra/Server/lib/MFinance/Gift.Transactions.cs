@@ -96,6 +96,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     NewRow.BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
                 }
+                else
+                {
+                    // needed for old Petra 2.x database
+                    NewRow.BankAccountCode = "6000";
+                }
 
                 // TODO? DomainManager.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
             }
@@ -105,13 +110,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             MainDS.AGiftBatch.Rows.Add(NewRow);
 
             TVerificationResultCollection VerificationResult;
-            AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out VerificationResult);
-            ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out VerificationResult);
+            bool success = false;
 
-            MainDS.AGiftBatch.AcceptChanges();
+            if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out VerificationResult))
+            {
+                if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out VerificationResult))
+                {
+                    success = true;
+                }
+            }
 
-            DBAccess.GDBAccessObj.CommitTransaction();
-            return MainDS;
+            if (success)
+            {
+                MainDS.AGiftBatch.AcceptChanges();
+                DBAccess.GDBAccessObj.CommitTransaction();
+                return MainDS;
+            }
+            else
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw new Exception("Error in CreateAGiftBatch");
+            }
         }
 
         /// <summary>
@@ -202,7 +221,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
@@ -211,6 +229,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // TODO: check that gifts are in consecutive numbers?
                 // TODO: check that gift details are in consecutive numbers, no gift without gift details?
                 // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
+                // TODO: calculate hash of saved batch or batch of saved gift
             }
 
             return SubmissionResult;
