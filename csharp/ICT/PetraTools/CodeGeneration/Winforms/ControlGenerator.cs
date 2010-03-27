@@ -1005,6 +1005,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if (TYml2Xml.GetAttribute(curNode, "Type") == "PartnerKey")
                 {
                     FButtonLabelType = "PartnerKey";
+                    FDefaultWidth = 370;
                     return true;
                 }
                 else if (TYml2Xml.GetAttribute(curNode, "Type") == "Extract")

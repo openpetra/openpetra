@@ -73,6 +73,8 @@ namespace Ict.Petra.Client.MFinance.Gui
             // TODO: check if we want to save the changed matches?
             SaveMatches(null, null);
 
+            CurrentlySelectedMatch = null;
+
             // load the transactions of the selected statement, and the matches
             FMainDS =
                 TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(
@@ -81,15 +83,14 @@ namespace Ict.Petra.Client.MFinance.Gui
             grdAllTransactions.Columns.Clear();
             grdAllTransactions.AddTextColumn(Catalog.GetString("Nr"), FMainDS.AEpTransaction.ColumnOrder, 40);
             grdAllTransactions.AddTextColumn(Catalog.GetString("Account Name"), FMainDS.AEpTransaction.ColumnAccountName, 150);
-            grdAllTransactions.AddTextColumn(Catalog.GetString("description"), FMainDS.AEpTransaction.ColumnDescription, 150);
-            grdAllTransactions.AddTextColumn(Catalog.GetString("Date Effective"), FMainDS.AEpTransaction.ColumnDateEffective, 70);
-            grdAllTransactions.AddTextColumn(Catalog.GetString("Transaction Amount"), FMainDS.AEpTransaction.ColumnTransactionAmount, 70);
+            grdAllTransactions.AddTextColumn(Catalog.GetString("description"), FMainDS.AEpTransaction.ColumnDescription, 200);
+            grdAllTransactions.AddDateColumn(Catalog.GetString("Date Effective"), FMainDS.AEpTransaction.ColumnDateEffective);
+            grdAllTransactions.AddCurrencyColumn(Catalog.GetString("Transaction Amount"), FMainDS.AEpTransaction.ColumnTransactionAmount);
 
             FTransactionView = FMainDS.AEpTransaction.DefaultView;
             FTransactionView.AllowNew = false;
             FTransactionView.Sort = AEpTransactionTable.GetOrderDBName() + " ASC";
             grdAllTransactions.DataSource = new DevAge.ComponentModel.BoundDataView(FTransactionView);
-            grdAllTransactions.AutoSizeCells();
             rbtListAll.Checked = true;
 
             TFinanceControls.InitialiseMotivationDetailList(ref cmbMotivationDetail, FLedgerNumber, true);
@@ -97,13 +98,15 @@ namespace Ict.Petra.Client.MFinance.Gui
             TFinanceControls.InitialiseAccountList(ref cmbGiftAccount, FLedgerNumber, true, false, true, false);
 
             grdGiftDetails.Columns.Clear();
-            grdGiftDetails.AddTextColumn(Catalog.GetString("Motivation"), FMainDS.AEpMatch.ColumnMotivationDetailCode, 70);
+            grdGiftDetails.AddTextColumn(Catalog.GetString("Motivation"), FMainDS.AEpMatch.ColumnMotivationDetailCode, 100);
             grdGiftDetails.AddTextColumn(Catalog.GetString("Cost Centre"), FMainDS.AEpMatch.ColumnCostCentreCode, 150);
-            grdGiftDetails.AddTextColumn(Catalog.GetString("Amount"), FMainDS.AEpMatch.ColumnGiftTransactionAmount, 70);
+            grdGiftDetails.AddTextColumn(Catalog.GetString("Cost Centre Name"), FMainDS.AEpMatch.ColumnCostCentreName, 200);
+            grdGiftDetails.AddCurrencyColumn(Catalog.GetString("Amount"), FMainDS.AEpMatch.ColumnGiftTransactionAmount);
             FMatchView = FMainDS.AEpMatch.DefaultView;
             FMatchView.AllowNew = false;
             grdGiftDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMatchView);
-            grdGiftDetails.AutoSizeCells();
+
+            grdAllTransactions.SelectRowInGrid(1);
         }
 
         private void PopulateStatementCombobox()
@@ -227,15 +230,13 @@ namespace Ict.Petra.Client.MFinance.Gui
             if (rbtGift.Checked)
             {
                 // select first detail
-                grdGiftDetails.Selection.ResetSelection(false);
-                grdGiftDetails.Selection.SelectRow(1, true);
-                GiftDetailsFocusedRowChanged(null, null);
+                grdGiftDetails.SelectRowInGrid(1);
                 AEpMatchRow match = GetSelectedMatch();
                 txtDonorKey.Text = StringHelper.FormatStrToPartnerKeyString(match.DonorKey.ToString());
             }
         }
 
-        private AEpMatchRow CurrentlySelectedMatch = null;
+        private BankImportTDSAEpMatchRow CurrentlySelectedMatch = null;
         private bool rbtGiftWasChecked = false;
         private bool rbtUnmatchedWasChecked = false;
 
@@ -257,6 +258,8 @@ namespace Ict.Petra.Client.MFinance.Gui
                 }
 
                 GetGiftDetailValuesFromScreen();
+
+                // TODO: validation> calculate the sum of the gift details and check with the bank transaction amount
             }
 
             if (rbtUnmatched.Checked)
@@ -289,7 +292,8 @@ namespace Ict.Petra.Client.MFinance.Gui
 
                 txtDonorKey.Text = StringHelper.FormatStrToPartnerKeyString(match.DonorKey.ToString());
 
-                DisplayGiftDetails();
+                grdGiftDetails.SelectRowInGrid(1);
+                grdAllTransactions.Focus();
             }
             else
             {
@@ -307,13 +311,13 @@ namespace Ict.Petra.Client.MFinance.Gui
             DisplayGiftDetails();
         }
 
-        private AEpMatchRow GetSelectedMatch()
+        private BankImportTDSAEpMatchRow GetSelectedMatch()
         {
             DataRowView[] SelectedGridRow = grdGiftDetails.SelectedDataRowsAsDataRowView;
 
             if (SelectedGridRow.Length >= 1)
             {
-                return (AEpMatchRow)SelectedGridRow[0].Row;
+                return (BankImportTDSAEpMatchRow)SelectedGridRow[0].Row;
             }
 
             return null;
@@ -321,37 +325,37 @@ namespace Ict.Petra.Client.MFinance.Gui
 
         private void DisplayGiftDetails()
         {
-            AEpMatchRow matchRow = GetSelectedMatch();
+            CurrentlySelectedMatch = GetSelectedMatch();
 
-            if (matchRow != null)
+            if (CurrentlySelectedMatch != null)
             {
-                txtAmount.Text = matchRow.GiftTransactionAmount.ToString();
+                txtAmount.Text = CurrentlySelectedMatch.GiftTransactionAmount.ToString();
 
-                if (matchRow.IsMotivationDetailCodeNull())
+                if (CurrentlySelectedMatch.IsMotivationDetailCodeNull())
                 {
                     cmbMotivationDetail.SelectedIndex = -1;
                 }
                 else
                 {
-                    cmbMotivationDetail.SetSelectedString(matchRow.MotivationDetailCode);
+                    cmbMotivationDetail.SetSelectedString(CurrentlySelectedMatch.MotivationDetailCode);
                 }
 
-                if (matchRow.IsAccountCodeNull())
+                if (CurrentlySelectedMatch.IsAccountCodeNull())
                 {
                     cmbGiftAccount.SelectedIndex = -1;
                 }
                 else
                 {
-                    cmbGiftAccount.SetSelectedString(matchRow.AccountCode);
+                    cmbGiftAccount.SetSelectedString(CurrentlySelectedMatch.AccountCode);
                 }
 
-                if (matchRow.IsCostCentreCodeNull())
+                if (CurrentlySelectedMatch.IsCostCentreCodeNull())
                 {
                     cmbGiftCostCentre.SelectedIndex = -1;
                 }
                 else
                 {
-                    cmbGiftCostCentre.SetSelectedString(matchRow.CostCentreCode);
+                    cmbGiftCostCentre.SetSelectedString(CurrentlySelectedMatch.CostCentreCode);
                 }
             }
         }
@@ -367,6 +371,16 @@ namespace Ict.Petra.Client.MFinance.Gui
                 CurrentlySelectedMatch.CostCentreCode = cmbGiftCostCentre.GetSelectedString();
                 CurrentlySelectedMatch.GiftTransactionAmount = Convert.ToDouble(txtAmount.Text);
                 CurrentlySelectedMatch.DonorKey = Convert.ToInt64(txtDonorKey.Text);
+
+                FMainDS.ACostCentre.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                    ACostCentreTable.GetCostCentreCodeDBName(), CurrentlySelectedMatch.CostCentreCode);
+
+                if (FMainDS.ACostCentre.DefaultView.Count == 1)
+                {
+                    CurrentlySelectedMatch.CostCentreName = ((ACostCentreRow)FMainDS.ACostCentre.DefaultView[0].Row).CostCentreName;
+                }
+
+                FMainDS.ACostCentre.DefaultView.RowFilter = "";
             }
         }
 
@@ -406,6 +420,9 @@ namespace Ict.Petra.Client.MFinance.Gui
                 newRow.GiftTransactionAmount = ((AEpTransactionRow)grdAllTransactions.SelectedDataRowsAsDataRowView[0].Row).TransactionAmount -
                                                amount;
                 FMainDS.AEpMatch.Rows.Add(newRow);
+
+                // select the new gift detail
+                grdGiftDetails.SelectRowInGrid(grdGiftDetails.Rows.Count - 1);
             }
         }
 
@@ -429,6 +446,9 @@ namespace Ict.Petra.Client.MFinance.Gui
             {
                 FMainDS.AEpMatch.Rows.Remove(CurrentlySelectedMatch);
                 CurrentlySelectedMatch = null;
+
+                // select the last gift detail
+                grdGiftDetails.SelectRowInGrid(grdGiftDetails.Rows.Count - 1);
             }
         }
 

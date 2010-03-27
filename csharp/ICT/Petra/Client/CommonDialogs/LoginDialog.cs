@@ -446,7 +446,7 @@ namespace Ict.Petra.Client.CommonDialogs
                     AUsername = storedUserName;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // ignore the exception, file will be created
             }

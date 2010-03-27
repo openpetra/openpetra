@@ -573,7 +573,7 @@ namespace Ict.Common.Controls
             this.Invalidate();
         }
 
-        #region Public Methods
+        #region Methods for adding typed columns
 
         /// <summary>
         /// Easy method to add a new Text column.
@@ -779,6 +779,7 @@ namespace Ict.Common.Controls
         {
             SourceGrid.DataGridColumn gridColumn;
             gridColumn = Columns.Add(ADataColumn.ColumnName, AColumnTitle, typeof(DateTime));
+            gridColumn.Width = 100;
             gridColumn.DataCell.Editor.EditableMode = SourceGrid.EditableMode.None;
         }
 
@@ -793,6 +794,7 @@ namespace Ict.Common.Controls
         {
             SourceGrid.DataGridColumn gridColumn;
             gridColumn = Columns.Add(ADataColumn.ColumnName, AColumnTitle, typeof(double));
+            gridColumn.Width = 100;
             SourceGrid.Cells.Editors.TextBox CurrencyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(double));
 
             //CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.CurrencyTypeConverter(typeof(double));
@@ -817,7 +819,7 @@ namespace Ict.Common.Controls
             {
                 DataRowView row = (DataRowView)itemRow;
                 return row[ADataColumn.ColumnName] is double && (double)row[ADataColumn.ColumnName] < 0;
-            };
+            }
             gridColumn.Conditions.Add(selectedConditionNegative);
         }
 
@@ -1092,6 +1094,21 @@ namespace Ict.Common.Controls
             }
 
             return RowIndex;
+        }
+
+        /// select a row in the grid, and invoke the even for FocusedRowChanged
+        public void SelectRowInGrid(Int32 ARowNumberInGrid)
+        {
+            this.Selection.ResetSelection(false);
+            this.Selection.SelectRow(ARowNumberInGrid, true);
+
+            // scroll to the row
+            this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
+
+            // invoke the event for FocusedRowChanged
+            this.Selection.FocusRow(ARowNumberInGrid);
+
+            //FocusRowEntered.Invoke(this, new SourceGrid.RowEventArgs(ARowNumberInGrid));
         }
 
         /// <summary>

@@ -272,6 +272,18 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 throw e;
             }
 
+            // update the custom field for cost centre name for each match
+            foreach (BankImportTDSAEpMatchRow row in ResultDataset.AEpMatch.Rows)
+            {
+                ResultDataset.ACostCentre.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                    ACostCentreTable.GetCostCentreCodeDBName(), row.CostCentreCode);
+
+                if (ResultDataset.ACostCentre.DefaultView.Count == 1)
+                {
+                    row.CostCentreName = ((ACostCentreRow)ResultDataset.ACostCentre.DefaultView[0].Row).CostCentreName;
+                }
+            }
+
             ResultDataset.AcceptChanges();
 
             return ResultDataset;
@@ -344,28 +356,20 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 if (v.Count > 0)
                 {
-// TODO: gift batch screen only supports one gift detail at the moment
-//                    AGiftRow gift = GiftDS.AGift.NewRowTyped();
-//                    gift.LedgerNumber = giftbatchRow.LedgerNumber;
-//                    gift.BatchNumber = giftbatchRow.BatchNumber;
-//                    gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
-//                    giftbatchRow.LastGiftNumber++;
-//
-//                    AEpMatchRow match = (AEpMatchRow)v[0].Row;
-//                    gift.DonorKey = match.DonorKey;
-//                    GiftDS.AGift.Rows.Add(gift);
+                    AEpMatchRow match = (AEpMatchRow)v[0].Row;
+
+                    AGiftRow gift = GiftDS.AGift.NewRowTyped();
+                    gift.LedgerNumber = giftbatchRow.LedgerNumber;
+                    gift.BatchNumber = giftbatchRow.BatchNumber;
+                    gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
+                    gift.DonorKey = match.DonorKey;
+                    gift.DateEntered = transactionRow.DateEffective;
+                    GiftDS.AGift.Rows.Add(gift);
+                    giftbatchRow.LastGiftNumber++;
+
                     foreach (DataRowView r in v)
                     {
-                        AEpMatchRow match = (AEpMatchRow)r.Row;
-
-                        AGiftRow gift = GiftDS.AGift.NewRowTyped();
-                        gift.LedgerNumber = giftbatchRow.LedgerNumber;
-                        gift.BatchNumber = giftbatchRow.BatchNumber;
-                        gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
-                        gift.DonorKey = match.DonorKey;
-                        gift.DateEntered = transactionRow.DateEffective;
-                        giftbatchRow.LastGiftNumber++;
-                        GiftDS.AGift.Rows.Add(gift);
+                        match = (AEpMatchRow)r.Row;
 
                         AGiftDetailRow detail = GiftDS.AGiftDetail.NewRowTyped();
                         detail.LedgerNumber = gift.LedgerNumber;

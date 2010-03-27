@@ -40,7 +40,7 @@ OpenPetra:
                         ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=GL.TFrmGLCostCentreHierarchy}
                         GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=GL.TFrmGLBatch}
                     Gift:
-                        EnteringGifts: {Description: Just a prototype at the moment, ActionOpenScreen=TFrmBankStatementImport}
+                        ImportGiftsFromBankStatement: {Description: Matching donors and recipient, ActionOpenScreen=TFrmBankStatementImport}
                         GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=Gift.TFrmGiftBatch}
                         PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=Gift.TFrmGiftReceiptPrinting}
                     AP: {Label=Accounts Payable}

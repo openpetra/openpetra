@@ -757,7 +757,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         private BankImportTDSPBankingDetailsTable TablePBankingDetails;
         private AEpStatementTable TableAEpStatement;
         private AEpTransactionTable TableAEpTransaction;
-        private AEpMatchTable TableAEpMatch;
+        private BankImportTDSAEpMatchTable TableAEpMatch;
         private ACostCentreTable TableACostCentre;
         private AMotivationDetailTable TableAMotivationDetail;
 
@@ -816,7 +816,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// auto generated
-        public AEpMatchTable AEpMatch
+        public BankImportTDSAEpMatchTable AEpMatch
         {
             get
             {
@@ -855,7 +855,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Tables.Add(new BankImportTDSPBankingDetailsTable("PBankingDetails"));
             this.Tables.Add(new AEpStatementTable("AEpStatement"));
             this.Tables.Add(new AEpTransactionTable("AEpTransaction"));
-            this.Tables.Add(new AEpMatchTable("AEpMatch"));
+            this.Tables.Add(new BankImportTDSAEpMatchTable("AEpMatch"));
             this.Tables.Add(new ACostCentreTable("ACostCentre"));
             this.Tables.Add(new AMotivationDetailTable("AMotivationDetail"));
         }
@@ -881,7 +881,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             }
             if ((ds.Tables.IndexOf("AEpMatch") != -1))
             {
-                this.Tables.Add(new AEpMatchTable("AEpMatch"));
+                this.Tables.Add(new BankImportTDSAEpMatchTable("AEpMatch"));
             }
             if ((ds.Tables.IndexOf("ACostCentre") != -1))
             {
@@ -936,7 +936,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.TablePBankingDetails = ((BankImportTDSPBankingDetailsTable)(this.Tables["PBankingDetails"]));
             this.TableAEpStatement = ((AEpStatementTable)(this.Tables["AEpStatement"]));
             this.TableAEpTransaction = ((AEpTransactionTable)(this.Tables["AEpTransaction"]));
-            this.TableAEpMatch = ((AEpMatchTable)(this.Tables["AEpMatch"]));
+            this.TableAEpMatch = ((BankImportTDSAEpMatchTable)(this.Tables["AEpMatch"]));
             this.TableACostCentre = ((ACostCentreTable)(this.Tables["ACostCentre"]));
             this.TableAMotivationDetail = ((AMotivationDetailTable)(this.Tables["AMotivationDetail"]));
         }
@@ -1720,6 +1720,298 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
     }
 
+    /// the matches that can be used to identify recurring gift or GL transactions
+    [Serializable()]
+    public class BankImportTDSAEpMatchTable : AEpMatchTable
+    {
+        /// TableId for Ict.Common.Data generic functions
+        public new static short TableId = 65;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCostCentreNameId = 40;
+
+        /// constructor
+        public BankImportTDSAEpMatchTable() :
+                base("AEpMatch")
+        {
+        }
+
+        /// constructor
+        public BankImportTDSAEpMatchTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public BankImportTDSAEpMatchTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        ///
+        public DataColumn ColumnCostCentreName;
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("a_ep_match_key_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_match_text_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_detail_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_action_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_recent_match_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_recipient_ledger_number_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("a_motivation_group_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_motivation_detail_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_comment_one_type_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_comment_one_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_confidential_gift_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_tax_deductable_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("p_recipient_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("a_charge_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_mailing_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_comment_two_type_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_comment_two_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_comment_three_type_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_comment_three_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_home_admin_charges_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_ilt_admin_charges_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_receipt_letter_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_method_of_giving_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_method_of_payment_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_donor_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("a_admin_charge_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_reference_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_donor_short_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_recipient_short_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_restricted_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_account_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_key_ministry_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("CostCentreName", typeof(string)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnEpMatchKey = this.Columns["a_ep_match_key_i"];
+            this.ColumnMatchText = this.Columns["a_match_text_c"];
+            this.ColumnDetail = this.Columns["a_detail_i"];
+            this.ColumnAction = this.Columns["a_action_c"];
+            this.ColumnRecentMatch = this.Columns["a_recent_match_d"];
+            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
+            this.ColumnRecipientLedgerNumber = this.Columns["a_recipient_ledger_number_n"];
+            this.ColumnMotivationGroupCode = this.Columns["a_motivation_group_code_c"];
+            this.ColumnMotivationDetailCode = this.Columns["a_motivation_detail_code_c"];
+            this.ColumnCommentOneType = this.Columns["a_comment_one_type_c"];
+            this.ColumnGiftCommentOne = this.Columns["a_gift_comment_one_c"];
+            this.ColumnConfidentialGiftFlag = this.Columns["a_confidential_gift_flag_l"];
+            this.ColumnTaxDeductable = this.Columns["a_tax_deductable_l"];
+            this.ColumnRecipientKey = this.Columns["p_recipient_key_n"];
+            this.ColumnChargeFlag = this.Columns["a_charge_flag_l"];
+            this.ColumnCostCentreCode = this.Columns["a_cost_centre_code_c"];
+            this.ColumnMailingCode = this.Columns["p_mailing_code_c"];
+            this.ColumnCommentTwoType = this.Columns["a_comment_two_type_c"];
+            this.ColumnGiftCommentTwo = this.Columns["a_gift_comment_two_c"];
+            this.ColumnCommentThreeType = this.Columns["a_comment_three_type_c"];
+            this.ColumnGiftCommentThree = this.Columns["a_gift_comment_three_c"];
+            this.ColumnGiftTransactionAmount = this.Columns["a_gift_transaction_amount_n"];
+            this.ColumnHomeAdminChargesFlag = this.Columns["a_home_admin_charges_flag_l"];
+            this.ColumnIltAdminChargesFlag = this.Columns["a_ilt_admin_charges_flag_l"];
+            this.ColumnReceiptLetterCode = this.Columns["a_receipt_letter_code_c"];
+            this.ColumnMethodOfGivingCode = this.Columns["a_method_of_giving_code_c"];
+            this.ColumnMethodOfPaymentCode = this.Columns["a_method_of_payment_code_c"];
+            this.ColumnDonorKey = this.Columns["p_donor_key_n"];
+            this.ColumnAdminCharge = this.Columns["a_admin_charge_l"];
+            this.ColumnReference = this.Columns["a_reference_c"];
+            this.ColumnDonorShortName = this.Columns["p_donor_short_name_c"];
+            this.ColumnRecipientShortName = this.Columns["p_recipient_short_name_c"];
+            this.ColumnRestricted = this.Columns["a_restricted_l"];
+            this.ColumnAccountCode = this.Columns["a_account_code_c"];
+            this.ColumnKeyMinistryKey = this.Columns["a_key_ministry_key_n"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.ColumnCostCentreName = this.Columns["CostCentreName"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnEpMatchKey};
+        }
+
+        /// Access a typed row by index
+        public new BankImportTDSAEpMatchRow this[int i]
+        {
+            get
+            {
+                return ((BankImportTDSAEpMatchRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public new BankImportTDSAEpMatchRow NewRowTyped(bool AWithDefaultValues)
+        {
+            BankImportTDSAEpMatchRow ret = ((BankImportTDSAEpMatchRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public new BankImportTDSAEpMatchRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new BankImportTDSAEpMatchRow(builder);
+        }
+
+        /// get typed set of changes
+        public new BankImportTDSAEpMatchTable GetChangesTyped()
+        {
+            return ((BankImportTDSAEpMatchTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static new string GetTableName()
+        {
+            return "AEpMatch";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static new string GetTableDBName()
+        {
+            return "a_ep_match";
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCostCentreNameDBName()
+        {
+            return "CostCentreName";
+        }
+
+        /// get character length for column
+        public static short GetCostCentreNameLength()
+        {
+            return -1;
+        }
+
+    }
+
+    /// the matches that can be used to identify recurring gift or GL transactions
+    [Serializable()]
+    public class BankImportTDSAEpMatchRow : AEpMatchRow
+    {
+        private BankImportTDSAEpMatchTable myTable;
+
+        /// Constructor
+        public BankImportTDSAEpMatchRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((BankImportTDSAEpMatchTable)(this.Table));
+        }
+
+        ///
+        public string CostCentreName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCostCentreName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCostCentreName)
+                            || (((string)(this[this.myTable.ColumnCostCentreName])) != value)))
+                {
+                    this[this.myTable.ColumnCostCentreName] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public override void InitValues()
+        {
+            this.SetNull(this.myTable.ColumnEpMatchKey);
+            this.SetNull(this.myTable.ColumnMatchText);
+            this[this.myTable.ColumnDetail.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnAction);
+            this[this.myTable.ColumnRecentMatch.Ordinal] = DateTime.Today;
+            this[this.myTable.ColumnLedgerNumber.Ordinal] = 0;
+            this[this.myTable.ColumnRecipientLedgerNumber.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnMotivationGroupCode);
+            this.SetNull(this.myTable.ColumnMotivationDetailCode);
+            this.SetNull(this.myTable.ColumnCommentOneType);
+            this.SetNull(this.myTable.ColumnGiftCommentOne);
+            this[this.myTable.ColumnConfidentialGiftFlag.Ordinal] = false;
+            this[this.myTable.ColumnTaxDeductable.Ordinal] = true;
+            this[this.myTable.ColumnRecipientKey.Ordinal] = 0;
+            this[this.myTable.ColumnChargeFlag.Ordinal] = true;
+            this.SetNull(this.myTable.ColumnCostCentreCode);
+            this.SetNull(this.myTable.ColumnMailingCode);
+            this.SetNull(this.myTable.ColumnCommentTwoType);
+            this.SetNull(this.myTable.ColumnGiftCommentTwo);
+            this.SetNull(this.myTable.ColumnCommentThreeType);
+            this.SetNull(this.myTable.ColumnGiftCommentThree);
+            this[this.myTable.ColumnGiftTransactionAmount.Ordinal] = 0;
+            this[this.myTable.ColumnHomeAdminChargesFlag.Ordinal] = true;
+            this[this.myTable.ColumnIltAdminChargesFlag.Ordinal] = true;
+            this.SetNull(this.myTable.ColumnReceiptLetterCode);
+            this.SetNull(this.myTable.ColumnMethodOfGivingCode);
+            this.SetNull(this.myTable.ColumnMethodOfPaymentCode);
+            this[this.myTable.ColumnDonorKey.Ordinal] = 0;
+            this[this.myTable.ColumnAdminCharge.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnReference);
+            this.SetNull(this.myTable.ColumnDonorShortName);
+            this.SetNull(this.myTable.ColumnRecipientShortName);
+            this[this.myTable.ColumnRestricted.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnAccountCode);
+            this.SetNull(this.myTable.ColumnKeyMinistryKey);
+            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnCreatedBy);
+            this.SetNull(this.myTable.ColumnDateModified);
+            this.SetNull(this.myTable.ColumnModifiedBy);
+            this.SetNull(this.myTable.ColumnModificationId);
+            this.SetNull(this.myTable.ColumnCostCentreName);
+        }
+
+        /// test for NULL value
+        public bool IsCostCentreNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnCostCentreName);
+        }
+
+        /// assign NULL value
+        public void SetCostCentreNameNull()
+        {
+            this.SetNull(this.myTable.ColumnCostCentreName);
+        }
+    }
+
      /// auto generated
     [Serializable()]
     public class NewDonorTDS : TTypedDataSet
@@ -2432,7 +2724,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class DonorHistoryTDSGiftTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 5604;
+        public static short TableId = 5605;
         /// used for generic TTypedDataTable functions
         public static short ColumnDonorKeyId = 0;
         /// used for generic TTypedDataTable functions
@@ -2962,7 +3254,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     public class DonorHistoryTDSDonorTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public static short TableId = 5605;
+        public static short TableId = 5606;
         /// used for generic TTypedDataTable functions
         public static short ColumnDonorKeyId = 0;
         /// used for generic TTypedDataTable functions

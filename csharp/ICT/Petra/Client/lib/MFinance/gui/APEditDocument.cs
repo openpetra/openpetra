@@ -220,12 +220,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 RowNumberGrid = Counter + 1;
             }
         }
-        grdDetails.Selection.ResetSelection(false);
-        grdDetails.Selection.SelectRow(RowNumberGrid, true);
-        // scroll to the row
-        grdDetails.ShowCell(new SourceGrid.Position(RowNumberGrid, 0), true);
 
-        FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
+        grdDetails.SelectRowInGrid(RowNumberGrid);
     }
 
     /// return the selected row
@@ -322,9 +318,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             grdDetails.AutoSizeCells();
             if (FMainDS.AApDocumentDetail.Rows.Count > 0)
             {
-                grdDetails.Selection.ResetSelection(false);
-                grdDetails.Selection.SelectRow(1, true);
-                FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
+                grdDetails.SelectRowInGrid(1);
                 pnlDetails.Enabled = true;
             }
         }
