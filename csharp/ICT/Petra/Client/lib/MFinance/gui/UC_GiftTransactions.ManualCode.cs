@@ -95,7 +95,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailAccountCode.Text = motivationDetail.AccountCode;
 
                 // TODO: calculation of cost centre also depends on the recipient partner key; can be a field key or ministry key, or determined by pm_staff_data: foreign cost centre
-                txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
+                if (motivationDetail.CostCentreCode.EndsWith("S"))
+                {
+                    // work around if we have selected the cost centre already in bank import
+                    // TODO: allow to select the cost centre here, which reports to the motivation cost centre
+                    //txtDetailCostCentreCode.Text =
+                }
+                else
+                {
+                    txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
+                }
             }
         }
 
