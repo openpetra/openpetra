@@ -313,6 +313,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <returns></returns>
         public static double GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
         {
+            if (ACurrencyFrom == ACurrencyTo)
+            {
+                return 1.0;
+            }
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ADailyExchangeRateRow fittingRate = null;
