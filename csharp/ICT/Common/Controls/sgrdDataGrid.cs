@@ -814,12 +814,12 @@ namespace Ict.Common.Controls
 
             SourceGrid.Conditions.ConditionView selectedConditionNegative =
                 new SourceGrid.Conditions.ConditionView(NegativeNumberView);
-            selectedConditionNegative.EvaluateFunction = delegate(SourceGrid.DataGridColumn column,
-                                                                  int gridRow, object itemRow)
-            {
-                DataRowView row = (DataRowView)itemRow;
-                return row[ADataColumn.ColumnName] is double && (double)row[ADataColumn.ColumnName] < 0;
-            }
+            selectedConditionNegative.EvaluateFunction = (delegate(SourceGrid.DataGridColumn column,
+                                                                   int gridRow, object itemRow)
+                                                          {
+                                                              DataRowView row = (DataRowView)itemRow;
+                                                              return row[ADataColumn.ColumnName] is double && (double)row[ADataColumn.ColumnName] < 0;
+                                                          });
             gridColumn.Conditions.Add(selectedConditionNegative);
         }
 
