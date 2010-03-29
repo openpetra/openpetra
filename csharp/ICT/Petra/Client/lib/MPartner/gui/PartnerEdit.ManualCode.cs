@@ -110,10 +110,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             uictPartnerKey,
 
             /// <summary>Call the UIConnector with Partner Key, Location Key and Site Key Arguments</summary>
-            uictLocationKey,
+           uictLocationKey,
 
             /// <summary>Call the UIConnector without any Arguments, thus signalising that a new Partner should be created</summary>
-            uictNewPartner
+           uictNewPartner
         }
 
         private const String StrScreenCaption = "Partner Edit";
@@ -1749,7 +1749,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // begin
 
                             /* TmpDebugString := TmpDebugString + PLocationTable.GetTableName() + '.Row[' + TmpRowCounter.ToString + ']: PLocationKey: ' +
-                            *AInspectDS.Tables[PLocationTable.GetTableName].Rows[TmpRowCounter][PLocationTable.GetLocationKeyDBName()].ToString + '(); PSiteKey: ' +
+                            * *AInspectDS.Tables[PLocationTable.GetTableName].Rows[TmpRowCounter][PLocationTable.GetLocationKeyDBName()].ToString + '(); PSiteKey: ' +
                             *AInspectDS.Tables[PLocationTable.GetTableName].Rows[TmpRowCounter][PLocationTable.GetSiteKeyDBName()].ToString + "\r\n"(); */
 
                             // end;
@@ -1762,8 +1762,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // begin
 
                             /* TmpDebugString := TmpDebugString + PPartnerLocationTable.GetTableName() + '.Row[' + TmpRowCounter.ToString + ']: PLocationKey: ' +
-                             *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetLocationKeyDBName()].ToString + '(); PSiteKey: ' +
-                             *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetSiteKeyDBName()].ToString + '(); PPartnerKey: ' +
+                             * *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetLocationKeyDBName()].ToString + '(); PSiteKey: ' +
+                             * *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetSiteKeyDBName()].ToString + '(); PPartnerKey: ' +
                              *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetPartnerKeyDBName()].ToString + "\r\n"(); */
 
                             // end;
@@ -1783,7 +1783,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // begin
 
                             /* TmpDebugString := TmpDebugString + PLocationTable.GetTableName() + '.Row[' + TmpRowCounter.ToString + ']: PLocationKey: ' +
-                            *AInspectDS.Tables[PLocationTable.GetTableName].Rows[TmpRowCounter][PLocationTable.GetLocationKeyDBName()].ToString + '(); PSiteKey: ' +
+                            * *AInspectDS.Tables[PLocationTable.GetTableName].Rows[TmpRowCounter][PLocationTable.GetLocationKeyDBName()].ToString + '(); PSiteKey: ' +
                             *AInspectDS.Tables[PLocationTable.GetTableName].Rows[TmpRowCounter][PLocationTable.GetSiteKeyDBName()].ToString + "\r\n"(); */
 
                             // end;
@@ -1796,9 +1796,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // begin
 
                             /* TmpDebugString := TmpDebugString + PPartnerLocationTable.GetTableName() + '.Row[' + TmpRowCounter.ToString + ']: PLocationKey: ' +
-                             *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetLocationKeyDBName()].ToString + '(); PSiteKey: ' +
-                             *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetSiteKeyDBName()].ToString + '(); PPartnerKey: ' +
-                             *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetPartnerKeyDBName()].ToString + '(); RowError: ' +
+                             * *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetLocationKeyDBName()].ToString + '(); PSiteKey: ' +
+                             * *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetSiteKeyDBName()].ToString + '(); PPartnerKey: ' +
+                             * *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetPartnerKeyDBName()].ToString + '(); RowError: ' +
                              *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter].RowError.ToString + "\r\n"(); */
 
                             // end;
@@ -2181,40 +2181,40 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Application.DoEvents();
 
                 using (frmPartnerLS = new TPartnerLocationFind())
-                      {
-                          if (frmPartnerLS.ShowDialog() == DialogResult.OK)
-                          {
-                              LocationKey = frmPartnerLS.SelectedLocation.LocationKey;
-                              SiteKey = frmPartnerLS.SelectedLocation.SiteKey;
+                {
+                    if (frmPartnerLS.ShowDialog() == DialogResult.OK)
+                    {
+                        LocationKey = frmPartnerLS.SelectedLocation.LocationKey;
+                        SiteKey = frmPartnerLS.SelectedLocation.SiteKey;
 
-                              // MessageBox.Show('selected location: ' + LocationKey.ToString());
+                        // MessageBox.Show('selected location: ' + LocationKey.ToString());
 
-                              // Need to switch to Address Tab to make sure it is initialised before
-                              // executing methods on it...
-                              ucoPartnerTabSet.SelectTabPage(TPartnerEditTabPageEnum.petpAddresses);
+                        // Need to switch to Address Tab to make sure it is initialised before
+                        // executing methods on it...
+                        ucoPartnerTabSet.SelectTabPage(TPartnerEditTabPageEnum.petpAddresses);
 
-                              if (!ucoPartnerTabSet.IsAddressRowPresent(new TLocationPK(SiteKey, LocationKey)))
-                              {
-                                  // Retrieve data for the selected Location from the PetraServer
-                                  LocationDT = FPartnerEditUIConnector.GetDataLocation(SiteKey, LocationKey);
+                        if (!ucoPartnerTabSet.IsAddressRowPresent(new TLocationPK(SiteKey, LocationKey)))
+                        {
+                            // Retrieve data for the selected Location from the PetraServer
+                            LocationDT = FPartnerEditUIConnector.GetDataLocation(SiteKey, LocationKey);
 
-                                  if (FPetraUtilsObject.DetailEditMode)
-                                  {
-                                      ucoPartnerTabSet.CopyFoundAddressData((PLocationRow)LocationDT.Rows[0]);
-                                  }
-                                  else
-                                  {
-                                      // Merge the data for the selected Location into the Location Table of the
-                                      // Main DataSet.
-                                      FMainDS.Merge(LocationDT);
-                                      ucoPartnerTabSet.AddNewFoundAddress(SiteKey, LocationKey);
-                                  }
-                              }
-                          }
-                      }
+                            if (FPetraUtilsObject.DetailEditMode)
+                            {
+                                ucoPartnerTabSet.CopyFoundAddressData((PLocationRow)LocationDT.Rows[0]);
+                            }
+                            else
+                            {
+                                // Merge the data for the selected Location into the Location Table of the
+                                // Main DataSet.
+                                FMainDS.Merge(LocationDT);
+                                ucoPartnerTabSet.AddNewFoundAddress(SiteKey, LocationKey);
+                            }
+                        }
+                    }
+                }
 
-                      // normal mouse cursor again
-                      System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+                // normal mouse cursor again
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
             }
 #endif
         }

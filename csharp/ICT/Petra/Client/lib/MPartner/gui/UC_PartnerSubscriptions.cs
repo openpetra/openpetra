@@ -516,9 +516,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 tbbActions.Width =
                     Convert.ToInt32(System.Decimal.Round(Convert.ToDecimal(tbbActions.Width *
                                 (this.ParentForm.AutoScaleBaseSize.Width / PetraForm.AUTOSCALEBASESIZEWIDTHFOR96DPI)))) + 14;                                                                                                   /* The '14' here gives the
-                                                                                                                                                                                                                                 *most accurate
-                                                                                                                                                                                                                                 *representation of the
-                                                                                                                                                                                                                                 *Width compared to the
+                                                                                                                                                                                                                                 * *most accurate
+                                                                                                                                                                                                                                 * *representation of the
+                                                                                                                                                                                                                                 * *Width compared to the
                                                                                                                                                                                                                                  *Width with 96 DPI... */
             }
 

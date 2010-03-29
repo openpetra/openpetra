@@ -364,18 +364,18 @@ namespace Ict.Petra.Client.CommonForms
                 case eActionId.eHelpDevelopmentTeam:
 #if TODO
                     using (DevelopmentTeamDialog teamDialog = new DevelopmentTeamDialog())
-                          {
-                              teamDialog.ShowDialog();
-                          }
+                    {
+                        teamDialog.ShowDialog();
+                    }
 #endif
                     break;
 
                 case eActionId.eHelpAbout:
 #if TODO
                     using (AboutPetraDialog aboutDialog = new AboutPetraDialog())
-                          {
-                              aboutDialog.ShowDialog();
-                          }
+                    {
+                        aboutDialog.ShowDialog();
+                    }
 #endif
                     break;
 

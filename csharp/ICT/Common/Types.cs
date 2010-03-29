@@ -130,12 +130,12 @@ namespace Ict.Common
         /// <summary>
         /// edit the data
         /// </summary>
-        dmEdit,
+            dmEdit,
 
         /// <summary>
         /// add new data
         /// </summary>
-        dmAdd
+            dmAdd
     };
 
     /// <summary>

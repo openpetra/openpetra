@@ -19,7 +19,7 @@ namespace Ict.Petra.Client.MSysMan
         {
             InitToolbar(true, true, true);
             Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance.UIConnectors.ISysManUIConnectorsTableMaintenance
-            UIConnector = TRemote.MSysMan.TableMaintenance.UIConnectors.SysManTableMaintenance();
+                UIConnector = TRemote.MSysMan.TableMaintenance.UIConnectors.SysManTableMaintenance();
             DataTable table = UIConnector.GetData(SUserTable.GetTableDBName());
             InitGrid(table);
             AssembleAndShow();
