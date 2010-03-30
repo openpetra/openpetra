@@ -381,7 +381,7 @@ namespace Ict.Petra.Server.App.Main
 
                     /*
                      * The following code is needed because the header lines go until column
-                     *#80 of the Console, and this causes the first Client line to be shifted
+                     * #80 of the Console, and this causes the first Client line to be shifted
                      * two characters to the right...
                      */
                     if (ClientLine == 1)
