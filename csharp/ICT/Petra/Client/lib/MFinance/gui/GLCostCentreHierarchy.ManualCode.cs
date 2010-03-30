@@ -195,6 +195,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // TODO: open file; only will work if there are no GLM records and transactions yet
             XmlDocument doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Load Cost Centre Hierarchy from file"));
 
+            if (doc == null)
+            {
+                // import was cancelled
+                return;
+            }
+
             if (!TRemote.MFinance.GL.WebConnectors.ImportCostCentreHierarchy(FLedgerNumber, TXMLParser.XmlToString(doc)))
             {
                 MessageBox.Show(Catalog.GetString(
