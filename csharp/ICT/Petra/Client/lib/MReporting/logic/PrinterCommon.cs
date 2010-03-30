@@ -298,7 +298,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             ReturnValue = null;
 
-            if (currentRow.masterRow != 0)
+            if (currentRow.masterRow > 0)
             {
                 ReturnValue = FindNextRow(FindRow(currentRow.masterRow));
             }
@@ -324,7 +324,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             ReturnValue = FindNextSibling(currentRow);
 
-            if ((ReturnValue == null) && (currentRow.masterRow != 0))
+            if ((ReturnValue == null) && (currentRow.masterRow > 0))
             {
                 // see if the father is already fully printed
                 ReturnValue = FindRow(currentRow.masterRow);
@@ -668,8 +668,6 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// </summary>
         public override void PrintPageBody()
         {
-            TResult currentRow;
-
             if (FResults.Count == 0)
             {
                 // nothing to be printed
@@ -678,7 +676,12 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             try
             {
-                currentRow = FindRow(FNextElementToPrint);
+                TResult currentRow = null;
+
+                if (FNextElementToPrint > 0)
+                {
+                    currentRow = FindRow(FNextElementToPrint);
+                }
 
                 while ((currentRow != null) && PrintRow(currentRow))
                 {

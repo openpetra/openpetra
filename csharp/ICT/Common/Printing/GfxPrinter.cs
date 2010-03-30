@@ -760,7 +760,7 @@ namespace Ict.Common.Printing
                     } while (HasMorePages());
 
                     FinishSimulatePrinting();
-
+                    BeginPrint(null, null);
                     FNumberOfPages = pageCounter;
                 }
             }

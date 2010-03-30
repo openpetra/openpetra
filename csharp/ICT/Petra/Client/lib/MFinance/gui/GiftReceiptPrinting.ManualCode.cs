@@ -94,6 +94,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 dtpEndDate.Value,
                 htmlTemplate);
 
+            if (AllLetters.Length == 0)
+            {
+                MessageBox.Show(Catalog.GetString("There are no posted gifts in the date range"));
+                return;
+            }
+
             FGfxPrinter = new TGfxPrinter(printDocument);
             try
             {

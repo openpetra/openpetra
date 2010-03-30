@@ -334,11 +334,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             linePrinted = false;
             position = GetPosition(columnNr, level, 0);
-
-            // (Columns[columnNr] as RectangleF).Left
             width = GetWidth(columnNr, level, 0);
-
-            // (Columns[columnNr] as RectangleF).Width
             s = column.ToString();
 
             if (s.Length != 0)
