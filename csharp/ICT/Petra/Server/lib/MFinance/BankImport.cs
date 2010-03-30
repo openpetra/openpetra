@@ -187,7 +187,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 AEpTransactionAccess.LoadViaAEpStatement(ResultDataset, AStatementKey, Transaction);
 
                 // load the matches or create new matches
-                foreach (AEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
+                foreach (BankImportTDSAEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
                 {
                     // find a match with the same match text, or create a new one
                     row.MatchText = CalculateMatchText(row);
@@ -218,6 +218,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         }
 
                         row.EpMatchKey = tempTable[0].EpMatchKey;
+                        row.MatchAction = tempTable[0].Action;
 
                         ResultDataset.AEpMatch.Merge(tempTable);
                     }
@@ -255,7 +256,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         tempTable.Rows.Add(tempRow);
                         AEpMatchAccess.SubmitChanges(tempTable, Transaction, out VerificationResult);
                         row.EpMatchKey = tempTable[0].EpMatchKey;
-
+                        row.MatchAction = tempTable[0].Action;
                         ResultDataset.AEpMatch.Merge(tempTable);
                     }
                 }

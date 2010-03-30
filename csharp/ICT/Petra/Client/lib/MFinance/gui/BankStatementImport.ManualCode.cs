@@ -236,6 +236,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             }
         }
 
+        private BankImportTDSAEpTransactionRow CurrentlySelectedTransaction = null;
         private BankImportTDSAEpMatchRow CurrentlySelectedMatch = null;
         private bool rbtGiftWasChecked = false;
         private bool rbtUnmatchedWasChecked = false;
@@ -257,6 +258,8 @@ namespace Ict.Petra.Client.MFinance.Gui
                     match.Action = MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT;
                 }
 
+                CurrentlySelectedTransaction.MatchAction = MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT;
+
                 GetGiftDetailValuesFromScreen();
 
                 // TODO: validation> calculate the sum of the gift details and check with the bank transaction amount
@@ -269,6 +272,8 @@ namespace Ict.Petra.Client.MFinance.Gui
                     AEpMatchRow match = (AEpMatchRow)FMatchView[i].Row;
                     match.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
                 }
+
+                CurrentlySelectedTransaction.MatchAction = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
             }
         }
 
@@ -280,9 +285,11 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             CurrentlySelectedMatch = null;
 
+            CurrentlySelectedTransaction = ((BankImportTDSAEpTransactionRow)grdAllTransactions.SelectedDataRowsAsDataRowView[0].Row);
+
             // load selections from the a_ep_match table for the new row
             FMatchView.RowFilter = AEpMatchTable.GetMatchTextDBName() +
-                                   " = '" + ((AEpTransactionRow)grdAllTransactions.SelectedDataRowsAsDataRowView[0].Row).MatchText + "'";
+                                   " = '" + CurrentlySelectedTransaction.MatchText + "'";
 
             AEpMatchRow match = (AEpMatchRow)FMatchView[0].Row;
 
@@ -417,7 +424,7 @@ namespace Ict.Petra.Client.MFinance.Gui
                 newRow.AccountCode = match.AccountCode;
                 newRow.CostCentreCode = match.CostCentreCode;
                 newRow.DonorKey = match.DonorKey;
-                newRow.GiftTransactionAmount = ((AEpTransactionRow)grdAllTransactions.SelectedDataRowsAsDataRowView[0].Row).TransactionAmount -
+                newRow.GiftTransactionAmount = CurrentlySelectedTransaction.TransactionAmount -
                                                amount;
                 FMainDS.AEpMatch.Rows.Add(newRow);
 
@@ -438,7 +445,7 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             // we should never allow to delete all details, otherwise we have nothing to copy from
             // also cannot delete the first detail, since there is the foreign key from a_ep_transaction on epmatchkey?
-            if (((AEpTransactionRow)grdAllTransactions.SelectedDataRowsAsDataRowView[0].Row).EpMatchKey == CurrentlySelectedMatch.EpMatchKey)
+            if (CurrentlySelectedTransaction.EpMatchKey == CurrentlySelectedMatch.EpMatchKey)
             {
                 MessageBox.Show(Catalog.GetString("Cannot delete the first detail"));
             }
@@ -488,6 +495,11 @@ namespace Ict.Petra.Client.MFinance.Gui
 
         private void TransactionFilterChanged(System.Object sender, EventArgs e)
         {
+            GetValuesFromScreen();
+            pnlDetails.Visible = false;
+            CurrentlySelectedMatch = null;
+            CurrentlySelectedTransaction = null;
+
             if (FTransactionView == null)
             {
                 return;
@@ -501,6 +513,27 @@ namespace Ict.Petra.Client.MFinance.Gui
             {
                 // TODO: allow splitting a transaction, one part is GL/AP, the other is a donation?
                 //       at Top Level: split transaction, results into 2 rows in aeptransaction (not stored). Merge Transactions again?
+
+                FTransactionView.RowFilter = String.Format("{0}='{1}'",
+                    BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
+                    MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT);
+            }
+            else if (rbtListUnmatched.Checked)
+            {
+                FTransactionView.RowFilter = String.Format("{0}='{1}'",
+                    BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
+                    MFinanceConstants.BANK_STMT_STATUS_UNMATCHED);
+            }
+            else if (rbtListGL.Checked)
+            {
+                FTransactionView.RowFilter = String.Format("{0}='{1}'",
+                    BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
+                    MFinanceConstants.BANK_STMT_STATUS_MATCHED_GL);
+            }
+
+            if (FTransactionView.Count > 0)
+            {
+                grdAllTransactions.SelectRowInGrid(1);
             }
         }
     }
