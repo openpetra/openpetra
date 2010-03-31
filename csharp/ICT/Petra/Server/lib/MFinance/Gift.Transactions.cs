@@ -275,39 +275,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             journal.ExchangeRateToBase = 1.0;
             GLDataset.AJournal.Rows.Add(journal);
 
-            ATransactionRow transaction = null;
-
-            transaction = GLDataset.ATransaction.NewRowTyped();
-            transaction.LedgerNumber = journal.LedgerNumber;
-            transaction.BatchNumber = journal.BatchNumber;
-            transaction.JournalNumber = journal.JournalNumber;
-            transaction.TransactionNumber = ++journal.LastTransactionNumber;
-            transaction.TransactionAmount = 0;
-
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
             {
-                transaction.TransactionAmount += giftdetail.GiftTransactionAmount;
-            }
+                ATransactionRow transaction = null;
 
-            transaction.DebitCreditIndicator = true;
-
-            // TODO: support foreign currencies
-            transaction.AmountInBaseCurrency = transaction.TransactionAmount;
-
-            // TODO: account and costcentre based on linked costcentre, current commitment, and Motivation detail
-            // if motivation cost centre is a summary cost centre, make sure the transaction costcentre is reporting to that summary cost centre
-            // Careful: modify gift cost centre and account and recipient field only when the amount is positive.
-            // adjustments and reversals must remain on the original value
-            transaction.AccountCode = giftbatch.BankAccountCode;
-            transaction.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
-                ALedgerNumber);
-            transaction.Narrative = "Deposit from receipts - Gift Batch " + giftbatch.BatchNumber.ToString();
-            transaction.Reference = "GB" + giftbatch.BatchNumber.ToString();
-
-            GLDataset.ATransaction.Rows.Add(transaction);
-
-            foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
-            {
                 // do we have already a transaction for this costcentre&account?
                 GLDataset.ATransaction.DefaultView.RowFilter = String.Format("{0}='{1}' and {2}='{3}'",
                     ATransactionTable.GetAccountCodeDBName(),
@@ -329,6 +300,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     transaction.DebitCreditIndicator = false;
                     transaction.TransactionAmount = 0;
                     transaction.AmountInBaseCurrency = 0;
+                    transaction.TransactionDate = giftbatch.GlEffectiveDate;
 
                     GLDataset.ATransaction.Rows.Add(transaction);
                 }
@@ -345,26 +317,49 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // TODO: do the fee calculation, a_fees_payable, a_fees_receivable
             }
 
+            ATransactionRow transactionForTotals = GLDataset.ATransaction.NewRowTyped();
+            transactionForTotals.LedgerNumber = journal.LedgerNumber;
+            transactionForTotals.BatchNumber = journal.BatchNumber;
+            transactionForTotals.JournalNumber = journal.JournalNumber;
+            transactionForTotals.TransactionNumber = ++journal.LastTransactionNumber;
+            transactionForTotals.TransactionAmount = 0;
+            transactionForTotals.TransactionDate = giftbatch.GlEffectiveDate;
+
+            foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
+            {
+                transactionForTotals.TransactionAmount += giftdetail.GiftTransactionAmount;
+            }
+
+            transactionForTotals.DebitCreditIndicator = true;
+
+            // TODO: support foreign currencies
+            transactionForTotals.AmountInBaseCurrency = transactionForTotals.TransactionAmount;
+
+            // TODO: account and costcentre based on linked costcentre, current commitment, and Motivation detail
+            // if motivation cost centre is a summary cost centre, make sure the transaction costcentre is reporting to that summary cost centre
+            // Careful: modify gift cost centre and account and recipient field only when the amount is positive.
+            // adjustments and reversals must remain on the original value
+            transactionForTotals.AccountCode = giftbatch.BankAccountCode;
+            transactionForTotals.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
+                ALedgerNumber);
+            transactionForTotals.Narrative = "Deposit from receipts - Gift Batch " + giftbatch.BatchNumber.ToString();
+            transactionForTotals.Reference = "GB" + giftbatch.BatchNumber.ToString();
+
+            GLDataset.ATransaction.Rows.Add(transactionForTotals);
+
             GLDataset.ATransaction.DefaultView.RowFilter = string.Empty;
 
-            foreach (ATransactionRow transactionForTotals in GLDataset.ATransaction.Rows)
+            foreach (ATransactionRow transaction in GLDataset.ATransaction.Rows)
             {
-                if (transactionForTotals.TransactionAmount < 0)
+                if (transaction.DebitCreditIndicator)
                 {
-                    transactionForTotals.TransactionAmount *= -1;
-                    transactionForTotals.AmountInBaseCurrency *= -1;
-                    transactionForTotals.DebitCreditIndicator = !transactionForTotals.DebitCreditIndicator;
-                }
-
-                if (transactionForTotals.DebitCreditIndicator)
-                {
-                    journal.JournalDebitTotal += transactionForTotals.TransactionAmount;
-                    batch.BatchDebitTotal += transactionForTotals.TransactionAmount;
+                    journal.JournalDebitTotal += transaction.TransactionAmount;
+                    batch.BatchDebitTotal += transaction.TransactionAmount;
                 }
                 else
                 {
-                    journal.JournalCreditTotal += transactionForTotals.TransactionAmount;
-                    batch.BatchCreditTotal += transactionForTotals.TransactionAmount;
+                    journal.JournalCreditTotal += transaction.TransactionAmount;
+                    batch.BatchCreditTotal += transaction.TransactionAmount;
                 }
             }
 
