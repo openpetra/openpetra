@@ -106,7 +106,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 TPrinterHtml htmlPrinter = new TPrinterHtml(AllLetters,
                     System.IO.Path.GetDirectoryName(letterTemplateFilename),
                     FGfxPrinter);
-                FGfxPrinter.Init(eOrientation.ePortrait, htmlPrinter);
+                FGfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
                 this.ppvLetters.InvalidatePreview();
                 this.ppvLetters.Document = FGfxPrinter.Document;
                 this.ppvLetters.Zoom = 1;

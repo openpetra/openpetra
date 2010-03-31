@@ -71,11 +71,11 @@ namespace Ict.Petra.Client.MReporting.Logic
         {
             if (AParameters.Get("ReportWidth").ToDouble() > 20)
             {
-                APrinter.Init(eOrientation.eLandscape, this);
+                APrinter.Init(eOrientation.eLandscape, this, eMarginType.eDefaultMargins);
             }
             else
             {
-                APrinter.Init(eOrientation.ePortrait, this);
+                APrinter.Init(eOrientation.ePortrait, this, eMarginType.eDefaultMargins);
             }
         }
 

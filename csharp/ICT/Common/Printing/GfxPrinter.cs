@@ -109,11 +109,9 @@ namespace Ict.Common.Printing
         /// <summary>
         /// todoComment
         /// </summary>
-        /// <param name="AOrientation"></param>
-        /// <param name="APrinterLayout"></param>
-        public override void Init(eOrientation AOrientation, TPrinterLayout APrinterLayout)
+        public override void Init(eOrientation AOrientation, TPrinterLayout APrinterLayout, eMarginType AMarginType)
         {
-            base.Init(AOrientation, APrinterLayout);
+            base.Init(AOrientation, APrinterLayout, AMarginType);
 
             if (AOrientation == eOrientation.ePortrait)
             {
@@ -733,12 +731,27 @@ namespace Ict.Common.Printing
             // first page? then we should store some settings
             if (CurrentPageNr == 0)
             {
-                FLeftMargin = FEv.PageSettings.PrintableArea.Left / 100.0f;
-                FTopMargin = FEv.PageSettings.PrintableArea.Top / 100.0f;
-                FRightMargin = (FEv.PageSettings.PaperSize.Width - FEv.PageSettings.PrintableArea.Right) / 100.0f;
-                FBottomMargin = (FEv.PageSettings.PaperSize.Height - FEv.PageSettings.PrintableArea.Bottom) / 100.0f;
-                FWidth = FEv.PageSettings.PrintableArea.Width / 100.0f;
-                FHeight = FEv.PageSettings.PrintableArea.Height / 100.0f;
+                if (FMarginType == eMarginType.ePrintableArea)
+                {
+                    // margin is set by the printing program, eg. HTML Renderer
+                    FLeftMargin = FEv.PageSettings.PrintableArea.Left / 100.0f;
+                    FTopMargin = FEv.PageSettings.PrintableArea.Top / 100.0f;
+                    FRightMargin = (FEv.PageSettings.PaperSize.Width - FEv.PageSettings.PrintableArea.Right) / 100.0f;
+                    FBottomMargin = (FEv.PageSettings.PaperSize.Height - FEv.PageSettings.PrintableArea.Bottom) / 100.0f;
+                    FWidth = FEv.PageSettings.PrintableArea.Width / 100.0f;
+                    FHeight = FEv.PageSettings.PrintableArea.Height / 100.0f;
+                }
+                else if (FMarginType == eMarginType.eDefaultMargins)
+                {
+                    // prepare the margins here, this is used for the reporting printing
+                    FLeftMargin = FEv.MarginBounds.Left / 100.0f;
+                    FTopMargin = FEv.MarginBounds.Top / 100.0f;
+                    FRightMargin = FEv.MarginBounds.Right / 100.0f;
+                    FBottomMargin = FEv.MarginBounds.Bottom / 100.0f;
+                    FWidth = FEv.MarginBounds.Width / 100.0f;
+                    FHeight = FEv.MarginBounds.Height / 100.0f;
+                }
+
                 FBlackPen = new Pen(Color.Black, Cm(0.05f));
 
                 // Calculate the number of lines per page.
