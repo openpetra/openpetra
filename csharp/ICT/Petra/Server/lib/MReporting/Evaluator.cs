@@ -889,6 +889,10 @@ namespace Ict.Petra.Server.MReporting
             {
                 ReturnValue = new TVariant(StringHelper.ContainsCSV(ops[1].ToString(), ops[2].ToString()));
             }
+            else if (f == "replace")
+            {
+                ReturnValue = new TVariant(ops[1].ToString().Replace(ops[2].ToString(), ops[3].ToString()));
+            }
             else if ((f == "substring") || (f == "substr"))
             {
                 s = ops[1].ToString();
@@ -955,6 +959,12 @@ namespace Ict.Petra.Server.MReporting
                 ReturnValue =
                     new TVariant((!GetParameters().Exists(ops[1].ToString(), column,
                                       Depth) || GetParameters().Get(ops[1].ToString(), column, Depth).IsZeroOrNull()));
+            }
+            else if (f == "template")
+            {
+                TRptCalculation rptTemplate = ReportStore.GetCalculation(CurrentReport, ops[1].ToString());
+                TRptDataCalcCalculation rptTempCalculation = new TRptDataCalcCalculation(this);
+                ReturnValue = rptTempCalculation.Calculate(rptTemplate, null);
             }
             else if (f == "conditionrow")
             {

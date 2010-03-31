@@ -36,6 +36,10 @@
 				<option name="all costcentres from the current ledger with a_posting_cost_centre_flag_l"/>
 			</reportparameter>
 			<reportparameter name="param_cost_centre_codes"/> <!-- alternative to cost centre range, comma separated list of cost centre codes -->
+            <reportparameter name="param_rgrCostCentres">
+                <option name="CostCentreList"/>
+                <option name="CostCentreRange"/>
+            </reportparameter>
 			<reportparameter name="param_account_code_start"> 
 				<option name="all accounts from the current ledger with a_posting_status_l"/>
 			</reportparameter>
@@ -43,6 +47,10 @@
 				<option name="all accounts from the current ledger with a_posting_status_l"/>
 			</reportparameter>
 			<reportparameter name="param_account_codes"/> <!-- alternative to account code range, comma separated list of account codes -->
+            <reportparameter name="param_rgrAccounts">
+                <option name="AccountList"/>
+                <option name="AccountRange"/>
+            </reportparameter>
 			<reportparameter name="param_reference_start" condition="param_sortby = Reference"/>
 			<reportparameter name="param_reference_end" condition="param_sortby = Reference" />
 			<reportparameter name="param_analyis_type_start" condition="param_sortby = Analysis Type" />
