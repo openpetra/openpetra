@@ -115,7 +115,7 @@
 				</fielddetail>
 				<fielddetail condition="eq({param_rgrCostCentres},CostCentreList)">
 					<value text="    Cost Centres: "/>
-					<value variable="param_cost_centre_codes"/>
+					<value function="replace({param_cost_centre_codes},&quot;,)"/>
 				</fielddetail>
 			</field>
 			<field whichfield="period3" align="right">
@@ -130,7 +130,7 @@
 				</fielddetail>
 				<fielddetail condition="eq({param_rgrAccounts},AccountList)">
 					<value text="Accounts: "/>
-					<value variable="param_account_codes"/>
+					<value function="replace({param_account_codes},&quot;,)"/>
 				</fielddetail>
 			</field>
 
@@ -503,7 +503,7 @@
 						<lowerLevelReport level="TransactionAnalysisAttributes" calculation ="Select Analysis Attributes of Transaction"/>
 					</case>
 					<default>
-						<field whichfield="left 0" pos="1 cm" width="2cm" align="left"><value variable="a_transaction_date_d" format="formatteddate"/></field>
+						<field whichfield="left 0" pos="1 cm" width="2cm" align="left"><value variable="a_transaction_date_d"/></field>
 						<field whichfield="left 1" pos="3.5 cm" width="3cm" align="left"><value variable="a_reference_c"/></field>
 						<field whichfield="columns" />
 					</default>
@@ -517,7 +517,7 @@
 			<header>
 			</header>
 			<detail>
-				<field whichfield="left 0" pos="1 cm" width="2cm" align="left"><value variable="a_transaction_date_d" format="formatteddate"/></field>
+				<field whichfield="left 0" pos="1 cm" width="2cm" align="left"><value variable="a_transaction_date_d"/></field>
 				<field whichfield="left 1" pos="3.5 cm" width="3cm" align="left"><value variable="a_reference_c"/></field>
 				<field whichfield="columns" />
 			</detail>

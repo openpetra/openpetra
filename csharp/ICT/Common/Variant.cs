@@ -27,6 +27,7 @@ using System;
 using System.Collections;
 using System.Globalization;
 using System.Collections.Specialized;
+using System.Text.RegularExpressions;
 using Ict.Common;
 
 
@@ -317,6 +318,13 @@ namespace Ict.Common
             {
                 BooleanValue = this.ToBool();
                 TypeVariant = eVariantTypes.eBoolean;
+            }
+
+            if (this.ToDate() != DateTime.MinValue)
+            {
+                // this is needed for SQLite, which returns date values as a string
+                DateValue = this.ToDate();
+                TypeVariant = eVariantTypes.eDateTime;
             }
             else if ((value.Length > 0)
                      && ((value[0] == '-')
@@ -1047,6 +1055,20 @@ namespace Ict.Common
                 // todo: need to decode, similar to ToDouble?
                 // should we raise an Exception?
                 ReturnValue = System.DateTime.MinValue;
+
+                // for SQLite, attempt to match eg. 2009-02-28 00:00:00
+                Regex exp = new Regex(@"(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)");
+                MatchCollection matches = exp.Matches(StringValue);
+
+                if (matches.Count != 0)
+                {
+                    return new DateTime(Convert.ToInt32(matches[0].Groups[1].ToString()),
+                        Convert.ToInt32(matches[0].Groups[2].ToString()),
+                        Convert.ToInt32(matches[0].Groups[3].ToString()),
+                        Convert.ToInt32(matches[0].Groups[4].ToString()),
+                        Convert.ToInt32(matches[0].Groups[5].ToString()),
+                        Convert.ToInt32(matches[0].Groups[6].ToString()));
+                }
             }
             else
             {
@@ -1139,7 +1161,7 @@ namespace Ict.Common
                     {
                         ReturnValue = StringHelper.FormatCurrency(this, "dayofyear");
                     }
-                    else
+                    else // formatteddate
                     {
                         ReturnValue = StringHelper.DateToLocalizedString(DateValue);
                     }

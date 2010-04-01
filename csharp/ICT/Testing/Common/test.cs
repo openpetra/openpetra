@@ -204,6 +204,7 @@ namespace Ict.Common.Testing
             const String KOMMA = "test, hallo";
             const String QUOTES = "test\"tst";
             const String DATE = "24/03/1999";
+            const String ACCOUNTCODE = "0400";
 
             String[] myTest;
             Int16 i;
@@ -219,9 +220,9 @@ namespace Ict.Common.Testing
             Assert.AreEqual("shortdesc=\"Equipment, General\"", StringHelper.GetNextCSV(ref s), "get string with quotes that are not at the start");
             Assert.AreEqual("longdesc=Equipment", StringHelper.GetNextCSV(ref s), "after string with quotes that are not at the start");
 
-            /* ,Bäcker,"test"",","test""",test,"test, hallo","test""tst","24/03/1999" */
+            /* ,Bäcker,"test"",","test""",test,"test, hallo","test""tst","24/03/1999","0400" */
             myTest = new String[] {
-                EMPTY, UMLAUT, QUOTEKOMMA, QUOTE, SIMPLE, KOMMA, QUOTES, DATE
+                EMPTY, UMLAUT, QUOTEKOMMA, QUOTE, SIMPLE, KOMMA, QUOTES, DATE, ACCOUNTCODE
             };
             s = "";
 
@@ -233,7 +234,7 @@ namespace Ict.Common.Testing
             Assert.AreEqual(" ," + UMLAUT + ",\"" +
                 QUOTEKOMMA.Replace("\"", "\"\"") + "\",\"" +
                 QUOTE.Replace("\"", "\"\"") + "\"," + SIMPLE + ",\"" + KOMMA + "\",\"" +
-                QUOTES.Replace("\"", "\"\"") + "\"," + DATE + "", s, "full list not correctly built");
+                QUOTES.Replace("\"", "\"\"") + "\"," + DATE + ",\"" + ACCOUNTCODE + "\"" , s, "full list not correctly built");
             i = 0;
 
             while (s.Length > 0)
@@ -312,6 +313,7 @@ namespace Ict.Common.Testing
             /* Assert.AreEqual('29MÄR2004', DateToLocalizedString(TVariant.Create(DateTime.Create(2004,03,29)).ToDate()),'Problem D date DE'); */
             Assert.AreEqual("29-MRZ-2004", StringHelper.DateToLocalizedString(new TVariant(new DateTime(2004, 03, 29)).ToDate()), "Problem D date DE");
             Assert.AreEqual("eDateTime:31/07/2004", new TVariant("#20040731#").EncodeToString(), "EncodeToString DE");
+            Assert.AreEqual("29-MRZ-2004", StringHelper.DateToLocalizedString(new TVariant("2004-03-29 00:00:00").ToDate()), "sqlite date value");
             Thread.CurrentThread.CurrentCulture = oldCulture;
         }
 
