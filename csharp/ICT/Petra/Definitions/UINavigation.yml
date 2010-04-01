@@ -28,11 +28,12 @@ OpenPetra:
                         AddNewFamily: {ActionClick=TFrmPartnerMain.NewPartner}
                         AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson}
                         AddNewOrganisation: {ActionClick=TFrmPartnerMain.NewOrganisation}
-                        ImportPartners: {ActionClick=TFrmPartnerMain.ImportPartners}
                     MaintainPartner:
                         FindPartner: {ActionClick=TFrmPartnerMain.FindPartner}
                     Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
+                    ImportExport: {Label=Import and Export}
+                        ImportPartners: {ActionClick=TFrmPartnerMain.ImportPartners}
                         ExportPartners: {ActionClick=TFrmPartnerMain.ExportPartners}
                 Ledger43: {Label=German Ledger (43), LedgerNumber=43, Namespace=Ict.Petra.Client.MFinance.Gui}
                     GL: 
@@ -40,7 +41,7 @@ OpenPetra:
                         ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=GL.TFrmGLCostCentreHierarchy}
                         GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=GL.TFrmGLBatch}
                     Gift:
-                        ImportGiftsFromBankStatement: {Description: Matching donors and recipient, ActionOpenScreen=TFrmBankStatementImport}
+                        ImportGiftsFromBankStatement: {Description: Matching donors and recipients, ActionOpenScreen=TFrmBankStatementImport}
                         GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=Gift.TFrmGiftBatch}
                         PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=Gift.TFrmGiftReceiptPrinting}
                     AP: {Label=Accounts Payable}
