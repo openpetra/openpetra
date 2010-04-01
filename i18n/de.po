@@ -25,8 +25,7 @@ msgid "Cannot open CSV file, because it is missing the header line"
 msgstr "Kann die CSV Datei nicht öffnen, weil die Kopfzeile fehlt"
 
 #, csharp-format
-msgid ""
-"Cannot parse CSV file header of file {0}, caption {1} is missing the #"
+msgid "Cannot parse CSV file header of file {0}, caption {1} is missing the #"
 msgstr ""
 "Kann die Kopfzeile der CSV Datei {0} nicht lesen, bei der Überschrift {1} "
 "fehlt das #"
@@ -754,8 +753,7 @@ msgid "Enter the previously used Surname (eg before marriage)"
 msgstr "Geben Sie frühere Nachnamen an (z.B. vor der Heirat)"
 
 msgid "Enter a short name for this partner in your local language"
-msgstr ""
-"Einen kurzen Namen auf deutsch angeben (wichtiger für Chinesisch etc)"
+msgstr "Einen kurzen Namen auf deutsch angeben (wichtiger für Chinesisch etc)"
 
 msgid "ie. Nobel Peace Prize, Olympic Gold Medal, ?, etc."
 msgstr "z.B. Friedensnobelpreis, Olympische Gold Medaille, etc"
@@ -786,8 +784,7 @@ msgid "Year the Person became a Believer"
 msgstr "In welchem Jahr wurde diese Person gläubig"
 
 msgid "Comment about the Year or how the Person became a Believer"
-msgstr ""
-"Kommentar zu dem Jahr oder die Umstände wie diese Person gläubig wurde"
+msgstr "Kommentar zu dem Jahr oder die Umstände wie diese Person gläubig wurde"
 
 msgid "Status Updated:"
 msgstr "Status aktualisiert:"
@@ -1421,8 +1418,7 @@ msgid "The part of the address preceding the street, eg business name"
 msgstr "Teil der Adresse, der der Straße vorangeht (etwa der Firmenname)"
 
 msgid "Enter the second part of the address (e.g. name of the street)"
-msgstr ""
-"Geben Sie den zweiten Teil der Adresse an (etwa den Namen der Straße)"
+msgstr "Geben Sie den zweiten Teil der Adresse an (etwa den Namen der Straße)"
 
 msgid "Enter the third part of the address, eg district of the city"
 msgstr "Geben Sie den dritten Teil der Adresse ein (etwa den Ortsteil)"
@@ -2549,8 +2545,7 @@ msgstr ""
 msgid "Type of cost centre (foreign or local)."
 msgstr ""
 
-msgid ""
-"You can only add a new cost centre after selecting a parent cost centre"
+msgid "You can only add a new cost centre after selecting a parent cost centre"
 msgstr ""
 
 msgid "NewCostCentre"
@@ -2654,8 +2649,7 @@ msgstr ""
 msgid "Spreadsheet files (*.csv)|*.csv"
 msgstr ""
 
-msgid ""
-"Please select a yml file that describes the content of the spreadsheet"
+msgid "Please select a yml file that describes the content of the spreadsheet"
 msgstr ""
 
 msgid "Data description files (*.yml)|*.yml"
@@ -3026,8 +3020,7 @@ msgstr ""
 msgid "Please select the file to import from"
 msgstr ""
 
-msgid ""
-"Import of database was successful. Please restart your OpenPetra client"
+msgid "Import of database was successful. Please restart your OpenPetra client"
 msgstr ""
 
 msgid ""
@@ -3505,15 +3498,85 @@ msgstr ""
 msgid "Invalid User ID"
 msgstr ""
 
-#~ msgid "Edit"
-#~ msgstr "Editieren"
+msgid "Cost Centre Name"
+msgstr ""
 
-#~ msgid "Add"
-#~ msgstr "Hinzufügen"
+msgid "Date Effective:"
+msgstr ""
 
-#~ msgid "You need to finish editing by choosing the 'Done' button"
-#~ msgstr ""
-#~ "Bitte erst das Bearbeiten der Adresse abschliessen und auf \"Fertig\" klicken"
+msgid "Recipient Key:"
+msgstr ""
 
-#~ msgid "Default Report"
-#~ msgstr "Standardreport"
+msgid "Old Field Key:"
+msgstr ""
+
+msgid "No Receipt"
+msgstr ""
+
+msgid "&Adjust gifts after field change"
+msgstr ""
+
+msgid "Field Change Adjustment"
+msgstr ""
+
+msgid "Fix Gifts from this date onwards"
+msgstr ""
+
+msgid "Fix Gifts till this date (inclusive)"
+msgstr ""
+
+msgid "Date for adjusted Gift batch"
+msgstr ""
+
+msgid "tick this if the gift was already receipted last year"
+msgstr ""
+
+#, csharp-format
+msgid "Please check and post gift batch {0}"
+msgstr ""
+
+msgid "There was a problem creating the adjustment batch"
+msgstr ""
+
+msgid "Failure"
+msgstr ""
+
+msgid "There are no posted gifts in the date range"
+msgstr ""
+
+msgid "Do you really want to cancel this gift batch?"
+msgstr ""
+
+msgid "Confirm cancelling of Gift Batch"
+msgstr ""
+
+msgid "Do you really want to post this gift batch?"
+msgstr ""
+
+msgid "Confirm posting of Gift Batch"
+msgstr ""
+
+msgid "&Add Gift"
+msgstr ""
+
+msgid "Add Detai&l"
+msgstr ""
+
+msgid "&Delete Detail"
+msgstr ""
+
+msgid "Import and Export"
+msgstr ""
+
+msgid "Import Gifts From Bank Statement"
+msgstr ""
+
+msgid "We don't support several bank statements per file at the moment"
+msgstr ""
+
+#, csharp-format
+msgid "posted on {0}"
+msgstr ""
+
+msgid "Gift Adjustment (Field Change)"
+msgstr ""
