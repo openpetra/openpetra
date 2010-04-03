@@ -1647,7 +1647,7 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
             int countRow;
             if ((AWithCascDelete == true))
             {
-                AEpTransactionTable MyAEpTransactionTable = AEpTransactionAccess.LoadViaAEpStatement(AStatementKey, StringHelper.StrSplit("a_statement_key_i,a_order_i", ","), ATransaction);
+                AEpTransactionTable MyAEpTransactionTable = AEpTransactionAccess.LoadViaAEpStatement(AStatementKey, StringHelper.StrSplit("a_statement_key_i,a_order_i,a_detail_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAEpTransactionTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AEpTransactionCascading.DeleteUsingTemplate(MyAEpTransactionTable[countRow], null, ATransaction, AWithCascDelete);
@@ -1662,7 +1662,7 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
             int countRow;
             if ((AWithCascDelete == true))
             {
-                AEpTransactionTable MyAEpTransactionTable = AEpTransactionAccess.LoadViaAEpStatementTemplate(ATemplateRow, StringHelper.StrSplit("a_statement_key_i,a_order_i", ","), ATransaction);
+                AEpTransactionTable MyAEpTransactionTable = AEpTransactionAccess.LoadViaAEpStatementTemplate(ATemplateRow, StringHelper.StrSplit("a_statement_key_i,a_order_i,a_detail_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAEpTransactionTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AEpTransactionCascading.DeleteUsingTemplate(MyAEpTransactionTable[countRow], null, ATransaction, AWithCascDelete);
@@ -1681,7 +1681,7 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
             int countRow;
             if ((AWithCascDelete == true))
             {
-                AEpTransactionTable MyAEpTransactionTable = AEpTransactionAccess.LoadViaAEpMatch(AEpMatchKey, StringHelper.StrSplit("a_statement_key_i,a_order_i", ","), ATransaction);
+                AEpTransactionTable MyAEpTransactionTable = AEpTransactionAccess.LoadViaAEpMatch(AEpMatchKey, StringHelper.StrSplit("a_statement_key_i,a_order_i,a_detail_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAEpTransactionTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AEpTransactionCascading.DeleteUsingTemplate(MyAEpTransactionTable[countRow], null, ATransaction, AWithCascDelete);
@@ -1696,7 +1696,7 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
             int countRow;
             if ((AWithCascDelete == true))
             {
-                AEpTransactionTable MyAEpTransactionTable = AEpTransactionAccess.LoadViaAEpMatchTemplate(ATemplateRow, StringHelper.StrSplit("a_statement_key_i,a_order_i", ","), ATransaction);
+                AEpTransactionTable MyAEpTransactionTable = AEpTransactionAccess.LoadViaAEpMatchTemplate(ATemplateRow, StringHelper.StrSplit("a_statement_key_i,a_order_i,a_detail_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAEpTransactionTable.Rows.Count); countRow = (countRow + 1))
                 {
                     AEpTransactionCascading.DeleteUsingTemplate(MyAEpTransactionTable[countRow], null, ATransaction, AWithCascDelete);
@@ -1710,9 +1710,9 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
     public class AEpTransactionCascading : TTypedDataAccess
     {
         /// cascading delete
-        public static void DeleteByPrimaryKey(Int32 AStatementKey, Int32 AOrder, TDBTransaction ATransaction, bool AWithCascDelete)
+        public static void DeleteByPrimaryKey(Int32 AStatementKey, Int32 AOrder, Int32 ADetailKey, TDBTransaction ATransaction, bool AWithCascDelete)
         {
-            AEpTransactionAccess.DeleteByPrimaryKey(AStatementKey, AOrder, ATransaction);
+            AEpTransactionAccess.DeleteByPrimaryKey(AStatementKey, AOrder, ADetailKey, ATransaction);
         }
 
         /// cascading delete

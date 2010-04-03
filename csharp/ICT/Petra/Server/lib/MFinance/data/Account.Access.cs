@@ -3299,41 +3299,41 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         }
 
         /// this method is called by all overloads
-        public static void LoadByPrimaryKey(DataSet ADataSet, Int32 AStatementKey, Int32 AOrder, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static void LoadByPrimaryKey(DataSet ADataSet, Int32 AStatementKey, Int32 AOrder, Int32 ADetailKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            LoadByPrimaryKey(AEpTransactionTable.TableId, ADataSet, new System.Object[2]{AStatementKey, AOrder}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            LoadByPrimaryKey(AEpTransactionTable.TableId, ADataSet, new System.Object[3]{AStatementKey, AOrder, ADetailKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(DataSet AData, Int32 AStatementKey, Int32 AOrder, TDBTransaction ATransaction)
+        public static void LoadByPrimaryKey(DataSet AData, Int32 AStatementKey, Int32 AOrder, Int32 ADetailKey, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(AData, AStatementKey, AOrder, null, ATransaction, null, 0, 0);
+            LoadByPrimaryKey(AData, AStatementKey, AOrder, ADetailKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(DataSet AData, Int32 AStatementKey, Int32 AOrder, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static void LoadByPrimaryKey(DataSet AData, Int32 AStatementKey, Int32 AOrder, Int32 ADetailKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            LoadByPrimaryKey(AData, AStatementKey, AOrder, AFieldList, ATransaction, null, 0, 0);
+            LoadByPrimaryKey(AData, AStatementKey, AOrder, ADetailKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static AEpTransactionTable LoadByPrimaryKey(Int32 AStatementKey, Int32 AOrder, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static AEpTransactionTable LoadByPrimaryKey(Int32 AStatementKey, Int32 AOrder, Int32 ADetailKey, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             AEpTransactionTable Data = new AEpTransactionTable();
-            LoadByPrimaryKey(AEpTransactionTable.TableId, Data, new System.Object[2]{AStatementKey, AOrder}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            LoadByPrimaryKey(AEpTransactionTable.TableId, Data, new System.Object[3]{AStatementKey, AOrder, ADetailKey}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
             return Data;
         }
 
         /// auto generated
-        public static AEpTransactionTable LoadByPrimaryKey(Int32 AStatementKey, Int32 AOrder, TDBTransaction ATransaction)
+        public static AEpTransactionTable LoadByPrimaryKey(Int32 AStatementKey, Int32 AOrder, Int32 ADetailKey, TDBTransaction ATransaction)
         {
-            return LoadByPrimaryKey(AStatementKey, AOrder, null, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AStatementKey, AOrder, ADetailKey, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static AEpTransactionTable LoadByPrimaryKey(Int32 AStatementKey, Int32 AOrder, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static AEpTransactionTable LoadByPrimaryKey(Int32 AStatementKey, Int32 AOrder, Int32 ADetailKey, StringCollection AFieldList, TDBTransaction ATransaction)
         {
-            return LoadByPrimaryKey(AStatementKey, AOrder, AFieldList, ATransaction, null, 0, 0);
+            return LoadByPrimaryKey(AStatementKey, AOrder, ADetailKey, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// this method is called by all overloads
@@ -3425,9 +3425,9 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         }
 
         /// check if a row exists by using the primary key
-        public static bool Exists(Int32 AStatementKey, Int32 AOrder, TDBTransaction ATransaction)
+        public static bool Exists(Int32 AStatementKey, Int32 AOrder, Int32 ADetailKey, TDBTransaction ATransaction)
         {
-            return Exists(AEpTransactionTable.TableId, new System.Object[2]{AStatementKey, AOrder}, ATransaction);
+            return Exists(AEpTransactionTable.TableId, new System.Object[3]{AStatementKey, AOrder, ADetailKey}, ATransaction);
         }
 
         /// this method is called by all overloads
@@ -3739,9 +3739,9 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         }
 
         /// auto generated
-        public static void DeleteByPrimaryKey(Int32 AStatementKey, Int32 AOrder, TDBTransaction ATransaction)
+        public static void DeleteByPrimaryKey(Int32 AStatementKey, Int32 AOrder, Int32 ADetailKey, TDBTransaction ATransaction)
         {
-            DeleteByPrimaryKey(AEpTransactionTable.TableId, new System.Object[2]{AStatementKey, AOrder}, ATransaction);
+            DeleteByPrimaryKey(AEpTransactionTable.TableId, new System.Object[3]{AStatementKey, AOrder, ADetailKey}, ATransaction);
         }
 
         /// auto generated

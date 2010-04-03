@@ -134,6 +134,13 @@ namespace Plugin.BankImportFromCSV
             // TODO: BankAccountKey should be NOT NULL. for the moment not time to implement
             // stmt.BankAccountKey = Convert.ToInt64(TXMLParser.GetAttribute(RootNode, "BankAccountKey"));
             stmt.Filename = BankStatementFilename;
+
+            if (stmt.Filename.Length > AEpStatementTable.GetFilenameLength())
+            {
+                // use the last number of characters of the path and filename
+                stmt.Filename = BankStatementFilename.Substring(BankStatementFilename.Length - AEpStatementTable.GetFilenameLength());
+            }
+
             stmt.CurrencyCode = CurrencyCode;
             stmtTable.Rows.Add(stmt);
 

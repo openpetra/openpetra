@@ -1727,7 +1727,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// TableId for Ict.Common.Data generic functions
         public new static short TableId = 66;
         /// used for generic TTypedDataTable functions
-        public static short ColumnMatchActionId = 22;
+        public static short ColumnMatchActionId = 24;
 
         /// constructor
         public BankImportTDSAEpTransactionTable() :
@@ -1755,6 +1755,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         {
             this.Columns.Add(new System.Data.DataColumn("a_statement_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_order_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_detail_key_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_number_on_paper_statement_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_match_text_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_account_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_title_c", typeof(String)));
@@ -1783,6 +1785,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         {
             this.ColumnStatementKey = this.Columns["a_statement_key_i"];
             this.ColumnOrder = this.Columns["a_order_i"];
+            this.ColumnDetailKey = this.Columns["a_detail_key_i"];
+            this.ColumnNumberOnPaperStatement = this.Columns["a_number_on_paper_statement_i"];
             this.ColumnMatchText = this.Columns["a_match_text_c"];
             this.ColumnAccountName = this.Columns["a_account_name_c"];
             this.ColumnTitle = this.Columns["a_title_c"];
@@ -1804,8 +1808,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
             this.ColumnMatchAction = this.Columns["MatchAction"];
-            this.PrimaryKey = new System.Data.DataColumn[2] {
-                    ColumnStatementKey,ColumnOrder};
+            this.PrimaryKey = new System.Data.DataColumn[3] {
+                    ColumnStatementKey,ColumnOrder,ColumnDetailKey};
         }
 
         /// Access a typed row by index
@@ -1922,6 +1926,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         {
             this.SetNull(this.myTable.ColumnStatementKey);
             this.SetNull(this.myTable.ColumnOrder);
+            this[this.myTable.ColumnDetailKey.Ordinal] = -1;
+            this[this.myTable.ColumnNumberOnPaperStatement.Ordinal] = -1;
             this.SetNull(this.myTable.ColumnMatchText);
             this.SetNull(this.myTable.ColumnAccountName);
             this.SetNull(this.myTable.ColumnTitle);
