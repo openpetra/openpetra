@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-01 11:57+0200\n"
+"POT-Creation-Date: 2010-04-03 20:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,16 +105,10 @@ msgstr ""
 msgid "Petra Login"
 msgstr ""
 
-msgid "label1"
-msgstr ""
-
 msgid "OK"
 msgstr ""
 
 msgid "Cancel"
-msgstr ""
-
-msgid "PetraInputBox"
 msgstr ""
 
 msgid " O P E N P E T R A "
@@ -1084,9 +1078,6 @@ msgstr ""
 msgid "Fax:"
 msgstr ""
 
-msgid "0732 / 12345 Ext. 78"
-msgstr ""
-
 msgid "Telephone:"
 msgstr ""
 
@@ -1099,46 +1090,19 @@ msgstr ""
 msgid "Email:"
 msgstr ""
 
-msgid "0732 / 2345678"
-msgstr ""
-
-msgid "hans-peter@testinger.com"
-msgstr ""
-
 msgid "Location Type:"
-msgstr ""
-
-msgid "HOME"
-msgstr ""
-
-msgid "0699 / 107223892"
 msgstr ""
 
 msgid "Mailing Addr.:"
 msgstr ""
 
-msgid "Yes"
-msgstr ""
-
 msgid "URL:"
-msgstr ""
-
-msgid "http://www.testinger.com"
 msgstr ""
 
 msgid "Valid From:"
 msgstr ""
 
-msgid "31-JUL-2000"
-msgstr ""
-
 msgid "Valid To:"
-msgstr ""
-
-msgid "30-DEC-2008"
-msgstr ""
-
-msgid "0732 / 12345 Ext. 56"
 msgstr ""
 
 msgid "Types && Subscriptions"
@@ -1147,13 +1111,7 @@ msgstr ""
 msgid "Subscriptions and Special Types of the Partner"
 msgstr ""
 
-msgid "WORKER, AIRMILES"
-msgstr ""
-
 msgid "Special Types:"
-msgstr ""
-
-msgid "GLOBAL, INDIA, CURRENTS, MONTHLY, VERWER"
 msgstr ""
 
 msgid "Subscriptions:"
@@ -1165,28 +1123,13 @@ msgstr ""
 msgid "Other details of the Partner"
 msgstr ""
 
-msgid "This is a Very Important Partner. Very pleasant to speak to."
-msgstr ""
-
 msgid "Other Information:"
-msgstr ""
-
-msgid "My previous name"
-msgstr ""
-
-msgid "Central European Area"
 msgstr ""
 
 msgid "Parent Unit:"
 msgstr ""
 
-msgid "Austria"
-msgstr ""
-
 msgid "Field:"
-msgstr ""
-
-msgid "31-JUN-2000"
 msgstr ""
 
 msgid "Partner Updated:"
@@ -1198,16 +1141,7 @@ msgstr ""
 msgid "Speaks (Lan-"
 msgstr ""
 
-msgid "German, English, Ukrainian, Mandarin"
-msgstr ""
-
-msgid "31-JUN-2008"
-msgstr ""
-
 msgid "Person / Family"
-msgstr ""
-
-msgid "Testinger, A   [0123456789]"
 msgstr ""
 
 msgid "Family:"
@@ -1217,18 +1151,6 @@ msgid "Date of Birth:"
 msgstr ""
 
 msgid "Family Members:"
-msgstr ""
-
-msgid "Testinger, Hans-Peter, Mr   (PERSON)"
-msgstr ""
-
-msgid "Markus' World"
-msgstr ""
-
-msgid "PRIVATE {MARLENE}"
-msgstr ""
-
-msgid "MAILROOM"
 msgstr ""
 
 msgid "No Partner to display."
@@ -2586,6 +2508,9 @@ msgstr ""
 msgid "Load Cost Centre Hierarchy from file"
 msgstr ""
 
+msgid "label1"
+msgstr ""
+
 #, csharp-format
 msgid "valid dates from {0} to {1}"
 msgstr ""
@@ -3395,6 +3320,9 @@ msgid "Please select the bank statement to import"
 msgstr ""
 
 msgid "Missing setting in config file: BankImportCSV.FileStructure.Config"
+msgstr ""
+
+msgid "bank statement MT940 (*.sta)|*.sta"
 msgstr ""
 
 msgid "We don't support several bank statements per file at the moment"
