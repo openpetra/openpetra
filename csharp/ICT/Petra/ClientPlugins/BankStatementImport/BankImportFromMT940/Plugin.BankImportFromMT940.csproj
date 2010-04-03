@@ -82,7 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="main.cs" />
+    <Compile Include="Main.cs" />
     <Compile Include="ParseMT940.cs" />
   </ItemGroup>
 </Project>
