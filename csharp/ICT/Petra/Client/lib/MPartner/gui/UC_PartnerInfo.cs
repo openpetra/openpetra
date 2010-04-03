@@ -318,7 +318,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tbpOther.ToolTipText = Catalog.GetString("Other details of the Partner");
             this.pnlOtherInfo.Text = Catalog.GetString("Other Information:");
             this.lblPreviousName.Text = Catalog.GetString("Previous Name:");
-            this.txtParentUnit.Text = Catalog.GetString("Central European Area");
             this.lblParentUnit.Text = Catalog.GetString("Parent Unit:");
             this.lblField.Text = Catalog.GetString("Field:");
             this.lblPartnerUpdated.Text = Catalog.GetString("Partner Updated:");
