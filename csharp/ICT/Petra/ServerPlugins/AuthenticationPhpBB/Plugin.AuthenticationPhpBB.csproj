@@ -14,7 +14,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <BaseIntermediateOutputPath>..\..\Server\_bin\Release\</BaseIntermediateOutputPath>
-    <DocumentationFile>..\..\_bin\Debug\Plugin.AuthenticationPhpBB.xml</DocumentationFile>
+    <DocumentationFile>..\..\Server\_bin\Debug\Plugin.AuthenticationPhpBB.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>
