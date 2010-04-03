@@ -319,7 +319,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtFax.ReadOnly = true;
             this.txtFax.Size = new System.Drawing.Size(206, 12);
             this.txtFax.TabIndex = 1;
-            this.txtFax.Text = "0732 / 12345 Ext. 78";
 
             //
             // lblTelephone
@@ -378,7 +377,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtAlternate.ReadOnly = true;
             this.txtAlternate.Size = new System.Drawing.Size(206, 12);
             this.txtAlternate.TabIndex = 1;
-            this.txtAlternate.Text = "0732 / 2345678";
 
             //
             // txtEmail
@@ -392,7 +390,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtEmail.ReadOnly = true;
             this.txtEmail.Size = new System.Drawing.Size(206, 12);
             this.txtEmail.TabIndex = 1;
-            this.txtEmail.Text = "hans-peter@testinger.com";
 
             //
             // lblLocationType
@@ -418,7 +415,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtLocationType.ReadOnly = true;
             this.txtLocationType.Size = new System.Drawing.Size(206, 12);
             this.txtLocationType.TabIndex = 1;
-            this.txtLocationType.Text = "HOME";
 
             //
             // txtMobile
@@ -432,7 +428,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtMobile.ReadOnly = true;
             this.txtMobile.Size = new System.Drawing.Size(206, 12);
             this.txtMobile.TabIndex = 1;
-            this.txtMobile.Text = "0699 / 107223892";
 
             //
             // lblMailingAddress
@@ -458,7 +453,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtMailingAddress.ReadOnly = true;
             this.txtMailingAddress.Size = new System.Drawing.Size(206, 12);
             this.txtMailingAddress.TabIndex = 1;
-            this.txtMailingAddress.Text = "Yes";
 
             //
             // lblUrl
@@ -483,7 +477,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtUrl.ReadOnly = true;
             this.txtUrl.Size = new System.Drawing.Size(206, 12);
             this.txtUrl.TabIndex = 1;
-            this.txtUrl.Text = "http://www.testinger.com";
 
             //
             // lblValidFrom
@@ -509,7 +502,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtValidFrom.ReadOnly = true;
             this.txtValidFrom.Size = new System.Drawing.Size(206, 12);
             this.txtValidFrom.TabIndex = 1;
-            this.txtValidFrom.Text = "31-JUL-2000";
 
             //
             // lblValidTo
@@ -534,7 +526,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtValidTo.ReadOnly = true;
             this.txtValidTo.Size = new System.Drawing.Size(206, 12);
             this.txtValidTo.TabIndex = 1;
-            this.txtValidTo.Text = "30-DEC-2008";
 
             //
             // txtTelephone
@@ -549,7 +540,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtTelephone.ReadOnly = true;
             this.txtTelephone.Size = new System.Drawing.Size(206, 12);
             this.txtTelephone.TabIndex = 1;
-            this.txtTelephone.Text = "0732 / 12345 Ext. 56";
 
             //
             // txtAddress1
@@ -564,7 +554,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtAddress1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtAddress1.Size = new System.Drawing.Size(240, 151);
             this.txtAddress1.TabIndex = 0;
-            this.txtAddress1.Text = "";
 
             //
             // lblLoadingPartnerLocation
@@ -661,7 +650,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtSpecialTypes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtSpecialTypes.Size = new System.Drawing.Size(270, 138);
             this.txtSpecialTypes.TabIndex = 1;
-            this.txtSpecialTypes.Text = "WORKER, AIRMILES";
 
             //
             // lblSpecialTypes
@@ -701,7 +689,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtSubscriptions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtSubscriptions.Size = new System.Drawing.Size(271, 138);
             this.txtSubscriptions.TabIndex = 3;
-            this.txtSubscriptions.Text = "GLOBAL, INDIA, CURRENTS, MONTHLY, VERWER";
 
             //
             // lblSubscriptions
@@ -780,7 +767,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtNotes.Size = new System.Drawing.Size(297, 96);
             this.txtNotes.TabIndex = 2;
-            this.txtNotes.Text = "This is a Very Important Partner. Very pleasant to speak to.";
 
             //
             // pnlOtherInfo
@@ -819,7 +805,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPreviousName.ReadOnly = true;
             this.txtPreviousName.Size = new System.Drawing.Size(185, 12);
             this.txtPreviousName.TabIndex = 26;
-            this.txtPreviousName.Text = "My previous name";
 
             //
             // lblPreviousName
@@ -856,7 +841,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtParentUnit.ReadOnly = true;
             this.txtParentUnit.Size = new System.Drawing.Size(185, 12);
             this.txtParentUnit.TabIndex = 26;
-            this.txtParentUnit.Text = "Central European Area";
 
             //
             // lblParentUnit
@@ -892,7 +876,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtField.ReadOnly = true;
             this.txtField.Size = new System.Drawing.Size(185, 12);
             this.txtField.TabIndex = 26;
-            this.txtField.Text = "Austria";
 
             //
             // lblField
@@ -931,7 +914,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPartnerUpdated.ReadOnly = true;
             this.txtPartnerUpdated.Size = new System.Drawing.Size(69, 12);
             this.txtPartnerUpdated.TabIndex = 22;
-            this.txtPartnerUpdated.Text = "31-JUN-2000";
 
             //
             // lblPartnerUpdated
@@ -983,7 +965,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtLanguages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtLanguages.Size = new System.Drawing.Size(167, 25);
             this.txtLanguages.TabIndex = 18;
-            this.txtLanguages.Text = "German, English, Ukrainian, Mandarin";
 
             //
             // txtLastContact
@@ -997,7 +978,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtLastContact.ReadOnly = true;
             this.txtLastContact.Size = new System.Drawing.Size(74, 12);
             this.txtLastContact.TabIndex = 19;
-            this.txtLastContact.Text = "31-JUN-2008";
 
             //
             // lblLoadingOther
@@ -1069,7 +1049,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtFamily.ReadOnly = true;
             this.txtFamily.Size = new System.Drawing.Size(189, 12);
             this.txtFamily.TabIndex = 30;
-            this.txtFamily.Text = "Testinger, A   [0123456789]";
 
             //
             // lblFamily
@@ -1103,7 +1082,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtDateOfBirth.ReadOnly = true;
             this.txtDateOfBirth.Size = new System.Drawing.Size(73, 12);
             this.txtDateOfBirth.TabIndex = 30;
-            this.txtDateOfBirth.Text = "31-JUL-2000";
 
             //
             // lblDateOfBirth
@@ -1143,7 +1121,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtFamilyMembers.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtFamilyMembers.Size = new System.Drawing.Size(270, 138);
             this.txtFamilyMembers.TabIndex = 32;
-            this.txtFamilyMembers.Text = "";
 
             //
             // lblFamilyMembers
@@ -1187,7 +1164,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPartnerName.ReadOnly = true;
             this.txtPartnerName.Size = new System.Drawing.Size(275, 14);
             this.txtPartnerName.TabIndex = 13;
-            this.txtPartnerName.Text = "Testinger, Hans-Peter, Mr   (PERSON)";
 
             //
             // txtPartnerKey
@@ -1195,7 +1171,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPartnerKey.BackColor = System.Drawing.SystemColors.Info;
             this.txtPartnerKey.DelegateFallbackLabel = true;
             this.txtPartnerKey.Font = new System.Drawing.Font("Courier New", 9.25F, System.Drawing.FontStyle.Bold);
-            this.txtPartnerKey.LabelText = "Markus\' World";
             this.txtPartnerKey.Location = new System.Drawing.Point(417, -3);
             this.txtPartnerKey.MaxLength = 10;
             this.txtPartnerKey.Name = "txtPartnerKey";
@@ -1219,7 +1194,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtStatusCode.ReadOnly = true;
             this.txtStatusCode.Size = new System.Drawing.Size(118, 12);
             this.txtStatusCode.TabIndex = 15;
-            this.txtStatusCode.Text = "PRIVATE {MARLENE}";
 
             //
             // txtAcquisitionCode
@@ -1233,7 +1207,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtAcquisitionCode.ReadOnly = true;
             this.txtAcquisitionCode.Size = new System.Drawing.Size(90, 12);
             this.txtAcquisitionCode.TabIndex = 17;
-            this.txtAcquisitionCode.Text = "MAILROOM";
             this.txtAcquisitionCode.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 
             //
