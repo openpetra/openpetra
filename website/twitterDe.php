@@ -82,7 +82,8 @@ function fetch_twitter_feed($user, $since = 0) {
         foreach($statuses as $status) {
            $id = $status->getElementsByTagName('id')->item(0)->nodeValue;
            $text = $status->getElementsByTagName('text')->item(0)->nodeValue;
-	   $text = htmlspecialchars($text);
+           $text = str_replace("https://translations.launchpad.net/openpetraorg", "http://bit.ly/abcEtj", $text);
+	   $text = htmlspecialchars(utf8_decode($text));
 	   while (!(($poshttp = strpos($text, 'http://')) === false))
 	   {
 	   	$posspace = strpos($text, ' ', $poshttp);
@@ -108,17 +109,18 @@ function get_relative_date ( $timestamp )
    // calculate the difference in seconds
    $timediff = time () - $timestamp ;
    $hourofday = date('G', $timestamp);
+   $hourtoday = date('G', time());
    // only exact to an hour
    $timediff /= 60*60;
    if ($timediff < 1) 
    {
       return "vor ca. einer Stunde";
    }
-   if ($timediff <  date('G', time()))
+   if ($timediff < 12)
    {
       return "vor ca. ".floor($timediff)." Stunden";
    }
-   $timediff -= $hourofday;
+   $timediff -= $hourtoday;
    $timediff /= 24;
    if ($timediff<1)
    {
@@ -150,7 +152,7 @@ $tweeds = false;
 ?>
 
 <br/><br/>
-<div class="twitter">Die neuesten Nachrichten auf <a href="http://www.twitter.com/openpetraorg">Twitter</a>:
+<div class="twitter">Die neuesten Nachrichten auf <a href="http://www.twitter.com/openpetraorgde">Twitter</a>:
 <?php echo getTweets('openpetraorgde', 5); ?>
 <!-- Follow us on Twitter: <br/><a href="http://www.twitter.com/openpetraorgde"><img src="img/twitter.jpg" border="0"/></a>-->
 </div>
