@@ -28,6 +28,8 @@ using System.Data;
 using System.IO;
 using System.Xml;
 using System.Collections.Specialized;
+using System.Security.Cryptography;
+using System.Text;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Verification;
@@ -158,6 +160,15 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 matchtext = matchtext.Replace("Ö", "");
                 matchtext = matchtext.Replace("ß", "");
                 matchtext = matchtext.Replace(" ", "");
+            }
+
+            if (matchtext.Length > AEpTransactionTable.GetMatchTextLength())
+            {
+                // calculate unique check sum which is shorter than the whole match text
+                MD5CryptoServiceProvider cr = new MD5CryptoServiceProvider();
+                System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
+                byte[] matchbytes = encoding.GetBytes(matchtext);
+                matchtext = BitConverter.ToString(cr.ComputeHash(matchbytes)).Replace("-", "").ToLower();
             }
 
             return matchtext;
