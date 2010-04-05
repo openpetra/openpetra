@@ -115,7 +115,8 @@ namespace Ict.Petra.Client.MFinance.Gui
             // see http://www.daniweb.com/forums/thread109966.html#
             // dtTScomponent = new ToolStripControlHost(dtMyDateTimePicker);
             // MainToolStrip.Items.Add(dtTScomponent);
-            DateTime dateStatementsFrom = DateTime.Now.AddMonths(-14);
+            // DateTime.Now.AddMonths(-100);
+            DateTime dateStatementsFrom = DateTime.MinValue;
 
             // update the combobox with the bank statements
             AEpStatementTable stmts = TRemote.MFinance.ImportExport.WebConnectors.GetImportedBankStatements(dateStatementsFrom);
