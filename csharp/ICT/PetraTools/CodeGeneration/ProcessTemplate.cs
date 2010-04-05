@@ -374,7 +374,7 @@ namespace Ict.Tools.CodeGeneration
         /// this overload allows duplicates to be added
         public string AddToCodeletPrepend(string APlaceholder, string ACodelet)
         {
-            return AddToCodelet(APlaceholder, ACodelet, true);
+            return AddToCodeletPrepend(APlaceholder, ACodelet, true);
         }
 
         /// add code to existing code that will be replaced later.

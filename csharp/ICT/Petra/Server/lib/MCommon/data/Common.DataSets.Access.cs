@@ -62,30 +62,7 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.DataLabelList, SubmitChangesTransaction,
-                            TTypedDataAccess.eSubmitChangesOperations.eDelete,
-                            out AVerificationResult,
-                            UserInfo.GUserInfo.UserID, "seq_data_label", "p_key_i"))
-                {
-                    SubmissionResult = TSubmitChangesResult.scrError;
-                }if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.DataLabelUseList, SubmitChangesTransaction,
-                            TTypedDataAccess.eSubmitChangesOperations.eDelete,
-                            out AVerificationResult,
-                            UserInfo.GUserInfo.UserID))
-                {
-                    SubmissionResult = TSubmitChangesResult.scrError;
-                }
-                if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.DataLabelLookupList, SubmitChangesTransaction,
-                            TTypedDataAccess.eSubmitChangesOperations.eDelete,
-                            out AVerificationResult,
-                            UserInfo.GUserInfo.UserID))
-                {
-                    SubmissionResult = TSubmitChangesResult.scrError;
-                }
-                if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.DataLabelLookupCategoryList, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PDataLabelValuePartner, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -101,10 +78,34 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PDataLabelValuePartner, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.DataLabelLookupCategoryList, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
+                {
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
+                if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.DataLabelLookupList, SubmitChangesTransaction,
+                            TTypedDataAccess.eSubmitChangesOperations.eDelete,
+                            out AVerificationResult,
+                            UserInfo.GUserInfo.UserID))
+                {
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
+                if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.DataLabelUseList, SubmitChangesTransaction,
+                            TTypedDataAccess.eSubmitChangesOperations.eDelete,
+                            out AVerificationResult,
+                            UserInfo.GUserInfo.UserID))
+                {
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
+                if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.DataLabelList, SubmitChangesTransaction,
+                            TTypedDataAccess.eSubmitChangesOperations.eDelete,
+                            out AVerificationResult,
+                            UserInfo.GUserInfo.UserID, "seq_data_label", "p_key_i"))
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
@@ -201,14 +202,15 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartner, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PmStaffData, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
-                            UserInfo.GUserInfo.UserID))
+                            UserInfo.GUserInfo.UserID, "seq_staff_data", "pm_key_n"))
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
-                }if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerFieldOfService, SubmitChangesTransaction,
+                }
+                if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFamily, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -224,7 +226,7 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFamily, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerFieldOfService, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -232,10 +234,10 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PmStaffData, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartner, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
-                            UserInfo.GUserInfo.UserID, "seq_staff_data", "pm_key_n"))
+                            UserInfo.GUserInfo.UserID))
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }

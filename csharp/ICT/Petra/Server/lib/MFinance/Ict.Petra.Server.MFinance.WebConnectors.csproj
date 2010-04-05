@@ -102,6 +102,7 @@
     <Compile Include="BankImport.cs" />
     <Compile Include="Gift.Adjustment.cs" />
     <Compile Include="Gift.Receipting.cs" />
+    <Compile Include="Gift.Setup.cs" />
     <Compile Include="Gift.Transactions.cs" />
     <Compile Include="GL.Setup.cs" />
     <Compile Include="GL.Transactions.cs" />

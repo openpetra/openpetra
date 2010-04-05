@@ -48,8 +48,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         private AGiftBatchTable TableAGiftBatch;
         private AGiftTable TableAGift;
         private GiftBatchTDSAGiftDetailTable TableAGiftDetail;
-        private AMotivationDetailTable TableAMotivationDetail;
         private AMotivationGroupTable TableAMotivationGroup;
+        private AMotivationDetailTable TableAMotivationDetail;
 
         /// auto generated
         public GiftBatchTDS() :
@@ -106,20 +106,20 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// auto generated
-        public AMotivationDetailTable AMotivationDetail
-        {
-            get
-            {
-                return this.TableAMotivationDetail;
-            }
-        }
-
-        /// auto generated
         public AMotivationGroupTable AMotivationGroup
         {
             get
             {
                 return this.TableAMotivationGroup;
+            }
+        }
+
+        /// auto generated
+        public AMotivationDetailTable AMotivationDetail
+        {
+            get
+            {
+                return this.TableAMotivationDetail;
             }
         }
 
@@ -136,8 +136,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Tables.Add(new AGiftBatchTable("AGiftBatch"));
             this.Tables.Add(new AGiftTable("AGift"));
             this.Tables.Add(new GiftBatchTDSAGiftDetailTable("AGiftDetail"));
-            this.Tables.Add(new AMotivationDetailTable("AMotivationDetail"));
             this.Tables.Add(new AMotivationGroupTable("AMotivationGroup"));
+            this.Tables.Add(new AMotivationDetailTable("AMotivationDetail"));
         }
 
         /// auto generated
@@ -159,13 +159,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             {
                 this.Tables.Add(new GiftBatchTDSAGiftDetailTable("AGiftDetail"));
             }
-            if ((ds.Tables.IndexOf("AMotivationDetail") != -1))
-            {
-                this.Tables.Add(new AMotivationDetailTable("AMotivationDetail"));
-            }
             if ((ds.Tables.IndexOf("AMotivationGroup") != -1))
             {
                 this.Tables.Add(new AMotivationGroupTable("AMotivationGroup"));
+            }
+            if ((ds.Tables.IndexOf("AMotivationDetail") != -1))
+            {
+                this.Tables.Add(new AMotivationDetailTable("AMotivationDetail"));
             }
         }
 
@@ -190,13 +190,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             {
                 this.TableAGiftDetail.InitVars();
             }
-            if ((this.TableAMotivationDetail != null))
-            {
-                this.TableAMotivationDetail.InitVars();
-            }
             if ((this.TableAMotivationGroup != null))
             {
                 this.TableAMotivationGroup.InitVars();
+            }
+            if ((this.TableAMotivationDetail != null))
+            {
+                this.TableAMotivationDetail.InitVars();
             }
         }
 
@@ -208,8 +208,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.TableAGiftBatch = ((AGiftBatchTable)(this.Tables["AGiftBatch"]));
             this.TableAGift = ((AGiftTable)(this.Tables["AGift"]));
             this.TableAGiftDetail = ((GiftBatchTDSAGiftDetailTable)(this.Tables["AGiftDetail"]));
-            this.TableAMotivationDetail = ((AMotivationDetailTable)(this.Tables["AMotivationDetail"]));
             this.TableAMotivationGroup = ((AMotivationGroupTable)(this.Tables["AMotivationGroup"]));
+            this.TableAMotivationDetail = ((AMotivationDetailTable)(this.Tables["AMotivationDetail"]));
         }
 
         /// auto generated

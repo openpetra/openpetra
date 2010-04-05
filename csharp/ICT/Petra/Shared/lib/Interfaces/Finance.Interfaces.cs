@@ -416,6 +416,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                         DateTime AEndDate,
                                         string AHTMLTemplate);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
+        GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
+        TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
+                                                   out TVerificationResultCollection AVerificationResult);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
         GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber,
                                       DateTime ADateEffective);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
