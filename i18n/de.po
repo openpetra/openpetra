@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-03 15:59+0100\n"
-"PO-Revision-Date: 2010-03-31 15:42+0000\n"
+"POT-Creation-Date: 2010-04-03 20:02+0200\n"
+"PO-Revision-Date: 2010-04-04 13:17+0000\n"
 "Last-Translator: Timotheus Pokorra <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-01 09:16+0000\n"
+"X-Launchpad-Export-Date: 2010-04-05 08:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "Language: de\n"
 
@@ -25,7 +25,8 @@ msgid "Cannot open CSV file, because it is missing the header line"
 msgstr "Kann die CSV Datei nicht öffnen, weil die Kopfzeile fehlt"
 
 #, csharp-format
-msgid "Cannot parse CSV file header of file {0}, caption {1} is missing the #"
+msgid ""
+"Cannot parse CSV file header of file {0}, caption {1} is missing the #"
 msgstr ""
 "Kann die Kopfzeile der CSV Datei {0} nicht lesen, bei der Überschrift {1} "
 "fehlt das #"
@@ -110,17 +111,11 @@ msgstr "Den Benutzernamen merken"
 msgid "Petra Login"
 msgstr "Petra Anmeldung"
 
-msgid "label1"
-msgstr "label1"
-
 msgid "OK"
 msgstr "OK"
 
 msgid "Cancel"
 msgstr "Abbrechen"
-
-msgid "PetraInputBox"
-msgstr "PetraInputBox"
 
 msgid " O P E N P E T R A "
 msgstr " O P E N P E T R A "
@@ -753,7 +748,8 @@ msgid "Enter the previously used Surname (eg before marriage)"
 msgstr "Geben Sie frühere Nachnamen an (z.B. vor der Heirat)"
 
 msgid "Enter a short name for this partner in your local language"
-msgstr "Einen kurzen Namen auf deutsch angeben (wichtiger für Chinesisch etc)"
+msgstr ""
+"Einen kurzen Namen auf deutsch angeben (wichtiger für Chinesisch etc)"
 
 msgid "ie. Nobel Peace Prize, Olympic Gold Medal, ?, etc."
 msgstr "z.B. Friedensnobelpreis, Olympische Gold Medaille, etc"
@@ -784,7 +780,8 @@ msgid "Year the Person became a Believer"
 msgstr "In welchem Jahr wurde diese Person gläubig"
 
 msgid "Comment about the Year or how the Person became a Believer"
-msgstr "Kommentar zu dem Jahr oder die Umstände wie diese Person gläubig wurde"
+msgstr ""
+"Kommentar zu dem Jahr oder die Umstände wie diese Person gläubig wurde"
 
 msgid "Status Updated:"
 msgstr "Status aktualisiert:"
@@ -826,7 +823,7 @@ msgid "Na&me:"
 msgstr "Na&me:"
 
 msgid "     &Field..."
-msgstr ""
+msgstr "     &Einsatzort..."
 
 msgid "01-JAN-9999"
 msgstr "do not translate"
@@ -973,13 +970,13 @@ msgid ""
 msgstr "do not translate"
 
 msgid " &Search"
-msgstr ""
+msgstr " &Suchen"
 
 msgid "Detailed Results"
 msgstr "Detaillierte Resultate"
 
 msgid "Clea&r"
-msgstr ""
+msgstr "Zurücksetzen"
 
 msgid "Find Criteria"
 msgstr "Suchkriterien"
@@ -988,19 +985,19 @@ msgid "Custom Criteria Demo"
 msgstr ""
 
 msgid "Fin&d Result"
-msgstr ""
+msgstr "Suche Ergebnis"
 
 msgid "Searching..."
 msgstr "Suche läuft …"
 
 msgid "Location Key"
-msgstr ""
+msgstr "Adressenschlüssel"
 
 msgid "Worker Families O&nly"
-msgstr ""
+msgstr "&Nur Familien von Mitarbeitern"
 
 msgid "(trailing 0 = --*)"
-msgstr ""
+msgstr "Hinten mit 0 auffüllen = --*"
 
 msgid "Private"
 msgstr "Vertraulich"
@@ -1036,7 +1033,7 @@ msgid "Previous Name:"
 msgstr "Mädchenname:"
 
 msgid "Address &1:"
-msgstr ""
+msgstr "Erste Adresszeile:"
 
 msgid "P&ost Code:"
 msgstr "PLZ:"
@@ -1060,7 +1057,7 @@ msgid "v"
 msgstr "do not translate"
 
 msgid "Commitm. Field &Office:"
-msgstr ""
+msgstr "Büro des Einsatzortes:"
 
 msgid "From/To:"
 msgstr "Von/Bis:"
@@ -1075,7 +1072,7 @@ msgid "..."
 msgstr "do not translate"
 
 msgid "Eve&nt/Confer./Camp.:"
-msgstr ""
+msgstr "Konferenz oder Einsatz:"
 
 msgid "Lang&uage:"
 msgstr "&Sprache:"
@@ -1084,7 +1081,7 @@ msgid "Partner Key:"
 msgstr "Partnerschlüssel:"
 
 msgid "Acquired:"
-msgstr ""
+msgstr "Eingegeben:"
 
 msgid "Name:"
 msgstr "Name :"
@@ -1098,9 +1095,6 @@ msgstr "Details der ausgewählten Adresse:"
 msgid "Fax:"
 msgstr "Fax:"
 
-msgid "0732 / 12345 Ext. 78"
-msgstr "do not translate"
-
 msgid "Telephone:"
 msgstr "Telefon:"
 
@@ -1113,47 +1107,20 @@ msgstr "Mobiltelefon (Handy):"
 msgid "Email:"
 msgstr "Email:"
 
-msgid "0732 / 2345678"
-msgstr "do not translate"
-
-msgid "hans-peter@testinger.com"
-msgstr "do not translate"
-
 msgid "Location Type:"
-msgstr ""
-
-msgid "HOME"
-msgstr ""
-
-msgid "0699 / 107223892"
-msgstr "do not translate"
+msgstr "Adresstyp"
 
 msgid "Mailing Addr.:"
 msgstr "Postalische Anschrift:"
 
-msgid "Yes"
-msgstr "Ja"
-
 msgid "URL:"
 msgstr "URL:"
-
-msgid "http://www.testinger.com"
-msgstr "do not translate"
 
 msgid "Valid From:"
 msgstr "Gültig von:"
 
-msgid "31-JUL-2000"
-msgstr "do not translate"
-
 msgid "Valid To:"
 msgstr "Gültig bis:"
-
-msgid "30-DEC-2008"
-msgstr "do not translate"
-
-msgid "0732 / 12345 Ext. 56"
-msgstr "do not translate"
 
 msgid "Types && Subscriptions"
 msgstr ""
@@ -1161,14 +1128,8 @@ msgstr ""
 msgid "Subscriptions and Special Types of the Partner"
 msgstr ""
 
-msgid "WORKER, AIRMILES"
-msgstr "do not translate"
-
 msgid "Special Types:"
 msgstr ""
-
-msgid "GLOBAL, INDIA, CURRENTS, MONTHLY, VERWER"
-msgstr "do not translate"
 
 msgid "Subscriptions:"
 msgstr ""
@@ -1179,30 +1140,14 @@ msgstr "Andere"
 msgid "Other details of the Partner"
 msgstr "Sonstige Partnerdetails"
 
-msgid "This is a Very Important Partner. Very pleasant to speak to."
-msgstr ""
-"do not translate. this is only test data and should not be part of the client"
-
 msgid "Other Information:"
 msgstr "Sonstige Information:"
-
-msgid "My previous name"
-msgstr "Mein bisheriger Name"
-
-msgid "Central European Area"
-msgstr "do not translate"
 
 msgid "Parent Unit:"
 msgstr ""
 
-msgid "Austria"
-msgstr "Österreich"
-
 msgid "Field:"
 msgstr "Feld:"
-
-msgid "31-JUN-2000"
-msgstr "do not translate"
 
 msgid "Partner Updated:"
 msgstr "Partner aktualisiert:"
@@ -1213,38 +1158,17 @@ msgstr ""
 msgid "Speaks (Lan-"
 msgstr ""
 
-msgid "German, English, Ukrainian, Mandarin"
-msgstr ""
-
-msgid "31-JUN-2008"
-msgstr "do not translate"
-
 msgid "Person / Family"
 msgstr ""
 
-msgid "Testinger, A   [0123456789]"
-msgstr "do not translate"
-
 msgid "Family:"
-msgstr ""
+msgstr "Familie:"
 
 msgid "Date of Birth:"
 msgstr "Geburtsdatum:"
 
 msgid "Family Members:"
-msgstr ""
-
-msgid "Testinger, Hans-Peter, Mr   (PERSON)"
-msgstr ""
-
-msgid "Markus' World"
-msgstr "do not translate"
-
-msgid "PRIVATE {MARLENE}"
-msgstr "do not translate"
-
-msgid "MAILROOM"
-msgstr ""
+msgstr "Familienmitglieder:"
 
 msgid "No Partner to display."
 msgstr "Kein Partner der angezeigt werden könnte."
@@ -1253,25 +1177,25 @@ msgid "Please wait."
 msgstr "Bitte warten."
 
 msgid "Enter any additional comments (if full, use notebook)"
-msgstr ""
+msgstr "Weitere Kommentare (falls voll, benutze Notizblock)"
 
 msgid "SplitButtonBase1"
 msgstr "do not translate"
 
 msgid "Starts with search term --*"
-msgstr ""
+msgstr "Beginnt mit Suchbegriff --"
 
 msgid "Ends with search term *--"
-msgstr ""
+msgstr "Endet mit Suchbegriff *--"
 
 msgid "Contains search term *-*"
-msgstr ""
+msgstr "Enthält Suchbegriff *--"
 
 msgid "Exactly matches search term ---"
-msgstr ""
+msgstr "Suchbegriff wird exakt gesucht ---"
 
 msgid "Country Name"
-msgstr ""
+msgstr "Land"
 
 msgid "btnButton"
 msgstr "do not translate"
@@ -1286,28 +1210,28 @@ msgid "PartnerKey"
 msgstr "PartnerSchlüssel"
 
 msgid "Partner Name"
-msgstr ""
+msgstr "Name des Partner"
 
 msgid "Partner Name:"
-msgstr ""
+msgstr "Name des Partners:"
 
 msgid "PartnerKey:"
 msgstr "PartnerSchlüssel:"
 
 msgid "Field Of Service"
-msgstr ""
+msgstr "Einsatzfeld"
 
 msgid "      &Delete"
-msgstr ""
+msgstr "      &Löschen"
 
 msgid "       Edi&t"
-msgstr ""
+msgstr "       Bearbeiten"
 
 msgid "       &New"
-msgstr ""
+msgstr "       Neu"
 
 msgid "List expand button"
-msgstr ""
+msgstr "Zeige Schalter zum Aufklappen"
 
 msgid "Address list"
 msgstr "Adressliste"
@@ -1322,34 +1246,34 @@ msgid "Create new address"
 msgstr "Neue Adresse anlegen"
 
 msgid "Vali&d From:"
-msgstr ""
+msgstr "Gültig seit:"
 
 msgid "&Phone:"
-msgstr ""
+msgstr "&Telefonnummer:"
 
 msgid "&Location Type:"
-msgstr ""
+msgstr "Art der Adresse:"
 
 msgid "County/St&ate:"
-msgstr ""
+msgstr "Bundesland:"
 
 msgid "Po&st Code:"
-msgstr ""
+msgstr "Postleitzahl:"
 
 msgid "Addr&3:"
-msgstr ""
+msgstr "Adresszusatz:"
 
 msgid "Street-&2:"
-msgstr ""
+msgstr "Strasse und Hausnummer:"
 
 msgid "Addr&1:"
-msgstr ""
+msgstr "Erste Adresszeile:"
 
 msgid "TelExt"
-msgstr ""
+msgstr "Telefondurchwahl:"
 
 msgid "Phone No"
-msgstr ""
+msgstr "Telefonnummer"
 
 msgid "Postal Code"
 msgstr "Postleitzahl"
@@ -1358,49 +1282,49 @@ msgid "County"
 msgstr "Landkreis"
 
 msgid "City"
-msgstr ""
+msgstr "Stadt"
 
 msgid "Address Line 3"
-msgstr ""
+msgstr "Adresszusatz"
 
 msgid "Street Name"
 msgstr "Straßenname"
 
 msgid "Locality"
-msgstr ""
+msgstr "Adresse"
 
 msgid "Fa&x:"
-msgstr ""
+msgstr "Faxnummer:"
 
 msgid "Fax No"
-msgstr ""
+msgstr "Faxnummer"
 
 msgid "FaxExt"
-msgstr ""
+msgstr "Fax-Durchwahl"
 
 msgid "E&mail:"
-msgstr ""
+msgstr "E-&Mail:"
 
 msgid "Email"
 msgstr "Email"
 
 msgid "Websi&te:"
-msgstr ""
+msgstr "Webseite:"
 
 msgid "Web URL"
-msgstr ""
+msgstr "Internet-Adresse"
 
 msgid "Alte&rnate:"
-msgstr ""
+msgstr "Alternative:"
 
 msgid "Alternate Phone No"
-msgstr ""
+msgstr "Weitere Telefonnummer"
 
 msgid "Mobile Phone No"
-msgstr ""
+msgstr "Handynummer"
 
 msgid "Mo&bile:"
-msgstr ""
+msgstr "Handy:"
 
 msgid "Partner-specific Data for this Address"
 msgstr ""
@@ -1409,7 +1333,7 @@ msgid "Valid From"
 msgstr "Gültig ab"
 
 msgid "Mailin&g Address:"
-msgstr ""
+msgstr "Postversand an diese Adresse:"
 
 msgid "Valid To"
 msgstr "Gültig bis"
@@ -1418,7 +1342,8 @@ msgid "The part of the address preceding the street, eg business name"
 msgstr "Teil der Adresse, der der Straße vorangeht (etwa der Firmenname)"
 
 msgid "Enter the second part of the address (e.g. name of the street)"
-msgstr "Geben Sie den zweiten Teil der Adresse an (etwa den Namen der Straße)"
+msgstr ""
+"Geben Sie den zweiten Teil der Adresse an (etwa den Namen der Straße)"
 
 msgid "Enter the third part of the address, eg district of the city"
 msgstr "Geben Sie den dritten Teil der Adresse ein (etwa den Ortsteil)"
@@ -1430,13 +1355,13 @@ msgid "Enter a county/province/state/district/canton"
 msgstr "Geben Sie den Landkreis/Bundesstaat/Bezirk/Provinz/Kanton ein"
 
 msgid "Enter the international postal/zip code"
-msgstr ""
+msgstr "Die Postleitzahl eingeben"
 
 msgid "Select a country code"
-msgstr ""
+msgstr "Das Land auswählen"
 
 msgid "Select the address location type"
-msgstr ""
+msgstr "Was für eine Adresse ist das?"
 
 msgid "Can or should, postal mail be sent to this address?"
 msgstr "Kann oder soll Post an diese Adresse geschickt werden?"
@@ -1445,7 +1370,7 @@ msgid "Enter a Telephone number for this address (if available)"
 msgstr "Geben Sie eine Telefonnummer für diese Adresse an (wenn verfügbar)"
 
 msgid "Enter a Fax number for this address location (if available)"
-msgstr ""
+msgstr "Eine Faxnummer für diese Adresse angeben (falls vorhanden)"
 
 msgid "Enter an Alternative phone number (if available)"
 msgstr "Geben Sie eine alternative Telefonnummer an (wenn verfügbar)"
@@ -1460,10 +1385,10 @@ msgid "URL for this Partner's Web Home Page"
 msgstr "URL der Website dieses Partners"
 
 msgid "Enter the Telephone Extension (if available)"
-msgstr ""
+msgstr "Die Durchwahlnummer angeben (falls vorhanden)"
 
 msgid "Enter the Fax Extension (if available)"
-msgstr ""
+msgstr "Die Durchwahl für das Fax angeben (falls vorhanden)"
 
 msgid "Enter the date this address is effective"
 msgstr "Geben Sie das Datum an ab dem diese Adresse gültig ist"
@@ -1472,19 +1397,19 @@ msgid "Enter the date this address expires on"
 msgstr "Geben Sie das Datum an bis zu der diese Adresse gültig bleibt"
 
 msgid "Office Specific Data Labels"
-msgstr ""
+msgstr "Bürospezifische Daten"
 
 msgid "Resize Button"
-msgstr ""
+msgstr "Größe verändern"
 
 msgid "    LowerButton"
-msgstr ""
+msgstr "    do not translate"
 
 msgid "       MiddleButton"
-msgstr ""
+msgstr "       do not translate"
 
 msgid "        UpperButton"
-msgstr ""
+msgstr "        do not translate"
 
 msgid "Reset Search"
 msgstr "Suche zurücksetzen"
@@ -1512,13 +1437,13 @@ msgid "Status Bar"
 msgstr "Statusleiste"
 
 msgid "Ready"
-msgstr ""
+msgstr "Fertig"
 
 msgid "Close"
 msgstr "Schließen"
 
 msgid "Print Preview"
-msgstr ""
+msgstr "Druckvorschau"
 
 msgid "Text Preview"
 msgstr "Textvorschau"
@@ -1571,7 +1496,7 @@ msgid ""
 msgstr ""
 
 msgid "Settings cannot be loaded"
-msgstr ""
+msgstr "Einstellungen können nicht geladen werden"
 
 msgid "Settings cannot be saved"
 msgstr "Einstellungen konnten nicht gespeichert werden"
@@ -1592,7 +1517,7 @@ msgid "Delete"
 msgstr "Löschen"
 
 msgid "Maintain Report Settings"
-msgstr ""
+msgstr "Einstellungen bearbeiten"
 
 msgid "New Name:"
 msgstr "Neuer Name:"
@@ -1675,7 +1600,7 @@ msgid "&Save Settings"
 msgstr "&Einstellungen speichern"
 
 msgid "Save Settings &As..."
-msgstr ""
+msgstr "Einstellungen Speichern &Als..."
 
 msgid "&Open..."
 msgstr "&Öffnen..."
@@ -1684,22 +1609,22 @@ msgid "RecentSettings"
 msgstr "do not translate"
 
 msgid "&Load Settings"
-msgstr ""
+msgstr "Einstellungen &Laden"
 
 msgid "&Maintain Settings..."
-msgstr ""
+msgstr "Einstellungen &Bearbeiten..."
 
 msgid "Partner by City"
-msgstr ""
+msgstr "Alle Partner in einer Stadt auflisten"
 
 msgid "Current Supplier:"
-msgstr ""
+msgstr "Aktueller Lieferant:"
 
 msgid "Currency:"
-msgstr ""
+msgstr "Währung:"
 
 msgid "Invoice &Number:"
-msgstr ""
+msgstr "Rechnungsnummer:"
 
 msgid "Invoice"
 msgstr "Rechnung"
@@ -1708,22 +1633,22 @@ msgid "T&ype:"
 msgstr "T&yp:"
 
 msgid "&Reference:"
-msgstr ""
+msgstr "&Referenz:"
 
 msgid "&Date Issued:"
-msgstr ""
+msgstr "Datum der Rechnung&stellung:"
 
 msgid "Date D&ue:"
-msgstr ""
+msgstr "&Fälligkeitsdatum:"
 
 msgid "Credit &Terms:"
-msgstr ""
+msgstr "Zahlbedingungen:"
 
 msgid "Discount &Days:"
-msgstr ""
+msgstr "Tage Zahlungsminderung:"
 
 msgid "Discount &Value (%):"
-msgstr ""
+msgstr "Zahlungsminderung (%):"
 
 msgid "&Amount:"
 msgstr "&Betrag:"
@@ -1732,230 +1657,245 @@ msgid "E&xchange Rate:"
 msgstr "Wechselkurs:"
 
 msgid "Document Information"
-msgstr ""
+msgstr "Dokument-Info"
 
 msgid "Add De&tail"
-msgstr ""
+msgstr "Detail Hinzufügen"
 
 msgid "&Remove Detail"
-msgstr ""
+msgstr "Detail Entfernen"
 
 msgid "Analysis Attri&b."
-msgstr ""
+msgstr "Buchungsattribute"
 
 msgid "Narrati&ve:"
-msgstr ""
+msgstr "Beschreibung:"
 
 msgid "Detail &Ref:"
-msgstr ""
+msgstr "Detail Referenz:"
 
 msgid "A&mount:"
-msgstr ""
+msgstr "Betrag:"
 
 msgid "C&ost Centre:"
-msgstr ""
+msgstr "Kostenstelle:"
 
 msgid "Use Ta&x Acct+CC"
-msgstr ""
+msgstr "Verrechne als Steuern"
 
 msgid "Base:"
-msgstr ""
+msgstr "Lokale Währung:"
 
 msgid "Accou&nt:"
-msgstr ""
+msgstr "Kostenart:"
 
 msgid "Details"
-msgstr ""
+msgstr "Details"
 
 msgid "Post Document"
-msgstr ""
+msgstr "Buchen"
 
 msgid "AP Document Edit"
-msgstr ""
+msgstr "Rechnungen/Gutschriften bearbeiten"
 
 msgid "The currency code to use for this supplier."
-msgstr ""
+msgstr "Die Währung des Lieferanten."
 
 msgid ""
 "The code given on the document itself (be it invoice or credit note). This "
 "will have to be unique for each supplier."
 msgstr ""
+"Die Kennung die auf der Rechnung oder Gutschrift steht. Es darf kein anderes "
+"Dokument mit dieser Kennung von diesem Lieferanten geben."
 
 msgid "A flag to indicate if this document is an invoice or a credit note."
-msgstr ""
+msgstr "Ist dieses Dokument eine Rechnung oder eine Gutschrift?"
 
 msgid "Some kind of other reference needed."
-msgstr ""
+msgstr "Ein Erkennungskürzel angeben."
 
 msgid "The date when this document was issued."
-msgstr ""
+msgstr "Das Datum wann dieses Dokument ausgestellt wurde."
 
 msgid "Credit Terms is the number of days between date issued and due date"
 msgstr ""
+"Fälligkeit in Anzahl von Tagen zwischen Datum der Rechnungsstellung und "
+"Fälligkeitsdatum."
 
 msgid "Credit terms allowed for this invoice."
-msgstr ""
+msgstr "Zahlungsmodalitäten die für diese Rechung gelten"
 
 msgid "The number of days that the discount is valid for (0 for none)."
 msgstr ""
+"Die Anzahl der Tage zu denen die Zahlungsermäßigung gilt (0 für keine "
+"Zahlungsermäßigung)."
 
 msgid ""
 "The percentage discount you get for early payment of this document in the "
 "case that it is an invoice."
 msgstr ""
+"Die prozentuale Ermäßigung die bei früher Bezahlung der Rechnung zutrifft"
 
 msgid "The total amount of money that this document is worth."
 msgstr ""
+"Die Gesamtsumme des Wertes dieses Dokuments (Gutschrift oder Rechnung)"
 
 msgid ""
 "The exchange rate to the base currency at the time that the document was "
 "issued."
 msgstr ""
+"Der Wechselkurs zur lokalen Währung zum Zeitpunkt der Rechnungsstellung"
 
 msgid "A narrative about what this is."
-msgstr ""
+msgstr "Beschreibung dieses Dokumentes"
 
 msgid "Some other reference to the item."
-msgstr ""
+msgstr "Weitere Rereferenz"
 
 msgid "The amount of money this detail is worth."
-msgstr ""
+msgstr "Der Wert des Details"
 
 msgid "Reference to the cost centre to use for this detail."
-msgstr ""
+msgstr "Welche Kostenstelle soll für dieses Detail belastet werden"
 
 msgid "Reference to the account to use for this detail"
-msgstr ""
+msgstr "Welche Kostenart ist von diesem Detail betroffen"
 
 msgid "Select posting date"
-msgstr ""
+msgstr "Buchungsdatum auswählen"
 
 msgid "The date effective for posting"
-msgstr ""
+msgstr "Das Wertstellungsdatum für die Buchung"
 
 msgid "The payment was cancelled."
-msgstr ""
+msgstr "Das Bezahlen wurde abgebrochen."
 
 msgid "Posting failed"
-msgstr ""
+msgstr "Buchung fehlgeschlagen"
 
 msgid "The AP document has been posted successfully!"
-msgstr ""
+msgstr "Das Dokument wurde korrekt verbucht!"
 
 msgid "&Edit Partner info of Supplier"
-msgstr ""
+msgstr "Bearbeite die Partnerdaten des Lieferanten"
 
 msgid "&Currency:"
-msgstr ""
+msgstr "&Währung:"
 
 msgid "Supplier &Type:"
-msgstr ""
+msgstr "Art des Lieferanten:"
 
 msgid "General Information"
-msgstr ""
+msgstr "Allgemeine Informationen"
 
 msgid "Invoice A&ging (in months):"
-msgstr ""
+msgstr "Verberge Rechnungen nach Monaten:"
 
 msgid "C&redit Terms (in days):"
-msgstr ""
+msgstr "Zahlmodalitäten (in Tagen):"
 
 msgid "Default &Payment Type:"
-msgstr ""
+msgstr "Bevorzugte Zahlungsweise:"
 
 msgid "Number of Days for &Discount (0 for none):"
-msgstr ""
+msgstr "Anzahl der Tage für Zahlungsermäßigung (0 für keine):"
 
 msgid "Misc Defaults"
-msgstr ""
+msgstr "Verschiedene Einstellungen"
 
 msgid "&AP Account:"
-msgstr ""
+msgstr "Verbuchungskonto:"
 
 msgid "Default &Bank Account:"
-msgstr ""
+msgstr "Voreingestelltes Bankkonto:"
 
 msgid "Default C&ost Centre:"
-msgstr ""
+msgstr "Voreingestellte Kostenstelle:"
 
 msgid "Default &Expense Account:"
-msgstr ""
+msgstr "Belaste diese Kostenart:"
 
 msgid "Account Information"
-msgstr ""
+msgstr "Kontoinformationen"
 
 msgid "AP Supplier Edit"
-msgstr ""
+msgstr "Lieferanten bearbeiten"
 
 msgid "Reference to the partner key for this supplier"
-msgstr ""
+msgstr "Der Partnerschlüssel des Lieferanten"
 
 msgid ""
 "What type of supplier this is - normal, credit card, maybe something else."
-msgstr ""
+msgstr "Wie bezahlen wir den Lieferanten, mit Bargeld, oder Kreditkarte?"
 
 msgid "Number of months to display invoices and credit notes"
 msgstr ""
+"Anzahl der Monate, in denen Rechungen und Gutschriften angezeigt werden"
 
 msgid "Default credit terms to use for invoices from this supplier."
 msgstr ""
+"Die voreingestellten Zahlungsmodalitäten für Rechnungen dieses Lieferanten."
 
 msgid "The default type of payment to use when paying this supplier."
-msgstr ""
+msgstr "Die bevorzugte Bezahlungsart für diesen Lieferanten"
 
 msgid "Default number of days in which the discount percentage has effect."
 msgstr ""
+"Die voreingestellte Anzahl von Tagen, in denen die Rechnungsermäßigung "
+"zutrifft."
 
 msgid "Default percentage discount to receive for early payments."
-msgstr ""
+msgstr "Der Prozentsatz der Ermäßigung bei früher Zahlung."
 
 msgid "The default AP Account to use when paying this supplier."
-msgstr ""
+msgstr "Welches Konto wird für die Bezahlung des Lieferanten benutzt."
 
 msgid "Reference to default bank account to use to pay supplier with."
 msgstr ""
+"Das voreingestellte Bankkonto über welches Zahlungsvorgänge mit dem "
+"Lieferanten laufen."
 
 msgid "Reference to the default cost centre to use for invoice details."
-msgstr ""
+msgstr "Die Kostenstelle für die Details der Rechnungen"
 
 msgid "Reference to the default expense Account to use for invoice details."
-msgstr ""
+msgstr "Die zu belastende Kostenart für die Details der Rechnungen"
 
 msgid "There is already a supplier record for this partner!"
-msgstr ""
+msgstr "Dieser Partner ist schon einem Lieferanten zugewiesen!"
 
 msgid "Please select an AP account (eg. 9100)"
-msgstr ""
+msgstr "Bitte ein Verrechnungskonto auswählen (z.B. 9100)"
 
 msgid "S&earch Supplier:"
-msgstr ""
+msgstr "Lieferanten suchen:"
 
 msgid "Due &Today"
-msgstr ""
+msgstr "Heute fällig"
 
 msgid "&Overdue"
-msgstr ""
+msgstr "Überfällig"
 
 msgid "Due &Within Future"
-msgstr ""
+msgstr "Zukünftig fällig"
 
 msgid "Days"
-msgstr ""
+msgstr "Tage"
 
 msgid "&Reset Criteria"
-msgstr ""
+msgstr "Zurücksetzen"
 
 msgid "Show Outstanding &Amounts"
-msgstr ""
+msgstr "Zeige ausstehende Beträge"
 
 msgid "Hide &Inactive Suppliers"
-msgstr ""
+msgstr "Verstecke deaktivierte Lieferanten"
 
 msgid "C&urrency:"
-msgstr ""
+msgstr "Währung:"
 
 msgid "Suppliers"
-msgstr ""
+msgstr "Lieferanten"
 
 msgid "Tag all Appro&vable"
 msgstr ""
@@ -1970,130 +1910,130 @@ msgid "&Untag all"
 msgstr ""
 
 msgid "Sum of Tagged:"
-msgstr ""
+msgstr "Summe der ausgewählten:"
 
 msgid "Outstanding Invoices"
-msgstr ""
+msgstr "Ausstehende Rechungen"
 
 msgid "Open the transactions of the supplier"
-msgstr ""
+msgstr "Die Rechnungen/Gutschriften des Lieferanten"
 
 msgid "Open Transactions"
-msgstr ""
+msgstr "Zeige Dokumente"
 
 msgid "Change the details and settings of an existing supplier"
-msgstr ""
+msgstr "Die Voreinstellungen eines Lieferanten bearbeiten"
 
 msgid "&Edit Supplier"
-msgstr ""
+msgstr "Lieferant bearbeiten"
 
 msgid "Create a new supplier"
-msgstr ""
+msgstr "Neuen Lieferanten anlegen"
 
 msgid "&New Supplier"
-msgstr ""
+msgstr "Neuer Lieferant"
 
 msgid "Create &Invoice"
-msgstr ""
+msgstr "Neue Rechnung"
 
 msgid "Create C&redit Note"
-msgstr ""
+msgstr "Neue Gutschrift"
 
 msgid "&Reports"
-msgstr ""
+msgstr "Be&richte"
 
 msgid "Reprint Pa&yment Report"
-msgstr ""
+msgstr "Zahlungsquittung nochmal drucken"
 
 msgid "AP &Defaults"
-msgstr ""
+msgstr "Einstellungen"
 
 msgid "Supplier"
-msgstr ""
+msgstr "Lieferant"
 
 msgid "&Find Invoice..."
-msgstr ""
+msgstr "Suche Rechnung..."
 
 msgid "Find"
-msgstr ""
+msgstr "Suchen"
 
 msgid "Accounts Payable"
-msgstr ""
+msgstr "Verbindlichkeiten Konten"
 
 msgid "Search by supplier name or partner key"
-msgstr ""
+msgstr "Suche Lieferanten mit Namen oder Partnerschlüssel"
 
 msgid "Suppliers to Pay"
-msgstr ""
+msgstr "Lieferanten zu bezahlen"
 
 msgid "Cash"
-msgstr ""
+msgstr "Bargeld"
 
 msgid "Payment T&ype:"
-msgstr ""
+msgstr "Art der Bezahlung:"
 
 msgid "Exchange Rate:"
-msgstr ""
+msgstr "Wechselkurs:"
 
 msgid "Bank Account:"
-msgstr ""
+msgstr "Bankkonto:"
 
 msgid "Print Remittance"
-msgstr ""
+msgstr "Überweisung/Scheck drucken"
 
 msgid "Print Label"
-msgstr ""
+msgstr "Adressaufkleber drucken"
 
 msgid "Print Cheque"
-msgstr ""
+msgstr "Scheck drucken"
 
 msgid "Cheque Number:"
-msgstr ""
+msgstr "Schecknummer:"
 
 msgid "PayFullOutstandingAmount"
-msgstr ""
+msgstr "do not translate"
 
 msgid "PayAPartialAmount"
-msgstr ""
+msgstr "do not translate"
 
 msgid "Amount To Pay"
-msgstr ""
+msgstr "Zahlungsbetrag"
 
 msgid "Claim Discount"
-msgstr ""
+msgstr "Zahlungsermäßigung"
 
 msgid "Amount To Pay:"
-msgstr ""
+msgstr "Zahlungsbetrag:"
 
 msgid "Invoices in this payment"
-msgstr ""
+msgstr "Rechnungen in dieser Zahlung:"
 
 msgid "&Make Payment"
-msgstr ""
+msgstr "Zahlung durchführen"
 
 msgid "Split By Invoice"
-msgstr ""
+msgstr "Nach Rechnung aufspalten"
 
 msgid "AP Payment"
-msgstr ""
+msgstr "Zahlungsvorgang"
 
 msgid "Select payment date"
-msgstr ""
+msgstr "Zahlungsdatum wählen"
 
 msgid "The date effective for the payment"
-msgstr ""
+msgstr "Das Wertstellungsdatum für diese Zahlung"
 
 msgid "Payment failed"
-msgstr ""
+msgstr "Zahlvorgang fehlgeschlagen"
 
 msgid "The AP payment has been posted successfully!"
-msgstr ""
+msgstr "Die Zahlung wurde korrekt ausgeführt!"
 
 msgid "&Type:"
-msgstr ""
+msgstr "&Typ:"
 
 msgid "&Date:"
-msgstr ""
+msgstr "&Datum:"
 
 msgid "Date &Field:"
 msgstr ""
@@ -2102,7 +2042,7 @@ msgid "&Status:"
 msgstr ""
 
 msgid "Hide &Aged Transactions"
-msgstr ""
+msgstr "Verberge alte Vorgänge"
 
 msgid "Tag all P&ostable"
 msgstr ""
@@ -2114,16 +2054,16 @@ msgid "Displayed Balance:"
 msgstr ""
 
 msgid "New &Invoice"
-msgstr ""
+msgstr "Neue Rechnung"
 
 msgid "New &Credit Note"
-msgstr ""
+msgstr "Neue Gutschrift"
 
 msgid "&Open Selected"
-msgstr ""
+msgstr "Öffne Dokument"
 
 msgid "Re&verse Selected"
-msgstr ""
+msgstr "Dokument Rückgängig"
 
 msgid "&Approve Tagged"
 msgstr ""
@@ -2135,13 +2075,13 @@ msgid "Add Tagged to Pa&yment"
 msgstr ""
 
 msgid "Reprint Re&mittance Advice"
-msgstr ""
+msgstr "Zahlungsanweisung nochmal drucken"
 
 msgid "Reprint &Cheque"
-msgstr ""
+msgstr "Scheck nochmal drucken"
 
 msgid "&New..."
-msgstr ""
+msgstr "&Neu …"
 
 msgid "&Action"
 msgstr ""
@@ -2150,7 +2090,7 @@ msgid "Supplier Transactions"
 msgstr ""
 
 msgid "The AP documents have been posted successfully!"
-msgstr ""
+msgstr "Die Dokumente wurden korrekt verbucht!"
 
 msgid "ListAll"
 msgstr ""
@@ -2228,6 +2168,9 @@ msgid "Motivation"
 msgstr ""
 
 msgid "Cost Centre"
+msgstr ""
+
+msgid "Cost Centre Name"
 msgstr ""
 
 msgid "Amount"
@@ -2403,6 +2346,49 @@ msgstr ""
 msgid "End Date:"
 msgstr ""
 
+msgid "Date Effective:"
+msgstr ""
+
+msgid "Recipient Key:"
+msgstr ""
+
+msgid "Old Field Key:"
+msgstr ""
+
+msgid "No Receipt"
+msgstr ""
+
+msgid "&Adjust gifts after field change"
+msgstr ""
+
+msgid "Field Change Adjustment"
+msgstr ""
+
+msgid "Fix Gifts from this date onwards"
+msgstr ""
+
+msgid "Fix Gifts till this date (inclusive)"
+msgstr ""
+
+msgid "Date for adjusted Gift batch"
+msgstr ""
+
+msgid "tick this if the gift was already receipted last year"
+msgstr ""
+
+#, csharp-format
+msgid "Please check and post gift batch {0}"
+msgstr ""
+
+msgid "Success"
+msgstr ""
+
+msgid "There was a problem creating the adjustment batch"
+msgstr ""
+
+msgid "Failure"
+msgstr ""
+
 msgid "Total Number Pages"
 msgstr ""
 
@@ -2429,6 +2415,9 @@ msgid "HTML file (*.html)|*.html;*.htm"
 msgstr ""
 
 msgid "Select the template for the gift receipt"
+msgstr ""
+
+msgid "There are no posted gifts in the date range"
 msgstr ""
 
 msgid "Account Code:"
@@ -2512,9 +2501,6 @@ msgstr ""
 msgid "Error"
 msgstr "Fehler"
 
-msgid "Success"
-msgstr ""
-
 msgid "Account cannot be deleted"
 msgstr ""
 
@@ -2545,7 +2531,8 @@ msgstr ""
 msgid "Type of cost centre (foreign or local)."
 msgstr ""
 
-msgid "You can only add a new cost centre after selecting a parent cost centre"
+msgid ""
+"You can only add a new cost centre after selecting a parent cost centre"
 msgstr ""
 
 msgid "NewCostCentre"
@@ -2556,6 +2543,9 @@ msgstr ""
 
 msgid "Load Cost Centre Hierarchy from file"
 msgstr ""
+
+msgid "label1"
+msgstr "label1"
 
 #, csharp-format
 msgid "valid dates from {0} to {1}"
@@ -2649,7 +2639,8 @@ msgstr ""
 msgid "Spreadsheet files (*.csv)|*.csv"
 msgstr ""
 
-msgid "Please select a yml file that describes the content of the spreadsheet"
+msgid ""
+"Please select a yml file that describes the content of the spreadsheet"
 msgstr ""
 
 msgid "Data description files (*.yml)|*.yml"
@@ -2721,10 +2712,22 @@ msgstr ""
 msgid "Valid between {0} and {1}"
 msgstr ""
 
+msgid "Do you really want to cancel this gift batch?"
+msgstr ""
+
+msgid "Confirm cancelling of Gift Batch"
+msgstr ""
+
 msgid "The batch was not posted due to problems during saving; "
 msgstr ""
 
 msgid "Please first save the batch, and then post it!"
+msgstr ""
+
+msgid "Do you really want to post this gift batch?"
+msgstr ""
+
+msgid "Confirm posting of Gift Batch"
 msgstr ""
 
 msgid "The batch has been posted successfully!"
@@ -2733,7 +2736,13 @@ msgstr ""
 msgid "Gift Batch:"
 msgstr ""
 
-msgid "Remove"
+msgid "&Add Gift"
+msgstr ""
+
+msgid "Add Detai&l"
+msgstr ""
+
+msgid "&Delete Detail"
 msgstr ""
 
 msgid "Donor:"
@@ -2785,6 +2794,9 @@ msgid "Automatically generated balancing transaction"
 msgstr ""
 
 msgid "Batch:"
+msgstr ""
+
+msgid "Remove"
 msgstr ""
 
 msgid "Journal Description:"
@@ -3020,7 +3032,8 @@ msgstr ""
 msgid "Please select the file to import from"
 msgstr ""
 
-msgid "Import of database was successful. Please restart your OpenPetra client"
+msgid ""
+"Import of database was successful. Please restart your OpenPetra client"
 msgstr ""
 
 msgid ""
@@ -3062,9 +3075,6 @@ msgstr "Neue Person hinzufügen"
 msgid "Add New Organisation"
 msgstr "Neue Organisation hinzufügen"
 
-msgid "Import Partners"
-msgstr ""
-
 msgid "Maintain Partner"
 msgstr ""
 
@@ -3075,6 +3085,12 @@ msgid "Reports"
 msgstr ""
 
 msgid "Partner By City"
+msgstr ""
+
+msgid "Import and Export"
+msgstr ""
+
+msgid "Import Partners"
 msgstr ""
 
 msgid "Export Partners"
@@ -3089,8 +3105,8 @@ msgstr ""
 msgid "Manage Cost Centres"
 msgstr ""
 
-msgid "Entering Gifts"
-msgstr "Spenden eingeben"
+msgid "Import Gifts From Bank Statement"
+msgstr ""
 
 msgid "Print Annual Receipts"
 msgstr ""
@@ -3251,6 +3267,9 @@ msgstr ""
 msgid "Gift Entry"
 msgstr ""
 
+msgid "Entering Gifts"
+msgstr "Spenden eingeben"
+
 msgid "Add Gifts"
 msgstr ""
 
@@ -3339,6 +3358,12 @@ msgid "Please select the bank statement to import"
 msgstr ""
 
 msgid "Missing setting in config file: BankImportCSV.FileStructure.Config"
+msgstr ""
+
+msgid "bank statement MT940 (*.sta)|*.sta"
+msgstr ""
+
+msgid "We don't support several bank statements per file at the moment"
 msgstr ""
 
 msgid "Invalid User ID/Password."
@@ -3483,100 +3508,88 @@ msgstr ""
 msgid "bank import for date {0}"
 msgstr ""
 
-msgid "There was a problem with the syntax of the file."
-msgstr ""
-
-msgid "Missing SiteKey Attribute"
-msgstr ""
-
-msgid "Missing status Attribute"
-msgstr ""
-
-msgid "Missing Country Attribute"
-msgstr ""
-
-msgid "Invalid User ID"
-msgstr ""
-
-msgid "Cost Centre Name"
-msgstr ""
-
-msgid "Date Effective:"
-msgstr ""
-
-msgid "Recipient Key:"
-msgstr ""
-
-msgid "Old Field Key:"
-msgstr ""
-
-msgid "No Receipt"
-msgstr ""
-
-msgid "&Adjust gifts after field change"
-msgstr ""
-
-msgid "Field Change Adjustment"
-msgstr ""
-
-msgid "Fix Gifts from this date onwards"
-msgstr ""
-
-msgid "Fix Gifts till this date (inclusive)"
-msgstr ""
-
-msgid "Date for adjusted Gift batch"
-msgstr ""
-
-msgid "tick this if the gift was already receipted last year"
-msgstr ""
-
-#, csharp-format
-msgid "Please check and post gift batch {0}"
-msgstr ""
-
-msgid "There was a problem creating the adjustment batch"
-msgstr ""
-
-msgid "Failure"
-msgstr ""
-
-msgid "There are no posted gifts in the date range"
-msgstr ""
-
-msgid "Do you really want to cancel this gift batch?"
-msgstr ""
-
-msgid "Confirm cancelling of Gift Batch"
-msgstr ""
-
-msgid "Do you really want to post this gift batch?"
-msgstr ""
-
-msgid "Confirm posting of Gift Batch"
-msgstr ""
-
-msgid "&Add Gift"
-msgstr ""
-
-msgid "Add Detai&l"
-msgstr ""
-
-msgid "&Delete Detail"
-msgstr ""
-
-msgid "Import and Export"
-msgstr ""
-
-msgid "Import Gifts From Bank Statement"
-msgstr ""
-
-msgid "We don't support several bank statements per file at the moment"
-msgstr ""
-
 #, csharp-format
 msgid "posted on {0}"
 msgstr ""
 
 msgid "Gift Adjustment (Field Change)"
-msgstr ""
+msgstr "Spendenkorrektur (bei Feldwechsel)"
+
+msgid "There was a problem with the syntax of the file."
+msgstr "Es gab ein Problem mit der Struktur der Datei"
+
+msgid "Missing SiteKey Attribute"
+msgstr "Es fehlt die Angabe der Zweigstelle"
+
+msgid "Missing status Attribute"
+msgstr "Es fehlt der aktuelle Zustand des Partners"
+
+msgid "Missing Country Attribute"
+msgstr "Es fehlt die Länderangabe"
+
+msgid "Invalid User ID"
+msgstr "Ungültige Benutzerkennung"
+
+#~ msgid "Yes"
+#~ msgstr "Ja"
+
+#~ msgid "My previous name"
+#~ msgstr "Mein bisheriger Name"
+
+#~ msgid "Austria"
+#~ msgstr "Österreich"
+
+#~ msgid "PetraInputBox"
+#~ msgstr "PetraInputBox"
+
+#~ msgid "hans-peter@testinger.com"
+#~ msgstr "do not translate"
+
+#~ msgid "0732 / 2345678"
+#~ msgstr "do not translate"
+
+#~ msgid "0699 / 107223892"
+#~ msgstr "do not translate"
+
+#~ msgid "0732 / 12345 Ext. 78"
+#~ msgstr "do not translate"
+
+#~ msgid "31-JUL-2000"
+#~ msgstr "do not translate"
+
+#~ msgid "http://www.testinger.com"
+#~ msgstr "do not translate"
+
+#~ msgid "GLOBAL, INDIA, CURRENTS, MONTHLY, VERWER"
+#~ msgstr "do not translate"
+
+#~ msgid "0732 / 12345 Ext. 56"
+#~ msgstr "do not translate"
+
+#~ msgid "WORKER, AIRMILES"
+#~ msgstr "do not translate"
+
+#~ msgid "30-DEC-2008"
+#~ msgstr "do not translate"
+
+#~ msgid "Central European Area"
+#~ msgstr "do not translate"
+
+#~ msgid "This is a Very Important Partner. Very pleasant to speak to."
+#~ msgstr ""
+#~ "do not translate. this is only test data and should not be part of the client"
+
+#~ msgid "31-JUN-2008"
+#~ msgstr "do not translate"
+
+#~ msgid "31-JUN-2000"
+#~ msgstr "do not translate"
+
+#~ msgid "Testinger, A   [0123456789]"
+#~ msgstr "do not translate"
+
+#~ msgid "Markus' World"
+#~ msgstr "do not translate"
+
+#~ msgid "PRIVATE {MARLENE}"
+#~ msgstr "do not translate"
