@@ -506,7 +506,7 @@ namespace Ict.Petra.Client.CommonForms
         /// if there are changes, ask the user what to do:
         /// save and close, discard and close, or cancel closing
         /// </summary>
-        /// <returns></returns>
+        /// <returns>returns false if the form cannot be closed</returns>
         public Boolean CloseFormCheck()
         {
             CloseFormCheckRun = true;
@@ -538,6 +538,10 @@ namespace Ict.Petra.Client.CommonForms
                             // Form contains invalid data that hasn't been corrected yet
                             CloseFormCheckRun = false;
                             return false;
+                        }
+                        else
+                        {
+                            HasChanges = false;
                         }
                     }
                     catch (Exception exp)
@@ -582,7 +586,7 @@ namespace Ict.Petra.Client.CommonForms
             {
                 if (!CloseFormCheck())
                 {
-                    // MessageBox.Show('TPartnerEditDSWinForm.TPartnerEditDSWinForm_Closing: e.Cancel := true');
+                    // MessageBox.Show("TFrmPetra_Closing: e.Cancel = true");
                     e.Cancel = true;
                 }
             }

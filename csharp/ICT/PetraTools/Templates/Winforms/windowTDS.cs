@@ -194,7 +194,11 @@ namespace {#NAMESPACE}
                 }
             }
 
-            if (FPetraUtilsObject.HasChanges)
+            if (!FPetraUtilsObject.HasChanges)
+            {
+                return true;
+            }
+            else
             {
                 FPetraUtilsObject.WriteToStatusBar("Saving data...");
                 this.Cursor = Cursors.WaitCursor;
@@ -204,6 +208,12 @@ namespace {#NAMESPACE}
 
                 {#DATASETTYPE} SubmitDS = FMainDS.GetChangesTyped(true);
 
+                if (SubmitDS == null)
+                {
+                    // nothing to be saved, so it is ok to close the screen etc
+                    return true;
+                }
+                
                 // Submit changes to the PETRAServer
                 try
                 {
@@ -257,10 +267,9 @@ namespace {#NAMESPACE}
                         "Server connection error",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
-                    bool ReturnValue = false;
 
                     // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return ReturnValue;
+                    return false;
                 }
 
                 switch (SubmissionResult)
@@ -291,16 +300,19 @@ namespace {#NAMESPACE}
                     case TSubmitChangesResult.scrError:
 
                         // TODO scrError
+                        this.Cursor = Cursors.Default;
                         break;
 
                     case TSubmitChangesResult.scrNothingToBeSaved:
 
                         // TODO scrNothingToBeSaved
-                        break;
+                        this.Cursor = Cursors.Default;
+                        return true;
 
                     case TSubmitChangesResult.scrInfoNeeded:
 
                         // TODO scrInfoNeeded
+                        this.Cursor = Cursors.Default;
                         break;
                 }
             }
