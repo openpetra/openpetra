@@ -19,7 +19,7 @@
     <property name="SQLitedb.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.db"/>
     <property name="TargetLanguage.Pofile" value="${Translation.TargetLanguage}.po"/>
     <property name="TargetLanguage.PofileWithPath" value="${OpenPetraRoot.dir}/i18n/${Translation.TargetLanguage}.po"/>
-    <property name="WebServerInstall.dir" value="${OpenPetraRoot.dir}/qooxdoo/"/>
+    <property name="WebServerInstall.dir" value="${OpenPetraRoot.dir}/webserver/"/>
 
     <property name="IctNAntTasks.file" value="${ThirdParty.dir}/NAnt/Ict.Tools.NAntTasks.dll"/>
     <if test="${not file::exists(IctNAntTasks.file)}">
@@ -69,7 +69,7 @@
         <echo message="startPetraServer: run a local Petra Server"/>
         <echo message="stopPetraServer: stop the local Petra Server"/>
         <echo message="startPetraClient: run the Petra Client"/>
-        <echo message="startSOAPServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)"/>
+        <echo message="startWebServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)"/>
         <echo message="buildRelease: requires this parameter: -D:ReleaseID=0.0.2.0"/>
         <echo message="createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0"/>
     </target>
@@ -315,7 +315,9 @@
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-             <echo message="please run sudo ls before calling this, then you don't need to enter a password for postgres user"/>
+             <if test="${platform::is-unix()}">
+                 <echo message="please run sudo ls before calling this, then you don't need to enter a password for postgres user"/>
+             </if>
              <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS openpetra;" database="template1"/>
              <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE openpetra;" database="template1"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="openpetra"/>
@@ -332,13 +334,11 @@
                 database="openpetra"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="openpetra"/>
 
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification1 TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_modification2 TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON s_login_s_login_process_id_r_seq TO petraserver;"  database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_location_number TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_general_ledger_master TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_statement_number TO petraserver;" database="openpetra"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="GRANT SELECT,UPDATE,USAGE ON seq_match_number TO petraserver;" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" 
+                sqlcommand="select 'GRANT SELECT,UPDATE,USAGE ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'S' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
+                outputfile="${tempfile}"
+                database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="openpetra"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <echo message="this will now take a while..."/>
@@ -500,7 +500,7 @@
             </environment>
         </exec>
     </target>
-    <target name="startSOAPServer" description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
+    <target name="startWebServer" description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
         <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
                     tofile="${WebServerInstall.dir}/server.asmx" overwrite="true"/>
         <mkdir dir="${WebServerInstall.dir}/bin" failonerror="false"/>
@@ -529,7 +529,8 @@
         </exec>
         <echo message="in your browser, go to http://localhost:8081/server.asmx"/>
         
-        <echo message="in your browser, go to http://localhost:8081/OpenPetraOrg/source/"/>
+        <echo message="in your browser, go to http://localhost:8081/OpenPetraOrg.qx/source for the qooxdoo test"/>
+        <echo message="                 or to http://localhost:8081/OpenPetraOrg.ext for the extjs test"/>
     </target>
 
     <target name="generateORMTables">

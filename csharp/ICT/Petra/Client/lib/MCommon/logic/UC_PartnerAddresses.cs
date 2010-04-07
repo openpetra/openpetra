@@ -1388,7 +1388,7 @@ namespace Ict.Petra.Client.MCommon
             ASiteKey = FMainDS.MiscellaneousData[0].SelectedSiteKey;
             ALocationKey = FMainDS.MiscellaneousData[0].SelectedLocationKey;
             ARowNumber = 0;
-            FDataGridDV = (FDataGrid.DataSource as DevAge.ComponentModel.BoundDataView).mDataView;
+            FDataGridDV = (FDataGrid.DataSource as DevAge.ComponentModel.BoundDataView).DataView;
             FoundSelectedLocation = false;
 
 //            MessageBox.Show("ASiteKey: " + ASiteKey.ToString() + "; ALocationKey: " + ALocationKey.ToString());

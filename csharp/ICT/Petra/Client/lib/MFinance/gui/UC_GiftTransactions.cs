@@ -68,8 +68,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblLedgerNumber.Text = Catalog.GetString("Ledger:");
       this.lblBatchNumber.Text = Catalog.GetString("Gift Batch:");
-      this.btnNew.Text = Catalog.GetString("&Add");
-      this.btnRemove.Text = Catalog.GetString("Remove");
+      this.btnNewGift.Text = Catalog.GetString("&Add Gift");
+      this.btnNewDetail.Text = Catalog.GetString("Add Detai&l");
+      this.btnDeleteDetail.Text = Catalog.GetString("&Delete Detail");
       this.txtDetailDonorKey.ButtonText = Catalog.GetString("Find");
       this.lblDetailDonorKey.Text = Catalog.GetString("Donor:");
       this.lblDateEntered.Text = Catalog.GetString("Date Entered:");
@@ -113,10 +114,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Gift Transaction Number", FMainDS.AGiftDetail.ColumnGiftTransactionNumber);
       grdDetails.AddTextColumn("Gift Number", FMainDS.AGiftDetail.ColumnDetailNumber);
-      grdDetails.AddTextColumn("Date Entered", FMainDS.AGiftDetail.ColumnDateEntered);
+      grdDetails.AddDateColumn("Date Entered", FMainDS.AGiftDetail.ColumnDateEntered);
       grdDetails.AddTextColumn("Donor Key", FMainDS.AGiftDetail.ColumnDonorKey);
       grdDetails.AddTextColumn("Donor Name", FMainDS.AGiftDetail.ColumnDonorName);
-      grdDetails.AddTextColumn("Transaction Gift Amount", FMainDS.AGiftDetail.ColumnGiftTransactionAmount);
+      grdDetails.AddCurrencyColumn("Transaction Gift Amount", FMainDS.AGiftDetail.ColumnGiftTransactionAmount);
       grdDetails.AddTextColumn("Recipient", FMainDS.AGiftDetail.ColumnRecipientDescription);
       grdDetails.AddTextColumn("Motivation Group", FMainDS.AGiftDetail.ColumnMotivationGroupCode);
       grdDetails.AddTextColumn("Motivation Detail", FMainDS.AGiftDetail.ColumnMotivationDetailCode);
@@ -135,7 +136,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         // we create the table locally, no dataset
         AGiftDetailRow NewRow = FMainDS.AGiftDetail.NewRowTyped(true);
-        NewRowManual(ref NewRow);
         FMainDS.AGiftDetail.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
@@ -156,7 +156,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             foreach (DataColumn myColumn in FMainDS.AGiftDetail.PrimaryKey)
             {
                 string value1 = FMainDS.AGiftDetail.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;
@@ -311,9 +311,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
-        if (e.ActionName == "actNew")
+        if (e.ActionName == "actNewGift")
         {
-            btnNew.Enabled = e.Enabled;
+            btnNewGift.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actNewDetail")
+        {
+            btnNewDetail.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actDeleteDetail")
+        {
+            btnDeleteDetail.Enabled = e.Enabled;
         }
     }
 

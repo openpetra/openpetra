@@ -29,9 +29,6 @@ Name: {userappdata}/OpenPetra.org/reports30
 
 [Files]
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.Extensions.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\DevAge\DevAge.Core.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\DevAge\DevAge.Windows.Forms.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\SQLite\System.Data.SQLite.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\Mono\intl.dll; DestDir: {app}/bin30; Flags: ignoreversion

@@ -24,12 +24,15 @@
 		
 			<div class="title">
 				<h1><a href="index.php">OpenPetra.org</a></h1>
-                <h2>Free Administration Software for Non-Profit Organisations</h2>
+                <h2>Free and Easy-to-use Administration Software Package for Non-profit Organisations</h2>
 <!--               <div class="donate"><a href="http://sourceforge.net/donate/index.php?group_id=260632"><img src="http://images.sourceforge.net/images/project-support.jpg" width="88" height="32" border="0" alt="Support OpenPetra.org" /></a></div> -->
 			</div>
                    <div class="flags">
 		      <a href="index.php?lang=de"><img src="flags/de.png" border="0"/></a>
 		      <a href="index.php?lang=en"><img src="flags/gb.png" border="0"/></a>
+		   </div>
+		   <div class="news">
+		     New: <a href="pdf/Openpetra_Flyer_english_March2010.pdf">PDF document: Explaining the OpenPetra project and inviting people to join!</a>
 		   </div>
 
 		</div>

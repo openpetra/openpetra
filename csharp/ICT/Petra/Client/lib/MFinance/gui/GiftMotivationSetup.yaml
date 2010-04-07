@@ -1,0 +1,46 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Gift Motivations
+    Namespace: Ict.Petra.Client.MFinance.Gui.Gift
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
+    DetailTable: AMotivationDetail
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
+    FormType: edit
+    Template: windowEdit
+    WindowWidth: 660
+    WindowHeight: 700
+    Actions:
+        actAddMotivationDetail: {Label=Add Detail, ActionClick=AddDetail}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnAddMotivationDetail]
+        btnAddMotivationDetail:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailMotivationGroupCode, DetailMotivationDetailCode, DetailMotivationDetailDesc, DetailAccountCode, DetailCostCentreCode, DetailMotivationStatus, DetailReceipt]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailMotivationGroupCode]
+                Row1: [txtDetailMotivationDetailCode]
+                Row2: [txtDetailMotivationDetailDesc]
+                Row3: [cmbDetailAccountCode]
+                Row4: [cmbDetailCostCentreCode]
+                Row5: [chkDetailMotivationStatus, chkDetailReceipt]
+        txtDetailMotivationGroupCode: {Label=Group}
+        txtDetailMotivationDetailCode: {Label=Detail}
+        txtDetailMotivationDetailDesc: {Label=Description}
+        cmbDetailAccountCode: {Label=Account, List=UserDefinedList}
+        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList}
+        chkDetailMotivationStatus: {Label=Active}
+        chkDetailReceipt: {Label=Print Receipt}
+    Toolbar:
+        tbbAddMotivationDetail:

@@ -26,17 +26,19 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
+
+using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Data;
+using System.Data.Odbc;
+using System.Runtime.Serialization;
+using System.Xml;
+using Ict.Common;
+using Ict.Common.Data;
+
 namespace Ict.Petra.Shared.MPersonnel.Units.Data
 {
-    using System;
-    using System.Collections;
-    using System.ComponentModel;
-    using System.Data;
-    using System.Data.Odbc;
-    using System.Runtime.Serialization;
-    using System.Xml;
-    using Ict.Common;
-    using Ict.Common.Data;
 
     /// This is a listing of the different position which exist within our organisation, e.g. Field Leader, Book Keeper, Computer support.
     [Serializable()]

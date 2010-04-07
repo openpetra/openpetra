@@ -26,21 +26,23 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
+
+using System;
+using System.Collections.Specialized;
+using System.Data;
+using System.Data.Odbc;
+using Ict.Common;
+using Ict.Common.DB;
+using Ict.Common.Verification;
+using Ict.Common.Data;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Units.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
+
 namespace Ict.Petra.Server.MCommon.Data.Access
 {
-    using System;
-    using System.Collections.Specialized;
-    using System.Data;
-    using System.Data.Odbc;
-    using Ict.Common;
-    using Ict.Common.DB;
-    using Ict.Common.Verification;
-    using Ict.Common.Data;
-    using Ict.Petra.Shared;
-    using Ict.Petra.Shared.MCommon.Data;
-    using Ict.Petra.Shared.MPartner.Partner.Data;
-    using Ict.Petra.Shared.MPersonnel.Units.Data;
-    using Ict.Petra.Shared.MPartner.Mailroom.Data;
 
     /// List of language codes
     public class PLanguageAccess : TTypedDataAccess
@@ -792,7 +794,7 @@ namespace Ict.Petra.Server.MCommon.Data.Access
         /// auto generated
         public static bool SubmitChanges(PLanguageTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(PLanguageTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -1012,7 +1014,7 @@ namespace Ict.Petra.Server.MCommon.Data.Access
         /// auto generated
         public static bool SubmitChanges(AFrequencyTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(AFrequencyTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -1232,7 +1234,7 @@ namespace Ict.Petra.Server.MCommon.Data.Access
         /// auto generated
         public static bool SubmitChanges(PInternationalPostalTypeTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(PInternationalPostalTypeTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -1773,7 +1775,7 @@ namespace Ict.Petra.Server.MCommon.Data.Access
         /// auto generated
         public static bool SubmitChanges(PCountryTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(PCountryTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -2314,7 +2316,7 @@ namespace Ict.Petra.Server.MCommon.Data.Access
         /// auto generated
         public static bool SubmitChanges(ACurrencyTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(ACurrencyTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 }

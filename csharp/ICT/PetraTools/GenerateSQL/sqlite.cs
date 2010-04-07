@@ -142,15 +142,15 @@ public class TSQLiteWriter
     static private void RunCommand(SQLiteConnection conn, string deletestmt)
     {
         using (SQLiteTransaction dbTrans = conn.BeginTransaction())
-              {
-                  using (SQLiteCommand cmd = conn.CreateCommand())
-                        {
-                            cmd.CommandText = deletestmt;
-                            cmd.ExecuteNonQuery();
-                        }
+        {
+            using (SQLiteCommand cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = deletestmt;
+                cmd.ExecuteNonQuery();
+            }
 
-                        dbTrans.Commit();
-              }
+            dbTrans.Commit();
+        }
     }
 
     /// <summary>
@@ -164,95 +164,95 @@ public class TSQLiteWriter
     static private bool LoadData(TDataDefinitionStore ADataDefinition, SQLiteConnection conn, string APath, string ATablename)
     {
         using (SQLiteTransaction dbTrans = conn.BeginTransaction())
-              {
-                  using (SQLiteCommand cmd = conn.CreateCommand())
+        {
+            using (SQLiteCommand cmd = conn.CreateCommand())
+            {
+                // prepare the statement
+                string stmt = "INSERT INTO " + ATablename + " (";
+                TTable table = ADataDefinition.GetTable(ATablename);
+                bool first = true;
+
+                foreach (TTableField field in table.grpTableField.List)
+                {
+                    if (!first)
+                    {
+                        stmt += ",";
+                    }
+
+                    first = false;
+
+                    stmt += field.strName;
+
+                    SQLiteParameter param = cmd.CreateParameter();
+                    cmd.Parameters.Add(param);
+                }
+
+                stmt += ") VALUES (";
+                first = true;
+
+                foreach (TTableField field in table.grpTableField.List)
+                {
+                    if (!first)
+                    {
+                        stmt += ",";
+                    }
+
+                    first = false;
+                    stmt += "?";
+                }
+
+                stmt += ")";
+                cmd.CommandText = stmt;
+
+                // load the data from the text file
+                StreamReader reader = new StreamReader(APath + Path.DirectorySeparatorChar + ATablename + ".csv");
+                string line;
+
+                while ((line = reader.ReadLine()) != null)
+                {
+                    int count = 0;
+
+                    foreach (TTableField field in table.grpTableField.List)
+                    {
+                        Object val = StringHelper.GetNextCSV(ref line, ",");
+
+                        if (val.ToString() == "?")
                         {
-                            // prepare the statement
-                            string stmt = "INSERT INTO " + ATablename + " (";
-                            TTable table = ADataDefinition.GetTable(ATablename);
-                            bool first = true;
-
-                            foreach (TTableField field in table.grpTableField.List)
+                            val = null;
+                        }
+                        else if ((field.strType == "date") && (val.ToString().Length != 0))
+                        {
+                            if (val.ToString().Contains("-"))
                             {
-                                if (!first)
-                                {
-                                    stmt += ",";
-                                }
-
-                                first = false;
-
-                                stmt += field.strName;
-
-                                SQLiteParameter param = cmd.CreateParameter();
-                                cmd.Parameters.Add(param);
+                                StringCollection dateString = StringHelper.StrSplit(val.ToString(), "-");
+                                val = new DateTime(Convert.ToInt16(dateString[0]),
+                                    Convert.ToInt16(dateString[1]),
+                                    Convert.ToInt16(dateString[2]));
                             }
-
-                            stmt += ") VALUES (";
-                            first = true;
-
-                            foreach (TTableField field in table.grpTableField.List)
+                            else
                             {
-                                if (!first)
-                                {
-                                    stmt += ",";
-                                }
-
-                                first = false;
-                                stmt += "?";
-                            }
-
-                            stmt += ")";
-                            cmd.CommandText = stmt;
-
-                            // load the data from the text file
-                            StreamReader reader = new StreamReader(APath + Path.DirectorySeparatorChar + ATablename + ".csv");
-                            string line;
-
-                            while ((line = reader.ReadLine()) != null)
-                            {
-                                int count = 0;
-
-                                foreach (TTableField field in table.grpTableField.List)
-                                {
-                                    Object val = StringHelper.GetNextCSV(ref line, ",");
-
-                                    if (val.ToString() == "?")
-                                    {
-                                        val = null;
-                                    }
-                                    else if ((field.strType == "date") && (val.ToString().Length != 0))
-                                    {
-                                        if (val.ToString().Contains("-"))
-                                        {
-                                            StringCollection dateString = StringHelper.StrSplit(val.ToString(), "-");
-                                            val = new DateTime(Convert.ToInt16(dateString[0]),
-                                                Convert.ToInt16(dateString[1]),
-                                                Convert.ToInt16(dateString[2]));
-                                        }
-                                        else
-                                        {
-                                            val = new DateTime(Convert.ToInt16(val.ToString().Substring(0, 3)),
-                                                Convert.ToInt16(val.ToString().Substring(4, 2)),
-                                                Convert.ToInt16(val.ToString().Substring(6, 2)));
-                                        }
-                                    }
-                                    else if (field.strType == "bit")
-                                    {
-                                        val = (val.ToString() == "true");
-                                    }
-
-                                    cmd.Parameters[count].Value = val;
-                                    count++;
-                                }
-
-                                cmd.ExecuteNonQuery();
+                                val = new DateTime(Convert.ToInt16(val.ToString().Substring(0, 3)),
+                                    Convert.ToInt16(val.ToString().Substring(4, 2)),
+                                    Convert.ToInt16(val.ToString().Substring(6, 2)));
                             }
                         }
+                        else if (field.strType == "bit")
+                        {
+                            val = (val.ToString() == "true");
+                        }
 
-                        dbTrans.Commit();
-              }
+                        cmd.Parameters[count].Value = val;
+                        count++;
+                    }
 
-              return true;
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            dbTrans.Commit();
+        }
+
+        return true;
     }
 }
 }

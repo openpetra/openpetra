@@ -39,6 +39,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.GL.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -99,74 +100,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
 
             AVerificationResult = null;
 
             if (AInspectDS != null)
             {
-                AVerificationResult = new TVerificationResultCollection();
-                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                try
-                {
-                    if ((AInspectDS.AAccount != null) || (AInspectDS.AAccountHierarchyDetail != null))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-
-                        // first delete account hierarchy details that are not needed anymore. otherwise we cannot delete the account
-                        if (TTypedDataAccess.SubmitChanges(AAccountHierarchyDetailTable.TableId, AInspectDS.AAccountHierarchyDetail,
-                                SubmitChangesTransaction,
-                                TTypedDataAccess.eSubmitChangesOperations.eDelete,
-                                out AVerificationResult,
-                                UserInfo.GUserInfo.UserID))
-                        {
-                            // this only supports adding new accounts, deleting unused accounts, and modifying details; but not renaming accounts
-                            if (AAccountAccess.SubmitChanges(AInspectDS.AAccount, SubmitChangesTransaction,
-                                    out AVerificationResult))
-                            {
-                                if (TTypedDataAccess.SubmitChanges(AAccountHierarchyDetailTable.TableId, AInspectDS.AAccountHierarchyDetail,
-                                        SubmitChangesTransaction,
-                                        TTypedDataAccess.eSubmitChangesOperations.eUpdate | TTypedDataAccess.eSubmitChangesOperations.eInsert,
-                                        out AVerificationResult,
-                                        UserInfo.GUserInfo.UserID))
-                                {
-                                    SubmissionResult = TSubmitChangesResult.scrOK;
-                                }
-                            }
-                        }
-                    }
-                    else if (AInspectDS.ACostCentre.Count > 0)
-                    {
-                        // this only supports adding new cost centres, and modifying details; but not renaming cost centres
-                        if (ACostCentreAccess.SubmitChanges(AInspectDS.ACostCentre, SubmitChangesTransaction,
-                                out AVerificationResult))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
-                    }
-
-                    if (SubmissionResult == TSubmitChangesResult.scrOK)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-                }
-                catch (Exception e)
-                {
-                    TLogging.Log("after submitchanges: exception " + e.Message);
-
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-
-                    throw new Exception(e.ToString() + " " + e.Message);
-                }
+                SubmissionResult = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
             }
 
             return SubmissionResult;

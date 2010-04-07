@@ -28,6 +28,8 @@ using System.Data;
 using System.IO;
 using System.Xml;
 using System.Collections.Specialized;
+using System.Security.Cryptography;
+using System.Text;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Verification;
@@ -160,6 +162,15 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 matchtext = matchtext.Replace(" ", "");
             }
 
+            if (matchtext.Length > AEpTransactionTable.GetMatchTextLength())
+            {
+                // calculate unique check sum which is shorter than the whole match text
+                MD5CryptoServiceProvider cr = new MD5CryptoServiceProvider();
+                System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
+                byte[] matchbytes = encoding.GetBytes(matchtext);
+                matchtext = BitConverter.ToString(cr.ComputeHash(matchbytes)).Replace("-", "").ToLower();
+            }
+
             return matchtext;
         }
 
@@ -187,7 +198,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 AEpTransactionAccess.LoadViaAEpStatement(ResultDataset, AStatementKey, Transaction);
 
                 // load the matches or create new matches
-                foreach (AEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
+                foreach (BankImportTDSAEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
                 {
                     // find a match with the same match text, or create a new one
                     row.MatchText = CalculateMatchText(row);
@@ -218,6 +229,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         }
 
                         row.EpMatchKey = tempTable[0].EpMatchKey;
+                        row.MatchAction = tempTable[0].Action;
 
                         ResultDataset.AEpMatch.Merge(tempTable);
                     }
@@ -255,7 +267,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         tempTable.Rows.Add(tempRow);
                         AEpMatchAccess.SubmitChanges(tempTable, Transaction, out VerificationResult);
                         row.EpMatchKey = tempTable[0].EpMatchKey;
-
+                        row.MatchAction = tempTable[0].Action;
                         ResultDataset.AEpMatch.Merge(tempTable);
                     }
                 }
@@ -270,6 +282,18 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 TLogging.Log(e.StackTrace);
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 throw e;
+            }
+
+            // update the custom field for cost centre name for each match
+            foreach (BankImportTDSAEpMatchRow row in ResultDataset.AEpMatch.Rows)
+            {
+                ResultDataset.ACostCentre.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                    ACostCentreTable.GetCostCentreCodeDBName(), row.CostCentreCode);
+
+                if (ResultDataset.ACostCentre.DefaultView.Count == 1)
+                {
+                    row.CostCentreName = ((ACostCentreRow)ResultDataset.ACostCentre.DefaultView[0].Row).CostCentreName;
+                }
             }
 
             ResultDataset.AcceptChanges();
@@ -344,28 +368,20 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 if (v.Count > 0)
                 {
-// TODO: gift batch screen only supports one gift detail at the moment
-//                    AGiftRow gift = GiftDS.AGift.NewRowTyped();
-//                    gift.LedgerNumber = giftbatchRow.LedgerNumber;
-//                    gift.BatchNumber = giftbatchRow.BatchNumber;
-//                    gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
-//                    giftbatchRow.LastGiftNumber++;
-//
-//                    AEpMatchRow match = (AEpMatchRow)v[0].Row;
-//                    gift.DonorKey = match.DonorKey;
-//                    GiftDS.AGift.Rows.Add(gift);
+                    AEpMatchRow match = (AEpMatchRow)v[0].Row;
+
+                    AGiftRow gift = GiftDS.AGift.NewRowTyped();
+                    gift.LedgerNumber = giftbatchRow.LedgerNumber;
+                    gift.BatchNumber = giftbatchRow.BatchNumber;
+                    gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
+                    gift.DonorKey = match.DonorKey;
+                    gift.DateEntered = transactionRow.DateEffective;
+                    GiftDS.AGift.Rows.Add(gift);
+                    giftbatchRow.LastGiftNumber++;
+
                     foreach (DataRowView r in v)
                     {
-                        AEpMatchRow match = (AEpMatchRow)r.Row;
-
-                        AGiftRow gift = GiftDS.AGift.NewRowTyped();
-                        gift.LedgerNumber = giftbatchRow.LedgerNumber;
-                        gift.BatchNumber = giftbatchRow.BatchNumber;
-                        gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
-                        gift.DonorKey = match.DonorKey;
-                        gift.DateEntered = transactionRow.DateEffective;
-                        giftbatchRow.LastGiftNumber++;
-                        GiftDS.AGift.Rows.Add(gift);
+                        match = (AEpMatchRow)r.Row;
 
                         AGiftDetailRow detail = GiftDS.AGiftDetail.NewRowTyped();
                         detail.LedgerNumber = gift.LedgerNumber;

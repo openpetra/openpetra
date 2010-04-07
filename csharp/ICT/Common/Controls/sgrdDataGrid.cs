@@ -573,7 +573,7 @@ namespace Ict.Common.Controls
             this.Invalidate();
         }
 
-        #region Public Methods
+        #region Methods for adding typed columns
 
         /// <summary>
         /// Easy method to add a new Text column.
@@ -768,6 +768,59 @@ namespace Ict.Common.Controls
 
             AGridColumn = new TSgrdImageColumn(this, AColumnTitle, AGetImageDelegate);
             this.Columns.Insert(this.Columns.Count, AGridColumn);
+        }
+
+        /// <summary>
+        /// add a date column, that is readonly, and only shows the date
+        /// </summary>
+        /// <param name="AColumnTitle"></param>
+        /// <param name="ADataColumn"></param>
+        public void AddDateColumn(String AColumnTitle, DataColumn ADataColumn)
+        {
+            SourceGrid.DataGridColumn gridColumn;
+            gridColumn = Columns.Add(ADataColumn.ColumnName, AColumnTitle, typeof(DateTime));
+            gridColumn.Width = 100;
+            gridColumn.DataCell.Editor.EditableMode = SourceGrid.EditableMode.None;
+        }
+
+        /// <summary>
+        /// add a column that shows a currency value.
+        /// aligns the value to the right.
+        /// prints number in red if it is negative
+        /// </summary>
+        /// <param name="AColumnTitle"></param>
+        /// <param name="ADataColumn"></param>
+        public void AddCurrencyColumn(String AColumnTitle, DataColumn ADataColumn)
+        {
+            SourceGrid.DataGridColumn gridColumn;
+            gridColumn = Columns.Add(ADataColumn.ColumnName, AColumnTitle, typeof(double));
+            gridColumn.Width = 100;
+            SourceGrid.Cells.Editors.TextBox CurrencyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(double));
+
+            //CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.CurrencyTypeConverter(typeof(double));
+            CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.NumberTypeConverter(typeof(double), "N");
+
+            // could also use format string "#,###.00"
+            gridColumn.DataCell.Editor = CurrencyEditor;
+            gridColumn.DataCell.Editor.EditableMode = SourceGrid.EditableMode.None;
+
+            SourceGrid.Cells.Views.Cell view = new SourceGrid.Cells.Views.Cell();
+            view.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleRight;
+            gridColumn.DataCell.View = view;
+
+            SourceGrid.Cells.Views.Cell NegativeNumberView = new SourceGrid.Cells.Views.Cell();
+            NegativeNumberView.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleRight;
+            NegativeNumberView.ForeColor = Color.Red;
+
+            SourceGrid.Conditions.ConditionView selectedConditionNegative =
+                new SourceGrid.Conditions.ConditionView(NegativeNumberView);
+            selectedConditionNegative.EvaluateFunction = (delegate(SourceGrid.DataGridColumn column,
+                                                                   int gridRow, object itemRow)
+                                                          {
+                                                              DataRowView row = (DataRowView)itemRow;
+                                                              return row[ADataColumn.ColumnName] is double && (double)row[ADataColumn.ColumnName] < 0;
+                                                          });
+            gridColumn.Conditions.Add(selectedConditionNegative);
         }
 
         #endregion
@@ -1032,15 +1085,30 @@ namespace Ict.Common.Controls
         {
             int RowIndex = -1;
 
-            for (int Counter2 = 0; Counter2 < (this.DataSource as BoundDataView).mDataView.Count; Counter2++)
+            for (int Counter2 = 0; Counter2 < (this.DataSource as BoundDataView).DataView.Count; Counter2++)
             {
-                if ((this.DataSource as BoundDataView).mDataView[Counter2].Row == ADataRowView.Row)
+                if ((this.DataSource as BoundDataView).DataView[Counter2].Row == ADataRowView.Row)
                 {
                     RowIndex = Counter2;
                 }
             }
 
             return RowIndex;
+        }
+
+        /// select a row in the grid, and invoke the even for FocusedRowChanged
+        public void SelectRowInGrid(Int32 ARowNumberInGrid)
+        {
+            this.Selection.ResetSelection(false);
+            this.Selection.SelectRow(ARowNumberInGrid, true);
+
+            // scroll to the row
+            this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
+
+            // invoke the event for FocusedRowChanged
+            this.Selection.FocusRow(ARowNumberInGrid);
+
+            //FocusRowEntered.Invoke(this, new SourceGrid.RowEventArgs(ARowNumberInGrid));
         }
 
         /// <summary>
@@ -1067,7 +1135,7 @@ namespace Ict.Common.Controls
             if ((AKey != FLastKeyCode) || (FAutoFindListRebuildNeeded))
             {
                 // Build a DataView that start with the typed character
-                GridDataTable = ((DevAge.ComponentModel.BoundDataView) base.DataSource).mDataView.Table;
+                GridDataTable = ((DevAge.ComponentModel.BoundDataView) base.DataSource).DataView.Table;
 
                 if ((FAutoFindColumn < 0) || (FAutoFindColumn >= this.Columns.Count))
                 {
@@ -1124,7 +1192,7 @@ namespace Ict.Common.Controls
                 //              MessageBox.Show("SelectClause: " + SelectClause);
                 FAutoFindMatchingDataView = new DataView(GridDataTable,
                     SelectClause,
-                    ((DevAge.ComponentModel.BoundDataView) base.DataSource).mDataView.Sort,
+                    ((DevAge.ComponentModel.BoundDataView) base.DataSource).DataView.Sort,
                     DataViewRowState.CurrentRows);
 
                 //              MessageBox.Show("FAutoFindMatchingDataView.Count: " + FAutoFindMatchingDataView.Count.ToString());

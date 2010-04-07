@@ -26,21 +26,23 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
+
+using System;
+using System.Collections.Specialized;
+using System.Data;
+using System.Data.Odbc;
+using Ict.Common;
+using Ict.Common.DB;
+using Ict.Common.Verification;
+using Ict.Common.Data;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MHospitality.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Shared.MFinance.AR.Data;
+
 namespace Ict.Petra.Server.MHospitality.Data.Access
 {
-    using System;
-    using System.Collections.Specialized;
-    using System.Data;
-    using System.Data.Odbc;
-    using Ict.Common;
-    using Ict.Common.DB;
-    using Ict.Common.Verification;
-    using Ict.Common.Data;
-    using Ict.Petra.Shared;
-    using Ict.Petra.Shared.MHospitality.Data;
-    using Ict.Petra.Shared.MPartner.Partner.Data;
-    using Ict.Petra.Shared.MConference.Data;
-    using Ict.Petra.Shared.MFinance.AR.Data;
 
     /// Details of building used for accomodation at a conference
     public class PcBuildingAccess : TTypedDataAccess
@@ -405,7 +407,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
         /// auto generated
         public static bool SubmitChanges(PcBuildingTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(PcBuildingTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -1093,7 +1095,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
         /// auto generated
         public static bool SubmitChanges(PcRoomTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(PcRoomTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -2075,7 +2077,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
         /// auto generated
         public static bool SubmitChanges(PcRoomAllocTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(PcRoomAllocTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID, "seq_room_alloc", "pc_key_i");
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID, "seq_room_alloc", "pc_key_i");
         }
     }
 
@@ -2477,7 +2479,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
         /// auto generated
         public static bool SubmitChanges(PcRoomAttributeTypeTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(PcRoomAttributeTypeTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -2991,7 +2993,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
         /// auto generated
         public static bool SubmitChanges(PcRoomAttributeTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(PcRoomAttributeTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -3505,7 +3507,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
         /// auto generated
         public static bool SubmitChanges(PhRoomBookingTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(PhRoomBookingTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID);
         }
     }
 
@@ -4193,7 +4195,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
         /// auto generated
         public static bool SubmitChanges(PhBookingTable ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            return SubmitChanges(PhBookingTable.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID, "seq_booking", "ph_key_i");
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID, "seq_booking", "ph_key_i");
         }
     }
 }

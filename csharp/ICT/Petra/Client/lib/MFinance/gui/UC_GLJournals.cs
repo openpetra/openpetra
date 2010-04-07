@@ -111,8 +111,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Journal Number", FMainDS.AJournal.ColumnJournalNumber);
       grdDetails.AddTextColumn("Journal Status", FMainDS.AJournal.ColumnJournalStatus);
-      grdDetails.AddTextColumn("Journal Debit Total", FMainDS.AJournal.ColumnJournalDebitTotal);
-      grdDetails.AddTextColumn("Journal Credit Total", FMainDS.AJournal.ColumnJournalCreditTotal);
+      grdDetails.AddCurrencyColumn("Journal Debit Total", FMainDS.AJournal.ColumnJournalDebitTotal);
+      grdDetails.AddCurrencyColumn("Journal Credit Total", FMainDS.AJournal.ColumnJournalCreditTotal);
       grdDetails.AddTextColumn("Transaction Currency", FMainDS.AJournal.ColumnTransactionCurrency);
       grdDetails.AddTextColumn("Journal Description", FMainDS.AJournal.ColumnJournalDescription);
       grdDetails.AddTextColumn("Sub System", FMainDS.AJournal.ColumnSubSystemCode);
@@ -153,7 +153,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             foreach (DataColumn myColumn in FMainDS.AJournal.PrimaryKey)
             {
                 string value1 = FMainDS.AJournal.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;

@@ -141,6 +141,26 @@ namespace Ict.Tools.CodeGeneration
             AddToCodelet(ACodeletName, ASnippet.FTemplateCode);
         }
 
+        /// <summary>
+        /// insert the snippet into the current template, into the given codelet.
+        /// add new text in front of the text that has already been added to the codelet
+        /// </summary>
+        /// <param name="ACodeletName"></param>
+        /// <param name="ASnippet"></param>
+        public void InsertSnippetPrepend(string ACodeletName, ProcessTemplate ASnippet)
+        {
+            ASnippet.ReplaceCodelets();
+
+            if (FCodelets.ContainsKey(ACodeletName))
+            {
+                AddToCodeletPrepend(ACodeletName, ASnippet.FTemplateCode + Environment.NewLine);
+            }
+            else
+            {
+                AddToCodeletPrepend(ACodeletName, ASnippet.FTemplateCode);
+            }
+        }
+
         // check if all placeholders have been replaced in the template; ignore IFDEF
         public Boolean CheckTemplateCompletion(string s)
         {
@@ -336,7 +356,7 @@ namespace Ict.Tools.CodeGeneration
             FCodeletPostfix = APostfix;
         }
 
-        // add code to existing code that will be replaced later
+        /// add code to existing code that will be replaced later
         public string AddToCodelet(string APlaceholder, string ACodelet)
         {
             if (!FCodelets.ContainsKey(APlaceholder + FCodeletPostfix))
@@ -346,6 +366,34 @@ namespace Ict.Tools.CodeGeneration
 
             int index = FCodelets.IndexOfKey(APlaceholder + FCodeletPostfix);
             FCodelets.SetByIndex(index, FCodelets.GetByIndex(index) + ACodelet);
+            return FCodelets.GetByIndex(index).ToString();
+        }
+
+        /// add code to existing code that will be replaced later.
+        /// the new code is added before the existing code.
+        /// this overload allows duplicates to be added
+        public string AddToCodeletPrepend(string APlaceholder, string ACodelet)
+        {
+            return AddToCodeletPrepend(APlaceholder, ACodelet, true);
+        }
+
+        /// add code to existing code that will be replaced later.
+        /// the new code is added before the existing code
+        public string AddToCodeletPrepend(string APlaceholder, string ACodelet, bool AAllowDuplicates)
+        {
+            if (!FCodelets.ContainsKey(APlaceholder + FCodeletPostfix))
+            {
+                FCodelets.Add(APlaceholder + FCodeletPostfix, "");
+            }
+
+            int index = FCodelets.IndexOfKey(APlaceholder + FCodeletPostfix);
+            string previousValue = FCodelets.GetByIndex(index).ToString();
+
+            if (AAllowDuplicates || !previousValue.Contains(ACodelet))
+            {
+                FCodelets.SetByIndex(index, ACodelet + previousValue);
+            }
+
             return FCodelets.GetByIndex(index).ToString();
         }
 

@@ -1045,7 +1045,7 @@ namespace Ict.Petra.Client.MCommon
             if (ASelectCurrentRow)
             {
                 // Select current row in the Grid
-                TmpDataRowView = FLogic.DetermineRecordToSelect((grdRecordList.DataSource as DevAge.ComponentModel.BoundDataView).mDataView);
+                TmpDataRowView = FLogic.DetermineRecordToSelect((grdRecordList.DataSource as DevAge.ComponentModel.BoundDataView).DataView);
                 TmpRowIndex = grdRecordList.Rows.DataSourceRowToIndex(TmpDataRowView);
 
                 // MessageBox.Show('Selecting TmpRowIndex: ' + TmpRowIndex.ToString);
@@ -1145,7 +1145,7 @@ namespace Ict.Petra.Client.MCommon
                 if (btnNewRecord.Enabled)
                 {
                     // Determine current row in the Grid
-                    TmpDataRowView = FLogic.DetermineRecordToSelect((grdRecordList.DataSource as DevAge.ComponentModel.BoundDataView).mDataView);
+                    TmpDataRowView = FLogic.DetermineRecordToSelect((grdRecordList.DataSource as DevAge.ComponentModel.BoundDataView).DataView);
                     TmpRowIndex = grdRecordList.Rows.DataSourceRowToIndex(TmpDataRowView);
 
 //                  MessageBox.Show("TmpRowIndex: " + TmpRowIndex.ToString());

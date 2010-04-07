@@ -127,6 +127,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
+            // ask if the user really wants to cancel the batch
+            if (MessageBox.Show(Catalog.GetString("Do you really want to cancel this gift batch?"),
+                    Catalog.GetString("Confirm cancelling of Gift Batch"),
+                    MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
+            {
+                return;
+            }
+
             GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
             FPetraUtilsObject.SetChangedFlag();
             grdDetails.Refresh();
@@ -148,6 +156,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         Catalog.GetString("Please first save the batch, and then post it!"));
                     return;
                 }
+            }
+
+            // ask if the user really wants to post the batch
+            if (MessageBox.Show(Catalog.GetString("Do you really want to post this gift batch?"), Catalog.GetString("Confirm posting of Gift Batch"),
+                    MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
+            {
+                return;
             }
 
             if (!TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))

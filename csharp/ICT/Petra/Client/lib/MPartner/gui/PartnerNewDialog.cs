@@ -535,7 +535,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdInstalledSites.Selection.FocusRowEntered += new RowEventHandler(this.DataGrid_FocusRowEntered);
 
             // Determine the Row that contains 'Best Address' > this Row should be initially selected
-            FLogic.DetermineInitiallySelectedSite((grdInstalledSites.DataSource as DevAge.ComponentModel.BoundDataView).mDataView,
+            FLogic.DetermineInitiallySelectedSite((grdInstalledSites.DataSource as DevAge.ComponentModel.BoundDataView).DataView,
                 FSiteKey,
                 out BestSiteRowNumber,
                 out FSiteKey);

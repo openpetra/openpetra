@@ -4720,6 +4720,16 @@
                 format="9999999"
                 label="order"
                 notnull="yes"/>
+    <tablefield name="a_detail_key_i"
+                type="integer"
+                descr="a transaction can be split in order to support mixed GL and Gift records"
+                initial="-1"
+                notnull="yes"/>
+    <tablefield name="a_number_on_paper_statement_i"
+                type="integer"
+                descr="can be different from order, since the paper statements can have different order than the electronic statement"
+                initial="-1"
+                notnull="yes"/>
     <tablefield name="a_match_text_c"
                 type="varchar"
                 format="X(50)"
@@ -4802,7 +4812,7 @@
     <!-- Constraints on table a_ep_transaction -->
     <primarykey name="a_ep_transaction_pk"
                 descr=""
-                thisFields="a_statement_key_i, a_order_i"/>
+                thisFields="a_statement_key_i, a_order_i, a_detail_key_i"/>
     <foreignkey name="a_ep_transaction_fk1"
                 descr=""
                 thisFields="a_statement_key_i"

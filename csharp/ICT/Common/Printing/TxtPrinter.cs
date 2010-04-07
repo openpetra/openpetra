@@ -72,11 +72,9 @@ namespace Ict.Common.Printing
         /// <summary>
         /// set the orientation of the page
         /// </summary>
-        /// <param name="AOrientation"></param>
-        /// <param name="APrinterLayout"></param>
-        public override void Init(eOrientation AOrientation, TPrinterLayout APrinterLayout)
+        public override void Init(eOrientation AOrientation, TPrinterLayout APrinterLayout, eMarginType AMarginType)
         {
-            base.Init(AOrientation, APrinterLayout);
+            base.Init(AOrientation, APrinterLayout, AMarginType);
 
             // FWidth: don't try to fit on a page at the moment
             FWidth = DEFAULT_LENGTH_LINE;

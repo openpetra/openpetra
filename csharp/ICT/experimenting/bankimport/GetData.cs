@@ -83,9 +83,11 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
             // first get all gifts, even those that have no bank account associated
             string stmt = TDataBase.ReadSqlFile("GetDonationsByDate.sql");
 
-            OdbcParameter[] parameters = new OdbcParameter[1];
+            OdbcParameter[] parameters = new OdbcParameter[2];
             parameters[0] = new OdbcParameter("ADateEffective", OdbcType.Date);
             parameters[0].Value = ADateEffective;
+            parameters[1] = new OdbcParameter("ALedgerNumber", OdbcType.Int);
+            parameters[1].Value = Convert.ToInt32(TAppSettingsManager.GetValueStatic("LedgerNumber"));
             DBAccess.GDBAccessObj.Select(AMainDS, stmt, AMainDS.AGiftDetail.TableName, transaction, parameters);
 
             // get PartnerKey and banking details (most important BankAccountNumber) for all donations on the given date
@@ -101,8 +103,8 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
-//            XmlDocument doc = TDataBase.DataTableToXml(AMainDS.AGiftDetail);
-//            TCsv2Xml.Xml2Csv(doc, "test.csv");
+            //            XmlDocument doc = TDataBase.DataTableToXml(AMainDS.AGiftDetail);
+            //            TCsv2Xml.Xml2Csv(doc, "test.csv");
         }
 
         /// get the donor key and shortname by the bank account number

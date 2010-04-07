@@ -179,7 +179,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.txtRecipientKey.Location = new System.Drawing.Point(2,2);
             this.txtRecipientKey.Name = "txtRecipientKey";
-            this.txtRecipientKey.Size = new System.Drawing.Size(150, 28);
+            this.txtRecipientKey.Size = new System.Drawing.Size(370, 28);
             this.txtRecipientKey.ASpecialSetting = true;
             this.txtRecipientKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.txtRecipientKey.ButtonWidth = 40;
@@ -204,7 +204,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.txtOldFieldKey.Location = new System.Drawing.Point(2,2);
             this.txtOldFieldKey.Name = "txtOldFieldKey";
-            this.txtOldFieldKey.Size = new System.Drawing.Size(150, 28);
+            this.txtOldFieldKey.Size = new System.Drawing.Size(370, 28);
             this.txtOldFieldKey.ASpecialSetting = true;
             this.txtOldFieldKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.txtOldFieldKey.ButtonWidth = 40;

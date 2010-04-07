@@ -26,14 +26,16 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
+
+using Ict.Common;
+using Ict.Common.Data;
+using System;
+using System.Data;
+using System.Data.Odbc;
+using Ict.Petra.Shared.MFinance.Account.Data;
+
 namespace Ict.Petra.Shared.MFinance.GL.Data
 {
-    using Ict.Common;
-    using Ict.Common.Data;
-    using System;
-    using System.Data;
-    using System.Data.Odbc;
-    using Ict.Petra.Shared.MFinance.Account.Data;
 
      /// auto generated
     [Serializable()]
@@ -364,57 +366,11 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
     public class GLBatchTDSATransactionTable : ATransactionTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 5500;
+        public new static short TableId = 168;
         /// used for generic TTypedDataTable functions
         public static short ColumnDateEnteredId = 32;
         /// used for generic TTypedDataTable functions
         public static short ColumnAnalysisAttributesId = 33;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "ATransaction", "a_transaction",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "BatchNumber", "a_batch_number_i", "Batch Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "JournalNumber", "a_journal_number_i", "Journal Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "TransactionNumber", "a_transaction_number_i", "Transaction Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(4, "AccountCode", "a_account_code_c", "Account Code", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(5, "PrimaryAccountCode", "a_primary_account_code_c", "Primary Account Code", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(6, "CostCentreCode", "a_cost_centre_code_c", "Cost Centre Code", OdbcType.VarChar, 24, true),
-                    new TTypedColumnInfo(7, "PrimaryCostCentreCode", "a_primary_cost_centre_code_c", "Primary Cost Centre Code", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(8, "TransactionDate", "a_transaction_date_d", "Transaction Date", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(9, "TransactionAmount", "a_transaction_amount_n", "Transaction Amount", OdbcType.Decimal, 24, true),
-                    new TTypedColumnInfo(10, "AmountInBaseCurrency", "a_amount_in_base_currency_n", "Amount in Base Currency", OdbcType.Decimal, 24, true),
-                    new TTypedColumnInfo(11, "AnalysisIndicator", "a_analysis_indicator_l", "Analysis Indicator", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(12, "ReconciledStatus", "a_reconciled_status_l", "a_reconciled_status_l", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(13, "Narrative", "a_narrative_c", "Narrative", OdbcType.VarChar, 160, false),
-                    new TTypedColumnInfo(14, "DebitCreditIndicator", "a_debit_credit_indicator_l", "Debit/Credit Indicator", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(15, "TransactionStatus", "a_transaction_status_l", "Transaction Posted Status", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(16, "HeaderNumber", "a_header_number_i", "Header Number", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(17, "DetailNumber", "a_detail_number_i", "Detail Number", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(18, "SubType", "a_sub_type_c", "a_sub_type_c", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(19, "ToIltFlag", "a_to_ilt_flag_l", "Transferred to ILT Ledger", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(20, "SourceFlag", "a_source_flag_l", "Source Transaction", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(21, "Reference", "a_reference_c", "Reference", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(22, "SourceReference", "a_source_reference_c", "Source Reference", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(23, "SystemGenerated", "a_system_generated_l", "System Generated", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(24, "AmountInIntlCurrency", "a_amount_in_intl_currency_n", "Amount in International Currency", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(25, "IchNumber", "a_ich_number_i", "ICH Process Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(26, "KeyMinistryKey", "a_key_ministry_key_n", "Key Ministry", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(27, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(28, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(29, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(30, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(31, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(32, "DateEntered", "DateEntered", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(33, "AnalysisAttributes", "AnalysisAttributes", "", OdbcType.Int, -1, false)
-                },
-                new int[] {
-                    0, 1, 2, 3
-                }));
-            return true;
-        }
 
         /// constructor
         public GLBatchTDSATransactionTable() :

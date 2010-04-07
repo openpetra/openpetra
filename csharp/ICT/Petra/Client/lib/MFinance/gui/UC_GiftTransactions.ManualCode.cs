@@ -95,7 +95,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailAccountCode.Text = motivationDetail.AccountCode;
 
                 // TODO: calculation of cost centre also depends on the recipient partner key; can be a field key or ministry key, or determined by pm_staff_data: foreign cost centre
-                txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
+                if (motivationDetail.CostCentreCode.EndsWith("S"))
+                {
+                    // work around if we have selected the cost centre already in bank import
+                    // TODO: allow to select the cost centre here, which reports to the motivation cost centre
+                    //txtDetailCostCentreCode.Text =
+                }
+                else
+                {
+                    txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
+                }
             }
         }
 
@@ -124,39 +133,177 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// add a new transaction
+        /// delete a gift detail, and if it is the last detail, delete the whole gift
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void NewRow(System.Object sender, EventArgs e)
+        private void DeleteDetail(System.Object sender, EventArgs e)
         {
-            this.CreateNewAGiftDetail();
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
+            int oldDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
+            AGiftRow gift = GetGiftRow(FPreviouslySelectedDetailRow.GiftTransactionNumber);
+            string filterAllDetailsOfGift = String.Format("{0}={1} and {2}={3}",
+                AGiftDetailTable.GetBatchNumberDBName(),
+                FPreviouslySelectedDetailRow.BatchNumber,
+                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                FPreviouslySelectedDetailRow.GiftTransactionNumber);
+            FMainDS.AGiftDetail.Rows.Remove(FPreviouslySelectedDetailRow);
+            FPreviouslySelectedDetailRow = null;
+            DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
+            giftDetailView.RowFilter = filterAllDetailsOfGift;
+
+            if (giftDetailView.Count == 0)
+            {
+                int oldGiftNumber = gift.GiftTransactionNumber;
+                int oldBatchNumber = gift.BatchNumber;
+
+                FMainDS.AGift.Rows.Remove(gift);
+
+// we cannot update primary keys easily, therefore we have to do it later on the server side
+#if DISABLED
+                string filterAllDetailsOfBatch = String.Format("{0}={1}",
+                    AGiftDetailTable.GetBatchNumberDBName(),
+                    oldBatchNumber);
+
+                giftDetailView.RowFilter = filterAllDetailsOfBatch;
+
+                foreach (DataRowView rv in giftDetailView)
+                {
+                    GiftBatchTDSAGiftDetailRow row = (GiftBatchTDSAGiftDetailRow)rv.Row;
+
+                    if (row.GiftTransactionNumber > oldGiftNumber)
+                    {
+                        row.GiftTransactionNumber--;
+                    }
+                }
+                GetBatchRow().LastGiftNumber--;
+#endif
+            }
+            else
+            {
+                foreach (DataRowView rv in giftDetailView)
+                {
+                    GiftBatchTDSAGiftDetailRow row = (GiftBatchTDSAGiftDetailRow)rv.Row;
+
+                    if (row.DetailNumber > oldDetailNumber)
+                    {
+                        row.DetailNumber--;
+                    }
+                }
+
+                gift.LastDetailNumber--;
+            }
+
+            FPetraUtilsObject.SetChangedFlag();
+
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
+            grdDetails.Refresh();
+        }
+
+        /// <summary>
+        /// add a new gift
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NewGift(System.Object sender, EventArgs e)
+        {
+            // this is coded manually, to use the correct gift record
+
+            // we create the table locally, no dataset
+            AGiftDetailRow NewRow = NewGift();
+
+            FPetraUtilsObject.SetChangedFlag();
+
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
+            grdDetails.Refresh();
+            SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+        }
+
+        /// <summary>
+        /// add a new gift detail
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NewGiftDetail(System.Object sender, EventArgs e)
+        {
+            // this is coded manually, to use the correct gift record
+
+            // we create the table locally, no dataset
+            AGiftDetailRow NewRow = NewGiftDetail((GiftBatchTDSAGiftDetailRow)FPreviouslySelectedDetailRow);
+
+            FPetraUtilsObject.SetChangedFlag();
+
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
+            grdDetails.Refresh();
+            SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
         }
 
         /// <summary>
         /// make sure the correct transaction number is assigned and the batch.lastTransactionNumber is updated
         /// </summary>
-        /// <param name="ANewRow"></param>
-        private void NewRowManual(ref AGiftDetailRow ANewRow)
+        private AGiftDetailRow NewGift()
         {
             AGiftBatchRow batchRow = GetBatchRow();
 
-            // TODO: deal properly with gift details and split gifts etc
             AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
 
             giftRow.LedgerNumber = batchRow.LedgerNumber;
             giftRow.BatchNumber = batchRow.BatchNumber;
             giftRow.GiftTransactionNumber = batchRow.LastGiftNumber + 1;
+            batchRow.LastGiftNumber++;
+            giftRow.LastDetailNumber = 1;
             FMainDS.AGift.Rows.Add(giftRow);
 
-            ANewRow.LedgerNumber = batchRow.LedgerNumber;
-            ANewRow.BatchNumber = batchRow.BatchNumber;
-            ANewRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
+            GiftBatchTDSAGiftDetailRow newRow = FMainDS.AGiftDetail.NewRowTyped(true);
+            newRow.LedgerNumber = batchRow.LedgerNumber;
+            newRow.BatchNumber = batchRow.BatchNumber;
+            newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
+            newRow.DetailNumber = 1;
+            newRow.DateEntered = giftRow.DateEntered;
+            newRow.DonorKey = 0;
+            FMainDS.AGiftDetail.Rows.Add(newRow);
 
             // TODO: use previous gifts of donor?
-            // ANewRow.MotivationGroupCode = "GIFT";
-            // ANewRow.MotivationDetailCode = "SUPPORT";
-            batchRow.LastGiftNumber++;
+            // newRow.MotivationGroupCode = "GIFT";
+            // newRow.MotivationDetailCode = "SUPPORT";
+
+            return newRow;
+        }
+
+        /// <summary>
+        /// add another gift detail to an existing gift
+        /// </summary>
+        private AGiftDetailRow NewGiftDetail(GiftBatchTDSAGiftDetailRow ACurrentRow)
+        {
+            if (ACurrentRow == null)
+            {
+                return NewGift();
+            }
+
+            // find gift row
+            AGiftRow giftRow = GetGiftRow(ACurrentRow.GiftTransactionNumber);
+
+            giftRow.LastDetailNumber++;
+
+            GiftBatchTDSAGiftDetailRow newRow = FMainDS.AGiftDetail.NewRowTyped(true);
+            newRow.LedgerNumber = giftRow.LedgerNumber;
+            newRow.BatchNumber = giftRow.BatchNumber;
+            newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
+            newRow.DetailNumber = giftRow.LastDetailNumber;
+            newRow.DonorKey = ACurrentRow.DonorKey;
+            newRow.DonorName = ACurrentRow.DonorName;
+            newRow.DateEntered = ACurrentRow.DateEntered;
+            FMainDS.AGiftDetail.Rows.Add(newRow);
+
+            // TODO: use previous gifts of donor?
+            // newRow.MotivationGroupCode = "GIFT";
+            // newRow.MotivationDetailCode = "SUPPORT";
+
+            return newRow;
         }
 
         /// <summary>
@@ -180,6 +327,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             dtpDateEntered.Value = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
             txtDetailDonorKey.Text = String.Format("{0:0000000000}", ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey);
+
+            dtpDateEntered.Enabled = (ARow.DetailNumber == 1);
+            txtDetailDonorKey.Enabled = (ARow.DetailNumber == 1);
         }
 
         private void GetDetailDataFromControlsManual(AGiftDetailRow ARow)

@@ -73,66 +73,94 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool AWithReceipt)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            // find all gifts that need reversing.
-            // criteria:
-            // posted gift batches only
-            // no adjusted/reversed gifts
-            // date of gift batch in specified date range
-            // recipient field is the old field
-            string SqlStmt = TDataBase.ReadSqlFile("Gift.GetGiftsToReverse.sql");
-
-            List <OdbcParameter>parameters = new List <OdbcParameter>();
-            OdbcParameter param = new OdbcParameter("LedgerNumber", OdbcType.Int);
-            param.Value = ALedgerNumber;
-            parameters.Add(param);
-            param = new OdbcParameter("StartDate", OdbcType.Date);
-            param.Value = AStartDate;
-            parameters.Add(param);
-            param = new OdbcParameter("EndDate", OdbcType.Date);
-            param.Value = AEndDate;
-            parameters.Add(param);
-            param = new OdbcParameter("RecipientKey", OdbcType.BigInt);
-            param.Value = ARecipientKey;
-            parameters.Add(param);
-            param = new OdbcParameter("OldField", OdbcType.BigInt);
-            param.Value = AOldField;
-            parameters.Add(param);
-
-            // load AGift and AGiftDetail
             GiftBatchTDS oldGiftDS = new GiftBatchTDS();
 
-            SqlStmt = SqlStmt.Replace("SELECT PUB_a_gift_detail.*, PUB_a_gift.*", "SELECT PUB_a_gift_detail.*");
-            DBAccess.GDBAccessObj.Select(oldGiftDS, SqlStmt, AGiftDetailTable.GetTableDBName(), Transaction, parameters.ToArray());
+            try
+            {
+                // find all gifts that need reversing.
+                // criteria:
+                // posted gift batches only
+                // no adjusted/reversed gifts
+                // date of gift batch in specified date range
+                // recipient field is the old field
+                string SqlStmt = TDataBase.ReadSqlFile("Gift.GetGiftsToReverse.sql");
 
-            parameters = new List <OdbcParameter>();
-            param = new OdbcParameter("LedgerNumber", OdbcType.Int);
-            param.Value = ALedgerNumber;
-            parameters.Add(param);
-            param = new OdbcParameter("StartDate", OdbcType.Date);
-            param.Value = AStartDate;
-            parameters.Add(param);
-            param = new OdbcParameter("EndDate", OdbcType.Date);
-            param.Value = AEndDate;
-            parameters.Add(param);
-            param = new OdbcParameter("RecipientKey", OdbcType.BigInt);
-            param.Value = ARecipientKey;
-            parameters.Add(param);
-            param = new OdbcParameter("OldField", OdbcType.BigInt);
-            param.Value = AOldField;
-            parameters.Add(param);
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
+                OdbcParameter param = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                param.Value = ALedgerNumber;
+                parameters.Add(param);
+                param = new OdbcParameter("StartDate", OdbcType.Date);
+                param.Value = AStartDate;
+                parameters.Add(param);
+                param = new OdbcParameter("EndDate", OdbcType.Date);
+                param.Value = AEndDate;
+                parameters.Add(param);
+                param = new OdbcParameter("RecipientKey", OdbcType.BigInt);
+                param.Value = ARecipientKey;
+                parameters.Add(param);
+                param = new OdbcParameter("OldField", OdbcType.BigInt);
+                param.Value = AOldField;
+                parameters.Add(param);
 
-            SqlStmt = SqlStmt.Replace("SELECT PUB_a_gift_detail.*", "SELECT PUB_a_gift.*");
-            DBAccess.GDBAccessObj.Select(oldGiftDS, SqlStmt, AGiftTable.GetTableDBName(), Transaction, parameters.ToArray());
+                DBAccess.GDBAccessObj.Select(oldGiftDS, SqlStmt, oldGiftDS.AGiftDetail.TableName, Transaction, parameters.ToArray());
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                // load the gift and the gift batch records if they have not been loaded yet
+                foreach (AGiftDetailRow giftdetail in oldGiftDS.AGiftDetail.Rows)
+                {
+                    oldGiftDS.AGift.DefaultView.RowFilter = String.Format("{0} = {1} and {2} = {3}",
+                        AGiftTable.GetBatchNumberDBName(),
+                        giftdetail.BatchNumber,
+                        AGiftTable.GetGiftTransactionNumberDBName(),
+                        giftdetail.GiftTransactionNumber);
 
-            GiftBatchTDS GiftDS = TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber, ADateCorrection);
-            AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
-            giftbatchRow.BatchDescription = Catalog.GetString("Gift Adjustment (Field Change)");
+                    if (oldGiftDS.AGift.DefaultView.Count == 0)
+                    {
+                        AGiftTable tempGiftTable =
+                            AGiftAccess.LoadByPrimaryKey(giftdetail.LedgerNumber,
+                                giftdetail.BatchNumber,
+                                giftdetail.GiftTransactionNumber,
+                                Transaction);
+                        oldGiftDS.AGift.Merge(tempGiftTable);
+                    }
+
+                    oldGiftDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = {1}",
+                        AGiftTable.GetBatchNumberDBName(),
+                        giftdetail.BatchNumber);
+
+                    if (oldGiftDS.AGiftBatch.DefaultView.Count == 0)
+                    {
+                        AGiftBatchTable tempGiftBatchTable =
+                            AGiftBatchAccess.LoadByPrimaryKey(giftdetail.LedgerNumber,
+                                giftdetail.BatchNumber,
+                                Transaction);
+                        oldGiftDS.AGiftBatch.Merge(tempGiftBatchTable);
+                    }
+                }
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            catch (Exception)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw;
+            }
+
+            // we need to create a gift batch for each set of gifts with the same Currency, BankAccountCode, BankCostCentre, and Gift Type
+            SortedList <string, GiftBatchTDS>NewGiftBatches = new SortedList <string, GiftBatchTDS>();
 
             foreach (GiftBatchTDSAGiftDetailRow oldGiftDetail in oldGiftDS.AGiftDetail.Rows)
             {
+                // get the gift batch row for this detail
+                oldGiftDS.AGiftBatch.DefaultView.RowFilter =
+                    String.Format("{0} = {1}",
+                        AGiftTable.GetBatchNumberDBName(), oldGiftDetail.BatchNumber);
+
+                AGiftBatchRow oldGiftBatch = (AGiftBatchRow)oldGiftDS.AGiftBatch.DefaultView[0].Row;
+
+                GiftBatchTDS GiftDS = CreateNewGiftBatch(NewGiftBatches, oldGiftBatch, ADateCorrection);
+
+                AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
+
                 // get the gift row for this detail
                 DataView v = oldGiftDS.AGift.DefaultView;
                 v.RowFilter =
@@ -157,7 +185,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 // reverse the original gift
-                AGiftDetailRow detail = GiftDS.AGiftDetail.NewRowTyped();
+                GiftBatchTDSAGiftDetailRow detail = GiftDS.AGiftDetail.NewRowTyped();
 
                 DataUtilities.CopyAllColumnValues(oldGiftDetail, detail);
 
@@ -181,6 +209,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 detail.BatchNumber = gift.BatchNumber;
                 detail.GiftTransactionNumber = gift.GiftTransactionNumber;
                 detail.DetailNumber = gift.LastDetailNumber + 1;
+                detail.GiftCommentOne = String.Format(Catalog.GetString("posted on {0}"), oldGiftBatch.GlEffectiveDate.ToShortDateString());
                 gift.LastDetailNumber++;
 
                 // TODO: calculate costcentre code from current commitment; this currently is done only at time of posting
@@ -197,19 +226,56 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TVerificationResultCollection VerificationResult;
 
-            TSubmitChangesResult result = TTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult);
+            TSubmitChangesResult result = TSubmitChangesResult.scrOK;
+
+            for (Int32 batchCounter = 0; batchCounter < NewGiftBatches.Count; batchCounter++)
+            {
+                if (result == TSubmitChangesResult.scrOK)
+                {
+                    GiftBatchTDS GiftDS = NewGiftBatches.Values[batchCounter];
+                    result = TTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult);
+                }
+            }
 
             if (result == TSubmitChangesResult.scrOK)
             {
-//              result = TTransactionWebConnector.SaveGiftBatchTDS(ref oldGiftDS, out VerificationResult);
+                result = TTransactionWebConnector.SaveGiftBatchTDS(ref oldGiftDS, out VerificationResult);
 
-                if (result == TSubmitChangesResult.scrOK)
+                if ((result == TSubmitChangesResult.scrOK) && (NewGiftBatches.Count > 0))
                 {
-                    return giftbatchRow.BatchNumber;
+                    return NewGiftBatches.Values[0].AGiftBatch[0].BatchNumber;
                 }
             }
 
             return -1;
+        }
+
+        /// try to find a new gift batch that does already have the same properties
+        private static GiftBatchTDS CreateNewGiftBatch(SortedList <string, GiftBatchTDS>ANewGiftBatches,
+            AGiftBatchRow AOldGiftBatch,
+            DateTime ADateCorrection)
+        {
+            string key = AOldGiftBatch.CurrencyCode + ";" +
+                         AOldGiftBatch.BankAccountCode + ";" +
+                         AOldGiftBatch.BankCostCentre + ";" +
+                         AOldGiftBatch.GiftType;
+
+            if (!ANewGiftBatches.ContainsKey(key))
+            {
+                GiftBatchTDS GiftDS = TTransactionWebConnector.CreateAGiftBatch(AOldGiftBatch.LedgerNumber, ADateCorrection);
+                AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
+                giftbatchRow.BatchDescription = Catalog.GetString("Gift Adjustment (Field Change)");
+                giftbatchRow.BankCostCentre = AOldGiftBatch.BankCostCentre;
+                giftbatchRow.BankAccountCode = AOldGiftBatch.BankAccountCode;
+                giftbatchRow.GiftType = AOldGiftBatch.GiftType;
+                ANewGiftBatches.Add(key, GiftDS);
+
+                return GiftDS;
+            }
+            else
+            {
+                return ANewGiftBatches[key];
+            }
         }
     }
 }

@@ -41,10 +41,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="DevAge.Core">
-      <HintPath>..\..\..\..\..\Common\_bin\Debug\DevAge.Core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="Ict.Common.Data">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
     </Reference>
@@ -85,15 +81,7 @@
       <HintPath>..\..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
     </Reference>
     <Reference Include="SourceGrid">
-      <HintPath>..\..\..\..\..\Common\_bin\Debug\SourceGrid.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="SourceGrid.Extensions">
-      <HintPath>..\..\..\..\..\Common\_bin\Debug\SourceGrid.Extensions.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="DevAge.Windows.Forms">
-      <HintPath>..\..\..\..\..\Common\_bin\Debug\DevAge.Windows.Forms.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Common">
@@ -223,6 +211,13 @@
     <Compile Include="GiftFieldAdjustment.ManualCode.cs">
       <DependentUpon>GiftFieldAdjustment.cs</DependentUpon>
     </Compile>
+    <Compile Include="GiftMotivationSetup.cs" />
+    <Compile Include="GiftMotivationSetup.Designer.cs">
+      <DependentUpon>GiftMotivationSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GiftMotivationSetup.ManualCode.cs">
+      <DependentUpon>GiftMotivationSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="GiftReceiptPrinting.cs" />
     <Compile Include="GiftReceiptPrinting.Designer.cs">
       <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>
@@ -334,6 +329,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GiftFieldAdjustment.resx">
       <DependentUpon>GiftFieldAdjustment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GiftMotivationSetup.resx">
+      <DependentUpon>GiftMotivationSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GiftReceiptPrinting.resx">
       <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>

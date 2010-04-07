@@ -113,6 +113,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.btnLogin.Text = Catalog.GetString(" &Login");
             this.btnCancel.Text = Catalog.GetString(" &Cancel");
             this.lblDatabase.Text = Catalog.GetString("Database:");
+            this.chkRememberUserName.Text = Catalog.GetString("Remember the username");
             this.Text = Catalog.GetString("Petra Login");
             #endregion
 
@@ -445,6 +446,10 @@ namespace Ict.Petra.Client.CommonDialogs
                 {
                     AUsername = storedUserName;
                 }
+            }
+            catch (Exception)
+            {
+                // ignore the exception, file will be created
             }
             finally
             {

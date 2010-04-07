@@ -50,6 +50,7 @@
     <Compile Include="codeGenerationAccess.cs" />
     <Compile Include="codeGenerationCascading.cs" />
     <Compile Include="codeGenerationDataset.cs" />
+    <Compile Include="codeGenerationDatasetAccess.cs" />
     <Compile Include="codeGenerationPetra.cs" />
     <Compile Include="codeGenerationTable.cs" />
     <Compile Include="generateTableList.cs" />

@@ -126,7 +126,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new RadioGroupNoBorderGenerator());
                 AvailableControlGenerators.Add(new RadioButtonGenerator());
                 AvailableControlGenerators.Add(new NumericUpDownGenerator());
-                AvailableControlGenerators.Add(new GridGenerator());
+                AvailableControlGenerators.Add(new WinformsGridGenerator());
+                AvailableControlGenerators.Add(new SourceGridGenerator());
             }
         }
 
@@ -734,6 +735,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("INITMANUALCODE", "");
             FTemplate.AddToCodelet("EXITMANUALCODE", "");
             FTemplate.AddToCodelet("INITNEWROWMANUAL", "");
+            FTemplate.AddToCodelet("STOREMANUALCODE", "");
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
             FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "");
             FTemplate.AddToCodelet("CLEARDETAILS", "");
@@ -758,6 +760,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("NewRowManual"))
             {
                 FTemplate.AddToCodelet("INITNEWROWMANUAL", "NewRowManual(ref NewRow);" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("StoreManualCode"))
+            {
+                FTemplate.AddToCodelet("STOREMANUALCODE",
+                    "SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);" + Environment.NewLine);
             }
 
             if (FCodeStorage.HasAttribute("DatasetType"))

@@ -71,11 +71,11 @@ namespace Ict.Petra.Client.MReporting.Logic
         {
             if (AParameters.Get("ReportWidth").ToDouble() > 20)
             {
-                APrinter.Init(eOrientation.eLandscape, this);
+                APrinter.Init(eOrientation.eLandscape, this, eMarginType.eDefaultMargins);
             }
             else
             {
-                APrinter.Init(eOrientation.ePortrait, this);
+                APrinter.Init(eOrientation.ePortrait, this, eMarginType.eDefaultMargins);
             }
         }
 
@@ -334,11 +334,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             linePrinted = false;
             position = GetPosition(columnNr, level, 0);
-
-            // (Columns[columnNr] as RectangleF).Left
             width = GetWidth(columnNr, level, 0);
-
-            // (Columns[columnNr] as RectangleF).Width
             s = column.ToString();
 
             if (s.Length != 0)

@@ -249,7 +249,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="e"></param>
         protected void Btn_PreviousPage_Click(System.Object sender, System.EventArgs e)
         {
-            this.PrintPreviewControl.StartPage = this.PrintPreviewControl.StartPage - 1;
+            if (this.PrintPreviewControl.StartPage > 0)
+            {
+                this.PrintPreviewControl.StartPage = this.PrintPreviewControl.StartPage - 1;
+            }
         }
 
         /// <summary>

@@ -81,6 +81,7 @@ function fetch_twitter_feed($user, $since = 0) {
         foreach($statuses as $status) {
            $id = $status->getElementsByTagName('id')->item(0)->nodeValue;
            $text = $status->getElementsByTagName('text')->item(0)->nodeValue;
+           $text = str_replace("https://translations.launchpad.net/openpetraorg", "http://bit.ly/abcEtj", $text);
 	   $text = htmlspecialchars($text);
 	   while (!(($poshttp = strpos($text, 'http://')) === false))
 	   {
@@ -95,7 +96,10 @@ function fetch_twitter_feed($user, $since = 0) {
 	   }
 	   $text = str_replace('REPLACEHTTP://', 'http://', $text);
            $date = strtotime($status->getElementsByTagName('created_at')->item(0)->nodeValue);
-           $updates[] = array($id, $text, $date);
+	   if ($text[0] != '@')
+	   {
+               $updates[] = array($id, $text, $date);
+	   }
         }
     }
     return $updates;
@@ -107,17 +111,18 @@ function get_relative_date ( $timestamp )
    // calculate the difference in seconds
    $timediff = time () - $timestamp ;
    $hourofday = date('G', $timestamp);
+   $hourtoday = date('G', time());
    // only exact to an hour
    $timediff /= 60*60;
    if ($timediff < 1) 
    {
       return "about an hour ago";
    }
-   if ($timediff <  date('G', time()))
+   if ($timediff <  12)
    {
       return "about ".floor($timediff)." hours ago";
    }
-   $timediff -= $hourofday;
+   $timediff -= $hourtoday;
    $timediff /= 24;
    if ($timediff<1)
    {

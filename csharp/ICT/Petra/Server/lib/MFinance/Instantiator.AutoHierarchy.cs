@@ -2224,6 +2224,19 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector.LoadMotivationDetails(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
+                                                          out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector.SaveMotivationDetails(ref AInspectDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
         public GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber,
                                              DateTime ADateEffective)
         {

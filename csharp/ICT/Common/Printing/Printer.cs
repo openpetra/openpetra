@@ -40,6 +40,16 @@ namespace Ict.Common.Printing
         ePortrait
     };
 
+    /// <summary>which margins to use when printing</summary>
+    public enum eMarginType
+    {
+        /// <summary>use the default margins of the printer</summary>
+        eDefaultMargins,
+
+        /// <summary>use the full printable area. the margins are managed by the rendering method, eg HTML renderer</summary>
+        ePrintableArea
+    };
+
     /// <summary>todoComment</summary>
     public enum eAlignment
     {
@@ -169,6 +179,9 @@ namespace Ict.Common.Printing
     {
         /// <summary>todoComment</summary>
         protected eOrientation FOrientation;
+
+        /// <summary>use printable area or default margins</summary>
+        protected eMarginType FMarginType;
 
         /// <summary>todoComment</summary>
         protected Int32 FNumberOfPages;
@@ -559,6 +572,7 @@ namespace Ict.Common.Printing
         {
             FOrientation = eOrientation.ePortrait;
             PrintingMode = ePrintingMode.eDoPrint;
+            FMarginType = eMarginType.eDefaultMargins;
             CurrentPageNr = 0;
             FNumberOfPages = 0;
             CurrentFont = eFont.eDefaultFont;
@@ -568,12 +582,11 @@ namespace Ict.Common.Printing
         /// <summary>
         /// sets the orientation of the page
         /// </summary>
-        /// <param name="AOrientation"></param>
-        /// <param name="APrinterLayout"></param>
-        public virtual void Init(eOrientation AOrientation, TPrinterLayout APrinterLayout)
+        public virtual void Init(eOrientation AOrientation, TPrinterLayout APrinterLayout, eMarginType AMarginType)
         {
             FPrinterLayout = APrinterLayout;
             FOrientation = AOrientation;
+            FMarginType = AMarginType;
         }
 
         Stack <TPrinterState>FPrinterStateStack = new Stack <TPrinterState>();

@@ -33,6 +33,9 @@
 		      <a href="index.php?lang=de"><img src="flags/de.png" border="0"/></a>
 		      <a href="index.php?lang=en"><img src="flags/gb.png" border="0"/></a>
 		   </div>
+		   <div class="news">
+		     Neu: <a href="pdf/OpenPetra_Flyer_de.pdf">PDF Datei: OpenPetra sucht Mitarbeiter und Helfer!</a>
+		   </div>
 
 		</div>
 	<div class="sidenav">

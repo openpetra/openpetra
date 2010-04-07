@@ -740,7 +740,7 @@ namespace Ict.Petra.Client.MPartner.Gui
              * Also assign the value directly to the databound data field!
              * Strangely enough, this is necessary for the case if the user doesn't TAB out
              * of cmbPersonGender, but uses the mouse to select anything else on the screen
-             *except* cmbAddresseeType!
+             * *except* cmbAddresseeType!
              */
             FMainDS.PPartner[0].AddresseeTypeCode = cmbAddresseeType.SelectedItem.ToString();
         }

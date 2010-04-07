@@ -125,7 +125,7 @@ namespace {#NAMESPACE}
             foreach (DataColumn myColumn in FMainDS.{#DETAILTABLE}.PrimaryKey)
             {
                 string value1 = FMainDS.{#DETAILTABLE}.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;
@@ -136,12 +136,8 @@ namespace {#NAMESPACE}
                 RowNumberGrid = Counter + 1;
             }
         }
-        grdDetails.Selection.ResetSelection(false);
-        grdDetails.Selection.SelectRow(RowNumberGrid, true);
-        // scroll to the row
-        grdDetails.ShowCell(new SourceGrid.Position(RowNumberGrid, 0), true);
 
-        FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
+        grdDetails.SelectRowInGrid(RowNumberGrid);
     }
 
     /// return the selected row
@@ -192,9 +188,7 @@ namespace {#NAMESPACE}
             grdDetails.AutoSizeCells();
             if (FMainDS.{#DETAILTABLE}.Rows.Count > 0)
             {
-                grdDetails.Selection.ResetSelection(false);
-                grdDetails.Selection.SelectRow(1, true);
-                FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
+                grdDetails.SelectRowInGrid(1);
                 pnlDetails.Enabled = true;
             }
         }
@@ -311,7 +305,11 @@ namespace {#NAMESPACE}
                 }
             }
 
-            if (FPetraUtilsObject.HasChanges)
+            if (!FPetraUtilsObject.HasChanges)
+            {
+                return true;
+            }
+            else
             {
                 FPetraUtilsObject.WriteToStatusBar("Saving data...");
                 this.Cursor = Cursors.WaitCursor;
@@ -320,6 +318,12 @@ namespace {#NAMESPACE}
                 TVerificationResultCollection VerificationResult;
 
                 {#DATASETTYPE} SubmitDS = FMainDS.GetChangesTyped(true);
+                
+                if (SubmitDS == null)
+                {
+                    // nothing to be saved, so it is ok to close the screen etc
+                    return true;
+                }
 
                 // Submit changes to the PETRAServer
                 try
@@ -374,10 +378,9 @@ namespace {#NAMESPACE}
                         "Server connection error",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
-                    bool ReturnValue = false;
 
                     // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return ReturnValue;
+                    return false;
                 }
 
                 switch (SubmissionResult)
@@ -408,16 +411,19 @@ namespace {#NAMESPACE}
                     case TSubmitChangesResult.scrError:
 
                         // TODO scrError
+                        this.Cursor = Cursors.Default;
                         break;
 
                     case TSubmitChangesResult.scrNothingToBeSaved:
 
                         // TODO scrNothingToBeSaved
-                        break;
+                        this.Cursor = Cursors.Default;
+                        return true;
 
                     case TSubmitChangesResult.scrInfoNeeded:
 
                         // TODO scrInfoNeeded
+                        this.Cursor = Cursors.Default;
                         break;
                 }
             }

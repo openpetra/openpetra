@@ -185,7 +185,7 @@ namespace Ict.Common
                  * and the Stack Trace would span several AppDomains. Therefore we
                  * don't do a StackTrace automatically on Mono, but only if the
                  * DebugLevel is DB_DEBUGLEVEL_TRACE...
-                 *) Bug: https://bugzilla.novell.com/show_bug.cgi?id=324794
+                 * *) Bug: https://bugzilla.novell.com/show_bug.cgi?id=324794
                  */
                 if (ADebugLevel >= DEBUGLEVEL_TRACE)
                 {
@@ -337,7 +337,7 @@ namespace Ict.Common
                  * and the Stack Trace would span several AppDomains. Therefore we
                  * log a warning here in case the next statement crashes - so at least we know
                  * why the Mono runtime has crashed!
-                 *) Bug: https://bugzilla.novell.com/show_bug.cgi?id=324794
+                 * *) Bug: https://bugzilla.novell.com/show_bug.cgi?id=324794
                  *
                  * -> If a call to this method might be done while the calling assembly is
                  * -> executing on a Mono runtime, it is better to call SafeLogStackTrace

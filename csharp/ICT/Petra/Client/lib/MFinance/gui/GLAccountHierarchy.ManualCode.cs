@@ -212,6 +212,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else
             {
                 AAccountHierarchyDetailRow siblingRow = (AAccountHierarchyDetailRow)FCurrentNode.Nodes[FCurrentNode.Nodes.Count - 1].Tag;
+
+                if (siblingRow.IsReportOrderNull())
+                {
+                    siblingRow.ReportOrder = 1;
+                }
+
                 hierarchyDetailRow.ReportOrder = siblingRow.ReportOrder + 1;
             }
 
@@ -238,6 +244,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             // TODO: open file; only will work if there are no GLM records and transactions yet
             XmlDocument doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Load Account Hierarchy from file"));
+
+            if (doc == null)
+            {
+                // was cancelled
+                return;
+            }
 
             if (!TRemote.MFinance.GL.WebConnectors.ImportAccountHierarchy(FLedgerNumber, FSelectedHierarchy, TXMLParser.XmlToString(doc)))
             {

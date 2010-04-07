@@ -36,6 +36,10 @@
 				<option name="all costcentres from the current ledger with a_posting_cost_centre_flag_l"/>
 			</reportparameter>
 			<reportparameter name="param_cost_centre_codes"/> <!-- alternative to cost centre range, comma separated list of cost centre codes -->
+            <reportparameter name="param_rgrCostCentres">
+                <option name="CostCentreList"/>
+                <option name="CostCentreRange"/>
+            </reportparameter>
 			<reportparameter name="param_account_code_start"> 
 				<option name="all accounts from the current ledger with a_posting_status_l"/>
 			</reportparameter>
@@ -43,6 +47,10 @@
 				<option name="all accounts from the current ledger with a_posting_status_l"/>
 			</reportparameter>
 			<reportparameter name="param_account_codes"/> <!-- alternative to account code range, comma separated list of account codes -->
+            <reportparameter name="param_rgrAccounts">
+                <option name="AccountList"/>
+                <option name="AccountRange"/>
+            </reportparameter>
 			<reportparameter name="param_reference_start" condition="param_sortby = Reference"/>
 			<reportparameter name="param_reference_end" condition="param_sortby = Reference" />
 			<reportparameter name="param_analyis_type_start" condition="param_sortby = Analysis Type" />
@@ -107,7 +115,7 @@
 				</fielddetail>
 				<fielddetail condition="eq({param_rgrCostCentres},CostCentreList)">
 					<value text="    Cost Centres: "/>
-					<value variable="param_cost_centre_codes"/>
+					<value function="replace({param_cost_centre_codes},&quot;,)"/>
 				</fielddetail>
 			</field>
 			<field whichfield="period3" align="right">
@@ -122,7 +130,7 @@
 				</fielddetail>
 				<fielddetail condition="eq({param_rgrAccounts},AccountList)">
 					<value text="Accounts: "/>
-					<value variable="param_account_codes"/>
+					<value function="replace({param_account_codes},&quot;,)"/>
 				</fielddetail>
 			</field>
 
@@ -495,7 +503,7 @@
 						<lowerLevelReport level="TransactionAnalysisAttributes" calculation ="Select Analysis Attributes of Transaction"/>
 					</case>
 					<default>
-						<field whichfield="left 0" pos="1 cm" width="2cm" align="left"><value variable="a_transaction_date_d" format="formatteddate"/></field>
+						<field whichfield="left 0" pos="1 cm" width="2cm" align="left"><value variable="a_transaction_date_d"/></field>
 						<field whichfield="left 1" pos="3.5 cm" width="3cm" align="left"><value variable="a_reference_c"/></field>
 						<field whichfield="columns" />
 					</default>
@@ -509,7 +517,7 @@
 			<header>
 			</header>
 			<detail>
-				<field whichfield="left 0" pos="1 cm" width="2cm" align="left"><value variable="a_transaction_date_d" format="formatteddate"/></field>
+				<field whichfield="left 0" pos="1 cm" width="2cm" align="left"><value variable="a_transaction_date_d"/></field>
 				<field whichfield="left 1" pos="3.5 cm" width="3cm" align="left"><value variable="a_reference_c"/></field>
 				<field whichfield="columns" />
 			</detail>

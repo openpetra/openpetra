@@ -129,7 +129,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
-            ResultDocument += "</html>";
+            if (ResultDocument.Length > 0)
+            {
+                ResultDocument += "</html>";
+            }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 

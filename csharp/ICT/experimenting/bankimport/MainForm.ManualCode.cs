@@ -91,13 +91,13 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
                     TGiftMatching exportMatchGifts = new TGiftMatching();
                     exportMatchGifts.WritePetraImportFile(ref FMainDS,
                         TAppSettingsManager.GetValueStatic("OutputCSV.Path") +
-                        Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(newFile) +
+                        Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(newFile) + "_" +
                         Catalog.GetString("Matched") + ".csv",
                         bankName);
 
                     rbtUnmatchedGifts.Checked = true;
                     StreamWriter sw = new StreamWriter(TAppSettingsManager.GetValueStatic("OutputCSV.Path") +
-                        Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(newFile) +
+                        Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(newFile) + "_" +
                         Catalog.GetString("Unmatched") + ".csv",
                         false, System.Text.Encoding.Default);
 
@@ -107,7 +107,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                     rbtOther.Checked = true;
                     sw = new StreamWriter(TAppSettingsManager.GetValueStatic("OutputCSV.Path") +
-                        Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(newFile) +
+                        Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(newFile) + "_" +
                         Catalog.GetString("Other") + ".csv",
                         false, System.Text.Encoding.Default);
 
@@ -117,7 +117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.BankImport
 
                     rbtAllTransactions.Checked = true;
                     sw = new StreamWriter(TAppSettingsManager.GetValueStatic("OutputCSV.Path") +
-                        Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(newFile) +
+                        Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(newFile) + "_" +
                         Catalog.GetString("AllTransactions") + ".csv",
                         false, System.Text.Encoding.Default);
 

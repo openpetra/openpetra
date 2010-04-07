@@ -69,7 +69,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblQuestion.Name = "lblQuestion";
             this.lblQuestion.Size = new System.Drawing.Size(243, 23);
             this.lblQuestion.TabIndex = 0;
-            this.lblQuestion.Text = "label1";
 
             //
             // txtAnswer
@@ -118,7 +117,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.MinimizeBox = false;
             this.Name = "PetraInputBox";
             this.ShowIcon = false;
-            this.Text = "PetraInputBox";
             this.TopMost = true;
             this.ResumeLayout(false);
             this.PerformLayout();

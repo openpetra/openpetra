@@ -131,7 +131,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       FPetraUtilsObject.SetStatusBarText(cmbDetailAccountCode, Catalog.GetString("Reference to the account to use for this detail"));
       FMainDS = new AccountsPayableTDS();
       grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Amount", FMainDS.AApDocumentDetail.ColumnAmount);
+      grdDetails.AddCurrencyColumn("Amount", FMainDS.AApDocumentDetail.ColumnAmount);
       grdDetails.AddTextColumn("Narrative", FMainDS.AApDocumentDetail.ColumnNarrative);
       grdDetails.AddTextColumn("Reference", FMainDS.AApDocumentDetail.ColumnItemRef);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
@@ -209,7 +209,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             foreach (DataColumn myColumn in FMainDS.AApDocumentDetail.PrimaryKey)
             {
                 string value1 = FMainDS.AApDocumentDetail.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;
@@ -220,12 +220,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 RowNumberGrid = Counter + 1;
             }
         }
-        grdDetails.Selection.ResetSelection(false);
-        grdDetails.Selection.SelectRow(RowNumberGrid, true);
-        // scroll to the row
-        grdDetails.ShowCell(new SourceGrid.Position(RowNumberGrid, 0), true);
 
-        FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
+        grdDetails.SelectRowInGrid(RowNumberGrid);
     }
 
     /// return the selected row
@@ -322,9 +318,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             grdDetails.AutoSizeCells();
             if (FMainDS.AApDocumentDetail.Rows.Count > 0)
             {
-                grdDetails.Selection.ResetSelection(false);
-                grdDetails.Selection.SelectRow(1, true);
-                FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
+                grdDetails.SelectRowInGrid(1);
                 pnlDetails.Enabled = true;
             }
         }
@@ -542,7 +536,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 }
             }
 
-            if (FPetraUtilsObject.HasChanges)
+            if (!FPetraUtilsObject.HasChanges)
+            {
+                return true;
+            }
+            else
             {
                 FPetraUtilsObject.WriteToStatusBar("Saving data...");
                 this.Cursor = Cursors.WaitCursor;
@@ -551,6 +549,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 TVerificationResultCollection VerificationResult;
 
                 AccountsPayableTDS SubmitDS = FMainDS.GetChangesTyped(true);
+
+                if (SubmitDS == null)
+                {
+                    // nothing to be saved, so it is ok to close the screen etc
+                    return true;
+                }
 
                 // Submit changes to the PETRAServer
                 try
@@ -605,10 +609,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                         "Server connection error",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
-                    bool ReturnValue = false;
 
                     // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return ReturnValue;
+                    return false;
                 }
 
                 switch (SubmissionResult)
@@ -639,16 +642,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                     case TSubmitChangesResult.scrError:
 
                         // TODO scrError
+                        this.Cursor = Cursors.Default;
                         break;
 
                     case TSubmitChangesResult.scrNothingToBeSaved:
 
                         // TODO scrNothingToBeSaved
-                        break;
+                        this.Cursor = Cursors.Default;
+                        return true;
 
                     case TSubmitChangesResult.scrInfoNeeded:
 
                         // TODO scrInfoNeeded
+                        this.Cursor = Cursors.Default;
                         break;
                 }
             }

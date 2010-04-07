@@ -115,8 +115,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("From Currency Code", FMainDS.ADailyExchangeRate.ColumnFromCurrencyCode);
       grdDetails.AddTextColumn("To Currency Code", FMainDS.ADailyExchangeRate.ColumnToCurrencyCode);
-      grdDetails.AddTextColumn("Date Effective From", FMainDS.ADailyExchangeRate.ColumnDateEffectiveFrom);
-      grdDetails.AddTextColumn("Rate of exchange", FMainDS.ADailyExchangeRate.ColumnRateOfExchange);
+      grdDetails.AddDateColumn("Date Effective From", FMainDS.ADailyExchangeRate.ColumnDateEffectiveFrom);
+      grdDetails.AddCurrencyColumn("Rate of exchange", FMainDS.ADailyExchangeRate.ColumnRateOfExchange);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       DataView myDataView = FMainDS.ADailyExchangeRate.DefaultView;
@@ -178,7 +178,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             foreach (DataColumn myColumn in FMainDS.ADailyExchangeRate.PrimaryKey)
             {
                 string value1 = FMainDS.ADailyExchangeRate.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;
@@ -305,7 +305,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 InspectDR.EndEdit();
             }
 
-            if (FPetraUtilsObject.HasChanges)
+            if (!FPetraUtilsObject.HasChanges)
+            {
+                return true;
+            }
+            else
             {
                 FPetraUtilsObject.WriteToStatusBar("Saving data...");
                 this.Cursor = Cursors.WaitCursor;
@@ -314,6 +318,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 TVerificationResultCollection VerificationResult;
 
                 Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.ADailyExchangeRate.GetChangesTyped();
+
+                if (SubmitDT == null)
+                {
+                    // nothing to be saved, so it is ok to close the screen etc
+                    return true;
+                }
 
                 // Submit changes to the PETRAServer
                 try
@@ -368,10 +378,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         "Server connection error",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
-                    bool ReturnValue = false;
 
                     // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return ReturnValue;
+                    return false;
                 }
 
                 switch (SubmissionResult)
@@ -402,16 +411,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     case TSubmitChangesResult.scrError:
 
                         // TODO scrError
+                        this.Cursor = Cursors.Default;
                         break;
 
                     case TSubmitChangesResult.scrNothingToBeSaved:
 
                         // TODO scrNothingToBeSaved
-                        break;
+                        this.Cursor = Cursors.Default;
+                        return true;
 
                     case TSubmitChangesResult.scrInfoNeeded:
 
                         // TODO scrInfoNeeded
+                        this.Cursor = Cursors.Default;
                         break;
                 }
             }

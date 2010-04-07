@@ -48,10 +48,12 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 snippet.SetCodelet("BASECLASSTABLE", TTable.NiceTableName(currentTable.strName) + "Table");
                 derivedTable = "new ";
+                snippet.SetCodelet("TABLEID", origTable.order.ToString());
             }
             else
             {
                 snippet.SetCodelet("BASECLASSTABLE", "TTypedDataTable");
+                snippet.SetCodelet("TABLEID", currentTable.order.ToString());
             }
 
             snippet.SetCodelet("NEW", derivedTable);
@@ -68,7 +70,6 @@ namespace Ict.Tools.CodeGeneration.DataStore
             }
 
             snippet.SetCodelet("DBTABLENAME", currentTable.strName);
-            snippet.SetCodelet("TABLEID", currentTable.order.ToString());
 
             if (currentTable.HasPrimaryKey())
             {
@@ -163,16 +164,19 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     snippet.InsertSnippet("COLUMNIDS", tempTemplate);
                 }
 
-                tempTemplate = Template.GetSnippet("COLUMNINFO");
-                tempTemplate.SetCodelet("COLUMNORDERNUMBER", colOrder.ToString());
-                tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
-                tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
-                tempTemplate.SetCodelet("COLUMNLABEL", col.strLabel);
-                tempTemplate.SetCodelet("COLUMNODBCTYPE", codeGenerationPetra.ToOdbcTypeString(col));
-                tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
-                tempTemplate.SetCodelet("COLUMNNOTNULL", col.bNotNull.ToString().ToLower());
-                tempTemplate.SetCodelet("COLUMNCOMMA", colOrder + 1 < currentTable.grpTableField.List.Count ? "," : "");
-                snippet.InsertSnippet("COLUMNINFO", tempTemplate);
+                if (origTable == null)
+                {
+                    tempTemplate = Template.GetSnippet("COLUMNINFO");
+                    tempTemplate.SetCodelet("COLUMNORDERNUMBER", colOrder.ToString());
+                    tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
+                    tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
+                    tempTemplate.SetCodelet("COLUMNLABEL", col.strLabel);
+                    tempTemplate.SetCodelet("COLUMNODBCTYPE", codeGenerationPetra.ToOdbcTypeString(col));
+                    tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
+                    tempTemplate.SetCodelet("COLUMNNOTNULL", col.bNotNull.ToString().ToLower());
+                    tempTemplate.SetCodelet("COLUMNCOMMA", colOrder + 1 < currentTable.grpTableField.List.Count ? "," : "");
+                    snippet.InsertSnippet("COLUMNINFO", tempTemplate);
+                }
 
                 tempTemplate = Template.GetSnippet("INITCLASSADDCOLUMN");
                 tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);

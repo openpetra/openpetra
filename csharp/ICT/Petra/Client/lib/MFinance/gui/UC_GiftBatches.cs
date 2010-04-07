@@ -125,8 +125,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Batch Number", FMainDS.AGiftBatch.ColumnBatchNumber);
       grdDetails.AddTextColumn("Batch Status", FMainDS.AGiftBatch.ColumnBatchStatus);
-      grdDetails.AddTextColumn("GL Effective Date", FMainDS.AGiftBatch.ColumnGlEffectiveDate);
-      grdDetails.AddTextColumn("Hash Total", FMainDS.AGiftBatch.ColumnHashTotal);
+      grdDetails.AddDateColumn("GL Effective Date", FMainDS.AGiftBatch.ColumnGlEffectiveDate);
+      grdDetails.AddCurrencyColumn("Hash Total", FMainDS.AGiftBatch.ColumnHashTotal);
       grdDetails.AddTextColumn("Batch description", FMainDS.AGiftBatch.ColumnBatchDescription);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
@@ -161,7 +161,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             foreach (DataColumn myColumn in FMainDS.AGiftBatch.PrimaryKey)
             {
                 string value1 = FMainDS.AGiftBatch.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;

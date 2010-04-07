@@ -1,6 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
+# SharpDevelop 3.2.0.5505
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.App.Core", "Petra\Server\app\Core\Ict.Petra.Server.App.Core.csproj", "{F053BB7D-E40D-4434-B99C-FC803F65E10A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MCommon", "Petra\Server\lib\MCommon\Ict.Petra.Server.MCommon.csproj", "{1F2FFC91-5C00-44ED-8EFD-3940426793CF}"
@@ -84,6 +85,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPartner.WebConnectors", "Petra\Server\lib\MPartner\Ict.Petra.Server.MPartner.WebConnectors.csproj", "{B7E0E43A-F197-46C0-9F5E-260FFDF2C877}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MSysMan.WebConnectors", "Petra\Server\lib\MSysMan\Ict.Petra.Server.MSysMan.WebConnectors.csproj", "{88C4BED3-FB27-46F8-85A7-F461989B7A34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MCommon.DatasetAccess", "Petra\Server\lib\MCommon\data\Ict.Petra.Server.MCommon.DatasetAccess.csproj", "{6343AB93-1AA2-46D9-ADB2-E9BA852BB878}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MHospitality.DatasetAccess", "Petra\Server\lib\MHospitality\data\Ict.Petra.Server.MHospitality.DatasetAccess.csproj", "{4B9EB5F9-2B16-4498-A218-77E6375428AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPersonnel.DatasetAccess", "Petra\Server\lib\MPersonnel\data\Ict.Petra.Server.MPersonnel.DatasetAccess.csproj", "{A2B90810-5C72-4154-8E6C-47F243E653A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPartner.DatasetAccess", "Petra\Server\lib\MPartner\data\Ict.Petra.Server.MPartner.DatasetAccess.csproj", "{6372DC9A-981C-48F8-8719-E5B2CF7157F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance.DatasetAccess", "Petra\Server\lib\MFinance\data\Ict.Petra.Server.MFinance.DatasetAccess.csproj", "{6EF08752-CDB0-4F94-8A17-D91BDDF45FA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -259,5 +270,25 @@ Global
 		{88C4BED3-FB27-46F8-85A7-F461989B7A34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88C4BED3-FB27-46F8-85A7-F461989B7A34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88C4BED3-FB27-46F8-85A7-F461989B7A34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6343AB93-1AA2-46D9-ADB2-E9BA852BB878}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6343AB93-1AA2-46D9-ADB2-E9BA852BB878}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6343AB93-1AA2-46D9-ADB2-E9BA852BB878}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6343AB93-1AA2-46D9-ADB2-E9BA852BB878}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B9EB5F9-2B16-4498-A218-77E6375428AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B9EB5F9-2B16-4498-A218-77E6375428AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B9EB5F9-2B16-4498-A218-77E6375428AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B9EB5F9-2B16-4498-A218-77E6375428AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2B90810-5C72-4154-8E6C-47F243E653A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2B90810-5C72-4154-8E6C-47F243E653A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2B90810-5C72-4154-8E6C-47F243E653A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2B90810-5C72-4154-8E6C-47F243E653A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6372DC9A-981C-48F8-8719-E5B2CF7157F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6372DC9A-981C-48F8-8719-E5B2CF7157F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6372DC9A-981C-48F8-8719-E5B2CF7157F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6372DC9A-981C-48F8-8719-E5B2CF7157F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EF08752-CDB0-4F94-8A17-D91BDDF45FA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EF08752-CDB0-4F94-8A17-D91BDDF45FA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EF08752-CDB0-4F94-8A17-D91BDDF45FA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EF08752-CDB0-4F94-8A17-D91BDDF45FA8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

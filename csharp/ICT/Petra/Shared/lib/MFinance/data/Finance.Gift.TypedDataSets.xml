@@ -14,8 +14,8 @@
             <CustomField name="RecipientDescription" type="string"/>
             <CustomField name="AccountCode" type="string"/>
         </Table>
-        <Table sqltable="a_motivation_detail"/>
         <Table sqltable="a_motivation_group"/>
+        <Table sqltable="a_motivation_detail"/>
     </DataSet> 
 
     <DataSet name="BankImportTDS">
@@ -31,6 +31,7 @@
         </Table>
         <Table sqltable="a_ep_statement"/>
         <Table sqltable="a_ep_transaction">
+            <CustomField name = "MatchAction" type="string"/>
 <!--            <CustomField name="NumberOnStatement" type="Int32"/>
             <CustomField name="DetailKey" type="Int32"/>
             <CustomField name="OriginalAmountOnStatement" type="Double"/>
@@ -43,7 +44,9 @@
             <CustomField name="RecipientDescription" type="string"/>
             <PrimaryKey thisFields="a_statement_key_i, a_order_i, DetailKey"/> -->
         </Table>
-        <Table sqltable="a_ep_match"/>
+        <Table sqltable="a_ep_match">
+            <CustomField name="CostCentreName" type="string"/>
+        </Table>
         <Table sqltable="a_cost_centre"/>
         <Table sqltable="a_motivation_detail"/>
     </DataSet> 

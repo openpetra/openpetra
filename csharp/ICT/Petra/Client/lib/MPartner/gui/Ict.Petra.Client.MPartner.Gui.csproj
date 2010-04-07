@@ -41,10 +41,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="DevAge.Core">
-      <HintPath>..\..\..\..\..\Common\_bin\Debug\DevAge.Core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
     </Reference>
@@ -64,15 +60,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="SourceGrid">
-      <HintPath>..\..\..\..\..\Common\_bin\Debug\SourceGrid.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="SourceGrid.Extensions">
-      <HintPath>..\..\..\..\..\Common\_bin\Debug\SourceGrid.Extensions.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="DevAge.Windows.Forms">
-      <HintPath>..\..\..\..\..\Common\_bin\Debug\DevAge.Windows.Forms.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Common">

@@ -26,14 +26,16 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
+
+using Ict.Common;
+using Ict.Common.Data;
+using System;
+using System.Data;
+using System.Data.Odbc;
+using Ict.Petra.Shared.MFinance.Account.Data;
+
 namespace Ict.Petra.Shared.MFinance.AP.Data
 {
-    using Ict.Common;
-    using Ict.Common.Data;
-    using System;
-    using System.Data;
-    using System.Data.Odbc;
-    using Ict.Petra.Shared.MFinance.Account.Data;
 
      /// auto generated
     [Serializable()]
@@ -255,46 +257,11 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     public class AccountsPayableTDSAApDocumentTable : AApDocumentTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 5400;
+        public new static short TableId = 175;
         /// used for generic TTypedDataTable functions
         public static short ColumnTaggedId = 21;
         /// used for generic TTypedDataTable functions
         public static short ColumnDateDueId = 22;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AApDocument", "a_ap_document",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "ApNumber", "a_ap_number_i", "AP Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "PartnerKey", "p_partner_key_n", "Supplier Partner Key", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(3, "CreditNoteFlag", "a_credit_note_flag_l", "Credit Note Flag", OdbcType.Bit, -1, true),
-                    new TTypedColumnInfo(4, "DocumentCode", "a_document_code_c", "Invoice Number", OdbcType.VarChar, 30, false),
-                    new TTypedColumnInfo(5, "Reference", "a_reference_c", "Reference", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(6, "DateIssued", "a_date_issued_d", "Date Issued", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(7, "DateEntered", "a_date_entered_d", "Date Entered", OdbcType.Date, -1, true),
-                    new TTypedColumnInfo(8, "CreditTerms", "a_credit_terms_i", "Credit Terms", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(9, "TotalAmount", "a_total_amount_n", "Total Amount", OdbcType.Decimal, 24, true),
-                    new TTypedColumnInfo(10, "ExchangeRateToBase", "a_exchange_rate_to_base_n", "Exchange Rate to Base", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(11, "DiscountPercentage", "a_discount_percentage_n", "Discount Percentage", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(12, "DiscountDays", "a_discount_days_i", "Discount Days", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(13, "ApAccount", "a_ap_account_c", "AP Account", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(14, "LastDetailNumber", "a_last_detail_number_i", "Last Detail Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(15, "DocumentStatus", "a_document_status_c", "Document Status", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(16, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(17, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(18, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(19, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(20, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(21, "Tagged", "Tagged", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(22, "DateDue", "DateDue", "", OdbcType.Int, -1, false)
-                },
-                new int[] {
-                    0, 1
-                }));
-            return true;
-        }
 
         /// constructor
         public AccountsPayableTDSAApDocumentTable() :
@@ -582,7 +549,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     public class AccountsPayableTDSAApDocumentPaymentTable : AApDocumentPaymentTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 5401;
+        public new static short TableId = 179;
         /// used for generic TTypedDataTable functions
         public static short ColumnTotalAmountToPayId = 9;
         /// used for generic TTypedDataTable functions
@@ -593,32 +560,6 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         public static short ColumnHasValidDiscountId = 12;
         /// used for generic TTypedDataTable functions
         public static short ColumnDiscountPercentageId = 13;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AApDocumentPayment", "a_ap_document_payment",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "ApNumber", "a_ap_number_i", "AP Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "PaymentNumber", "a_payment_number_i", "Payment Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "Amount", "a_amount_n", "Amount", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(8, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(9, "TotalAmountToPay", "TotalAmountToPay", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(10, "UseDiscount", "UseDiscount", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(11, "PayFullInvoice", "PayFullInvoice", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(12, "HasValidDiscount", "HasValidDiscount", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(13, "DiscountPercentage", "DiscountPercentage", "", OdbcType.Int, -1, false)
-                },
-                new int[] {
-                    0, 1, 2
-                }));
-            return true;
-        }
 
         /// constructor
         public AccountsPayableTDSAApDocumentPaymentTable() :
@@ -1035,7 +976,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
     public class AccountsPayableTDSAApPaymentTable : AApPaymentTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 5402;
+        public new static short TableId = 178;
         /// used for generic TTypedDataTable functions
         public static short ColumnSupplierKeyId = 14;
         /// used for generic TTypedDataTable functions
@@ -1044,36 +985,6 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         public static short ColumnCurrencyCodeId = 16;
         /// used for generic TTypedDataTable functions
         public static short ColumnListLabelId = 17;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AApPayment", "a_ap_payment",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "Ledger Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(1, "PaymentNumber", "a_payment_number_i", "Payment Number", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "Amount", "a_amount_n", "Amount", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(3, "ExchangeRateToBase", "a_exchange_rate_to_base_n", "Exchange Rate To Base", OdbcType.Decimal, 24, false),
-                    new TTypedColumnInfo(4, "PaymentDate", "a_payment_date_d", "Payment Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "UserId", "s_user_id_c", "User ID", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(6, "MethodOfPayment", "a_method_of_payment_c", "Method Of Payment", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(7, "Reference", "a_reference_c", "Reference", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(8, "BankAccount", "a_bank_account_c", "Bank Account", OdbcType.VarChar, 16, true),
-                    new TTypedColumnInfo(9, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(11, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(12, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(13, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(14, "SupplierKey", "SupplierKey", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(15, "SupplierName", "SupplierName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(16, "CurrencyCode", "CurrencyCode", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(17, "ListLabel", "ListLabel", "", OdbcType.Int, -1, false)
-                },
-                new int[] {
-                    0, 1
-                }));
-            return true;
-        }
 
         /// constructor
         public AccountsPayableTDSAApPaymentTable() :

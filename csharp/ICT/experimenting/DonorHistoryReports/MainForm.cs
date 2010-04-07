@@ -138,7 +138,7 @@ namespace Ict.Petra.Client.MFinance.Gui.DonorHistoryReports
             foreach (DataColumn myColumn in FMainDS.Gift.PrimaryKey)
             {
                 string value1 = FMainDS.Gift.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;
@@ -171,7 +171,7 @@ namespace Ict.Petra.Client.MFinance.Gui.DonorHistoryReports
             foreach (DataColumn myColumn in FMainDS.Gift.PrimaryKey)
             {
                 string value1 = row[myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView.Table.Rows[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView.Table.Rows[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;

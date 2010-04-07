@@ -2,18 +2,19 @@
  * Do not modify this file manually!
  */
 {#GPLFILEHEADER}
+
+using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Data;
+using System.Data.Odbc;
+using System.Runtime.Serialization;
+using System.Xml;
+using Ict.Common;
+using Ict.Common.Data;
+
 namespace {#NAMESPACE}
 {
-    using System;
-    using System.Collections;
-    using System.ComponentModel;
-    using System.Data;
-    using System.Data.Odbc;
-    using System.Runtime.Serialization;
-    using System.Xml;
-    using Ict.Common;
-    using Ict.Common.Data;
-
     {#TABLELOOP}
 }
 
@@ -26,7 +27,8 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
     /// TableId for Ict.Common.Data generic functions
     public {#NEW}static short TableId = {#TABLEID};
     {#COLUMNIDS}
-    
+
+{#IFDEF COLUMNINFO}
     private static bool FInitInfoValues = InitInfoValues();
     private static bool InitInfoValues()
     {
@@ -43,6 +45,7 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
             }));
         return true;
     }
+{#ENDIF COLUMNINFO}
 
     /// constructor
     public {#TABLENAME}Table() : 

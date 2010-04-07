@@ -2,19 +2,20 @@
  * Do not modify this file manually!
  */
 {#GPLFILEHEADER}
+
+using System;
+using System.Collections.Specialized;
+using System.Data;
+using System.Data.Odbc;
+using Ict.Common;
+using Ict.Common.DB;
+using Ict.Common.Verification;
+using Ict.Common.Data;
+using Ict.Petra.Shared;
+{#USINGNAMESPACES}
+
 namespace {#NAMESPACE}
 {
-    using System;
-    using System.Collections.Specialized;
-    using System.Data;
-    using System.Data.Odbc;
-    using Ict.Common;
-    using Ict.Common.DB;
-    using Ict.Common.Verification;
-    using Ict.Common.Data;
-    using Ict.Petra.Shared;
-    {#USINGNAMESPACES}
-
     {#TABLEACCESSLOOP}
 }
 
@@ -292,7 +293,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// auto generated
     public static bool SubmitChanges({#TABLENAME}Table ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
     {
-        return SubmitChanges({#TABLENAME}Table.TableId, ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
+        return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
     }
 }
 

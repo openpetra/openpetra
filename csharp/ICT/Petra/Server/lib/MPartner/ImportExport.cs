@@ -91,7 +91,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         newFamily.FamilyName = TYml2Xml.GetAttributeRecursive(LocalNode, "LastName");
                         newFamily.FirstName = TYml2Xml.GetAttribute(LocalNode, "FirstName");
                         newFamily.Title = TYml2Xml.GetAttribute(LocalNode, "Title");
-                        newFamily.DateCreated = Convert.ToDateTime(TYml2Xml.GetAttribute(LocalNode, "CreatedAt"));
+
+                        if (TYml2Xml.HasAttribute(LocalNode, "CreatedAt"))
+                        {
+                            newFamily.DateCreated = Convert.ToDateTime(TYml2Xml.GetAttribute(LocalNode, "CreatedAt"));
+                        }
+
                         AMainDS.PFamily.Rows.Add(newFamily);
 
                         newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;

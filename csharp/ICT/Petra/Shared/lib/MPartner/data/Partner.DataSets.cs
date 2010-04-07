@@ -26,16 +26,18 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
+
+using Ict.Common;
+using Ict.Common.Data;
+using System;
+using System.Data;
+using System.Data.Odbc;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+
 namespace Ict.Petra.Shared.MPartner.Partner.Data
 {
-    using Ict.Common;
-    using Ict.Common.Data;
-    using System;
-    using System.Data;
-    using System.Data.Odbc;
-    using Ict.Petra.Shared.MPartner.Partner.Data;
-    using Ict.Petra.Shared.MPartner.Mailroom.Data;
-    using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
      /// auto generated
     [Serializable()]
@@ -997,48 +999,11 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PartnerEditTDSPPartnerLocationTable : PPartnerLocationTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 5100;
+        public new static short TableId = 42;
         /// used for generic TTypedDataTable functions
         public static short ColumnBestAddressId = 23;
         /// used for generic TTypedDataTable functions
         public static short ColumnIconId = 24;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PPartnerLocation", "p_partner_location",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "SiteKey", "p_site_key_n", "Site Key", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(2, "LocationKey", "p_location_key_i", "Location Key", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "DateEffective", "p_date_effective_d", "Valid From", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(4, "DateGoodUntil", "p_date_good_until_d", "Valid To", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "LocationType", "p_location_type_c", "Location Type", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(6, "SendMail", "p_send_mail_l", "Mailing Address", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(7, "FaxNumber", "p_fax_number_c", "Fax", OdbcType.VarChar, 50, false),
-                    new TTypedColumnInfo(8, "Telex", "p_telex_i", "Telex", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(9, "TelephoneNumber", "p_telephone_number_c", "Phone", OdbcType.VarChar, 50, false),
-                    new TTypedColumnInfo(10, "Extension", "p_extension_i", "Phone Extension", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(11, "EmailAddress", "p_email_address_c", "Email", OdbcType.VarChar, 120, false),
-                    new TTypedColumnInfo(12, "LocationDetailComment", "p_location_detail_comment_c", "Comments", OdbcType.VarChar, 512, false),
-                    new TTypedColumnInfo(13, "FaxExtension", "p_fax_extension_i", "Fax Extension", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(14, "MobileNumber", "p_mobile_number_c", "Mobile", OdbcType.VarChar, 50, false),
-                    new TTypedColumnInfo(15, "AlternateTelephone", "p_alternate_telephone_c", "Alternate", OdbcType.VarChar, 50, false),
-                    new TTypedColumnInfo(16, "Url", "p_url_c", "Website", OdbcType.VarChar, 128, false),
-                    new TTypedColumnInfo(17, "Restricted", "p_restricted_l", "Partner Location Restricted", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(23, "BestAddress", "BestAddress", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(24, "Icon", "Icon", "", OdbcType.Int, -1, false)
-                },
-                new int[] {
-                    0, 1, 2
-                }));
-            return true;
-        }
 
         /// constructor
         public PartnerEditTDSPPartnerLocationTable() :
@@ -1332,50 +1297,9 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PartnerEditTDSPPersonTable : PPersonTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 5101;
+        public new static short TableId = 51;
         /// used for generic TTypedDataTable functions
         public static short ColumnUnitNameId = 26;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PPerson", "p_person",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "Title", "p_title_c", "Title", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(2, "FirstName", "p_first_name_c", "First Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(3, "PreferedName", "p_prefered_name_c", "Prefered Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(4, "MiddleName1", "p_middle_name_1_c", "Middle Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(5, "MiddleName2", "p_middle_name_2_c", "Middle Name 2", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(6, "MiddleName3", "p_middle_name_3_c", "Middle Name 3", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(7, "FamilyName", "p_family_name_c", "Family Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(8, "Decorations", "p_decorations_c", "Decorations", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(9, "DateOfBirth", "p_date_of_birth_d", "Date of Birth", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(10, "Gender", "p_gender_c", "Gender", OdbcType.VarChar, 16, false),
-                    new TTypedColumnInfo(11, "MaritalStatus", "p_marital_status_c", "Marital Status", OdbcType.VarChar, 4, false),
-                    new TTypedColumnInfo(12, "OccupationCode", "p_occupation_code_c", "Occupation Code", OdbcType.VarChar, 32, false),
-                    new TTypedColumnInfo(13, "BelieverSinceYear", "p_believer_since_year_i", "Believer since", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(14, "BelieverSinceComment", "p_believer_since_comment_c", "", OdbcType.VarChar, 1000, false),
-                    new TTypedColumnInfo(15, "FamilyKey", "p_family_key_n", "Partner Key", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(16, "FamilyId", "p_family_id_i", "Family ID", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(17, "FieldKey", "p_field_key_n", "Field Key", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(18, "AcademicTitle", "p_academic_title_c", "Academic Title", OdbcType.VarChar, 48, false),
-                    new TTypedColumnInfo(19, "MaritalStatusSince", "p_marital_status_since_d", "Since", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(20, "MaritalStatusComment", "p_marital_status_comment_c", "Marital Status Comment", OdbcType.VarChar, 512, false),
-                    new TTypedColumnInfo(21, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(22, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(23, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(24, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(25, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(26, "UnitName", "p_unit_name_c", "Unit Name", OdbcType.VarChar, 160, false)
-                },
-                new int[] {
-                    0
-                }, new int[] {
-                    15, 16
-                }));
-            return true;
-        }
 
         /// constructor
         public PartnerEditTDSPPersonTable() :
@@ -1623,37 +1547,9 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PartnerEditTDSPFamilyTable : PFamilyTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 5102;
+        public new static short TableId = 48;
         /// used for generic TTypedDataTable functions
         public static short ColumnUnitNameId = 15;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PFamily", "p_family",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "FamilyMembers", "p_family_members_l", "p_family_members_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(2, "Title", "p_title_c", "Title", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(3, "FirstName", "p_first_name_c", "First Name", OdbcType.VarChar, 96, false),
-                    new TTypedColumnInfo(4, "FamilyName", "p_family_name_c", "Family Name", OdbcType.VarChar, 120, false),
-                    new TTypedColumnInfo(5, "DifferentSurnames", "p_different_surnames_l", "p_different_surnames_l", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(6, "FieldKey", "p_field_key_n", "Field Key", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(7, "MaritalStatus", "p_marital_status_c", "Marital Status", OdbcType.VarChar, 4, false),
-                    new TTypedColumnInfo(8, "MaritalStatusSince", "p_marital_status_since_d", "Since", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(9, "MaritalStatusComment", "p_marital_status_comment_c", "Marital Status Comment", OdbcType.VarChar, 512, false),
-                    new TTypedColumnInfo(10, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(11, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(12, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(13, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(14, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(15, "UnitName", "p_unit_name_c", "Unit Name", OdbcType.VarChar, 160, false)
-                },
-                new int[] {
-                    0
-                }));
-            return true;
-        }
 
         /// constructor
         public PartnerEditTDSPFamilyTable() :
@@ -4408,7 +4304,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
     public class PartnerAddressAggregateTDSSimilarLocationParametersTable : PLocationTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 5107;
+        public new static short TableId = 40;
         /// used for generic TTypedDataTable functions
         public static short ColumnSiteKeyOfSimilarLocationId = 23;
         /// used for generic TTypedDataTable functions
@@ -4421,47 +4317,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public static short ColumnAnswerProcessedClientSideId = 27;
         /// used for generic TTypedDataTable functions
         public static short ColumnAnswerProcessedServerSideId = 28;
-
-        private static bool FInitInfoValues = InitInfoValues();
-        private static bool InitInfoValues()
-        {
-            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SimilarLocationParameters", "p_location",
-                new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "SiteKey", "p_site_key_n", "Site Key", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "LocationKey", "p_location_key_i", "Location Key", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(2, "Building1", "p_building_1_c", "Building", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(3, "Building2", "p_building_2_c", "Building (cont.)", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(4, "StreetName", "p_street_name_c", "Addr2", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(5, "Locality", "p_locality_c", "Addr1", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(6, "Suburb", "p_suburb_c", "Suburb", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(7, "City", "p_city_c", "City", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(8, "County", "p_county_c", "Province", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(9, "PostalCode", "p_postal_code_c", "Post Code", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(10, "CountryCode", "p_country_code_c", "Country Code", OdbcType.VarChar, 8, false),
-                    new TTypedColumnInfo(11, "Address3", "p_address_3_c", "Addr3", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(12, "GeoLatitude", "p_geo_latitude_n", "p_geo_latitude_n", OdbcType.Decimal, 9, false),
-                    new TTypedColumnInfo(13, "GeoLongitude", "p_geo_longitude_n", "p_geo_longitude_n", OdbcType.Decimal, 9, false),
-                    new TTypedColumnInfo(14, "GeoKmX", "p_geo_km_x_i", "p_geo_km_x_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(15, "GeoKmY", "p_geo_km_y_i", "p_geo_km_y_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(16, "GeoAccuracy", "p_geo_accuracy_i", "p_geo_accuracy_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(17, "Restricted", "p_restricted_l", "Location Restricted", OdbcType.Bit, -1, false),
-                    new TTypedColumnInfo(18, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(19, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(20, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(21, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(22, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false),
-                    new TTypedColumnInfo(23, "SiteKeyOfSimilarLocation", "SiteKeyOfSimilarLocation", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(24, "LocationKeyOfSimilarLocation", "LocationKeyOfSimilarLocation", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(25, "UsedByNOtherPartners", "UsedByNOtherPartners", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(26, "AnswerReuse", "AnswerReuse", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(27, "AnswerProcessedClientSide", "AnswerProcessedClientSide", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(28, "AnswerProcessedServerSide", "AnswerProcessedServerSide", "", OdbcType.Int, -1, false)
-                },
-                new int[] {
-                    0, 1
-                }));
-            return true;
-        }
 
         /// constructor
         public PartnerAddressAggregateTDSSimilarLocationParametersTable() :

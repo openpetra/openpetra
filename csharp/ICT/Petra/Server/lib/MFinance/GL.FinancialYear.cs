@@ -42,7 +42,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// using the calendar of the ledger to determine the financial period at the given date.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="ADateEffective"></param>
+        /// <param name="ADateToTest"></param>
         /// <param name="AFinancialYear"></param>
         /// <param name="AFinancialPeriod"></param>
         /// <param name="ATransaction"></param>

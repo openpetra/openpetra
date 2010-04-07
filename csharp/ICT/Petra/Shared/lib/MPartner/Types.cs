@@ -130,19 +130,19 @@ namespace Ict.Petra.Shared.MPartner
         eShortname,
 
         /// title firstname lastname
-        eReverseShortname,
+            eReverseShortname,
 
         /// title
-        eOnlyTitle,
+            eOnlyTitle,
 
         /// family name
-        eOnlySurname,
+            eOnlySurname,
 
         /// firstname l.; useful for data protection
-        eReverseLastnameInitialsOnly,
+            eReverseLastnameInitialsOnly,
 
         /// firstname lastname
-        eReverseWithoutTitle
+            eReverseWithoutTitle
     };
 
     #region TLocationPK

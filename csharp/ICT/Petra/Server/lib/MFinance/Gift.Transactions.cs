@@ -96,6 +96,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     NewRow.BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
                 }
+                else
+                {
+                    // needed for old Petra 2.x database
+                    NewRow.BankAccountCode = "6000";
+                }
 
                 // TODO? DomainManager.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
             }
@@ -105,13 +110,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             MainDS.AGiftBatch.Rows.Add(NewRow);
 
             TVerificationResultCollection VerificationResult;
-            AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out VerificationResult);
-            ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out VerificationResult);
+            bool success = false;
 
-            MainDS.AGiftBatch.AcceptChanges();
+            if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out VerificationResult))
+            {
+                if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out VerificationResult))
+                {
+                    success = true;
+                }
+            }
 
-            DBAccess.GDBAccessObj.CommitTransaction();
-            return MainDS;
+            if (success)
+            {
+                MainDS.AGiftBatch.AcceptChanges();
+                DBAccess.GDBAccessObj.CommitTransaction();
+                return MainDS;
+            }
+            else
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw new Exception("Error in CreateAGiftBatch");
+            }
         }
 
         /// <summary>
@@ -202,57 +221,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            AVerificationResult = new TVerificationResultCollection();
+            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-            try
+            if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
-                SubmissionResult = TSubmitChangesResult.scrOK;
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    if (!AGiftBatchAccess.SubmitChanges(AInspectDS.AGiftBatch, SubmitChangesTransaction,
-                            out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                }
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    if (!AGiftAccess.SubmitChanges(AInspectDS.AGift, SubmitChangesTransaction,
-                            out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                }
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    if (!AGiftDetailAccess.SubmitChanges(AInspectDS.AGiftDetail, SubmitChangesTransaction,
-                            out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                }
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("SaveGiftBatchTDS: exception " + e.Message);
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                throw new Exception(e.ToString() + " " + e.Message);
+                // TODO: check that gifts are in consecutive numbers?
+                // TODO: check that gift details are in consecutive numbers, no gift without gift details?
+                // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
+                // TODO: calculate hash of saved batch or batch of saved gift
             }
 
             return SubmissionResult;
@@ -291,75 +268,100 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             journal.JournalDescription = batch.BatchDescription;
             journal.TransactionTypeCode = MFinanceConstants.TRANSACTION_GIFT;
             journal.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GR;
+            journal.LastTransactionNumber = 0;
             journal.DateOfEntry = DateTime.Now;
 
             // TODO journal.ExchangeRateToBase and journal.ExchangeRateTime
             journal.ExchangeRateToBase = 1.0;
             GLDataset.AJournal.Rows.Add(journal);
 
-            Int32 TransactionCounter = 1;
-
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
             {
                 ATransactionRow transaction = null;
 
-                // at the moment, we create 2 transactions for each gift detail; no summarising of gift transactions etc
+                // do we have already a transaction for this costcentre&account?
+                GLDataset.ATransaction.DefaultView.RowFilter = String.Format("{0}='{1}' and {2}='{3}'",
+                    ATransactionTable.GetAccountCodeDBName(),
+                    giftdetail.AccountCode,
+                    ATransactionTable.GetCostCentreCodeDBName(),
+                    giftdetail.CostCentreCode);
 
-                transaction = GLDataset.ATransaction.NewRowTyped();
-                transaction.LedgerNumber = journal.LedgerNumber;
-                transaction.BatchNumber = journal.BatchNumber;
-                transaction.JournalNumber = journal.JournalNumber;
-                transaction.TransactionNumber = TransactionCounter++;
-                transaction.TransactionAmount = giftdetail.GiftTransactionAmount;
-
-                transaction.DebitCreditIndicator = (transaction.TransactionAmount > 0);
-
-                if (transaction.TransactionAmount < 0)
+                if (GLDataset.ATransaction.DefaultView.Count == 0)
                 {
-                    transaction.TransactionAmount *= -1;
+                    transaction = GLDataset.ATransaction.NewRowTyped();
+                    transaction.LedgerNumber = journal.LedgerNumber;
+                    transaction.BatchNumber = journal.BatchNumber;
+                    transaction.JournalNumber = journal.JournalNumber;
+                    transaction.TransactionNumber = ++journal.LastTransactionNumber;
+                    transaction.AccountCode = giftdetail.AccountCode;
+                    transaction.CostCentreCode = giftdetail.CostCentreCode;
+                    transaction.Narrative = "GB - Gift Batch " + giftbatch.BatchNumber.ToString();
+                    transaction.Reference = "GB" + giftbatch.BatchNumber.ToString();
+                    transaction.DebitCreditIndicator = false;
+                    transaction.TransactionAmount = 0;
+                    transaction.AmountInBaseCurrency = 0;
+                    transaction.TransactionDate = giftbatch.GlEffectiveDate;
+
+                    GLDataset.ATransaction.Rows.Add(transaction);
+                }
+                else
+                {
+                    transaction = (ATransactionRow)GLDataset.ATransaction.DefaultView[0].Row;
                 }
 
-                // TODO: support foreign currencies
-                transaction.AmountInBaseCurrency = transaction.TransactionAmount;
-
-                // TODO: account and costcentre based on linked costcentre, current commitment, and Motivation detail
-                // Careful: modify gift cost centre and account and recipient field only when the amount is positive.
-                // adjustments and reversals must remain on the original value
-                transaction.AccountCode = giftbatch.BankAccountCode;
-                transaction.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
-                    ALedgerNumber);
-                transaction.Narrative = "Deposit from receipts - Gift Batch " + giftbatch.BatchNumber.ToString();
-                transaction.Reference = "GB" + giftbatch.BatchNumber.ToString();
-
-                // TODO transaction.DetailNumber
-
-                GLDataset.ATransaction.Rows.Add(transaction);
-
-                // at the moment: no summarising of gift details of same gift transaction etc
-                // create one transaction for the gift destination account (income)
-                ATransactionRow transactionGiftAccount = GLDataset.ATransaction.NewRowTyped();
-                transactionGiftAccount.LedgerNumber = journal.LedgerNumber;
-                transactionGiftAccount.BatchNumber = journal.BatchNumber;
-                transactionGiftAccount.JournalNumber = journal.JournalNumber;
-                transactionGiftAccount.TransactionNumber = TransactionCounter++;
-                transactionGiftAccount.DebitCreditIndicator = !transaction.DebitCreditIndicator;
-                transactionGiftAccount.TransactionAmount = transaction.TransactionAmount;
-                transactionGiftAccount.AmountInBaseCurrency = transaction.AmountInBaseCurrency;
-                transactionGiftAccount.AccountCode = giftdetail.AccountCode;
-                transactionGiftAccount.CostCentreCode = giftdetail.CostCentreCode;
-                transactionGiftAccount.Narrative = "GB - Gift Batch " + giftbatch.BatchNumber.ToString();
-                transactionGiftAccount.Reference = "GB" + giftbatch.BatchNumber.ToString();
-
-                // TODO transactionGiftAccount.DetailNumber
-
-                GLDataset.ATransaction.Rows.Add(transactionGiftAccount);
+                transaction.TransactionAmount += giftdetail.GiftTransactionAmount;
+                transaction.AmountInBaseCurrency += giftdetail.GiftAmount;
 
                 // TODO: for other currencies a post to a_ledger.a_forex_gains_losses_account_c ???
 
                 // TODO: do the fee calculation, a_fees_payable, a_fees_receivable
             }
 
-            journal.LastTransactionNumber = TransactionCounter - 1;
+            ATransactionRow transactionForTotals = GLDataset.ATransaction.NewRowTyped();
+            transactionForTotals.LedgerNumber = journal.LedgerNumber;
+            transactionForTotals.BatchNumber = journal.BatchNumber;
+            transactionForTotals.JournalNumber = journal.JournalNumber;
+            transactionForTotals.TransactionNumber = ++journal.LastTransactionNumber;
+            transactionForTotals.TransactionAmount = 0;
+            transactionForTotals.TransactionDate = giftbatch.GlEffectiveDate;
+
+            foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
+            {
+                transactionForTotals.TransactionAmount += giftdetail.GiftTransactionAmount;
+            }
+
+            transactionForTotals.DebitCreditIndicator = true;
+
+            // TODO: support foreign currencies
+            transactionForTotals.AmountInBaseCurrency = transactionForTotals.TransactionAmount;
+
+            // TODO: account and costcentre based on linked costcentre, current commitment, and Motivation detail
+            // if motivation cost centre is a summary cost centre, make sure the transaction costcentre is reporting to that summary cost centre
+            // Careful: modify gift cost centre and account and recipient field only when the amount is positive.
+            // adjustments and reversals must remain on the original value
+            transactionForTotals.AccountCode = giftbatch.BankAccountCode;
+            transactionForTotals.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
+                ALedgerNumber);
+            transactionForTotals.Narrative = "Deposit from receipts - Gift Batch " + giftbatch.BatchNumber.ToString();
+            transactionForTotals.Reference = "GB" + giftbatch.BatchNumber.ToString();
+
+            GLDataset.ATransaction.Rows.Add(transactionForTotals);
+
+            GLDataset.ATransaction.DefaultView.RowFilter = string.Empty;
+
+            foreach (ATransactionRow transaction in GLDataset.ATransaction.Rows)
+            {
+                if (transaction.DebitCreditIndicator)
+                {
+                    journal.JournalDebitTotal += transaction.TransactionAmount;
+                    batch.BatchDebitTotal += transaction.TransactionAmount;
+                }
+                else
+                {
+                    journal.JournalCreditTotal += transaction.TransactionAmount;
+                    batch.BatchCreditTotal += transaction.TransactionAmount;
+                }
+            }
 
             batch.LastJournal = 1;
 

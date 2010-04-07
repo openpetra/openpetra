@@ -45,12 +45,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="DevAge.Core">
-      <HintPath>U:\openpetraorg\csharp\ThirdParty\DevAge\DevAge.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevAge.Windows.Forms">
-      <HintPath>U:\openpetraorg\csharp\ThirdParty\DevAge\DevAge.Windows.Forms.dll</HintPath>
-    </Reference>
     <Reference Include="Ict.Common">
       <HintPath>U:\openpetraorg\csharp\ICT\Common\_bin\Debug\Ict.Common.dll</HintPath>
     </Reference>
@@ -107,9 +101,6 @@
     </Reference>
     <Reference Include="SourceGrid">
       <HintPath>U:\openpetraorg\csharp\ThirdParty\DevAge\SourceGrid.dll</HintPath>
-    </Reference>
-    <Reference Include="SourceGrid.Extensions">
-      <HintPath>U:\openpetraorg\csharp\ThirdParty\DevAge\SourceGrid.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

@@ -351,7 +351,7 @@ public partial class MainForm : Form
                 TPrinterHtml htmlPrinter = new TPrinterHtml(AllLetters,
                     System.IO.Path.GetDirectoryName(letterTemplateFilename),
                     FGfxPrinter);
-                FGfxPrinter.Init(eOrientation.ePortrait, htmlPrinter);
+                FGfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
                 this.preLetter.InvalidatePreview();
                 this.preLetter.Document = FGfxPrinter.Document;
                 this.preLetter.Zoom = 1;

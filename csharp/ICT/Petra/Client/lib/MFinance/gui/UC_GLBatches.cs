@@ -114,10 +114,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Batch Number", FMainDS.ABatch.ColumnBatchNumber);
       grdDetails.AddTextColumn("Batch status", FMainDS.ABatch.ColumnBatchStatus);
-      grdDetails.AddTextColumn("Effective Date", FMainDS.ABatch.ColumnDateEffective);
-      grdDetails.AddTextColumn("Batch Debit Total", FMainDS.ABatch.ColumnBatchDebitTotal);
-      grdDetails.AddTextColumn("Batch Credit Total", FMainDS.ABatch.ColumnBatchCreditTotal);
-      grdDetails.AddTextColumn("Batch Control Total", FMainDS.ABatch.ColumnBatchControlTotal);
+      grdDetails.AddDateColumn("Effective Date", FMainDS.ABatch.ColumnDateEffective);
+      grdDetails.AddCurrencyColumn("Batch Debit Total", FMainDS.ABatch.ColumnBatchDebitTotal);
+      grdDetails.AddCurrencyColumn("Batch Credit Total", FMainDS.ABatch.ColumnBatchCreditTotal);
+      grdDetails.AddCurrencyColumn("Batch Control Total", FMainDS.ABatch.ColumnBatchControlTotal);
       grdDetails.AddTextColumn("Batch Description", FMainDS.ABatch.ColumnBatchDescription);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
@@ -152,7 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             foreach (DataColumn myColumn in FMainDS.ABatch.PrimaryKey)
             {
                 string value1 = FMainDS.ABatch.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).mDataView[Counter][myColumn.Ordinal].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
                     found = false;
