@@ -1345,6 +1345,300 @@ namespace Ict.Petra.Server.MFinance.Account.Data.Access
         }
 
         /// auto generated
+        public static void LoadViaAAccount(DataSet ADataSet, Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpStatementTable.TableId, AAccountTable.TableId, ADataSet, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+                new System.Object[2]{ALedgerNumber, AAccountCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccount(DataSet AData, Int32 ALedgerNumber, String AAccountCode, TDBTransaction ATransaction)
+        {
+            LoadViaAAccount(AData, ALedgerNumber, AAccountCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccount(DataSet AData, Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAAccount(AData, ALedgerNumber, AAccountCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpStatementTable Data = new AEpStatementTable();
+            LoadViaForeignKey(AEpStatementTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+                new System.Object[2]{ALedgerNumber, AAccountCode}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccount(ALedgerNumber, AAccountCode, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaAAccount(Int32 ALedgerNumber, String AAccountCode, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccount(ALedgerNumber, AAccountCode, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountTemplate(DataSet ADataSet, AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpStatementTable.TableId, AAccountTable.TableId, ADataSet, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountTemplate(DataSet AData, AAccountRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountTemplate(DataSet AData, AAccountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpStatementTable Data = new AEpStatementTable();
+            LoadViaForeignKey(AEpStatementTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpStatementTable.TableId, AAccountTable.TableId, ADataSet, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaAAccountTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaAAccountTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpStatementTable Data = new AEpStatementTable();
+            LoadViaForeignKey(AEpStatementTable.TableId, AAccountTable.TableId, Data, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaAAccountTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaAAccount(Int32 ALedgerNumber, String AAccountCode, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpStatementTable.TableId, AAccountTable.TableId, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+                new System.Object[2]{ALedgerNumber, AAccountCode}, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaAAccountTemplate(AAccountRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpStatementTable.TableId, AAccountTable.TableId, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+                ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaAAccountTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpStatementTable.TableId, AAccountTable.TableId, new string[2]{"a_ledger_number_i", "a_bank_account_code_c"},
+                ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
+        public static void LoadViaALedger(DataSet ADataSet, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpStatementTable.TableId, ALedgerTable.TableId, ADataSet, new string[1]{"a_ledger_number_i"},
+                new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaALedger(DataSet AData, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        {
+            LoadViaALedger(AData, ALedgerNumber, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedger(DataSet AData, Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedger(AData, ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpStatementTable Data = new AEpStatementTable();
+            LoadViaForeignKey(AEpStatementTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
+                new System.Object[1]{ALedgerNumber}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
+        {
+            return LoadViaALedger(ALedgerNumber, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaALedger(Int32 ALedgerNumber, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaALedger(ALedgerNumber, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet ADataSet, ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpStatementTable.TableId, ALedgerTable.TableId, ADataSet, new string[1]{"a_ledger_number_i"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpStatementTable Data = new AEpStatementTable();
+            LoadViaForeignKey(AEpStatementTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
+                ATemplateRow, ATemplateOperators, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, TDBTransaction ATransaction)
+        {
+            return LoadViaALedgerTemplate(ATemplateRow, null, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaALedgerTemplate(ATemplateRow, null, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaALedgerTemplate(ATemplateRow, ATemplateOperators, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet ADataSet, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            LoadViaForeignKey(AEpStatementTable.TableId, ALedgerTable.TableId, ADataSet, new string[1]{"a_ledger_number_i"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static void LoadViaALedgerTemplate(DataSet AData, TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            LoadViaALedgerTemplate(AData, ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        {
+            AEpStatementTable Data = new AEpStatementTable();
+            LoadViaForeignKey(AEpStatementTable.TableId, ALedgerTable.TableId, Data, new string[1]{"a_ledger_number_i"},
+                ASearchCriteria, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+            return Data;
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return LoadViaALedgerTemplate(ASearchCriteria, null, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static AEpStatementTable LoadViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, StringCollection AFieldList, TDBTransaction ATransaction)
+        {
+            return LoadViaALedgerTemplate(ASearchCriteria, AFieldList, ATransaction, null, 0, 0);
+        }
+
+        /// auto generated
+        public static int CountViaALedger(Int32 ALedgerNumber, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpStatementTable.TableId, ALedgerTable.TableId, new string[1]{"a_ledger_number_i"},
+                new System.Object[1]{ALedgerNumber}, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaALedgerTemplate(ALedgerRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpStatementTable.TableId, ALedgerTable.TableId, new string[1]{"a_ledger_number_i"},
+                ATemplateRow, ATemplateOperators, ATransaction);
+        }
+
+        /// auto generated
+        public static int CountViaALedgerTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
+        {
+            return CountViaForeignKey(AEpStatementTable.TableId, ALedgerTable.TableId, new string[1]{"a_ledger_number_i"},
+                ASearchCriteria, ATransaction);
+        }
+
+        /// auto generated
         public static void DeleteByPrimaryKey(Int32 AStatementKey, TDBTransaction ATransaction)
         {
             DeleteByPrimaryKey(AEpStatementTable.TableId, new System.Object[1]{AStatementKey}, ATransaction);

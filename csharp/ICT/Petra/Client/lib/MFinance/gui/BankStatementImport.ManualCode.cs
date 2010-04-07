@@ -52,9 +52,11 @@ namespace Ict.Petra.Client.MFinance.Gui
             {
                 FLedgerNumber = value;
 
+                TFinanceControls.InitialiseAccountList(ref cmbSelectBankAccount, FLedgerNumber, true, false, true, true);
+
                 // we can only load the statements when the ledger number is known
                 PopulateStatementCombobox();
-                tbcSelectStatement.ComboBox.SelectedIndex = tbcSelectStatement.ComboBox.Items.Count - 1;
+                cmbSelectStatement.SelectedIndex = cmbSelectStatement.Items.Count - 1;
             }
         }
 
@@ -65,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         private void InitializeManualCode()
         {
             pnlDetails.Visible = false;
-            tbcSelectStatement.ComboBox.SelectedValueChanged += new EventHandler(SelectBankStatement);
+            cmbSelectStatement.SelectedValueChanged += new EventHandler(SelectBankStatement);
         }
 
         private void SelectBankStatement(System.Object sender, EventArgs e)
@@ -78,7 +80,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             // load the transactions of the selected statement, and the matches
             FMainDS =
                 TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(
-                    Convert.ToInt32(tbcSelectStatement.ComboBox.SelectedValue), FLedgerNumber);
+                    cmbSelectStatement.GetSelectedInt32(), FLedgerNumber);
 
             grdAllTransactions.Columns.Clear();
             grdAllTransactions.AddTextColumn(Catalog.GetString("Nr"), FMainDS.AEpTransaction.ColumnOrder, 40);
@@ -91,11 +93,12 @@ namespace Ict.Petra.Client.MFinance.Gui
             FTransactionView.AllowNew = false;
             FTransactionView.Sort = AEpTransactionTable.GetOrderDBName() + " ASC";
             grdAllTransactions.DataSource = new DevAge.ComponentModel.BoundDataView(FTransactionView);
-            rbtListAll.Checked = true;
 
             TFinanceControls.InitialiseMotivationDetailList(ref cmbMotivationDetail, FLedgerNumber, true);
             TFinanceControls.InitialiseCostCentreList(ref cmbGiftCostCentre, FLedgerNumber, true, false, true, true);
             TFinanceControls.InitialiseAccountList(ref cmbGiftAccount, FLedgerNumber, true, false, true, false);
+            TFinanceControls.InitialiseCostCentreList(ref cmbGLCostCentre, FLedgerNumber, true, false, true, true);
+            TFinanceControls.InitialiseAccountList(ref cmbGLAccount, FLedgerNumber, true, false, true, false);
 
             grdGiftDetails.Columns.Clear();
             grdGiftDetails.AddTextColumn(Catalog.GetString("Motivation"), FMainDS.AEpMatch.ColumnMotivationDetailCode, 100);
@@ -106,6 +109,18 @@ namespace Ict.Petra.Client.MFinance.Gui
             FMatchView.AllowNew = false;
             grdGiftDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMatchView);
 
+            TFinanceControls.InitialiseAccountList(ref cmbSelectBankAccount, FLedgerNumber, true, false, true, true);
+
+            if (cmbSelectStatement.GetSelectedInt32() != -1)
+            {
+                FMainDS.AEpStatement.DefaultView.RowFilter = String.Format("{0}={1}",
+                    AEpStatementTable.GetStatementKeyDBName(),
+                    cmbSelectStatement.GetSelectedInt32());
+                cmbSelectBankAccount.SetSelectedString(((AEpStatementRow)FMainDS.AEpStatement.DefaultView[0].Row).BankAccountCode);
+                FMainDS.AEpStatement.DefaultView.RowFilter = string.Empty;
+            }
+
+            rbtListAll.Checked = true;
             grdAllTransactions.SelectRowInGrid(1);
         }
 
@@ -121,13 +136,14 @@ namespace Ict.Petra.Client.MFinance.Gui
             // update the combobox with the bank statements
             AEpStatementTable stmts = TRemote.MFinance.ImportExport.WebConnectors.GetImportedBankStatements(dateStatementsFrom);
 
-            tbcSelectStatement.ComboBox.BeginUpdate();
-            tbcSelectStatement.ComboBox.DisplayMember = AEpStatementTable.GetDateDBName();
-            tbcSelectStatement.ComboBox.ValueMember = AEpStatementTable.GetStatementKeyDBName();
-            tbcSelectStatement.ComboBox.DataSource = stmts.DefaultView;
-            tbcSelectStatement.ComboBox.EndUpdate();
+            cmbSelectStatement.BeginUpdate();
+            cmbSelectStatement.DataSource = stmts.DefaultView;
+            cmbSelectStatement.DisplayMember = AEpStatementTable.GetDateDBName();
+            cmbSelectStatement.ValueMember = AEpStatementTable.GetStatementKeyDBName();
+            cmbSelectStatement.DataSource = stmts.DefaultView;
+            cmbSelectStatement.EndUpdate();
 
-            tbcSelectStatement.ComboBox.SelectedIndex = -1;
+            cmbSelectStatement.SelectedIndex = -1;
         }
 
         private void ImportNewStatement(System.Object sender, EventArgs e)
@@ -161,7 +177,7 @@ namespace Ict.Petra.Client.MFinance.Gui
                 PopulateStatementCombobox();
 
                 // select the loaded bank statement and display all transactions
-                tbcSelectStatement.ComboBox.SelectedValue = StatementKey;
+                cmbSelectStatement.SetSelectedInt32(StatementKey);
             }
         }
 
@@ -223,10 +239,12 @@ namespace Ict.Petra.Client.MFinance.Gui
             GetValuesFromScreen();
             CurrentlySelectedMatch = null;
 
+            rbtGLWasChecked = rbtGL.Checked;
             rbtGiftWasChecked = rbtGift.Checked;
             rbtUnmatchedWasChecked = rbtUnmatched.Checked;
 
             pnlGiftEdit.Visible = rbtGift.Checked;
+            pnlGLEdit.Visible = rbtGL.Checked;
 
             if (rbtGift.Checked)
             {
@@ -235,16 +253,32 @@ namespace Ict.Petra.Client.MFinance.Gui
                 AEpMatchRow match = GetSelectedMatch();
                 txtDonorKey.Text = StringHelper.FormatStrToPartnerKeyString(match.DonorKey.ToString());
             }
+
+            if (rbtGL.Checked)
+            {
+                DisplayGLDetails();
+            }
         }
 
         private BankImportTDSAEpTransactionRow CurrentlySelectedTransaction = null;
         private BankImportTDSAEpMatchRow CurrentlySelectedMatch = null;
+        private bool rbtGLWasChecked = false;
         private bool rbtGiftWasChecked = false;
         private bool rbtUnmatchedWasChecked = false;
 
         /// store current selections in the a_ep_match table
         private void GetValuesFromScreen()
         {
+            if (cmbSelectStatement.GetSelectedInt32() != -1)
+            {
+                FMainDS.AEpStatement.DefaultView.RowFilter = String.Format("{0}={1}",
+                    AEpStatementTable.GetStatementKeyDBName(),
+                    cmbSelectStatement.GetSelectedInt32());
+//TODO                ((AEpStatementRow)FMainDS.AEpStatement.DefaultView[0].Row).LedgerNumber = FLedgerNumber;
+//TODO                ((AEpStatementRow)FMainDS.AEpStatement.DefaultView[0].Row).BankAccountCode = cmbSelectBankAccount.GetSelectedString();
+                FMainDS.AEpStatement.DefaultView.RowFilter = String.Empty;
+            }
+
             if (CurrentlySelectedMatch == null)
             {
                 return;
@@ -264,6 +298,14 @@ namespace Ict.Petra.Client.MFinance.Gui
                 GetGiftDetailValuesFromScreen();
 
                 // TODO: validation> calculate the sum of the gift details and check with the bank transaction amount
+            }
+
+            if (rbtGLWasChecked)
+            {
+                CurrentlySelectedMatch.Action = MFinanceConstants.BANK_STMT_STATUS_MATCHED_GL;
+                CurrentlySelectedTransaction.MatchAction = MFinanceConstants.BANK_STMT_STATUS_MATCHED_GL;
+
+                GetGLValuesFromScreen();
             }
 
             if (rbtUnmatched.Checked)
@@ -303,11 +345,17 @@ namespace Ict.Petra.Client.MFinance.Gui
                 grdGiftDetails.SelectRowInGrid(1);
                 grdAllTransactions.Focus();
             }
+            else if (match.Action == MFinanceConstants.BANK_STMT_STATUS_MATCHED_GL)
+            {
+                rbtGL.Checked = true;
+                DisplayGLDetails();
+            }
             else
             {
                 rbtUnmatched.Checked = true;
             }
 
+            rbtGLWasChecked = rbtGL.Checked;
             rbtGiftWasChecked = rbtGift.Checked;
             rbtUnmatchedWasChecked = rbtUnmatched.Checked;
         }
@@ -389,6 +437,59 @@ namespace Ict.Petra.Client.MFinance.Gui
                 }
 
                 FMainDS.ACostCentre.DefaultView.RowFilter = "";
+            }
+        }
+
+        private void DisplayGLDetails()
+        {
+            // there is only one match?
+            // TODO: support split GL transactions
+            CurrentlySelectedMatch = (BankImportTDSAEpMatchRow)FMatchView[0].Row;
+
+            if (CurrentlySelectedMatch != null)
+            {
+                if (CurrentlySelectedMatch.IsAccountCodeNull())
+                {
+                    cmbGLAccount.SelectedIndex = -1;
+                }
+                else
+                {
+                    cmbGLAccount.SetSelectedString(CurrentlySelectedMatch.AccountCode);
+                }
+
+                if (CurrentlySelectedMatch.IsCostCentreCodeNull())
+                {
+                    cmbGLCostCentre.SelectedIndex = -1;
+                }
+                else
+                {
+                    cmbGLCostCentre.SetSelectedString(CurrentlySelectedMatch.CostCentreCode);
+                }
+
+                if (!CurrentlySelectedMatch.IsReferenceNull())
+                {
+                    txtGLReference.Text = CurrentlySelectedMatch.Reference;
+                }
+
+                if (CurrentlySelectedMatch.IsNarrativeNull())
+                {
+                    txtGLNarrative.Text = CurrentlySelectedTransaction.Description;
+                }
+                else
+                {
+                    txtGLNarrative.Text = CurrentlySelectedMatch.Narrative;
+                }
+            }
+        }
+
+        private void GetGLValuesFromScreen()
+        {
+            if (CurrentlySelectedMatch != null)
+            {
+                CurrentlySelectedMatch.AccountCode = cmbGLAccount.GetSelectedString();
+                CurrentlySelectedMatch.CostCentreCode = cmbGLCostCentre.GetSelectedString();
+                CurrentlySelectedMatch.Reference = txtGLReference.Text;
+                CurrentlySelectedMatch.Narrative = txtGLNarrative.Text;
             }
         }
 
@@ -492,6 +593,27 @@ namespace Ict.Petra.Client.MFinance.Gui
             {
                 MessageBox.Show(Catalog.GetString("Problem: No gift batch has been created"));
             }
+        }
+
+        private void CreateGLBatch(System.Object sender, EventArgs e)
+        {
+            GetValuesFromScreen();
+
+            // TODO: should we first ask? also when closing the window?
+            SaveMatches(null, null);
+
+/*
+ *          Int32 GLBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGLBatch(FMainDS, FLedgerNumber, -1);
+ *
+ *          if (GLBatchNumber != -1)
+ *          {
+ *              MessageBox.Show(String.Format(Catalog.GetString("Please check GL Batch {0}"), GiftBatchNumber));
+ *          }
+ *          else
+ *          {
+ *              MessageBox.Show(Catalog.GetString("Problem: No GL batch has been created"));
+ *          }
+ */
         }
 
         private void TransactionFilterChanged(System.Object sender, EventArgs e)

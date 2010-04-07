@@ -37,6 +37,7 @@ using Ict.Petra.Shared.MFinance.GL;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.GL.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -224,59 +225,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
-
-            try
-            {
-                SubmissionResult = TSubmitChangesResult.scrOK;
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    if (!ABatchAccess.SubmitChanges(AInspectDS.ABatch, SubmitChangesTransaction,
-                            out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                }
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    if (!AJournalAccess.SubmitChanges(AInspectDS.AJournal, SubmitChangesTransaction,
-                            out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                }
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    if (!ATransactionAccess.SubmitChanges(AInspectDS.ATransaction, SubmitChangesTransaction,
-                            out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                }
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("SaveGLBatchTDS: exception " + e.Message);
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                throw new Exception(e.ToString() + " " + e.Message);
-            }
+        	// TODO: calculate debit and credit sums for journal and batch?
+        	
+        	TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
             return SubmissionResult;
         }

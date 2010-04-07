@@ -20,11 +20,14 @@ RootNode:
             ActionClick: SaveMatches
         actCreateGiftBatch:
             ActionClick: CreateGiftBatch
+        actCreateGLBatch:
+            ActionClick: CreateGLBatch
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [rgrSelectTransaction, sptTransactionDetails]
+            Controls: [cmbSelectBankAccount, rgrSelectTransaction, sptTransactionDetails]
             # add to Controls: pnlStatementInfo
+        cmbSelectBankAccount: {List=UserDefinedList}
         rgrSelectTransaction:
             Dock: Top
             OptionalValues: [ListAll, ListUnmatched, ListGift, ListGL]
@@ -53,8 +56,7 @@ RootNode:
             OnChange: NewTransactionCategory
             Dock: Left
         pnlHostCategorySpecificEdit:
-            Controls: [pnlGiftEdit]
-            #pnlGLEdit
+            Controls: [pnlGiftEdit, pnlGLEdit]
             Dock: Fill
         pnlGiftEdit:
             Dock: Fill
@@ -82,14 +84,19 @@ RootNode:
         pnlGLEdit:
             Dock: Fill
             Visible: false
-            #Controls: [cmbGLAccountCode, cmbGLCostCentre]
+            Controls: [txtGLNarrative, txtGLReference, cmbGLAccount, cmbGLCostCentre]
+        cmbGLAccount: {Label=Account, List=UserDefinedList}
+        cmbGLCostCentre: {Label=Cost Centre, List=UserDefinedList}
+        txtGLNarrative: {Label=Narrative}
+        txtGLReference: {Label=Reference}
     Menu:
         mniFile:
             mniImportNewStatement:
     Toolbar:
         tbbImportNewStatement:
         tbbSeparator:
-        tbcSelectStatement:
+        cmbSelectStatement:
         tbbSeparator:
         tbbSaveMatches:
         tbbCreateGiftBatch:
+        tbbCreateGLBatch:

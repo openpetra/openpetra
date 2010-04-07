@@ -4356,6 +4356,20 @@
                 label="banking details"
                 />
                 <!-- TODO: a_bank_account_key_i should be NOT NULL -->
+    <tablefield name="a_ledger_number_i"
+                type="integer"
+                descr="The four digit ledger number of the gift."
+                format="&gt;&gt;&gt;9"
+                label="Ledger Number"
+                help="Enter the ledger number"
+                notnull="yes"
+                initial="0"/>
+    <tablefield name="a_bank_account_code_c"
+                type="varchar"
+                descr="The bank account for creating GL transactions against"
+                format="X(8)"
+                label="Account Code"
+                help="Enter an account code."/>
     <tablefield name="a_date_d"
                 type="date"
                 descr="The date of this statement"
@@ -4400,6 +4414,11 @@
                 thisFields="a_currency_code_c"
                 otherTable="a_currency"
                 otherFields="a_currency_code_c"/>
+    <foreignkey name="a_ep_statement_fk3"
+                descr=""
+                thisFields="a_ledger_number_i, a_bank_account_code_c"
+                otherTable="a_account"
+                otherFields="a_ledger_number_i, a_account_code_c"/>
   </table>
   <table name="a_ep_match"
          descr="the matches that can be used to identify recurring gift or GL transactions"
@@ -4602,7 +4621,12 @@
                 format="Yes/No"
                 label="Admin Charge"
                 initial="no"/>
-     <tablefield name="a_reference_c"
+    <tablefield name="a_narrative_c"
+                type="varchar"
+                descr=""
+                format="X(120)"
+                label="Narrative"/>
+    <tablefield name="a_reference_c"
                 type="varchar"
                 descr="Reference number/code for the transaction"
                 format="X(10)"

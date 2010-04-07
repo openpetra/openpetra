@@ -220,7 +220,6 @@ namespace Ict.Petra.Shared
             list.Add("p_banking_details");
             list.Add("p_partner_banking_details");
             list.Add("p_banking_details_usage");
-            list.Add("a_ep_statement");
             list.Add("p_partner_type");
             list.Add("p_partner_relationship");
             list.Add("p_partner_ledger");
@@ -231,6 +230,7 @@ namespace Ict.Petra.Shared
             list.Add("p_partner_contact");
             list.Add("p_partner_contact_attribute");
             list.Add("a_account");
+            list.Add("a_ep_statement");
             list.Add("a_account_property");
             list.Add("a_account_hierarchy");
             list.Add("a_account_hierarchy_detail");
