@@ -280,16 +280,12 @@ namespace Ict.Tools.CodeGeneration
             List <XmlNode>children = TYml2Xml.GetChildren(curNode, true);
 
             XmlNode rootBarNode = FCodeStorage.GetRootControl("tbr").xmlNode;
-            bool UsePreviousNode = false;
 
             foreach (XmlNode childNode in children)
             {
                 // the check for tbb works around problems with elements list, shortcutkeys
-                XmlNode prevNode = childNode;
-
                 if (childNode.Name.StartsWith("tbb") || childNode.Name.StartsWith("tbc"))
                 {
-                    UsePreviousNode = true;
                     string tbbName = childNode.Name;
 
                     if (tbbName == "tbbSeparator")
@@ -301,14 +297,30 @@ namespace Ict.Tools.CodeGeneration
 
                     TControlDef tbbItem = FCodeStorage.AddControl(childNode);
                     tbbItem.parentName = parentName;
-                }
 
-                if (UsePreviousNode)
+                    rootBarNode.AppendChild(childNode);
+                }
+                else
                 {
-                    rootBarNode.AppendChild(prevNode);
-                }
+                    // use ToolStripControlHost to host any control
+                    TControlDef tbbItem = FCodeStorage.AddControl(childNode);
+                    string prefix = TControlDef.GetLowerCasePrefix(childNode.Name);
+                    tbbItem.parentName = "tch" + childNode.Name.Substring(prefix.Length);
 
-                UsePreviousNode = false;
+                    XmlNode controlHostNode = rootBarNode.OwnerDocument.CreateElement(tbbItem.parentName);
+                    TYml2Xml.SetAttribute(controlHostNode, "depth", TYml2Xml.GetAttribute(childNode, "depth"));
+                    TYml2Xml.SetAttribute(controlHostNode, "HostedControl", childNode.Name);
+                    rootBarNode.AppendChild(controlHostNode);
+
+                    XmlNode controlsNode = rootBarNode.OwnerDocument.CreateElement("Controls");
+                    controlHostNode.AppendChild(controlsNode);
+                    XmlNode elementNode = rootBarNode.OwnerDocument.CreateElement("Element");
+                    controlsNode.AppendChild(elementNode);
+                    TYml2Xml.SetAttribute(elementNode, "name", childNode.Name);
+
+                    TControlDef hostItem = FCodeStorage.AddControl(controlHostNode);
+                    hostItem.parentName = parentName;
+                }
             }
 
             return true;

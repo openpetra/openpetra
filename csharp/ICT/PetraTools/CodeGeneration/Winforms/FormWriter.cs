@@ -96,6 +96,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new MenuGenerator());
                 AvailableControlGenerators.Add(new MenuItemGenerator());
                 AvailableControlGenerators.Add(new MenuItemSeparatorGenerator());
+                AvailableControlGenerators.Add(new ToolbarControlHostGenerator());
                 AvailableControlGenerators.Add(new ToolbarTextBoxGenerator());
                 AvailableControlGenerators.Add(new ToolbarLabelGenerator());
                 AvailableControlGenerators.Add(new ToolbarButtonGenerator());

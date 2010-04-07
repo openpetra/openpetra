@@ -1632,6 +1632,59 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
     }
 
+    public class ToolbarControlHostGenerator : TControlGenerator
+    {
+        public ToolbarControlHostGenerator()
+            : base("tch", typeof(ToolStripControlHost))
+        {
+            FAutoSize = true;
+            FLocation = false;
+            FGenerateLabel = false;
+        }
+
+        public override void GenerateDeclaration(IFormWriter writer, TControlDef ctrl)
+        {
+            string hostedControlName = TYml2Xml.GetAttribute(ctrl.xmlNode, "HostedControl");
+            TControlDef hostedCtrl = FCodeStorage.FindOrCreateControl(hostedControlName, ctrl.controlName);
+
+            IControlGenerator ctrlGenerator = writer.FindControlGenerator(hostedCtrl.xmlNode);
+
+            // add control itself
+            if ((hostedCtrl != null) && (ctrlGenerator != null))
+            {
+                ctrlGenerator.GenerateDeclaration(writer, hostedCtrl);
+            }
+
+            string localControlType = ControlType;
+
+            if (ctrl.controlType.Length > 0)
+            {
+                localControlType = ctrl.controlType;
+            }
+
+            writer.Template.AddToCodelet("CONTROLDECLARATION", "private " + localControlType + " " + ctrl.controlName + ";" + Environment.NewLine);
+            writer.Template.AddToCodelet("CONTROLCREATION", "this." + ctrl.controlName + " = new " + localControlType + "(" +
+                TYml2Xml.GetAttribute(ctrl.xmlNode, "HostedControl") + ");" + Environment.NewLine);
+        }
+
+        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        {
+            // first create the hosted control
+            string hostedControlName = TYml2Xml.GetAttribute(ctrl.xmlNode, "HostedControl");
+            TControlDef hostedCtrl = FCodeStorage.FindOrCreateControl(hostedControlName, ctrl.controlName);
+
+            IControlGenerator ctrlGenerator = writer.FindControlGenerator(hostedCtrl.xmlNode);
+
+            // add control itself
+            if ((hostedCtrl != null) && (ctrlGenerator != null))
+            {
+                ctrlGenerator.SetControlProperties(writer, hostedCtrl);
+            }
+
+            base.SetControlProperties(writer, ctrl);
+        }
+    }
+
     public class ToolbarTextBoxGenerator : TControlGenerator
     {
         public ToolbarTextBoxGenerator()
