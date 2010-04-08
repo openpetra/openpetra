@@ -35,28 +35,56 @@ namespace Ict.Common.Verification
         Resv_Noncritical
     };
 
+    public interface IResultInterface
+    {
+        object ResultContext
+        {
+            get;
+        }
+
+        String ResultText
+        {
+            get;
+        }
+
+        String ResultTextCaption
+        {
+            get;
+        }
+
+        String ResultCode
+        {
+            get;
+        }
+
+        TResultSeverity ResultSeverity
+        {
+            get;
+        }
+    }
+
     /// <summary>
     /// A TVerificationResult object stores information about failed data
     /// verification and is passed (serialised) from the Server to the Client.
     /// It is made to be stored in the TVerificationResultCollection.
     /// </summary>
     [Serializable]
-    public class TVerificationResult
+    public class TVerificationResult : object, IResultInterface
     {
         /// <summary>DB Field or other context that describes where the data verification failed (use '[ODBC ...]' instead to signal a database error (such as a failed call to a stored procedure)</summary>
-        public String FResultContext;
+        protected object FResultContext;
 
         /// <summary>Verification failure explanation</summary>
-        public String FResultText;
+        protected String FResultText;
 
         /// <summary>Verification failure caption</summary>
-        public String FResultTextCaption;
+        protected String FResultTextCaption;
 
         /// <summary>Error code if verification failure</summary>
-        public String FResultCode;
+        protected String FResultCode;
 
         /// <summary>Signals whether the verification failure prevented saving of data (critical) or the verification result is only for information purposes (noncritical).</summary>
-        public TResultSeverity FResultSeverity;
+        protected TResultSeverity FResultSeverity;
 
         /// <summary>
         /// We need this constructor so that inherited Classes can get by not having a default constructor...
@@ -88,13 +116,13 @@ namespace Ict.Common.Verification
         /// <param name="AResultSeverity">is this an error or just a warning</param>
         public TVerificationResult(String AResultContext,
             String AResultText,
-            String AResultCaption,
+            String AResultTextCaption,
             String AResultCode,
             TResultSeverity AResultSeverity)
         {
             FResultContext = AResultContext;
             FResultText = AResultText;
-            FResultTextCaption = AResultCaption;
+            FResultTextCaption = AResultTextCaption;
             FResultCode = AResultCode;
             FResultSeverity = AResultSeverity;
         }
@@ -103,18 +131,53 @@ namespace Ict.Common.Verification
         /// get the context
         /// </summary>
         /// <returns></returns>
-        public object ResultContext()
+        public object ResultContext
         {
-            return FResultContext;
+            get
+            {
+                return FResultContext;
+            }
         }
 
         /// <summary>
         /// get the explanation for the verification failure
         /// </summary>
         /// <returns></returns>
-        public String ResultText()
+        public String ResultText
         {
-            return FResultText;
+            get
+            {
+                return FResultText;
+            }
+        }
+
+        public String ResultTextCaption
+        {
+            get
+            {
+                return FResultTextCaption;
+            }
+        }
+
+        public String ResultCode
+        {
+            get
+            {
+                return FResultCode;
+            }
+
+            set
+            {
+                FResultCode = value;
+            }
+        }
+
+        public TResultSeverity ResultSeverity
+        {
+            get
+            {
+                return FResultSeverity;
+            }
         }
     }
 
@@ -124,22 +187,17 @@ namespace Ict.Common.Verification
     /// verification in a Form or UserControl on the Client side.
     /// It is made to be stored in the TVerificationResultCollection.
     /// </summary>
-    public class TScreenVerificationResult : TVerificationResult
+    public class TScreenVerificationResult : TVerificationResult, IResultInterface
     {
-        /// <summary>
-        /// the context for the verification; here of type System.Object
-        /// </summary>
-        public new System.Object FResultContext;
-
         /// <summary>
         /// specify the column where the error verification happened
         /// </summary>
-        public DataColumn FResultColumn;
+        private DataColumn FResultColumn;
 
         /// <summary>
         /// specify the control that failed the verification
         /// </summary>
-        public Control FResultControl;
+        private Control FResultControl;
 
         /// <summary>
         /// constructor
@@ -190,21 +248,27 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// the context of the verification failure
+        /// the DataColumn of the verification failure
         /// </summary>
         /// <returns></returns>
-        public new object ResultContext()
+        public DataColumn ResultColumn
         {
-            return FResultContext;
+            get
+            {
+                return FResultColumn;
+            }
         }
 
         /// <summary>
-        /// get the explanation for the verification failure
+        /// get the Control for the verification failure
         /// </summary>
         /// <returns></returns>
-        public new String ResultText()
+        public Control ResultControl
         {
-            return FResultText;
+            get
+            {
+                return FResultControl;
+            }
         }
     }
 
@@ -235,7 +299,7 @@ namespace Ict.Common.Verification
         /// <summary>
         /// access the elements of the verification collection
         /// </summary>
-        public TVerificationResult this[int index]
+        public IResultInterface this[int index]
         {
             get
             {
@@ -253,7 +317,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="value">the verification object to be added</param>
         /// <returns></returns>
-        public int Add(TVerificationResult value)
+        public int Add(IResultInterface value)
         {
             return List.Add(value);
         }
@@ -278,7 +342,7 @@ namespace Ict.Common.Verification
         {
             foreach (TVerificationResult v in List)
             {
-                if (v.FResultSeverity == TResultSeverity.Resv_Critical)
+                if (v.ResultSeverity == TResultSeverity.Resv_Critical)
                 {
                     return true;
                 }
@@ -304,12 +368,12 @@ namespace Ict.Common.Verification
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
                 si = (TScreenVerificationResult)(List[Counter]);
-                AErrorMessages = AErrorMessages + si.FResultText + Environment.NewLine + Environment.NewLine;
+                AErrorMessages = AErrorMessages + si.ResultText + Environment.NewLine + Environment.NewLine;
 
                 if (AFirstErrorControl == null)
                 {
-                    AFirstErrorControl = si.FResultControl;
-                    AFirstErrorContext = si.FResultContext;
+                    AFirstErrorControl = si.ResultControl;
+                    AFirstErrorContext = si.ResultContext;
                 }
             }
         }
@@ -331,16 +395,41 @@ namespace Ict.Common.Verification
             {
                 si = (TScreenVerificationResult)(List[Counter]);
 
-                if (si.ResultContext() == AResultContext)
+                if (si.ResultContext == AResultContext)
                 {
-                    AErrorMessages = AErrorMessages + si.FResultText + Environment.NewLine + Environment.NewLine;
+                    AErrorMessages = AErrorMessages + si.ResultText + Environment.NewLine + Environment.NewLine;
 
                     if (AFirstErrorControl == null)
                     {
-                        AFirstErrorControl = si.FResultControl;
+                        AFirstErrorControl = si.ResultControl;
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns a formatted String that contains information about all
+        /// <see cref="TVerificationResult" />s in the <see cref="TVerificationResultCollection" />.
+        /// </summary>
+        /// <returns>Formatted String that contains information about all
+        /// <see cref="TVerificationResult" />s in the <see cref="TVerificationResultCollection" />.</returns>
+        public string BuildVerificationResultString()
+        {
+            const String fmt = "  Context: {0}; Severity: {1}.\r\n    Problem: {2}\r\n    Code: {3}";
+            TVerificationResult si;
+            string ReturnValue = String.Empty;
+
+            for (int i = 0; i <= Count - 1; i += 1)
+            {
+                si = (TVerificationResult)(List[i]);
+
+                ReturnValue = ReturnValue +
+                              (String.Format(fmt,
+                                   new object[] { si.ResultContext, si.ResultSeverity, si.ResultText, si.ResultCode })) +
+                              Environment.NewLine + Environment.NewLine;
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -348,7 +437,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="value">check list for this value</param>
         /// <returns>true if the value is already there</returns>
-        public bool Contains(TVerificationResult value)
+        public bool Contains(IResultInterface value)
         {
             return List.Contains(value);
         }
@@ -361,14 +450,14 @@ namespace Ict.Common.Verification
         /// <returns>true if an error from this context is already there</returns>
         public bool Contains(object AResultContext)
         {
-            TVerificationResult si;
+            IResultInterface si;
             Boolean Found = false;
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
                 si = (TVerificationResult)(List[Counter]);
 
-                if (si.ResultContext() == AResultContext)
+                if (si.ResultContext == AResultContext)
                 {
                     Found = true;
                     break;
@@ -392,7 +481,7 @@ namespace Ict.Common.Verification
             {
                 si = (TScreenVerificationResult)(List[Counter]);
 
-                if (si.FResultColumn == AResultColumn)
+                if (si.ResultColumn == AResultColumn)
                 {
                     Found = true;
                     break;
@@ -407,7 +496,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="Index">which result should be returned</param>
         /// <returns>the selected result</returns>
-        public TVerificationResult GetVerificationResult(int Index)
+        public IResultInterface GetVerificationResult(int Index)
         {
             return (TVerificationResult)List[Index];
         }
@@ -417,7 +506,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="Index">index to change the verification result</param>
         /// <param name="Value">the new value</param>
-        public void SetVerificationResult(int Index, TVerificationResult Value)
+        public void SetVerificationResult(int Index, IResultInterface Value)
         {
             List[Index] = Value;
         }
@@ -427,7 +516,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="value">value to look for</param>
         /// <returns>index of the value</returns>
-        public int IndexOf(TVerificationResult value)
+        public int IndexOf(IResultInterface value)
         {
             return List.IndexOf(value);
         }
@@ -437,7 +526,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="index">position to insert after</param>
         /// <param name="value">value to add</param>
-        public void Insert(int index, TVerificationResult value)
+        public void Insert(int index, IResultInterface value)
         {
             List.Insert(index, value);
         }
@@ -458,7 +547,7 @@ namespace Ict.Common.Verification
             {
                 si = (TScreenVerificationResult)(List[Counter]);
 
-                if (si.FResultColumn == AResultColumn)
+                if (si.ResultColumn == AResultColumn)
                 {
                     ReturnValue = si;
                     break;
@@ -473,18 +562,18 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="AResultContext">context to look for</param>
         /// <returns>the first result for that context</returns>
-        public TVerificationResult FindBy(object AResultContext)
+        public IResultInterface FindBy(object AResultContext)
         {
-            TVerificationResult ReturnValue;
-            TVerificationResult si;
+            IResultInterface ReturnValue;
+            IResultInterface si;
 
             ReturnValue = null;
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TVerificationResult)(List[Counter]);
+                si = (IResultInterface)(List[Counter]);
 
-                if (si.ResultContext() == AResultContext)
+                if (si.ResultContext == AResultContext)
                 {
                     ReturnValue = si;
                     break;
@@ -499,9 +588,9 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="index">index to identify the result</param>
         /// <returns>the result</returns>
-        public TVerificationResult FindBy(int index)
+        public IResultInterface FindBy(int index)
         {
-            return (TVerificationResult)(List[index]);
+            return (IResultInterface)(List[index]);
         }
 
         /// <summary>
@@ -536,8 +625,8 @@ namespace Ict.Common.Verification
                 si = (TVerificationResult)(List[i]);
                 System.Console.WriteLine(String.Format(
                         fmt,
-                        new object[] { si.FResultContext, si.FResultText,
-                                       si.FResultSeverity }
+                        new object[] { si.ResultContext, si.ResultText,
+                                       si.ResultSeverity }
                         ));
             }
         }
@@ -546,7 +635,7 @@ namespace Ict.Common.Verification
         /// remove a result from the list
         /// </summary>
         /// <param name="value">value to delete</param>
-        public void Remove(TVerificationResult value)
+        public void Remove(IResultInterface value)
         {
             List.Remove(value);
         }
@@ -563,7 +652,7 @@ namespace Ict.Common.Verification
             {
                 si = (TScreenVerificationResult)(List[Counter]);
 
-                if (si.FResultColumn == AResultColumn)
+                if (si.ResultColumn == AResultColumn)
                 {
                     List.Remove(si);
                     break;
@@ -585,7 +674,7 @@ namespace Ict.Common.Verification
                 {
                     si = (TScreenVerificationResult)(List[Counter]);
 
-                    if (si.FResultColumn.ColumnName == AResultColumnName)
+                    if (si.ResultColumn.ColumnName == AResultColumnName)
                     {
                         List.Remove(si);
                         break;
@@ -612,26 +701,26 @@ namespace Ict.Common.Verification
             {
                 si = (TScreenVerificationResult)(List[Counter]);
 
-                // MessageBox.Show(si.FResultColumn.ToString + ' is found at array count ' + Counter.ToString);
-                if (si.FResultContext == AResultContext)
+                // MessageBox.Show(si.ResultColumn.ToString + ' is found at array count ' + Counter.ToString);
+                if (si.ResultContext == AResultContext)
                 {
                     // MessageBox.Show('Length(siarray): ' + Convert.ToInt16(Length(siarray)).ToString);
                     siarray.Add(si);
 
-                    // MessageBox.Show('Added ' + si.FResultColumn.ToString + ' at array count ' + Counter.ToString);
+                    // MessageBox.Show('Added ' + si.ResultColumn.ToString + ' at array count ' + Counter.ToString);
                 }
             }
 
             for (int Counter2 = 0; Counter2 <= siarray.Count - 1; Counter2 += 1)
             {
-                // MessageBox.Show('List.Remove of ' + siarray[Counter2].FResultColumn.ToString + ' at array count ' + Counter2.ToString);
+                // MessageBox.Show('List.Remove of ' + siarray[Counter2].ResultColumn.ToString + ' at array count ' + Counter2.ToString);
                 List.Remove((TScreenVerificationResult)siarray[Counter2]);
             }
         }
 
         private void VerifyType(object value)
         {
-            if (!(value is TVerificationResult))
+            if (!(value is IResultInterface))
             {
                 throw new ArgumentException("Invalid Type");
             }
@@ -658,7 +747,7 @@ namespace Ict.Common.Verification
             object PreviousProposedValue = e.ProposedValue;
 
             e.Row.SetColumnError(e.Column,
-                AVerificationResultEntry.FResultText + "//[[" + AControlName + "]]");
+                AVerificationResultEntry.ResultText + "//[[" + AControlName + "]]");
 
             /*
              * SetColumnError automatically resets the value of the DataColumn.

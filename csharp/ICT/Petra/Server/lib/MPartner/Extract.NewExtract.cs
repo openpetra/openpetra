@@ -77,7 +77,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
         /// </summary>
         /// <param name="AExtractName">Name of the extract to be created</param>
         /// <param name="AExtractDescription">Description of the extract to be created</param>
-        /// <param name="ANewExtractID">Extract Id of the new created extract. -1 if not successfull</param>
+		/// <param name="AExtractID">Extract Id of the new created extract. -1 if not successfull</param>
         /// <param name="AExtractAlreadyExists">True if there is already an extract with the given name. Otherwise false</param>
         /// <param name="AVerificationResults">Nil if all verifications are OK and all DB calls
         /// succeded, otherwise filled with 1..n TVerificationResult objects
@@ -85,7 +85,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
         /// <returns>true if the new extract was created. Otherwise false</returns>
         public bool CreateNewExtract(String AExtractName,
             String AExtractDescription,
-            out Int32 ANewExtractID,
+                             out Int32 AExtractID, 
             out Boolean AExtractAlreadyExists,
             out TVerificationResultCollection AVerificationResults)
         {
@@ -93,13 +93,13 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
 
             Success = TExtractsHandling.CreateNewExtract(AExtractName,
                 AExtractDescription,
-                out ANewExtractID,
+		        out AExtractID,
                 out AExtractAlreadyExists,
                 out AVerificationResults);
 
             if (Success)
             {
-                FNewExtractID = ANewExtractID;
+                FNewExtractID = AExtractID;
             }
 
             return Success;
@@ -126,7 +126,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                     }
                     else
                     {
-                        throw new ApplicationException("Cannot delete Extract. Reason: " + VerificationResult.ResultText());
+                        throw new ApplicationException("Cannot delete Extract. Reason: " + VerificationResult.ResultText);
                     }
                 }
             }

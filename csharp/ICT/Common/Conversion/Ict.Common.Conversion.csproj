@@ -1,18 +1,19 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{31A5F128-F78F-4957-AA0E-B0F6005A2614}</ProjectGuid>
+    <ProjectGuid>{2CCE2158-4FBB-4A32-BC01-5B6A75526802}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>Ict.Common.IO</RootNamespace>
-    <AssemblyName>Ict.Common.IO</AssemblyName>
-    <BaseIntermediateOutputPath>..\_bin\Debug\obj\</BaseIntermediateOutputPath>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <RootNamespace>Ict.Common.Conversion</RootNamespace>
+    <AssemblyName>Ict.Common.Conversion</AssemblyName>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\berndr\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <BaseIntermediateOutputPath>..\_bin\</BaseIntermediateOutputPath>
+    <DocumentationFile>..\_bin\Debug\Ict.Common.Conversion.xml</DocumentationFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DocumentationFile>..\_bin\Debug\Ict.Common.IO.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\_bin\Debug\</OutputPath>
@@ -21,14 +22,17 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <IntermediateOutputPath>..\_bin\Debug\</IntermediateOutputPath>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\_bin\Release\</OutputPath>
+    <OutputPath>..\_bin\Release</OutputPath>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -39,36 +43,22 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\..\..\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Posix">
-      <HintPath>..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Csv2Xml.cs" />
-    <Compile Include="Encryption.cs" />
-    <Compile Include="Excel.cs" />
-    <Compile Include="FileHelper.cs" />
-    <Compile Include="ImportExportDialogs.cs" />
-    <Compile Include="PackTools.cs" />
-    <Compile Include="PatchTools.cs" />
-    <Compile Include="SmtpEmail.cs" />
-    <Compile Include="HTTPUtils.cs" />
-    <Compile Include="TextFile.cs" />
-    <Compile Include="XmlParser.cs" />
-    <Compile Include="Yml2Xml.cs" />
+    <Compile Include="Date.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ict.Common.csproj">
       <Project>{ED73B0A3-AC08-4FB0-A18C-2816C9AC5588}</Project>
       <Name>Ict.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Verification\Ict.Common.Verification.csproj">
+      <Project>{6DC5901F-3F0A-4B87-A258-80FD0794A4DB}</Project>
+      <Name>Ict.Common.Verification</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

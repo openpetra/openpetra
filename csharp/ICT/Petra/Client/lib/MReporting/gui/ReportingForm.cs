@@ -707,16 +707,16 @@ namespace Ict.Petra.Client.MReporting.Gui
                     {
                         VerificationResultEntry = ((TVerificationResult)VerificationResultEnum.Current);
 
-                        if (VerificationResultEntry.FResultContext.Length > 0)
+                        if (VerificationResultEntry.ResultContext.ToString().Length > 0)
                         {
-                            UserMessage = UserMessage + "  * [" + VerificationResultEntry.FResultContext + "] ";
+                            UserMessage = UserMessage + "  * [" + VerificationResultEntry.ResultContext + "] ";
                         }
                         else
                         {
                             UserMessage = UserMessage + "  * ";
                         }
 
-                        UserMessage = UserMessage + VerificationResultEntry.FResultText + Environment.NewLine + Environment.NewLine;
+                        UserMessage = UserMessage + VerificationResultEntry.ResultText + Environment.NewLine + Environment.NewLine;
                     }
 
                     MessageBox.Show(UserMessage, "Error");

@@ -193,7 +193,13 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="ATypeWhichRaisesException"></param>
         public static void MsgSecurityException(ESecurityPartnerAccessDeniedException AException, System.Type ATypeWhichRaisesException)
         {
-            const string MessageAccessDenied = "Access to Partner {0}denied.";
+            MessageBox.Show(MsgSecurityExceptionString(AException, ATypeWhichRaisesException), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
+                MessageBoxIcon.Information);            
+        }
+        
+        public static string MsgSecurityExceptionString(ESecurityPartnerAccessDeniedException AException, System.Type ATypeWhichRaisesException)
+        {
+            const string MESSAGE_ACCESS_DENIED = "Access to Partner {0}denied.";
             string SpecificMessageText;
             TPartnerAccessLevelEnum AccessLevel;
 
@@ -201,7 +207,7 @@ namespace Ict.Petra.Client.App.Gui
                 typeof(TPartnerAccessLevelEnum),
                 Enum.GetName(typeof(TPartnerAccessLevelEnum), AException.AccessLevel));
 
-            SpecificMessageText = String.Format(MessageAccessDenied,
+            SpecificMessageText = String.Format(MESSAGE_ACCESS_DENIED, 
                 Environment.NewLine + "    " + AException.PartnerShortName +
                 " [" + AException.PartnerKey.ToString() + "]" + Environment.NewLine);
 
@@ -219,8 +225,7 @@ namespace Ict.Petra.Client.App.Gui
                     break;
             }
 
-            MessageBox.Show(SpecificMessageText, Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            return SpecificMessageText;
         }
 
         /// <summary>
@@ -337,9 +342,9 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="ATypeWhichRaisesException"></param>
         public static void MsgGeneralError(TVerificationResult AVerificationResult, System.Type ATypeWhichRaisesException)
         {
-            MsgGeneralError(AVerificationResult.FResultText,
-                AVerificationResult.FResultTextCaption,
-                AVerificationResult.FResultCode,
+            MsgGeneralError(AVerificationResult.ResultText,
+                AVerificationResult.ResultTextCaption,
+                AVerificationResult.ResultCode,
                 ATypeWhichRaisesException);
         }
 
