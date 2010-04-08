@@ -1890,17 +1890,21 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
         /// generated method from connector
         public Int32 CreateGiftBatch(BankImportTDS AMainDS,
                                      Int32 ALedgerNumber,
-                                     Int32 AGiftBatchNumber)
+                                     Int32 AStatementKey,
+                                     Int32 AGiftBatchNumber,
+                                     out TVerificationResultCollection AVerificationResult)
         {
-            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.CreateGiftBatch(AMainDS, ALedgerNumber, AGiftBatchNumber);
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.CreateGiftBatch(AMainDS, ALedgerNumber, AStatementKey, AGiftBatchNumber, out AVerificationResult);
         }
 
         /// generated method from connector
         public Int32 CreateGLBatch(BankImportTDS AMainDS,
                                    Int32 ALedgerNumber,
-                                   Int32 ABatchNumber)
+                                   Int32 AStatementKey,
+                                   Int32 AGLBatchNumber,
+                                   out TVerificationResultCollection AVerificationResult)
         {
-            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.CreateGLBatch(AMainDS, ALedgerNumber, ABatchNumber);
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.CreateGLBatch(AMainDS, ALedgerNumber, AStatementKey, AGLBatchNumber, out AVerificationResult);
         }
 
     }

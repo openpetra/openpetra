@@ -28,6 +28,7 @@ using System.Data;
 using System.Windows.Forms;
 using Mono.Unix;
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
@@ -76,11 +77,23 @@ namespace Ict.Petra.Client.MFinance.Gui
             SaveMatches(null, null);
 
             CurrentlySelectedMatch = null;
+            CurrentStatement = null;
+
+            if (cmbSelectStatement.GetSelectedInt32() == -1)
+            {
+                return;
+            }
+
+            FMainDS.AEpStatement.DefaultView.RowFilter = String.Format("{0}={1}",
+                AEpStatementTable.GetStatementKeyDBName(),
+                cmbSelectStatement.GetSelectedInt32());
+            CurrentStatement = (AEpStatementRow)FMainDS.AEpStatement.DefaultView[0].Row;
+            FMainDS.AEpStatement.DefaultView.RowFilter = String.Empty;
 
             // load the transactions of the selected statement, and the matches
-            FMainDS =
+            FMainDS.Merge(
                 TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(
-                    cmbSelectStatement.GetSelectedInt32(), FLedgerNumber);
+                    CurrentStatement.StatementKey, FLedgerNumber));
 
             grdAllTransactions.Columns.Clear();
             grdAllTransactions.AddTextColumn(Catalog.GetString("Nr"), FMainDS.AEpTransaction.ColumnOrder, 40);
@@ -111,16 +124,17 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             TFinanceControls.InitialiseAccountList(ref cmbSelectBankAccount, FLedgerNumber, true, false, true, true);
 
-            if (cmbSelectStatement.GetSelectedInt32() != -1)
+            if (CurrentStatement != null)
             {
                 FMainDS.AEpStatement.DefaultView.RowFilter = String.Format("{0}={1}",
                     AEpStatementTable.GetStatementKeyDBName(),
-                    cmbSelectStatement.GetSelectedInt32());
-                cmbSelectBankAccount.SetSelectedString(((AEpStatementRow)FMainDS.AEpStatement.DefaultView[0].Row).BankAccountCode);
+                    CurrentStatement.StatementKey);
+                cmbSelectBankAccount.SetSelectedString(CurrentStatement.BankAccountCode);
                 FMainDS.AEpStatement.DefaultView.RowFilter = string.Empty;
             }
 
             rbtListAll.Checked = true;
+            TransactionFilterChanged(null, null);
             grdAllTransactions.SelectRowInGrid(1);
         }
 
@@ -135,6 +149,8 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             // update the combobox with the bank statements
             AEpStatementTable stmts = TRemote.MFinance.ImportExport.WebConnectors.GetImportedBankStatements(dateStatementsFrom);
+
+            FMainDS.Merge(stmts);
 
             cmbSelectStatement.BeginUpdate();
             cmbSelectStatement.DataSource = stmts.DefaultView;
@@ -178,6 +194,7 @@ namespace Ict.Petra.Client.MFinance.Gui
 
                 // select the loaded bank statement and display all transactions
                 cmbSelectStatement.SetSelectedInt32(StatementKey);
+                SelectBankStatement(null, null);
             }
         }
 
@@ -260,6 +277,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             }
         }
 
+        private AEpStatementRow CurrentStatement = null;
         private BankImportTDSAEpTransactionRow CurrentlySelectedTransaction = null;
         private BankImportTDSAEpMatchRow CurrentlySelectedMatch = null;
         private bool rbtGLWasChecked = false;
@@ -269,14 +287,10 @@ namespace Ict.Petra.Client.MFinance.Gui
         /// store current selections in the a_ep_match table
         private void GetValuesFromScreen()
         {
-            if (cmbSelectStatement.GetSelectedInt32() != -1)
+            if (CurrentStatement != null)
             {
-                FMainDS.AEpStatement.DefaultView.RowFilter = String.Format("{0}={1}",
-                    AEpStatementTable.GetStatementKeyDBName(),
-                    cmbSelectStatement.GetSelectedInt32());
-//TODO                ((AEpStatementRow)FMainDS.AEpStatement.DefaultView[0].Row).LedgerNumber = FLedgerNumber;
-//TODO                ((AEpStatementRow)FMainDS.AEpStatement.DefaultView[0].Row).BankAccountCode = cmbSelectBankAccount.GetSelectedString();
-                FMainDS.AEpStatement.DefaultView.RowFilter = String.Empty;
+                CurrentStatement.LedgerNumber = FLedgerNumber;
+                CurrentStatement.BankAccountCode = cmbSelectBankAccount.GetSelectedString();
             }
 
             if (CurrentlySelectedMatch == null)
@@ -583,7 +597,12 @@ namespace Ict.Petra.Client.MFinance.Gui
             // TODO: should we first ask? also when closing the window?
             SaveMatches(null, null);
 
-            Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS, FLedgerNumber, -1);
+            TVerificationResultCollection VerificationResult;
+            Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
+                FLedgerNumber,
+                CurrentStatement.StatementKey,
+                -1,
+                out VerificationResult);
 
             if (GiftBatchNumber != -1)
             {
@@ -591,7 +610,18 @@ namespace Ict.Petra.Client.MFinance.Gui
             }
             else
             {
-                MessageBox.Show(Catalog.GetString("Problem: No gift batch has been created"));
+                if (VerificationResult != null)
+                {
+                    MessageBox.Show(
+                        VerificationResult.GetVerificationResult(0).FResultText,
+                        Catalog.GetString("Problem: No gift batch has been created"));
+                }
+                else
+                {
+                    MessageBox.Show(
+                        VerificationResult.GetVerificationResult(0).FResultText,
+                        Catalog.GetString("Problem: No gift batch has been created"));
+                }
             }
         }
 
@@ -602,18 +632,32 @@ namespace Ict.Petra.Client.MFinance.Gui
             // TODO: should we first ask? also when closing the window?
             SaveMatches(null, null);
 
-/*
- *          Int32 GLBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGLBatch(FMainDS, FLedgerNumber, -1);
- *
- *          if (GLBatchNumber != -1)
- *          {
- *              MessageBox.Show(String.Format(Catalog.GetString("Please check GL Batch {0}"), GiftBatchNumber));
- *          }
- *          else
- *          {
- *              MessageBox.Show(Catalog.GetString("Problem: No GL batch has been created"));
- *          }
- */
+            TVerificationResultCollection VerificationResult;
+            Int32 GLBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGLBatch(FMainDS,
+                FLedgerNumber,
+                CurrentStatement.StatementKey,
+                -1,
+                out VerificationResult);
+
+            if (GLBatchNumber != -1)
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("Please check GL Batch {0}"), GLBatchNumber));
+            }
+            else
+            {
+                if (VerificationResult != null)
+                {
+                    MessageBox.Show(
+                        VerificationResult.GetVerificationResult(0).FResultText,
+                        Catalog.GetString("Problem: No GL batch has been created"));
+                }
+                else
+                {
+                    MessageBox.Show(
+                        VerificationResult.GetVerificationResult(0).FResultText,
+                        Catalog.GetString("Problem: No GL batch has been created"));
+                }
+            }
         }
 
         private void TransactionFilterChanged(System.Object sender, EventArgs e)
@@ -630,26 +674,34 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             if (rbtListAll.Checked)
             {
-                FTransactionView.RowFilter = "";
+                FTransactionView.RowFilter = String.Format("{0}={1}",
+                    AEpStatementTable.GetStatementKeyDBName(),
+                    CurrentStatement.StatementKey);
             }
             else if (rbtListGift.Checked)
             {
                 // TODO: allow splitting a transaction, one part is GL/AP, the other is a donation?
                 //       at Top Level: split transaction, results into 2 rows in aeptransaction (not stored). Merge Transactions again?
 
-                FTransactionView.RowFilter = String.Format("{0}='{1}'",
+                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                    AEpStatementTable.GetStatementKeyDBName(),
+                    CurrentStatement.StatementKey,
                     BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
                     MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT);
             }
             else if (rbtListUnmatched.Checked)
             {
-                FTransactionView.RowFilter = String.Format("{0}='{1}'",
+                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                    AEpStatementTable.GetStatementKeyDBName(),
+                    CurrentStatement.StatementKey,
                     BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
                     MFinanceConstants.BANK_STMT_STATUS_UNMATCHED);
             }
             else if (rbtListGL.Checked)
             {
-                FTransactionView.RowFilter = String.Format("{0}='{1}'",
+                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                    AEpStatementTable.GetStatementKeyDBName(),
+                    CurrentStatement.StatementKey,
                     BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
                     MFinanceConstants.BANK_STMT_STATUS_MATCHED_GL);
             }

@@ -318,9 +318,23 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// create a gift batch for the matched gifts, and return the gift batch number
         /// </summary>
         /// <returns>the gift batch number</returns>
-        static public Int32 CreateGiftBatch(BankImportTDS AMainDS, Int32 ALedgerNumber, Int32 AGiftBatchNumber)
+        static public Int32 CreateGiftBatch(BankImportTDS AMainDS,
+            Int32 ALedgerNumber,
+            Int32 AStatementKey,
+            Int32 AGiftBatchNumber,
+            out TVerificationResultCollection AVerificationResult)
         {
-            AEpStatementRow stmt = AMainDS.AEpStatement[0];
+            AVerificationResult = null;
+
+            AMainDS.AEpTransaction.DefaultView.RowFilter =
+                String.Format("{0}={1}",
+                    AEpTransactionTable.GetStatementKeyDBName(),
+                    AStatementKey);
+            AMainDS.AEpStatement.DefaultView.RowFilter =
+                String.Format("{0}={1}",
+                    AEpStatementTable.GetStatementKeyDBName(),
+                    AStatementKey);
+            AEpStatementRow stmt = (AEpStatementRow)AMainDS.AEpStatement.DefaultView[0].Row;
 
             // TODO: optional: use the preselected gift batch, AGiftBatchNumber
 
@@ -330,9 +344,11 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, stmt.Date, out DateEffectivePeriodNumber, out DateEffectiveYearNumber,
                     Transaction))
             {
-                TLogging.Log(
-                    String.Format("Cannot create a gift batch for date {0} since it is not in an open period of the ledger.",
-                        stmt.Date.ToShortDateString()));
+                string msg =
+                    String.Format(Catalog.GetString("Cannot create a gift batch for date {0} since it is not in an open period of the ledger."),
+                        stmt.Date.ToShortDateString());
+                AVerificationResult = new TVerificationResultCollection();
+                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Critical));
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 return -1;
             }
@@ -346,8 +362,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             double HashTotal = 0.0;
 
-            foreach (AEpTransactionRow transactionRow in AMainDS.AEpTransaction.Rows)
+            foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {
+                AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
                 DataView v = AMainDS.AEpMatch.DefaultView;
                 v.RowFilter = AEpMatchTable.GetActionDBName() + " = '" + MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT + "' and " +
                               AEpMatchTable.GetMatchTextDBName() + " = '" + transactionRow.MatchText + "'";
@@ -390,16 +407,13 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             giftbatchRow.HashTotal = HashTotal;
 
-            TVerificationResultCollection VerificationResult;
-
-            TSubmitChangesResult result = TTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult);
+            TSubmitChangesResult result = TTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out AVerificationResult);
 
             if (result == TSubmitChangesResult.scrOK)
             {
                 return giftbatchRow.BatchNumber;
             }
 
-            TLogging.Log("Problems storing Gift Batch");
             return -1;
         }
 
@@ -407,9 +421,23 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// create a GL batch for the matched GL Transactions, and return the GL batch number
         /// </summary>
         /// <returns>the GL batch number</returns>
-        static public Int32 CreateGLBatch(BankImportTDS AMainDS, Int32 ALedgerNumber, Int32 AGLBatchNumber)
+        static public Int32 CreateGLBatch(BankImportTDS AMainDS,
+            Int32 ALedgerNumber,
+            Int32 AStatementKey,
+            Int32 AGLBatchNumber,
+            out TVerificationResultCollection AVerificationResult)
         {
-            AEpStatementRow stmt = AMainDS.AEpStatement[0];
+            AMainDS.AEpTransaction.DefaultView.RowFilter =
+                String.Format("{0}={1}",
+                    AEpTransactionTable.GetStatementKeyDBName(),
+                    AStatementKey);
+            AMainDS.AEpStatement.DefaultView.RowFilter =
+                String.Format("{0}={1}",
+                    AEpStatementTable.GetStatementKeyDBName(),
+                    AStatementKey);
+            AEpStatementRow stmt = (AEpStatementRow)AMainDS.AEpStatement.DefaultView[0].Row;
+
+            AVerificationResult = null;
 
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -417,14 +445,15 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, stmt.Date, out DateEffectivePeriodNumber, out DateEffectiveYearNumber,
                     Transaction))
             {
-                TLogging.Log(
-                    String.Format("Cannot create a GL batch for date {0} since it is not in an open period of the ledger.",
-                        stmt.Date.ToShortDateString()));
+                string msg = String.Format(Catalog.GetString("Cannot create a GL batch for date {0} since it is not in an open period of the ledger."),
+                    stmt.Date.ToShortDateString());
+                TLogging.Log(msg);
+                AVerificationResult = new TVerificationResultCollection();
+                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating GL Batch"), msg, TResultSeverity.Resv_Critical));
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 return -1;
             }
-
-            GLBatchTDS GLDS = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
 
             Int32 BatchYear, BatchPeriod;
 
@@ -433,9 +462,11 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref DateEffective, out BatchYear, out BatchPeriod, Transaction, true);
 
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            
+
             DBAccess.GDBAccessObj.RollbackTransaction();
-            
+
+            GLBatchTDS GLDS = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
+
             ABatchRow glbatchRow = GLDS.ABatch[0];
             glbatchRow.BatchPeriod = BatchPeriod;
             glbatchRow.DateEffective = DateEffective;
@@ -444,7 +475,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             double HashTotal = 0.0;
             double DebitTotal = 0.0;
             double CreditTotal = 0.0;
-            
+
             // TODO: support several journals
             // TODO: support several currencies, support other currencies than the base currency
             AJournalRow gljournalRow = GLDS.AJournal.NewRowTyped();
@@ -455,10 +486,15 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             glbatchRow.LastJournal++;
             gljournalRow.JournalPeriod = glbatchRow.BatchPeriod;
             gljournalRow.DateEffective = glbatchRow.DateEffective;
+            gljournalRow.JournalDescription = glbatchRow.BatchDescription;
+            gljournalRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
+            gljournalRow.TransactionTypeCode = MFinanceConstants.TRANSACTION_STD;
             GLDS.AJournal.Rows.Add(gljournalRow);
 
-            foreach (AEpTransactionRow transactionRow in AMainDS.AEpTransaction.Rows)
+            foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {
+                AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
+
                 DataView v = AMainDS.AEpMatch.DefaultView;
                 v.RowFilter = AEpMatchTable.GetActionDBName() + " = '" + MFinanceConstants.BANK_STMT_STATUS_MATCHED_GL + "' and " +
                               AEpMatchTable.GetMatchTextDBName() + " = '" + transactionRow.MatchText + "'";
@@ -476,22 +512,26 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     trans.Reference = match.Reference;
                     trans.Narrative = match.Narrative;
                     trans.TransactionDate = transactionRow.DateEffective;
+
                     if (transactionRow.TransactionAmount < 0)
                     {
-                    	trans.AmountInBaseCurrency = -1 * transactionRow.TransactionAmount;
-                    	trans.DebitCreditIndicator = true;
-                    	DebitTotal += trans.AmountInBaseCurrency;
+                        trans.AmountInBaseCurrency = -1 * transactionRow.TransactionAmount;
+                        trans.TransactionAmount = -1 * transactionRow.TransactionAmount;
+                        trans.DebitCreditIndicator = true;
+                        DebitTotal += trans.AmountInBaseCurrency;
                     }
                     else
                     {
-                    	trans.AmountInBaseCurrency = transactionRow.TransactionAmount;
-                    	trans.DebitCreditIndicator = false;
-                    	CreditTotal += trans.AmountInBaseCurrency;
+                        trans.AmountInBaseCurrency = transactionRow.TransactionAmount;
+                        trans.TransactionAmount = transactionRow.TransactionAmount;
+                        trans.DebitCreditIndicator = false;
+                        CreditTotal += trans.AmountInBaseCurrency;
                     }
+
                     trans.AmountInBaseCurrency = transactionRow.TransactionAmount;
                     GLDS.ATransaction.Rows.Add(trans);
                     gljournalRow.LastTransactionNumber++;
-                    
+
                     // add one transaction for the bank as well
                     trans = GLDS.ATransaction.NewRowTyped();
                     trans.LedgerNumber = glbatchRow.LedgerNumber;
@@ -503,25 +543,28 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     trans.Reference = match.Reference;
                     trans.Narrative = match.Narrative;
                     trans.TransactionDate = transactionRow.DateEffective;
+
                     if (transactionRow.TransactionAmount < 0)
                     {
-                    	trans.AmountInBaseCurrency = -1 * transactionRow.TransactionAmount;
-                    	trans.DebitCreditIndicator = true;
-                    	DebitTotal += trans.AmountInBaseCurrency;
+                        trans.AmountInBaseCurrency = -1 * transactionRow.TransactionAmount;
+                        trans.TransactionAmount = -1 * transactionRow.TransactionAmount;
+                        trans.DebitCreditIndicator = false;
+                        CreditTotal += trans.AmountInBaseCurrency;
                     }
                     else
                     {
-                    	trans.AmountInBaseCurrency = transactionRow.TransactionAmount;
-                    	trans.DebitCreditIndicator = false;
-                    	CreditTotal += trans.AmountInBaseCurrency;
+                        trans.AmountInBaseCurrency = transactionRow.TransactionAmount;
+                        trans.TransactionAmount = transactionRow.TransactionAmount;
+                        trans.DebitCreditIndicator = true;
+                        DebitTotal += trans.AmountInBaseCurrency;
                     }
+
                     trans.AmountInBaseCurrency = transactionRow.TransactionAmount;
                     GLDS.ATransaction.Rows.Add(trans);
                     gljournalRow.LastTransactionNumber++;
                 }
-                
             }
-            
+
             gljournalRow.JournalDebitTotal = DebitTotal;
             gljournalRow.JournalCreditTotal = CreditTotal;
             glbatchRow.BatchDebitTotal = DebitTotal;
@@ -530,7 +573,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             TVerificationResultCollection VerificationResult;
 
-            TSubmitChangesResult result = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDS, out VerificationResult);
+            TSubmitChangesResult result = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDS,
+                out VerificationResult);
 
             if (result == TSubmitChangesResult.scrOK)
             {

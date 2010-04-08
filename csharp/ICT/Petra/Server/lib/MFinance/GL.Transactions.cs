@@ -143,25 +143,26 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            ALedgerTable LedgerTable;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
 
             ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
             NewRow.LedgerNumber = ALedgerNumber;
-            LedgerTable[0].LastBatchNumber++;
-            NewRow.BatchNumber = LedgerTable[0].LastBatchNumber;
-            NewRow.BatchPeriod = LedgerTable[0].CurrentPeriod;
+            MainDS.ALedger[0].LastBatchNumber++;
+            NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
+            NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
             MainDS.ABatch.Rows.Add(NewRow);
 
             TVerificationResultCollection VerificationResult;
-            ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction, out VerificationResult);
-            ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out VerificationResult);
 
-            MainDS.ABatch.AcceptChanges();
+            if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+            {
+                MainDS.AcceptChanges();
+            }
 
-            DBAccess.GDBAccessObj.CommitTransaction();
             return MainDS;
         }
 
@@ -225,9 +226,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-        	// TODO: calculate debit and credit sums for journal and batch?
-        	
-        	TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+            // TODO: calculate debit and credit sums for journal and batch?
+
+            TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
             return SubmissionResult;
         }
