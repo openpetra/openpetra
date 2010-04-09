@@ -183,14 +183,12 @@ namespace {#NAMESPACE}
         {
             pnlDetails.Enabled = false;
             {#CLEARDETAILS}
-            {#SHOWDETAILSMANUAL}
         }
         else
         {
             pnlDetails.Enabled = true;
             FPreviouslySelectedDetailRow = ARow;
             {#SHOWDETAILS}
-            {#SHOWDETAILSMANUAL}
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }

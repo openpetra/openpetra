@@ -34,7 +34,7 @@ RootNode:
                 Row3: [txtDetailAccountCodeLongDesc]
                 Row4: [txtDetailAccountCodeShortDesc]
                 Row5: [cmbDetailValidCcCombo]
-                Row6: [chkDetailAccountActiveFlag]
+                Row6: [chkDetailAccountActiveFlag, chkDetailBankAccountFlag]
         txtDetailAccountCode:
         cmbDetailAccountType:
             OptionalValues: [Income, Expense, Asset, Equity, Liability]
@@ -47,9 +47,10 @@ RootNode:
             OptionalValues: [All, Foreign, Local]
         # TODO: budget type, budget control
         # TODO: analysis attributes
-        # TODO: bank account
         # TODO: system account, standard account
         chkDetailAccountActiveFlag: {Label=Active}
+        # TODO: which bank account (pbankingdetail) is this account linked to
+        chkDetailBankAccountFlag: {Label=Bank Account}
     Menu:
         mniAccounts:
             mniAddNewAccount:

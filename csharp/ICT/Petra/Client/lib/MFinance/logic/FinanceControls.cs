@@ -33,6 +33,7 @@ using Ict.Common.Controls;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.App.Core;
@@ -120,9 +121,16 @@ namespace Ict.Petra.Client.MFinance.Logic
                 Filter += AAccountTable.GetAccountActiveFlagDBName() + " = true";
             }
 
-            // TODO: limit to bank accounts? how? AAccountProperty: ACC_PROP_BANK_ACCOUNT
-            // https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=76
-            // easiest solution: GetCacheableFinanceTable should return a DataTable with a bank flag?
+            // GetCacheableFinanceTable returns a DataTable with a bank flag
+            if (ABankAccountOnly)
+            {
+                if (Filter.Length > 0)
+                {
+                    Filter += " AND ";
+                }
+
+                Filter += GLSetupTDSAAccountTable.GetBankAccountFlagDBName() + " = true";
+            }
 
             return Filter;
         }

@@ -89,6 +89,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.cmbDetailValidCcCombo = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblDetailValidCcCombo = new System.Windows.Forms.Label();
             this.chkDetailAccountActiveFlag = new System.Windows.Forms.CheckBox();
+            this.chkDetailBankAccountFlag = new System.Windows.Forms.CheckBox();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbAddNewAccount = new System.Windows.Forms.ToolStripButton();
@@ -274,7 +275,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.chkDetailAccountActiveFlag.AutoSize = true;
             this.chkDetailAccountActiveFlag.Text = "Active";
             this.chkDetailAccountActiveFlag.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.tableLayoutPanel1.ColumnCount = 2;
+            //
+            // chkDetailBankAccountFlag
+            //
+            this.chkDetailBankAccountFlag.Location = new System.Drawing.Point(2,2);
+            this.chkDetailBankAccountFlag.Name = "chkDetailBankAccountFlag";
+            this.chkDetailBankAccountFlag.AutoSize = true;
+            this.chkDetailBankAccountFlag.Text = "Bank Account";
+            this.chkDetailBankAccountFlag.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.RowCount = 8;
@@ -302,6 +312,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.Controls.Add(this.txtDetailAccountCodeLongDesc, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.txtDetailAccountCodeShortDesc, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.cmbDetailValidCcCombo, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.chkDetailBankAccountFlag, 2, 7);
             //
             // tbbSave
             //
@@ -600,6 +611,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Ict.Common.Controls.TCmbAutoComplete cmbDetailValidCcCombo;
         private System.Windows.Forms.Label lblDetailValidCcCombo;
         private System.Windows.Forms.CheckBox chkDetailAccountActiveFlag;
+        private System.Windows.Forms.CheckBox chkDetailBankAccountFlag;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripButton tbbAddNewAccount;

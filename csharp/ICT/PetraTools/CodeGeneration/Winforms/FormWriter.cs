@@ -911,7 +911,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FCodeStorage.ManualFileExistsAndContains("void ShowDetailsManual"))
             {
-                FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "ShowDetailsManual(ARow);" + Environment.NewLine);
+                FTemplate.AddToCodelet("SHOWDETAILS", "ShowDetailsManual(ARow);" + Environment.NewLine);
+                FTemplate.AddToCodelet("CLEARDETAILS", "ShowDetailsManual(ARow);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsManual()"))
