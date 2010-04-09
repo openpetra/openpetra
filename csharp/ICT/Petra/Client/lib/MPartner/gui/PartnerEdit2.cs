@@ -117,7 +117,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       cmbPartnerStatus.InitialiseUserControl();
       ucoPartnerDetails.PetraUtilsObject = FPetraUtilsObject;
       ucoPartnerDetails.MainDS = FMainDS;
-      ucoPartnerDetails.InitUserControl();
+//      ucoPartnerDetails.InitUserControl();
       tabPartners.SelectedIndex = 0;
       TabSelectionChanged(null, null);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;

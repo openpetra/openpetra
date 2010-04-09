@@ -217,13 +217,3 @@ namespace Ict.Common.IO
         }
     }
 }
-
-/*
- * CVS HISTORY
- * 
- * $Log: FileHelper.cs,v $
- * Revision 1.1  2009/07/27 12:11:23  christiank
- * Helps in handling with certain aspects of files and compression.
- *
- * 
- */

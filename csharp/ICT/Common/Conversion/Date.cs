@@ -1,11 +1,28 @@
-/*
- * Contains class TDate for Date conversions that are needed both on Server and
- * Client side.
+/*************************************************************************
  *
- * @Author  Bernd Rehberger
+ * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
- * @Version $Revision: 1.2 $ / $Date: 2009/08/25 08:46:56 $
- */
+ * @Authors:
+ *       berndr
+ *
+ * Copyright 2004-2009 by OM International
+ *
+ * This file is part of OpenPetra.org.
+ *
+ * OpenPetra.org is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenPetra.org is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
 using System;
 using System.Globalization;
 using System.Windows.Forms;
@@ -16,7 +33,7 @@ using Ict.Common.Verification;
 namespace Ict.Common.Conversion
 {
 	/// <summary>
-	/// Description of TDate.
+	/// Performs Date conversions that are needed both on Server and Client side.
 	/// </summary>
 	public class TDate
 	{
@@ -60,20 +77,20 @@ namespace Ict.Common.Conversion
             ReturnValue = false;
             try
             {
-                /* TODO: implement parsing of localised short month names like 4GL does (according to user's default language setting), eg. accept 'M?R' instead of 'MAR' for March if the user's language setting is DE (German) */
-                /* MessageBox.Show('AParseDate: ' + AParseDate); */
+                // TODO: implement parsing of localised short month names like 4GL does (according to user's default language setting), eg. accept 'M?R' instead of 'MAR' for March if the user's language setting is DE (German) 
+                // MessageBox.Show('AParseDate: ' + AParseDate); 
                 if (TDateChecks.IsValidDateTime(AParseDate, "") != null)
                 {
-                    /* MessageBox.Show('No regular DateTime'); */
+                    // MessageBox.Show('No regular DateTime'); 
                     if ((AParseDate.StartsWith("-")) || ((AParseDate.StartsWith("+")) && (AParseDate.Length != 1)))
                     {
-                        /* MessageBox.Show('Calculating date from the amount that follows the + or  sign...'); */
-                        /* calculate date from the amount that follows the + or  sign */
+                        // MessageBox.Show('Calculating date from the amount that follows the + or  sign...'); 
+                        // calculate date from the amount that follows the + or  sign 
                         if (TNumericalChecks.IsValidInteger(AParseDate.Substring(1), "") == null)
                         {
                             DayOffset = System.Convert.ToInt32(AParseDate.Substring(1));
 
-                            /* MessageBox.Show('DayOffset: ' + DayOffset.ToString); */
+                            // MessageBox.Show('DayOffset: ' + DayOffset.ToString); 
                             if (AParseDate.StartsWith("+"))
                             {
                                 AParseDate = DateTime.Now.Date.AddDays(DayOffset).ToString("D");
@@ -85,7 +102,7 @@ namespace Ict.Common.Conversion
                         }
                         else
                         {
-                            /* characters following the + or  are not an Int32 */
+                            // characters following the + or  are not an Int32 
         					MessageBox.Show(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText,
                                      TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultTextCaption);
                             return ReturnValue;
@@ -159,7 +176,7 @@ namespace Ict.Common.Conversion
                             {
                                 TmpYear = AParseDate.Substring(YearStart, 2);
 
-                                /* Determine the correct century for twodigit years. */
+                                // Determine the correct century for twodigit years. 
                                 /* For compatibility reasons: This is the way how it's done in 4GL, */
                                 /* in sp_date.p/ConvertStringToDate */
                                 if (Convert.ToInt32(TmpYear) < 80)
@@ -213,7 +230,7 @@ namespace Ict.Common.Conversion
                         }
                         else
                         {
-                            /* format with other number of digits not supported */
+                            // format with other number of digits not supported 
     						MessageBox.Show(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText,
                                      TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultTextCaption);
      
@@ -227,8 +244,8 @@ namespace Ict.Common.Conversion
                             TmpDay = TmpMonthDayExchange;
                         }
 
-                        /* AParseDate := TmpYear + TmpDateSeparator + TmpMonth + TmpDateSeparator + TmpDay;    For testing purposes */
-                        /* MessageBox.Show('AParseDate (1): ' + AParseDate);    For testing purposes */
+                        // AParseDate := TmpYear + TmpDateSeparator + TmpMonth + TmpDateSeparator + TmpDay;    For testing purposes 
+                        // MessageBox.Show('AParseDate (1): ' + AParseDate);    For testing purposes 
                         try
                         {
                             AParseDate = new DateTime(Convert.ToInt32(TmpYear), Convert.ToInt32(TmpMonth), Convert.ToInt32(TmpDay)).ToString("D"); 
@@ -241,7 +258,7 @@ namespace Ict.Common.Conversion
                         }
                         catch (Exception)
                         {
-                            /* $IFDEF DEBUGMODE MessageBox.Show('Exception occured in LongDateStringToDateTime: ' + Exp.ToString); $ENDIF */
+                            // $IFDEF DEBUGMODE MessageBox.Show('Exception occured in LongDateStringToDateTime: ' + Exp.ToString); $ENDIF 
  							MessageBox.Show(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText,
                                      TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultTextCaption);
                             return ReturnValue;
@@ -271,7 +288,7 @@ namespace Ict.Common.Conversion
                     {
                         if (AShowVerificationError)
                         {
-                            /* not an accepted date parse string */
+                            // not an accepted date parse string 
  							MessageBox.Show(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText,
                                      TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultTextCaption);
                         }
@@ -280,7 +297,7 @@ namespace Ict.Common.Conversion
                     }
                 }
 
-                /* AParseDate ready to be parsed */
+                // AParseDate ready to be parsed 
                 AParsedDate = DateTime.Parse(AParseDate).ToString("D");
                 ReturnValue = true;
             }
@@ -368,7 +385,7 @@ namespace Ict.Common.Conversion
             /* end; */
             if (LongDateStringToDateTimeInternal(AParseDate, ADescription, out ResultObj, AShowVerificationError, ATypeWhichCallsVerification))
             {
-                /* MessageBox.Show('LongDateStringToDateTime2: date is valid: ' + ResultObj.ToString); */
+                // MessageBox.Show('LongDateStringToDateTime2: date is valid: ' + ResultObj.ToString); 
                 if (ResultObj != DBNull.Value)
                 {
                     ReturnValue = Convert.ToDateTime(ResultObj);
@@ -380,7 +397,7 @@ namespace Ict.Common.Conversion
             }
             else
             {
-                /* MessageBox.Show('LongDateStringToDateTime2: date is INvalid!'); */
+                // MessageBox.Show('LongDateStringToDateTime2: date is INvalid!'); 
                 AVerificationResult = TDateChecks.IsValidDateTime(AParseDate, ADescription);
                 ReturnValue = DateTime.MinValue;
             }
@@ -404,17 +421,3 @@ namespace Ict.Common.Conversion
 		
 	}
 }
-
-
-/*
- * CVS HISTORY
- *
- * $Log: Date.cs,v $
- * Revision 1.2  2009/08/25 08:46:56  christiank
- * Reflect changes of Class 'TScreenVerificationResult': use new Properties instead of public Fields.
- *
- * Revision 1.1  2009/07/14 08:59:36  berndr
- * Move the date conversions from Ict.Petra.Client.App.Formatting into the Ict.Common.Conversion
- *
- *
- */ 
