@@ -81,6 +81,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             NewRow.GlEffectiveDate = ADateEffective;
             NewRow.ExchangeRateToBase = 1.0;
 
+            // TODO: bank account as a parameter, set on the gift matching screen, etc
             NewRow.BankAccountCode = DomainManager.GSystemDefaultsCache.GetStringDefault(
                 SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
 

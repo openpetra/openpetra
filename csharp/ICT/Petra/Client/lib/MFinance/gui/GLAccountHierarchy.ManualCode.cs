@@ -162,6 +162,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                                                                ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode }));
         }
 
+        private void ShowDetailsManual(AAccountRow ARow)
+        {
+            if (((GLSetupTDSAAccountRow)ARow).IsBankAccountFlagNull())
+            {
+                chkDetailBankAccountFlag.Checked = false;
+            }
+            else
+            {
+                chkDetailBankAccountFlag.Checked = ((GLSetupTDSAAccountRow)ARow).BankAccountFlag;
+            }
+        }
+
+        private void GetDetailDataFromControlsManual(AAccountRow ARow)
+        {
+            ((GLSetupTDSAAccountRow)ARow).BankAccountFlag = chkDetailBankAccountFlag.Checked;
+        }
+
         private void AddNewAccount(Object sender, EventArgs e)
         {
             if (FCurrentNode == null)

@@ -34,6 +34,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.MCommon;
@@ -200,7 +201,6 @@ namespace Ict.Petra.Server.MFinance
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             String TableName;
-            AAccountTable TmpAAccountDT;
             AAccountHierarchyTable TmpAccountHierarchyDT;
             AAccountingPeriodTable TmpAAccountingPeriodDT;
             ACostCentreTable TmpACostCentreDT;
@@ -257,9 +257,27 @@ namespace Ict.Petra.Server.MFinance
                             FieldList.Add(AAccountTable.GetAccountCodeShortDescDBName());
                             FieldList.Add(AAccountTable.GetAccountActiveFlagDBName());
                             FieldList.Add(AAccountTable.GetPostingStatusDBName());
-                            TmpAAccountDT = AAccountAccess.LoadViaALedger(ALedgerNumber, FieldList, ReadTransaction);
+                            GLSetupTDS TempDS = new GLSetupTDS();
+                            AAccountAccess.LoadViaALedger(TempDS, ALedgerNumber, FieldList, ReadTransaction);
+
+                            // load AAccountProperty and set the BankAccountFlag
+                            AAccountPropertyAccess.LoadViaALedger(TempDS, ALedgerNumber, ReadTransaction);
+
+                            foreach (AAccountPropertyRow accProp in TempDS.AAccountProperty.Rows)
+                            {
+                                if ((accProp.PropertyCode == MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT) && (accProp.PropertyValue == "true"))
+                                {
+                                    TempDS.AAccount.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                                        AAccountTable.GetAccountCodeDBName(),
+                                        accProp.AccountCode);
+                                    GLSetupTDSAAccountRow acc = (GLSetupTDSAAccountRow)TempDS.AAccount.DefaultView[0].Row;
+                                    acc.BankAccountFlag = true;
+                                    TempDS.AAccount.DefaultView.RowFilter = "";
+                                }
+                            }
+
                             DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName,
-                            TmpAAccountDT,
+                            TempDS.AAccount,
                             DomainManager.GClientID,
                             (object)ALedgerNumber);
                             break;

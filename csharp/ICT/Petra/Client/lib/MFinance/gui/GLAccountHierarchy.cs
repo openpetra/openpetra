@@ -74,6 +74,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.lblDetailAccountCodeShortDesc.Text = Catalog.GetString("Description Short Local:");
       this.lblDetailValidCcCombo.Text = Catalog.GetString("Valid Cost Centres:");
       this.chkDetailAccountActiveFlag.Text = Catalog.GetString("Active");
+      this.chkDetailBankAccountFlag.Text = Catalog.GetString("Bank Account");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.tbbAddNewAccount.Text = Catalog.GetString("Add Account");
@@ -206,6 +207,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             chkDetailAccountActiveFlag.Checked = ARow.AccountActiveFlag;
         }
+        ShowDetailsManual(ARow);
     }
 
     private void GetDataFromControls()
@@ -267,6 +269,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ARow.ValidCcCombo = cmbDetailValidCcCombo.GetSelectedString();
             }
             ARow.AccountActiveFlag = chkDetailAccountActiveFlag.Checked;
+            GetDetailDataFromControlsManual(ARow);
         }
     }
 

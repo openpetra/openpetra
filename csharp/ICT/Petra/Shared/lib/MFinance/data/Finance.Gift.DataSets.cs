@@ -1971,7 +1971,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// TableId for Ict.Common.Data generic functions
         public new static short TableId = 65;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCostCentreNameId = 40;
+        public static short ColumnCostCentreNameId = 41;
 
         /// constructor
         public BankImportTDSAEpMatchTable() :
@@ -2026,6 +2026,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("a_method_of_payment_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_donor_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("a_admin_charge_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_narrative_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_reference_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_donor_short_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_recipient_short_name_c", typeof(String)));
@@ -2072,6 +2073,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.ColumnMethodOfPaymentCode = this.Columns["a_method_of_payment_code_c"];
             this.ColumnDonorKey = this.Columns["p_donor_key_n"];
             this.ColumnAdminCharge = this.Columns["a_admin_charge_l"];
+            this.ColumnNarrative = this.Columns["a_narrative_c"];
             this.ColumnReference = this.Columns["a_reference_c"];
             this.ColumnDonorShortName = this.Columns["p_donor_short_name_c"];
             this.ColumnRecipientShortName = this.Columns["p_recipient_short_name_c"];
@@ -2229,6 +2231,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.SetNull(this.myTable.ColumnMethodOfPaymentCode);
             this[this.myTable.ColumnDonorKey.Ordinal] = 0;
             this[this.myTable.ColumnAdminCharge.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnNarrative);
             this.SetNull(this.myTable.ColumnReference);
             this.SetNull(this.myTable.ColumnDonorShortName);
             this.SetNull(this.myTable.ColumnRecipientShortName);

@@ -234,7 +234,7 @@ namespace Ict.Common.Testing
             Assert.AreEqual(" ," + UMLAUT + ",\"" +
                 QUOTEKOMMA.Replace("\"", "\"\"") + "\",\"" +
                 QUOTE.Replace("\"", "\"\"") + "\"," + SIMPLE + ",\"" + KOMMA + "\",\"" +
-                QUOTES.Replace("\"", "\"\"") + "\"," + DATE + ",\"" + ACCOUNTCODE + "\"" , s, "full list not correctly built");
+                QUOTES.Replace("\"", "\"\"") + "\"," + DATE + ",\"" + ACCOUNTCODE + "\"", s, "full list not correctly built");
             i = 0;
 
             while (s.Length > 0)

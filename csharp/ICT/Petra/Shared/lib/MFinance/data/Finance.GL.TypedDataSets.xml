@@ -22,7 +22,9 @@
         <Table sqltable="a_accounting_system_parameter"/>
         <Table sqltable="a_accounting_period"/>
 
-        <Table sqltable="a_account"/>
+        <Table sqltable="a_account">
+            <CustomField name="BankAccountFlag" type="bool"/>
+        </Table>
         <Table sqltable="a_account_hierarchy"/>
         <Table sqltable="a_account_hierarchy_detail"/>
         <Table sqltable="a_account_property"/>

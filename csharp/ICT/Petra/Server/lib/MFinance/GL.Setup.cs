@@ -36,6 +36,7 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Data;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -60,6 +61,21 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+
+            // set Account BankAccountFlag if there exists a property
+            foreach (AAccountPropertyRow accProp in MainDS.AAccountProperty.Rows)
+            {
+                if ((accProp.PropertyCode == MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT) && (accProp.PropertyValue == "true"))
+                {
+                    MainDS.AAccount.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                        AAccountTable.GetAccountCodeDBName(),
+                        accProp.AccountCode);
+                    GLSetupTDSAAccountRow acc = (GLSetupTDSAAccountRow)MainDS.AAccount.DefaultView[0].Row;
+                    acc.BankAccountFlag = true;
+                    MainDS.AAccount.DefaultView.RowFilter = "";
+                }
+            }
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
@@ -100,16 +116,61 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-
             AVerificationResult = null;
 
-            if (AInspectDS != null)
+            if (AInspectDS == null)
             {
-                SubmissionResult = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                return TSubmitChangesResult.scrNothingToBeSaved;
             }
 
-            return SubmissionResult;
+            if ((AInspectDS.AAccount != null) && (AInspectDS.AAccount.Count > 0))
+            {
+                // load all account properties, there are not so many anyways
+                AInspectDS.Merge(AAccountPropertyAccess.LoadViaALedger(AInspectDS.AAccount[0].LedgerNumber, null));
+                AInspectDS.AAccountProperty.AcceptChanges();
+
+                // check AAccount, if BankAccountFlag is not null, then create AAccountProperty or delete it
+                foreach (GLSetupTDSAAccountRow acc in AInspectDS.AAccount.Rows)
+                {
+                    // if the flag has been changed by the client, it will not be null
+                    if (!acc.IsBankAccountFlagNull())
+                    {
+                        AInspectDS.AAccountProperty.DefaultView.RowFilter =
+                            String.Format("{0}='{1}' and {2}='{3}'",
+                                AAccountPropertyTable.GetAccountCodeDBName(),
+                                acc.AccountCode,
+                                AAccountPropertyTable.GetPropertyCodeDBName(),
+                                MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT);
+
+                        if ((AInspectDS.AAccountProperty.DefaultView.Count == 0) && acc.BankAccountFlag)
+                        {
+                            AAccountPropertyRow accProp = AInspectDS.AAccountProperty.NewRowTyped(true);
+                            accProp.LedgerNumber = acc.LedgerNumber;
+                            accProp.AccountCode = acc.AccountCode;
+                            accProp.PropertyCode = MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT;
+                            accProp.PropertyValue = "true";
+                            AInspectDS.AAccountProperty.Rows.Add(accProp);
+                        }
+                        else if (AInspectDS.AAccountProperty.DefaultView.Count == 1)
+                        {
+                            AAccountPropertyRow accProp = (AAccountPropertyRow)AInspectDS.AAccountProperty.DefaultView[0].Row;
+
+                            if (!acc.BankAccountFlag)
+                            {
+                                accProp.Delete();
+                            }
+                            else
+                            {
+                                accProp.PropertyValue = "true";
+                            }
+                        }
+                    }
+                }
+
+                AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
+            }
+
+            return GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
         }
 
         /// <summary>

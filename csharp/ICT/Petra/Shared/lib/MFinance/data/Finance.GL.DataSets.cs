@@ -695,7 +695,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         private ALedgerInitFlagTable TableALedgerInitFlag;
         private AAccountingSystemParameterTable TableAAccountingSystemParameter;
         private AAccountingPeriodTable TableAAccountingPeriod;
-        private AAccountTable TableAAccount;
+        private GLSetupTDSAAccountTable TableAAccount;
         private AAccountHierarchyTable TableAAccountHierarchy;
         private AAccountHierarchyDetailTable TableAAccountHierarchyDetail;
         private AAccountPropertyTable TableAAccountProperty;
@@ -768,7 +768,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         }
 
         /// auto generated
-        public AAccountTable AAccount
+        public GLSetupTDSAAccountTable AAccount
         {
             get
             {
@@ -933,7 +933,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.Tables.Add(new ALedgerInitFlagTable("ALedgerInitFlag"));
             this.Tables.Add(new AAccountingSystemParameterTable("AAccountingSystemParameter"));
             this.Tables.Add(new AAccountingPeriodTable("AAccountingPeriod"));
-            this.Tables.Add(new AAccountTable("AAccount"));
+            this.Tables.Add(new GLSetupTDSAAccountTable("AAccount"));
             this.Tables.Add(new AAccountHierarchyTable("AAccountHierarchy"));
             this.Tables.Add(new AAccountHierarchyDetailTable("AAccountHierarchyDetail"));
             this.Tables.Add(new AAccountPropertyTable("AAccountProperty"));
@@ -973,7 +973,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             }
             if ((ds.Tables.IndexOf("AAccount") != -1))
             {
-                this.Tables.Add(new AAccountTable("AAccount"));
+                this.Tables.Add(new GLSetupTDSAAccountTable("AAccount"));
             }
             if ((ds.Tables.IndexOf("AAccountHierarchy") != -1))
             {
@@ -1140,7 +1140,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.TableALedgerInitFlag = ((ALedgerInitFlagTable)(this.Tables["ALedgerInitFlag"]));
             this.TableAAccountingSystemParameter = ((AAccountingSystemParameterTable)(this.Tables["AAccountingSystemParameter"]));
             this.TableAAccountingPeriod = ((AAccountingPeriodTable)(this.Tables["AAccountingPeriod"]));
-            this.TableAAccount = ((AAccountTable)(this.Tables["AAccount"]));
+            this.TableAAccount = ((GLSetupTDSAAccountTable)(this.Tables["AAccount"]));
             this.TableAAccountHierarchy = ((AAccountHierarchyTable)(this.Tables["AAccountHierarchy"]));
             this.TableAAccountHierarchyDetail = ((AAccountHierarchyDetailTable)(this.Tables["AAccountHierarchyDetail"]));
             this.TableAAccountProperty = ((AAccountPropertyTable)(this.Tables["AAccountProperty"]));
@@ -1359,6 +1359,256 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                                 "a_ledger_number_i"}, "ALedgerInitFlag", new string[] {
                                 "a_ledger_number_i"}));
             }
+        }
+    }
+
+    /// Details about each account code within a ledger. Also holds information on the summary account structure for reporting.
+    [Serializable()]
+    public class GLSetupTDSAAccountTable : AAccountTable
+    {
+        /// TableId for Ict.Common.Data generic functions
+        public new static short TableId = 111;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnBankAccountFlagId = 26;
+
+        /// constructor
+        public GLSetupTDSAAccountTable() :
+                base("AAccount")
+        {
+        }
+
+        /// constructor
+        public GLSetupTDSAAccountTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public GLSetupTDSAAccountTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        ///
+        public DataColumn ColumnBankAccountFlag;
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("a_account_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_account_type_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_account_code_long_desc_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_account_code_short_desc_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_eng_account_code_short_desc_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_eng_account_code_long_desc_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_debit_credit_indicator_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_account_active_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_analysis_attribute_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_standard_account_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_consolidation_account_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_intercompany_account_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_budget_type_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_posting_status_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_system_account_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_budget_control_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_valid_cc_combo_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("a_foreign_currency_flag_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("a_foreign_currency_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_banking_details_key_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("BankAccountFlag", typeof(bool)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnLedgerNumber = this.Columns["a_ledger_number_i"];
+            this.ColumnAccountCode = this.Columns["a_account_code_c"];
+            this.ColumnAccountType = this.Columns["a_account_type_c"];
+            this.ColumnAccountCodeLongDesc = this.Columns["a_account_code_long_desc_c"];
+            this.ColumnAccountCodeShortDesc = this.Columns["a_account_code_short_desc_c"];
+            this.ColumnEngAccountCodeShortDesc = this.Columns["a_eng_account_code_short_desc_c"];
+            this.ColumnEngAccountCodeLongDesc = this.Columns["a_eng_account_code_long_desc_c"];
+            this.ColumnDebitCreditIndicator = this.Columns["a_debit_credit_indicator_l"];
+            this.ColumnAccountActiveFlag = this.Columns["a_account_active_flag_l"];
+            this.ColumnAnalysisAttributeFlag = this.Columns["a_analysis_attribute_flag_l"];
+            this.ColumnStandardAccountFlag = this.Columns["a_standard_account_flag_l"];
+            this.ColumnConsolidationAccountFlag = this.Columns["a_consolidation_account_flag_l"];
+            this.ColumnIntercompanyAccountFlag = this.Columns["a_intercompany_account_flag_l"];
+            this.ColumnBudgetTypeCode = this.Columns["a_budget_type_code_c"];
+            this.ColumnPostingStatus = this.Columns["a_posting_status_l"];
+            this.ColumnSystemAccountFlag = this.Columns["a_system_account_flag_l"];
+            this.ColumnBudgetControlFlag = this.Columns["a_budget_control_flag_l"];
+            this.ColumnValidCcCombo = this.Columns["a_valid_cc_combo_c"];
+            this.ColumnForeignCurrencyFlag = this.Columns["a_foreign_currency_flag_l"];
+            this.ColumnForeignCurrencyCode = this.Columns["a_foreign_currency_code_c"];
+            this.ColumnBankingDetailsKey = this.Columns["p_banking_details_key_i"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.ColumnBankAccountFlag = this.Columns["BankAccountFlag"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnLedgerNumber,ColumnAccountCode};
+        }
+
+        /// Access a typed row by index
+        public new GLSetupTDSAAccountRow this[int i]
+        {
+            get
+            {
+                return ((GLSetupTDSAAccountRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public new GLSetupTDSAAccountRow NewRowTyped(bool AWithDefaultValues)
+        {
+            GLSetupTDSAAccountRow ret = ((GLSetupTDSAAccountRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public new GLSetupTDSAAccountRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new GLSetupTDSAAccountRow(builder);
+        }
+
+        /// get typed set of changes
+        public new GLSetupTDSAAccountTable GetChangesTyped()
+        {
+            return ((GLSetupTDSAAccountTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static new string GetTableName()
+        {
+            return "AAccount";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static new string GetTableDBName()
+        {
+            return "a_account";
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetBankAccountFlagDBName()
+        {
+            return "BankAccountFlag";
+        }
+
+        /// get character length for column
+        public static short GetBankAccountFlagLength()
+        {
+            return -1;
+        }
+
+    }
+
+    /// Details about each account code within a ledger. Also holds information on the summary account structure for reporting.
+    [Serializable()]
+    public class GLSetupTDSAAccountRow : AAccountRow
+    {
+        private GLSetupTDSAAccountTable myTable;
+
+        /// Constructor
+        public GLSetupTDSAAccountRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((GLSetupTDSAAccountTable)(this.Table));
+        }
+
+        ///
+        public bool BankAccountFlag
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnBankAccountFlag.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((bool)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnBankAccountFlag)
+                            || (((bool)(this[this.myTable.ColumnBankAccountFlag])) != value)))
+                {
+                    this[this.myTable.ColumnBankAccountFlag] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public override void InitValues()
+        {
+            this[this.myTable.ColumnLedgerNumber.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnAccountCode);
+            this.SetNull(this.myTable.ColumnAccountType);
+            this.SetNull(this.myTable.ColumnAccountCodeLongDesc);
+            this.SetNull(this.myTable.ColumnAccountCodeShortDesc);
+            this.SetNull(this.myTable.ColumnEngAccountCodeShortDesc);
+            this.SetNull(this.myTable.ColumnEngAccountCodeLongDesc);
+            this[this.myTable.ColumnDebitCreditIndicator.Ordinal] = true;
+            this[this.myTable.ColumnAccountActiveFlag.Ordinal] = true;
+            this[this.myTable.ColumnAnalysisAttributeFlag.Ordinal] = false;
+            this[this.myTable.ColumnStandardAccountFlag.Ordinal] = false;
+            this[this.myTable.ColumnConsolidationAccountFlag.Ordinal] = false;
+            this[this.myTable.ColumnIntercompanyAccountFlag.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnBudgetTypeCode);
+            this[this.myTable.ColumnPostingStatus.Ordinal] = true;
+            this[this.myTable.ColumnSystemAccountFlag.Ordinal] = false;
+            this[this.myTable.ColumnBudgetControlFlag.Ordinal] = false;
+            this[this.myTable.ColumnValidCcCombo.Ordinal] = "All";
+            this[this.myTable.ColumnForeignCurrencyFlag.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnForeignCurrencyCode);
+            this.SetNull(this.myTable.ColumnBankingDetailsKey);
+            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnCreatedBy);
+            this.SetNull(this.myTable.ColumnDateModified);
+            this.SetNull(this.myTable.ColumnModifiedBy);
+            this.SetNull(this.myTable.ColumnModificationId);
+            this.SetNull(this.myTable.ColumnBankAccountFlag);
+        }
+
+        /// test for NULL value
+        public bool IsBankAccountFlagNull()
+        {
+            return this.IsNull(this.myTable.ColumnBankAccountFlag);
+        }
+
+        /// assign NULL value
+        public void SetBankAccountFlagNull()
+        {
+            this.SetNull(this.myTable.ColumnBankAccountFlag);
         }
     }
 }

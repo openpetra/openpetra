@@ -63,6 +63,7 @@ namespace Ict.Petra.Client.MFinance.Gui
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      this.lblSelectBankAccount.Text = Catalog.GetString("Select Bank Account:");
       this.rbtListAll.Text = Catalog.GetString("ListAll");
       this.rbtListUnmatched.Text = Catalog.GetString("ListUnmatched");
       this.rbtListGift.Text = Catalog.GetString("ListGift");
@@ -79,11 +80,16 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.lblMotivationDetail.Text = Catalog.GetString("Motivation Detail:");
       this.lblGiftAccount.Text = Catalog.GetString("Account:");
       this.lblGiftCostCentre.Text = Catalog.GetString("Cost Centre:");
+      this.lblGLNarrative.Text = Catalog.GetString("Narrative:");
+      this.lblGLReference.Text = Catalog.GetString("Reference:");
+      this.lblGLAccount.Text = Catalog.GetString("Account:");
+      this.lblGLCostCentre.Text = Catalog.GetString("Cost Centre:");
       this.tbbImportNewStatement.Text = Catalog.GetString("&Import new statement");
       this.tbbSeparator0.Text = Catalog.GetString("Separator");
       this.tbbSeparator1.Text = Catalog.GetString("Separator");
       this.tbbSaveMatches.Text = Catalog.GetString("Save Matches");
       this.tbbCreateGiftBatch.Text = Catalog.GetString("Create Gift Batch");
+      this.tbbCreateGLBatch.Text = Catalog.GetString("CreateGL Batch");
       this.mniImportNewStatement.Text = Catalog.GetString("&Import new statement");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
@@ -187,6 +193,10 @@ namespace Ict.Petra.Client.MFinance.Gui
         if (e.ActionName == "actCreateGiftBatch")
         {
             tbbCreateGiftBatch.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actCreateGLBatch")
+        {
+            tbbCreateGLBatch.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {

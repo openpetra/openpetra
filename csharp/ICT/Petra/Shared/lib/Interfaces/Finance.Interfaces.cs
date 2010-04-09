@@ -355,11 +355,15 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
         Int32 CreateGiftBatch(BankImportTDS AMainDS,
                               Int32 ALedgerNumber,
-                              Int32 AGiftBatchNumber);
+                              Int32 AStatementKey,
+                              Int32 AGiftBatchNumber,
+                              out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
         Int32 CreateGLBatch(BankImportTDS AMainDS,
                             Int32 ALedgerNumber,
-                            Int32 ABatchNumber);
+                            Int32 AStatementKey,
+                            Int32 AGLBatchNumber,
+                            out TVerificationResultCollection AVerificationResult);
     }
 
 }
