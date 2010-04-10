@@ -528,7 +528,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         CreditTotal += trans.AmountInBaseCurrency;
                     }
 
-                    trans.AmountInBaseCurrency = transactionRow.TransactionAmount;
                     GLDS.ATransaction.Rows.Add(trans);
                     gljournalRow.LastTransactionNumber++;
 
@@ -559,7 +558,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         DebitTotal += trans.AmountInBaseCurrency;
                     }
 
-                    trans.AmountInBaseCurrency = transactionRow.TransactionAmount;
                     GLDS.ATransaction.Rows.Add(trans);
                     gljournalRow.LastTransactionNumber++;
                 }
