@@ -253,7 +253,8 @@ namespace Ict.Petra.Client.MFinance.Gui
 
         private void NewTransactionCategory(System.Object sender, EventArgs e)
         {
-            GetValuesFromScreen();
+            // do NOT call GetValuesFromScreen to avoid disappearing transaction from the grid
+            // GetValuesFromScreen();
             CurrentlySelectedMatch = null;
 
             rbtGLWasChecked = rbtGL.Checked;
@@ -342,7 +343,17 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             CurrentlySelectedMatch = null;
 
-            CurrentlySelectedTransaction = ((BankImportTDSAEpTransactionRow)grdAllTransactions.SelectedDataRowsAsDataRowView[0].Row);
+            try
+            {
+                CurrentlySelectedTransaction = ((BankImportTDSAEpTransactionRow)grdAllTransactions.SelectedDataRowsAsDataRowView[0].Row);
+            }
+            catch (System.IndexOutOfRangeException)
+            {
+                // this can happen when the transaction type has changed, and the row disappears from the grid
+                // select another row
+                grdAllTransactions.SelectRowInGrid(1);
+                return;
+            }
 
             // load selections from the a_ep_match table for the new row
             FMatchView.RowFilter = AEpMatchTable.GetMatchTextDBName() +
