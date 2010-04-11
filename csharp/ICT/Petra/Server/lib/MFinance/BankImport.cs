@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// <param name="ATransTable"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        static public TSubmitChangesResult StoreNewBankStatement(AEpStatementTable AStmtTable,
+        static public TSubmitChangesResult StoreNewBankStatement(ref AEpStatementTable AStmtTable,
             AEpTransactionTable ATransTable,
             out TVerificationResultCollection AVerificationResult)
         {

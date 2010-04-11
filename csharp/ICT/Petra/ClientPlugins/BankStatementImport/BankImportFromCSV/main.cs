@@ -167,7 +167,14 @@ namespace Plugin.BankImportFromCSV
 
                     if (UseAs.ToLower() == "dateeffective")
                     {
-                        row.DateEffective = XmlConvert.ToDateTime(Value, DateFormat);
+                        try
+                        {
+                            row.DateEffective = XmlConvert.ToDateTime(Value, DateFormat);
+                        }
+                        catch (Exception e)
+                        {
+                            TLogging.Log("Problem with date effective: " + Value + " (Format: " + DateFormat + ")");
+                        }
 
                         if (row.DateEffective > latestDate)
                         {
@@ -213,11 +220,11 @@ namespace Plugin.BankImportFromCSV
 
             TVerificationResultCollection VerificationResult;
 
-            if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(stmtTable, transactionsTable,
+            if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(ref stmtTable, transactionsTable,
                     out VerificationResult) == TSubmitChangesResult.scrOK)
             {
                 AStatementKey = stmtTable[0].StatementKey;
-                return true;
+                return AStatementKey != -1;
             }
 
             AStatementKey = -1;
