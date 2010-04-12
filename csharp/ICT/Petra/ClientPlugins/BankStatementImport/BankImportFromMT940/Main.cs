@@ -130,8 +130,8 @@ namespace Plugin.BankImportFromMT940
                         MainDS.AEpTransaction,
                         out VerificationResult) == TSubmitChangesResult.scrOK)
                 {
-                    AStatementKey = MainDS.AEpStatement[0].StatementKey;
-                    return true;
+                    AStatementKey = refStmt[0].StatementKey;
+                    return AStatementKey != -1;
                 }
             }
 
