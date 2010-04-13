@@ -163,7 +163,6 @@ OpenPetra:
                 LedgerOperations: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
                     DeleteLedger:
-                    ImportLedgerStructure:
                 ExchangeRates:
                     ManageCurrencies:
                     ManageExchangeRates:

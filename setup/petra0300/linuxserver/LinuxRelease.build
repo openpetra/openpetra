@@ -87,6 +87,7 @@
         <copy todir="${setupDir}/sql30">
             <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/sql/">
                 <include name="*.sql" />
+                <include name="*.yml" />
             </fileset>
         </copy>
 

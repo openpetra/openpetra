@@ -40,6 +40,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // TODO: retention period
             // TODO: setup of gift system, AP, etc
 
+            nudLedgerNumber.Maximum = 9999;
+            nudLedgerNumber.Minimum = 1;
             nudLedgerNumber.Value = 99;
             dtpCalendarStartDate.Value = new DateTime(DateTime.Now.Year, 1, 1);
             nudNumberOfFwdPostingPeriods.Value = 8;
@@ -47,6 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             nudCurrentPeriod.Value = DateTime.Now.Month;
             cmbBaseCurrency.SetSelectedString("EUR");
             cmbIntlCurrency.SetSelectedString("USD");
+            cmbCountryCode.SetSelectedString("DE");
         }
 
         private void CreateLedger(System.Object sender, EventArgs e)

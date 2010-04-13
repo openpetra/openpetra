@@ -99,6 +99,16 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// constructor
+        /// </summary>
+        public TYml2Xml(string[] ALines)
+        {
+            filename = String.Empty;
+            lines = ALines;
+            currentLine = -1;
+        }
+
+        /// <summary>
         /// return either the name from the attribute, or the element name
         /// </summary>
         public static string GetElementName(XmlNode ANode)

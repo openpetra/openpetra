@@ -590,21 +590,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// import a new Account hierarchy into an empty new ledger
         private static void ImportDefaultAccountHierarchy(ref GLSetupTDS AMainDS, Int32 ALedgerNumber)
         {
-            // load XmlAccountHierarchy from a default file
-            StreamReader sr = new StreamReader(TAppSettingsManager.GetValueStatic("SqlFiles.Path", ".") +
-                Path.DirectorySeparatorChar +
-                "DefaultAccountHierarchy.yml");
-            string XmlAccountHierarchy = sr.ReadToEnd();
-
-            sr.Close();
-
-            XmlAccountHierarchy = XmlAccountHierarchy.Replace("<LEDGERNUMBER>", ALedgerNumber.ToString());
-
-            XmlDocument doc = new XmlDocument();
+            XmlDocument doc;
+            TYml2Xml ymlFile;
+            string Filename = TAppSettingsManager.GetValueStatic("SqlFiles.Path", ".") +
+                              Path.DirectorySeparatorChar +
+                              "DefaultAccountHierarchy.yml";
 
             try
             {
-                doc.LoadXml(XmlAccountHierarchy);
+                ymlFile = new TYml2Xml(Filename);
+                doc = ymlFile.ParseYML2XML();
             }
             catch (XmlException exp)
             {
@@ -613,7 +608,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     Environment.NewLine +
                     exp.Message +
                     Environment.NewLine +
-                    XmlAccountHierarchy);
+                    Filename);
             }
 
             // create the root account
@@ -630,22 +625,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             CreateAccountHierarchyRecursively(ref AMainDS, ref ImportedAccountNames, root, ALedgerNumber.ToString());
         }
 
-        private static void ImportDefaultCostCentreHierarchy(ref GLSetupTDS AMainDS, Int32 ALedgerNumber)
+        private static void ImportDefaultCostCentreHierarchy(ref GLSetupTDS AMainDS, Int32 ALedgerNumber, string ALedgerName)
         {
             // load XmlCostCentreHierarchy from a default file
-            StreamReader sr = new StreamReader(TAppSettingsManager.GetValueStatic("SqlFiles.Path", ".") +
-                Path.DirectorySeparatorChar +
-                "DefaultCostCentreHierarchy.yml");
-            string XmlCostCentreHierarchy = sr.ReadToEnd();
 
-            sr.Close();
+            string Filename = TAppSettingsManager.GetValueStatic("SqlFiles.Path", ".") +
+                              Path.DirectorySeparatorChar +
+                              "DefaultCostCentreHierarchy.yml";
+            TextReader reader = new StreamReader(Filename, TTextFile.GetFileEncoding(Filename), false);
+            string XmlCostCentreHierarchy = reader.ReadToEnd();
 
-            // TODO what about one digit ledger numbers?
-            XmlCostCentreHierarchy = XmlCostCentreHierarchy.Replace("<LEDGERNUMBER>", ALedgerNumber.ToString());
+            reader.Close();
 
-            XmlDocument doc = new XmlDocument();
+            XmlCostCentreHierarchy = XmlCostCentreHierarchy.Replace("{#LEDGERNUMBER}", ALedgerNumber.ToString());
+            XmlCostCentreHierarchy = XmlCostCentreHierarchy.Replace("{#LEDGERNUMBERWITHLEADINGZEROS}", ALedgerNumber.ToString("00"));
+            XmlCostCentreHierarchy = XmlCostCentreHierarchy.Replace("{#LEDGERNAME}", ALedgerName);
 
-            doc.LoadXml(XmlCostCentreHierarchy);
+            string[] lines = XmlCostCentreHierarchy.Replace("\r", "").Split(new char[] { '\n' });
+            TYml2Xml ymlFile = new TYml2Xml(lines);
+            XmlDocument doc = ymlFile.ParseYML2XML();
 
             XmlNode root = doc.FirstChild.NextSibling.FirstChild;
 
@@ -704,6 +702,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             ledgerRow.ActualsDataRetention = 11;
             ledgerRow.GiftDataRetention = 5;
             ledgerRow.CountryCode = ACountryCode;
+            ledgerRow.ForexGainsLossesAccount = "5003";
             MainDS.ALedger.Rows.Add(ledgerRow);
 
             Int64 PartnerKey = Convert.ToInt64(ALedgerNumber) * 1000000L;
@@ -893,6 +892,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             motivationDetailRow.MotivationDetailCode = "SUPPORT";
             motivationDetailRow.MotivationDetailDesc = Catalog.GetString("Personal Support");
             motivationDetailRow.MotivationDetailDescLocal = motivationDetailRow.MotivationDetailDesc;
+            motivationDetailRow.AccountCode = "0100";
+            motivationDetailRow.CostCentreCode = (ALedgerNumber * 100).ToString("0000");
             MainDS.AMotivationDetail.Rows.Add(motivationDetailRow);
 
             motivationDetailRow = MainDS.AMotivationDetail.NewRowTyped();
@@ -901,10 +902,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             motivationDetailRow.MotivationDetailCode = "FIELD";
             motivationDetailRow.MotivationDetailDesc = Catalog.GetString("Gifts for Field");
             motivationDetailRow.MotivationDetailDescLocal = motivationDetailRow.MotivationDetailDesc;
+            motivationDetailRow.AccountCode = "1200";
+            motivationDetailRow.CostCentreCode = (ALedgerNumber * 100).ToString("0000");
             MainDS.AMotivationDetail.Rows.Add(motivationDetailRow);
 
             ImportDefaultAccountHierarchy(ref MainDS, ALedgerNumber);
-            ImportDefaultCostCentreHierarchy(ref MainDS, ALedgerNumber);
+            ImportDefaultCostCentreHierarchy(ref MainDS, ALedgerNumber, ALedgerName);
 
             // TODO: modify UI navigation yml file etc?
             // TODO: permissions for which users?
