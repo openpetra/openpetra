@@ -4604,7 +4604,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(0, "StatementKey", "a_statement_key_i", "Bank statement", OdbcType.Int, -1, true),
                     new TTypedColumnInfo(1, "Order", "a_order_i", "order", OdbcType.Int, -1, true),
                     new TTypedColumnInfo(2, "DetailKey", "a_detail_key_i", "a_detail_key_i", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "NumberOnPaperStatement", "a_number_on_paper_statement_i", "a_number_on_paper_statement_i", OdbcType.Int, -1, true),
+                    new TTypedColumnInfo(3, "NumberOnPaperStatement", "a_number_on_paper_statement_i", "a_number_on_paper_statement_i", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(4, "MatchText", "a_match_text_c", "a_match_text_c", OdbcType.VarChar, 100, false),
                     new TTypedColumnInfo(5, "AccountName", "a_account_name_c", "Account Name", OdbcType.VarChar, 160, false),
                     new TTypedColumnInfo(6, "Title", "a_title_c", "Title", OdbcType.VarChar, 64, false),

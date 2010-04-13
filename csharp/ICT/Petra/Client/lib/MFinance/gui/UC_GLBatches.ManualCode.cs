@@ -41,6 +41,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber;
         private Int32 FSelectedBatchNumber;
+        private DateTime DefaultDate;
 
         /// <summary>
         /// load the batches into the grid
@@ -55,13 +56,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ShowData();
 
+            //TODO: not necessary for posted batches
             DateTime StartDateCurrentPeriod;
             DateTime EndDateLastForwardingPeriod;
-            DateTime DefaultDate;
             TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber, out StartDateCurrentPeriod, out EndDateLastForwardingPeriod, out DefaultDate);
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
-            dtpDetailDateEffective.Value = DefaultDate;
         }
 
         /// <summary>
@@ -93,6 +93,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewABatch();
+
+            dtpDetailDateEffective.Value = DefaultDate;
 
             // TODO: this.dtpDateCantBeBeyond.Value = AAccountingPeriod[ALedger.CurrentPeriod + ALedger.ForwardingPostingPeriods].EndOfPeriod
 

@@ -124,12 +124,14 @@ namespace Plugin.BankImportFromMT940
                 TVerificationResultCollection VerificationResult;
                 TLogging.Log("writing to db");
 
-                if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(MainDS.AEpStatement,
+                AEpStatementTable refStmt = MainDS.AEpStatement;
+
+                if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(ref refStmt,
                         MainDS.AEpTransaction,
                         out VerificationResult) == TSubmitChangesResult.scrOK)
                 {
-                    AStatementKey = MainDS.AEpStatement[0].StatementKey;
-                    return true;
+                    AStatementKey = refStmt[0].StatementKey;
+                    return AStatementKey != -1;
                 }
             }
 

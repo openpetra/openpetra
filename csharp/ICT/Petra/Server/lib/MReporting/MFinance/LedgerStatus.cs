@@ -31,6 +31,7 @@ using Ict.Common.DB.DBCaching;
 using System.Collections;
 using System.Data;
 using System.Data.Odbc;
+using System.Collections.Generic;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MReporting;
@@ -497,12 +498,16 @@ namespace Ict.Petra.Server.MReporting.MFinance
             ReturnValue = false;
             debitCreditIndicator = false;
             accountType = "";
+            List <OdbcParameter>parameters = new List <OdbcParameter>();
+            OdbcParameter param = new OdbcParameter("accountcode", OdbcType.VarChar);
+            param.Value = pv_account_code_c;
+            parameters.Add(param);
             postingAccount = false;
             strSql = "SELECT a_account_type_c, a_posting_status_l, a_debit_credit_indicator_l " + "FROM PUB_a_account " +
                      "WHERE a_ledger_number_i = " + pv_ledger_number_i.ToString() + ' ' + "AND a_account_code_c = ?";
             tab =
                 databaseConnection.SelectDT(strSql, "AccountType", databaseConnection.Transaction,
-                    new OdbcParameter[] { new OdbcParameter("accountcode", pv_account_code_c) });
+                    parameters.ToArray());
 
             if (tab.Rows.Count > 0)
             {

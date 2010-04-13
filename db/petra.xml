@@ -4752,8 +4752,7 @@
     <tablefield name="a_number_on_paper_statement_i"
                 type="integer"
                 descr="can be different from order, since the paper statements can have different order than the electronic statement"
-                initial="-1"
-                notnull="yes"/>
+                initial="-1"/>
     <tablefield name="a_match_text_c"
                 type="varchar"
                 format="X(50)"

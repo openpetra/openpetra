@@ -1861,11 +1861,11 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
 
 
         /// generated method from connector
-        public TSubmitChangesResult StoreNewBankStatement(AEpStatementTable AStmtTable,
+        public TSubmitChangesResult StoreNewBankStatement(ref AEpStatementTable AStmtTable,
                                                           AEpTransactionTable ATransTable,
                                                           out TVerificationResultCollection AVerificationResult)
         {
-            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.StoreNewBankStatement(AStmtTable, ATransTable, out AVerificationResult);
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.StoreNewBankStatement(ref AStmtTable, ATransTable, out AVerificationResult);
         }
 
         /// generated method from connector
