@@ -246,6 +246,13 @@
     <Compile Include="GLCostCentreHierarchy.ManualCode.cs">
       <DependentUpon>GLCostCentreHierarchy.cs</DependentUpon>
     </Compile>
+    <Compile Include="GLCreateLedger.cs" />
+    <Compile Include="GLCreateLedger.Designer.cs">
+      <DependentUpon>GLCreateLedger.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GLCreateLedger.ManualCode.cs">
+      <DependentUpon>GLCreateLedger.cs</DependentUpon>
+    </Compile>
     <Compile Include="GLEnterDateEffective.cs" />
     <Compile Include="GLEnterDateEffective.Designer.cs">
       <DependentUpon>GLEnterDateEffective.cs</DependentUpon>
@@ -344,6 +351,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GLCostCentreHierarchy.resx">
       <DependentUpon>GLCostCentreHierarchy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GLCreateLedger.resx">
+      <DependentUpon>GLCreateLedger.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GLEnterDateEffective.resx">
       <DependentUpon>GLEnterDateEffective.cs</DependentUpon>

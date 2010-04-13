@@ -171,7 +171,7 @@ namespace Plugin.BankImportFromCSV
                         {
                             row.DateEffective = XmlConvert.ToDateTime(Value, DateFormat);
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             TLogging.Log("Problem with date effective: " + Value + " (Format: " + DateFormat + ")");
                         }

@@ -68,6 +68,9 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Partner Types (Special Types)</summary>
         public const String PARTNERTYPE_EX_WORKER = "EX-WORKER";
 
+        /// <summary>Partner Types</summary>
+        public const String PARTNERTYPE_LEDGER = "LEDGER";
+
         /// <summary>Partner class</summary>
         public const String PARTNERCLASS_FAMILY = "FAMILY";
 
@@ -76,6 +79,12 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>Partner class</summary>
         public const String PARTNERCLASS_ORGANISATION = "ORGANISATION";
+
+        /// <summary>Partner status</summary>
+        public const String PARTNERSTATUS_ACTIVE = "ACTIVE";
+
+        /// <summary>Partner status</summary>
+        public const String PARTNERSTATUS_INACTIVE = "INACTIVE";
 
         /// Default values
         /// <summary>used eg. for PPerson.OccupationCode</summary>

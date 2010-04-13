@@ -1,5 +1,8 @@
 <PetraDataSets>
   <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MFinance.Gift.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MSysMan.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
   
     <DataSet name="GLBatchTDS">
         <Table sqltable="a_ledger"/>
@@ -17,10 +20,15 @@
     </DataSet> 
 
     <DataSet name="GLSetupTDS">
+        <Table sqltable="p_partner"/>
+
         <Table sqltable="a_ledger"/>
         <Table sqltable="a_ledger_init_flag"/>
         <Table sqltable="a_accounting_system_parameter"/>
         <Table sqltable="a_accounting_period"/>
+        <Table sqltable="a_system_interface"/>
+        <Table sqltable="a_transaction_type"/>
+        <Table sqltable="a_valid_ledger_number"/>
 
         <Table sqltable="a_account">
             <CustomField name="BankAccountFlag" type="bool"/>
@@ -40,11 +48,22 @@
         <Table sqltable="a_budget_revision"/>
         <Table sqltable="a_budget_type"/>
 
-        <Table sqltable="a_cost_centre"/>
         <Table sqltable="a_cost_centre_types"/>
+        <Table sqltable="a_cost_centre"/>
 
         <Table sqltable="a_general_ledger_master"/>
         <Table sqltable="a_general_ledger_master_period"/>
-    </DataSet> 
+
+        <Table sqltable="a_motivation_group"/>
+        <Table sqltable="a_motivation_detail"/>
+        
+        <Table sqltable="s_module"/>
+        <Table sqltable="s_system_defaults"/>
+        <Table sqltable="p_unit"/>
+        <Table sqltable="p_location"/>
+        <Table sqltable="p_partner_type"/>
+        <Table sqltable="p_partner_location"/>
+        <Table sqltable="p_partner_ledger"/>
+    </DataSet>
 
 </PetraDataSets>
