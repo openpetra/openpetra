@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Printing", "Comm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Conversion", "Common\Conversion\Ict.Common.Conversion.csproj", "{2CCE2158-4FBB-4A32-BC01-5B6A75526802}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.EMailing", "Common\EMailing\Ict.Common.EMailing.csproj", "{6C2A20DF-9657-4DEE-BF31-119B10EFA4FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,5 +58,9 @@ Global
 		{2CCE2158-4FBB-4A32-BC01-5B6A75526802}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2CCE2158-4FBB-4A32-BC01-5B6A75526802}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2CCE2158-4FBB-4A32-BC01-5B6A75526802}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C2A20DF-9657-4DEE-BF31-119B10EFA4FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C2A20DF-9657-4DEE-BF31-119B10EFA4FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C2A20DF-9657-4DEE-BF31-119B10EFA4FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C2A20DF-9657-4DEE-BF31-119B10EFA4FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal

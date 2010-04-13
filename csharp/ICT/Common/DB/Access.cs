@@ -2349,7 +2349,7 @@ namespace Ict.Common.DB
                 FormattedSqlStatement +
                 "Possible cause: " + AException.ToString() + Environment.NewLine + ErrorMessage);
 
-            TLogging.SafeLogStackTrace(TLoggingType.ToLogfile, FDebugLevel);
+            TLogging.LogStackTrace(TLoggingType.ToLogfile);
 
             if (AThrowExceptionAfterLogging)
             {

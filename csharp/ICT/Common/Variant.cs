@@ -687,7 +687,7 @@ namespace Ict.Common
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                TLogging.SafeLogStackTrace(TLoggingType.ToConsole);
+                TLogging.LogStackTrace(TLoggingType.ToConsole);
             }
             return ReturnValue;
         }
