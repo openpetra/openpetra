@@ -87,6 +87,8 @@ namespace Ict.Petra.Server.App.Main
             }
         }
 
+        #region Properties
+        
         /// <summary>Total number of Clients that connected to the Petra Server since the start of the Petra Server</summary>
         public int ClientsConnectedTotal
         {
@@ -166,6 +168,24 @@ namespace Ict.Petra.Server.App.Main
                 return GC.GetTotalMemory(false);
             }
         }
+        
+        public bool RunAsStandalone
+        {
+            get
+            {
+                return TSrvSetting.RunAsStandalone;
+            }
+        }
+
+        public string SMTPServer
+        {
+            get
+            {
+                return TSrvSetting.SMTPServer;
+            }
+        }
+        
+        #endregion
 
         /// <summary>
         /// Initialises Logging and parses Server settings from different sources.
@@ -323,13 +343,17 @@ namespace Ict.Petra.Server.App.Main
             Int16 ClientKeepAliveTimeoutAfterXSecondsRemote;
             Int16 ClientConnectionTimeoutAfterXSeconds;
             Boolean ClientAppDomainShutdownAfterKeepAliveTimeout;
-
+			string SMTPServer;
+			bool AutomaticIntranetExportEnabled;
+			bool RunAsStandalone;
+            string IntranetDataDestinationEmail;
+            string IntranetDataSenderEmail;
+            
             CmdLineArgs = ReadCommandLineArguments();
             AppSettingsManager = new TAppSettingsManager(CmdLineArgs.ConfigurationFile);
 
-            //
-            // Parse settings from the Application Configuration File
-            //
+            #region Parse settings from the Application Configuration File
+            
             // Server.RDBMSType
             RDBMSTypeAppSetting = CommonTypes.ParseDBType(AppSettingsManager.GetValue("Server.RDBMSType"));
 
@@ -357,6 +381,8 @@ namespace Ict.Petra.Server.App.Main
             // Server.DebugLevel
             ServerDebugLevel = AppSettingsManager.GetInt16("Server.DebugLevel", 0);
 
+            RunAsStandalone = AppSettingsManager.GetBoolean("Server.RunAsStandalone", false);
+            
             // Server.Credentials with the password for the PostgreSQL and the Progress database for user petraserver
             string ServerCredentials = AppSettingsManager.GetValue("Server.Credentials");
 
@@ -379,6 +405,16 @@ namespace Ict.Petra.Server.App.Main
             // Server.ClientAppDomainShutdownAfterKeepAliveTimeout
             ClientAppDomainShutdownAfterKeepAliveTimeout = AppSettingsManager.GetBoolean("Server.ClientAppDomainShutdownAfterKeepAliveTimeout", true);
 
+            SMTPServer = AppSettingsManager.GetValue("Server.SMTPServer", "localhost");
+            
+            // This is disabled in processing at the moment, so we reflect that here. When it works change to true
+            AutomaticIntranetExportEnabled = AppSettingsManager.GetBoolean("Server.AutomaticIntranetExportEnabled", false);
+            // The following setting specifies the email address where the Intranet Data emails are sent to when "Server.AutomaticIntranetExportEnabled" is true.
+            IntranetDataDestinationEmail = AppSettingsManager.GetValue("Server.IntranetDataDestinationEmail", "???@???.org");
+            // The following setting is temporary - until we have created a GUI where users can specify the email address for the 
+            // responsible Personnel and Finance persons themselves. Those will be stored in SystemDefaults then.
+            IntranetDataSenderEmail = AppSettingsManager.GetValue("Server.IntranetDataSenderEmail", "???@???.org");
+            
             // Determine network configuration of the Server
             Networking.DetermineNetworkConfig(out ServerName, out ServerIPAddresses);
 
@@ -410,6 +446,8 @@ namespace Ict.Petra.Server.App.Main
                 ServerAssemblyVersion = new Version(0, 0, 0, 0);
             }
 
+            #endregion
+
             // Store Server configuration in the static TSrvSetting class
             FServerSettings = new TSrvSetting(
                 CmdLineArgs.ApplicationName,
@@ -433,7 +471,12 @@ namespace Ict.Petra.Server.App.Main
                 ClientKeepAliveTimeoutAfterXSecondsLAN,
                 ClientKeepAliveTimeoutAfterXSecondsRemote,
                 ClientConnectionTimeoutAfterXSeconds,
-                ClientAppDomainShutdownAfterKeepAliveTimeout);
+                ClientAppDomainShutdownAfterKeepAliveTimeout,
+				SMTPServer,
+				AutomaticIntranetExportEnabled,
+                RunAsStandalone,
+                IntranetDataDestinationEmail,
+                IntranetDataSenderEmail);
         }
 
         /// <summary>
@@ -451,14 +494,12 @@ namespace Ict.Petra.Server.App.Main
 
         /// <summary>
         /// Queues a ClientTask for a certain Client.
-        ///
         /// </summary>
         /// <param name="AClientID">Server-assigned ID of the Client</param>
         /// <param name="ATaskGroup">Group of the Task</param>
         /// <param name="ATaskCode">Code of the Task</param>
         /// <param name="ATaskPriority">Priority of the Task</param>
-        /// <returns>true if ClientTask was queued, otherwise false.
-        /// </returns>
+        /// <returns>true if ClientTask was queued, otherwise false.</returns>
         public bool QueueClientTask(System.Int16 AClientID, String ATaskGroup, String ATaskCode, System.Int16 ATaskPriority)
         {
             bool ReturnValue;
@@ -605,6 +646,38 @@ namespace Ict.Petra.Server.App.Main
             return GC.GetTotalMemory(false);
         }
 
+        /// <summary>
+        /// Causes PetraServer to send a test e-mail to a recipient with the current Server Email Settings.
+        /// </summary>
+        public string SendServerTestEmail(string ARecipients)
+        {
+            bool result;
+            string ReturnValue;
+
+//            Console.WriteLine("Server Email Settings:" + Environment.NewLine +
+//                "SmtpServer: " + TSrvSetting.SMTPServer + Environment.NewLine +
+//                "AutoIntranetExportSetting: " + TSrvSetting.AutomaticIntranetExportEnabled.ToString());
+
+
+            result = Ict.Common.EMailing.SMTPEmail.SendEmail(
+                ARecipients, ARecipients, ARecipients,
+                "Test Email from PetraServer",
+                "PetraServer Test Email, as requested on " + DateTime.Now.ToString() + ".");
+
+            ReturnValue = "Email sending result: ";
+
+            if (result)
+            {
+                ReturnValue = ReturnValue + "OK";
+            }
+            else
+            {
+                ReturnValue = ReturnValue + "FAILURE";
+            }
+
+            return ReturnValue;
+        }
+        
         /// <summary>
         /// Allows loading of a 'fake' Client AppDomain.
         /// *** For development testing purposes only ***

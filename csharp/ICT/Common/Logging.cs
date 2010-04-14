@@ -165,52 +165,6 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// This prints the current stack trace
-        /// it is safe on mono because it only prints the stack trace if the debug level is very high
-        /// </summary>
-        /// <param name="ALoggingtype">destination of logging output</param>
-        /// <param name="ADebugLevel">the debug level determines if the stack trace is printed at all</param>
-        public static void SafeLogStackTrace(TLoggingType ALoggingtype, Int16 ADebugLevel)
-        {
-            if (Utilities.DetermineExecutingCLR() != TExecutingCLREnum.eclrMono)
-            {
-                // TLogging.Log('TLogging.SafeLogStackTrace: not running on Mono!');
-                TLogging.LogStackTrace(ALoggingtype);
-            }
-            else
-            {
-                /*
-                 * The Mono runtime has a Bug*) that can cause a complete crash of the
-                 * Mono runtime if an instance of the StackTrace class is created
-                 * and the Stack Trace would span several AppDomains. Therefore we
-                 * don't do a StackTrace automatically on Mono, but only if the
-                 * DebugLevel is DB_DEBUGLEVEL_TRACE...
-                 * *) Bug: https://bugzilla.novell.com/show_bug.cgi?id=324794
-                 */
-                if (ADebugLevel >= DEBUGLEVEL_TRACE)
-                {
-                    // TLogging.Log('TLogging.SafeLogStackTrace: running on Mono. Calling LogStackTrace because DebugLevel is high enough!');
-                    TLogging.LogStackTrace(ALoggingtype);
-                }
-                else
-                {
-                    // TLogging.Log('TLogging.SafeLogStackTrace: running on Mono. Not calling LogStackTrace because DebugLevel isn''t high enough!');
-                }
-            }
-        }
-
-        /// <summary>
-        /// This prints the current stack trace
-        /// it is safe on mono because it only prints the stack trace if the debug level is very high
-        /// Debug level is assumed 0
-        /// </summary>
-        /// <param name="ALoggingtype">destination of logging</param>
-        public static void SafeLogStackTrace(TLoggingType ALoggingtype)
-        {
-            SafeLogStackTrace(ALoggingtype, 0);
-        }
-
-        /// <summary>
         /// Set the context of the program situation. It is displayed in the next log messages.
         /// </summary>
         /// <param name="context">This will be displayed in the following calls to Log; can be reset with an empty string
@@ -301,7 +255,7 @@ namespace Ict.Common
                 {
                     // I found it was better to write the actual logging message, even if the logwriter
                     // is not setup up correctly
-                    new TLogging("temp.log");
+                    new TLogging("..\\tmp23\\log\\temp.log");
                     TLogWriter.Log(Text);
 
                     if (TLogging.Context.Length != 0)
@@ -328,26 +282,6 @@ namespace Ict.Common
             StackFrame sf;
             Int32 Counter;
             String msg;
-
-            if (Utilities.DetermineExecutingCLR() == TExecutingCLREnum.eclrMono)
-            {
-                /*
-                 * The Mono runtime has a Bug*) that can causes a complete crash of the
-                 * Mono runtime if an instance of the StackTrace class is created
-                 * and the Stack Trace would span several AppDomains. Therefore we
-                 * log a warning here in case the next statement crashes - so at least we know
-                 * why the Mono runtime has crashed!
-                 * *) Bug: https://bugzilla.novell.com/show_bug.cgi?id=324794
-                 *
-                 * -> If a call to this method might be done while the calling assembly is
-                 * -> executing on a Mono runtime, it is better to call SafeLogStackTrace
-                 * -> instead!
-                 */
-
-                // todo: can we check if this is already called by SafeLogStackTrace ?
-                TLogging.Log(
-                    "TLogging.LogStackTrace: WARNING: Execution of this Method on Mono can cause a CRASH OF THE MONO RUNTIME - use SafeLogStackTrace instead.");
-            }
 
             st = new StackTrace(true);
             msg = "";

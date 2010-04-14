@@ -346,19 +346,20 @@ namespace Ict.Common
         /// <summary>
         /// need to find the matching quotes
         /// </summary>
-        /// <returns>void</returns>
+        /// <param name="s">String to the find the matchin quote</param>
+        /// <returns>index of the end matching quote in the string </returns>
         public static int FindMatchingQuote(String s)
         {
             string localstr;
 
             localstr = s.Substring(1);
 
-            while (localstr.IndexOf("\"\"") != -1)
+            if (localstr.IndexOf("\"\"") != -1)
             {
                 localstr = localstr.Replace("\"\"", "  ");
             }
 
-            return localstr.IndexOf('"') + 1;
+            return localstr.IndexOf('"');
         }
 
         /// <summary>
@@ -417,7 +418,7 @@ namespace Ict.Common
 
                 if (list[position] == '"')
                 {
-                    string quotedstring = list.Substring(position + 1, FindMatchingQuote(list.Substring(position) + 1) - 1);
+                    string quotedstring = list.Substring(position + 1, FindMatchingQuote(list.Substring(position) + 1));
 
                     if (value.Length == 0)
                     {
@@ -1767,6 +1768,80 @@ namespace Ict.Common
             {
                 months.Add(s);
             }
-        }
+        }        
+       
+        /// <summary>
+        /// Finds a matching closing bracket in a String.
+        /// </summary>
+        /// <param name="AInspectString">The String to inspect.</param>
+        /// <param name="AStartPos">Start position from which to search (must be >= 0).</param>
+        /// <param name="ABracketChar">Opening bracket character. Supported are '(', '[' and '{'.</param>
+        /// <returns>If return value is positive: The position in string of the matching closing bracket. If return
+        /// value is negative and not -9999: uneven opening and closing of bracktes. The number is the of missing 
+        /// closing brackets. If return value is -9999: AStartPos was greater than the string has characters!</returns>
+        public static int FindMatchingEndBracket(string AInspectString, int AStartPos, char ABracketChar)
+        {
+            int ReturnValue = -9999;            
+            char CurrentChar;
+            char ClosingBracketChar;
+            int ExtraBracketOccurances = 0;
+
+            #region Working on Arguments
+            
+            if (AStartPos <= 0) 
+            {
+                throw new ArgumentException("AStartPos Argument must greater than 0");
+            }
+                        
+            if (ABracketChar == '(') 
+            {
+                ClosingBracketChar = ')';
+            }
+            else if (ABracketChar == '[') 
+            {
+                ClosingBracketChar = ']';
+            }
+            else if (ABracketChar == '{') 
+            {
+                ClosingBracketChar = '}';
+            }
+            else
+            {
+                throw new ArgumentException("Character submitted in ABracketChar is not supported. Supported bracket characters are: '(', '[' and '{'.");
+            }
+            
+            #endregion
+            
+            
+            for (int Counter = AStartPos; Counter < AInspectString.Length; Counter++) 
+            {
+                CurrentChar = AInspectString[Counter];
+                
+                if (CurrentChar == ABracketChar) 
+                {
+                    ExtraBracketOccurances++;    
+                    ReturnValue = (ExtraBracketOccurances * -1);  // set ReturnValue in case no matching number of closing Brackets is ever found!
+                }
+                else if (CurrentChar == ClosingBracketChar) 
+                {
+                    if (ExtraBracketOccurances > 0) 
+                    {                                                
+                        ExtraBracketOccurances--;                        
+                        ReturnValue = (ExtraBracketOccurances * -1);  // set ReturnValue in case no matching number of closing Brackets is ever found!
+                    }
+                    else
+                    {
+                        // We have found the matching closing bracket!
+                        ReturnValue = Counter;
+                        break;
+                    }
+                }                    
+            }
+            
+//#if DEBUGMODE
+    Console.WriteLine(String.Format("FindMatchingEndBracketPos for AInspectString '{0}', AStartPos: {1}; ABracketChar: '{2}':   Closing bracket '{3}' found at position {4}.", AInspectString, AStartPos, ABracketChar, ClosingBracketChar, ReturnValue));
+//#endif
+            return ReturnValue;
+        }                
     }
 }

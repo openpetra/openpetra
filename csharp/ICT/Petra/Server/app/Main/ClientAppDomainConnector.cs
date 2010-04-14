@@ -694,7 +694,12 @@ namespace Ict.Petra.Server.App.Main
                                (object)TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsLAN,
                                (object)TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsRemote,
                                (object)TSrvSetting.ClientConnectionTimeoutAfterXSeconds,
-                               (object)TSrvSetting.ClientAppDomainShutdownAfterKeepAliveTimeout },
+                               (object)TSrvSetting.ClientAppDomainShutdownAfterKeepAliveTimeout,
+                               (object)TSrvSetting.SMTPServer,
+                               (object)TSrvSetting.AutomaticIntranetExportEnabled,
+                               (object)TSrvSetting.RunAsStandalone,
+                               (object)TSrvSetting.IntranetDataDestinationEmail,
+                               (object)TSrvSetting.IntranetDataSenderEmail},
                 out ARemotingURLPollClientTasks,
                 out ARemotingURLTestObject);
 #if DEBUGMODE

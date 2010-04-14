@@ -56,7 +56,7 @@ namespace Ict.Petra.Shared
             while (VerificationResultEnum.MoveNext())
             {
                 VerificationResultEntry = ((TVerificationResult)VerificationResultEnum.Current);
-                ReturnValue = ReturnValue + "  * [" + VerificationResultEntry.FResultContext + "] " + VerificationResultEntry.FResultText +
+                ReturnValue = ReturnValue + "  * [" + VerificationResultEntry.ResultContext + "] " + VerificationResultEntry.ResultText +
                               Environment.NewLine + Environment.NewLine;
             }
 

@@ -338,15 +338,15 @@ namespace Ict.Petra.Client.MCommon
                 if (TPartnerAddressVerification.VerifyPartnerLocationData(e, FPetraUtilsObject.VerificationResultCollection,
                         out VerificationResultReturned) == false)
                 {
-                    if (VerificationResultReturned.FResultCode != ErrorCodes.PETRAERRORCODE_VALUEUNASSIGNABLE)
+                    if (VerificationResultReturned.ResultCode != ErrorCodes.PETRAERRORCODE_VALUEUNASSIGNABLE)
                     {
                         // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
                         MessageBox.Show(
-                            VerificationResultReturned.FResultText + Environment.NewLine + Environment.NewLine + "Message Number: " +
-                            VerificationResultReturned.FResultCode + Environment.NewLine + "Context: " + this.GetType().ToString() +
+                            VerificationResultReturned.ResultText + Environment.NewLine + Environment.NewLine + "Message Number: " +
+                            VerificationResultReturned.ResultCode + Environment.NewLine + "Context: " + this.GetType().ToString() +
                             Environment.NewLine +
                             "Release: ",
-                            VerificationResultReturned.FResultTextCaption,
+                            VerificationResultReturned.ResultTextCaption,
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error);
                         BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerLocationDV], e.Column);
@@ -361,11 +361,11 @@ namespace Ict.Petra.Client.MCommon
 
                         VerificationResultEntry = new TScreenVerificationResult(this,
                             e.Column,
-                            VerificationResultReturned.FResultText,
-                            VerificationResultReturned.FResultTextCaption,
-                            VerificationResultReturned.FResultCode,
+                            VerificationResultReturned.ResultText,
+                            VerificationResultReturned.ResultTextCaption,
+                            VerificationResultReturned.ResultCode,
                             BoundControl,
-                            VerificationResultReturned.FResultSeverity);
+                            VerificationResultReturned.ResultSeverity);
                         FPetraUtilsObject.VerificationResultCollection.Add(VerificationResultEntry);
 
                         // MessageBox.Show('After setting the error: ' + e.ProposedValue.ToString);

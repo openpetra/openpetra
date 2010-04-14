@@ -521,7 +521,12 @@ namespace Ict.Petra.Server.App.ClientDomain
             System.Int16 AClientKeepAliveTimeoutAfterXSecondsLAN,
             System.Int16 AClientKeepAliveTimeoutAfterXSecondsRemote,
             System.Int16 AClientConnectionTimeoutAfterXSeconds,
-            bool AClientAppDomainShutdownAfterKeepAliveTimeout)
+            bool AClientAppDomainShutdownAfterKeepAliveTimeout,
+            string ASMTPServer,            
+            bool AAutomaticIntranetExportEnabled,
+            bool ARunAsStandalone,
+            string AIntranetDataDestinationEmail,
+            string AIntranetDataSenderEmail)
         {
             // Console.WriteLine('TClientDomainManager.TakeoverServerSettings in AppDomain: ' + Thread.GetDomain().FriendlyName);
             FServerSettings = new TSrvSetting(AApplicationName,
@@ -545,7 +550,12 @@ namespace Ict.Petra.Server.App.ClientDomain
                 AClientKeepAliveTimeoutAfterXSecondsLAN,
                 AClientKeepAliveTimeoutAfterXSecondsRemote,
                 AClientConnectionTimeoutAfterXSeconds,
-                AClientAppDomainShutdownAfterKeepAliveTimeout);
+                AClientAppDomainShutdownAfterKeepAliveTimeout,
+                ASMTPServer,
+                AAutomaticIntranetExportEnabled,
+                ARunAsStandalone,
+                AIntranetDataDestinationEmail,
+                AIntranetDataSenderEmail);
         }
 
         /// <summary>

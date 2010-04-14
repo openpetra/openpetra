@@ -137,9 +137,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 foreach (TVerificationResult verif in Verifications)
                 {
-                    ErrorMessages += "[" + verif.FResultContext + "] " +
-                                     verif.FResultTextCaption + ": " +
-                                     verif.FResultText + Environment.NewLine;
+                    ErrorMessages += "[" + verif.ResultContext + "] " +
+                                     verif.ResultTextCaption + ": " +
+                                     verif.ResultText + Environment.NewLine;
                 }
 
                 System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));

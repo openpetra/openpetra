@@ -1849,8 +1849,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 VerificationResultItem = (TVerificationResult)VerificationResult.FindBy(
                                     (object)"Location Change Promotion: Information");
 
-                                MessageBox.Show(VerificationResultItem.FResultText,
-                                    VerificationResultItem.FResultTextCaption, MessageBoxButtons.OK,
+                                MessageBox.Show(VerificationResultItem.ResultText,
+                                    VerificationResultItem.ResultTextCaption, MessageBoxButtons.OK,
                                     MessageBoxIcon.Information);
                             }
 
@@ -3169,7 +3169,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 MessageBox.Show(Resourcestrings.StrErrorNoValidEmailAddressForThisPartner + "\r\n" + "\r\n" +
                     Resourcestrings.StrDetails + "\r\n" +
-                    VerificationResult.FResultText,
+                    VerificationResult.ResultText,
                     Resourcestrings.StrErrorNoEmailAddressForThisPartnerTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }

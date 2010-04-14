@@ -109,7 +109,7 @@ namespace Ict.Petra.Client.App.Gui
         /// <returns>void</returns>
         public static void SetColumnErrorText(DataColumnChangeEventArgs AEventArgs, TVerificationResult AVerificationResultEntry, string AControlName)
         {
-            AEventArgs.Row.SetColumnError(AEventArgs.Column, AVerificationResultEntry.FResultText + "//[[" + AControlName + "]]");
+            AEventArgs.Row.SetColumnError(AEventArgs.Column, AVerificationResultEntry.ResultText + "//[[" + AControlName + "]]");
         }
 
         /// <summary>

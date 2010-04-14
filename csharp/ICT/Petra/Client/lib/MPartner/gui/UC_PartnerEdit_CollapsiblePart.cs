@@ -837,15 +837,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 if (TPartnerVerification.VerifyPartnerData(e, out VerificationResultReturned) == false)
                 {
-                    if (VerificationResultReturned.FResultCode != ErrorCodes.PETRAERRORCODE_PARTNERSTATUSMERGEDCHANGEUNDONE)
+                    if (VerificationResultReturned.ResultCode != ErrorCodes.PETRAERRORCODE_PARTNERSTATUSMERGEDCHANGEUNDONE)
                     {
                         // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
                         MessageBox.Show(
-                            VerificationResultReturned.FResultText + Environment.NewLine + Environment.NewLine + "Message Number: " +
-                            VerificationResultReturned.FResultCode + Environment.NewLine + "Context: " + this.GetType().ToString() +
+                            VerificationResultReturned.ResultText + Environment.NewLine + Environment.NewLine + "Message Number: " +
+                            VerificationResultReturned.ResultCode + Environment.NewLine + "Context: " + this.GetType().ToString() +
                             Environment.NewLine +
                             "Release: ",
-                            VerificationResultReturned.FResultTextCaption,
+                            VerificationResultReturned.ResultTextCaption,
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error);
                         BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PPartner], e.Column);
@@ -854,11 +854,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         BoundControl.Focus();
                         VerificationResultEntry = new TScreenVerificationResult(this,
                             e.Column,
-                            VerificationResultReturned.FResultText,
-                            VerificationResultReturned.FResultTextCaption,
-                            VerificationResultReturned.FResultCode,
+                            VerificationResultReturned.ResultText,
+                            VerificationResultReturned.ResultTextCaption,
+                            VerificationResultReturned.ResultCode,
                             BoundControl,
-                            VerificationResultReturned.FResultSeverity);
+                            VerificationResultReturned.ResultSeverity);
                         FVerificationResultCollection.Add(VerificationResultEntry);
 
                         // MessageBox.Show('After setting the error: ' + e.ProposedValue.ToString);
@@ -873,11 +873,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
                         MessageBox.Show(
-                            VerificationResultReturned.FResultText + Environment.NewLine + Environment.NewLine + "Message Number: " +
-                            VerificationResultReturned.FResultCode + Environment.NewLine + "Context: " + this.GetType().ToString() +
+                            VerificationResultReturned.ResultText + Environment.NewLine + Environment.NewLine + "Message Number: " +
+                            VerificationResultReturned.ResultCode + Environment.NewLine + "Context: " + this.GetType().ToString() +
                             Environment.NewLine +
                             "Release: ",
-                            VerificationResultReturned.FResultTextCaption,
+                            VerificationResultReturned.ResultTextCaption,
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error);
                         BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerDefaultView], e.Column);
@@ -933,15 +933,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 if (TPartnerVerification.VerifyUnitData(e, FMainDS, out VerificationResultReturned) == false)
                 {
-                    if (VerificationResultReturned.FResultCode != ErrorCodes.PETRAERRORCODE_UNITNAMECHANGEUNDONE)
+                    if (VerificationResultReturned.ResultCode != ErrorCodes.PETRAERRORCODE_UNITNAMECHANGEUNDONE)
                     {
                         // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
                         MessageBox.Show(
-                            VerificationResultReturned.FResultText + Environment.NewLine + Environment.NewLine + "Message Number: " +
-                            VerificationResultReturned.FResultCode + Environment.NewLine + "Context: " + this.GetType().ToString() +
+                            VerificationResultReturned.ResultText + Environment.NewLine + Environment.NewLine + "Message Number: " +
+                            VerificationResultReturned.ResultCode + Environment.NewLine + "Context: " + this.GetType().ToString() +
                             Environment.NewLine +
                             "Release: ",
-                            VerificationResultReturned.FResultTextCaption,
+                            VerificationResultReturned.ResultTextCaption,
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error);
                         BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PUnit], e.Column);
@@ -950,11 +950,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         BoundControl.Focus();
                         VerificationResultEntry = new TScreenVerificationResult(this,
                             e.Column,
-                            VerificationResultReturned.FResultText,
-                            VerificationResultReturned.FResultTextCaption,
-                            VerificationResultReturned.FResultCode,
+                            VerificationResultReturned.ResultText,
+                            VerificationResultReturned.ResultTextCaption,
+                            VerificationResultReturned.ResultCode,
                             BoundControl,
-                            VerificationResultReturned.FResultSeverity);
+                            VerificationResultReturned.ResultSeverity);
                         FVerificationResultCollection.Add(VerificationResultEntry);
 
                         // MessageBox.Show('After setting the error: ' + e.ProposedValue.ToString);

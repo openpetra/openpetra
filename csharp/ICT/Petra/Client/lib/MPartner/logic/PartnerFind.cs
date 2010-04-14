@@ -628,7 +628,7 @@ namespace Ict.Petra.Client.MPartner
                     Environment.NewLine + Environment.NewLine +
                     Catalog.GetString("Details: ") +
                     Environment.NewLine +
-                    VerificationResult.FResultText,
+                    VerificationResult.ResultText,
                     Catalog.GetString("Cannot Send E-mail To Partner"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);

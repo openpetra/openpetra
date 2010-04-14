@@ -167,7 +167,7 @@ namespace Ict.Petra.Client.MCommon.Verification
 
             if (AVerificationResult != null)
             {
-                AVerificationResult.FResultCode = ErrorCodes.PETRAERRORCODE_EMAILADDRESSINVALID;
+                AVerificationResult.ResultCode = ErrorCodes.PETRAERRORCODE_EMAILADDRESSINVALID;
             }
         }
 

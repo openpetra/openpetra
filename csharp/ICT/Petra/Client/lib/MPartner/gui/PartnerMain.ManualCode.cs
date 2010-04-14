@@ -90,9 +90,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     foreach (TVerificationResult verif in VerificationResult)
                     {
-                        ErrorMessages += "[" + verif.FResultContext + "] " +
-                                         verif.FResultTextCaption + ": " +
-                                         verif.FResultText + Environment.NewLine;
+                        ErrorMessages += "[" + verif.ResultContext + "] " +
+                                         verif.ResultTextCaption + ": " +
+                                         verif.ResultText + Environment.NewLine;
                     }
                 }
 
