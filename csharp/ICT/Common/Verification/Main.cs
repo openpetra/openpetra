@@ -35,28 +35,46 @@ namespace Ict.Common.Verification
         Resv_Noncritical
     };
 
+    /// <summary>
+    /// Properties that every 'Verification Result' needs to implement.
+    /// </summary>
     public interface IResultInterface
     {
+        /// <summary>
+        /// Context of the Verification Result (where the Verification Result originated from).
+        /// </summary>
         object ResultContext
         {
             get;
         }
 
+        /// <summary>
+        /// Text of the Verification Result.
+        /// </summary>
         String ResultText
         {
             get;
         }
 
+        /// <summary>
+        /// Caption of the Verification Result (e.g. for use in MessageBox Titles).
+        /// </summary>        
         String ResultTextCaption
         {
             get;
         }
 
+        /// <summary>
+        /// ResultCode of the Verification Result.
+        /// </summary>
         String ResultCode
         {
             get;
         }
 
+        /// <summary>
+        /// Severity of the Verification Result.
+        /// </summary>
         TResultSeverity ResultSeverity
         {
             get;
@@ -111,7 +129,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="AResultContext">context where this verification happens (e.g. DB field name)</param>
         /// <param name="AResultText">Verification failure explanation</param>
-        /// <param name="AResultCaption">caption for message box</param>
+        /// <param name="AResultTextCaption">caption for message box</param>
         /// <param name="AResultCode">a result code to identify error messages</param>
         /// <param name="AResultSeverity">is this an error or just a warning</param>
         public TVerificationResult(String AResultContext,
@@ -128,9 +146,8 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// get the context
+        /// Context of the Verification Result (where the Verification Result originated from).
         /// </summary>
-        /// <returns></returns>
         public object ResultContext
         {
             get
@@ -140,9 +157,8 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// get the explanation for the verification failure
+        /// Text of the Verification Result.
         /// </summary>
-        /// <returns></returns>
         public String ResultText
         {
             get
@@ -151,6 +167,9 @@ namespace Ict.Common.Verification
             }
         }
 
+        /// <summary>
+        /// Caption of the Verification Result (e.g. for use in MessageBox Titles).
+        /// </summary>        
         public String ResultTextCaption
         {
             get
@@ -159,6 +178,9 @@ namespace Ict.Common.Verification
             }
         }
 
+        /// <summary>
+        /// ResultCode of the Verification Result.
+        /// </summary>
         public String ResultCode
         {
             get
@@ -172,6 +194,9 @@ namespace Ict.Common.Verification
             }
         }
 
+        /// <summary>
+        /// Severity of the Verification Result.
+        /// </summary>
         public TResultSeverity ResultSeverity
         {
             get

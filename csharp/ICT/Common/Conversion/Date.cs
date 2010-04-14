@@ -301,7 +301,11 @@ namespace Ict.Common.Conversion
                 AParsedDate = DateTime.Parse(AParseDate).ToString("D");
                 ReturnValue = true;
             }
+#if !DEBUGMODE
+            catch (Exception)
+#else                
             catch (Exception Exp)
+#endif                
             {
 #if DEBUGMODE
                 MessageBox.Show("Exception occured in LongDateStringToDateTimeInternal: " + Exp.ToString());
@@ -412,12 +416,7 @@ namespace Ict.Common.Conversion
         /// <returns>The converted date.</returns>
         public static String DateTimeToLongDateString2(DateTime ADateTime)
         {
-        	if (ADateTime == null)
-        	{
-        		return "";
-        	}
             return StringHelper.DateToLocalizedString(ADateTime);
-        }
-		
+        }		
 	}
 }
