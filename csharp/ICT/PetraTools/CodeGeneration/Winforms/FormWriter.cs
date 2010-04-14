@@ -836,6 +836,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddRootControl("stb");
             }
 
+            // check for controls that have no parent
+            List <TControlDef>orphans = FCodeStorage.GetOrphanedControls();
+
+            if (orphans.Count > 0)
+            {
+                string msg = String.Empty;
+
+                foreach (TControlDef o in orphans)
+                {
+                    msg += o.controlName + " ";
+                }
+
+                TLogging.Log("WARNING: There are some controls without parent control: " + msg);
+            }
+
             // add form events
             foreach (TEventHandler handler in FCodeStorage.FEventList.Values)
             {
