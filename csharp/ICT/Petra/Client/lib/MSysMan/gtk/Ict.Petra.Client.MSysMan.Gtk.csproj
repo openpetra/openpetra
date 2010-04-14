@@ -94,7 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
-      <Project>A3E8D62A-D07D-44D9-A286-68220B3AA94F</Project>
+      <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
       <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
     </ProjectReference>
   </ItemGroup>

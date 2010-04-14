@@ -63,6 +63,7 @@
         <echo message="generateGlue: generates the interfaces and instantiators, which is the glue between client and server"/>
         <echo message="generateGTK: generates the User Interface using GTK"/>
         <echo message="generateWinforms: generates the User Interface using System.Windows.Forms"/>
+        <echo message="generateWinform: generate a single Winform. requires parameter: -D:file=MFinance/gui/GLCreateLedger.yaml"/>
         <echo message="cleanPetra: prepare for a clean build"/>
         <echo message="compilePetra: build all Petra C# code"/>
         <echo message="compileQx: compile the javascript webclient, using Qooxdoo"/>
@@ -117,6 +118,19 @@
         </if>
     </target>
     <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServer, compilePetraClient"/>
+    <target name="compileSingleGuiProject">
+        <!-- only implemented for windows at the moment; used by generateWinform -->
+        <solution configuration="${Configuration}">
+            <projects>
+                <include name="${ProjectFile}" />
+            </projects>
+
+            <referenceprojects>
+                <include name="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/**.csproj" />
+                <exclude name="${ProjectFile}" />
+            </referenceprojects>
+        </solution>
+    </target>
     <target name="compileTemplate">
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <if test="${property::exists('mdtool')}"> <!-- to allow generateWinforms on Mono on Windows; don't build at all -->
@@ -571,6 +585,15 @@
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MPartner ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MFinance ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MFinance/gui ${generateWinformsParameters}"/>
+    </target>
+
+    <target name="generateWinform" depends="" description="Generate a single Winform">
+        <property name="generateWinformsParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${TargetPlatform}"/>
+        <property name="YmlFile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/${file}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${YmlFile} ${generateWinformsParameters}"/>
+        <property name="ProjectFile" value="${path::get-directory-name(YmlFile)}/*.csproj"/>
+        <call target="compileSingleGuiProject"/>
+        <call target="startPetraClient"/>
     </target>
 
     <target name="translationTemplate">
