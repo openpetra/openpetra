@@ -136,7 +136,12 @@ class Program
                 Console.WriteLine(e.InnerException.GetType().ToString() + ": " + e.InnerException.Message);
             }
 
-            Console.WriteLine(e.StackTrace);
+            // do not print a stacktrace for custom generated exception, eg. by the YML parser
+            if (e.GetType() != typeof(System.Exception))
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+
             Environment.Exit(-1);
         }
     }
