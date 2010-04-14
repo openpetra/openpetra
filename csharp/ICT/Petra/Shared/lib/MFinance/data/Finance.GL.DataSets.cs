@@ -33,6 +33,9 @@ using System;
 using System.Data;
 using System.Data.Odbc;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Shared.MFinance.GL.Data
 {
@@ -691,10 +694,14 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
     public class GLSetupTDS : TTypedDataSet
     {
 
+        private PPartnerTable TablePPartner;
         private ALedgerTable TableALedger;
         private ALedgerInitFlagTable TableALedgerInitFlag;
         private AAccountingSystemParameterTable TableAAccountingSystemParameter;
         private AAccountingPeriodTable TableAAccountingPeriod;
+        private ASystemInterfaceTable TableASystemInterface;
+        private ATransactionTypeTable TableATransactionType;
+        private AValidLedgerNumberTable TableAValidLedgerNumber;
         private GLSetupTDSAAccountTable TableAAccount;
         private AAccountHierarchyTable TableAAccountHierarchy;
         private AAccountHierarchyDetailTable TableAAccountHierarchyDetail;
@@ -708,10 +715,19 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         private ABudgetPeriodTable TableABudgetPeriod;
         private ABudgetRevisionTable TableABudgetRevision;
         private ABudgetTypeTable TableABudgetType;
-        private ACostCentreTable TableACostCentre;
         private ACostCentreTypesTable TableACostCentreTypes;
+        private ACostCentreTable TableACostCentre;
         private AGeneralLedgerMasterTable TableAGeneralLedgerMaster;
         private AGeneralLedgerMasterPeriodTable TableAGeneralLedgerMasterPeriod;
+        private AMotivationGroupTable TableAMotivationGroup;
+        private AMotivationDetailTable TableAMotivationDetail;
+        private SModuleTable TableSModule;
+        private SSystemDefaultsTable TableSSystemDefaults;
+        private PUnitTable TablePUnit;
+        private PLocationTable TablePLocation;
+        private PPartnerTypeTable TablePPartnerType;
+        private PPartnerLocationTable TablePPartnerLocation;
+        private PPartnerLedgerTable TablePPartnerLedger;
 
         /// auto generated
         public GLSetupTDS() :
@@ -729,6 +745,15 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         public GLSetupTDS(string ADatasetName) :
                 base(ADatasetName)
         {
+        }
+
+        /// auto generated
+        public PPartnerTable PPartner
+        {
+            get
+            {
+                return this.TablePPartner;
+            }
         }
 
         /// auto generated
@@ -764,6 +789,33 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             get
             {
                 return this.TableAAccountingPeriod;
+            }
+        }
+
+        /// auto generated
+        public ASystemInterfaceTable ASystemInterface
+        {
+            get
+            {
+                return this.TableASystemInterface;
+            }
+        }
+
+        /// auto generated
+        public ATransactionTypeTable ATransactionType
+        {
+            get
+            {
+                return this.TableATransactionType;
+            }
+        }
+
+        /// auto generated
+        public AValidLedgerNumberTable AValidLedgerNumber
+        {
+            get
+            {
+                return this.TableAValidLedgerNumber;
             }
         }
 
@@ -885,20 +937,20 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         }
 
         /// auto generated
-        public ACostCentreTable ACostCentre
-        {
-            get
-            {
-                return this.TableACostCentre;
-            }
-        }
-
-        /// auto generated
         public ACostCentreTypesTable ACostCentreTypes
         {
             get
             {
                 return this.TableACostCentreTypes;
+            }
+        }
+
+        /// auto generated
+        public ACostCentreTable ACostCentre
+        {
+            get
+            {
+                return this.TableACostCentre;
             }
         }
 
@@ -921,6 +973,87 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         }
 
         /// auto generated
+        public AMotivationGroupTable AMotivationGroup
+        {
+            get
+            {
+                return this.TableAMotivationGroup;
+            }
+        }
+
+        /// auto generated
+        public AMotivationDetailTable AMotivationDetail
+        {
+            get
+            {
+                return this.TableAMotivationDetail;
+            }
+        }
+
+        /// auto generated
+        public SModuleTable SModule
+        {
+            get
+            {
+                return this.TableSModule;
+            }
+        }
+
+        /// auto generated
+        public SSystemDefaultsTable SSystemDefaults
+        {
+            get
+            {
+                return this.TableSSystemDefaults;
+            }
+        }
+
+        /// auto generated
+        public PUnitTable PUnit
+        {
+            get
+            {
+                return this.TablePUnit;
+            }
+        }
+
+        /// auto generated
+        public PLocationTable PLocation
+        {
+            get
+            {
+                return this.TablePLocation;
+            }
+        }
+
+        /// auto generated
+        public PPartnerTypeTable PPartnerType
+        {
+            get
+            {
+                return this.TablePPartnerType;
+            }
+        }
+
+        /// auto generated
+        public PPartnerLocationTable PPartnerLocation
+        {
+            get
+            {
+                return this.TablePPartnerLocation;
+            }
+        }
+
+        /// auto generated
+        public PPartnerLedgerTable PPartnerLedger
+        {
+            get
+            {
+                return this.TablePPartnerLedger;
+            }
+        }
+
+        /// auto generated
         public new virtual GLSetupTDS GetChangesTyped(bool removeEmptyTables)
         {
             return ((GLSetupTDS)(base.GetChangesTyped(removeEmptyTables)));
@@ -929,10 +1062,14 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         /// auto generated
         protected override void InitTables()
         {
+            this.Tables.Add(new PPartnerTable("PPartner"));
             this.Tables.Add(new ALedgerTable("ALedger"));
             this.Tables.Add(new ALedgerInitFlagTable("ALedgerInitFlag"));
             this.Tables.Add(new AAccountingSystemParameterTable("AAccountingSystemParameter"));
             this.Tables.Add(new AAccountingPeriodTable("AAccountingPeriod"));
+            this.Tables.Add(new ASystemInterfaceTable("ASystemInterface"));
+            this.Tables.Add(new ATransactionTypeTable("ATransactionType"));
+            this.Tables.Add(new AValidLedgerNumberTable("AValidLedgerNumber"));
             this.Tables.Add(new GLSetupTDSAAccountTable("AAccount"));
             this.Tables.Add(new AAccountHierarchyTable("AAccountHierarchy"));
             this.Tables.Add(new AAccountHierarchyDetailTable("AAccountHierarchyDetail"));
@@ -946,15 +1083,28 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.Tables.Add(new ABudgetPeriodTable("ABudgetPeriod"));
             this.Tables.Add(new ABudgetRevisionTable("ABudgetRevision"));
             this.Tables.Add(new ABudgetTypeTable("ABudgetType"));
-            this.Tables.Add(new ACostCentreTable("ACostCentre"));
             this.Tables.Add(new ACostCentreTypesTable("ACostCentreTypes"));
+            this.Tables.Add(new ACostCentreTable("ACostCentre"));
             this.Tables.Add(new AGeneralLedgerMasterTable("AGeneralLedgerMaster"));
             this.Tables.Add(new AGeneralLedgerMasterPeriodTable("AGeneralLedgerMasterPeriod"));
+            this.Tables.Add(new AMotivationGroupTable("AMotivationGroup"));
+            this.Tables.Add(new AMotivationDetailTable("AMotivationDetail"));
+            this.Tables.Add(new SModuleTable("SModule"));
+            this.Tables.Add(new SSystemDefaultsTable("SSystemDefaults"));
+            this.Tables.Add(new PUnitTable("PUnit"));
+            this.Tables.Add(new PLocationTable("PLocation"));
+            this.Tables.Add(new PPartnerTypeTable("PPartnerType"));
+            this.Tables.Add(new PPartnerLocationTable("PPartnerLocation"));
+            this.Tables.Add(new PPartnerLedgerTable("PPartnerLedger"));
         }
 
         /// auto generated
         protected override void InitTables(System.Data.DataSet ds)
         {
+            if ((ds.Tables.IndexOf("PPartner") != -1))
+            {
+                this.Tables.Add(new PPartnerTable("PPartner"));
+            }
             if ((ds.Tables.IndexOf("ALedger") != -1))
             {
                 this.Tables.Add(new ALedgerTable("ALedger"));
@@ -970,6 +1120,18 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             if ((ds.Tables.IndexOf("AAccountingPeriod") != -1))
             {
                 this.Tables.Add(new AAccountingPeriodTable("AAccountingPeriod"));
+            }
+            if ((ds.Tables.IndexOf("ASystemInterface") != -1))
+            {
+                this.Tables.Add(new ASystemInterfaceTable("ASystemInterface"));
+            }
+            if ((ds.Tables.IndexOf("ATransactionType") != -1))
+            {
+                this.Tables.Add(new ATransactionTypeTable("ATransactionType"));
+            }
+            if ((ds.Tables.IndexOf("AValidLedgerNumber") != -1))
+            {
+                this.Tables.Add(new AValidLedgerNumberTable("AValidLedgerNumber"));
             }
             if ((ds.Tables.IndexOf("AAccount") != -1))
             {
@@ -1023,13 +1185,13 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             {
                 this.Tables.Add(new ABudgetTypeTable("ABudgetType"));
             }
-            if ((ds.Tables.IndexOf("ACostCentre") != -1))
-            {
-                this.Tables.Add(new ACostCentreTable("ACostCentre"));
-            }
             if ((ds.Tables.IndexOf("ACostCentreTypes") != -1))
             {
                 this.Tables.Add(new ACostCentreTypesTable("ACostCentreTypes"));
+            }
+            if ((ds.Tables.IndexOf("ACostCentre") != -1))
+            {
+                this.Tables.Add(new ACostCentreTable("ACostCentre"));
             }
             if ((ds.Tables.IndexOf("AGeneralLedgerMaster") != -1))
             {
@@ -1039,6 +1201,42 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             {
                 this.Tables.Add(new AGeneralLedgerMasterPeriodTable("AGeneralLedgerMasterPeriod"));
             }
+            if ((ds.Tables.IndexOf("AMotivationGroup") != -1))
+            {
+                this.Tables.Add(new AMotivationGroupTable("AMotivationGroup"));
+            }
+            if ((ds.Tables.IndexOf("AMotivationDetail") != -1))
+            {
+                this.Tables.Add(new AMotivationDetailTable("AMotivationDetail"));
+            }
+            if ((ds.Tables.IndexOf("SModule") != -1))
+            {
+                this.Tables.Add(new SModuleTable("SModule"));
+            }
+            if ((ds.Tables.IndexOf("SSystemDefaults") != -1))
+            {
+                this.Tables.Add(new SSystemDefaultsTable("SSystemDefaults"));
+            }
+            if ((ds.Tables.IndexOf("PUnit") != -1))
+            {
+                this.Tables.Add(new PUnitTable("PUnit"));
+            }
+            if ((ds.Tables.IndexOf("PLocation") != -1))
+            {
+                this.Tables.Add(new PLocationTable("PLocation"));
+            }
+            if ((ds.Tables.IndexOf("PPartnerType") != -1))
+            {
+                this.Tables.Add(new PPartnerTypeTable("PPartnerType"));
+            }
+            if ((ds.Tables.IndexOf("PPartnerLocation") != -1))
+            {
+                this.Tables.Add(new PPartnerLocationTable("PPartnerLocation"));
+            }
+            if ((ds.Tables.IndexOf("PPartnerLedger") != -1))
+            {
+                this.Tables.Add(new PPartnerLedgerTable("PPartnerLedger"));
+            }
         }
 
         /// auto generated
@@ -1046,6 +1244,10 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         {
             this.InitVars();
             base.MapTables();
+            if ((this.TablePPartner != null))
+            {
+                this.TablePPartner.InitVars();
+            }
             if ((this.TableALedger != null))
             {
                 this.TableALedger.InitVars();
@@ -1061,6 +1263,18 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             if ((this.TableAAccountingPeriod != null))
             {
                 this.TableAAccountingPeriod.InitVars();
+            }
+            if ((this.TableASystemInterface != null))
+            {
+                this.TableASystemInterface.InitVars();
+            }
+            if ((this.TableATransactionType != null))
+            {
+                this.TableATransactionType.InitVars();
+            }
+            if ((this.TableAValidLedgerNumber != null))
+            {
+                this.TableAValidLedgerNumber.InitVars();
             }
             if ((this.TableAAccount != null))
             {
@@ -1114,13 +1328,13 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             {
                 this.TableABudgetType.InitVars();
             }
-            if ((this.TableACostCentre != null))
-            {
-                this.TableACostCentre.InitVars();
-            }
             if ((this.TableACostCentreTypes != null))
             {
                 this.TableACostCentreTypes.InitVars();
+            }
+            if ((this.TableACostCentre != null))
+            {
+                this.TableACostCentre.InitVars();
             }
             if ((this.TableAGeneralLedgerMaster != null))
             {
@@ -1130,16 +1344,56 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             {
                 this.TableAGeneralLedgerMasterPeriod.InitVars();
             }
+            if ((this.TableAMotivationGroup != null))
+            {
+                this.TableAMotivationGroup.InitVars();
+            }
+            if ((this.TableAMotivationDetail != null))
+            {
+                this.TableAMotivationDetail.InitVars();
+            }
+            if ((this.TableSModule != null))
+            {
+                this.TableSModule.InitVars();
+            }
+            if ((this.TableSSystemDefaults != null))
+            {
+                this.TableSSystemDefaults.InitVars();
+            }
+            if ((this.TablePUnit != null))
+            {
+                this.TablePUnit.InitVars();
+            }
+            if ((this.TablePLocation != null))
+            {
+                this.TablePLocation.InitVars();
+            }
+            if ((this.TablePPartnerType != null))
+            {
+                this.TablePPartnerType.InitVars();
+            }
+            if ((this.TablePPartnerLocation != null))
+            {
+                this.TablePPartnerLocation.InitVars();
+            }
+            if ((this.TablePPartnerLedger != null))
+            {
+                this.TablePPartnerLedger.InitVars();
+            }
         }
 
         /// auto generated
         public override void InitVars()
         {
             this.DataSetName = "GLSetupTDS";
+            this.TablePPartner = ((PPartnerTable)(this.Tables["PPartner"]));
             this.TableALedger = ((ALedgerTable)(this.Tables["ALedger"]));
             this.TableALedgerInitFlag = ((ALedgerInitFlagTable)(this.Tables["ALedgerInitFlag"]));
             this.TableAAccountingSystemParameter = ((AAccountingSystemParameterTable)(this.Tables["AAccountingSystemParameter"]));
             this.TableAAccountingPeriod = ((AAccountingPeriodTable)(this.Tables["AAccountingPeriod"]));
+            this.TableASystemInterface = ((ASystemInterfaceTable)(this.Tables["ASystemInterface"]));
+            this.TableATransactionType = ((ATransactionTypeTable)(this.Tables["ATransactionType"]));
+            this.TableAValidLedgerNumber = ((AValidLedgerNumberTable)(this.Tables["AValidLedgerNumber"]));
             this.TableAAccount = ((GLSetupTDSAAccountTable)(this.Tables["AAccount"]));
             this.TableAAccountHierarchy = ((AAccountHierarchyTable)(this.Tables["AAccountHierarchy"]));
             this.TableAAccountHierarchyDetail = ((AAccountHierarchyDetailTable)(this.Tables["AAccountHierarchyDetail"]));
@@ -1153,10 +1407,19 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.TableABudgetPeriod = ((ABudgetPeriodTable)(this.Tables["ABudgetPeriod"]));
             this.TableABudgetRevision = ((ABudgetRevisionTable)(this.Tables["ABudgetRevision"]));
             this.TableABudgetType = ((ABudgetTypeTable)(this.Tables["ABudgetType"]));
-            this.TableACostCentre = ((ACostCentreTable)(this.Tables["ACostCentre"]));
             this.TableACostCentreTypes = ((ACostCentreTypesTable)(this.Tables["ACostCentreTypes"]));
+            this.TableACostCentre = ((ACostCentreTable)(this.Tables["ACostCentre"]));
             this.TableAGeneralLedgerMaster = ((AGeneralLedgerMasterTable)(this.Tables["AGeneralLedgerMaster"]));
             this.TableAGeneralLedgerMasterPeriod = ((AGeneralLedgerMasterPeriodTable)(this.Tables["AGeneralLedgerMasterPeriod"]));
+            this.TableAMotivationGroup = ((AMotivationGroupTable)(this.Tables["AMotivationGroup"]));
+            this.TableAMotivationDetail = ((AMotivationDetailTable)(this.Tables["AMotivationDetail"]));
+            this.TableSModule = ((SModuleTable)(this.Tables["SModule"]));
+            this.TableSSystemDefaults = ((SSystemDefaultsTable)(this.Tables["SSystemDefaults"]));
+            this.TablePUnit = ((PUnitTable)(this.Tables["PUnit"]));
+            this.TablePLocation = ((PLocationTable)(this.Tables["PLocation"]));
+            this.TablePPartnerType = ((PPartnerTypeTable)(this.Tables["PPartnerType"]));
+            this.TablePPartnerLocation = ((PPartnerLocationTable)(this.Tables["PPartnerLocation"]));
+            this.TablePPartnerLedger = ((PPartnerLedgerTable)(this.Tables["PPartnerLedger"]));
         }
 
         /// auto generated
@@ -1358,6 +1621,132 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 this.FConstraints.Add(new TTypedConstraint("FKLedgerInitFlag1", "ALedger", new string[] {
                                 "a_ledger_number_i"}, "ALedgerInitFlag", new string[] {
                                 "a_ledger_number_i"}));
+            }
+            if (((this.TableAMotivationGroup != null)
+                        && (this.TableAMotivationDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKMotivationDetail1", "AMotivationGroup", new string[] {
+                                "a_ledger_number_i", "a_motivation_group_code_c"}, "AMotivationDetail", new string[] {
+                                "a_ledger_number_i", "a_motivation_group_code_c"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableAMotivationDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKMotivationDetail2", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "AMotivationDetail", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}));
+            }
+            if (((this.TableACostCentre != null)
+                        && (this.TableAMotivationDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKMotivationDetail3", "ACostCentre", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}, "AMotivationDetail", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TableAMotivationDetail != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKMotivationDetail4", "PPartner", new string[] {
+                                "p_partner_key_n"}, "AMotivationDetail", new string[] {
+                                "p_recipient_key_n"}));
+            }
+            if (((this.TableALedger != null)
+                        && (this.TableAMotivationGroup != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKMotivationGroup1", "ALedger", new string[] {
+                                "a_ledger_number_i"}, "AMotivationGroup", new string[] {
+                                "a_ledger_number_i"}));
+            }
+            if (((this.TableALedger != null)
+                        && (this.TableASystemInterface != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKSystemInterface1", "ALedger", new string[] {
+                                "a_ledger_number_i"}, "ASystemInterface", new string[] {
+                                "a_ledger_number_i"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableATransactionType != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKTransactionType1", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "ATransactionType", new string[] {
+                                "a_ledger_number_i", "a_debit_account_code_c"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableATransactionType != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKTransactionType2", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "ATransactionType", new string[] {
+                                "a_ledger_number_i", "a_credit_account_code_c"}));
+            }
+            if (((this.TableALedger != null)
+                        && (this.TableAValidLedgerNumber != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKValidLedgerNumber1", "ALedger", new string[] {
+                                "a_ledger_number_i"}, "AValidLedgerNumber", new string[] {
+                                "a_ledger_number_i"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TableAValidLedgerNumber != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKValidLedgerNumber2", "PPartner", new string[] {
+                                "p_partner_key_n"}, "AValidLedgerNumber", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TableAValidLedgerNumber != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKValidLedgerNumber3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "AValidLedgerNumber", new string[] {
+                                "a_ilt_processing_centre_n"}));
+            }
+            if (((this.TableACostCentre != null)
+                        && (this.TableAValidLedgerNumber != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKValidLedgerNumber4", "ACostCentre", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}, "AValidLedgerNumber", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePPartnerLedger != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerLedger1", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PPartnerLedger", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerLocation != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerLocation1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerLocation", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePLocation != null)
+                        && (this.TablePPartnerLocation != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerLocation2", "PLocation", new string[] {
+                                "p_site_key_n", "p_location_key_i"}, "PPartnerLocation", new string[] {
+                                "p_site_key_n", "p_location_key_i"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerType != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerType3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerType", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePUnit != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnit1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PUnit", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePUnit != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnit7", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PUnit", new string[] {
+                                "p_primary_office_n"}));
             }
         }
     }

@@ -538,17 +538,16 @@ namespace Ict.Common
         {
         }
 
-        
         /// <summary>
         /// constructor for serialization
         /// </summary>
         /// <param name="info">for serialization</param>
         /// <param name="context">for serialization</param>
         public EDBConcurrencyRowDeletedException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
+            : base(info, context)
         {
         }
-        
+
         /// <summary>
         /// for serialization
         /// </summary>
@@ -556,8 +555,8 @@ namespace Ict.Common
         /// <param name="context">for serialization</param>
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-        	base.GetObjectData(info, context);
-        }        
+            base.GetObjectData(info, context);
+        }
     }
     #endregion
 

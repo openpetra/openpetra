@@ -664,9 +664,8 @@ namespace Ict.Petra.Client.MFinance.Gui
                 }
                 else
                 {
-                    MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).ResultText,
-                        Catalog.GetString("Problem: No GL batch has been created"));
+                    MessageBox.Show(Catalog.GetString("Problem: No GL batch has been created"),
+                        Catalog.GetString("Error"));
                 }
             }
         }

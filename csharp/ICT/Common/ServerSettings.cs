@@ -59,13 +59,13 @@ namespace Ict.Common
         private static System.Int16 UClientConnectionTimeoutAfterXSeconds;
         private static bool UClientAppDomainShutdownAfterKeepAliveTimeout;
         private static TExecutingOSEnum UExecutingOS;
-		private static string USMTPServer;
-		private static bool UAutomaticIntranetExportEnabled;
-		private static string UIntranetDataDestinationEmail;
-		private static string UIntranetDataSenderEmail;
-		private static bool URunAsStandalone;
+        private static string USMTPServer;
+        private static bool UAutomaticIntranetExportEnabled;
+        private static string UIntranetDataDestinationEmail;
+        private static string UIntranetDataSenderEmail;
+        private static bool URunAsStandalone;
 
-		#region Properties
+        #region Properties
 
         /// <summary>Name of .NET Configuration File, if specified via command line options</summary>
         public static String ConfigurationFile
@@ -280,65 +280,65 @@ namespace Ict.Common
             }
         }
 
-		
-		/// <summary>
-		/// Which server to use for sending email.
-		/// </summary>
-		public static string SMTPServer
-		{
-			get 
-			{
-				return USMTPServer;
-			}
-		}
 
-		/// <summary>
-		/// A way of turning off Automatic Intranet Export.
-		/// </summary>
-		public static bool AutomaticIntranetExportEnabled
-		{
-			get 
-			{
-				return UAutomaticIntranetExportEnabled;
-			}
-		}
+        /// <summary>
+        /// Which server to use for sending email.
+        /// </summary>
+        public static string SMTPServer
+        {
+            get
+            {
+                return USMTPServer;
+            }
+        }
 
-		/// <summary>
-		/// True if PetraServer is running as a server for a Standalone Petra, otherwise false.
-		/// </summary>
-		public static bool RunAsStandalone
-		{
-			get 
-			{
-				return URunAsStandalone;
-			}
-		}
-		
-		/// <summary>
-		/// Email address that the Intranet Upload Data should get sent to.
-		/// </summary>
-		public static string IntranetDataDestinationEmail
-		{
-		    get
-		    {
-		        return UIntranetDataDestinationEmail;
-		    }
-		}
+        /// <summary>
+        /// A way of turning off Automatic Intranet Export.
+        /// </summary>
+        public static bool AutomaticIntranetExportEnabled
+        {
+            get
+            {
+                return UAutomaticIntranetExportEnabled;
+            }
+        }
 
-		/// <summary>
-		/// Email address of the user that creates the Intranet Upload Data.
-		/// </summary>		
-		public static string IntranetDataSenderEmail
-		{
-		    get
-		    {
-		        return UIntranetDataSenderEmail;
-		    }
-		}
-		
-		#endregion
-		
-		
+        /// <summary>
+        /// True if PetraServer is running as a server for a Standalone Petra, otherwise false.
+        /// </summary>
+        public static bool RunAsStandalone
+        {
+            get
+            {
+                return URunAsStandalone;
+            }
+        }
+
+        /// <summary>
+        /// Email address that the Intranet Upload Data should get sent to.
+        /// </summary>
+        public static string IntranetDataDestinationEmail
+        {
+            get
+            {
+                return UIntranetDataDestinationEmail;
+            }
+        }
+
+        /// <summary>
+        /// Email address of the user that creates the Intranet Upload Data.
+        /// </summary>
+        public static string IntranetDataSenderEmail
+        {
+            get
+            {
+                return UIntranetDataSenderEmail;
+            }
+        }
+
+        #endregion
+
+
         /// <summary>
         /// Initialises the internal variables that hold the Server Settings.
         ///
@@ -366,11 +366,11 @@ namespace Ict.Common
             System.Int16 AClientKeepAliveTimeoutAfterXSecondsRemote,
             System.Int16 AClientConnectionTimeoutAfterXSeconds,
             bool AClientAppDomainShutdownAfterKeepAliveTimeout,
-	        string ASmtpServer,
-			bool AAutomaticIntranetExportEnabled,
-			bool ARunAsStandalone,
-			string AIntranetDataDestinationEmail,
-			string AIntranetDataSenderEmail)
+            string ASmtpServer,
+            bool AAutomaticIntranetExportEnabled,
+            bool ARunAsStandalone,
+            string AIntranetDataDestinationEmail,
+            string AIntranetDataSenderEmail)
         {
             UApplicationName = AApplicationName;
             UConfigurationFile = AConfigurationFile;
@@ -394,11 +394,11 @@ namespace Ict.Common
             UClientConnectionTimeoutAfterXSeconds = AClientConnectionTimeoutAfterXSeconds;
             UClientAppDomainShutdownAfterKeepAliveTimeout = AClientAppDomainShutdownAfterKeepAliveTimeout;
             UApplicationVersion = AApplicationVersion;
-			USMTPServer = ASmtpServer;
-			UAutomaticIntranetExportEnabled = AAutomaticIntranetExportEnabled;
-			URunAsStandalone = ARunAsStandalone;
-			UIntranetDataDestinationEmail = AIntranetDataDestinationEmail;
-			UIntranetDataSenderEmail = AIntranetDataSenderEmail;            
+            USMTPServer = ASmtpServer;
+            UAutomaticIntranetExportEnabled = AAutomaticIntranetExportEnabled;
+            URunAsStandalone = ARunAsStandalone;
+            UIntranetDataDestinationEmail = AIntranetDataDestinationEmail;
+            UIntranetDataSenderEmail = AIntranetDataSenderEmail;
         }
     }
 }

@@ -2645,6 +2645,21 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public bool CreateNewLedger(Int32 ALedgerNumber,
+                                    String ALedgerName,
+                                    String ACountryCode,
+                                    String ABaseCurrency,
+                                    String AIntlCurrency,
+                                    DateTime ACalendarStartDate,
+                                    Int32 ANumberOfPeriods,
+                                    Int32 ACurrentPeriod,
+                                    Int32 ANumberOfFwdPostingPeriods,
+                                    out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.CreateNewLedger(ALedgerNumber, ALedgerName, ACountryCode, ABaseCurrency, AIntlCurrency, ACalendarStartDate, ANumberOfPeriods, ACurrentPeriod, ANumberOfFwdPostingPeriods, out AVerificationResult);
+        }
+
+        /// generated method from connector
         public bool GetCurrentPeriodDates(Int32 ALedgerNumber,
                                           out DateTime AStartDate,
                                           out DateTime AEndDate)

@@ -511,6 +511,17 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
         bool CanDeleteAccount(Int32 ALedgerNumber,
                               string AAccountCode);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
+        bool CreateNewLedger(Int32 ALedgerNumber,
+                             String ALedgerName,
+                             String ACountryCode,
+                             String ABaseCurrency,
+                             String AIntlCurrency,
+                             DateTime ACalendarStartDate,
+                             Int32 ANumberOfPeriods,
+                             Int32 ACurrentPeriod,
+                             Int32 ANumberOfFwdPostingPeriods,
+                             out TVerificationResultCollection AVerificationResult);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
         bool GetCurrentPeriodDates(Int32 ALedgerNumber,
                                    out DateTime AStartDate,

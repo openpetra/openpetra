@@ -7581,7 +7581,7 @@
                 descr=""
                 format="&gt;&gt;9"
                 label="Actuals Data Retention Period"
-                initial="0"/>
+                initial="11"/>
     <tablefield name="p_partner_key_n"
                 type="number"
                 length="10"

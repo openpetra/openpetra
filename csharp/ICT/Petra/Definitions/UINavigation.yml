@@ -161,9 +161,9 @@ OpenPetra:
         FinancialDevelopment: {Icon=develope_small.ico}
         SystemManager: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Finance:
-                LedgerOperations:
+                LedgerOperations: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                    CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
                     DeleteLedger:
-                    ImportLedgerStructure:
                 ExchangeRates:
                     ManageCurrencies:
                     ManageExchangeRates:

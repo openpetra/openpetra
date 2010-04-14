@@ -528,7 +528,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             System.Int16 AClientKeepAliveTimeoutAfterXSecondsRemote,
             System.Int16 AClientConnectionTimeoutAfterXSeconds,
             bool AClientAppDomainShutdownAfterKeepAliveTimeout,
-            string ASMTPServer,            
+            string ASMTPServer,
             bool AAutomaticIntranetExportEnabled,
             bool ARunAsStandalone,
             string AIntranetDataDestinationEmail,

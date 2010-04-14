@@ -84,12 +84,6 @@
             </fileset>
         </copy>
 
-        <copy todir="${setupDir}/sql30">
-            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/sql/">
-                <include name="*.sql" />
-            </fileset>
-        </copy>
-
         <copy todir="${setupDir}/reports30">
             <fileset basedir="${OpenPetraRoot.dir}/XmlReports/">
                 <include name="*.dtd" />
@@ -101,6 +95,13 @@
             tofile="${setupDir}/LICENSE"/>
 
         <if test="${not BuildClientArchive}">
+            <copy todir="${setupDir}/sql30">
+                <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/sql/">
+                    <include name="*.sql" />
+                    <include name="*.yml" />
+                </fileset>
+            </copy>
+
             <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db"
                         tofile="${setupDir}/db30/demo.db"/>
             <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql"

@@ -193,10 +193,11 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="ATypeWhichRaisesException"></param>
         public static void MsgSecurityException(ESecurityPartnerAccessDeniedException AException, System.Type ATypeWhichRaisesException)
         {
-            MessageBox.Show(MsgSecurityExceptionString(AException, ATypeWhichRaisesException), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
-                MessageBoxIcon.Information);            
+            MessageBox.Show(MsgSecurityExceptionString(AException, ATypeWhichRaisesException), Catalog.GetString(
+                    "Security Violation"), MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
         }
-        
+
         public static string MsgSecurityExceptionString(ESecurityPartnerAccessDeniedException AException, System.Type ATypeWhichRaisesException)
         {
             const string MESSAGE_ACCESS_DENIED = "Access to Partner {0}denied.";
@@ -207,7 +208,7 @@ namespace Ict.Petra.Client.App.Gui
                 typeof(TPartnerAccessLevelEnum),
                 Enum.GetName(typeof(TPartnerAccessLevelEnum), AException.AccessLevel));
 
-            SpecificMessageText = String.Format(MESSAGE_ACCESS_DENIED, 
+            SpecificMessageText = String.Format(MESSAGE_ACCESS_DENIED,
                 Environment.NewLine + "    " + AException.PartnerShortName +
                 " [" + AException.PartnerKey.ToString() + "]" + Environment.NewLine);
 
