@@ -125,7 +125,7 @@
     <Compile Include="PartnerEdit2.cs" />
     <Compile Include="PartnerEdit2.Designer.cs">
       <DependentUpon>PartnerEdit2.cs</DependentUpon>
-    </Compile>    
+    </Compile>
     <Compile Include="PartnerFind.cs" />
     <Compile Include="PartnerFind.Designer.cs">
       <DependentUpon>PartnerFind.cs</DependentUpon>
@@ -195,7 +195,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PartnerEdit2.resx">
       <DependentUpon>PartnerEdit2.cs</DependentUpon>
-    </EmbeddedResource>    
+    </EmbeddedResource>
     <EmbeddedResource Include="PartnerFind.resx">
       <DependentUpon>PartnerFind.cs</DependentUpon>
     </EmbeddedResource>

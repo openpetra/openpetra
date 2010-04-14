@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 # SharpDevelop 3.1.0.4977
@@ -54,13 +54,13 @@ Global
 		{954F91D9-263A-49F3-942D-6D85A2C13DB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{954F91D9-263A-49F3-942D-6D85A2C13DB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{954F91D9-263A-49F3-942D-6D85A2C13DB8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2CCE2158-4FBB-4A32-BC01-5B6A75526802}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CCE2158-4FBB-4A32-BC01-5B6A75526802}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2CCE2158-4FBB-4A32-BC01-5B6A75526802}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CCE2158-4FBB-4A32-BC01-5B6A75526802}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CCE2158-4FBB-4A32-BC01-5B6A75526802}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C2A20DF-9657-4DEE-BF31-119B10EFA4FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CCE2158-4FBB-4A32-BC01-5B6A75526802}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6C2A20DF-9657-4DEE-BF31-119B10EFA4FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C2A20DF-9657-4DEE-BF31-119B10EFA4FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C2A20DF-9657-4DEE-BF31-119B10EFA4FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C2A20DF-9657-4DEE-BF31-119B10EFA4FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C2A20DF-9657-4DEE-BF31-119B10EFA4FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
