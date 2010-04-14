@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (VerificationResult != null)
                 {
                     MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).FResultText,
+                        VerificationResult.GetVerificationResult(0).ResultText,
                         Catalog.GetString("Problem: No Ledger has been created"));
                 }
                 else

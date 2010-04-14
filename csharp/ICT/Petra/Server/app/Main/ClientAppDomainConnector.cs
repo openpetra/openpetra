@@ -699,7 +699,7 @@ namespace Ict.Petra.Server.App.Main
                                (object)TSrvSetting.AutomaticIntranetExportEnabled,
                                (object)TSrvSetting.RunAsStandalone,
                                (object)TSrvSetting.IntranetDataDestinationEmail,
-                               (object)TSrvSetting.IntranetDataSenderEmail},
+                               (object)TSrvSetting.IntranetDataSenderEmail },
                 out ARemotingURLPollClientTasks,
                 out ARemotingURLTestObject);
 #if DEBUGMODE

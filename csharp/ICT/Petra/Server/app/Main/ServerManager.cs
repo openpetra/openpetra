@@ -88,7 +88,7 @@ namespace Ict.Petra.Server.App.Main
         }
 
         #region Properties
-        
+
         /// <summary>Total number of Clients that connected to the Petra Server since the start of the Petra Server</summary>
         public int ClientsConnectedTotal
         {
@@ -168,7 +168,7 @@ namespace Ict.Petra.Server.App.Main
                 return GC.GetTotalMemory(false);
             }
         }
-        
+
         public bool RunAsStandalone
         {
             get
@@ -184,7 +184,7 @@ namespace Ict.Petra.Server.App.Main
                 return TSrvSetting.SMTPServer;
             }
         }
-        
+
         #endregion
 
         /// <summary>
@@ -343,17 +343,17 @@ namespace Ict.Petra.Server.App.Main
             Int16 ClientKeepAliveTimeoutAfterXSecondsRemote;
             Int16 ClientConnectionTimeoutAfterXSeconds;
             Boolean ClientAppDomainShutdownAfterKeepAliveTimeout;
-			string SMTPServer;
-			bool AutomaticIntranetExportEnabled;
-			bool RunAsStandalone;
+            string SMTPServer;
+            bool AutomaticIntranetExportEnabled;
+            bool RunAsStandalone;
             string IntranetDataDestinationEmail;
             string IntranetDataSenderEmail;
-            
+
             CmdLineArgs = ReadCommandLineArguments();
             AppSettingsManager = new TAppSettingsManager(CmdLineArgs.ConfigurationFile);
 
             #region Parse settings from the Application Configuration File
-            
+
             // Server.RDBMSType
             RDBMSTypeAppSetting = CommonTypes.ParseDBType(AppSettingsManager.GetValue("Server.RDBMSType"));
 
@@ -382,7 +382,7 @@ namespace Ict.Petra.Server.App.Main
             ServerDebugLevel = AppSettingsManager.GetInt16("Server.DebugLevel", 0);
 
             RunAsStandalone = AppSettingsManager.GetBoolean("Server.RunAsStandalone", false);
-            
+
             // Server.Credentials with the password for the PostgreSQL and the Progress database for user petraserver
             string ServerCredentials = AppSettingsManager.GetValue("Server.Credentials");
 
@@ -406,15 +406,17 @@ namespace Ict.Petra.Server.App.Main
             ClientAppDomainShutdownAfterKeepAliveTimeout = AppSettingsManager.GetBoolean("Server.ClientAppDomainShutdownAfterKeepAliveTimeout", true);
 
             SMTPServer = AppSettingsManager.GetValue("Server.SMTPServer", "localhost");
-            
+
             // This is disabled in processing at the moment, so we reflect that here. When it works change to true
             AutomaticIntranetExportEnabled = AppSettingsManager.GetBoolean("Server.AutomaticIntranetExportEnabled", false);
+
             // The following setting specifies the email address where the Intranet Data emails are sent to when "Server.AutomaticIntranetExportEnabled" is true.
             IntranetDataDestinationEmail = AppSettingsManager.GetValue("Server.IntranetDataDestinationEmail", "???@???.org");
-            // The following setting is temporary - until we have created a GUI where users can specify the email address for the 
+
+            // The following setting is temporary - until we have created a GUI where users can specify the email address for the
             // responsible Personnel and Finance persons themselves. Those will be stored in SystemDefaults then.
             IntranetDataSenderEmail = AppSettingsManager.GetValue("Server.IntranetDataSenderEmail", "???@???.org");
-            
+
             // Determine network configuration of the Server
             Networking.DetermineNetworkConfig(out ServerName, out ServerIPAddresses);
 
@@ -472,8 +474,8 @@ namespace Ict.Petra.Server.App.Main
                 ClientKeepAliveTimeoutAfterXSecondsRemote,
                 ClientConnectionTimeoutAfterXSeconds,
                 ClientAppDomainShutdownAfterKeepAliveTimeout,
-				SMTPServer,
-				AutomaticIntranetExportEnabled,
+                SMTPServer,
+                AutomaticIntranetExportEnabled,
                 RunAsStandalone,
                 IntranetDataDestinationEmail,
                 IntranetDataSenderEmail);
@@ -677,7 +679,7 @@ namespace Ict.Petra.Server.App.Main
 
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// Allows loading of a 'fake' Client AppDomain.
         /// *** For development testing purposes only ***

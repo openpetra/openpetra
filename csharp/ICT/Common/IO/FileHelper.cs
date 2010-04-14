@@ -71,30 +71,30 @@ namespace Ict.Common.IO
 
 
                     using (ZipOutputStream ZipStream = new ZipOutputStream(ZippedStream))
-                          {
-                              ZipStream.SetLevel(9); // 0 - store only to 9 - means best compression
+                    {
+                        ZipStream.SetLevel(9);       // 0 - store only to 9 - means best compression
 
-                              foreach (string FileToBeZipped in AFilePaths)
-                              {
-                                  ZippedFile = new ZipEntry(FileToBeZipped);
-                                  ZipStream.PutNextEntry(ZippedFile);
+                        foreach (string FileToBeZipped in AFilePaths)
+                        {
+                            ZippedFile = new ZipEntry(FileToBeZipped);
+                            ZipStream.PutNextEntry(ZippedFile);
 
-                                  using (FileStream fs = File.OpenRead(FileToBeZipped)) {
-                                        StreamUtils.Copy(fs, ZipStream, buffer);
-                                    }
+                            using (FileStream fs = File.OpenRead(FileToBeZipped)) {
+                                StreamUtils.Copy(fs, ZipStream, buffer);
+                            }
 
 //MessageBox.Show("1:" + ZippedStream.Length.ToString());
-                              }
+                        }
 
-                              ZipStream.Finish();
+                        ZipStream.Finish();
 
 //MessageBox.Show("2:" + ZippedStream.Length.ToString());
 //                          ZipStream.Close();
-                              ZippedStream.WriteTo(OutputStream);
-                          }
+                        ZippedStream.WriteTo(OutputStream);
+                    }
 
-                          // Ensure that the user of OutputStream is reading from the beginning...
-                          OutputStream.Seek(0, SeekOrigin.Begin);
+                    // Ensure that the user of OutputStream is reading from the beginning...
+                    OutputStream.Seek(0, SeekOrigin.Begin);
 
 //MessageBox.Show("3:" + OutputStream.Length.ToString());
                     return OutputStream;
@@ -115,28 +115,28 @@ namespace Ict.Common.IO
                     AZippedStream.Seek(0, SeekOrigin.Begin);
 
                     using (ZipInputStream s = new ZipInputStream(AZippedStream))
-                          {
-                              while ((ZippedFile = s.GetNextEntry()) != null)
-                              {
-                                  Byte[] buffer = new Byte[4096];
+                    {
+                        while ((ZippedFile = s.GetNextEntry()) != null)
+                        {
+                            Byte[] buffer = new Byte[4096];
 
-                                  while (true)
-                                  {
-                                      size = s.Read(buffer, 0, buffer.Length);
+                            while (true)
+                            {
+                                size = s.Read(buffer, 0, buffer.Length);
 
-                                      if (size > 0)
-                                      {
-                                          UnzippedStream.Write(buffer, 0, size);
-                                      }
-                                      else
-                                      {
-                                          break;
-                                      }
-                                  }
-                              }
-                          }
+                                if (size > 0)
+                                {
+                                    UnzippedStream.Write(buffer, 0, size);
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
 
-                          return UnzippedStream;
+                    return UnzippedStream;
                 }
             }
 
@@ -160,15 +160,15 @@ namespace Ict.Common.IO
                     MemoryStream OutputStream = new MemoryStream();
 
                     using (FileStream fs = new FileStream(AFilePath, FileMode.Open, FileAccess.Read))
-                          {
-                              while ((bytesNum = fs.Read(buffer, 0, blockSize)) > 0)
-                              {
-                                  OutputStream.Write(buffer, 0, bytesNum);
-                              }
-                          }
+                    {
+                        while ((bytesNum = fs.Read(buffer, 0, blockSize)) > 0)
+                        {
+                            OutputStream.Write(buffer, 0, bytesNum);
+                        }
+                    }
 
-                          // Ensure that the user of OutputStream is reading from the beginning...
-                          OutputStream.Seek(0, SeekOrigin.Begin);
+                    // Ensure that the user of OutputStream is reading from the beginning...
+                    OutputStream.Seek(0, SeekOrigin.Begin);
 
                     return OutputStream;
                 }
@@ -189,29 +189,29 @@ namespace Ict.Common.IO
                     AStream.Seek(0, SeekOrigin.Begin);
 
                     using (FileStream Writer = System.IO.File.OpenWrite(AFilePath))
-                          {
-                              Byte[] buffer = new Byte[4096];
+                    {
+                        Byte[] buffer = new Byte[4096];
 
-                              while (true)
-                              {
-                                  size = AStream.Read(buffer, 0, buffer.Length);
+                        while (true)
+                        {
+                            size = AStream.Read(buffer, 0, buffer.Length);
 
 //MessageBox.Show("5:" + size.ToString());
-                                  if (size > 0)
-                                  {
-                                      Writer.Write(buffer, 0, size);
-                                  }
-                                  else
-                                  {
-                                      break;
-                                  }
-                              }
+                            if (size > 0)
+                            {
+                                Writer.Write(buffer, 0, size);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
 
-                              Writer.Flush();
-                          }
+                        Writer.Flush();
+                    }
 
-                          // Ensure that the user of OutputStream is reading from the beginning...
-                          AStream.Seek(0, SeekOrigin.Begin);
+                    // Ensure that the user of OutputStream is reading from the beginning...
+                    AStream.Seek(0, SeekOrigin.Begin);
                 }
             }
         }
