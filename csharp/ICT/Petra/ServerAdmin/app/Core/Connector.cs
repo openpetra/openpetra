@@ -49,7 +49,7 @@ namespace Ict.Petra.ServerAdmin.App.Core
             iRemote = null;
             try
             {
-                RemotingConfiguration.Configure(ConfigFile);
+                RemotingConfiguration.Configure(ConfigFile, false);
                 iRemote = (IServerAdminInterface)(Ict.Common.TRemotingHelper.GetObject(typeof(IServerAdminInterface)));
 
                 if (iRemote == null)

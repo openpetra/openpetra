@@ -169,6 +169,7 @@ namespace Ict.Petra.Server.App.Main
             }
         }
 
+        /// server is running as standalone, started with the client
         public bool RunAsStandalone
         {
             get
@@ -177,6 +178,7 @@ namespace Ict.Petra.Server.App.Main
             }
         }
 
+        /// smtp server for sending email
         public string SMTPServer
         {
             get
