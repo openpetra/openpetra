@@ -181,8 +181,8 @@ namespace Ict.Tools.CodeGeneration
                     {
                         // a root control has no parent by definition
                     }
-                    else if ((GetRootControl("content") == ctrl) || (GetRootControl("mnu") == ctrl)
-                             || (GetRootControl("tbr") == ctrl) || (GetRootControl("stb") == ctrl))
+                    else if ((GetRootControl("content", false) == ctrl) || (GetRootControl("mnu", false) == ctrl)
+                             || (GetRootControl("tbr", false) == ctrl) || (GetRootControl("stb", false) == ctrl))
                     {
                         // root control has no parent
                     }
@@ -212,8 +212,9 @@ namespace Ict.Tools.CodeGeneration
         /// the first control can be overwritten with attribute RootControl=true; this is necessary for the reports, see tabReportSettings
         /// </summary>
         /// <param name="APrefix">can be mnu, tab, tbr, sbt, stb, content</param>
+        /// <param name="AThrowException">if there is no root control, throw an exception</param>
         /// <returns></returns>
-        public TControlDef GetRootControl(string APrefix)
+        public TControlDef GetRootControl(string APrefix, bool AThrowException)
         {
             TControlDef firstControl = null;
 
@@ -255,9 +256,24 @@ namespace Ict.Tools.CodeGeneration
                 return firstControl;
             }
 
-            throw new Exception("cannot find a default control for prefix " + APrefix);
+            if (AThrowException)
+            {
+                throw new Exception("cannot find a default control for prefix " + APrefix);
+            }
 
-            //return null;
+            return null;
+        }
+
+        /// <summary>
+        /// get the main menustrip, tabpage, statusstrip etc;
+        /// if prefix is content, the first available pnl, uco, tpg or grp control is returned;
+        /// the first control can be overwritten with attribute RootControl=true; this is necessary for the reports, see tabReportSettings
+        /// </summary>
+        /// <param name="APrefix">can be mnu, tab, tbr, sbt, stb, content</param>
+        /// <returns></returns>
+        public TControlDef GetRootControl(string APrefix)
+        {
+            return GetRootControl(APrefix, true);
         }
 
         public bool HasRootControl(string APrefix)
