@@ -198,6 +198,9 @@ namespace Ict.Petra.Client.App.Gui
                 MessageBoxIcon.Information);
         }
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
         public static string MsgSecurityExceptionString(ESecurityPartnerAccessDeniedException AException, System.Type ATypeWhichRaisesException)
         {
             const string MESSAGE_ACCESS_DENIED = "Access to Partner {0}denied.";

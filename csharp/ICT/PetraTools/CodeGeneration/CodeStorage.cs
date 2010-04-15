@@ -165,6 +165,37 @@ namespace Ict.Tools.CodeGeneration
             return false;
         }
 
+        /// <summary>
+        /// returns a list of controls that are not used anywhere on the screen
+        /// </summary>
+        /// <returns></returns>
+        public List <TControlDef>GetOrphanedControls()
+        {
+            List <TControlDef>result = new List <TControlDef>();
+
+            foreach (TControlDef ctrl in FSortedControlList.Values)
+            {
+                if ((ctrl.parentName == null) || (ctrl.parentName.Length == 0))
+                {
+                    if (ctrl.HasAttribute("RootControl") && (ctrl.GetAttribute("RootControl").ToLower() == "true"))
+                    {
+                        // a root control has no parent by definition
+                    }
+                    else if ((GetRootControl("content") == ctrl) || (GetRootControl("mnu") == ctrl)
+                             || (GetRootControl("tbr") == ctrl) || (GetRootControl("stb") == ctrl))
+                    {
+                        // root control has no parent
+                    }
+                    else
+                    {
+                        result.Add(ctrl);
+                    }
+                }
+            }
+
+            return result;
+        }
+
         public TControlDef GetControl(string AControlName)
         {
             if (FControlList.ContainsKey(AControlName))
