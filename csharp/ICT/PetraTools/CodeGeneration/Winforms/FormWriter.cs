@@ -609,7 +609,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("ADDMAINCONTROLS", "this.Controls.Add(this." + ctrl.controlName + ");" + Environment.NewLine);
             }
 
-            if ((prefix == "mnu") && !FCodeStorage.GetAttribute("BaseClass").Contains("UserControl"))
+            if ((prefix == "mnu") 
+                && !(FCodeStorage.GetAttribute("BaseClass").Contains("UserControl")) 
+                    || (FCodeStorage.GetAttribute("BaseClass").Contains("TGrpCollapsible")))
             {
                 FTemplate.AddToCodelet("ADDMAINCONTROLS", "this.MainMenuStrip = " + ctrl.controlName + ";" + Environment.NewLine);
             }

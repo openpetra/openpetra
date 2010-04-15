@@ -35,45 +35,51 @@ namespace Ict.Common.Verification
         Resv_Noncritical
     };
 
+
     /// <summary>
-    /// todoComment
+    /// Properties that every 'Verification Result' needs to implement.
     /// </summary>
     public interface IResultInterface
     {
+
         /// <summary>
-        /// todoComment
+        /// Context of the Verification Result (where the Verification Result originated from).
         /// </summary>
         object ResultContext
         {
             get;
         }
 
+
         /// <summary>
-        /// todoComment
+        /// Text of the Verification Result.
         /// </summary>
         String ResultText
         {
             get;
         }
 
+
         /// <summary>
-        /// todoComment
-        /// </summary>
+        /// Caption of the Verification Result (e.g. for use in MessageBox Titles).
+        /// </summary>        
         String ResultTextCaption
         {
             get;
         }
 
+
         /// <summary>
-        /// todoComment
+        /// ResultCode of the Verification Result.
         /// </summary>
         String ResultCode
         {
             get;
         }
 
+
         /// <summary>
-        /// todoComment
+        /// Severity of the Verification Result.
         /// </summary>
         TResultSeverity ResultSeverity
         {
@@ -146,9 +152,8 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// get the context
+        /// Context of the Verification Result (where the Verification Result originated from).
         /// </summary>
-        /// <returns></returns>
         public object ResultContext
         {
             get
@@ -158,9 +163,8 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// get the explanation for the verification failure
+        /// Text of the Verification Result.
         /// </summary>
-        /// <returns></returns>
         public String ResultText
         {
             get
@@ -169,9 +173,10 @@ namespace Ict.Common.Verification
             }
         }
 
+
         /// <summary>
-        /// todoComment
-        /// </summary>
+        /// Caption of the Verification Result (e.g. for use in MessageBox Titles).
+        /// </summary>        
         public String ResultTextCaption
         {
             get
@@ -180,8 +185,9 @@ namespace Ict.Common.Verification
             }
         }
 
+
         /// <summary>
-        /// todoComment
+        /// ResultCode of the Verification Result.
         /// </summary>
         public String ResultCode
         {
@@ -196,8 +202,9 @@ namespace Ict.Common.Verification
             }
         }
 
+
         /// <summary>
-        /// todoComment
+        /// Severity of the Verification Result.
         /// </summary>
         public TResultSeverity ResultSeverity
         {

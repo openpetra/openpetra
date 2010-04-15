@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from PartnerEdit2.yaml and template windowTDS
+/* auto generated with nant generateWinforms from PartnerEdit2.yaml and template windowEditUIConnector
  *
  * DO NOT edit manually, DO NOT edit with the designer
  * use a user control if you need to modify the screen content
@@ -54,7 +54,9 @@ namespace Ict.Petra.Client.MPartner.Gui
   public partial class TFrmPartnerEdit2: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
-    private Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS FMainDS;
+
+    /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
+    private Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors.IPartnerUIConnectorsPartnerEdit FUIConnector = null;
 
     /// constructor
     public TFrmPartnerEdit2(IntPtr AParentFormHandle) : base()
@@ -66,23 +68,6 @@ namespace Ict.Petra.Client.MPartner.Gui
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblPartnerKey.Text = Catalog.GetString("Key:");
-      this.lblEmpty2.Text = Catalog.GetString("Empty2:");
-      this.lblPartnerClass.Text = Catalog.GetString("Class:");
-      this.lblTitle.Text = Catalog.GetString("Title/Na&me:");
-      this.lblEmpty.Text = Catalog.GetString("Empty:");
-      this.lblAddresseeTypeCode.Text = Catalog.GetString("&Addressee Type:");
-      this.chkNoSolicitations.Text = Catalog.GetString("No Solicitations");
-      this.lblLastGift.Text = Catalog.GetString("Last Gift:");
-      this.btnWorkerField.Text = Catalog.GetString("&OMer Field...");
-      this.lblPartnerStatus.Text = Catalog.GetString("Partner &Status:");
-      this.lblStatusUpdated.Text = Catalog.GetString("Status Updated:");
-      this.lblLastContact.Text = Catalog.GetString("Last Contact:");
-      this.grpCollapsible.Text = Catalog.GetString("Partner");
-      this.lblTest.Text = Catalog.GetString("Test only:");
-      this.tpgAddresses.Text = Catalog.GetString("Addresses ({0})");
-      this.tpgDetails.Text = Catalog.GetString("Partner Details");
-      this.tpgSubscriptions.Text = Catalog.GetString("Subscriptions ({0})");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
@@ -104,36 +89,24 @@ namespace Ict.Petra.Client.MPartner.Gui
       #endregion
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-      FMainDS = new Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS();
-      FPetraUtilsObject.SetStatusBarText(txtPartnerKey, Catalog.GetString("Enter the partner key (SiteID + Number)"));
-      FPetraUtilsObject.SetStatusBarText(txtPartnerClass, Catalog.GetString("Select a partner class"));
-      FPetraUtilsObject.SetStatusBarText(txtTitle, Catalog.GetString("e.g. Family, Mr & Mrs, Herr und Frau"));
-      FPetraUtilsObject.SetStatusBarText(txtFirstName, Catalog.GetString("Enter the person's full first name"));
-      FPetraUtilsObject.SetStatusBarText(txtFamilyName, Catalog.GetString("Enter a Last Name/Surname/Family Name"));
-      FPetraUtilsObject.SetStatusBarText(cmbAddresseeTypeCode, Catalog.GetString("Enter an addressee type code"));
-      cmbAddresseeTypeCode.InitialiseUserControl();
-      FPetraUtilsObject.SetStatusBarText(chkNoSolicitations, Catalog.GetString("Set this if the partner does not want extra mailings"));
-      FPetraUtilsObject.SetStatusBarText(cmbPartnerStatus, Catalog.GetString("Select a partner status"));
-      cmbPartnerStatus.InitialiseUserControl();
-      ucoPartnerDetails.PetraUtilsObject = FPetraUtilsObject;
-      ucoPartnerDetails.MainDS = FMainDS;
-//      ucoPartnerDetails.InitUserControl();
-      tabPartners.SelectedIndex = 0;
-      TabSelectionChanged(null, null);
+      ucoUpperPart.PetraUtilsObject = FPetraUtilsObject;
+      ucoUpperPart.MainDS = FMainDS;
+      ucoUpperPart.InitUserControl();
+      ucoLowerPart.PetraUtilsObject = FPetraUtilsObject;
+      ucoLowerPart.MainDS = FMainDS;
+      ucoLowerPart.InitUserControl();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
 
+      FUIConnector = TRemote.MPartner.Partner.UIConnectors.PartnerEdit();
+      // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
+      TEnsureKeepAlive.Register(FUIConnector);
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
     {
         FPetraUtilsObject.TFrmPetra_Activated(sender, e);
-    }
-
-    private void TFrmPetra_Load(object sender, EventArgs e)
-    {
-        FPetraUtilsObject.TFrmPetra_Load(sender, e);
     }
 
     private void TFrmPetra_Closing(object sender, CancelEventArgs e)
@@ -150,112 +123,11 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         // TODO? Save Window position
 
-    }
-
-    private void ShowData(PPartnerRow ARow)
-    {
-        txtPartnerKey.Text = String.Format("{0:0000000000}", ARow.PartnerKey);
-        txtPartnerKey.ReadOnly = (ARow.RowState != DataRowState.Added);
-        if (ARow.IsPartnerClassNull())
+        if (FUIConnector != null)
         {
-            txtPartnerClass.Text = String.Empty;
-        }
-        else
-        {
-            txtPartnerClass.Text = ARow.PartnerClass;
-        }
-        if (FMainDS.PFamily[0].IsTitleNull())
-        {
-            txtTitle.Text = String.Empty;
-        }
-        else
-        {
-            txtTitle.Text = FMainDS.PFamily[0].Title;
-        }
-        if (FMainDS.PFamily[0].IsFirstNameNull())
-        {
-            txtFirstName.Text = String.Empty;
-        }
-        else
-        {
-            txtFirstName.Text = FMainDS.PFamily[0].FirstName;
-        }
-        if (FMainDS.PFamily[0].IsFamilyNameNull())
-        {
-            txtFamilyName.Text = String.Empty;
-        }
-        else
-        {
-            txtFamilyName.Text = FMainDS.PFamily[0].FamilyName;
-        }
-        if (ARow.IsAddresseeTypeCodeNull())
-        {
-            cmbAddresseeTypeCode.SelectedIndex = -1;
-        }
-        else
-        {
-            cmbAddresseeTypeCode.SetSelectedString(ARow.AddresseeTypeCode);
-        }
-        if (ARow.IsNoSolicitationsNull())
-        {
-            chkNoSolicitations.Checked = false;
-        }
-        else
-        {
-            chkNoSolicitations.Checked = ARow.NoSolicitations;
-        }
-        if (ARow.IsStatusCodeNull())
-        {
-            cmbPartnerStatus.SelectedIndex = -1;
-        }
-        else
-        {
-            cmbPartnerStatus.SetSelectedString(ARow.StatusCode);
-        }
-    }
-
-    private void GetDataFromControls(PPartnerRow ARow)
-    {
-        if (txtTitle.Text.Length == 0)
-        {
-            FMainDS.PFamily[0].SetTitleNull();
-        }
-        else
-        {
-            FMainDS.PFamily[0].Title = txtTitle.Text;
-        }
-        if (txtFirstName.Text.Length == 0)
-        {
-            FMainDS.PFamily[0].SetFirstNameNull();
-        }
-        else
-        {
-            FMainDS.PFamily[0].FirstName = txtFirstName.Text;
-        }
-        if (txtFamilyName.Text.Length == 0)
-        {
-            FMainDS.PFamily[0].SetFamilyNameNull();
-        }
-        else
-        {
-            FMainDS.PFamily[0].FamilyName = txtFamilyName.Text;
-        }
-        if (cmbAddresseeTypeCode.SelectedIndex == -1)
-        {
-            ARow.SetAddresseeTypeCodeNull();
-        }
-        else
-        {
-            ARow.AddresseeTypeCode = cmbAddresseeTypeCode.GetSelectedString();
-        }
-        ARow.NoSolicitations = chkNoSolicitations.Checked;
-        if (cmbPartnerStatus.SelectedIndex == -1)
-        {
-            ARow.SetStatusCodeNull();
-        }
-        else
-        {
-            ARow.StatusCode = cmbPartnerStatus.GetSelectedString();
+            // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
+            TEnsureKeepAlive.UnRegister(FUIConnector);
+            FUIConnector = null;
         }
     }
 
@@ -297,143 +169,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         SaveChanges();
     }
 
-    /// <summary>
-    /// save the changes on the screen
-    /// </summary>
-    /// <returns></returns>
-    public bool SaveChanges()
-    {
-        FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());        
-
-//TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
-        GetDataFromControls(FMainDS.PPartner[0]);
-
-        // TODO: verification
-
-        if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
-        {
-            foreach (DataTable InspectDT in FMainDS.Tables)
-            {
-                foreach (DataRow InspectDR in InspectDT.Rows)
-                {
-                    InspectDR.EndEdit();
-                }
-            }
-
-            if (FPetraUtilsObject.HasChanges)
-            {
-                FPetraUtilsObject.WriteToStatusBar("Saving data...");
-                this.Cursor = Cursors.WaitCursor;
-
-                TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrOK;
-                TVerificationResultCollection VerificationResult;
-
-                Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS SubmitDS = FMainDS.GetChangesTyped(true);
-
-                // Submit changes to the PETRAServer
-                try
-                {
-//                    SubmissionResult = TRemote.MPartner.Gui.WebConnectors.SavePartnerEditTDS(ref SubmitDS, out VerificationResult);
-                }
-                catch (System.Net.Sockets.SocketException)
-                {
-                    FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-                    this.Cursor = Cursors.Default;
-                    MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
-                        "No Server response",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Stop);
-                    bool ReturnValue = false;
-
-                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return ReturnValue;
-                }
-/* TODO ESecurityDBTableAccessDeniedException
-*                  catch (ESecurityDBTableAccessDeniedException Exp)
-*                  {
-*                      FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-*                      this.Cursor = Cursors.Default;
-*                      // TODO TMessages.MsgSecurityException(Exp, this.GetType());
-*                      bool ReturnValue = false;
-*                      // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-*                      return ReturnValue;
-*                  }
-*/
-                catch (EDBConcurrencyException)
-                {
-                    FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-                    this.Cursor = Cursors.Default;
-
-                    // TODO TMessages.MsgDBConcurrencyException(Exp, this.GetType());
-                    bool ReturnValue = false;
-
-                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return ReturnValue;
-                }
-                catch (Exception exp)
-                {
-                    FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-                    this.Cursor = Cursors.Default;
-                    TLogging.Log(
-                        "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
-                        TLoggingType.ToLogfile);
-                    MessageBox.Show(
-                        "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
-                        "For details see the log file: " + TLogging.GetLogFileName(),
-                        "Server connection error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Stop);
-                    bool ReturnValue = false;
-
-                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return ReturnValue;
-                }
-
-                switch (SubmissionResult)
-                {
-                    case TSubmitChangesResult.scrOK:
-
-                        // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.AcceptChanges();
-
-                        // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.Merge(SubmitDS, false);
-
-                        // need to accept the new modification ID
-                        FMainDS.AcceptChanges();
-
-                        // Update UI
-                        FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
-                        this.Cursor = Cursors.Default;
-
-                        // TODO EnableSave(false);
-
-                        // We don't have unsaved changes anymore
-                        FPetraUtilsObject.DisableSaveButton();
-
-                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                        return true;
-
-                    case TSubmitChangesResult.scrError:
-
-                        // TODO scrError
-                        break;
-
-                    case TSubmitChangesResult.scrNothingToBeSaved:
-
-                        // TODO scrNothingToBeSaved
-                        break;
-
-                    case TSubmitChangesResult.scrInfoNeeded:
-
-                        // TODO scrInfoNeeded
-                        break;
-                }
-            }
-        }
-
-        return false;
-    }
 #endregion
 
 #region Action Handling
@@ -467,60 +202,5 @@ namespace Ict.Petra.Client.MPartner.Gui
     }
 
 #endregion
-
-        private ToolStrip PreviouslyMergedToolbarItems = null;
-        private ToolStrip PreviouslyMergedMenuItems = null;
-
-        /// <summary>
-        /// change the toolbars that are associated with the tabs
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TabSelectionChanged(System.Object sender, EventArgs e)
-        {
-            TabPage currentTab = tabPartners.TabPages[tabPartners.SelectedIndex];
-
-            if (PreviouslyMergedToolbarItems != null)
-            {
-                ToolStripManager.RevertMerge(tbrMain, PreviouslyMergedToolbarItems);
-                PreviouslyMergedToolbarItems = null;
-            }
-
-            if (PreviouslyMergedMenuItems != null)
-            {
-                ToolStripManager.RevertMerge(mnuMain, PreviouslyMergedMenuItems);
-                PreviouslyMergedMenuItems = null;
-            }
-
-            Control[] tabToolbar = currentTab.Controls.Find("tbrTabPage", true);
-            if (tabToolbar.Length == 1)
-            {
-                ToolStrip ItemsToMerge = (ToolStrip) tabToolbar[0];
-                ItemsToMerge.Visible = false;
-                foreach (ToolStripItem item in ItemsToMerge.Items)
-                {
-                    item.MergeAction = MergeAction.Append;
-                }
-                ToolStripManager.Merge(ItemsToMerge, tbrMain);
-
-                PreviouslyMergedToolbarItems = ItemsToMerge;
-            }
-
-            Control[] tabMenu = currentTab.Controls.Find("mnuTabPage", true);
-            if (tabMenu.Length == 1)
-            {
-                ToolStrip ItemsToMerge = (ToolStrip) tabMenu[0];
-                ItemsToMerge.Visible = false;
-                Int32 NewPosition = mnuMain.Items.IndexOf(mniHelp);
-                foreach (ToolStripItem item in ItemsToMerge.Items)
-                {
-                    item.MergeAction = MergeAction.Insert;
-                    item.MergeIndex = NewPosition++;
-                }
-                ToolStripManager.Merge(ItemsToMerge, mnuMain);
-
-                PreviouslyMergedMenuItems = ItemsToMerge;
-            }
-        }
   }
 }
