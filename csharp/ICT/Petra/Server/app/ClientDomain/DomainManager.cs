@@ -499,6 +499,11 @@ namespace Ict.Petra.Server.App.ClientDomain
         /// <param name="AClientConnectionTimeoutAfterXSeconds"></param>
         /// <param name="AClientAppDomainShutdownAfterKeepAliveTimeout">ClientAppDomainShutdownAfterKeepAliveTimeout
         /// setting</param>
+
+
+
+
+
         /// 
         /// <param name="ASMTPServer">ASMTPServer setting</param>
         /// <param name="AAutomaticIntranetExportEnabled">AAutomaticIntranetExportEnabled setting</param>

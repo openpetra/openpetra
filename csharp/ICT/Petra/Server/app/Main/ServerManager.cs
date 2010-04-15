@@ -169,6 +169,7 @@ namespace Ict.Petra.Server.App.Main
             }
         }
 
+
         /// <summary>True if the Server is running for a Standalone installation, otherwise false.</summary>
         public bool RunAsStandalone
         {
@@ -177,6 +178,7 @@ namespace Ict.Petra.Server.App.Main
                 return TSrvSetting.RunAsStandalone;
             }
         }
+
 
         /// <summary>SMTP Server which the Server will use to send emails.</summary>
         public string SMTPServer

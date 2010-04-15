@@ -35,11 +35,13 @@ namespace Ict.Common.Verification
         Resv_Noncritical
     };
 
+
     /// <summary>
     /// Properties that every 'Verification Result' needs to implement.
     /// </summary>
     public interface IResultInterface
     {
+
         /// <summary>
         /// Context of the Verification Result (where the Verification Result originated from).
         /// </summary>
@@ -47,6 +49,7 @@ namespace Ict.Common.Verification
         {
             get;
         }
+
 
         /// <summary>
         /// Text of the Verification Result.
@@ -56,6 +59,7 @@ namespace Ict.Common.Verification
             get;
         }
 
+
         /// <summary>
         /// Caption of the Verification Result (e.g. for use in MessageBox Titles).
         /// </summary>        
@@ -64,6 +68,7 @@ namespace Ict.Common.Verification
             get;
         }
 
+
         /// <summary>
         /// ResultCode of the Verification Result.
         /// </summary>
@@ -71,6 +76,7 @@ namespace Ict.Common.Verification
         {
             get;
         }
+
 
         /// <summary>
         /// Severity of the Verification Result.
@@ -167,6 +173,7 @@ namespace Ict.Common.Verification
             }
         }
 
+
         /// <summary>
         /// Caption of the Verification Result (e.g. for use in MessageBox Titles).
         /// </summary>        
@@ -177,6 +184,7 @@ namespace Ict.Common.Verification
                 return FResultTextCaption;
             }
         }
+
 
         /// <summary>
         /// ResultCode of the Verification Result.
@@ -193,6 +201,7 @@ namespace Ict.Common.Verification
                 FResultCode = value;
             }
         }
+
 
         /// <summary>
         /// Severity of the Verification Result.
