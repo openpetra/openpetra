@@ -304,7 +304,12 @@ namespace Ict.Common.Conversion
                 AParsedDate = DateTime.Parse(AParseDate).ToString("D");
                 ReturnValue = true;
             }
+#if DEBUGMODE
             catch (Exception Exp)
+#endif
+#if !DEBUGMODE
+            catch (Exception)
+#endif
             {
 #if DEBUGMODE
                 MessageBox.Show("Exception occured in LongDateStringToDateTimeInternal: " + Exp.ToString());
@@ -415,7 +420,8 @@ namespace Ict.Common.Conversion
         /// <returns>The converted date.</returns>
         public static String DateTimeToLongDateString2(DateTime ADateTime)
         {
-            if (ADateTime == null)
+            // DateTime is a non-nullable value type, therefore encode an invalid date with DateTime.MinValue
+            if (ADateTime == DateTime.MinValue)
             {
                 return "";
             }

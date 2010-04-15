@@ -499,6 +499,11 @@ namespace Ict.Petra.Server.App.ClientDomain
         /// <param name="AClientConnectionTimeoutAfterXSeconds"></param>
         /// <param name="AClientAppDomainShutdownAfterKeepAliveTimeout">ClientAppDomainShutdownAfterKeepAliveTimeout
         /// setting</param>
+        /// <param name="ASMTPServer"></param>
+        /// <param name="AAutomaticIntranetExportEnabled"></param>
+        /// <param name="ARunAsStandalone"></param>
+        /// <param name="AIntranetDataDestinationEmail"></param>
+        /// <param name="AIntranetDataSenderEmail"></param>
         /// <returns>void</returns>
         public void TakeoverServerSettings(String AApplicationName,
             String AConfigurationFile,
