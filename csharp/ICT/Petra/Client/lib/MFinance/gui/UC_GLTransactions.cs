@@ -144,7 +144,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public bool CreateNewATransaction()
     {
         // we create the table locally, no dataset
-        ATransactionRow NewRow = FMainDS.ATransaction.NewRowTyped(true);
+        GLBatchTDSATransactionRow NewRow = FMainDS.ATransaction.NewRowTyped(true);
         NewRowManual(ref NewRow);
         FMainDS.ATransaction.Rows.Add(NewRow);
 
@@ -186,13 +186,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     }
 
     /// return the selected row
-    private ATransactionRow GetSelectedDetailRow()
+    private GLBatchTDSATransactionRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            return (ATransactionRow)SelectedGridRow[0].Row;
+            return (GLBatchTDSATransactionRow)SelectedGridRow[0].Row;
         }
 
         return null;
@@ -222,7 +222,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private void ShowDetails(ATransactionRow ARow)
+    private void ShowDetails(GLBatchTDSATransactionRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
         if (ARow == null)
@@ -266,7 +266,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private ATransactionRow FPreviouslySelectedDetailRow = null;
+    private GLBatchTDSATransactionRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
         // get the details from the previously selected row
@@ -285,7 +285,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
-    private void GetDetailsFromControls(ATransactionRow ARow)
+    private void GetDetailsFromControls(GLBatchTDSATransactionRow ARow)
     {
         if (ARow != null)
         {

@@ -67,10 +67,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblLedgerNumber.Text = Catalog.GetString("Ledger:");
-      this.rbtPosting.Text = Catalog.GetString("Posting");
+      this.rbtPosted.Text = Catalog.GetString("Posted");
       this.rbtEditing.Text = Catalog.GetString("Editing");
       this.rbtAll.Text = Catalog.GetString("All");
-      this.rgrShowBatches.Text = Catalog.GetString("Show batches available for");
+      this.rgrShowBatches.Text = Catalog.GetString("Show batches");
       this.btnNew.Text = Catalog.GetString("&Add");
       this.btnDelete.Text = Catalog.GetString("&Cancel");
       this.btnPostBatch.Text = Catalog.GetString("&Post Batch");
@@ -88,6 +88,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.rbtOther.Text = Catalog.GetString("Other");
       this.rgrDetailGiftType.Text = Catalog.GetString("Gift Type");
       this.tbbPostBatch.Text = Catalog.GetString("&Post Batch");
+      this.tbbExportBatches.Text = Catalog.GetString("&Export Batches");
+      this.tbbImportBatches.Text = Catalog.GetString("&Import Batches");
       this.mniPost.Text = Catalog.GetString("&Post Batch");
       this.mniBatch.Text = Catalog.GetString("&Batch");
       #endregion
@@ -337,6 +339,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             btnPostBatch.Enabled = e.Enabled;
             tbbPostBatch.Enabled = e.Enabled;
             mniPost.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actExportBatches")
+        {
+            tbbExportBatches.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actImportBatches")
+        {
+            tbbImportBatches.Enabled = e.Enabled;
         }
     }
 
