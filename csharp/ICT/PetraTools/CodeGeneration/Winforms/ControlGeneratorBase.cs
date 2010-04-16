@@ -422,7 +422,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 string dataField = ctrl.GetAttribute("DataField");
                 bool IsDetailNotMaster;
 
-                TTableField field = FCodeStorage.GetTableField(ctrl, dataField, out IsDetailNotMaster, true);
+                TTableField field = TDataBinding.GetTableField(ctrl, dataField, out IsDetailNotMaster, true);
 
                 LinkControlDataField(writer, ctrl, field, IsDetailNotMaster);
             }
@@ -432,7 +432,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if (!(this is LabelGenerator || this is GroupBoxGenerator))
                 {
                     bool IsDetailNotMaster;
-                    TTableField field = FCodeStorage.GetTableField(ctrl, ctrl.controlName.Substring(
+                    TTableField field = TDataBinding.GetTableField(ctrl, ctrl.controlName.Substring(
                             ctrl.controlTypePrefix.Length), out IsDetailNotMaster, false);
 
                     if (field != null)
@@ -519,7 +519,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string PartnerShortNameLookup = ctrl.GetAttribute("PartnerShortNameLookup");
             bool IsDetailNotMaster;
 
-            TTableField field = FCodeStorage.GetTableField(ctrl, PartnerShortNameLookup, out IsDetailNotMaster, true);
+            TTableField field = TDataBinding.GetTableField(ctrl, PartnerShortNameLookup, out IsDetailNotMaster, true);
 
             string showData = "TPartnerClass partnerClass;" + Environment.NewLine;
             string RowName = "FMainDS." + TTable.NiceTableName(field.strTableName) + "[0]";
