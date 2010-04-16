@@ -543,6 +543,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         private void LinkControlDataField(IFormWriter writer, TControlDef ctrl, TTableField AField, bool AIsDetailNotMaster)
         {
+            if (AField == null)
+            {
+                return;
+            }
+
             string AssignValue = "";
             string tablename = TTable.NiceTableName(AField.strTableName);
             string fieldname = TTable.NiceFieldName(AField);

@@ -1157,6 +1157,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public virtual StringCollection FindContainedControls(IFormWriter writer, XmlNode curNode)
         {
+            StringCollection controlNamesCollection;
             XmlNode controlsNode = TXMLParser.GetChild(curNode, "Controls");
 
             if ((controlsNode != null) && TYml2Xml.GetChildren(controlsNode, true)[0].Name.StartsWith("Row"))
@@ -1185,10 +1186,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     countRow++;
                 }
 
-                return StringHelper.StrSplit(result, ",");
+                controlNamesCollection = StringHelper.StrSplit(result, ",");
+            }
+            else
+            {
+                controlNamesCollection = TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
             }
 
-            return TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
+            // set the parent control for all children
+            foreach (string ctrlname in controlNamesCollection)
+            {
+                TControlDef ctrl = writer.CodeStorage.GetControl(ctrlname);
+                ctrl.parentName = curNode.Name;
+            }
+
+            return controlNamesCollection;
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)

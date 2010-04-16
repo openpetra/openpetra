@@ -141,13 +141,13 @@ namespace {#NAMESPACE}
     }
 
     /// return the selected row
-    private {#DETAILTABLE}Row GetSelectedDetailRow()
+    private {#DETAILTABLETYPE}Row GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            return ({#DETAILTABLE}Row)SelectedGridRow[0].Row;
+            return ({#DETAILTABLETYPE}Row)SelectedGridRow[0].Row;
         }
 
         return null;
@@ -168,7 +168,7 @@ namespace {#NAMESPACE}
 {#ENDIF CANFINDWEBCONNECTOR_LOADMASTER}
 
 {#IFDEF SHOWDATA}
-    private void ShowData({#MASTERTABLE}Row ARow)
+    private void ShowData({#MASTERTABLETYPE}Row ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
         {#SHOWDATA}
@@ -198,14 +198,14 @@ namespace {#NAMESPACE}
 {#ENDIF SHOWDATA}
 
 {#IFDEF SHOWDETAILS}
-    private void ShowDetails({#DETAILTABLE}Row ARow)
+    private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
         {#SHOWDETAILS}
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
+    private {#DETAILTABLETYPE}Row FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
 {#IFDEF SAVEDETAILS}
@@ -223,7 +223,7 @@ namespace {#NAMESPACE}
 {#ENDIF SHOWDETAILS}
     
 {#IFDEF SAVEDATA}
-    private void GetDataFromControls({#MASTERTABLE}Row ARow)
+    private void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
     {
         {#SAVEDATA}
 {#IFDEF SAVEDETAILS}
@@ -233,7 +233,7 @@ namespace {#NAMESPACE}
 {#ENDIF SAVEDATA}
 
 {#IFDEF SAVEDETAILS}
-    private void GetDetailsFromControls({#DETAILTABLE}Row ARow)
+    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
     {
         if (ARow != null)
         {

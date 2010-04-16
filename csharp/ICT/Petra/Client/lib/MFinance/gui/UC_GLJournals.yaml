@@ -17,8 +17,8 @@ RootNode:
             Dock: Top
             Controls: 
                 Row0: [txtLedgerNumber, txtBatchNumber]
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger}
-        txtBatchNumber: {ReadOnly=true, Label=Batch}
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]

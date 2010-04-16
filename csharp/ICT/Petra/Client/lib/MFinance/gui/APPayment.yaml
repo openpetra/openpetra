@@ -64,7 +64,7 @@ RootNode:
             OptionalValues: [=Cash, Cheque]
             # TODO: Transfer, Electronic
             Label: Payment T&ype
-        txtReference: {Label=&Reference, ColSpan=2}
+        txtReference: {Label=&Reference, ColSpan=2, DataField=AApPayment.Reference}
         cmbBankAccount: {List=UserDefinedList, ColSpan=2}
         txtExchangeRate:
         txtTotalAmount:
