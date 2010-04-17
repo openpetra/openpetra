@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from UC_PartnerEdit_LowerPart.yaml and template controlMaintainTable
+/* auto generated with nant generateWinforms from UC_PartnerEdit_PartnerTabSet2.yaml and template controlMaintainTable
  *
  * DO NOT edit manually, DO NOT edit with the designer
  *
@@ -44,20 +44,19 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
 
   /// auto generated user control
-  public partial class TUC_PartnerEdit_LowerPart: System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
+  public partial class TUC_PartnerEdit_PartnerTabSet2: System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
     private Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS FMainDS;
 
     /// constructor
-    public TUC_PartnerEdit_LowerPart() : base()
+    public TUC_PartnerEdit_PartnerTabSet2() : base()
     {
       //
       // Required for Windows Form Designer support
@@ -66,7 +65,12 @@ namespace Ict.Petra.Client.MPartner.Gui
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblDynamicLoad.Text = Catalog.GetString("Controls are added dynamically at runtime! See below for an example!:");
+      this.lblTest.Text = Catalog.GetString("Test only:");
+      this.tpgAddresses.Text = Catalog.GetString("Addresses ({0})");
+      this.tpgDetails.Text = Catalog.GetString("Partner Details");
+      this.tpgSubscriptions.Text = Catalog.GetString("Subscriptions ({0})");
+      this.tpgSpecialTypes.Text = Catalog.GetString("Special Types ({0})");
+      this.tpgNotes.Text = Catalog.GetString("Notes ({0})");
       #endregion
 
     }
@@ -92,9 +96,9 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
-        ucoPartnerTabSet.PetraUtilsObject = FPetraUtilsObject;
-        ucoPartnerTabSet.MainDS = FMainDS;
-        ucoPartnerTabSet.InitUserControl();
+        ucoPartnerDetails.PetraUtilsObject = FPetraUtilsObject;
+        ucoPartnerDetails.MainDS = FMainDS;
+        ucoPartnerDetails.InitUserControl();
     }
 
 #region Implement interface functions

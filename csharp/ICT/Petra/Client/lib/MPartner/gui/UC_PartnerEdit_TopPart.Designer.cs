@@ -347,7 +347,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnWorkerField.Location = new System.Drawing.Point(2,2);
             this.btnWorkerField.Name = "btnWorkerField";
             this.btnWorkerField.AutoSize = true;
-            this.btnWorkerField.Text = "&OMer Field...";
+            this.btnWorkerField.Click += new System.EventHandler(this.MaintainWorkerField);
+            this.btnWorkerField.Image = ((System.Drawing.Bitmap)resources.GetObject("btnWorkerField.Glyph"));
+            this.btnWorkerField.Text = "&Worker Field...";
             //
             // txtWorkerField
             //

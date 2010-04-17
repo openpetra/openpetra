@@ -857,6 +857,91 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         #endregion
         
+        #region Action Handlers
+        
+        private void NewPartner(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ViewPartnerData(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ViewPersonnelData(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ViewFinanceData(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MaintainAddresses(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void NewPartnerWithShepherdPerson(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void NewPartnerWithShepherdFamily(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void NewPartnerWithShepherdChurch(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void NewPartnerWithShepherdOrganisation(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void NewPartnerWithShepherdUnit(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void DeactivatePartner(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void DeletePartner(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void SendEmail(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void PrintPartner(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void PrintSection(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void ExportPartner(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+        
+        
         #region Private Methods
         
         private void LoadData()
