@@ -17,6 +17,7 @@ RootNode:
            mniSeparator: {Label=-}
            mniFilePrint:
               Label:&Print...
+              Image: Print.ico
 #              ActionClick:MniFile_Click
               #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.P]
            mniSeparator: {Label=-}

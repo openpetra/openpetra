@@ -26,9 +26,9 @@ RootNode:
         mniHelp: 
             Label: &Help
             Order: AlwaysLast
-            mniHelpPetraHelp: {Label=&Petra Help, ActionId=eHelp}
+            mniHelpPetraHelp: {Label=&Petra Help, ActionId=eHelp, Image: Help2.ico}
             mniSeparator: {Label=-}
-            mniHelpBugReport: {Label=Bug &Report, ActionId=eBugReport}
+            mniHelpBugReport: {Label=Bug &Report, ActionId=eBugReport, Image: BugReport.ico}
             mniSeparator: {Label=-}
-            mniHelpAboutPetra: {Label=&About Petra, ActionId=eAHelpbout}
-            mniHelpDevelopmentTeam: {Label=&The Development Team..., ActionId=eHelpDevelopmentTeam}
+            mniHelpAboutPetra: {Label=&About Petra, ActionId=eAHelpbout, Image: PetraInformation.ico}
+            mniHelpDevelopmentTeam: {Label=&The Development Team..., ActionId=eHelpDevelopmentTeam, Image: DevelopmentTeam.ico}
