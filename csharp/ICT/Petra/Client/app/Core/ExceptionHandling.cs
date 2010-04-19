@@ -26,7 +26,10 @@
 using System;
 using System.Threading;
 using System.IO;
+
 using Ict.Common;
+using Mono.Posix;
+using System.Windows.Forms;
 
 namespace Ict.Petra.Client.App.Core
 {
@@ -110,16 +113,24 @@ namespace Ict.Petra.Client.App.Core
         {
             TUnhandledExceptionForm UEDialogue;
 
-            // for the moment, until the proper window works:
-            System.Windows.Forms.MessageBox.Show(
-                "TUnhandledThreadExceptionHandler.OnThreadException  Unhandled Exception: \r\n\r\n" + AEventArgs.Exception.ToString());
-
-            ExceptionHandling.LogException(AEventArgs.Exception, "Reported by TUnhandledThreadExceptionHandler.OnThreadException");
-            UEDialogue = new TUnhandledExceptionForm();
-
-//            UEDialogue.NonRecoverable = false;
-//            UEDialogue.TheException = AEventArgs.Exception;
-//            UEDialogue.ShowDialog();
+            if (!(AEventArgs.Exception is NotImplementedException))
+            {
+                // for the moment, until the proper window works:
+                MessageBox.Show(
+                    "TUnhandledThreadExceptionHandler.OnThreadException  Unhandled Exception: \r\n\r\n" + AEventArgs.Exception.ToString());
+    
+                ExceptionHandling.LogException(AEventArgs.Exception, "Reported by TUnhandledThreadExceptionHandler.OnThreadException");
+                UEDialogue = new TUnhandledExceptionForm();
+    
+    //            UEDialogue.NonRecoverable = false;
+    //            UEDialogue.TheException = AEventArgs.Exception;
+    //            UEDialogue.ShowDialog();               
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("This functionality is not yet implemented in OpenPetra."), Catalog.GetString("Not Implemented"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         #endregion
