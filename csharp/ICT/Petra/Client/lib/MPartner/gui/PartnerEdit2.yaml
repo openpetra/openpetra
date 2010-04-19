@@ -25,15 +25,36 @@ RootNode:
         actDeactivatePartner: {Label=Deacti&vate Partner..., ActionClick=DeactivatePartner, Image: DeactivatePartner.ico}
         actDeletePartner: {Label=&Delete THIS Partner..., ActionClick=DeletePartner, Image: DeletePartner.ico}
         actSendEmail: {Label=Send E&mail to Partner, ActionClick=SendEmail, Image: Email.ico}
-        actPrint: {Label=Print Partner..., ActionClick=PrintPartner, Image: Print.ico}
+        actPrint: {Label=&Print Partner..., ActionClick=PrintPartner, Image: Print.ico}
         actPrintSection: {Label=P&rint Section..., ActionClick=DeletePartner, Image: PrintSection.ico}
         actExportPartner: {Label=E&xport Partner, ActionClick=ExportPartner, Image: ExportPetra.ico}
         
         actMaintainAddresses: {Label=&Addresses, ActionClick=MaintainAddresses, Image: Address.ico}
+        actMaintainPartnerDetails: {Label=Partner &Details, ActionClick=MaintainPartnerDetails, Image: Details.ico}
+        actMaintainFoundationDetails: {Label=Foundation Details, ActionClick=MaintainFoundationDetails, Image: Foundations.ico}
+        actMaintainSubscriptions: {Label=&Subscriptions, ActionClick=MaintainSubscriptions, Image: Subscriptions.ico}
+        actMaintainSpecialTypes: {Label=Special &Types, ActionClick=MaintainSpecialTypes, Image: Types.ico}
+        actMaintainContacts: {Label=&Contacts, ActionClick=MaintainContacts, Image: RecordedContacts.ico}
+        actMaintainFamilyMembers: {Label=Fa&mily Members, ActionClick=MaintainFamilyMembers, Image: FamilyMembers.ico}
+        actMaintainRelationships: {Label=&Relationships, ActionClick=MaintainRelationships, Image: Relationships.ico}
+        actMaintainInterests: {Label=&Interests, ActionClick=MaintainInterests, Image: PartnerInterest.ico}
+        actMaintainReminders: {Label=&Reminders, ActionClick=MaintainReminders, Image: Reminders.ico}
+        actMaintainNotes: {Label=&Notes, ActionClick=MaintainNotes, Image: Notes.ico}
+        actMaintainLocalPartnerData: {Label=&Local Partner Data, ActionClick=MaintainLocalPartnerData, Image: OfficeSpecific.ico}
+        actMaintainWorkerField: {Label=&Worker Field, ActionClick=MaintainWorkerField, Image: OMField.ico}
+        actMaintainPersonnelData: {Label=&Personnel/Individual Data, ActionClick=MaintainIndividualData, Image: personel_small.ico}
+        actMaintainDonorHistory: {Label=Donor &History, ActionClick=MaintainDonorHistory}
+        actMaintainRecipientHistory: {Label=Recipient Histor&y, ActionClick=MaintainRecipientHistory}
+        actMaintainFinanceReports: {Label=Finance Report&s, ActionClick=MaintainFinanceReports}
+        actMaintainBankAccounts: {Label=Ban&k Accounts, ActionClick=MaintainBankAccounts}
+        actMaintainGiftReceipting: {Label=&Gift Receipting, ActionClick=MaintainGiftReceipting}
+        actMaintainFinanceDetails: {Label=&Finance Details, ActionClick=MaintainFinanceDetails, Image: FinanceDetails.ico}        
         
         actViewPartnerData: {Label=&Partner Data, ActionClick=ViewPartnerData, Image: partner_toolbar.ico}
         actViewPersonnelData: {Label=P&ersonnel Data, ActionClick=ViewPersonnelData, Image: personel_toolbar.ico}
         actViewFinanceData: {Label=&Finance Data, ActionClick=ViewFinanceData, Image: accounts_toolbar.ico}        
+        
+        actHelpVideoTutorial: {Label=&Video Tutorial for Partner Edit Screen..., ActionClick=HelpVideoTutorial, Image: VideoTutorial.ico}        
         
     Controls:
         pnlContent:
@@ -55,7 +76,7 @@ RootNode:
     Menu:
         mniFile: 
             mniNewPartner: {Action=actNewPartner, Order=AlwaysFirst}
-            mniNewPartnerWithShepherd: {Action=actNewPartnerWithShepherd, Order=AlwaysFirst, Image: NewPartner.ico}
+            mniNewPartnerWithShepherd: {Label: N&ew Partner (Shepherd), Action=actNewPartnerWithShepherd, Order=AlwaysFirst, Image: NewPartner.ico}
                 mniNewPartnerWithShepherdPerson:
                 mniNewPartnerWithShepherdFamily:
                 mniNewPartnerWithShepherdChurch:
@@ -73,13 +94,38 @@ RootNode:
             mniSeparator:
             
         mniMaintain: {Label=Ma&intain}            
-            mniAddresses: {Action=actMaintainAddresses}
+            mniMaintainAddresses:
+            mniMaintainPartnerDetails:
+            mniMaintainFoundationDetails:
+            mniMaintainSubscriptions:
+            mniMaintainSpecialTypes:
+            mniMaintainContacts:
+            mniMaintainFamilyMembers:
+            mniMaintainRelationships:
+            mniMaintainInterests:
+            mniMaintainReminders:
+            mniMaintainNotes:
+            mniMaintainLocalPartnerData:
+            mniMaintainWorkerField:
+            mniSeparator:
+            mniMaintainPersonnelData:
+            mniSeparator:
+            mniMaintainDonorHistory:
+            mniMaintainRecipientHistory:
+            mniMaintainFinanceReports:
+            mniMaintainBankAccounts:
+            mniMaintainGiftReceipting:
+            mniMaintainFinanceDetails:
             
         mniView:  {Label=Vie&w}
-            mniViewPartnerData: {Action=actViewPartnerData}
-            mniViewPersonnelData: {Action=actViewPersonnelData}
-            mniViewFinanceData: {Action=actViewFinanceData}
+            mniViewPartnerData:
+            mniViewPersonnelData:
+            mniViewFinanceData:
         
+        mniHelp:
+            mniSeparator:
+            mniHelpVideoTutorial:
+            
     Toolbar:
         tbbNewPartner: {Label=&New Partner, Action=actNewPartner}
         tbbSeparator:

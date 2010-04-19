@@ -19,7 +19,7 @@ RootNode:
         grpCollapsible:
             Controls: [pnlLeft, pnlRight]
             ControlsOrientation: horizontal
-            Label: Partner
+            Label: Key Partner Data
             Dock: Top  
         pnlLeft:
             Controls: [pnlPartnerInfo, pnlFamily, pnlAdditionalInfo]
@@ -35,11 +35,11 @@ RootNode:
             Controls: [txtLastGift]
             Dock: Top
         txtLastGift:
-            #DataField: MiscellaneousData.LastGiftInfo
+            DataField: MiscellaneousData.LastGiftInfo
             ReadOnly: true
             Width: 420
         txtLastContact:
-            #DataField: MiscellaneousData.LastContactDate
+            DataField: MiscellaneousData.LastContactDate
             ReadOnly: true
             ColSpan: 2
             Width: 115
