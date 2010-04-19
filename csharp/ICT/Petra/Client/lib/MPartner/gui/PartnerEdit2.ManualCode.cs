@@ -859,27 +859,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         #region Action Handlers
         
+        #region File Menu
+        
         private void NewPartner(System.Object sender, System.EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ViewPartnerData(System.Object sender, System.EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ViewPersonnelData(System.Object sender, System.EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ViewFinanceData(System.Object sender, System.EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void MaintainAddresses(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
@@ -938,7 +920,140 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             throw new NotImplementedException();
         }
+        
+        #endregion
+        
+        #region Maintain Menu
+        
+        private void MaintainAddresses(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
+        private void MaintainPartnerDetails(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void MaintainFoundationDetails(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void MaintainSubscriptions(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void MaintainSpecialTypes(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        private void MaintainContacts(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void MaintainFamilyMembers(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void MaintainRelationships(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void MaintainInterests(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MaintainReminders(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MaintainNotes(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MaintainLocalPartnerData(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MaintainWorkerField(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void MaintainIndividualData(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MaintainDonorHistory(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MaintainRecipientHistory(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MaintainFinanceReports(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MaintainBankAccounts(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MaintainGiftReceipting(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MaintainFinanceDetails(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+        
+        #region View Menu
+        
+        private void ViewPartnerData(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ViewPersonnelData(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ViewFinanceData(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+        
+        #region Help Menu
+        
+        private void HelpVideoTutorial(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        #endregion
+        
         #endregion
         
         

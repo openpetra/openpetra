@@ -423,7 +423,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel4.SetColumnSpan(this.txtLastContact, 2);
             this.tableLayoutPanel4.Controls.Add(this.txtLastContact, 1, 3);
             this.tableLayoutPanel4.Controls.Add(this.txtWorkerField, 2, 0);
-            this.grpCollapsible.Text = "Partner";
+            this.grpCollapsible.Text = "Key Partner Data";
 
             //
             // TUC_PartnerEdit_TopPart

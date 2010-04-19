@@ -44,11 +44,10 @@ RootNode:
             Label: Family Members
             Image: FamilyMembers.ico
 
-        tpgOfficeSpecific:
-            Label: Local Data
-            Image: OfficeSpecific.ico
-            
         tpgNotes:
             Label: Notes ({0})
             Image: Notes.ico
             
+        tpgOfficeSpecific:
+            Label: Local Data
+            Image: OfficeSpecific.ico            

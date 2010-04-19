@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.lblPartnerStatus.Text = Catalog.GetString("Partner &Status:");
       this.lblStatusUpdated.Text = Catalog.GetString("Status Updated:");
       this.lblLastContact.Text = Catalog.GetString("Last Contact:");
-      this.grpCollapsible.Text = Catalog.GetString("Partner");
+      this.grpCollapsible.Text = Catalog.GetString("Key Partner Data");
       #endregion
 
     }
@@ -175,6 +175,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             chkNoSolicitations.Checked = ARow.NoSolicitations;
         }
+        if (FMainDS.MiscellaneousData[0].IsLastGiftInfoNull())
+        {
+            txtLastGift.Text = String.Empty;
+        }
+        else
+        {
+            txtLastGift.Text = FMainDS.MiscellaneousData[0].LastGiftInfo;
+        }
         if (ARow.IsStatusCodeNull())
         {
             cmbPartnerStatus.SelectedIndex = -1;
@@ -182,6 +190,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         else
         {
             cmbPartnerStatus.SetSelectedString(ARow.StatusCode);
+        }
+        if (FMainDS.MiscellaneousData[0].IsLastContactDateNull())
+        {
+            txtLastContact.Text = String.Empty;
+        }
+        else
+        {
+            txtLastContact.Text = FMainDS.MiscellaneousData[0].LastContactDate.ToString();
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
