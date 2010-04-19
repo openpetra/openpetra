@@ -68,8 +68,11 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.lblTest.Text = Catalog.GetString("Test only:");
       this.tpgAddresses.Text = Catalog.GetString("Addresses ({0})");
       this.tpgDetails.Text = Catalog.GetString("Partner Details");
+      this.tpgFoundationDetails.Text = Catalog.GetString("Foundation Details");
       this.tpgSubscriptions.Text = Catalog.GetString("Subscriptions ({0})");
       this.tpgSpecialTypes.Text = Catalog.GetString("Special Types ({0})");
+      this.tpgFamilyMembers.Text = Catalog.GetString("Family Members");
+      this.tpgOfficeSpecific.Text = Catalog.GetString("Local Data");
       this.tpgNotes.Text = Catalog.GetString("Notes ({0})");
       #endregion
 
