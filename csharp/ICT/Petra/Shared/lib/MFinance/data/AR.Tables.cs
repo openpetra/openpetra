@@ -118,9 +118,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         {
             this.Columns.Add(new System.Data.DataColumn("a_tax_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_tax_type_description_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -347,7 +347,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -355,17 +355,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -399,7 +399,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -407,17 +407,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -681,9 +681,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_tax_rate_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_tax_rate_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_active_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -1105,7 +1105,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -1113,17 +1113,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -1157,7 +1157,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -1165,17 +1165,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -1480,9 +1480,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_ar_category_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_local_description_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -1748,7 +1748,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -1756,17 +1756,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -1800,7 +1800,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -1808,17 +1808,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -2089,9 +2089,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_ar_specific_article_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_local_description_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -2474,7 +2474,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -2482,17 +2482,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -2526,7 +2526,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -2534,17 +2534,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -2842,9 +2842,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_ar_date_valid_from_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_amount_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -3149,7 +3149,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -3157,17 +3157,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -3201,7 +3201,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -3209,17 +3209,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -3575,9 +3575,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_ar_early_payment_days_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_article_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_partner_type_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -4428,7 +4428,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -4436,17 +4436,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -4480,7 +4480,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -4488,17 +4488,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -4946,9 +4946,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_ar_category_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_discount_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_date_valid_from_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -5214,7 +5214,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -5222,17 +5222,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -5266,7 +5266,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -5274,17 +5274,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -5548,10 +5548,10 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_ar_discount_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_discount_date_valid_from_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_date_valid_from_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("a_ar_date_valid_to_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("a_ar_date_valid_to_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -5869,7 +5869,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// this default discount is only applied during this time period; can be null for ongoing default discounts
-        public System.DateTime ArDateValidTo
+        public System.DateTime? ArDateValidTo
         {
             get
             {
@@ -5877,17 +5877,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnArDateValidTo.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnArDateValidTo)
-                            || (((System.DateTime)(this[this.myTable.ColumnArDateValidTo])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnArDateValidTo])) != value)))
                 {
                     this[this.myTable.ColumnArDateValidTo] = value;
                 }
@@ -5895,7 +5895,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -5903,17 +5903,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -5947,7 +5947,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -5955,17 +5955,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -6290,17 +6290,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_status_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("a_date_effective_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("a_date_effective_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("a_offer_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_taxing_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_special_tax_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_special_tax_rate_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_special_tax_valid_from_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("a_special_tax_valid_from_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("a_total_amount_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -6709,7 +6709,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// this is the date when the invoice was charged
-        public System.DateTime DateEffective
+        public System.DateTime? DateEffective
         {
             get
             {
@@ -6717,17 +6717,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateEffective.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateEffective)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateEffective])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateEffective])) != value)))
                 {
                     this[this.myTable.ColumnDateEffective] = value;
                 }
@@ -6839,7 +6839,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// this describes when this particular percentage rate has become valid by law
-        public System.DateTime SpecialTaxValidFrom
+        public System.DateTime? SpecialTaxValidFrom
         {
             get
             {
@@ -6847,17 +6847,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnSpecialTaxValidFrom.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnSpecialTaxValidFrom)
-                            || (((System.DateTime)(this[this.myTable.ColumnSpecialTaxValidFrom])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnSpecialTaxValidFrom])) != value)))
                 {
                     this[this.myTable.ColumnSpecialTaxValidFrom] = value;
                 }
@@ -6917,7 +6917,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -6925,17 +6925,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -6969,7 +6969,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -6977,17 +6977,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -7411,9 +7411,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_tax_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_tax_rate_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_tax_valid_from_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -8030,7 +8030,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -8038,17 +8038,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -8082,7 +8082,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -8090,17 +8090,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -8476,9 +8476,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_invoice_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_discount_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_discount_date_valid_from_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -8783,7 +8783,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -8791,17 +8791,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -8835,7 +8835,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -8843,17 +8843,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -9131,9 +9131,9 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_detail_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_discount_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_discount_date_valid_from_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -9477,7 +9477,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -9485,17 +9485,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -9529,7 +9529,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -9537,17 +9537,17 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }

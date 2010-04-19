@@ -714,8 +714,8 @@ namespace Ict.Petra.Client.MCommon
             // MessageBox.Show('FLocationRow: Proposed? ' + FLocationRow.HasVersion(DataRowVersion.Proposed).ToString +
             // 'PPartnerLocationRow: Proposed? ' + PPartnerLocationRow.HasVersion(DataRowVersion.Proposed).ToString);
             // Store values of some DataColumns before the user can edit them (used later for comparisons)
-            FValidFromBeforeEditing = PPartnerLocationRow.DateEffective;
-            FValidUntilBeforeEditing = PPartnerLocationRow.DateGoodUntil;
+            FValidFromBeforeEditing = PPartnerLocationRow.DateEffective.Value;
+            FValidUntilBeforeEditing = PPartnerLocationRow.DateGoodUntil.Value;
             FSendMailBeforeEditing = PPartnerLocationRow.SendMail;
         }
 
@@ -928,8 +928,8 @@ namespace Ict.Petra.Client.MCommon
                 || (APartnerLocationRow.DateGoodUntil != FValidUntilBeforeEditing) || (APartnerLocationRow.SendMail != FSendMailBeforeEditing))
             {
                 // MessageBox.Show('PartnerLocation Date(s) or Mailing Address CheckBox have changed!');
-                FValidFromBeforeEditing = APartnerLocationRow.DateEffective;
-                FValidUntilBeforeEditing = APartnerLocationRow.DateGoodUntil;
+                FValidFromBeforeEditing = APartnerLocationRow.DateEffective.Value;
+                FValidUntilBeforeEditing = APartnerLocationRow.DateGoodUntil.Value;
 
                 // Determination of the Grid icons and the 'Best Address' (these calls change certain columns in some rows!)
                 Calculations.DeterminePartnerLocationsDateStatus((DataSet)FMainDS);
@@ -1678,12 +1678,12 @@ namespace Ict.Petra.Client.MCommon
 
                 case 2:
                     TooltipText = "Address will become active in the future  (Valid from " + StringHelper.DateToLocalizedString(
-                    PartnerLocationRow.DateEffective) + ')';
+                    PartnerLocationRow.DateEffective.Value) + ')';
                     break;
 
                 case 3:
                     TooltipText = "Address was active in the past  (Valid until " + StringHelper.DateToLocalizedString(
-                    PartnerLocationRow.DateGoodUntil) + ')';
+                    PartnerLocationRow.DateGoodUntil.Value) + ')';
                     break;
 
                 default:

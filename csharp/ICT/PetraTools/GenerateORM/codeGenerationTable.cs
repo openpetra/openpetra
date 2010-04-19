@@ -242,7 +242,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
                     tempTemplate.SetCodelet("COLUMNDOTNETTYPE", col.GetDotNetType());
 
-                    if (col.GetDotNetType().Contains("DateTime"))
+                    if (col.GetDotNetType().Contains("DateTime?"))
+                    {
+                        tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "return null;");
+                    }
+                    else if (col.GetDotNetType().Contains("DateTime"))
                     {
                         tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "return DateTime.MinValue;");
                     }

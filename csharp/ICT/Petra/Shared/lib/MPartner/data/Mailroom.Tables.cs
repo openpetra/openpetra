@@ -181,20 +181,20 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("m_extract_id_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("m_extract_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("m_extract_desc_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("m_last_ref_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("m_last_ref_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("m_deletable_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("m_frozen_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("m_key_count_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("m_public_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("m_manual_mod_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("m_manual_mod_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("m_manual_mod_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("m_manual_mod_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("m_extract_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("m_template_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("m_restricted_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -603,7 +603,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         ///
-        public System.DateTime LastRef
+        public System.DateTime? LastRef
         {
             get
             {
@@ -611,17 +611,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnLastRef.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnLastRef)
-                            || (((System.DateTime)(this[this.myTable.ColumnLastRef])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnLastRef])) != value)))
                 {
                     this[this.myTable.ColumnLastRef] = value;
                 }
@@ -759,7 +759,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// Date the extract was manually modified
-        public System.DateTime ManualModicationDate
+        public System.DateTime? ManualModicationDate
         {
             get
             {
@@ -767,17 +767,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnManualModicationDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnManualModicationDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnManualModicationDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnManualModicationDate])) != value)))
                 {
                     this[this.myTable.ColumnManualModicationDate] = value;
                 }
@@ -889,7 +889,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -897,17 +897,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -941,7 +941,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -949,17 +949,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -1361,9 +1361,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("p_site_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("p_location_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -1668,7 +1668,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -1676,17 +1676,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -1720,7 +1720,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -1728,17 +1728,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -2004,9 +2004,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("m_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("m_function_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("m_description_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -2272,7 +2272,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -2280,17 +2280,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -2324,7 +2324,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -2332,17 +2332,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -2601,9 +2601,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("m_parameter_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("m_value_index_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("m_parameter_value_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -2908,7 +2908,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -2916,17 +2916,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -2960,7 +2960,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -2968,17 +2968,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -3273,16 +3273,16 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         {
             this.Columns.Add(new System.Data.DataColumn("p_mailing_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_mailing_description_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_mailing_date_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_mailing_date_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("a_motivation_group_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_motivation_detail_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_mailing_cost_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("p_mailing_attributed_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("p_viewable_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("p_viewable_until_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_viewable_until_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -3600,7 +3600,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// Date Of Mailing
-        public System.DateTime MailingDate
+        public System.DateTime? MailingDate
         {
             get
             {
@@ -3608,17 +3608,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnMailingDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnMailingDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnMailingDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnMailingDate])) != value)))
                 {
                     this[this.myTable.ColumnMailingDate] = value;
                 }
@@ -3756,7 +3756,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// Date until this mailing is viewable for users (if p_viewable_l is set)
-        public System.DateTime ViewableUntil
+        public System.DateTime? ViewableUntil
         {
             get
             {
@@ -3764,17 +3764,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnViewableUntil.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnViewableUntil)
-                            || (((System.DateTime)(this[this.myTable.ColumnViewableUntil])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnViewableUntil])) != value)))
                 {
                     this[this.myTable.ColumnViewableUntil] = value;
                 }
@@ -3782,7 +3782,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -3790,17 +3790,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -3834,7 +3834,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -3842,17 +3842,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -4189,9 +4189,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_display_index_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_comment_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -4496,7 +4496,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -4504,17 +4504,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -4548,7 +4548,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -4556,17 +4556,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -4850,9 +4850,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_address_line_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_address_prompt_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_locked_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -5235,7 +5235,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -5243,17 +5243,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -5287,7 +5287,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -5295,17 +5295,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -5603,9 +5603,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_address_element_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_address_element_field_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_address_element_text_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -5910,7 +5910,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -5918,17 +5918,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -5962,7 +5962,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -5970,17 +5970,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -6246,9 +6246,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_address_line_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_address_element_position_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_address_element_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -6514,7 +6514,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -6522,17 +6522,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -6566,7 +6566,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -6574,17 +6574,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -6839,9 +6839,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_language_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_title_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_title_override_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -7109,7 +7109,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -7117,17 +7117,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -7161,7 +7161,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -7169,17 +7169,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -7438,9 +7438,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("s_user_id_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_customised_greeting_text_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_customised_closing_text_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -7745,7 +7745,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -7753,17 +7753,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -7797,7 +7797,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -7805,17 +7805,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -8112,9 +8112,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_title_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_complimentary_closing_text_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_personal_pronoun_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -8576,7 +8576,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -8584,17 +8584,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -8628,7 +8628,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -8636,17 +8636,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -8976,9 +8976,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_physical_file_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_owner_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -9322,7 +9322,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -9330,17 +9330,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -9374,7 +9374,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -9382,17 +9382,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -9683,9 +9683,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_address_layout_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_formality_level_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_body_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -10029,7 +10029,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -10037,17 +10037,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -10081,7 +10081,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -10089,17 +10089,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -10390,9 +10390,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("m_extract_id_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_body_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_insert_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -10736,7 +10736,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -10744,17 +10744,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -10788,7 +10788,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -10796,17 +10796,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -11133,9 +11133,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_start_column_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_start_line_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -11713,7 +11713,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -11721,17 +11721,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -11765,7 +11765,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -11773,17 +11773,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -12134,9 +12134,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         {
             this.Columns.Add(new System.Data.DataColumn("p_merge_form_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_merge_form_description_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -12363,7 +12363,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -12371,17 +12371,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -12415,7 +12415,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -12423,17 +12423,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -12685,9 +12685,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_merge_field_position_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_merge_type_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_merge_parameters_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -13031,7 +13031,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -13039,17 +13039,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -13083,7 +13083,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -13091,17 +13091,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -13380,9 +13380,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_range_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_from_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_to_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -13648,7 +13648,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -13656,17 +13656,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -13700,7 +13700,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -13708,17 +13708,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -13965,9 +13965,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         {
             this.Columns.Add(new System.Data.DataColumn("p_region_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_range_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -14194,7 +14194,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -14202,17 +14202,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -14246,7 +14246,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -14254,17 +14254,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -14534,9 +14534,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("a_frequency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_publication_label_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_publication_language_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -14997,7 +14997,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -15005,17 +15005,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -15049,7 +15049,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -15057,17 +15057,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -15397,9 +15397,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_publication_cost_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("p_postage_cost_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("p_currency_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -15743,7 +15743,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -15751,17 +15751,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -15795,7 +15795,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -15803,17 +15803,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -16086,9 +16086,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         {
             this.Columns.Add(new System.Data.DataColumn("p_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_description_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -16315,7 +16315,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -16323,17 +16323,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -16367,7 +16367,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -16375,17 +16375,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -16619,9 +16619,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         {
             this.Columns.Add(new System.Data.DataColumn("p_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_description_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -16848,7 +16848,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -16856,17 +16856,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -16900,7 +16900,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -16908,17 +16908,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -17235,22 +17235,22 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_publication_copies_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_reason_subs_given_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_reason_subs_cancelled_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_expiry_date_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("p_provisional_expiry_date_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_expiry_date_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("p_provisional_expiry_date_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("p_gratis_subscription_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("p_date_notice_sent_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("p_date_cancelled_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_notice_sent_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_cancelled_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("p_start_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("p_number_issues_received_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_number_complimentary_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("p_subscription_renewal_date_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_subscription_renewal_date_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("p_subscription_status_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_first_issue_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("p_last_issue_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_first_issue_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("p_last_issue_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("p_gift_from_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -17763,7 +17763,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// Date the subscription expires
-        public System.DateTime ExpiryDate
+        public System.DateTime? ExpiryDate
         {
             get
             {
@@ -17771,17 +17771,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnExpiryDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnExpiryDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnExpiryDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnExpiryDate])) != value)))
                 {
                     this[this.myTable.ColumnExpiryDate] = value;
                 }
@@ -17789,7 +17789,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// Provisional date on which the subscription may expire
-        public System.DateTime ProvisionalExpiryDate
+        public System.DateTime? ProvisionalExpiryDate
         {
             get
             {
@@ -17797,17 +17797,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnProvisionalExpiryDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnProvisionalExpiryDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnProvisionalExpiryDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnProvisionalExpiryDate])) != value)))
                 {
                     this[this.myTable.ColumnProvisionalExpiryDate] = value;
                 }
@@ -17841,7 +17841,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         ///
-        public System.DateTime DateNoticeSent
+        public System.DateTime? DateNoticeSent
         {
             get
             {
@@ -17849,17 +17849,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateNoticeSent.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateNoticeSent)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateNoticeSent])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateNoticeSent])) != value)))
                 {
                     this[this.myTable.ColumnDateNoticeSent] = value;
                 }
@@ -17867,7 +17867,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         ///
-        public System.DateTime DateCancelled
+        public System.DateTime? DateCancelled
         {
             get
             {
@@ -17875,17 +17875,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCancelled.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCancelled)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCancelled])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCancelled])) != value)))
                 {
                     this[this.myTable.ColumnDateCancelled] = value;
                 }
@@ -17971,7 +17971,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         ///
-        public System.DateTime SubscriptionRenewalDate
+        public System.DateTime? SubscriptionRenewalDate
         {
             get
             {
@@ -17979,17 +17979,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnSubscriptionRenewalDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnSubscriptionRenewalDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnSubscriptionRenewalDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnSubscriptionRenewalDate])) != value)))
                 {
                     this[this.myTable.ColumnSubscriptionRenewalDate] = value;
                 }
@@ -18023,7 +18023,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         ///
-        public System.DateTime FirstIssue
+        public System.DateTime? FirstIssue
         {
             get
             {
@@ -18031,17 +18031,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnFirstIssue.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnFirstIssue)
-                            || (((System.DateTime)(this[this.myTable.ColumnFirstIssue])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnFirstIssue])) != value)))
                 {
                     this[this.myTable.ColumnFirstIssue] = value;
                 }
@@ -18049,7 +18049,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         ///
-        public System.DateTime LastIssue
+        public System.DateTime? LastIssue
         {
             get
             {
@@ -18057,17 +18057,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnLastIssue.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnLastIssue)
-                            || (((System.DateTime)(this[this.myTable.ColumnLastIssue])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnLastIssue])) != value)))
                 {
                     this[this.myTable.ColumnLastIssue] = value;
                 }
@@ -18101,7 +18101,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -18109,17 +18109,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -18153,7 +18153,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -18161,17 +18161,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -18619,9 +18619,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_contact_attribute_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_contact_attribute_descr_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_active_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -18887,7 +18887,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -18895,17 +18895,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -18939,7 +18939,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -18947,17 +18947,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -19222,9 +19222,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_contact_attr_detail_descr_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_active_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("p_comment_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -19568,7 +19568,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -19576,17 +19576,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -19620,7 +19620,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -19628,17 +19628,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -19932,9 +19932,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_contact_type_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_valid_method_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("p_deletable_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -20281,7 +20281,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -20289,17 +20289,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -20333,7 +20333,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -20341,17 +20341,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -20692,9 +20692,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_mailing_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_restricted_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("p_contact_location_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -21350,7 +21350,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -21358,17 +21358,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -21402,7 +21402,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -21410,17 +21410,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -21803,9 +21803,9 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
             this.Columns.Add(new System.Data.DataColumn("p_contact_id_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_contact_attribute_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_contact_attr_detail_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -22071,7 +22071,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -22079,17 +22079,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -22123,7 +22123,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -22131,17 +22131,17 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }

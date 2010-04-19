@@ -41,7 +41,6 @@ namespace Ict.Common.Verification
     /// </summary>
     public interface IResultInterface
     {
-
         /// <summary>
         /// Context of the Verification Result (where the Verification Result originated from).
         /// </summary>
@@ -62,7 +61,7 @@ namespace Ict.Common.Verification
 
         /// <summary>
         /// Caption of the Verification Result (e.g. for use in MessageBox Titles).
-        /// </summary>        
+        /// </summary>
         String ResultTextCaption
         {
             get;
@@ -176,7 +175,7 @@ namespace Ict.Common.Verification
 
         /// <summary>
         /// Caption of the Verification Result (e.g. for use in MessageBox Titles).
-        /// </summary>        
+        /// </summary>
         public String ResultTextCaption
         {
             get

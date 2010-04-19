@@ -1034,8 +1034,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("p_site_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("p_location_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("p_date_effective_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("p_date_good_until_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_effective_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_good_until_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("p_location_type_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_send_mail_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("p_fax_number_c", typeof(String)));
@@ -1049,9 +1049,9 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("p_alternate_telephone_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_url_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_restricted_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("BestAddress", typeof(bool)));
@@ -1334,7 +1334,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("p_middle_name_3_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_family_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_decorations_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_date_of_birth_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_of_birth_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("p_gender_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_marital_status_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_occupation_code_c", typeof(String)));
@@ -1344,11 +1344,11 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("p_family_id_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_field_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("p_academic_title_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_marital_status_since_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_marital_status_since_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("p_marital_status_comment_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_unit_name_c", typeof(String)));
@@ -1583,11 +1583,11 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("p_different_surnames_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("p_field_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("p_marital_status_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_marital_status_since_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_marital_status_since_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("p_marital_status_comment_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_unit_name_c", typeof(String)));
@@ -3132,7 +3132,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("p_partner_short_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_family_id_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_gender_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_date_of_birth_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_of_birth_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("TypeCodeModify", typeof(bool)));
             this.Columns.Add(new System.Data.DataColumn("TypeCodePresent", typeof(bool)));
             this.Columns.Add(new System.Data.DataColumn("OtherTypeCodes", typeof(string)));
@@ -3426,7 +3426,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// This is the date the rthe person was born
-        public System.DateTime DateOfBirth
+        public System.DateTime? DateOfBirth
         {
             get
             {
@@ -3434,17 +3434,17 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateOfBirth.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateOfBirth)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateOfBirth])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateOfBirth])) != value)))
                 {
                     this[this.myTable.ColumnDateOfBirth] = value;
                 }
@@ -4370,9 +4370,9 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("p_geo_km_y_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_geo_accuracy_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_restricted_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("SiteKeyOfSimilarLocation", typeof(Int64)));
@@ -4974,8 +4974,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("p_email_address_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_url_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_send_mail_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("p_date_effective_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("p_date_good_until_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_effective_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_good_until_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("p_location_type_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("SiteKeyOfEditedRecord", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("LocationKeyOfEditedRecord", typeof(Int32)));
@@ -5669,7 +5669,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         ///
-        public System.DateTime DateEffective
+        public System.DateTime? DateEffective
         {
             get
             {
@@ -5677,17 +5677,17 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateEffective.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateEffective)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateEffective])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateEffective])) != value)))
                 {
                     this[this.myTable.ColumnDateEffective] = value;
                 }
@@ -5695,7 +5695,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         ///
-        public System.DateTime DateGoodUntil
+        public System.DateTime? DateGoodUntil
         {
             get
             {
@@ -5703,17 +5703,17 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateGoodUntil.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateGoodUntil)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateGoodUntil])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateGoodUntil])) != value)))
                 {
                     this[this.myTable.ColumnDateGoodUntil] = value;
                 }
@@ -7560,9 +7560,9 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("MainLanguages", typeof(string)));
             this.Columns.Add(new System.Data.DataColumn("AdditionalLanguages", typeof(string)));
             this.Columns.Add(new System.Data.DataColumn("s_contact_date_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("p_date_of_birth_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("p_date_of_birth_d", typeof(System.DateTime?)));
             this.Columns.Add(new System.Data.DataColumn("p_partner_short_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_family_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("p_previous_name_c", typeof(String)));
@@ -7882,7 +7882,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -7890,17 +7890,17 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -7908,7 +7908,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -7916,17 +7916,17 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -7934,7 +7934,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// This is the date the rthe person was born
-        public System.DateTime DateOfBirth
+        public System.DateTime? DateOfBirth
         {
             get
             {
@@ -7942,17 +7942,17 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 ret = this[this.myTable.ColumnDateOfBirth.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateOfBirth)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateOfBirth])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateOfBirth])) != value)))
                 {
                     this[this.myTable.ColumnDateOfBirth] = value;
                 }

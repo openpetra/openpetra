@@ -167,15 +167,25 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
+        protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet == null)
+            {
+                return ctrl.controlName + ".Value == DateTime.MinValue";
+            }
+
+            return ctrl.controlName + ".Value";
+        }
+
         protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
         {
             if (AFieldOrNull == null)
             {
-                // Date never can be null; cause compiler error to tell the developer to mark field in database as NOT NULL
-                return ctrl.controlName + ".Value = " + "Please use NOT NULL in petra.xml" + ";";
+                AFieldOrNull = "DateTime.MinValue";
+                return ctrl.controlName + ".Value = " + AFieldOrNull + ";";
             }
 
-            return ctrl.controlName + ".Value = " + AFieldOrNull + ";";
+            return ctrl.controlName + ".Value = " + AFieldOrNull + ".Value;";
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
@@ -1019,7 +1029,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     FButtonLabelType = "OccupationList";
                     return true;
                 }
-                
             }
 
             return false;
