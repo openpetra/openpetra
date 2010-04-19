@@ -16,18 +16,18 @@ RootNode:
         Load: {class=System.EventHandler, method=TFrmPartnerEdit2_Load}    
 
     Actions:
-        actNewPartner: {Label=&New Partner..., ActionClick=NewPartner, Image: NewPartner.ico}
-        actNewPartnerWithShepherdPerson: {Label=Add &Person with Shepherd..., ActionClick=NewPartnerWithShepherdPerson}
-        actNewPartnerWithShepherdFamily: {Label=Add &Family with Shepherd..., ActionClick=NewPartnerWithShepherdFamily}
-        actNewPartnerWithShepherdChurch: {Label=Add &Church with Shepherd..., ActionClick=NewPartnerWithShepherdChurch}
-        actNewPartnerWithShepherdOrganisation: {Label=Add &Organisation with Shepherd..., ActionClick=NewPartnerWithShepherdOrganisation}
-        actNewPartnerWithShepherdUnit: {Label=Add &Unit with Shepherd..., ActionClick=NewPartnerWithShepherdUnit}        
-        actDeactivatePartner: {Label=Deacti&vate Partner..., ActionClick=DeactivatePartner, Image: DeactivatePartner.ico}
-        actDeletePartner: {Label=&Delete THIS Partner..., ActionClick=DeletePartner, Image: DeletePartner.ico}
-        actSendEmail: {Label=Send E&mail to Partner, ActionClick=SendEmail, Image: Email.ico}
-        actPrint: {Label=&Print Partner..., ActionClick=PrintPartner, Image: Print.ico}
-        actPrintSection: {Label=P&rint Section..., ActionClick=DeletePartner, Image: PrintSection.ico}
-        actExportPartner: {Label=E&xport Partner, ActionClick=ExportPartner, Image: ExportPetra.ico}
+        actFileNewPartner: {Label=&New Partner..., ActionClick=FileNewPartner, Image: NewPartner.ico}
+        actFileNewPartnerWithShepherdPerson: {Label=Add &Person with Shepherd..., ActionClick=FileNewPartnerWithShepherdPerson}
+        actFileNewPartnerWithShepherdFamily: {Label=Add &Family with Shepherd..., ActionClick=FileNewPartnerWithShepherdFamily}
+        actFileNewPartnerWithShepherdChurch: {Label=Add &Church with Shepherd..., ActionClick=FileNewPartnerWithShepherdChurch}
+        actFileNewPartnerWithShepherdOrganisation: {Label=Add &Organisation with Shepherd..., ActionClick=FileNewPartnerWithShepherdOrganisation}
+        actFileNewPartnerWithShepherdUnit: {Label=Add &Unit with Shepherd..., FileActionClick=NewPartnerWithShepherdUnit}        
+        actFileDeactivatePartner: {Label=Deacti&vate Partner..., ActionClick=FileDeactivatePartner, Image: DeactivatePartner.ico}
+        actFileDeletePartner: {Label=&Delete THIS Partner..., ActionClick=FileDeletePartner, Image: DeletePartner.ico}
+        actFileSendEmail: {Label=Send E&mail to Partner, ActionClick=FileSendEmail, Image: Email.ico}
+        actFilePrint: {Label=&Print Partner..., ActionClick=FilePrintPartner, Image: Print.ico}
+        actFilePrintSection: {Label=P&rint Section..., ActionClick=FileDeletePartner, Image: PrintSection.ico}
+        actFileExportPartner: {Label=E&xport Partner, ActionClick=FileExportPartner, Image: ExportPetra.ico}
         
         actMaintainAddresses: {Label=&Addresses, ActionClick=MaintainAddresses, Image: Address.ico}
         actMaintainPartnerDetails: {Label=Partner &Details, ActionClick=MaintainPartnerDetails, Image: Details.ico}
@@ -49,7 +49,10 @@ RootNode:
         actMaintainBankAccounts: {Label=Ban&k Accounts, ActionClick=MaintainBankAccounts}
         actMaintainGiftReceipting: {Label=&Gift Receipting, ActionClick=MaintainGiftReceipting}
         actMaintainFinanceDetails: {Label=&Finance Details, ActionClick=MaintainFinanceDetails, Image: FinanceDetails.ico}        
-        
+
+        actViewUpperScreenPartExpanded: {Label=&Expanded, ActionClick=ViewUpperScreenPartExpanded}
+        actViewUpperScreenPartCollapsed: {Label=&Collapsed, ActionClick=ViewUpperScreenPartExpanded}
+
         actViewPartnerData: {Label=&Partner Data, ActionClick=ViewPartnerData, Image: partner_toolbar.ico}
         actViewPersonnelData: {Label=P&ersonnel Data, ActionClick=ViewPersonnelData, Image: personel_toolbar.ico}
         actViewFinanceData: {Label=&Finance Data, ActionClick=ViewFinanceData, Image: accounts_toolbar.ico}        
@@ -75,22 +78,22 @@ RootNode:
             Dock: Fill            
     Menu:
         mniFile: 
-            mniNewPartner: {Action=actNewPartner, Order=AlwaysFirst}
-            mniNewPartnerWithShepherd: {Label: N&ew Partner (Shepherd), Action=actNewPartnerWithShepherd, Order=AlwaysFirst, Image: NewPartner.ico}
-                mniNewPartnerWithShepherdPerson:
-                mniNewPartnerWithShepherdFamily:
-                mniNewPartnerWithShepherdChurch:
-                mniNewPartnerWithShepherdOrganisation:
-                mniNewPartnerWithShepherdUnit:
+            mniFileNewPartner: {Action=actNewPartner, Order=AlwaysFirst}
+            mniFileNewPartnerWithShepherd: {Label: N&ew Partner (Shepherd), Action=actFileNewPartnerWithShepherd, Order=AlwaysFirst, Image: NewPartner.ico}
+                mniFileNewPartnerWithShepherdPerson:
+                mniFileNewPartnerWithShepherdFamily:
+                mniFileNewPartnerWithShepherdChurch:
+                mniFileNewPartnerWithShepherdOrganisation:
+                mniFileNewPartnerWithShepherdUnit:
             mniDeactivatePartner:
-            mniDeletePartner:
+            mniFileDeletePartner:
             mniSeparator:
-            mniSendEmail:
+            mniFileSendEmail:
             mniSeparator:
-            mniPrint:
-            mniPrintSection:
+            mniFilePrint:
+            mniFilePrintSection:
             mniSeparator:
-            mniExportPartner:
+            mniFileExportPartner:
             mniSeparator:
             
         mniMaintain: {Label=Ma&intain}            
@@ -118,6 +121,9 @@ RootNode:
             mniMaintainFinanceDetails:
             
         mniView:  {Label=Vie&w}
+            mniViewUpperScreenPart: {Label=&Upper Screen Part}
+                mniViewUpperScreenPartExpanded:
+                mniViewUpperScreenPartCollapsed:            
             mniViewPartnerData:
             mniViewPersonnelData:
             mniViewFinanceData:

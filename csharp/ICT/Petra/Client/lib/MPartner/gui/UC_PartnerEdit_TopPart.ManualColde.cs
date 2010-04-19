@@ -24,7 +24,10 @@
  *
  ************************************************************************/
 using System;
+
 using Ict.Common.Controls;
+using Ict.Common.Verification;
+using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -32,7 +35,13 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         #region Fields
         
+        /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
+        private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
+        
         private String FPartnerClass;
+
+        /// <summary>Used for keeping track of data verification errors</summary>
+        private TVerificationResultCollection FVerificationResultCollection;
         
         #endregion
         
@@ -47,6 +56,46 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
         
+        #region Properties
+        
+        /// <summary>UIConnector that the screen uses</summary>
+        public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
+        {
+            get
+            {
+                return FPartnerEditUIConnector;
+            }
+
+            set
+            {
+                FPartnerEditUIConnector = value;
+            }
+        }
+
+        /// <summary>Holds verification results.</summary>
+        public TVerificationResultCollection VerificationResultCollection
+        {
+            get
+            {
+                return FVerificationResultCollection;
+            }
+
+            set
+            {
+                FVerificationResultCollection = value;
+            }
+        }
+        
+        #endregion
+        
+        
+        #region Public Methods
+        
+        public void ShowData()
+        {
+            ShowData(FMainDS.PPartner[0]);
+        }
+                       
         /// <summary>
         /// todoComment
         /// </summary>
@@ -70,6 +119,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return TmpString;
         }
+        
+        #endregion
         
         #region Actions
         

@@ -33,6 +33,7 @@ using Ict.Common.DB;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
@@ -128,6 +129,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean FUppperPartInitiallyCollapsed;
         private Boolean FFoundationDetailsEnabled;
 
+        private Boolean FPartnerTabSetInitialised;
 //TODO        private Boolean FPersonnelTabSetInitialised;
 //TODO        private Boolean FFinanceTabSetInitialised;
         private TModuleSwitchEnum FCurrentModuleTabGroup;
@@ -183,7 +185,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         #endregion
         
         
-
         #region Public Methods
 
         /// <summary>
@@ -788,6 +789,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.Height = 600;
             }
 
+            // Determine which tab page will be shown
+            DetermineInitiallySelectedTabPage();
+            
             /*
              * Load data for new Partner or existing Partner
              */            
@@ -797,32 +801,96 @@ namespace Ict.Petra.Client.MPartner.Gui
              * From here on we have access to the Server Object and the DataSet is filled
              * with data.
              */
-            FPartnerClass = FMainDS.PPartner[0].PartnerClass;
-            FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+            FPartnerClass = FMainDS.PPartner[0].PartnerClass;            
 
             // Determine whether Partner is of PartnerClass ORGANISATION and whether it is a Foundation
 #if TODO            
             DetermineOrganisationIsFoundation();
 #endif            
 
-            // Determine which tab page will be shown
-            DetermineInitiallySelectedTabPage();
-
             // Setup Modulerelated Toggle Buttons in ToolBar
             SetupAvailableModuleDataItems(true, TModuleSwitchEnum.msNone);
 
+            /* 
+             * Setup the bottom part of the screen - that is the TabSet that corresponds 
+             * with the initially selected TabPage
+             */
+            switch (FCurrentModuleTabGroup) 
+            {
+                case TModuleSwitchEnum.msPartner:
+                    /*
+                     * Set up ucoPartnerTabSet
+                     */
+                    
+                    // TODO 1
+                    
+                    FPartnerTabSetInitialised = true;
+                    
+                    break;
+                   
+                case TModuleSwitchEnum.msPersonnel:
+                    // TODO 2
+                    
+                    break;
+                    
+                case TModuleSwitchEnum.msFinance:
+                    // TODO 2
+                    
+                    break;                    
+            }
+            
+            HookupPartnerEditDataChangeEvents(TPartnerEditTabPageEnum.petpDefault);
 
-            //
-            // Set up ucoPartnerTabSet
-            //
-            
-            
+            // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
+            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.FormDataSavingStarted);
+
+            // Hook up DataSaved Event to be able to run code after SaveChanges was run
+            FPetraUtilsObject.DataSaved += new TDataSavedHandler(this.FormDataSaved);
+
+            /*
+             * Set up top part of the Screen
+             */
+// TODO            ucoUpperPart.InitialiseDelegateMaintainWorkerField(new TDelegateMaintainWorkerField(MaintainWorkerField));
+            ucoUpperPart.VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            ucoUpperPart.PartnerEditUIConnector = FPartnerEditUIConnector;
+
+            // Show data in the top part of the screen
+            ucoUpperPart.ShowData();
+
+            // Set up screen caption
+            SetScreenCaption();
+
+            // Collapse upper Part, if user had it so last time
+            FUppperPartInitiallyCollapsed = TUserDefaults.GetBooleanDefault(TUserDefaults.PARTNER_EDIT_UPPERPARTCOLLAPSED, false);
+
+            if (FUppperPartInitiallyCollapsed)
+            {
+                ViewUpperScreenPartCollapsed(this, null);
+            }
+            else
+            {
+                ViewUpperScreenPartExpanded(this, null);
+            }
+
+            // Disable 'Local Partner Data' MenuItem if there are no Office Specific Data Labels available
+            if (!FMainDS.MiscellaneousData[0].OfficeSpecificDataLabelsAvailable)
+            {
+                mniMaintainLocalPartnerData.Enabled = false;
+            }
+
+            FSubmitChangesContinue = false;
+            ApplySecurity();
+
+            // Need to do this manually  we disabled the automatic hookup in the Base Form because
+            // we remove some TabPages, therefore the Controls on it, but the Events hooked
+            // up to them would still be around and prevent a GC of the Form!
+            FPetraUtilsObject.HookupAllControls();
             
 
             ucoUpperPart.Focus();
             this.Cursor = Cursors.Default;            
             
-            MessageBox.Show("Data loaded successfully (might not look like it, but this screen isn't finished yet...!");
+//            MessageBox.Show("Data loaded successfully (might not look like it, but this screen isn't finished yet...!");
         }
         
 
@@ -854,69 +922,70 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ucoUpperPart.SubCaption = "";
             }
         }
-        
+                        
         #endregion
         
-        #region Action Handlers
         
+        #region Action Handlers
+                
         #region File Menu
         
-        private void NewPartner(System.Object sender, System.EventArgs e)
+        private void FileNewPartner(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
 
-        private void NewPartnerWithShepherdPerson(System.Object sender, System.EventArgs e)
+        private void FileNewPartnerWithShepherdPerson(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
 
-        private void NewPartnerWithShepherdFamily(System.Object sender, System.EventArgs e)
+        private void FileNewPartnerWithShepherdFamily(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
         
-        private void NewPartnerWithShepherdChurch(System.Object sender, System.EventArgs e)
+        private void FileNewPartnerWithShepherdChurch(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
         
-        private void NewPartnerWithShepherdOrganisation(System.Object sender, System.EventArgs e)
+        private void FileNewPartnerWithShepherdOrganisation(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
         
-        private void NewPartnerWithShepherdUnit(System.Object sender, System.EventArgs e)
+        private void FileNewPartnerWithShepherdUnit(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
 
-        private void DeactivatePartner(System.Object sender, System.EventArgs e)
+        private void FileDeactivatePartner(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
         
-        private void DeletePartner(System.Object sender, System.EventArgs e)
+        private void FileDeletePartner(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
 
-        private void SendEmail(System.Object sender, System.EventArgs e)
+        private void FileSendEmail(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
 
-        private void PrintPartner(System.Object sender, System.EventArgs e)
+        private void FilePrintPartner(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
         
-        private void PrintSection(System.Object sender, System.EventArgs e)
+        private void FilePrintSection(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
         
-        private void ExportPartner(System.Object sender, System.EventArgs e)
+        private void FileExportPartner(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
@@ -1027,6 +1096,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         #endregion
         
         #region View Menu
+        
+        private void ViewUpperScreenPartExpanded(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ViewUpperScreenPartCollapsed(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
         
         private void ViewPartnerData(System.Object sender, System.EventArgs e)
         {
@@ -1397,8 +1476,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
         
         /// <summary>
-        /// Verify that tap pages are only opened for the partners which use them.
+        /// Determines which TabPage to show when the screen is loaded and which
+        /// TabSet to initialise.
         /// </summary>
+        /// <remarks>
+        /// Verifies that TapPages are only opened for the Partners which use them.
+        /// </remarks>
         private void DetermineInitiallySelectedTabPage()
         {
             switch (FShowTabPage)
@@ -1408,6 +1491,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // TODO 2 oChristianK cPartner Edit / Tabs : Introduce a User Default that can specify which TabPage is the one the User wants to see as default.
                     FShowTabPage = TPartnerEditTabPageEnum.petpAddresses;
                     FInitiallySelectedTabPage = FShowTabPage;
+                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
                     break;
 
                 case TPartnerEditTabPageEnum.petpFoundationDetails:
@@ -1418,6 +1502,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     FInitiallySelectedTabPage = FShowTabPage;
+                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
                     break;
 
                 case TPartnerEditTabPageEnum.petpFamilyMembers:
@@ -1429,6 +1514,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     FInitiallySelectedTabPage = FShowTabPage;
+                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
                     break;
 
                 case TPartnerEditTabPageEnum.petpOfficeSpecific:
@@ -1439,6 +1525,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     FInitiallySelectedTabPage = FShowTabPage;
+                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
                     break;
 
                 case TPartnerEditTabPageEnum.petpAddresses:
@@ -1447,6 +1534,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerEditTabPageEnum.petpPartnerTypes:
                 case TPartnerEditTabPageEnum.petpNotes:
                     FInitiallySelectedTabPage = FShowTabPage;
+                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
                     break;
 
 #if  SHOWUNFINISHEDTABS
@@ -1455,6 +1543,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerEditTabPageEnum.petpReminders:
                 case TPartnerEditTabPageEnum.petpInterests:
                     FInitiallySelectedTabPage = FShowTabPage;
+                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
                     break;
 
 #else
@@ -1464,6 +1553,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerEditTabPageEnum.petpInterests:
                     FShowTabPage = TPartnerEditTabPageEnum.petpAddresses;
                     FInitiallySelectedTabPage = FShowTabPage;
+                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
                     break;
 #endif
                 default:
@@ -1471,6 +1561,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // Fallback
 #if TODO
                     ucoPartnerTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
+                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
 #endif                    
                     break;
             }
@@ -1478,7 +1569,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     
         /// <summary>
         /// Sets Module-related Toggle Buttons in ToolBar up
-        ///
         /// </summary>
         /// <returns>void</returns>
         private void SetupAvailableModuleDataItems(Boolean AEnable, TModuleSwitchEnum ALockOnModule)
@@ -1845,6 +1935,176 @@ namespace Ict.Petra.Client.MPartner.Gui
             return ReturnValue;
         }
     
+        /// <summary>
+        /// Hook up Events that enable the 'Save' ToolBarButton and File/Save menu entry.
+        /// </summary>
+        /// <returns>void</returns>
+        private void HookupPartnerEditDataChangeEvents(TPartnerEditTabPageEnum ATabPage)
+        {
+            switch (ATabPage)
+            {
+                case TPartnerEditTabPageEnum.petpDefault:
+                    FMainDS.PPartner.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+
+                    if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+                    {
+                        FMainDS.PPerson.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    }
+                    else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
+                    {
+                        FMainDS.PFamily.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    }
+                    else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.CHURCH))
+                    {
+                        FMainDS.PChurch.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    }
+                    else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.ORGANISATION))
+                    {
+                        FMainDS.POrganisation.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    }
+                    else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))
+                    {
+                        FMainDS.PUnit.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    }
+                    else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.BANK))
+                    {
+                        FMainDS.PBank.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    }
+                    else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.VENUE))
+                    {
+                        FMainDS.PVenue.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    }
+
+                    break;
+
+                case TPartnerEditTabPageEnum.petpAddresses:
+                    FMainDS.PLocation.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PPartnerLocation.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    break;
+
+                case TPartnerEditTabPageEnum.petpDetails:
+                    break;
+
+                case TPartnerEditTabPageEnum.petpFoundationDetails:
+                    FMainDS.PFoundation.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PFoundationDeadline.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PFoundationProposal.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PFoundationProposal.RowDeleting += new DataRowChangeEventHandler(FPetraUtilsObject.OnAnyDataRowChanging);
+                    FMainDS.PFoundationProposalDetail.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PFoundationProposalDetail.RowDeleting += new DataRowChangeEventHandler(FPetraUtilsObject.OnAnyDataRowChanging);
+                    break;
+
+                case TPartnerEditTabPageEnum.petpSubscriptions:
+                    FMainDS.PSubscription.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PSubscription.RowDeleting += new DataRowChangeEventHandler(FPetraUtilsObject.OnAnyDataRowChanging);
+                    break;
+
+                case TPartnerEditTabPageEnum.petpPartnerTypes:
+                    FMainDS.PPartnerType.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PPartnerType.RowDeleting += new DataRowChangeEventHandler(FPetraUtilsObject.OnAnyDataRowChanging);
+                    break;
+
+                case TPartnerEditTabPageEnum.petpFamilyMembers:
+                    FMainDS.FamilyMembers.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.FamilyMembers.RowDeleting += new DataRowChangeEventHandler(FPetraUtilsObject.OnAnyDataRowChanging);
+                    break;
+
+                case TPartnerEditTabPageEnum.petpInterests:
+                    FMainDS.PPartnerInterest.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    break;
+
+                case TPartnerEditTabPageEnum.petpOfficeSpecific:
+                    FMainDS.PDataLabelValuePartner.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    break;
+
+                case TPartnerEditTabPageEnum.petpRelationships:
+                    break;
+
+                case TPartnerEditTabPageEnum.petpContacts:
+                    break;
+
+                case TPartnerEditTabPageEnum.petpNotes:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Sets the caption (title) of the screen.
+        /// </summary>
+        private void SetScreenCaption()
+        {
+            String CaptionPrefix = "";
+
+            if (FNewPartner)
+            {
+                CaptionPrefix = TFrmPetraEditUtils.StrFormCaptionPrefixNew;
+            }
+
+            this.Text = CaptionPrefix + StrScreenCaption + " - " + ucoUpperPart.PartnerQuickInfo(true);
+        }
+        
+        private void ApplySecurity()
+        {
+            if (!CheckSecurityOKToCreateNewPartner(false))
+            {
+                mniFileNewPartner.Enabled = false;
+                tbbNewPartner.Enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// This Procedure will get called from the SaveChanges procedure whenever a
+        /// Save operation is finished (successful or unsuccesful).
+        /// </summary>
+        /// <param name="sender">The Object that throws this Event</param>
+        /// <param name="e">Event Arguments. Success property is true if saving was successful,
+        /// otherwise false.
+        /// </param>
+        /// <returns>void</returns>
+        private void FormDataSaved(System.Object sender, TDataSavedEventArgs e)
+        {
+// TODO            ucoPartnerTabSet.DataSavedEventFired(e.Success);
+
+            if (e.Success)
+            {
+                // disable save button again because the fired event may trigger some initial
+                // data changes (e.g. new dummy records in office specific data) which trigger
+                // the enabling of the save button
+                EnableSave(false);
+                FPetraUtilsObject.HasChanges = false;
+            }
+        }
+        
+        /// <summary>
+        /// This Procedure will get called from the SaveChanges procedure before it
+        /// actually performs any saving operation.
+        /// </summary>
+        /// <param name="sender">The Object that throws this Event</param>
+        /// <param name="e">Event Arguments.
+        /// </param>
+        /// <returns>void</returns>
+        private void FormDataSavingStarted(System.Object sender, System.EventArgs e)
+        {
+// TODO            ucoPartnerTabSet.DataSavingStartedEventFired();
+        }        
+
+        private void EnableSave(bool Enable)
+        {
+// TODO enablesave
+#if TODO
+            if ((Enable) && (ucoUpperPart.Enabled))
+            {
+                mniFileSave.Enabled = true;
+                tbbSave.Enabled = true;
+            }
+            else
+            {
+                mniFileSave.Enabled = false;
+                tbbSave.Enabled = false;
+            }
+#endif
+        }
+        
         #endregion
     }   
 }
