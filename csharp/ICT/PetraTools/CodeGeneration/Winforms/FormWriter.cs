@@ -610,7 +610,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("ADDMAINCONTROLS", "this.Controls.Add(this." + ctrl.controlName + ");" + Environment.NewLine);
             }
 
-            if ((prefix == "mnu") 
+            if ((prefix == "mnu")
                 && !((FCodeStorage.GetAttribute("BaseClass").Contains("UserControl"))
                      || (FCodeStorage.GetAttribute("BaseClass").Contains("TGrpCollapsible"))))
             {

@@ -402,7 +402,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                                 {
                                     AMergedIntoPartnerKey = PartnerMergeTable[0].MergeTo;
                                     AMergedBy = PartnerMergeTable[0].MergedBy;
-                                    AMergeDate = PartnerMergeTable[0].MergeDate;
+                                    AMergeDate = PartnerMergeTable[0].MergeDate.Value;
                                     AMergedIntoPartnerShortName = PartnerMergedIntoTable[0].PartnerShortName;
                                     AMergedIntoPartnerClass = SharedTypes.PartnerClassStringToEnum(PartnerMergedIntoTable[0].PartnerClass);
 

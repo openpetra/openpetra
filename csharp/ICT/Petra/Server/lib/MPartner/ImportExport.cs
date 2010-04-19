@@ -475,7 +475,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         partnerNode.SetAttribute("Name", organisationRow.OrganisationName.ToString());
                     }
 
-                    partnerNode.SetAttribute("CreatedAt", partnerRow.DateCreated.ToString("yyyy-MM-dd HH:mm:ss"));
+                    partnerNode.SetAttribute("CreatedAt", partnerRow.DateCreated.Value.ToString("yyyy-MM-dd HH:mm:ss"));
 
                     // special types
                     string specialTypes = "";

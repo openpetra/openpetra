@@ -632,7 +632,7 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
     public class SBatchJobCascading : TTypedDataAccess
     {
         /// cascading delete
-        public static void DeleteByPrimaryKey(String AFileName, String AUserId, System.DateTime ADateSubmitted, Int32 ATimeSubmitted, TDBTransaction ATransaction, bool AWithCascDelete)
+        public static void DeleteByPrimaryKey(String AFileName, String AUserId, System.DateTime? ADateSubmitted, Int32 ATimeSubmitted, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SBatchJobAccess.DeleteByPrimaryKey(AFileName, AUserId, ADateSubmitted, ATimeSubmitted, ATransaction);
         }

@@ -13691,25 +13691,25 @@ namespace Ict.Petra.Server.MSysMan.Data.Access
         }
 
         /// this method is called by all overloads
-        public static void LoadByPrimaryKey(DataSet ADataSet, String AFileName, String AUserId, System.DateTime ADateSubmitted, Int32 ATimeSubmitted, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static void LoadByPrimaryKey(DataSet ADataSet, String AFileName, String AUserId, System.DateTime? ADateSubmitted, Int32 ATimeSubmitted, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             LoadByPrimaryKey(SBatchJobTable.TableId, ADataSet, new System.Object[4]{AFileName, AUserId, ADateSubmitted, ATimeSubmitted}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(DataSet AData, String AFileName, String AUserId, System.DateTime ADateSubmitted, Int32 ATimeSubmitted, TDBTransaction ATransaction)
+        public static void LoadByPrimaryKey(DataSet AData, String AFileName, String AUserId, System.DateTime? ADateSubmitted, Int32 ATimeSubmitted, TDBTransaction ATransaction)
         {
             LoadByPrimaryKey(AData, AFileName, AUserId, ADateSubmitted, ATimeSubmitted, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByPrimaryKey(DataSet AData, String AFileName, String AUserId, System.DateTime ADateSubmitted, Int32 ATimeSubmitted, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static void LoadByPrimaryKey(DataSet AData, String AFileName, String AUserId, System.DateTime? ADateSubmitted, Int32 ATimeSubmitted, StringCollection AFieldList, TDBTransaction ATransaction)
         {
             LoadByPrimaryKey(AData, AFileName, AUserId, ADateSubmitted, ATimeSubmitted, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static SBatchJobTable LoadByPrimaryKey(String AFileName, String AUserId, System.DateTime ADateSubmitted, Int32 ATimeSubmitted, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static SBatchJobTable LoadByPrimaryKey(String AFileName, String AUserId, System.DateTime? ADateSubmitted, Int32 ATimeSubmitted, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             SBatchJobTable Data = new SBatchJobTable();
             LoadByPrimaryKey(SBatchJobTable.TableId, Data, new System.Object[4]{AFileName, AUserId, ADateSubmitted, ATimeSubmitted}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
@@ -13717,13 +13717,13 @@ namespace Ict.Petra.Server.MSysMan.Data.Access
         }
 
         /// auto generated
-        public static SBatchJobTable LoadByPrimaryKey(String AFileName, String AUserId, System.DateTime ADateSubmitted, Int32 ATimeSubmitted, TDBTransaction ATransaction)
+        public static SBatchJobTable LoadByPrimaryKey(String AFileName, String AUserId, System.DateTime? ADateSubmitted, Int32 ATimeSubmitted, TDBTransaction ATransaction)
         {
             return LoadByPrimaryKey(AFileName, AUserId, ADateSubmitted, ATimeSubmitted, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static SBatchJobTable LoadByPrimaryKey(String AFileName, String AUserId, System.DateTime ADateSubmitted, Int32 ATimeSubmitted, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static SBatchJobTable LoadByPrimaryKey(String AFileName, String AUserId, System.DateTime? ADateSubmitted, Int32 ATimeSubmitted, StringCollection AFieldList, TDBTransaction ATransaction)
         {
             return LoadByPrimaryKey(AFileName, AUserId, ADateSubmitted, ATimeSubmitted, AFieldList, ATransaction, null, 0, 0);
         }
@@ -13817,7 +13817,7 @@ namespace Ict.Petra.Server.MSysMan.Data.Access
         }
 
         /// check if a row exists by using the primary key
-        public static bool Exists(String AFileName, String AUserId, System.DateTime ADateSubmitted, Int32 ATimeSubmitted, TDBTransaction ATransaction)
+        public static bool Exists(String AFileName, String AUserId, System.DateTime? ADateSubmitted, Int32 ATimeSubmitted, TDBTransaction ATransaction)
         {
             return Exists(SBatchJobTable.TableId, new System.Object[4]{AFileName, AUserId, ADateSubmitted, ATimeSubmitted}, ATransaction);
         }
@@ -14131,7 +14131,7 @@ namespace Ict.Petra.Server.MSysMan.Data.Access
         }
 
         /// auto generated
-        public static void DeleteByPrimaryKey(String AFileName, String AUserId, System.DateTime ADateSubmitted, Int32 ATimeSubmitted, TDBTransaction ATransaction)
+        public static void DeleteByPrimaryKey(String AFileName, String AUserId, System.DateTime? ADateSubmitted, Int32 ATimeSubmitted, TDBTransaction ATransaction)
         {
             DeleteByPrimaryKey(SBatchJobTable.TableId, new System.Object[4]{AFileName, AUserId, ADateSubmitted, ATimeSubmitted}, ATransaction);
         }

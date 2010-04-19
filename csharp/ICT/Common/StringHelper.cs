@@ -1701,6 +1701,21 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// overload for nullable DateTime
+        /// </summary>
+        /// <param name="ADateTime"></param>
+        /// <returns></returns>
+        public static String DateToLocalizedString(DateTime ? ADateTime)
+        {
+            if (ADateTime == null)
+            {
+                return "";
+            }
+
+            return DateToLocalizedString(ADateTime.Value, false, false);
+        }
+
+        /// <summary>
         /// return a string with the date and optionally with the time
         /// </summary>
         /// <param name="ADateTime">the date to print</param>
