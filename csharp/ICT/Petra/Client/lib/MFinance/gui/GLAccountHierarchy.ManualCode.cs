@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // store current detail values
             if ((FCurrentNode != null) && (FCurrentNode != e.Node))
             {
-                AAccountRow currentAccount = (AAccountRow)FMainDS.AAccount.Rows.Find(
+                GLSetupTDSAAccountRow currentAccount = (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
                     new object[] { FLedgerNumber, ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
                 string oldName = currentAccount.AccountCode;
                 GetDetailsFromControls(currentAccount);
@@ -158,25 +158,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FCurrentNode = e.Node;
 
             // update detail panel
-            ShowDetails((AAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber,
-                                                                               ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode }));
-        }
-
-        private void ShowDetailsManual(AAccountRow ARow)
-        {
-            if (((GLSetupTDSAAccountRow)ARow).IsBankAccountFlagNull())
-            {
-                chkDetailBankAccountFlag.Checked = false;
-            }
-            else
-            {
-                chkDetailBankAccountFlag.Checked = ((GLSetupTDSAAccountRow)ARow).BankAccountFlag;
-            }
-        }
-
-        private void GetDetailDataFromControlsManual(AAccountRow ARow)
-        {
-            ((GLSetupTDSAAccountRow)ARow).BankAccountFlag = chkDetailBankAccountFlag.Checked;
+            ShowDetails((GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber,
+                                                                                         ((AAccountHierarchyDetailRow)FCurrentNode.Tag).
+                                                                                         ReportingAccountCode }));
         }
 
         private void AddNewAccount(Object sender, EventArgs e)
@@ -335,7 +319,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FCurrentNode != null)
             {
-                AAccountRow currentAccount = (AAccountRow)FMainDS.AAccount.Rows.Find(
+                GLSetupTDSAAccountRow currentAccount = (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
                     new object[] { FLedgerNumber, ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
                 GetDetailsFromControls(currentAccount);
             }

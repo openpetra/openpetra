@@ -135,7 +135,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public bool CreateNewAGiftDetail()
     {
         // we create the table locally, no dataset
-        AGiftDetailRow NewRow = FMainDS.AGiftDetail.NewRowTyped(true);
+        GiftBatchTDSAGiftDetailRow NewRow = FMainDS.AGiftDetail.NewRowTyped(true);
         FMainDS.AGiftDetail.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
@@ -176,13 +176,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     }
 
     /// return the selected row
-    private AGiftDetailRow GetSelectedDetailRow()
+    private GiftBatchTDSAGiftDetailRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            return (AGiftDetailRow)SelectedGridRow[0].Row;
+            return (GiftBatchTDSAGiftDetailRow)SelectedGridRow[0].Row;
         }
 
         return null;
@@ -212,7 +212,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private void ShowDetails(AGiftDetailRow ARow)
+    private void ShowDetails(GiftBatchTDSAGiftDetailRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
         if (ARow == null)
@@ -236,12 +236,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 txtDetailCostCentreCode.Text = ARow.CostCentreCode;
             }
+            if (ARow.IsAccountCodeNull())
+            {
+                txtDetailAccountCode.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailAccountCode.Text = ARow.AccountCode;
+            }
             ShowDetailsManual(ARow);
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private AGiftDetailRow FPreviouslySelectedDetailRow = null;
+    private GiftBatchTDSAGiftDetailRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
         // get the details from the previously selected row
@@ -260,7 +268,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
-    private void GetDetailsFromControls(AGiftDetailRow ARow)
+    private void GetDetailsFromControls(GiftBatchTDSAGiftDetailRow ARow)
     {
         if (ARow != null)
         {

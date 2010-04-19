@@ -6,7 +6,7 @@
     Namespace: Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
     FormType: browse
     Template: windowBrowsePrint
-    DatasetType: NewDonorTDS
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.NewDonorTDS
     MasterTable: AGift
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
     WindowWidth: 754

@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblLedgerNumber = new System.Windows.Forms.Label();
             this.rgrShowBatches = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.rbtPosting = new System.Windows.Forms.RadioButton();
+            this.rbtPosted = new System.Windows.Forms.RadioButton();
             this.rbtEditing = new System.Windows.Forms.RadioButton();
             this.rbtAll = new System.Windows.Forms.RadioButton();
             this.pnlDetailGrid = new System.Windows.Forms.Panel();
@@ -114,6 +114,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.rbtOther = new System.Windows.Forms.RadioButton();
             this.tbrTabPage = new System.Windows.Forms.ToolStrip();
             this.tbbPostBatch = new System.Windows.Forms.ToolStripButton();
+            this.tbbExportBatches = new System.Windows.Forms.ToolStripButton();
+            this.tbbImportBatches = new System.Windows.Forms.ToolStripButton();
             this.mnuTabPage = new System.Windows.Forms.MenuStrip();
             this.mniBatch = new System.Windows.Forms.ToolStripMenuItem();
             this.mniPost = new System.Windows.Forms.ToolStripMenuItem();
@@ -207,14 +209,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3.AutoSize = true;
             this.rgrShowBatches.Controls.Add(this.tableLayoutPanel3);
             //
-            // rbtPosting
+            // rbtPosted
             //
-            this.rbtPosting.Location = new System.Drawing.Point(2,2);
-            this.rbtPosting.Name = "rbtPosting";
-            this.rbtPosting.AutoSize = true;
-            this.rbtPosting.Tag = "SuppressChangeDetection";
-            this.rbtPosting.Text = "Posting";
-            this.rbtPosting.Checked = true;
+            this.rbtPosted.Location = new System.Drawing.Point(2,2);
+            this.rbtPosted.Name = "rbtPosted";
+            this.rbtPosted.AutoSize = true;
+            this.rbtPosted.Tag = "SuppressChangeDetection";
+            this.rbtPosted.CheckedChanged += new System.EventHandler(this.ChangeBatchFilter);
+            this.rbtPosted.Text = "Posted";
             //
             // rbtEditing
             //
@@ -222,7 +224,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.rbtEditing.Name = "rbtEditing";
             this.rbtEditing.AutoSize = true;
             this.rbtEditing.Tag = "SuppressChangeDetection";
+            this.rbtEditing.CheckedChanged += new System.EventHandler(this.ChangeBatchFilter);
             this.rbtEditing.Text = "Editing";
+            this.rbtEditing.Checked = true;
             //
             // rbtAll
             //
@@ -230,6 +234,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.rbtAll.Name = "rbtAll";
             this.rbtAll.AutoSize = true;
             this.rbtAll.Tag = "SuppressChangeDetection";
+            this.rbtAll.CheckedChanged += new System.EventHandler(this.ChangeBatchFilter);
             this.rbtAll.Text = "All";
             this.tableLayoutPanel3.ColumnCount = 3;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -237,10 +242,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Controls.Add(this.rbtPosting, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.rbtPosted, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.rbtEditing, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.rbtAll, 2, 0);
-            this.rgrShowBatches.Text = "Show batches available for";
+            this.rgrShowBatches.Text = "Show batches";
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.RowCount = 2;
@@ -535,13 +540,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tbbPostBatch.Click += new System.EventHandler(this.PostBatch);
             this.tbbPostBatch.Text = "&Post Batch";
             //
+            // tbbExportBatches
+            //
+            this.tbbExportBatches.Name = "tbbExportBatches";
+            this.tbbExportBatches.AutoSize = true;
+            this.tbbExportBatches.Click += new System.EventHandler(this.ExportBatches);
+            this.tbbExportBatches.Text = "&Export Batches";
+            //
+            // tbbImportBatches
+            //
+            this.tbbImportBatches.Name = "tbbImportBatches";
+            this.tbbImportBatches.AutoSize = true;
+            this.tbbImportBatches.Click += new System.EventHandler(this.ImportBatches);
+            this.tbbImportBatches.Text = "&Import Batches";
+            //
             // tbrTabPage
             //
             this.tbrTabPage.Name = "tbrTabPage";
             this.tbrTabPage.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbrTabPage.AutoSize = true;
             this.tbrTabPage.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           tbbPostBatch});
+                           tbbPostBatch,
+                        tbbExportBatches,
+                        tbbImportBatches});
             //
             // mniPost
             //
@@ -607,7 +628,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.Label lblLedgerNumber;
         private System.Windows.Forms.GroupBox rgrShowBatches;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.RadioButton rbtPosting;
+        private System.Windows.Forms.RadioButton rbtPosted;
         private System.Windows.Forms.RadioButton rbtEditing;
         private System.Windows.Forms.RadioButton rbtAll;
         private System.Windows.Forms.Panel pnlDetailGrid;
@@ -643,6 +664,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.RadioButton rbtOther;
         private System.Windows.Forms.ToolStrip tbrTabPage;
         private System.Windows.Forms.ToolStripButton tbbPostBatch;
+        private System.Windows.Forms.ToolStripButton tbbExportBatches;
+        private System.Windows.Forms.ToolStripButton tbbImportBatches;
         private System.Windows.Forms.MenuStrip mnuTabPage;
         private System.Windows.Forms.ToolStripMenuItem mniBatch;
         private System.Windows.Forms.ToolStripMenuItem mniPost;

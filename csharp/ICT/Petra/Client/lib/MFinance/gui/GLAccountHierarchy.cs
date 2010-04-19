@@ -46,6 +46,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -147,7 +148,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     }
 
-    private void ShowDetails(AAccountRow ARow)
+    private void ShowDetails(GLSetupTDSAAccountRow ARow)
     {
         txtDetailAccountCode.Text = ARow.AccountCode;
         txtDetailAccountCode.ReadOnly = (ARow.RowState != DataRowState.Added);
@@ -207,7 +208,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             chkDetailAccountActiveFlag.Checked = ARow.AccountActiveFlag;
         }
-        ShowDetailsManual(ARow);
+        if (ARow.IsBankAccountFlagNull())
+        {
+            chkDetailBankAccountFlag.Checked = false;
+        }
+        else
+        {
+            chkDetailBankAccountFlag.Checked = ARow.BankAccountFlag;
+        }
     }
 
     private void GetDataFromControls()
@@ -215,7 +223,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         GetDataFromControlsManual();
     }
 
-    private void GetDetailsFromControls(AAccountRow ARow)
+    private void GetDetailsFromControls(GLSetupTDSAAccountRow ARow)
     {
         if (ARow != null)
         {
@@ -269,7 +277,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ARow.ValidCcCombo = cmbDetailValidCcCombo.GetSelectedString();
             }
             ARow.AccountActiveFlag = chkDetailAccountActiveFlag.Checked;
-            GetDetailDataFromControlsManual(ARow);
+            ARow.BankAccountFlag = chkDetailBankAccountFlag.Checked;
         }
     }
 

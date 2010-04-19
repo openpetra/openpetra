@@ -34,6 +34,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -241,7 +242,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 string line = dataFile.ReadLine();
                 lineCounter++;
 
-                ATransactionRow NewTransaction = FMainDS.ATransaction.NewRowTyped(true);
+                GLBatchTDSATransactionRow NewTransaction = FMainDS.ATransaction.NewRowTyped(true);
                 ((TFrmGLBatch)ParentForm).GetTransactionsControl().NewRowManual(ref NewTransaction, ARefJournalRow);
                 FMainDS.ATransaction.Rows.Add(NewTransaction);
 
@@ -342,7 +343,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // create a balancing transaction; not sure if this is needed at all???
             if (Convert.ToDecimal(sumCredits - sumDebits) != 0)
             {
-                ATransactionRow BalancingTransaction = FMainDS.ATransaction.NewRowTyped(true);
+                GLBatchTDSATransactionRow BalancingTransaction = FMainDS.ATransaction.NewRowTyped(true);
                 ((TFrmGLBatch)ParentForm).GetTransactionsControl().NewRowManual(ref BalancingTransaction, ARefJournalRow);
                 FMainDS.ATransaction.Rows.Add(BalancingTransaction);
 

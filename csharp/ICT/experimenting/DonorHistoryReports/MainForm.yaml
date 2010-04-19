@@ -5,7 +5,7 @@
     Namespace: Ict.Petra.Client.MFinance.Gui.DonorHistoryReports
     FormType: browse
     Template: windowBrowsePrint
-    DatasetType: DonorHistoryTDS
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.DonorHistoryTDS
     MasterTable: Gift
     MasterTableType: DonorHistoryTDSGift
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]

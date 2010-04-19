@@ -87,10 +87,10 @@ class Program
 
             CSParser.ICTPath = fullYmlfilePath.Substring(0, fullYmlfilePath.IndexOf("csharp/ICT") + "csharp/ICT".Length);
 
-            TCodeStorage.FPetraXMLStore = new TDataDefinitionStore();
+            TDataBinding.FPetraXMLStore = new TDataDefinitionStore();
             Console.WriteLine("parsing " + opts.GetValue("petraxml", true));
             TDataDefinitionParser parser = new TDataDefinitionParser(opts.GetValue("petraxml", true));
-            parser.ParseDocument(ref TCodeStorage.FPetraXMLStore, true, true);
+            parser.ParseDocument(ref TDataBinding.FPetraXMLStore, true, true);
 
             string ymlfileParam = opts.GetValue("ymlfile", true);
 
@@ -107,9 +107,13 @@ class Program
             {
                 foreach (string file in System.IO.Directory.GetFiles(ymlfileParam, "*.yaml"))
                 {
+                    // reset the dataset each time to force reload
+                    TDataBinding.FDatasetTables = null;
+
                     // only look for main files, not language specific files (*.XY.yaml)
                     if (file[file.Length - 8] != '.')
                     {
+                        Console.WriteLine("working on " + file);
                         ProcessFile(file, SelectedLocalisation);
                     }
                 }
