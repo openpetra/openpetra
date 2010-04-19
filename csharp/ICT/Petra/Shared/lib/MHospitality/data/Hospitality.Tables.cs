@@ -124,9 +124,9 @@ namespace Ict.Petra.Shared.MHospitality.Data
             this.Columns.Add(new System.Data.DataColumn("p_venue_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pc_building_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_building_desc_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -781,9 +781,9 @@ namespace Ict.Petra.Shared.MHospitality.Data
             this.Columns.Add(new System.Data.DataColumn("pc_layout_ypos_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("pc_layout_width_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("pc_layout_height_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -1997,10 +1997,10 @@ namespace Ict.Petra.Shared.MHospitality.Data
             this.Columns.Add(new System.Data.DataColumn("ph_number_of_overflow_beds_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("ph_gender_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_in_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("pc_out_d", typeof(System.DateTime?)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("pc_out_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -3063,9 +3063,9 @@ namespace Ict.Petra.Shared.MHospitality.Data
             this.Columns.Add(new System.Data.DataColumn("pc_desc_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_valid_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("pc_deletable_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -3712,9 +3712,9 @@ namespace Ict.Petra.Shared.MHospitality.Data
             this.Columns.Add(new System.Data.DataColumn("pc_building_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_room_number_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_room_attr_type_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -4349,9 +4349,9 @@ namespace Ict.Petra.Shared.MHospitality.Data
         {
             this.Columns.Add(new System.Data.DataColumn("ph_booking_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("ph_room_alloc_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -4960,15 +4960,15 @@ namespace Ict.Petra.Shared.MHospitality.Data
             this.Columns.Add(new System.Data.DataColumn("ph_number_of_lunch_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("ph_number_of_supper_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("ph_number_of_linen_needed_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("ph_confirmed_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("ph_confirmed_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("ph_in_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("ph_out_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("ph_out_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("ph_time_arrival_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("ph_time_departure_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("ph_notes_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }

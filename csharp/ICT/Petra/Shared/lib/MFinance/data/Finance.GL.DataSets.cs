@@ -428,9 +428,9 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.Columns.Add(new System.Data.DataColumn("a_amount_in_intl_currency_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_ich_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_key_ministry_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("DateEntered", typeof(DateTime)));
@@ -1805,9 +1805,9 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.Columns.Add(new System.Data.DataColumn("a_foreign_currency_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_foreign_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_banking_details_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("BankAccountFlag", typeof(bool)));

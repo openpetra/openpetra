@@ -181,6 +181,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 tempTemplate = Template.GetSnippet("INITCLASSADDCOLUMN");
                 tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
                 tempTemplate.SetCodelet("COLUMNDOTNETTYPE", col.GetDotNetType());
+                tempTemplate.SetCodelet("COLUMNDOTNETTYPENOTNULLABLE", col.GetDotNetType().Replace("?", ""));
                 snippet.InsertSnippet("INITCLASSADDCOLUMN", tempTemplate);
 
                 tempTemplate = Template.GetSnippet("INITVARSCOLUMN");

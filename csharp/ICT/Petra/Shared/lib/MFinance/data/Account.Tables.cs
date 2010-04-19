@@ -172,9 +172,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_tax_deductable_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_motivation_group_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_motivation_detail_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -1215,9 +1215,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_filename_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_end_balance_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -2318,9 +2318,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_restricted_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_account_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_key_ministry_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -4721,9 +4721,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_date_effective_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_ep_match_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -6150,9 +6150,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_sub_system_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_setup_sub_system_process_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_sub_system_to_call_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -7226,7 +7226,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_creditor_gl_account_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_current_financial_year_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_current_period_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_date_cr_dr_balances_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("a_date_cr_dr_balances_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_debtor_gl_account_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_fa_depreciation_gl_account_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_fa_gl_account_code_c", typeof(String)));
@@ -7273,9 +7273,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_last_ich_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_branch_processing_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_consolidation_ledger_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -12018,9 +12018,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         {
             this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_init_option_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -12557,9 +12557,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_budget_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_budget_type_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_budget_process_to_call_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -13256,9 +13256,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_foreign_currency_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_foreign_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_banking_details_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -14777,9 +14777,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         {
             this.Columns.Add(new System.Data.DataColumn("a_property_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_description_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -15322,9 +15322,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_account_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_property_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_property_value_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -15965,9 +15965,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_account_hierarchy_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_root_account_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -16568,9 +16568,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_reporting_account_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_account_code_to_report_to_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_report_order_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -17269,9 +17269,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_type_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_cc_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_deletable_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -17961,14 +17961,14 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_posting_cost_centre_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_active_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_project_status_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("a_project_constraint_date_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("a_project_constraint_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_project_constraint_amount_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_system_cost_centre_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_type_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_key_focus_area_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -19031,9 +19031,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_ilt_processing_centre_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -19680,9 +19680,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_year_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_revision_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_description_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -20362,9 +20362,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_budget_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_budget_status_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_comment_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -21284,9 +21284,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_budget_last_year_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_budget_this_year_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_budget_next_year_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -22049,9 +22049,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_period_start_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_period_end_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_effective_date_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -22892,9 +22892,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_donor_yearly_receipt_txt_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_gift_data_retention_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_deceased_address_text_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -24303,9 +24303,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         protected override void InitClass()
         {
             this.Columns.Add(new System.Data.DataColumn("a_store_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -24808,9 +24808,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_analysis_store_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_analysis_element_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_system_analysis_type_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -25567,9 +25567,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_account_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_active_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -26274,9 +26274,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_rate_of_exchange_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_date_effective_from_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_time_effective_from_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -26981,9 +26981,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_rate_of_exchange_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_date_effective_from_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_time_effective_from_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -27685,9 +27685,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("p_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_valid_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("p_deletable_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -28337,9 +28337,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_conditional_value_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("p_email_address_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -29016,9 +29016,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_account_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_fee_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_dr_account_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -29955,9 +29955,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_account_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_fee_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_dr_account_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -30894,9 +30894,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_lines_on_page_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_minimum_amount_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_options_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -31803,9 +31803,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_form_element_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_form_element_type_desc_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_default_length_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -32488,9 +32488,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_skip_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_when_print_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_literal_text_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -33449,9 +33449,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_analysis_value_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_active_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -34154,9 +34154,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_start_balance_intl_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_ytd_actual_foreign_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_start_balance_foreign_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -35289,9 +35289,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_actual_intl_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_budget_intl_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_actual_foreign_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -36136,9 +36136,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_income_amount_intl_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_expense_amount_intl_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_direct_xfer_amount_intl_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -37161,9 +37161,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_tax_rebate_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_recurring_method_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_active_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -37950,9 +37950,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_transaction_type_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_balancing_account_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_special_transaction_type_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -38965,9 +38965,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_date_of_entry_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_batch_status_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_last_journal_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -40160,9 +40160,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_exchange_rate_to_base_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_exchange_rate_time_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_reversed_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -41611,9 +41611,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_source_reference_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_system_generated_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_amount_in_intl_currency_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -43376,9 +43376,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_analysis_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_analysis_attribute_value_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -44239,9 +44239,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_rate_of_exchange_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_date_effective_from_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_time_effective_from_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -44988,9 +44988,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_date_of_entry_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_batch_status_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_last_journal_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -46131,9 +46131,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_exchange_rate_to_base_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_exchange_rate_time_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_reversed_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -47588,9 +47588,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_system_generated_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_amount_in_intl_currency_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_ich_number_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -49405,9 +49405,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_analysis_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_analysis_attribute_value_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -50324,13 +50324,13 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_batch_period_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_date_effective_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_user_id_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_date_of_entry_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("a_date_of_entry_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_frequency_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_date_batch_last_run_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("a_date_batch_last_run_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_last_journal_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -51615,9 +51615,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_sub_system_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_exchange_rate_to_base_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_transaction_currency_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -52967,16 +52967,16 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_transaction_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_narrative_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_reference_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_date_of_entry_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("a_date_of_entry_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_user_id_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_debit_credit_indicator_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_transaction_status_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_header_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_detail_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_sub_type_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -54843,9 +54843,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_analysis_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_analysis_attribute_value_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -55748,9 +55748,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_date_of_entry_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_batch_status_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_last_journal_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -56891,9 +56891,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_exchange_rate_time_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_date_of_entry_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_reversed_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -58354,9 +58354,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_amount_in_intl_currency_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("a_ich_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_key_ministry_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -60223,9 +60223,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_analysis_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_analysis_attribute_value_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -61068,9 +61068,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         {
             this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_suspense_account_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -61619,9 +61619,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_transaction_type_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_spec_trans_process_to_call_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_spec_trans_undo_process_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -62314,9 +62314,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_sub_system_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_set_up_complete_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -62935,9 +62935,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             this.Columns.Add(new System.Data.DataColumn("a_decimal_options_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_decimal_label_singular_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_decimal_label_plural_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -63780,9 +63780,9 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         {
             this.Columns.Add(new System.Data.DataColumn("a_key_focus_area_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_key_focus_area_comment_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
