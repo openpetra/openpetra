@@ -10,8 +10,8 @@ RootNode:
             Controls: [tabPartners]
             Dock: Fill
 
-        tabPartners: {Dock=Fill, DragTabPageEnabled=true}     
-           
+        tabPartners: {Dock=Fill, DragTabPageEnabled=true}
+        
         tpgAddresses:
             Label: Addresses ({0})
             Controls: [lblTest]
@@ -27,18 +27,28 @@ RootNode:
            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Person2
            #Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2
            Dock: Fill
+
+        tpgFoundationDetails:
+            Label: Foundation Details
+            Image: Foundations.ico
            
         tpgSubscriptions:
             Label: Subscriptions ({0})
             Image: Subscriptions.ico
-            #Controls: []
             
         tpgSpecialTypes:
             Label: Special Types ({0})
             Image: Types.ico
-            #Controls: []
+
+        tpgFamilyMembers:
+            Label: Family Members
+            Image: FamilyMembers.ico
+
+        tpgOfficeSpecific:
+            Label: Local Data
+            Image: OfficeSpecific.ico
             
         tpgNotes:
             Label: Notes ({0})
             Image: Notes.ico
-            #Controls: []                        
+            

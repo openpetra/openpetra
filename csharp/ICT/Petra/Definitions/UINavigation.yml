@@ -30,7 +30,6 @@ OpenPetra:
                         AddNewOrganisation: {ActionClick=TFrmPartnerMain.NewOrganisation}
                     MaintainPartner:
                         FindPartner: {ActionClick=TFrmPartnerMain.FindPartner}
-                        EditPartner2: {ActionOpenScreen=TFrmPartnerEdit2}
                     Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
                     ImportExport: {Label=Import and Export}
