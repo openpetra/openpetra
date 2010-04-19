@@ -155,7 +155,7 @@ public DataColumn Column{#COLUMNNAME};
 new TTypedColumnInfo({#COLUMNORDERNUMBER}, "{#COLUMNNAME}", "{#COLUMNDBNAME}", "{#COLUMNLABEL}", {#COLUMNODBCTYPE}, {#COLUMNLENGTH}, {#COLUMNNOTNULL}){#COLUMNCOMMA}
 
 {##INITCLASSADDCOLUMN}
-this.Columns.Add(new System.Data.DataColumn("{#COLUMNDBNAME}", typeof({#COLUMNDOTNETTYPE})));
+this.Columns.Add(new System.Data.DataColumn("{#COLUMNDBNAME}", typeof({#COLUMNDOTNETTYPENOTNULLABLE})));
 
 {##INITVARSCOLUMN}
 this.Column{#COLUMNNAME} = this.Columns["{#COLUMNDBNAME}"];

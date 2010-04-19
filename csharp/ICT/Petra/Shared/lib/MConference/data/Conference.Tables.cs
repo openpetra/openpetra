@@ -133,12 +133,12 @@ namespace Ict.Petra.Shared.MConference.Data
         {
             this.Columns.Add(new System.Data.DataColumn("pc_conference_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pc_xyz_tbd_prefix_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("pc_start_d", typeof(System.DateTime?)));
-            this.Columns.Add(new System.Data.DataColumn("pc_end_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("pc_start_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("pc_end_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -841,11 +841,11 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("pc_cost_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_cost_type_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_unassignable_flag_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("pc_unassignable_date_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("pc_unassignable_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("pc_deletable_flag_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -1554,11 +1554,11 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("pc_option_type_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_option_type_comment_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_unassignable_flag_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("pc_unassignable_date_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("pc_unassignable_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("pc_deletable_flag_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -2303,9 +2303,9 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("pc_conference_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pc_option_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_option_set_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -2904,11 +2904,11 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("pc_discount_criteria_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_discount_criteria_desc_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_unassignable_flag_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("pc_unassignable_date_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("pc_unassignable_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("pc_deletable_flag_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -3625,9 +3625,9 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("pc_up_to_age_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("pc_percentage_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("pc_discount_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -4480,19 +4480,19 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pc_home_office_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pc_xyz_tbd_type_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("pc_actual_arr_d", typeof(System.DateTime?)));
-            this.Columns.Add(new System.Data.DataColumn("pc_actual_dep_d", typeof(System.DateTime?)));
-            this.Columns.Add(new System.Data.DataColumn("pc_badge_print_d", typeof(System.DateTime?)));
-            this.Columns.Add(new System.Data.DataColumn("pc_details_print_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("pc_actual_arr_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("pc_actual_dep_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("pc_badge_print_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("pc_details_print_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("pc_comments_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_discovery_group_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_work_group_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("pc_registered_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("pc_registered_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("pc_arrival_group_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_departure_group_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -5653,9 +5653,9 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("pc_conference_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pc_option_days_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("pc_charge_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -6274,9 +6274,9 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("pc_comment_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_authorising_field_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pc_authorising_person_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -7143,9 +7143,9 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("pc_amount_percent_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("pc_amount_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("pc_percent_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -7896,9 +7896,9 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pc_group_type_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_group_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -8545,9 +8545,9 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("pc_xyz_tbd_type_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_supplement_n", typeof(Double)));
             this.Columns.Add(new System.Data.DataColumn("pc_apply_discounts_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
@@ -9182,9 +9182,9 @@ namespace Ict.Petra.Shared.MConference.Data
         {
             this.Columns.Add(new System.Data.DataColumn("pc_conference_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("p_venue_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime?)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
         }
