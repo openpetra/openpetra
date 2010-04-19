@@ -851,6 +851,7 @@ namespace Ict.Petra.Client.MPartner.Gui
              * Set up top part of the Screen
              */
 // TODO            ucoUpperPart.InitialiseDelegateMaintainWorkerField(new TDelegateMaintainWorkerField(MaintainWorkerField));
+            ucoUpperPart.MainDS = FMainDS;
             ucoUpperPart.VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
             ucoUpperPart.PartnerEditUIConnector = FPartnerEditUIConnector;
 

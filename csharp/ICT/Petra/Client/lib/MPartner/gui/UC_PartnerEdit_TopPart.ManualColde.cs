@@ -91,8 +91,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         #region Public Methods
         
+        /// <summary>
+        /// Shows the data that is in FMainDS
+        /// </summary>
         public void ShowData()
         {
+            FPartnerClass = FMainDS.PPartner[0].PartnerClass.ToString();
+            
             ShowData(FMainDS.PPartner[0]);
         }
                        
