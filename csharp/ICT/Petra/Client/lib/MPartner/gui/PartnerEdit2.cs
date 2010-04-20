@@ -75,25 +75,24 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.tbbViewPartnerData.Text = Catalog.GetString("&Partner Data");
       this.tbbViewPersonnelData.Text = Catalog.GetString("P&ersonnel Data");
       this.tbbViewFinanceData.Text = Catalog.GetString("&Finance Data");
-      this.mniNewPartner.Text = Catalog.GetString("&New Partner...");
-      this.mniNewPartnerWithShepherdPerson.Text = Catalog.GetString("Add &Person with Shepherd...");
-      this.mniNewPartnerWithShepherdFamily.Text = Catalog.GetString("Add &Family with Shepherd...");
-      this.mniNewPartnerWithShepherdChurch.Text = Catalog.GetString("Add &Church with Shepherd...");
-      this.mniNewPartnerWithShepherdOrganisation.Text = Catalog.GetString("Add &Organisation with Shepherd...");
-      this.mniNewPartnerWithShepherdUnit.Text = Catalog.GetString("Add &Unit with Shepherd...");
-      this.mniNewPartnerWithShepherd.Text = Catalog.GetString("N&ew Partner (Shepherd)");
+      this.mniFileNewPartner.Text = Catalog.GetString("&New Partner...");
+      this.mniFileNewPartnerWithShepherdPerson.Text = Catalog.GetString("Add &Person with Shepherd...");
+      this.mniFileNewPartnerWithShepherdFamily.Text = Catalog.GetString("Add &Family with Shepherd...");
+      this.mniFileNewPartnerWithShepherdChurch.Text = Catalog.GetString("Add &Church with Shepherd...");
+      this.mniFileNewPartnerWithShepherdOrganisation.Text = Catalog.GetString("Add &Organisation with Shepherd...");
+      this.mniFileNewPartnerWithShepherdUnit.Text = Catalog.GetString("Add &Unit with Shepherd...");
+      this.mniFileNewPartnerWithShepherd.Text = Catalog.GetString("N&ew Partner (Shepherd)");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
-      this.mniDeactivatePartner.Text = Catalog.GetString("Deacti&vate Partner...");
-      this.mniDeletePartner.Text = Catalog.GetString("&Delete THIS Partner...");
+      this.mniDeactivatePartner.Text = Catalog.GetString("Deactivate Partner");
+      this.mniFileDeletePartner.Text = Catalog.GetString("&Delete THIS Partner...");
       this.mniSeparator2.Text = Catalog.GetString("Separator");
-      this.mniSendEmail.Text = Catalog.GetString("Send E&mail to Partner");
+      this.mniFileSendEmail.Text = Catalog.GetString("Send E&mail to Partner");
       this.mniSeparator3.Text = Catalog.GetString("Separator");
-      this.mniPrint.Text = Catalog.GetString("&Print Partner...");
-      this.mniPrintSection.Text = Catalog.GetString("P&rint Section...");
+      this.mniFilePrintSection.Text = Catalog.GetString("P&rint Section...");
       this.mniSeparator4.Text = Catalog.GetString("Separator");
-      this.mniExportPartner.Text = Catalog.GetString("E&xport Partner");
+      this.mniFileExportPartner.Text = Catalog.GetString("E&xport Partner");
       this.mniSeparator5.Text = Catalog.GetString("Separator");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
@@ -125,6 +124,9 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.mniMaintainGiftReceipting.Text = Catalog.GetString("&Gift Receipting");
       this.mniMaintainFinanceDetails.Text = Catalog.GetString("&Finance Details");
       this.mniMaintain.Text = Catalog.GetString("Ma&intain");
+      this.mniViewUpperScreenPartExpanded.Text = Catalog.GetString("&Expanded");
+      this.mniViewUpperScreenPartCollapsed.Text = Catalog.GetString("&Collapsed");
+      this.mniViewUpperScreenPart.Text = Catalog.GetString("&Upper Screen Part");
       this.mniViewPartnerData.Text = Catalog.GetString("&Partner Data");
       this.mniViewPersonnelData.Text = Catalog.GetString("P&ersonnel Data");
       this.mniViewFinanceData.Text = Catalog.GetString("&Finance Data");
@@ -233,11 +235,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             tbbSave.Enabled = e.Enabled;
             mniFileSave.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actNewPartner")
-        {
-            tbbNewPartner.Enabled = e.Enabled;
-            mniNewPartner.Enabled = e.Enabled;
-        }
         if (e.ActionName == "actViewPartnerData")
         {
             tbbViewPartnerData.Enabled = e.Enabled;
@@ -253,49 +250,49 @@ namespace Ict.Petra.Client.MPartner.Gui
             tbbViewFinanceData.Enabled = e.Enabled;
             mniViewFinanceData.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actNewPartnerWithShepherdPerson")
+        if (e.ActionName == "actFileNewPartner")
         {
-            mniNewPartnerWithShepherdPerson.Enabled = e.Enabled;
+            mniFileNewPartner.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actNewPartnerWithShepherdFamily")
+        if (e.ActionName == "actFileNewPartnerWithShepherdPerson")
         {
-            mniNewPartnerWithShepherdFamily.Enabled = e.Enabled;
+            mniFileNewPartnerWithShepherdPerson.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actNewPartnerWithShepherdChurch")
+        if (e.ActionName == "actFileNewPartnerWithShepherdFamily")
         {
-            mniNewPartnerWithShepherdChurch.Enabled = e.Enabled;
+            mniFileNewPartnerWithShepherdFamily.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actNewPartnerWithShepherdOrganisation")
+        if (e.ActionName == "actFileNewPartnerWithShepherdChurch")
         {
-            mniNewPartnerWithShepherdOrganisation.Enabled = e.Enabled;
+            mniFileNewPartnerWithShepherdChurch.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actNewPartnerWithShepherdUnit")
+        if (e.ActionName == "actFileNewPartnerWithShepherdOrganisation")
         {
-            mniNewPartnerWithShepherdUnit.Enabled = e.Enabled;
+            mniFileNewPartnerWithShepherdOrganisation.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actDeactivatePartner")
+        if (e.ActionName == "actFileNewPartnerWithShepherdUnit")
         {
-            mniDeactivatePartner.Enabled = e.Enabled;
+            mniFileNewPartnerWithShepherdUnit.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actDeletePartner")
+        if (e.ActionName == "actFilePrint")
         {
-            mniDeletePartner.Enabled = e.Enabled;
+            mniFilePrint.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actSendEmail")
+        if (e.ActionName == "actFileDeletePartner")
         {
-            mniSendEmail.Enabled = e.Enabled;
+            mniFileDeletePartner.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actPrint")
+        if (e.ActionName == "actFileSendEmail")
         {
-            mniPrint.Enabled = e.Enabled;
+            mniFileSendEmail.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actPrintSection")
+        if (e.ActionName == "actFilePrintSection")
         {
-            mniPrintSection.Enabled = e.Enabled;
+            mniFilePrintSection.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actExportPartner")
+        if (e.ActionName == "actFileExportPartner")
         {
-            mniExportPartner.Enabled = e.Enabled;
+            mniFileExportPartner.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {
@@ -381,11 +378,19 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             mniMaintainFinanceDetails.Enabled = e.Enabled;
         }
+        if (e.ActionName == "actViewUpperScreenPartExpanded")
+        {
+            mniViewUpperScreenPartExpanded.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actViewUpperScreenPartCollapsed")
+        {
+            mniViewUpperScreenPartCollapsed.Enabled = e.Enabled;
+        }
         if (e.ActionName == "actHelpVideoTutorial")
         {
             mniHelpVideoTutorial.Enabled = e.Enabled;
         }
-        mniFilePrint.Enabled = false;
+        mniDeactivatePartner.Enabled = false;
         mniEditUndoCurrentField.Enabled = false;
         mniEditUndoScreen.Enabled = false;
         mniEditFind.Enabled = false;

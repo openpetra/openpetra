@@ -28,7 +28,7 @@ using System.Threading;
 using System.IO;
 
 using Ict.Common;
-using Mono.Posix;
+using Mono.Unix;
 using System.Windows.Forms;
 
 namespace Ict.Petra.Client.App.Core
