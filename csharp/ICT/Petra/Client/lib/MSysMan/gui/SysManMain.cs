@@ -118,5 +118,41 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 }
             }
         }
+
+        /// <summary>
+        /// create a user. this is a temporary function. should be replaced by a fully functional user and permission management screen.
+        /// assigns permissions to all modules at the moment.
+        /// </summary>
+        public static void CreateUser(IntPtr AParentFormHandle)
+        {
+            PetraInputBox input = new PetraInputBox(
+                Catalog.GetString("Create a new user"),
+                Catalog.GetString("Please enter the user name:"),
+                "", false);
+
+            if (input.ShowDialog() == DialogResult.OK)
+            {
+                string username = input.GetAnswer();
+                input = new PetraInputBox(
+                    Catalog.GetString("Set the password of a user"),
+                    Catalog.GetString("Please enter the new password:"),
+                    "", true);
+
+                if (input.ShowDialog() == DialogResult.OK)
+                {
+                    string password = input.GetAnswer();
+
+                    // TODO: select module permissions
+                    if (TRemote.MSysMan.Maintenance.WebConnectors.CreateUser(username, password, "TODO: ALLMODULES"))
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString("User {0} has been created successfully."), username));
+                    }
+                    else
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString("There was a problem creating the user {0}"), username));
+                    }
+                }
+            }
+        }
     }
 }

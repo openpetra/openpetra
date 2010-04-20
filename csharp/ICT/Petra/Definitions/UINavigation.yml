@@ -168,7 +168,7 @@ OpenPetra:
                     ManageExchangeRates:
             Users:
                 Functions:
-                    CreateNewUser:
+                    CreateNewUser: {ActionClick=TSysManMain.CreateUser}
                     DeleteUser:
                     ModifyUserPermissions:
                     ImportUserPermissions:
