@@ -137,6 +137,148 @@ namespace Ict.Common.Controls
 
         static private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
 
+        /// <summary>
+        /// execute action from the navigation tree
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns>the error or status message</returns>
+        public static string ExecuteAction(XmlNode node, IntPtr AParentWindowHandle)
+        {
+            string strNamespace = TYml2Xml.GetAttributeRecursive(node, "Namespace");
+
+            if (strNamespace.Length == 0)
+            {
+                return "There is no namespace for " + node.Name;
+            }
+
+            if (!FGUIAssemblies.Keys.Contains(strNamespace))
+            {
+                // work around dlls containing several namespaces, eg Ict.Petra.Client.MFinance.Gui contains AR as well
+                string DllName = strNamespace;
+
+                if (!System.IO.File.Exists(DllName + ".dll"))
+                {
+                    DllName = DllName.Substring(0, DllName.LastIndexOf("."));
+                }
+
+                try
+                {
+                    FGUIAssemblies.Add(strNamespace, Assembly.LoadFrom(DllName + ".dll"));
+                }
+                catch (Exception exp)
+                {
+                    return "error loading assembly " + strNamespace + ".dll: " + exp.Message;
+                }
+            }
+
+            Assembly asm = FGUIAssemblies[strNamespace];
+            string actionClick = TYml2Xml.GetAttribute(node, "ActionClick");
+            string actionOpenScreen = TYml2Xml.GetAttribute(node, "ActionOpenScreen");
+
+            if (actionClick.Contains("."))
+            {
+                string className = actionClick.Substring(0, actionClick.IndexOf("."));
+                string methodName = actionClick.Substring(actionClick.IndexOf(".") + 1);
+                System.Type classType = asm.GetType(strNamespace + "." + className);
+
+                if (classType == null)
+                {
+                    return "cannot find class " + strNamespace + "." + className + " for " + node.Name;
+                }
+
+                MethodInfo method = classType.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
+
+                if (method != null)
+                {
+                    method.Invoke(null, new object[] { AParentWindowHandle });
+                }
+                else
+                {
+                    return "cannot find method " + className + "." + methodName + " for " + node.Name;
+                }
+            }
+            else if (actionOpenScreen.Length > 0)
+            {
+                string className = actionOpenScreen;
+
+                System.Type classType = asm.GetType(strNamespace + "." + className);
+
+                if (classType == null)
+                {
+                    return "cannot find class " + strNamespace + "." + className + " for " + node.Name;
+                }
+
+                // TODO: check if user has permissions for this screen?
+                // needs to be implemented as a static function of the screen, GetRequiredPermission returns the permission that is needed (eg PTNRUSER)
+                // also use something similar as in lstFolderNavigation: CheckAccessPermissionDelegate?
+                // delegate as a static function that is available from everywhere?
+
+                System.Object screen = Activator.CreateInstance(classType, new object[] { AParentWindowHandle });
+
+                // check for properties and according attributes; this works for the LedgerNumber at the moment
+                foreach (PropertyInfo prop in classType.GetProperties())
+                {
+                    if (TYml2Xml.HasAttributeRecursive(node, prop.Name))
+                    {
+                        Object obj = TYml2Xml.GetAttributeRecursive(node, prop.Name);
+
+                        if (prop.PropertyType == typeof(Int32))
+                        {
+                            obj = Convert.ToInt32(obj);
+                        }
+                        else if (prop.PropertyType == typeof(Int64))
+                        {
+                            obj = Convert.ToInt64(obj);
+                        }
+                        else if (prop.PropertyType == typeof(bool))
+                        {
+                            obj = Convert.ToBoolean(obj);
+                        }
+                        else if (prop.PropertyType == typeof(string))
+                        {
+                            // leave it as string
+                        }
+                        else if (prop.PropertyType.ToString().Contains("Enum"))
+                        {
+                            obj = Enum.Parse(prop.PropertyType, obj.ToString(), true);
+                        }
+                        else
+                        {
+                            // to avoid that Icon is set etc, clear obj
+                            obj = null;
+                        }
+
+                        if (obj != null)
+                        {
+                            prop.SetValue(screen, obj, null);
+                        }
+                    }
+                }
+
+                MethodInfo method = classType.GetMethod("Show", BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.Any,
+                    new Type[] { }, null);
+
+                if (method != null)
+                {
+                    method.Invoke(screen, null);
+                }
+                else
+                {
+                    return "cannot find method " + className + ".Show for " + node.Name;
+                }
+            }
+            else if (actionClick.Length == 0)
+            {
+                return "No action defined for " + node.Name;
+            }
+            else
+            {
+                return "Invalid action " + actionClick + " defined for " + node.Name;
+            }
+
+            return "";
+        }
+
         private void TaskListMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             ListView lst = (ListView)sender;
@@ -147,147 +289,8 @@ namespace Ict.Common.Controls
 
             if ((info.Item != null) && (info.Item == FSelectedTaskItem))
             {
-                XmlNode node = (XmlNode)info.Item.Tag;
-
-                string strNamespace = TYml2Xml.GetAttributeRecursive(node, "Namespace");
-
-                if (strNamespace.Length == 0)
-                {
-                    WriteToStatusBar("There is no namespace for " + node.Name);
-                    Cursor = Cursors.Default;
-                    return;
-                }
-
-                if (!FGUIAssemblies.Keys.Contains(strNamespace))
-                {
-                    // work around dlls containing several namespaces, eg Ict.Petra.Client.MFinance.Gui contains AR as well
-                    string DllName = strNamespace;
-
-                    if (!System.IO.File.Exists(DllName + ".dll"))
-                    {
-                        DllName = DllName.Substring(0, DllName.LastIndexOf("."));
-                    }
-
-                    try
-                    {
-                        FGUIAssemblies.Add(strNamespace, Assembly.LoadFrom(DllName + ".dll"));
-                    }
-                    catch (Exception exp)
-                    {
-                        WriteToStatusBar("error loading assembly " + strNamespace + ".dll: " + exp.Message);
-                        Cursor = Cursors.Default;
-                        return;
-                    }
-                }
-
-                Assembly asm = FGUIAssemblies[strNamespace];
-                string actionClick = TYml2Xml.GetAttribute(node, "ActionClick");
-                string actionOpenScreen = TYml2Xml.GetAttribute(node, "ActionOpenScreen");
-
-                if (actionClick.Contains("."))
-                {
-                    string className = actionClick.Substring(0, actionClick.IndexOf("."));
-                    string methodName = actionClick.Substring(actionClick.IndexOf(".") + 1);
-                    System.Type classType = asm.GetType(strNamespace + "." + className);
-
-                    if (classType == null)
-                    {
-                        WriteToStatusBar("cannot find class " + strNamespace + "." + className + " for " + node.Name);
-                        Cursor = Cursors.Default;
-                        return;
-                    }
-
-                    MethodInfo method = classType.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
-
-                    if (method != null)
-                    {
-                        method.Invoke(null, new object[] { this.Handle });
-                    }
-                    else
-                    {
-                        WriteToStatusBar("cannot find method " + className + "." + methodName + " for " + node.Name);
-                    }
-                }
-                else if (actionOpenScreen.Length > 0)
-                {
-                    string className = actionOpenScreen;
-
-                    System.Type classType = asm.GetType(strNamespace + "." + className);
-
-                    if (classType == null)
-                    {
-                        WriteToStatusBar("cannot find class " + strNamespace + "." + className + " for " + node.Name);
-                        Cursor = Cursors.Default;
-                        return;
-                    }
-
-                    // TODO: check if user has permissions for this screen?
-                    // needs to be implemented as a static function of the screen, GetRequiredPermission returns the permission that is needed (eg PTNRUSER)
-                    // also use something similar as in lstFolderNavigation: CheckAccessPermissionDelegate?
-                    // delegate as a static function that is available from everywhere?
-
-                    System.Object screen = Activator.CreateInstance(classType, new object[] { this.Handle });
-
-                    // check for properties and according attributes; this works for the LedgerNumber at the moment
-                    foreach (PropertyInfo prop in classType.GetProperties())
-                    {
-                        if (TYml2Xml.HasAttributeRecursive(node, prop.Name))
-                        {
-                            Object obj = TYml2Xml.GetAttributeRecursive(node, prop.Name);
-
-                            if (prop.PropertyType == typeof(Int32))
-                            {
-                                obj = Convert.ToInt32(obj);
-                            }
-                            else if (prop.PropertyType == typeof(Int64))
-                            {
-                                obj = Convert.ToInt64(obj);
-                            }
-                            else if (prop.PropertyType == typeof(bool))
-                            {
-                                obj = Convert.ToBoolean(obj);
-                            }
-                            else if (prop.PropertyType == typeof(string))
-                            {
-                                // leave it as string
-                            }
-                            else if (prop.PropertyType.ToString().Contains("Enum"))
-                            {
-                                obj = Enum.Parse(prop.PropertyType, obj.ToString(), true);
-                            }
-                            else
-                            {
-                                // to avoid that Icon is set etc, clear obj
-                                obj = null;
-                            }
-
-                            if (obj != null)
-                            {
-                                prop.SetValue(screen, obj, null);
-                            }
-                        }
-                    }
-
-                    MethodInfo method = classType.GetMethod("Show", BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.Any,
-                        new Type[] { }, null);
-
-                    if (method != null)
-                    {
-                        method.Invoke(screen, null);
-                    }
-                    else
-                    {
-                        WriteToStatusBar("cannot find method " + className + ".Show for " + node.Name);
-                    }
-                }
-                else if (actionClick.Length == 0)
-                {
-                    WriteToStatusBar("No action defined for " + node.Name);
-                }
-                else
-                {
-                    WriteToStatusBar("Invalid action " + actionClick + " defined for " + node.Name);
-                }
+                string message = ExecuteAction((XmlNode)info.Item.Tag, this.Handle);
+                WriteToStatusBar(message);
             }
 
             Cursor = Cursors.Default;

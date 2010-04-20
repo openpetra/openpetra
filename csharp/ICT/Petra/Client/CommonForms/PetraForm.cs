@@ -185,9 +185,12 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// todoComment
         /// </summary>
-        public virtual void RunOnceOnActivation()
+        public void RunOnceOnActivation()
         {
-            // Virtual method, for overridding only
+            if (FTheForm != null)
+            {
+                FTheForm.RunOnceOnActivation();
+            }
         }
 
         /** used to iterate through the controls on the form

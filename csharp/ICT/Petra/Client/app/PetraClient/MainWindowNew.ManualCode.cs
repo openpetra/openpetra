@@ -45,6 +45,37 @@ namespace Ict.Petra.Client.App.PetraClient
                         System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString(3);
         }
 
+        private void RunOnceOnActivationManual()
+        {
+            RunTestAction();
+        }
+
+        private void RunTestAction()
+        {
+            // for testing purposes. we can open a screen with parameters by default with a value in the config file or commandline
+            // sample action: TestAction="Namespace=Ict.Petra.Client.MPartner.Gui,ActionOpenScreen=TFrmPartnerEdit2,PartnerKey=0043005002,InitiallySelectedTabPage=petpDetails"
+            string testAction = TAppSettingsManager.GetValueStatic("TestAction");
+
+            if (testAction.Length > 0)
+            {
+                XmlDocument temp = new XmlDocument();
+                XmlNode testActionNode = temp.CreateElement("testAction");
+                temp.AppendChild(testActionNode);
+
+                testAction = testAction.Trim(new char[] { '"' });
+
+                while (testAction.Length > 0)
+                {
+                    string[] pair = StringHelper.GetNextCSV(ref testAction, ",").Split(new char[] { '=' });
+                    XmlAttribute attr = temp.CreateAttribute(pair[0]);
+                    attr.Value = pair[1];
+                    testActionNode.Attributes.Append(attr);
+                }
+
+                TLstTasks.ExecuteAction(testActionNode, IntPtr.Zero);
+            }
+        }
+
         /// <summary>
         /// checks if the user has access to the navigation node
         /// </summary>
