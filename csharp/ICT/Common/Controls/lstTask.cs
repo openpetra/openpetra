@@ -251,6 +251,12 @@ namespace Ict.Common.Controls
                             {
                                 // leave it as string
                             }
+                            else if (prop.PropertyType.ToString().Contains("Enum"))
+                            {
+                                MessageBox.Show(obj.ToString());
+                                obj = Enum.Parse(prop.PropertyType, obj.ToString(), true);
+                                MessageBox.Show(obj.ToString());
+                            }
                             else
                             {
                                 // to avoid that Icon is set etc, clear obj
