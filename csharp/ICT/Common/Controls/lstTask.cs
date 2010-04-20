@@ -253,9 +253,7 @@ namespace Ict.Common.Controls
                             }
                             else if (prop.PropertyType.ToString().Contains("Enum"))
                             {
-                                MessageBox.Show(obj.ToString());
                                 obj = Enum.Parse(prop.PropertyType, obj.ToString(), true);
-                                MessageBox.Show(obj.ToString());
                             }
                             else
                             {
