@@ -118,13 +118,13 @@ namespace Ict.Petra.Client.App.Core
                 // for the moment, until the proper window works:
                 MessageBox.Show(
                     "TUnhandledThreadExceptionHandler.OnThreadException  Unhandled Exception: \r\n\r\n" + AEventArgs.Exception.ToString());
-    
+
                 ExceptionHandling.LogException(AEventArgs.Exception, "Reported by TUnhandledThreadExceptionHandler.OnThreadException");
                 UEDialogue = new TUnhandledExceptionForm();
-    
-    //            UEDialogue.NonRecoverable = false;
-    //            UEDialogue.TheException = AEventArgs.Exception;
-    //            UEDialogue.ShowDialog();               
+
+                //            UEDialogue.NonRecoverable = false;
+                //            UEDialogue.TheException = AEventArgs.Exception;
+                //            UEDialogue.ShowDialog();
             }
             else
             {

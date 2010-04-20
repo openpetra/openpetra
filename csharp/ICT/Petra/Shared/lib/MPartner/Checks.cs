@@ -76,7 +76,8 @@ namespace Ict.Petra.Shared.MPartner
                     Row = (PPartnerTypeRow)untypedRow;
 
                     if ((Row.IsValidFromNull()
-                         || (Row.ValidFrom.Value.CompareTo(DateTime.Now) <= 0)) && (Row.IsValidUntilNull() || (Row.ValidUntil.Value.CompareTo(DateTime.Now) >= 0)))
+                         || (Row.ValidFrom.Value.CompareTo(DateTime.Now) <= 0))
+                        && (Row.IsValidUntilNull() || (Row.ValidUntil.Value.CompareTo(DateTime.Now) >= 0)))
                     {
                         return true;
                     }
