@@ -130,7 +130,11 @@ namespace Ict.Petra.Client.App.Core
             {
                 TLogging.Log(Catalog.GetString("This functionality is not yet implemented in OpenPetra."));
                 TLogging.Log(AEventArgs.Exception.StackTrace);
-                MessageBox.Show(Catalog.GetString("This functionality is not yet implemented in OpenPetra."), Catalog.GetString("Not Implemented"),
+                MessageBox.Show(Catalog.GetString("This functionality is not yet implemented in OpenPetra.") 
+#if DEBUGMODE                                
+                                + Environment.NewLine + Environment.NewLine + Catalog.GetString("This information comes from Code") + AEventArgs.Exception.StackTrace.Substring(0, AEventArgs.Exception.StackTrace.IndexOf(Environment.NewLine))                               
+#endif                                
+                                , Catalog.GetString("Not Implemented"),
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
