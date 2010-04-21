@@ -140,6 +140,13 @@
     <Compile Include="PartnerFind_Options.Designer.cs">
       <DependentUpon>PartnerFind_Options.cs</DependentUpon>
     </Compile>
+    <Compile Include="PartnerImport.cs" />
+    <Compile Include="PartnerImport.Designer.cs">
+      <DependentUpon>PartnerImport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PartnerImport.ManualCode.cs">
+      <DependentUpon>PartnerImport.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartnerMain.cs" />
     <Compile Include="PartnerMain.Designer.cs">
       <DependentUpon>PartnerMain.cs</DependentUpon>
@@ -236,6 +243,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PartnerFind_Options.resx">
       <DependentUpon>PartnerFind_Options.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PartnerImport.resx">
+      <DependentUpon>PartnerImport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PartnerMain.resx">
       <DependentUpon>PartnerMain.cs</DependentUpon>
