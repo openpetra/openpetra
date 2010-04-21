@@ -152,7 +152,7 @@ namespace Ict.Petra.Client.CommonControls
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TexpTextBoxStringLengthCheck() : base()
+        public TexpTextBoxStringLengthCheck() : base ()
         {
             //
             // Required for Windows Form Designer support
@@ -175,7 +175,7 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         /// <returns>void</returns>
         public TexpTextBoxStringLengthCheck(System.ComponentModel.IContainer Container)
-            : base()
+            : base ()
         {
             Container.Add(this);
 

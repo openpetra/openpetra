@@ -46,5 +46,10 @@ namespace Ict.Petra.Shared.Interfaces.Plugins.MSysMan
         /// this will allow the system administrator to change the password of the user
         /// </summary>
         bool SetPassword(string AUsername, string APassword);
+
+        /// <summary>
+        /// this will create a new user
+        /// </summary>
+        bool CreateUser(string AUsername, string APassword);
     }
 }

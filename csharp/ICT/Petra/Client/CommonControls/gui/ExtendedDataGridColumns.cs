@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// constructor
         /// </summary>
-        public TDataGridTextBoxColumnNotEditableNotNavigable() : base()
+        public TDataGridTextBoxColumnNotEditableNotNavigable() : base ()
         {
             this.FKeyTrapTextBox = new TKeyTrapTextBox();
             this.FKeyTrapTextBox.BorderStyle = BorderStyle.None;
@@ -228,7 +228,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <param name="Icons"></param>
         /// <param name="getIconIndex"></param>
         public TDataGridIconOnlyColumn(ImageList Icons, DelegateGetIconIndexForRow getIconIndex)
-            : base()
+            : base ()
         {
             this.FIcons = Icons;
             this.FGetIconIndex = getIconIndex;
@@ -324,7 +324,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <param name="ARelationName"></param>
         /// <param name="AParentField"></param>
         public TDataGridJoinTextBoxColumn(string ARelationName, DataColumn AParentField)
-            : base()
+            : base ()
         {
             this.FRelationName = ARelationName;
             this.FParentField = AParentField;

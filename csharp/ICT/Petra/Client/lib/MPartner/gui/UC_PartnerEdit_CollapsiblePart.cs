@@ -121,7 +121,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        public TUC_PartnerEdit_CollapsiblePart() : base()
+        public TUC_PartnerEdit_CollapsiblePart() : base ()
         {
             //
             // Required for Windows Form Designer support

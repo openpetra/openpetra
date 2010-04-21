@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptCalculator() : base()
+        public TRptCalculator() : base ()
         {
             Parameters = new TParameterList();
             MaxDisplayColumns = -1;

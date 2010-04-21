@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -235,7 +235,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// constructor
         /// </summary>
-        public TtxtPetraDate() : base()
+        public TtxtPetraDate() : base ()
         {
             // MessageBox.Show('Entering TtxtPetraDate.Create');
             FDate = DateTime.Today;
@@ -489,7 +489,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// constructor
         /// </summary>
-        public TPetraDateChangedEventArgs() : base()
+        public TPetraDateChangedEventArgs() : base ()
         {
         }
 
@@ -499,7 +499,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <param name="ADate"></param>
         /// <param name="AValidDate"></param>
         public TPetraDateChangedEventArgs(DateTime ADate, Boolean AValidDate)
-            : base()
+            : base ()
         {
             FDate = ADate;
             FValidDate = AValidDate;

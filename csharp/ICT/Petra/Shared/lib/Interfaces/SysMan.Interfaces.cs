@@ -206,6 +206,10 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
         bool SetUserPassword(string AUsername,
                              string APassword);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
+        bool CreateUser(string AUsername,
+                        string APassword,
+                        string AModulePermissions);
     }
 
 }

@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -24,7 +24,7 @@
  *
  ************************************************************************/
 using System.Windows.Forms;
-TODO : move Statusbar things to constructor
+TODO: move Statusbar things to constructor
 namespace Ict.Petra.Client.MPartner.Gui
 {
     partial class TCopyPartnerAddressDialogWinForm

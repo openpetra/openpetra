@@ -255,74 +255,74 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool Success = false;
 
             using (TPartnerNewExtract CreateExtractDialog = new TPartnerNewExtract())
-            {
-                // Open the Dialog for creating a New Extract
-                if (CreateExtractDialog.ShowDialog() == DialogResult.OK)
-                {
-                    // Make Dialog visible again to be able to show Text in its StatusBar!
-                    CreateExtractDialog.Visible = true;
-                    CreateExtractDialog.ShowProgressAfterOK("Adding Partners to Extract. Please wait...");
+                  {
+                      // Open the Dialog for creating a New Extract
+                      if (CreateExtractDialog.ShowDialog() == DialogResult.OK)
+                      {
+                          // Make Dialog visible again to be able to show Text in its StatusBar!
+                          CreateExtractDialog.Visible = true;
+                          CreateExtractDialog.ShowProgressAfterOK("Adding Partners to Extract. Please wait...");
 
-                    this.Cursor = Cursors.WaitCursor;
-                    Application.DoEvents();
+                          this.Cursor = Cursors.WaitCursor;
+                          Application.DoEvents();
 
-                    int ExtractId;
-                    CreateExtractDialog.GetReturnedParameters(out ExtractId);
+                          int ExtractId;
+                          CreateExtractDialog.GetReturnedParameters(out ExtractId);
 
-                    /*
-                     * Make Server call to add all found Partners to the new Extract.
-                     * This can take some time to finish...
-                     */
-                    try
-                    {
-                        TVerificationResultCollection VerificationResult;
-                        int ExtractPartners = FPartnerFindObject.AddAllFoundPartnersToExtract(ExtractId, out VerificationResult);
+                          /*
+                           * Make Server call to add all found Partners to the new Extract.
+                           * This can take some time to finish...
+                           */
+                          try
+                          {
+                              TVerificationResultCollection VerificationResult;
+                              int ExtractPartners = FPartnerFindObject.AddAllFoundPartnersToExtract(ExtractId, out VerificationResult);
 
-                        if (ExtractPartners != -1)
-                        {
-                            string MessageText;
+                              if (ExtractPartners != -1)
+                              {
+                                  string MessageText;
 
-                            if (ExtractPartners == 1)
-                            {
-                                MessageText = Resourcestrings.StrPartnersAddedToExtractText;
-                            }
-                            else
-                            {
-                                MessageText = Resourcestrings.StrPartnersAddedToExtractPluralText;
-                            }
+                                  if (ExtractPartners == 1)
+                                  {
+                                      MessageText = Resourcestrings.StrPartnersAddedToExtractText;
+                                  }
+                                  else
+                                  {
+                                      MessageText = Resourcestrings.StrPartnersAddedToExtractPluralText;
+                                  }
 
-                            MessageBox.Show(String.Format(MessageText,
-                                    ExtractPartners), Resourcestrings.StrPartnersAddedToExtractTitle, MessageBoxButtons.OK,
-                                MessageBoxIcon.Information);
+                                  MessageBox.Show(String.Format(MessageText,
+                                          ExtractPartners), Resourcestrings.StrPartnersAddedToExtractTitle, MessageBoxButtons.OK,
+                                      MessageBoxIcon.Information);
 
-                            Success = true;
-                        }
-                        else
-                        {
-                            if (VerificationResult != null)
-                            {
-                                MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult));
-                            }
-                            else
-                            {
-                                MessageBox.Show("An unknown error occured while Parters were added to the Extract.");
-                            }
+                                  Success = true;
+                              }
+                              else
+                              {
+                                  if (VerificationResult != null)
+                                  {
+                                      MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult));
+                                  }
+                                  else
+                                  {
+                                      MessageBox.Show("An unknown error occured while Parters were added to the Extract.");
+                                  }
 
-                            Success = false;
-                        }
-                    }
-                    finally
-                    {
-                        if (!Success)
-                        {
-                            CreateExtractDialog.DeleteExtractAgain();
-                        }
+                                  Success = false;
+                              }
+                          }
+                          finally
+                          {
+                              if (!Success)
+                              {
+                                  CreateExtractDialog.DeleteExtractAgain();
+                              }
 
-                        this.Cursor = Cursors.Default;
-                        Application.DoEvents();
-                    }
-                }
-            }
+                              this.Cursor = Cursors.Default;
+                              Application.DoEvents();
+                          }
+                      }
+                  }
 #endif
         }
 

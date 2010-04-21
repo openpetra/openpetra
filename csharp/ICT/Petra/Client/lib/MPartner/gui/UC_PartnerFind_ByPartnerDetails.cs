@@ -724,19 +724,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (System.Windows.Forms.Form.ModifierKeys == Keys.Alt)
                 {
                     TFrmPartnerEdit2 frm = new TFrmPartnerEdit2(this.Handle);
-                    
+
                     frm.SetParameters(TScreenMode.smEdit, FLogic.PartnerKey,
                         FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, AShowTabPage);
-                    frm.Show();                    
+                    frm.Show();
                 }
                 else
                 {
                     TPartnerEditDSWinForm frm = new TPartnerEditDSWinForm(this.Handle);
-                    
+
                     frm.SetParameters(TScreenMode.smEdit, FLogic.PartnerKey,
                         FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, AShowTabPage);
-                    frm.Show();                    
-                }                    
+                    frm.Show();
+                }
             }
             finally
             {
@@ -903,25 +903,25 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 // Open the 'Merged Partner Info' Dialog
                 using (TPartnerMergedPartnerInfoDialog MergedPartnerInfoDialog = new TPartnerMergedPartnerInfoDialog())
-                {
-                    MergedPartnerInfoDialog.SetParameters(APartnerKey,
-                        MergedPartnerPartnerShortName,
-                        MergedPartnerPartnerClass,
-                        AMergedIntoPartnerKey,
-                        MergedIntoPartnerShortName,
-                        MergedIntoPartnerClass,
-                        MergedBy,
-                        MergeDate);
+                      {
+                          MergedPartnerInfoDialog.SetParameters(APartnerKey,
+                              MergedPartnerPartnerShortName,
+                              MergedPartnerPartnerClass,
+                              AMergedIntoPartnerKey,
+                              MergedIntoPartnerShortName,
+                              MergedIntoPartnerClass,
+                              MergedBy,
+                              MergeDate);
 
-                    if (MergedPartnerInfoDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        ReturnValue = true;
-                    }
-                    else
-                    {
-                        ReturnValue = false;
-                    }
-                }
+                          if (MergedPartnerInfoDialog.ShowDialog() == DialogResult.OK)
+                          {
+                              ReturnValue = true;
+                          }
+                          else
+                          {
+                              ReturnValue = false;
+                          }
+                      }
             }
 #endif
             return ReturnValue;

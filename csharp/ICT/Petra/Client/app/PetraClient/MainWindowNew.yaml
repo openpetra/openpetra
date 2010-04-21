@@ -4,6 +4,12 @@ RootNode:
     FormType: navigation
     Namespace: Ict.Petra.Client.App.PetraClient
     Icon: petraico-big.ico
+    Events:
+        Activated: {class=System.EventHandler,method=FPetraUtilsObject.TFrmPetra_Activated}
+        Load: {class=System.EventHandler, method=FPetraUtilsObject.TFrmPetra_Load}
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=FPetraUtilsObject.TFrmPetra_Closing}
+        KeyDown: {class=System.Windows.Forms.KeyEventHandler,method=FPetraUtilsObject.Form_KeyDown}
+        Closed: {class=System.EventHandler,method=TFrmPetra_Closed}
     Actions:
         actMenuSwitch: {Label=Classic Navigation, ActionClick=SwitchToClassicNavigation}
         actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}

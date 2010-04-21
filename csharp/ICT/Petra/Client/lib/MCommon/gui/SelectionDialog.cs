@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -129,7 +129,7 @@ TODO: move SetStatusBarText calls to constructor; make sure that Catalog.GetStri
         /// Private Declarations
         /// </summary>
         /// <returns>void</returns>
-        public TSelectionDialog() : base()
+        public TSelectionDialog() : base ()
         {
             //
             // Required for Windows Form Designer support

@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -110,9 +110,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="ACallerWindowHandle">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>
-        public TFrmPetraReportingUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm, TExtStatusBarHelp AStatusBar) : base(ACallerWindowHandle,
-                                                                                                                           (IFrmPetra)ATheForm,
-                                                                                                                           AStatusBar)
+        public TFrmPetraReportingUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm, TExtStatusBarHelp AStatusBar) : base (ACallerWindowHandle,
+                                                                                                                             (IFrmPetra)ATheForm,
+                                                                                                                             AStatusBar)
         {
             FCurrentSettingsName = "";
             FSelectedColumn = -1;

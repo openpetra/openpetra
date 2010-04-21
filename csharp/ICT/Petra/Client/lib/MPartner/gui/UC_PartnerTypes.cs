@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     public partial class TUCPartnerTypes : TPetraUserControl
     {
         private TFrmPetraEditUtils FPetraUtilsObject;
-        
+
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
@@ -89,15 +89,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-    /// helper object for the whole screen
-    public TFrmPetraEditUtils PetraUtilsObject
-    {
-        set
+        /// helper object for the whole screen
+        public TFrmPetraEditUtils PetraUtilsObject
         {
-            FPetraUtilsObject = value;
+            set
+            {
+                FPetraUtilsObject = value;
+            }
         }
-    }
-        
+
         /// <summary>todoComment</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
 
@@ -107,7 +107,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        public TUCPartnerTypes() : base()
+        public TUCPartnerTypes() : base ()
         {
             //
             // Required for Windows Form Designer support

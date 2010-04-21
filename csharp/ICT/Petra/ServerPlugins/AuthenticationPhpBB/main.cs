@@ -96,5 +96,14 @@ namespace Plugin.AuthenticationPhpBB
         {
             return false;
         }
+
+        /// <summary>
+        /// could check if the user already exists in phpBB
+        /// </summary>
+        public bool CreateUser(string AUsername, string APassword)
+        {
+            // TODO check if user exists. careful: password is probably not valid, since the sysadmin does not know it
+            return true;
+        }
     }
 }

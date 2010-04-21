@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -118,16 +118,18 @@ namespace Ict.Petra.Client.App.Core
                 // for the moment, until the proper window works:
                 MessageBox.Show(
                     "TUnhandledThreadExceptionHandler.OnThreadException  Unhandled Exception: \r\n\r\n" + AEventArgs.Exception.ToString());
-    
+
                 ExceptionHandling.LogException(AEventArgs.Exception, "Reported by TUnhandledThreadExceptionHandler.OnThreadException");
                 UEDialogue = new TUnhandledExceptionForm();
-    
-    //            UEDialogue.NonRecoverable = false;
-    //            UEDialogue.TheException = AEventArgs.Exception;
-    //            UEDialogue.ShowDialog();               
+
+                //            UEDialogue.NonRecoverable = false;
+                //            UEDialogue.TheException = AEventArgs.Exception;
+                //            UEDialogue.ShowDialog();
             }
             else
             {
+                TLogging.Log(Catalog.GetString("This functionality is not yet implemented in OpenPetra."));
+                TLogging.Log(AEventArgs.Exception.StackTrace);
                 MessageBox.Show(Catalog.GetString("This functionality is not yet implemented in OpenPetra."), Catalog.GetString("Not Implemented"),
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

@@ -737,6 +737,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // init some template variables that can be empty
             FTemplate.AddToCodelet("INITUSERCONTROLS", "");
             FTemplate.AddToCodelet("INITMANUALCODE", "");
+            FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "");
             FTemplate.AddToCodelet("EXITMANUALCODE", "");
             FTemplate.AddToCodelet("INITNEWROWMANUAL", "");
             FTemplate.AddToCodelet("STOREMANUALCODE", "");
@@ -754,6 +755,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("InitializeManualCode"))
             {
                 FTemplate.AddToCodelet("INITMANUALCODE", "InitializeManualCode();" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("RunOnceOnActivationManual"))
+            {
+                FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "RunOnceOnActivationManual();" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("ExitManualCode"))

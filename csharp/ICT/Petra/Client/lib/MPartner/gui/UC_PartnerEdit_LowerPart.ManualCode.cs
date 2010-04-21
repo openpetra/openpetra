@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -33,28 +33,28 @@ namespace Ict.Petra.Client.MPartner.Gui
     public partial class TUC_PartnerEdit_LowerPart
     {
         #region Fields
-        
+
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-        
+
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
         private TPartnerEditTabPageEnum FCurrentlySelectedTabPage;
         private TDelegateIsNewPartner FDelegateIsNewPartner;
-        
+
         #endregion
-        
+
         #region Events
-        
+
         /// <summary>todoComment</summary>
         public event System.EventHandler DataLoadingStarted;
 
         /// <summary>todoComment</summary>
         public event System.EventHandler DataLoadingFinished;
-        
+
         #endregion
-        
+
         #region Properties
-        
+
         /// <summary>todoComment</summary>
         public TPartnerEditTabPageEnum InitiallySelectedTabPage
         {
@@ -96,9 +96,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPartnerEditUIConnector = value;
             }
         }
-        
+
         #endregion
-        
+
         #region Public Methods
 
         /// <summary>

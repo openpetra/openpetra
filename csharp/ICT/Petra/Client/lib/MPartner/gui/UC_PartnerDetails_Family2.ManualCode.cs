@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -29,6 +29,5 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public class TUC_PartnerDetails_Family2
     {
-
     }
 }

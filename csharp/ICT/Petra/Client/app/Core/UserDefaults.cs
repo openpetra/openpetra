@@ -304,7 +304,7 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>
         /// constructor
         /// </summary>
-        public TUserDefaults() : base()
+        public TUserDefaults() : base ()
         {
             TRemote.MSysMan.Maintenance.UserDefaults.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID, out UUserDefaultsDataTable);
             UUserDefaults = new DataView(UUserDefaultsDataTable);

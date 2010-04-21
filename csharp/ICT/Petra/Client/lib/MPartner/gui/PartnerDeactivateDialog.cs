@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -38,8 +38,8 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
-TODO : move statusbar things to constructor
-TODO : split Designer File
+TODO: move statusbar things to constructor
+TODO: split Designer File
 namespace Ict.Petra.Client.MPartner.Gui
 {
     /// Deactivate Partner Dialog.
@@ -281,7 +281,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
-        public TPartnerDeactivateDialogWinForm() : base()
+        public TPartnerDeactivateDialogWinForm() : base ()
         {
             //
             // Required for Windows Form Designer support

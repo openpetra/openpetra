@@ -1329,6 +1329,14 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SetUserPassword(AUsername, APassword);
         }
 
+        /// generated method from connector
+        public bool CreateUser(string AUsername,
+                               string APassword,
+                               string AModulePermissions)
+        {
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.CreateUser(AUsername, APassword, AModulePermissions);
+        }
+
     }
 }
 

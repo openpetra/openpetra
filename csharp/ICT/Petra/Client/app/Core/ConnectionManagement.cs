@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -503,7 +503,7 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>
         /// constructor
         /// </summary>
-        public EServerConnectionServerNotReachableException() : base()
+        public EServerConnectionServerNotReachableException() : base ()
         {
         }
 
@@ -511,7 +511,7 @@ namespace Ict.Petra.Client.App.Core
         /// constructor
         /// </summary>
         /// <param name="msg"></param>
-        public EServerConnectionServerNotReachableException(String msg) : base(msg)
+        public EServerConnectionServerNotReachableException(String msg) : base (msg)
         {
         }
 
@@ -526,7 +526,7 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>
         /// constructor
         /// </summary>
-        public EServerConnectionGeneralException() : base()
+        public EServerConnectionGeneralException() : base ()
         {
         }
 
@@ -534,7 +534,7 @@ namespace Ict.Petra.Client.App.Core
         /// constructor
         /// </summary>
         /// <param name="msg"></param>
-        public EServerConnectionGeneralException(String msg) : base(msg)
+        public EServerConnectionGeneralException(String msg) : base (msg)
         {
         }
     }

@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -275,7 +275,7 @@ todo: move statusbar things to constructor
             base.Dispose(Disposing);
         }
 
-        public TPartnerSubscCancelAllWinForm() : base()
+        public TPartnerSubscCancelAllWinForm() : base ()
         {
             //
             // Required for Windows Form Designer support

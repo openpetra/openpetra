@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -75,19 +75,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             uictPartnerKey,
 
             /// <summary>Call the UIConnector with Partner Key, Location Key and Site Key Arguments</summary>
-           uictLocationKey,
+            uictLocationKey,
 
             /// <summary>Call the UIConnector without any Arguments, thus signalising that a new Partner should be created</summary>
-           uictNewPartner
+            uictNewPartner
         }
-        
+
         #endregion
-                
+
         #region Fields
-        
+
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-        
+
         /// <summary>holds the DataSet that contains most data that is used on the screen</summary>
         private PartnerEditTDS FMainDS;
 
@@ -130,6 +130,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean FFoundationDetailsEnabled;
 
         private Boolean FPartnerTabSetInitialised;
+
 //TODO        private Boolean FPersonnelTabSetInitialised;
 //TODO        private Boolean FFinanceTabSetInitialised;
         private TModuleSwitchEnum FCurrentModuleTabGroup;
@@ -138,10 +139,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         public static Exception UExceptionAtLoad = null;
 
         #endregion
-        
+
         #region ResourceStrings
+
         // TODO 2 Replace with String.Format(Catalog.GetString("Hello {0}"), myname);
-        
+
         private const String StrScreenCaption = "Partner Edit";
         private const String StrQueryUnitParent = "All 'Units' MUST be assigned a 'Parent'." + "\r\n" + "Do you wish to assign one now?";
         private const String StrQueryUnitParentTitle = "Assign Parent in Unit Hierarchy?";
@@ -183,9 +185,40 @@ namespace Ict.Petra.Client.MPartner.Gui
         private const String StrDeactivatePartnerStatusNotChanged = "Partner Status wasn't changed - it " + "was already set to '{0}'.";
 
         #endregion
-        
-        
+
+
         #region Public Methods
+
+        /// <summary>
+        /// to load a partner, set this property before showing the screen, or use SetParameters
+        /// </summary>
+        public Int64 PartnerKey
+        {
+            get
+            {
+                return FPartnerKey;
+            }
+            set
+            {
+                FPartnerKey = value;
+                FPetraUtilsObject.ScreenMode = TScreenMode.smEdit;
+            }
+        }
+
+        /// <summary>
+        /// set this property before showing the screen, or use SetParameters
+        /// </summary>
+        public TPartnerEditTabPageEnum InitiallySelectedTabPage
+        {
+            get
+            {
+                return FInitiallySelectedTabPage;
+            }
+            set
+            {
+                FInitiallySelectedTabPage = value;
+            }
+        }
 
         /// <summary>
         /// Used for passing parameters to the screen before it is actually shown.
@@ -771,16 +804,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns></returns>
         public bool SaveChanges()
         {
-            // TODO            
+            // TODO
 
             return false;
         }
-        
+
         #endregion
-        
-        
+
+
         #region Event Handlers
-        
+
         private void TFrmPartnerEdit2_Load(System.Object sender, System.EventArgs e)
         {
             // Reduce Form height to fit the PartnerEdit screen fully only on 800x600 resolution
@@ -791,61 +824,64 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Determine which tab page will be shown
             DetermineInitiallySelectedTabPage();
-            
+
             /*
              * Load data for new Partner or existing Partner
-             */            
+             */
             LoadData();
-            
+
             /*
              * From here on we have access to the Server Object and the DataSet is filled
              * with data.
              */
-            FPartnerClass = FMainDS.PPartner[0].PartnerClass;            
+            FPartnerClass = FMainDS.PPartner[0].PartnerClass;
 
             // Determine whether Partner is of PartnerClass ORGANISATION and whether it is a Foundation
-#if TODO            
+#if TODO
             DetermineOrganisationIsFoundation();
-#endif            
+#endif
 
             // Setup Modulerelated Toggle Buttons in ToolBar
             SetupAvailableModuleDataItems(true, TModuleSwitchEnum.msNone);
 
-            /* 
-             * Setup the bottom part of the screen - that is the TabSet that corresponds 
+            /*
+             * Setup the bottom part of the screen - that is the TabSet that corresponds
              * with the initially selected TabPage
              */
             ucoLowerPart.MainDS = FMainDS;
             ucoLowerPart.PetraUtilsObject = FPetraUtilsObject;
             ucoLowerPart.PartnerEditUIConnector = FPartnerEditUIConnector;
             ucoLowerPart.InitiallySelectedTabPage = FInitiallySelectedTabPage;
-            ucoLowerPart.InitialiseDelegateIsNewPartner(@IsNewPartner);            
+            ucoLowerPart.InitialiseDelegateIsNewPartner(@IsNewPartner);
             ucoLowerPart.InitChildUserControl();
-            
-            switch (FCurrentModuleTabGroup) 
+
+            switch (FCurrentModuleTabGroup)
             {
                 case TModuleSwitchEnum.msPartner:
+
                     /*
                      * Set up ucoPartnerTabSet
                      */
-                    
+
                     // TODO 1
-                    
+
                     FPartnerTabSetInitialised = true;
-                    
+
                     break;
-                   
+
                 case TModuleSwitchEnum.msPersonnel:
+
                     // TODO 2
-                    
+
                     break;
-                    
+
                 case TModuleSwitchEnum.msFinance:
+
                     // TODO 2
-                    
-                    break;                    
+
+                    break;
             }
-            
+
             HookupPartnerEditDataChangeEvents(TPartnerEditTabPageEnum.petpDefault);
 
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
@@ -857,6 +893,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             /*
              * Set up top part of the Screen
              */
+
 // TODO            ucoUpperPart.InitialiseDelegateMaintainWorkerField(new TDelegateMaintainWorkerField(MaintainWorkerField));
             ucoUpperPart.MainDS = FMainDS;
             ucoUpperPart.VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -893,21 +930,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             // we remove some TabPages, therefore the Controls on it, but the Events hooked
             // up to them would still be around and prevent a GC of the Form!
             FPetraUtilsObject.HookupAllControls();
-            
+
 
             ucoUpperPart.Focus();
-            this.Cursor = Cursors.Default;            
-            
+            this.Cursor = Cursors.Default;
+
 //            MessageBox.Show("Data loaded successfully (might not look like it, but this screen isn't finished yet...!");
         }
-        
 
         private void UcoUpperPart_PartnerClassMainDataChanged(System.Object Sender, TPartnerClassMainDataChangedEventArgs e)
         {
             FPetraUtilsObject.HasChanges = true;
-#if TODO            
+#if TODO
             SetScreenCaption();
-#endif            
+#endif
         }
 
         private void UcoUpperPart_CollapsingEvent(System.Object sender, CollapsibleEventArgs args)
@@ -930,14 +966,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ucoUpperPart.SubCaption = "";
             }
         }
-                        
+
         #endregion
-        
-        
+
+
         #region Action Handlers
-                
+
         #region File Menu
-        
+
         private void FileNewPartner(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
@@ -952,17 +988,17 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             throw new NotImplementedException();
         }
-        
+
         private void FileNewPartnerWithShepherdChurch(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
-        
+
         private void FileNewPartnerWithShepherdOrganisation(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
-        
+
         private void FileNewPartnerWithShepherdUnit(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
@@ -972,7 +1008,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             throw new NotImplementedException();
         }
-        
+
         private void FileDeletePartner(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
@@ -987,21 +1023,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             throw new NotImplementedException();
         }
-        
+
         private void FilePrintSection(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
-        
+
         private void FileExportPartner(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
-        
+
         #endregion
-        
+
         #region Maintain Menu
-        
+
         private void MaintainAddresses(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
@@ -1011,36 +1047,37 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             throw new NotImplementedException();
         }
-        
+
         private void MaintainFoundationDetails(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
-        
+
         private void MaintainSubscriptions(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
-        
+
         private void MaintainSpecialTypes(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
+
         private void MaintainContacts(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
-        
+
         private void MaintainFamilyMembers(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
-        
+
         private void MaintainRelationships(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
-        
+
         private void MaintainInterests(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
@@ -1065,7 +1102,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             throw new NotImplementedException();
         }
-        
+
         private void MaintainIndividualData(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
@@ -1102,9 +1139,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
-        
+
         #region View Menu
-        
+
         private void ViewUpperScreenPartExpanded(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
@@ -1114,7 +1151,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             throw new NotImplementedException();
         }
-        
+
         private void ViewPartnerData(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
@@ -1131,25 +1168,25 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
-        
+
         #region Help Menu
-        
+
         private void HelpVideoTutorial(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
-        
+
         #endregion
-        
+
         #endregion
-        
-        
+
+
         #region Private Methods
-        
+
         private void LoadData()
         {
-            PartnerEditTDSPPartnerLocationRow NewPartnerLocationRow;            
-            
+            PartnerEditTDSPPartnerLocationRow NewPartnerLocationRow;
+
             if (FPetraUtilsObject.ScreenMode == TScreenMode.smNew)
             {
                 try
@@ -1469,10 +1506,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     throw;
                 }
-            }            
+            }
         }
-       
-                
+
         private void DataLoadOperationFinishing(System.Object sender, System.EventArgs e)
         {
             FPetraUtilsObject.SuppressChangeDetection = false;
@@ -1482,7 +1518,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FPetraUtilsObject.SuppressChangeDetection = true;
         }
-        
+
         /// <summary>
         /// Determines which TabPage to show when the screen is loaded and which
         /// TabSet to initialise.
@@ -1570,11 +1606,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 #if TODO
                     ucoPartnerTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
                     FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
-#endif                    
+#endif
                     break;
             }
-        }        
-    
+        }
+
         /// <summary>
         /// Sets Module-related Toggle Buttons in ToolBar up
         /// </summary>
@@ -1750,15 +1786,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 #endif
 #endif
         }
-        
+
         private bool CheckSecurityOKToCreateNewPartner(Boolean AShowMessage)
         {
             Boolean ReturnValue;
             ESecurityDBTableAccessDeniedException SecurityException;
-    
+
             ReturnValue = false;
             SecurityException = null;
-    
+
             if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapCREATE, PPartnerTable.GetTableDBName()))
             {
                 SecurityException = new ESecurityDBTableAccessDeniedException("", "create", PPartnerTable.GetTableDBName());
@@ -1804,22 +1840,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // User has access to all checked tables
                 ReturnValue = true;
             }
-    
+
             if ((SecurityException != null) && (AShowMessage))
             {
                 TMessages.MsgSecurityException(SecurityException, this.GetType());
             }
-    
+
             return ReturnValue;
         }
-        
+
         private Boolean GetPartnerEditUIConnector(TUIConnectorType AUIConnectorType)
         {
             Boolean ServerCallSuccessful;
-    
+
             System.Windows.Forms.DialogResult ServerBusyDialogResult;
             ServerCallSuccessful = false;
-    
+
             do
             {
                 try
@@ -1832,9 +1868,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                             TClientSettings.DelayedDataLoading,
                             FInitiallySelectedTabPage);
                             break;
-    
+
                         case TUIConnectorType.uictLocationKey:
-    
+
                             // MessageBox.Show('Passed in FLocationKeyForSelectingPartnerLocation: ' + FLocationKeyForSelectingPartnerLocation.toString);
                             FPartnerEditUIConnector = TRemote.MPartner.Partner.UIConnectors.PartnerEdit(FPartnerKey,
                             FSiteKeyForSelectingPartnerLocation,
@@ -1843,12 +1879,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                             TClientSettings.DelayedDataLoading,
                             FInitiallySelectedTabPage);
                             break;
-    
+
                         case TUIConnectorType.uictNewPartner:
                             FPartnerEditUIConnector = TRemote.MPartner.Partner.UIConnectors.PartnerEdit();
                             break;
                     }
-    
+
                     ServerCallSuccessful = true;
                 }
                 catch (EDBTransactionBusyException)
@@ -1859,7 +1895,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             MessageBoxButtons.RetryCancel,
                             MessageBoxIcon.Warning,
                             MessageBoxDefaultButton.Button1);
-    
+
                     if (ServerBusyDialogResult == System.Windows.Forms.DialogResult.Retry)
                     {
                         // retry will happen because of the repeat block
@@ -1875,15 +1911,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     throw;
                 }
             } while (!(ServerCallSuccessful));
-    
+
             if (ServerCallSuccessful)
             {
                 // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
                 TEnsureKeepAlive.Register(FPartnerEditUIConnector);
             }
-    
+
             return ServerCallSuccessful;
-        }    
+        }
 
         private Boolean OpenNewPartnerDialog()
         {
@@ -1942,7 +1978,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return ReturnValue;
         }
-    
+
         /// <summary>
         /// Hook up Events that enable the 'Save' ToolBarButton and File/Save menu entry.
         /// </summary>
@@ -2050,7 +2086,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.Text = CaptionPrefix + StrScreenCaption + " - " + ucoUpperPart.PartnerQuickInfo(true);
         }
-        
+
         /// <summary>
         /// Determines whether the current Partner was just created and has not been
         /// saved yet.
@@ -2063,7 +2099,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             return !AInspectDataSet.PPartner[0].HasVersion(DataRowVersion.Original);
         }
-        
+
         private void ApplySecurity()
         {
             if (!CheckSecurityOKToCreateNewPartner(false))
@@ -2095,7 +2131,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPetraUtilsObject.HasChanges = false;
             }
         }
-        
+
         /// <summary>
         /// This Procedure will get called from the SaveChanges procedure before it
         /// actually performs any saving operation.
@@ -2107,7 +2143,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void FormDataSavingStarted(System.Object sender, System.EventArgs e)
         {
 // TODO            ucoPartnerTabSet.DataSavingStartedEventFired();
-        }        
+        }
 
         private void EnableSave(bool Enable)
         {
@@ -2125,7 +2161,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 #endif
         }
-        
+
         #endregion
-    }   
+    }
 }

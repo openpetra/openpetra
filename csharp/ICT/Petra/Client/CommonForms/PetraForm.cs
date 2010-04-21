@@ -185,9 +185,12 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// todoComment
         /// </summary>
-        public virtual void RunOnceOnActivation()
+        public void RunOnceOnActivation()
         {
-            // Virtual method, for overridding only
+            if (FTheForm != null)
+            {
+                FTheForm.RunOnceOnActivation();
+            }
         }
 
         /** used to iterate through the controls on the form
@@ -364,18 +367,18 @@ namespace Ict.Petra.Client.CommonForms
                 case eActionId.eHelpDevelopmentTeam:
 #if TODO
                     using (DevelopmentTeamDialog teamDialog = new DevelopmentTeamDialog())
-                    {
-                        teamDialog.ShowDialog();
-                    }
+                          {
+                              teamDialog.ShowDialog();
+                          }
 #endif
                     break;
 
                 case eActionId.eHelpAbout:
 #if TODO
                     using (AboutPetraDialog aboutDialog = new AboutPetraDialog())
-                    {
-                        aboutDialog.ShowDialog();
-                    }
+                          {
+                              aboutDialog.ShowDialog();
+                          }
 #endif
                     break;
 

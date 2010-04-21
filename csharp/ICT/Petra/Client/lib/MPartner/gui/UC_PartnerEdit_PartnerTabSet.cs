@@ -120,7 +120,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 // TODO        private TUCPartnerRelationships FUcoRelationships;
 // TODO        private TUCPartnerReminders FUcoReminders;
 // TODO                private Boolean FTabSetupPartnerSubscriptions;
-        private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;
+        private SortedList <TDynamicLoadableUserControls, UserControl>FTabSetup;
+
 //        private Boolean FTabSetupPartnerTypes;
         private Boolean FTabSetupPartnerAddresses;
         private Boolean FTabSetupPartnerDetails;
@@ -274,7 +275,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        public TUC_PartnerEdit_PartnerTabSet() : base()
+        public TUC_PartnerEdit_PartnerTabSet() : base ()
         {
             //
             // Required for Windows Form Designer support
@@ -553,8 +554,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Determine which Tabs to show in the ucoPartnerTabSet
             FPartnerClass = FMainDS.PPartner[0].PartnerClass;
             TabsToHide = new ArrayList();
-            FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
-            
+            FTabSetup = new SortedList <TDynamicLoadableUserControls, UserControl>();
+
             if (FPartnerClass == "PERSON")
             {
                 TabsToHide.Add("tbpFoundationDetails");
@@ -829,7 +830,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private UserControl DynamicLoadUserControl(TDynamicLoadableUserControls AUserControl)
         {
             UserControl ReturnValue = null;
-            
+
             switch (AUserControl)
             {
                 case TDynamicLoadableUserControls.dlucAddresses:
@@ -1032,7 +1033,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TDynamicLoadableUserControls.dlucPartnerTypes:
                     TUCPartnerTypes TabUserControl = new TUCPartnerTypes();
-                    
+
                     FTabSetup.Add(TDynamicLoadableUserControls.dlucPartnerTypes, TabUserControl);
                     TabUserControl.Location = new Point(0, 2);
                     TabUserControl.Dock = DockStyle.Fill;
@@ -1229,7 +1230,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 #endif
             }
-            
+
             return ReturnValue;
         }
 
@@ -1740,11 +1741,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (tabPartnerTab.SelectedTab == tbpPartnerTypes)
             {
                 this.FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerTypes;
-                                
+
                 if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerTypes))
                 {
                     TUCPartnerTypes TabUserControl;
-                    
+
                     if (TClientSettings.DelayedDataLoading)
                     {
                         // Signalise the user that data is beeing loaded
@@ -1761,7 +1762,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // MessageBox.Show('TabSetupPartnerTypes finished');
 //                    FTabSetupPartnerTypes = true;
-                    
+
                     this.Cursor = Cursors.Default;
                 }
             }

@@ -557,7 +557,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         #endregion
 
         #region Creation and Disposal
-        public TUC_PartnerDetailsBank() : base()
+        public TUC_PartnerDetailsBank() : base ()
         {
             //
             // Required for Windows Form Designer support
