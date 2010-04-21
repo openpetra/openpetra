@@ -227,6 +227,12 @@ namespace Ict.Petra.Client.MCommon
             FLogic = new TUCPartnerAddressesLogic();
         }
 
+        
+        public void InitUserControl()
+        {
+            
+        }
+        
         private TFrmPetraEditUtils FPetraUtilsObject;
 
         /// <summary>

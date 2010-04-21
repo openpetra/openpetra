@@ -72,28 +72,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlContent = new System.Windows.Forms.Panel();
             this.tabPartners = new Ict.Common.Controls.TTabVersatile();
             this.tpgAddresses = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.lblTest = new System.Windows.Forms.Label();
             this.tpgDetails = new System.Windows.Forms.TabPage();
-            this.ucoPartnerDetails = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Person2();
             this.tpgFoundationDetails = new System.Windows.Forms.TabPage();
             this.tpgSubscriptions = new System.Windows.Forms.TabPage();
             this.tpgSpecialTypes = new System.Windows.Forms.TabPage();
             this.tpgFamilyMembers = new System.Windows.Forms.TabPage();
-            this.tpgOfficeSpecific = new System.Windows.Forms.TabPage();
             this.tpgNotes = new System.Windows.Forms.TabPage();
+            this.tpgOfficeSpecific = new System.Windows.Forms.TabPage();
 
             this.pnlContent.SuspendLayout();
             this.tabPartners.SuspendLayout();
             this.tpgAddresses.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
             this.tpgDetails.SuspendLayout();
             this.tpgFoundationDetails.SuspendLayout();
             this.tpgSubscriptions.SuspendLayout();
             this.tpgSpecialTypes.SuspendLayout();
             this.tpgFamilyMembers.SuspendLayout();
-            this.tpgOfficeSpecific.SuspendLayout();
             this.tpgNotes.SuspendLayout();
+            this.tpgOfficeSpecific.SuspendLayout();
 
             //
             // pnlContent
@@ -108,26 +104,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tpgAddresses.Location = new System.Drawing.Point(2,2);
             this.tpgAddresses.Name = "tpgAddresses";
             this.tpgAddresses.AutoSize = true;
-            //
-            // tableLayoutPanel1
-            //
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.AutoSize = true;
-            this.tpgAddresses.Controls.Add(this.tableLayoutPanel1);
-            //
-            // lblTest
-            //
-            this.lblTest.Location = new System.Drawing.Point(2,2);
-            this.lblTest.Name = "lblTest";
-            this.lblTest.AutoSize = true;
-            this.lblTest.Text = "Test only:";
-            this.lblTest.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.lblTest, 0, 0);
             this.tpgAddresses.Text = "Addresses ({0})";
             this.tpgAddresses.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -136,12 +112,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tpgDetails.Location = new System.Drawing.Point(2,2);
             this.tpgDetails.Name = "tpgDetails";
             this.tpgDetails.AutoSize = true;
-            this.tpgDetails.Controls.Add(this.ucoPartnerDetails);
-            //
-            // ucoPartnerDetails
-            //
-            this.ucoPartnerDetails.Name = "ucoPartnerDetails";
-            this.ucoPartnerDetails.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tpgDetails.Text = "Partner Details";
             this.tpgDetails.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -177,14 +147,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tpgFamilyMembers.Text = "Family Members";
             this.tpgFamilyMembers.Dock = System.Windows.Forms.DockStyle.Fill;
             //
-            // tpgOfficeSpecific
-            //
-            this.tpgOfficeSpecific.Location = new System.Drawing.Point(2,2);
-            this.tpgOfficeSpecific.Name = "tpgOfficeSpecific";
-            this.tpgOfficeSpecific.AutoSize = true;
-            this.tpgOfficeSpecific.Text = "Local Data";
-            this.tpgOfficeSpecific.Dock = System.Windows.Forms.DockStyle.Fill;
-            //
             // tpgNotes
             //
             this.tpgNotes.Location = new System.Drawing.Point(2,2);
@@ -192,6 +154,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tpgNotes.AutoSize = true;
             this.tpgNotes.Text = "Notes ({0})";
             this.tpgNotes.Dock = System.Windows.Forms.DockStyle.Fill;
+            //
+            // tpgOfficeSpecific
+            //
+            this.tpgOfficeSpecific.Location = new System.Drawing.Point(2,2);
+            this.tpgOfficeSpecific.Name = "tpgOfficeSpecific";
+            this.tpgOfficeSpecific.AutoSize = true;
+            this.tpgOfficeSpecific.Text = "Local Data";
+            this.tpgOfficeSpecific.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tabPartners
             //
@@ -203,8 +173,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tabPartners.Controls.Add(this.tpgSubscriptions);
             this.tabPartners.Controls.Add(this.tpgSpecialTypes);
             this.tabPartners.Controls.Add(this.tpgFamilyMembers);
-            this.tabPartners.Controls.Add(this.tpgOfficeSpecific);
             this.tabPartners.Controls.Add(this.tpgNotes);
+            this.tabPartners.Controls.Add(this.tpgOfficeSpecific);
+            this.tabPartners.SelectedIndexChanged += new System.EventHandler(this.TabSelectionChanged);
 
             //
             // TUC_PartnerEdit_PartnerTabSet2
@@ -217,14 +188,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Text = "";
 
 	
-            this.tpgNotes.ResumeLayout(false);
             this.tpgOfficeSpecific.ResumeLayout(false);
+            this.tpgNotes.ResumeLayout(false);
             this.tpgFamilyMembers.ResumeLayout(false);
             this.tpgSpecialTypes.ResumeLayout(false);
             this.tpgSubscriptions.ResumeLayout(false);
             this.tpgFoundationDetails.ResumeLayout(false);
             this.tpgDetails.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
             this.tpgAddresses.ResumeLayout(false);
             this.tabPartners.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
@@ -234,15 +204,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Panel pnlContent;
         private Ict.Common.Controls.TTabVersatile tabPartners;
         private System.Windows.Forms.TabPage tpgAddresses;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Label lblTest;
         private System.Windows.Forms.TabPage tpgDetails;
-        private Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Person2 ucoPartnerDetails;
         private System.Windows.Forms.TabPage tpgFoundationDetails;
         private System.Windows.Forms.TabPage tpgSubscriptions;
         private System.Windows.Forms.TabPage tpgSpecialTypes;
         private System.Windows.Forms.TabPage tpgFamilyMembers;
-        private System.Windows.Forms.TabPage tpgOfficeSpecific;
         private System.Windows.Forms.TabPage tpgNotes;
+        private System.Windows.Forms.TabPage tpgOfficeSpecific;
     }
 }
