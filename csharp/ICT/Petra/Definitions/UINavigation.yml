@@ -33,7 +33,8 @@ OpenPetra:
                     Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
                     ImportExport: {Label=Import and Export}
-                        ImportPartners: {ActionClick=TFrmPartnerMain.ImportPartners}
+                        ImportPartners: {ActionClick=TFrmPartnerMain.ImportPartners, Label=Simple Import, Description="Import Partners, only useful for initial database setup"}
+                        ComplexImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Sophisticated Import, Description=Import Partners without overwriting}
                         ExportPartners: {ActionClick=TFrmPartnerMain.ExportPartners}
                 Ledger43: {Label=German Ledger (43), LedgerNumber=43, Namespace=Ict.Petra.Client.MFinance.Gui}
                     GL: 

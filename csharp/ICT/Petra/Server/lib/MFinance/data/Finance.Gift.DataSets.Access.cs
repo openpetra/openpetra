@@ -35,6 +35,7 @@ using Ict.Petra.Shared;
 using System;
 using System.Data;
 using System.Data.Odbc;
+using System.Collections.Generic;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -70,6 +71,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AMotivationGroup, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
@@ -78,6 +80,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGiftDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
@@ -86,6 +89,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGift, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
@@ -94,6 +98,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGiftBatch, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
@@ -102,6 +107,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.ALedger, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
@@ -110,6 +116,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.ALedger, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -118,6 +125,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGiftBatch, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -126,6 +134,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGift, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -134,6 +143,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGiftDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -142,6 +152,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AMotivationGroup, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -150,6 +161,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AMotivationDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -205,6 +217,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.ACostCentre, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
@@ -213,14 +226,16 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AEpMatch, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
-                            UserInfo.GUserInfo.UserID, "seq_match_number", "a_ep_match_key_i"))
+                            UserInfo.GUserInfo.UserID))
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AEpTransaction, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
@@ -229,22 +244,25 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AEpStatement, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
-                            UserInfo.GUserInfo.UserID, "seq_statement_number", "a_statement_key_i"))
+                            UserInfo.GUserInfo.UserID))
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.PBankingDetails, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
-                            UserInfo.GUserInfo.UserID, "seq_bank_details", "p_banking_details_key_i"))
+                            UserInfo.GUserInfo.UserID))
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGiftDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
@@ -253,6 +271,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGiftDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -261,22 +280,63 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PBankingDetails, SubmitChangesTransaction,
+
+                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                {
+                    SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
+                    Int32 rowIndex = 0;
+                    foreach (PBankingDetailsRow origRow in AInspectDS.PBankingDetails.Rows)
+                    {
+                        OldSequenceValuesRow.Add(origRow.BankingDetailsKey, rowIndex);
+                        rowIndex++;
+                    }
+                    if (!TTypedDataAccess.SubmitChanges(AInspectDS.PBankingDetails, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_bank_details", "p_banking_details_key_i"))
-                {
-                    SubmissionResult = TSubmitChangesResult.scrError;
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                    else
+                    {
+                        foreach (AEpStatementRow otherRow in AInspectDS.AEpStatement.Rows)
+                        {
+                            if (otherRow.BankAccountKey < 0)
+                            {
+                                otherRow.BankAccountKey = AInspectDS.PBankingDetails[OldSequenceValuesRow[otherRow.BankAccountKey]].BankingDetailsKey;
+                            }
+                        }
+                    }
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AEpStatement, SubmitChangesTransaction,
+
+                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                {
+                    SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
+                    Int32 rowIndex = 0;
+                    foreach (AEpStatementRow origRow in AInspectDS.AEpStatement.Rows)
+                    {
+                        OldSequenceValuesRow.Add(origRow.StatementKey, rowIndex);
+                        rowIndex++;
+                    }
+                    if (!TTypedDataAccess.SubmitChanges(AInspectDS.AEpStatement, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_statement_number", "a_statement_key_i"))
-                {
-                    SubmissionResult = TSubmitChangesResult.scrError;
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                    else
+                    {
+                        foreach (AEpTransactionRow otherRow in AInspectDS.AEpTransaction.Rows)
+                        {
+                            if (otherRow.StatementKey < 0)
+                            {
+                                otherRow.StatementKey = AInspectDS.AEpStatement[OldSequenceValuesRow[otherRow.StatementKey]].StatementKey;
+                            }
+                        }
+                    }
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AEpTransaction, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -285,14 +345,35 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.AEpMatch, SubmitChangesTransaction,
+
+                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                {
+                    SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
+                    Int32 rowIndex = 0;
+                    foreach (AEpMatchRow origRow in AInspectDS.AEpMatch.Rows)
+                    {
+                        OldSequenceValuesRow.Add(origRow.EpMatchKey, rowIndex);
+                        rowIndex++;
+                    }
+                    if (!TTypedDataAccess.SubmitChanges(AInspectDS.AEpMatch, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID, "seq_match_number", "a_ep_match_key_i"))
-                {
-                    SubmissionResult = TSubmitChangesResult.scrError;
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                    else
+                    {
+                        foreach (AEpTransactionRow otherRow in AInspectDS.AEpTransaction.Rows)
+                        {
+                            if (otherRow.EpMatchKey < 0)
+                            {
+                                otherRow.EpMatchKey = AInspectDS.AEpMatch[OldSequenceValuesRow[otherRow.EpMatchKey]].EpMatchKey;
+                            }
+                        }
+                    }
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.ACostCentre, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -301,6 +382,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AMotivationDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -356,6 +438,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGift, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,

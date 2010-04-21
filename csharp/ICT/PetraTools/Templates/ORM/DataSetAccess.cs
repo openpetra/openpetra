@@ -11,6 +11,7 @@ using Ict.Petra.Shared;
 using System;
 using System.Data;
 using System.Data.Odbc;
+using System.Collections.Generic;
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}.Access
@@ -66,11 +67,45 @@ static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS, out 
 }
 
 {##SUBMITCHANGES}
-if (SubmissionResult == TSubmitChangesResult.scrOK 
+{#IFNDEF UPDATESEQUENCEINOTHERTABLES}
+if (SubmissionResult == TSubmitChangesResult.scrOK
     && !TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
             TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
             out AVerificationResult,
             UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD}))
 {
     SubmissionResult = TSubmitChangesResult.scrError;
+}
+{#ENDIFN UPDATESEQUENCEINOTHERTABLES}
+{#IFDEF UPDATESEQUENCEINOTHERTABLES}
+if (SubmissionResult == TSubmitChangesResult.scrOK)
+{
+    SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
+    Int32 rowIndex = 0;
+    foreach ({#TABLEROWTYPE} origRow in AInspectDS.{#TABLEVARIABLENAME}.Rows)
+    {
+        OldSequenceValuesRow.Add(origRow.{#SEQUENCEDCOLUMNNAME}, rowIndex);
+        rowIndex++;
+    }
+    if (!TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
+            TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
+            out AVerificationResult,
+            UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD}))
+    {
+        SubmissionResult = TSubmitChangesResult.scrError;
+    }
+    else
+    {
+        {#UPDATESEQUENCEINOTHERTABLES}
+    }
+}
+{#ENDIF UPDATESEQUENCEINOTHERTABLES}
+
+{##UPDATESEQUENCEINOTHERTABLES}
+foreach ({#REFERENCINGTABLEROWTYPE} otherRow in AInspectDS.{#REFERENCINGTABLENAME}.Rows)
+{
+    if (otherRow.{#REFCOLUMNNAME} < 0)
+    {
+        otherRow.{#REFCOLUMNNAME} = AInspectDS.{#TABLEVARIABLENAME}[OldSequenceValuesRow[otherRow.{#REFCOLUMNNAME}]].{#SEQUENCEDCOLUMNNAME};
+    }
 }

@@ -76,8 +76,8 @@
         <CustomTable name="PartnerTypeChangeFamilyMembersPromotion">
             <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
             <CustomField name="TypeCode" type="string"/>
-      <CustomField name="AddTypeCode" type="bool"/>              
-      <CustomField name="RemoveTypeCode" type="bool"/>
+            <CustomField name="AddTypeCode" type="bool"/>              
+            <CustomField name="RemoveTypeCode" type="bool"/>
             <PrimaryKey thisFields="PartnerKey,TypeCode,AddTypeCode"/>
         </CustomTable>
         <CustomRelation name="Address" 
@@ -198,4 +198,14 @@
         </CustomTable>        
     </DataSet>    
     
+    <DataSet name="SimplePartnerFindTDS">
+        <Table name="SearchResult" sqltable="p_location">
+            <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
+            <Field sqltable="p_partner" sqlfield="p_status_code_c"/>
+            <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
+            <Field sqltable="p_person" sqlfield="p_first_name_c"/>
+            <Field sqltable="p_person" sqlfield="p_family_name_c"/>
+        </Table>
+    </DataSet>
+
 </PetraDataSets>
