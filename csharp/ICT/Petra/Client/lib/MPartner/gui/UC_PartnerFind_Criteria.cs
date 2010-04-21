@@ -291,7 +291,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        public TUC_PartnerFindCriteria() : base()
+        public TUC_PartnerFindCriteria() : base ()
         {
             //
             // Required for Windows Form Designer support
@@ -2507,7 +2507,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             Boolean IsFirstInColumn,
             Boolean IsLastInColumn,
             Int32 PositionInCriteriaColumn) :
-            base()
+            base ()
         {
             FSelectedCriteriaPanel = SelectedCriteriaPanel;
             FCriteriaColumn = CriteriaColumn;

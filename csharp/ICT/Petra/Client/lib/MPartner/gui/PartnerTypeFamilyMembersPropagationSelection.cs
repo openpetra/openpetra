@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -232,7 +232,7 @@ todo: move statusbar things to constructor
         #endregion
 
         #region Creation and Disposal
-        public TPartnerTypeFamilyMembersPropagationSelectionWinForm() : base()
+        public TPartnerTypeFamilyMembersPropagationSelectionWinForm() : base ()
         {
             //
             // Required for Windows Form Designer support

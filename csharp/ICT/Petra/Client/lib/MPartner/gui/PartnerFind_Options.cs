@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private ArrayList FCriteriaFieldsRightDefaultOrder;
         private String FLastSelectedCriteria;
 
-        public TFindOptionsForm() : base()
+        public TFindOptionsForm() : base ()
         {
             //
             // Required for Windows Form Designer support
@@ -897,14 +897,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         public TFindCriteriaColumn CriteriaColumn;
 
         #region TFindCriteriaListItem
-        public TFindCriteriaListItem(String ADisplayName, String AInternalName, TFindCriteriaColumn ACriteriaColumn) : base()
+        public TFindCriteriaListItem(String ADisplayName, String AInternalName, TFindCriteriaColumn ACriteriaColumn) : base ()
         {
             DisplayName = ADisplayName;
             InternalName = AInternalName;
             CriteriaColumn = ACriteriaColumn;
         }
 
-        public TFindCriteriaListItem() : base()
+        public TFindCriteriaListItem() : base ()
         {
         }
 

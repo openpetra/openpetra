@@ -92,9 +92,14 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
+
+    }
+    
+    public void InitChildUserControl()
+    {
         ucoPartnerTabSet.PetraUtilsObject = FPetraUtilsObject;
         ucoPartnerTabSet.MainDS = FMainDS;
-        ucoPartnerTabSet.InitUserControl();
+        ucoPartnerTabSet.InitUserControl();        
     }
 
 #region Implement interface functions

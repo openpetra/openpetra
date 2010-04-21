@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -258,7 +258,7 @@ namespace Ict.Petra.Client.MPartner
         /// <summary>
         /// constructor
         /// </summary>
-        public TUCPartnerSubscriptionsLogic() : base()
+        public TUCPartnerSubscriptionsLogic() : base ()
         {
         }
 

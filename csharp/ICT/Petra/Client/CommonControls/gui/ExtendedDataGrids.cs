@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -130,7 +130,7 @@ namespace Ict.Petra.Client.CommonControls
         /// constructor
         /// </summary>
         public TDataGridControlledSort()
-            : base()
+            : base ()
         {
             FNotSortableColumns = new ArrayList();
         }

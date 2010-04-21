@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>
         /// constructor
         /// </summary>
-        public TUnhandledExceptionForm() : base()
+        public TUnhandledExceptionForm() : base ()
         {
             // TODO TUnhandledExceptionForm
         }

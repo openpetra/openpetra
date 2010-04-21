@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -34,19 +34,19 @@ namespace Ict.Petra.Client.MPartner.Gui
     public partial class TUC_PartnerEdit_TopPart
     {
         #region Fields
-        
+
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-        
+
         private String FPartnerClass;
 
         /// <summary>Used for keeping track of data verification errors</summary>
         private TVerificationResultCollection FVerificationResultCollection;
-        
+
         #endregion
-        
+
         #region Events
-        
+
         /// <summary>
         /// This Event is thrown when the 'main data' of a DataTable for a certain
         /// PartnerClass has changed.
@@ -55,9 +55,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         public event TPartnerClassMainDataChangedHandler PartnerClassMainDataChanged;
 
         #endregion
-        
+
         #region Properties
-        
+
         /// <summary>UIConnector that the screen uses</summary>
         public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
         {
@@ -85,22 +85,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FVerificationResultCollection = value;
             }
         }
-        
+
         #endregion
-        
-        
+
+
         #region Public Methods
-        
+
         /// <summary>
         /// Shows the data that is in FMainDS
         /// </summary>
         public void ShowData()
         {
             FPartnerClass = FMainDS.PPartner[0].PartnerClass.ToString();
-            
+
             ShowData(FMainDS.PPartner[0]);
         }
-                       
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -124,16 +124,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return TmpString;
         }
-        
+
         #endregion
-        
+
         #region Actions
-        
+
         private void MaintainWorkerField(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
         }
-        
+
         #endregion
     }
 }

@@ -1027,7 +1027,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Define the screen's logic.
         /// </summary>
         /// <returns>void</returns>
-        public TUCPartnerSubscriptions() : base()
+        public TUCPartnerSubscriptions() : base ()
         {
             //
             // Required for Windows Form Designer support

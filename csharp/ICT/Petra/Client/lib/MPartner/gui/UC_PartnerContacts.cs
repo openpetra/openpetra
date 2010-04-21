@@ -153,7 +153,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TUCPartnerContacts() : base()
+        public TUCPartnerContacts() : base ()
         {
             //
             // Required for Windows Form Designer support

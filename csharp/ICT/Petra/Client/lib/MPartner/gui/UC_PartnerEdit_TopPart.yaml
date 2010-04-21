@@ -60,7 +60,7 @@ RootNode:
             Width: 115
         pnlFamily:
             Controls: 
-                Row1: [txtTitle, txtFirstName, txtFamilyName]
+                Row1: [txtFamilyTitle, txtFirstName, txtFamilyName]
                 Row2: [lblEmpty, cmbAddresseeTypeCode, chkNoSolicitations]
             Dock: Top              
         txtPartnerKey:
@@ -71,8 +71,8 @@ RootNode:
         txtPartnerClass:
             ReadOnly: true
             Label: Class
-        txtTitle:
-            Label: Title/Na&me
+        txtFamilyTitle:
+            Label: Title/Na&me            
             Width: 90
             DataField: PFamily.Title
         txtFirstName:
@@ -93,13 +93,13 @@ RootNode:
 
         pnlPerson:
             Controls: 
-                Row1: [txtTitlePers, txtFirstNamePers, txtMiddleName1, txtFamilyNamePers]
+                Row1: [txtPersonTitle, txtFirstNamePers, txtMiddleName1, txtFamilyNamePers]
                 Row2: [cmbGender, cmbAddresseeTypeCodePers, chkNoSolicitationsPers]
             Dock: Top
             Visible: False
         lblEmpty3:
             NoLabel: true                        
-        txtTitlePers:
+        txtPersonTitle:
             Label: Title/Na&me
             DataField: PPerson.Title
             Width: 90

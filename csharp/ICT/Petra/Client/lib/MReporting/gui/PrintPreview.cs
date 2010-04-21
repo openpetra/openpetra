@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="results"></param>
         /// <param name="parameters"></param>
         public TFrmPrintPreview(IntPtr ACallerWindowHandle, String caption, TimeSpan duration, TResultList results, TParameterList parameters)
-            : base()
+            : base ()
         {
             FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(ACallerWindowHandle, this, stbMain);
 

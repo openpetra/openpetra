@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -361,7 +361,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
-        public TUC_PartnerEdit_PersonnelTabSet() : base()
+        public TUC_PartnerEdit_PersonnelTabSet() : base ()
         {
             //
             // Required for Windows Form Designer support

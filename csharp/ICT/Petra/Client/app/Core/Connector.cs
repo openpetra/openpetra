@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -560,14 +560,14 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         /// <param name="strConnectionString"></param>
         /// <param name="inExp"></param>
-        public ServerIPAddressNotFoundInConfigurationFileException(string strConnectionString, Exception inExp) : base(strConnectionString, inExp)
+        public ServerIPAddressNotFoundInConfigurationFileException(string strConnectionString, Exception inExp) : base (strConnectionString, inExp)
         {
         }
 
         /// <summary>
         /// constructor
         /// </summary>
-        public ServerIPAddressNotFoundInConfigurationFileException() : base()
+        public ServerIPAddressNotFoundInConfigurationFileException() : base ()
         {
         }
 
@@ -575,7 +575,7 @@ namespace Ict.Petra.Client.App.Core
         /// constructor
         /// </summary>
         /// <param name="AMessage"></param>
-        public ServerIPAddressNotFoundInConfigurationFileException(string AMessage) : base(AMessage)
+        public ServerIPAddressNotFoundInConfigurationFileException(string AMessage) : base (AMessage)
         {
         }
 

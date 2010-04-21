@@ -655,7 +655,7 @@ todo: split designer file
         /// <summary>
         /// constructor
         /// </summary>
-        public TUC_FamilyMembers() : base()
+        public TUC_FamilyMembers() : base ()
         {
             //
             // Required for Windows Form Designer support

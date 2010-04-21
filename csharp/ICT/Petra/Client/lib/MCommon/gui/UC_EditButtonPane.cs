@@ -357,7 +357,7 @@ namespace Ict.Petra.Client.MCommon
         /// <summary>
         /// constructor
         /// </summary>
-        public TUC_EditButtonPane() : base()
+        public TUC_EditButtonPane() : base ()
         {
             //
             // Required for Windows Form Designer support

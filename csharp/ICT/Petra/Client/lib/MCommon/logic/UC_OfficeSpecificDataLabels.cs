@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -1258,7 +1258,7 @@ namespace Ict.Petra.Client.MCommon
         /// <summary>
         /// constructor
         /// </summary>
-        public TUCOfficeSpecificDataLabelsLogic() : base()
+        public TUCOfficeSpecificDataLabelsLogic() : base ()
         {
             // initialize members
             FGridIsSetUp = false;
@@ -1328,7 +1328,7 @@ namespace Ict.Petra.Client.MCommon
         /// <summary>
         /// constructor
         /// </summary>
-        public TGridRowInfo() : base()
+        public TGridRowInfo() : base ()
         {
         }
 
@@ -1538,7 +1538,7 @@ namespace Ict.Petra.Client.MCommon
         /// <summary>
         /// constructor
         /// </summary>
-        public TCellEventNotificationController() : base()
+        public TCellEventNotificationController() : base ()
         {
         }
 

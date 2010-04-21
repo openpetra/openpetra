@@ -99,7 +99,7 @@ namespace Ict.Petra.Client.CommonDialogs
         /// <summary>
         /// constructor
         /// </summary>
-        public TLoginForm() : base()
+        public TLoginForm() : base ()
         {
             //
             // Required for Windows Form Designer support

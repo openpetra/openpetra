@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -109,7 +109,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// constructor
         /// </summary>
-        public TFormsList() : base()
+        public TFormsList() : base ()
         {
             WindowRelationship = new SortedList();
         }

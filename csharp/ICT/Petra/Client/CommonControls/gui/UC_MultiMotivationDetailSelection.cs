@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.CommonControls
         /// constructor
         /// </summary>
         public TUC_MultiMotivationDetailSelection()
-            : base()
+            : base ()
         {
             //
             // Required for Windows Form Designer support

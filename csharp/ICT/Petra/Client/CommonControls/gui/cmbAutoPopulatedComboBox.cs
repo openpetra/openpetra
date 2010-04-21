@@ -267,7 +267,7 @@ namespace Ict.Petra.Client.CommonControls
         /// constructor
         /// </summary>
         public TCmbAutoPopulated()
-            : base()
+            : base ()
         {
             //
             // Required for Windows Form Designer support

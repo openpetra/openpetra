@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -290,7 +290,7 @@ namespace Ict.Petra.Client.MCommon
         #endregion
 
         #region Creation and Disposal
-        public TPartnerLocationChangePropagationSelectionWinForm() : base()
+        public TPartnerLocationChangePropagationSelectionWinForm() : base ()
         {
             //
             // Required for Windows Form Designer support
