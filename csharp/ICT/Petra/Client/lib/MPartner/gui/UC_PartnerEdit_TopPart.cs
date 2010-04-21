@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.lblPartnerKey.Text = Catalog.GetString("Key:");
       this.lblEmpty2.Text = Catalog.GetString("Empty2:");
       this.lblPartnerClass.Text = Catalog.GetString("Class:");
-      this.lblTitle.Text = Catalog.GetString("Title/Na&me:");
+      this.lblFamilyTitle.Text = Catalog.GetString("Title/Na&me:");
       this.lblEmpty.Text = Catalog.GetString("Empty:");
       this.lblAddresseeTypeCode.Text = Catalog.GetString("&Addressee Type:");
       this.chkNoSolicitations.Text = Catalog.GetString("No Solicitations");
@@ -106,7 +106,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         FPetraUtilsObject.SetStatusBarText(txtPartnerKey, Catalog.GetString("Enter the partner key (SiteID + Number)"));
         FPetraUtilsObject.SetStatusBarText(txtPartnerClass, Catalog.GetString("Select a partner class"));
-        FPetraUtilsObject.SetStatusBarText(txtTitle, Catalog.GetString("e.g. Family, Mr & Mrs, Herr und Frau"));
+        FPetraUtilsObject.SetStatusBarText(txtFamilyTitle, Catalog.GetString("e.g. Family, Mr & Mrs, Herr und Frau"));
         FPetraUtilsObject.SetStatusBarText(txtFirstName, Catalog.GetString("Enter the person's full first name"));
         FPetraUtilsObject.SetStatusBarText(txtFamilyName, Catalog.GetString("Enter a Last Name/Surname/Family Name"));
         FPetraUtilsObject.SetStatusBarText(cmbAddresseeTypeCode, Catalog.GetString("Enter an addressee type code"));
@@ -137,11 +137,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
         if (FMainDS.PFamily[0].IsTitleNull())
         {
-            txtTitle.Text = String.Empty;
+            txtFamilyTitle.Text = String.Empty;
         }
         else
         {
-            txtTitle.Text = FMainDS.PFamily[0].Title;
+            txtFamilyTitle.Text = FMainDS.PFamily[0].Title;
         }
         if (FMainDS.PFamily[0].IsFirstNameNull())
         {

@@ -25,10 +25,24 @@
  ************************************************************************/
 using System;
 
+using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.MPartner;
+
 namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_PartnerEdit_LowerPart
     {
+        #region Fields
+        
+        /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
+        private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
+        
+        private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
+        private TPartnerEditTabPageEnum FCurrentlySelectedTabPage;
+        private TDelegateIsNewPartner FDelegateIsNewPartner;
+        
+        #endregion
+        
         #region Events
         
         /// <summary>todoComment</summary>
@@ -37,6 +51,66 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public event System.EventHandler DataLoadingFinished;
         
+        #endregion
+        
+        #region Properties
+        
+        /// <summary>todoComment</summary>
+        public TPartnerEditTabPageEnum InitiallySelectedTabPage
+        {
+            get
+            {
+                return FInitiallySelectedTabPage;
+            }
+
+            set
+            {
+                FInitiallySelectedTabPage = value;
+            }
+        }
+
+        /// <summary>todoComment</summary>
+        public TPartnerEditTabPageEnum CurrentlySelectedTabPage
+        {
+            get
+            {
+                return FCurrentlySelectedTabPage;
+            }
+
+            set
+            {
+                FCurrentlySelectedTabPage = value;
+            }
+        }
+
+        /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
+        public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
+        {
+            get
+            {
+                return FPartnerEditUIConnector;
+            }
+
+            set
+            {
+                FPartnerEditUIConnector = value;
+            }
+        }
+        
+        #endregion
+        
+        #region Public Methods
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="ADelegateFunction"></param>
+        public void InitialiseDelegateIsNewPartner(TDelegateIsNewPartner ADelegateFunction)
+        {
+            // set the delegate function from the calling System.Object
+            FDelegateIsNewPartner = ADelegateFunction;
+        }
+
         #endregion
     }
 }

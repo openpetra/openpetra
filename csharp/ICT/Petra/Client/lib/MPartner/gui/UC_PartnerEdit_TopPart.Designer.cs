@@ -81,8 +81,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerClass = new System.Windows.Forms.Label();
             this.pnlFamily = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtTitle = new System.Windows.Forms.TextBox();
-            this.lblTitle = new System.Windows.Forms.Label();
+            this.txtFamilyTitle = new System.Windows.Forms.TextBox();
+            this.lblFamilyTitle = new System.Windows.Forms.Label();
             this.txtFirstName = new System.Windows.Forms.TextBox();
             this.txtFamilyName = new System.Windows.Forms.TextBox();
             this.lblEmpty = new System.Windows.Forms.Label();
@@ -218,19 +218,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.AutoSize = true;
             this.pnlFamily.Controls.Add(this.tableLayoutPanel2);
             //
-            // txtTitle
+            // txtFamilyTitle
             //
-            this.txtTitle.Location = new System.Drawing.Point(2,2);
-            this.txtTitle.Name = "txtTitle";
-            this.txtTitle.Size = new System.Drawing.Size(90, 28);
+            this.txtFamilyTitle.Location = new System.Drawing.Point(2,2);
+            this.txtFamilyTitle.Name = "txtFamilyTitle";
+            this.txtFamilyTitle.Size = new System.Drawing.Size(90, 28);
             //
-            // lblTitle
+            // lblFamilyTitle
             //
-            this.lblTitle.Location = new System.Drawing.Point(2,2);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.AutoSize = true;
-            this.lblTitle.Text = "Title/Na&me:";
-            this.lblTitle.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblFamilyTitle.Location = new System.Drawing.Point(2,2);
+            this.lblFamilyTitle.Name = "lblFamilyTitle";
+            this.lblFamilyTitle.AutoSize = true;
+            this.lblFamilyTitle.Text = "Title/Na&me:";
+            this.lblFamilyTitle.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // txtFirstName
             //
@@ -283,10 +283,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.lblTitle, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblFamilyTitle, 0, 0);
             this.tableLayoutPanel2.SetColumnSpan(this.lblEmpty, 2);
             this.tableLayoutPanel2.Controls.Add(this.lblEmpty, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtTitle, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtFamilyTitle, 1, 0);
             this.tableLayoutPanel2.SetColumnSpan(this.txtFirstName, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtFirstName, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblAddresseeTypeCode, 2, 1);
@@ -462,8 +462,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Label lblPartnerClass;
         private System.Windows.Forms.Panel pnlFamily;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox txtTitle;
-        private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.TextBox txtFamilyTitle;
+        private System.Windows.Forms.Label lblFamilyTitle;
         private System.Windows.Forms.TextBox txtFirstName;
         private System.Windows.Forms.TextBox txtFamilyName;
         private System.Windows.Forms.Label lblEmpty;

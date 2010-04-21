@@ -815,6 +815,13 @@ namespace Ict.Petra.Client.MPartner.Gui
              * Setup the bottom part of the screen - that is the TabSet that corresponds 
              * with the initially selected TabPage
              */
+            ucoLowerPart.MainDS = FMainDS;
+            ucoLowerPart.PetraUtilsObject = FPetraUtilsObject;
+            ucoLowerPart.PartnerEditUIConnector = FPartnerEditUIConnector;
+            ucoLowerPart.InitiallySelectedTabPage = FInitiallySelectedTabPage;
+            ucoLowerPart.InitialiseDelegateIsNewPartner(@IsNewPartner);            
+            ucoLowerPart.InitChildUserControl();
+            
             switch (FCurrentModuleTabGroup) 
             {
                 case TModuleSwitchEnum.msPartner:
@@ -2042,6 +2049,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             this.Text = CaptionPrefix + StrScreenCaption + " - " + ucoUpperPart.PartnerQuickInfo(true);
+        }
+        
+        /// <summary>
+        /// Determines whether the current Partner was just created and has not been
+        /// saved yet.
+        /// </summary>
+        /// <param name="AInspectDataSet">DataSet in which the check should be performed on</param>
+        /// <returns>true if the currently edit partner was just created, and has not
+        /// been saved yet
+        /// </returns>
+        private bool IsNewPartner(PartnerEditTDS AInspectDataSet)
+        {
+            return !AInspectDataSet.PPartner[0].HasVersion(DataRowVersion.Original);
         }
         
         private void ApplySecurity()
