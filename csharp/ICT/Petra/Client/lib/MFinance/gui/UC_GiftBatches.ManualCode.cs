@@ -189,5 +189,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPetraUtilsObject.DisableSaveButton();
             }
         }
+
+        private void ChangeBatchFilter(System.Object sender, System.EventArgs e)
+        {
+            if ((FMainDS == null) || (FMainDS.AGiftBatch == null))
+            {
+                return;
+            }
+
+            if (rbtAll.Checked)
+            {
+                FMainDS.AGiftBatch.DefaultView.RowFilter = "";
+            }
+            else if (rbtEditing.Checked)
+            {
+                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0}={1}",
+                    AGiftBatchTable.GetBatchStatusDBName(),
+                    MFinanceConstants.BATCH_UNPOSTED);
+            }
+            else if (rbtPosted.Checked)
+            {
+                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0}={1}",
+                    AGiftBatchTable.GetBatchStatusDBName(),
+                    MFinanceConstants.BATCH_POSTED);
+            }
+        }
+
+        private void ExportBatches(System.Object sender, System.EventArgs e)
+        {
+            // todo: get the batch numbers of all selected batches, and send to the server, to create an exportable file
+        }
+
+        private void ImportBatches(System.Object sender, System.EventArgs e)
+        {
+        }
     }
 }

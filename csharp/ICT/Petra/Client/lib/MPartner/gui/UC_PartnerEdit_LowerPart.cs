@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblDynamicLoad.Text = Catalog.GetString("Controls are added dynamically at runtime!:");
+      this.lblDynamicLoad.Text = Catalog.GetString("Controls are added dynamically at runtime! See below for an example!:");
       #endregion
 
     }
@@ -92,6 +92,9 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
+        ucoPartnerTabSet.PetraUtilsObject = FPetraUtilsObject;
+        ucoPartnerTabSet.MainDS = FMainDS;
+        ucoPartnerTabSet.InitUserControl();
     }
 
 #region Implement interface functions

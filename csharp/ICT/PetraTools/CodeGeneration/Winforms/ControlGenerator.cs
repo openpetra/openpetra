@@ -497,7 +497,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 if ((TXMLParser.GetAttribute(curNode, "Type") == "PartnerKey")
-                    || (TXMLParser.GetAttribute(curNode, "Type") == "Extract"))
+                    || (TXMLParser.GetAttribute(curNode, "Type") == "Extract")
+                    || (TXMLParser.GetAttribute(curNode, "Type") == "Occupation"))
                 {
                     return false;
                 }
@@ -702,11 +703,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                     else if (ctrl.HasAttribute("TableName"))
                     {
-                        field = FCodeStorage.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster, true);
+                        field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster, true);
                     }
                     else
                     {
-                        field = FCodeStorage.GetTableField(null, ColumnFieldName, out IsDetailNotMaster, true);
+                        field = TDataBinding.GetTableField(null, ColumnFieldName, out IsDetailNotMaster, true);
                     }
 
                     if (field != null)
@@ -748,13 +749,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                         if ((SortOrderPart.Split(' ')[0].IndexOf(".") == -1) && ctrl.HasAttribute("TableName"))
                         {
-                            field = FCodeStorage.GetTableField(null, ctrl.GetAttribute("TableName") + "." + SortOrderPart.Split(
+                            field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + SortOrderPart.Split(
                                     ' ')[0], out temp, true);
                         }
                         else
                         {
                             field =
-                                writer.CodeStorage.GetTableField(
+                                TDataBinding.GetTableField(
                                     null,
                                     SortOrderPart.Split(' ')[0],
                                     out temp, true);
@@ -781,7 +782,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         bool temp;
                         string columnName =
-                            writer.CodeStorage.GetTableField(
+                            TDataBinding.GetTableField(
                                 null,
                                 RowFilterPart,
                                 out temp, true).strName;
@@ -874,11 +875,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                     else if (ctrl.HasAttribute("TableName"))
                     {
-                        field = FCodeStorage.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster, true);
+                        field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster, true);
                     }
                     else
                     {
-                        field = FCodeStorage.GetTableField(null, ColumnFieldName, out IsDetailNotMaster, true);
+                        field = TDataBinding.GetTableField(null, ColumnFieldName, out IsDetailNotMaster, true);
                     }
 
                     if (field != null)
@@ -934,13 +935,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                         if ((SortOrderPart.Split(' ')[0].IndexOf(".") == -1) && ctrl.HasAttribute("TableName"))
                         {
-                            field = FCodeStorage.GetTableField(null, ctrl.GetAttribute("TableName") + "." + SortOrderPart.Split(
+                            field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + SortOrderPart.Split(
                                     ' ')[0], out temp, true);
                         }
                         else
                         {
                             field =
-                                writer.CodeStorage.GetTableField(
+                                TDataBinding.GetTableField(
                                     null,
                                     SortOrderPart.Split(' ')[0],
                                     out temp, true);
@@ -967,7 +968,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         bool temp;
                         string columnName =
-                            writer.CodeStorage.GetTableField(
+                            TDataBinding.GetTableField(
                                 null,
                                 RowFilterPart,
                                 out temp, true).strName;
@@ -1015,6 +1016,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     FButtonLabelType = "Extract";
                     return true;
                 }
+                else if (TYml2Xml.GetAttribute(curNode, "Type") == "Occupation")
+                {
+                    FButtonLabelType = "OccupationList";
+                    return true;
+                }
+                
             }
 
             return false;
@@ -1159,6 +1166,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public virtual StringCollection FindContainedControls(IFormWriter writer, XmlNode curNode)
         {
+            StringCollection controlNamesCollection;
             XmlNode controlsNode = TXMLParser.GetChild(curNode, "Controls");
 
             if ((controlsNode != null) && TYml2Xml.GetChildren(controlsNode, true)[0].Name.StartsWith("Row"))
@@ -1187,10 +1195,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     countRow++;
                 }
 
-                return StringHelper.StrSplit(result, ",");
+                controlNamesCollection = StringHelper.StrSplit(result, ",");
+            }
+            else
+            {
+                controlNamesCollection = TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
             }
 
-            return TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
+            // set the parent control for all children
+            foreach (string ctrlname in controlNamesCollection)
+            {
+                TControlDef ctrl = writer.CodeStorage.GetControl(ctrlname);
+                ctrl.parentName = curNode.Name;
+            }
+
+            return controlNamesCollection;
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)

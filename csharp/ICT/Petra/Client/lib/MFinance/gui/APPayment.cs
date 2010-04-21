@@ -97,6 +97,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
       FPetraUtilsObject.SetStatusBarText(txtCurrency, Catalog.GetString("The currency code to use for this supplier."));
       FPetraUtilsObject.SetStatusBarText(cmbPaymentType, Catalog.GetString("The default type of payment to use when paying this supplier."));
+      FPetraUtilsObject.SetStatusBarText(txtReference, Catalog.GetString("Enter the reference for this accounts payable payment"));
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();

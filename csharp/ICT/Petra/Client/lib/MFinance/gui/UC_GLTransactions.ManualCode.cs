@@ -109,7 +109,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="ANewRow">returns the modified new transaction row</param>
         /// <param name="ARefJournalRow">this can be null; otherwise this is the journal that the transaction should belong to</param>
-        public void NewRowManual(ref ATransactionRow ANewRow, AJournalRow ARefJournalRow)
+        public void NewRowManual(ref GLBatchTDSATransactionRow ANewRow, AJournalRow ARefJournalRow)
         {
             if (ARefJournalRow == null)
             {
@@ -127,7 +127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// make sure the correct transaction number is assigned and the journal.lastTransactionNumber is updated;
         /// will use the currently selected journal
         /// </summary>
-        public void NewRowManual(ref ATransactionRow ANewRow)
+        public void NewRowManual(ref GLBatchTDSATransactionRow ANewRow)
         {
             NewRowManual(ref ANewRow, null);
         }

@@ -71,5 +71,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             return TmpString;
         }
         
+        #region Actions
+        
+        private void MaintainWorkerField(System.Object sender, System.EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        #endregion
     }
 }

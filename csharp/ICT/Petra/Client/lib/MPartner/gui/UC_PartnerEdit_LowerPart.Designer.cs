@@ -72,6 +72,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlContent = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.lblDynamicLoad = new System.Windows.Forms.Label();
+            this.ucoPartnerTabSet = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_PartnerTabSet2();
 
             this.pnlContent.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -95,13 +96,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblDynamicLoad.Location = new System.Drawing.Point(2,2);
             this.lblDynamicLoad.Name = "lblDynamicLoad";
             this.lblDynamicLoad.AutoSize = true;
-            this.lblDynamicLoad.Text = "Controls are added dynamically at runtime!:";
+            this.lblDynamicLoad.Text = "Controls are added dynamically at runtime! See below for an example!:";
             this.lblDynamicLoad.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // ucoPartnerTabSet
+            //
+            this.ucoPartnerTabSet.Name = "ucoPartnerTabSet";
+            this.ucoPartnerTabSet.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Controls.Add(this.lblDynamicLoad, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.ucoPartnerTabSet, 0, 1);
 
             //
             // TUC_PartnerEdit_LowerPart
@@ -122,5 +130,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label lblDynamicLoad;
+        private Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_PartnerTabSet2 ucoPartnerTabSet;
     }
 }

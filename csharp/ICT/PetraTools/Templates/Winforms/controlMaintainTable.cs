@@ -89,7 +89,7 @@ namespace {#NAMESPACE}
     {
 {#IFNDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
         // we create the table locally, no dataset
-        {#DETAILTABLE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped(true);
+        {#DETAILTABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped(true);
         {#INITNEWROWMANUAL}
         FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
 {#ENDIFN CANFINDWEBCONNECTOR_CREATEDETAIL}
@@ -135,13 +135,13 @@ namespace {#NAMESPACE}
     }
 
     /// return the selected row
-    private {#DETAILTABLE}Row GetSelectedDetailRow()
+    private {#DETAILTABLETYPE}Row GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            return ({#DETAILTABLE}Row)SelectedGridRow[0].Row;
+            return ({#DETAILTABLETYPE}Row)SelectedGridRow[0].Row;
         }
 
         return null;
@@ -176,7 +176,7 @@ namespace {#NAMESPACE}
     }
 
 {#IFDEF SHOWDETAILS}
-    private void ShowDetails({#DETAILTABLE}Row ARow)
+    private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
         if (ARow == null)
@@ -193,7 +193,7 @@ namespace {#NAMESPACE}
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
+    private {#DETAILTABLETYPE}Row FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
 {#IFDEF SAVEDETAILS}
@@ -216,7 +216,7 @@ namespace {#NAMESPACE}
         GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
-    private void GetDetailsFromControls({#DETAILTABLE}Row ARow)
+    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
     {
         if (ARow != null)
         {

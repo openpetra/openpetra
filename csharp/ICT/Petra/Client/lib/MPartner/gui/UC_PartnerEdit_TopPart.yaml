@@ -7,6 +7,10 @@ RootNode:
     FormType: edit
     Template: usercontrol
     MasterTable: PPartner    
+    
+    Actions:
+        actMaintainWorkerField: {Label=&Worker Field..., ActionClick=MaintainWorkerField, Image: OMerField.ico}
+        
     Controls:
         pnlContent:
             Controls: [grpCollapsible]
@@ -44,8 +48,7 @@ RootNode:
                 Row0: [txtPartnerKey, lblEmpty2, txtPartnerClass]            
             Dock: Top
         btnWorkerField:
-            Label: &OMer Field...
-            Icon: OMerField.ico
+            Action: actMaintainWorkerField
         txtWorkerField:
             ReadOnly: true
             NoLabel: true

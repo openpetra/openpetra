@@ -1,0 +1,36 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    FormType: edit
+    Template: usercontrol
+    MasterTable: PFamily
+    Controls:
+        pnlContent:
+            Controls: [grpNames, grpMisc]
+            Dock: Fill
+
+        grpNames: {Dock=Top}
+            Controls:
+                Row0: [txtPreviousName]
+                Row1: [txtLocalName]
+
+        txtPreviousName: {DataField=PPartner.PreviousName}
+        txtLocalName: {DataField=PPartner.PartnerShortNameLoc}
+         
+        grpMisc: {Label=Miscellaneous, Dock=Top}
+            Controls: 
+                Row1: [cmbMaritalStatus]
+                Row2: [txtMaritalStatusSince]
+                Row3: [txtMaritalStatusComment]
+                Row4: [cmbLanguageCode]
+                Row5: [cmbAcquisitionCode]
+
+        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList}
+        txtMaritalStatusSince:
+        txtMaritalStatusComment:
+# TODO: MultiLine!        
+        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}

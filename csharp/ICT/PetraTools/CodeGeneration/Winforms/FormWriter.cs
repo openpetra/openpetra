@@ -34,6 +34,7 @@ using DDW;
 using Ict.Common.IO;
 using Ict.Common;
 using Ict.Tools.CodeGeneration;
+using Ict.Tools.DBXML;
 
 namespace Ict.Tools.CodeGeneration.Winforms
 {
@@ -795,23 +796,62 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("USINGNAMESPACES", "");
             }
 
+            // load the dataset if there is a dataset defined for this screen. this allows us to reference customtables and custom fields
+            if (FCodeStorage.HasAttribute("DatasetType") && (TDataBinding.FDatasetTables == null))
+            {
+                TDataBinding.FDatasetTables = TDataBinding.LoadDatasetTables(CSParser.ICTPath, FCodeStorage.GetAttribute("DatasetType"), FCodeStorage);
+            }
+            else
+            {
+                TDataBinding.FCodeStorage = FCodeStorage;
+            }
+
             if (FCodeStorage.HasAttribute("MasterTable"))
             {
-                FTemplate.AddToCodelet("MASTERTABLE", FCodeStorage.GetAttribute("MasterTable"));
-
-                if (FCodeStorage.HasAttribute("MasterTableType"))
+                if ((TDataBinding.FDatasetTables != null) && TDataBinding.FDatasetTables.ContainsKey(FCodeStorage.GetAttribute("MasterTable")))
                 {
-                    FTemplate.AddToCodelet("MASTERTABLETYPE", FCodeStorage.GetAttribute("MasterTableType"));
+                    TTable table = TDataBinding.FDatasetTables[FCodeStorage.GetAttribute("MasterTable")];
+                    FTemplate.AddToCodelet("MASTERTABLE", table.strVariableNameInDataset);
+                    FTemplate.AddToCodelet("MASTERTABLETYPE", table.strDotNetName);
                 }
                 else
                 {
-                    FTemplate.AddToCodelet("MASTERTABLETYPE", FCodeStorage.GetAttribute("MasterTable"));
+                    FTemplate.AddToCodelet("MASTERTABLE", FCodeStorage.GetAttribute("MasterTable"));
+
+                    if (FCodeStorage.HasAttribute("MasterTableType"))
+                    {
+                        FTemplate.AddToCodelet("MASTERTABLETYPE", FCodeStorage.GetAttribute("MasterTableType"));
+                    }
+                    else
+                    {
+                        FTemplate.AddToCodelet("MASTERTABLETYPE", FCodeStorage.GetAttribute("MasterTable"));
+                    }
                 }
+            }
+            else
+            {
+                FTemplate.AddToCodelet("MASTERTABLE", "");
+                FTemplate.AddToCodelet("MASTERTABLETYPE", "");
             }
 
             if (FCodeStorage.HasAttribute("DetailTable"))
             {
-                FTemplate.AddToCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
+                if ((TDataBinding.FDatasetTables != null) && TDataBinding.FDatasetTables.ContainsKey(FCodeStorage.GetAttribute("DetailTable")))
+                {
+                    TTable table = TDataBinding.FDatasetTables[FCodeStorage.GetAttribute("DetailTable")];
+                    FTemplate.AddToCodelet("DETAILTABLE", table.strVariableNameInDataset);
+                    FTemplate.AddToCodelet("DETAILTABLETYPE", table.strDotNetName);
+                }
+                else
+                {
+                    FTemplate.AddToCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
+                    FTemplate.AddToCodelet("DETAILTABLETYPE", FCodeStorage.GetAttribute("DetailTable"));
+                }
+            }
+            else
+            {
+                FTemplate.AddToCodelet("DETAILTABLE", "");
+                FTemplate.AddToCodelet("DETAILTABLETYPE", "");
             }
 
             // find the first control that is a panel or groupbox or tab control
@@ -850,7 +890,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     msg += o.controlName + " ";
                 }
 
-                TLogging.Log("WARNING: There are some controls without parent control: " + msg);
+                TLogging.Log("WARNING: There are some controls that will not be part of the screen (missing parent control?): " + msg);
             }
 
             // add form events

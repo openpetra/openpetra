@@ -1071,6 +1071,14 @@ namespace Ict.Common.IO
                 // special case: separators have the same name
                 newElement = null;
             }
+            else if (newElement != null)
+            {
+                // make sure there is no control with the same name in the file that is currently parsed
+                if (TXMLParser.HasAttribute(newElement, "depth") && (TXMLParser.GetAttribute(newElement, "depth") == ADepth.ToString()))
+                {
+                    throw new Exception("Problem: the element " + nodeName + " should only appear once in the file");
+                }
+            }
             else if (newElement == null)
             {
                 XmlNode baseElement = TXMLParser.GetChild(parent, "base");

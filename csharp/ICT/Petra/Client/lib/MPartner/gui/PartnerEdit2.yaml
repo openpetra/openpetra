@@ -14,6 +14,26 @@ RootNode:
     
     Events:
         Load: {class=System.EventHandler, method=TFrmPartnerEdit2_Load}    
+
+    Actions:
+        actNewPartner: {Label=&New Partner..., ActionClick=NewPartner, Image: NewPartner.ico}
+        actNewPartnerWithShepherdPerson: {Label=Add &Person with Shepherd..., ActionClick=NewPartnerWithShepherdPerson}
+        actNewPartnerWithShepherdFamily: {Label=Add &Family with Shepherd..., ActionClick=NewPartnerWithShepherdFamily}
+        actNewPartnerWithShepherdChurch: {Label=Add &Church with Shepherd..., ActionClick=NewPartnerWithShepherdChurch}
+        actNewPartnerWithShepherdOrganisation: {Label=Add &Organisation with Shepherd..., ActionClick=NewPartnerWithShepherdOrganisation}
+        actNewPartnerWithShepherdUnit: {Label=Add &Unit with Shepherd..., ActionClick=NewPartnerWithShepherdUnit}        
+        actDeactivatePartner: {Label=Deacti&vate Partner..., ActionClick=DeactivatePartner, Image: DeactivatePartner.ico}
+        actDeletePartner: {Label=&Delete THIS Partner..., ActionClick=DeletePartner, Image: DeletePartner.ico}
+        actSendEmail: {Label=Send E&mail to Partner, ActionClick=SendEmail, Image: Email.ico}
+        actPrint: {Label=Print Partner..., ActionClick=PrintPartner, Image: Print.ico}
+        actPrintSection: {Label=P&rint Section..., ActionClick=DeletePartner, Image: PrintSection.ico}
+        actExportPartner: {Label=E&xport Partner, ActionClick=ExportPartner, Image: ExportPetra.ico}
+        
+        actMaintainAddresses: {Label=&Addresses, ActionClick=MaintainAddresses, Image: Address.ico}
+        
+        actViewPartnerData: {Label=&Partner Data, ActionClick=ViewPartnerData, Image: partner_toolbar.ico}
+        actViewPersonnelData: {Label=P&ersonnel Data, ActionClick=ViewPersonnelData, Image: personel_toolbar.ico}
+        actViewFinanceData: {Label=&Finance Data, ActionClick=ViewFinanceData, Image: accounts_toolbar.ico}        
         
     Controls:
         pnlContent:
@@ -31,20 +51,38 @@ RootNode:
             
         ucoLowerPart:
             Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_LowerPart
-            Dock: Fill
+            Dock: Fill            
+    Menu:
+        mniFile: 
+            mniNewPartner: {Action=actNewPartner, Order=AlwaysFirst}
+            mniNewPartnerWithShepherd: {Action=actNewPartnerWithShepherd, Order=AlwaysFirst, Image: NewPartner.ico}
+                mniNewPartnerWithShepherdPerson:
+                mniNewPartnerWithShepherdFamily:
+                mniNewPartnerWithShepherdChurch:
+                mniNewPartnerWithShepherdOrganisation:
+                mniNewPartnerWithShepherdUnit:
+            mniDeactivatePartner:
+            mniDeletePartner:
+            mniSeparator:
+            mniSendEmail:
+            mniSeparator:
+            mniPrint:
+            mniPrintSection:
+            mniSeparator:
+            mniExportPartner:
+            mniSeparator:
             
-#        tabPartners: {Dock=Fill, DragTabPageEnabled=true}
-#        tpgAddresses:
-#            Label: Addresses ({0})
-#            Controls: [lblTest]
-#        lblTest:
-#            Label: Test only
-#        tpgDetails:
-#            Label: Partner Details
-#            Controls: [ucoPartnerDetails]           
+        mniMaintain: {Label=Ma&intain}            
+            mniAddresses: {Action=actMaintainAddresses}
             
-#        ucoPartnerDetails:
-#           Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetailsPerson
-#        tpgSubscriptions:
-#            Label: Subscriptions ({0})
-            #Controls: []
+        mniView:  {Label=Vie&w}
+            mniViewPartnerData: {Action=actViewPartnerData}
+            mniViewPersonnelData: {Action=actViewPersonnelData}
+            mniViewFinanceData: {Action=actViewFinanceData}
+        
+    Toolbar:
+        tbbNewPartner: {Label=&New Partner, Action=actNewPartner}
+        tbbSeparator:
+        tbbViewPartnerData: {Action=actViewPartnerData}
+        tbbViewPersonnelData: {Action=actViewPersonnelData}
+        tbbViewFinanceData: {Action=actViewFinanceData}

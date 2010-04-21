@@ -89,21 +89,21 @@ namespace {#NAMESPACE}
     }
 
 {#IFDEF SHOWDATA}
-    private void ShowData({#MASTERTABLE}Row ARow)
+    private void ShowData({#MASTERTABLETYPE}Row ARow)
     {
         {#SHOWDATA}
     }
 {#ENDIF SHOWDATA}
 
 {#IFDEF SHOWDETAILS}
-    private void ShowDetails({#DETAILTABLE}Row ARow)
+    private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
         {#SHOWDETAILS}
     }
 {#ENDIF SHOWDETAILS}
 {#IFDEF MASTERTABLE}
 
-    private void GetDataFromControls({#MASTERTABLE}Row ARow)
+    private void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
     {
         {#SAVEDATA}
     }
@@ -117,7 +117,7 @@ namespace {#NAMESPACE}
 {#ENDIFN MASTERTABLE}
 {#IFDEF SAVEDETAILS}
 
-    private void GetDetailsFromControls({#DETAILTABLE}Row ARow)
+    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
     {
         if (ARow != null)
         {
