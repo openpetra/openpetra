@@ -72,10 +72,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlContent = new System.Windows.Forms.Panel();
             this.tabPartners = new Ict.Common.Controls.TTabVersatile();
             this.tpgAddresses = new System.Windows.Forms.TabPage();
-            this.tpgDetails = new System.Windows.Forms.TabPage();
+            this.tpgPartnerDetails = new System.Windows.Forms.TabPage();
             this.tpgFoundationDetails = new System.Windows.Forms.TabPage();
             this.tpgSubscriptions = new System.Windows.Forms.TabPage();
-            this.tpgSpecialTypes = new System.Windows.Forms.TabPage();
+            this.tpgPartnerTypes = new System.Windows.Forms.TabPage();
             this.tpgFamilyMembers = new System.Windows.Forms.TabPage();
             this.tpgNotes = new System.Windows.Forms.TabPage();
             this.tpgOfficeSpecific = new System.Windows.Forms.TabPage();
@@ -83,10 +83,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlContent.SuspendLayout();
             this.tabPartners.SuspendLayout();
             this.tpgAddresses.SuspendLayout();
-            this.tpgDetails.SuspendLayout();
+            this.tpgPartnerDetails.SuspendLayout();
             this.tpgFoundationDetails.SuspendLayout();
             this.tpgSubscriptions.SuspendLayout();
-            this.tpgSpecialTypes.SuspendLayout();
+            this.tpgPartnerTypes.SuspendLayout();
             this.tpgFamilyMembers.SuspendLayout();
             this.tpgNotes.SuspendLayout();
             this.tpgOfficeSpecific.SuspendLayout();
@@ -107,13 +107,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tpgAddresses.Text = "Addresses ({0})";
             this.tpgAddresses.Dock = System.Windows.Forms.DockStyle.Fill;
             //
-            // tpgDetails
+            // tpgPartnerDetails
             //
-            this.tpgDetails.Location = new System.Drawing.Point(2,2);
-            this.tpgDetails.Name = "tpgDetails";
-            this.tpgDetails.AutoSize = true;
-            this.tpgDetails.Text = "Partner Details";
-            this.tpgDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgPartnerDetails.Location = new System.Drawing.Point(2,2);
+            this.tpgPartnerDetails.Name = "tpgPartnerDetails";
+            this.tpgPartnerDetails.AutoSize = true;
+            this.tpgPartnerDetails.Text = "Partner Details";
+            this.tpgPartnerDetails.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgFoundationDetails
             //
@@ -131,13 +131,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tpgSubscriptions.Text = "Subscriptions ({0})";
             this.tpgSubscriptions.Dock = System.Windows.Forms.DockStyle.Fill;
             //
-            // tpgSpecialTypes
+            // tpgPartnerTypes
             //
-            this.tpgSpecialTypes.Location = new System.Drawing.Point(2,2);
-            this.tpgSpecialTypes.Name = "tpgSpecialTypes";
-            this.tpgSpecialTypes.AutoSize = true;
-            this.tpgSpecialTypes.Text = "Special Types ({0})";
-            this.tpgSpecialTypes.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgPartnerTypes.Location = new System.Drawing.Point(2,2);
+            this.tpgPartnerTypes.Name = "tpgPartnerTypes";
+            this.tpgPartnerTypes.AutoSize = true;
+            this.tpgPartnerTypes.Text = "Special Types ({0})";
+            this.tpgPartnerTypes.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgFamilyMembers
             //
@@ -168,10 +168,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tabPartners.Name = "tabPartners";
             this.tabPartners.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabPartners.Controls.Add(this.tpgAddresses);
-            this.tabPartners.Controls.Add(this.tpgDetails);
+            this.tabPartners.Controls.Add(this.tpgPartnerDetails);
             this.tabPartners.Controls.Add(this.tpgFoundationDetails);
             this.tabPartners.Controls.Add(this.tpgSubscriptions);
-            this.tabPartners.Controls.Add(this.tpgSpecialTypes);
+            this.tabPartners.Controls.Add(this.tpgPartnerTypes);
             this.tabPartners.Controls.Add(this.tpgFamilyMembers);
             this.tabPartners.Controls.Add(this.tpgNotes);
             this.tabPartners.Controls.Add(this.tpgOfficeSpecific);
@@ -191,10 +191,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tpgOfficeSpecific.ResumeLayout(false);
             this.tpgNotes.ResumeLayout(false);
             this.tpgFamilyMembers.ResumeLayout(false);
-            this.tpgSpecialTypes.ResumeLayout(false);
+            this.tpgPartnerTypes.ResumeLayout(false);
             this.tpgSubscriptions.ResumeLayout(false);
             this.tpgFoundationDetails.ResumeLayout(false);
-            this.tpgDetails.ResumeLayout(false);
+            this.tpgPartnerDetails.ResumeLayout(false);
             this.tpgAddresses.ResumeLayout(false);
             this.tabPartners.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
@@ -204,10 +204,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Panel pnlContent;
         private Ict.Common.Controls.TTabVersatile tabPartners;
         private System.Windows.Forms.TabPage tpgAddresses;
-        private System.Windows.Forms.TabPage tpgDetails;
+        private System.Windows.Forms.TabPage tpgPartnerDetails;
         private System.Windows.Forms.TabPage tpgFoundationDetails;
         private System.Windows.Forms.TabPage tpgSubscriptions;
-        private System.Windows.Forms.TabPage tpgSpecialTypes;
+        private System.Windows.Forms.TabPage tpgPartnerTypes;
         private System.Windows.Forms.TabPage tpgFamilyMembers;
         private System.Windows.Forms.TabPage tpgNotes;
         private System.Windows.Forms.TabPage tpgOfficeSpecific;

@@ -102,7 +102,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TUC_PartnerDetailsPerson FUcoPartnerDetailsPerson;
 
 // TODO        private TUCPartnerSubscriptions FUcoPartnerSubscriptions;
-        private TUCPartnerTypes FUcoPartnerTypes;
 
 // TODO        private TUC_PartnerDetailsFamily FUcoPartnerDetailsFamily;
 // TODO        private TUC_PartnerDetailsChurch FUcoPartnerDetailsChurch;
@@ -136,6 +135,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 // TODO                private Boolean FTabSetupReminders;
 // TODO                private Boolean FTabSetupRelationships;
         private Boolean FUserControlInitialised;
+
+        private event TTabPageEventHandler TabPageEvent;
 
         /// <summary>todoComment</summary>
         public PartnerEditTDS MainDS
@@ -198,6 +199,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void InitUserControl()
         {
+            TabPageEvent += this.TabPageEventHandler;
         }
 
         /// <summary>
@@ -1760,6 +1762,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TabUserControl.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(TabUserControl);
 
+                    OnTabPageEvent(new TTabPageEventArgs(tbpPartnerTypes, "FurtherInit"));
+
                     // MessageBox.Show('TabSetupPartnerTypes finished');
 //                    FTabSetupPartnerTypes = true;
 
@@ -1943,6 +1947,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             OnDataLoadingFinished();
         }
 
+        private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
+        {
+            if (ATabPageEventArgs.Event == "FurtherInit")
+            {
+//                if (ATabPageEventArgs.Tab == tbpPartnerTypes)
+//                {
+//                    MessageBox.Show("TabPageEventHandler for tbpPartnerTypes");
+//                }
+            }
+        }
+
         private void UcoTab_EnableDisableOtherScreenParts(System.Object sender, TEnableDisableEventArgs e)
         {
             // MessageBox.Show('TUC_PartnerEdit_PartnerTabSet.ucoTab_EnableDisableOtherScreenParts(' + e.Enable.ToString + ')');
@@ -1998,6 +2013,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // raise Event here so that PartnerEdit Form can catch it
             OnShowTab(new TShowTabEventArgs(e.TabName, e.Show, e.ShowNextToTabName));
+        }
+
+        private void OnTabPageEvent(TTabPageEventArgs e)
+        {
+            if (TabPageEvent != null)
+            {
+                TabPageEvent(this, e);
+            }
         }
 
         #endregion

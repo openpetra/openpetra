@@ -208,15 +208,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// set this property before showing the screen, or use SetParameters
         /// </summary>
-        public TPartnerEditTabPageEnum InitiallySelectedTabPage
+        public TPartnerEditTabPageEnum ShowTabPage
         {
             get
             {
-                return FInitiallySelectedTabPage;
+                return FShowTabPage;
             }
             set
             {
-                FInitiallySelectedTabPage = value;
+                FShowTabPage = value;
             }
         }
 
@@ -853,7 +853,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoLowerPart.PartnerEditUIConnector = FPartnerEditUIConnector;
             ucoLowerPart.InitiallySelectedTabPage = FInitiallySelectedTabPage;
             ucoLowerPart.InitialiseDelegateIsNewPartner(@IsNewPartner);
+
+
+            // Hook up EnableDisableOtherScreenParts Event that is fired by ucoPartnerTabSet
+            ucoLowerPart.EnableDisableOtherScreenParts += new TEnableDisableScreenPartsEventHandler(
+                this.UcoPartnerTabSet_EnableDisableOtherScreenParts);
+
+            // Hook up ShowTab Event that is fired by FUcoPartnerDetailsOrganisation
+            ucoLowerPart.ShowTab += new TShowTabEventHandler(this.UcoPartnerTabSet_ShowTab);
+
+            // Hook up HookUpDataChange Event that is fired by ucoPartnerTabSet
+            ucoLowerPart.HookupDataChange += new THookupDataChangeEventHandler(this.UcoPartnerTabSet_HookupDataChange);
+            ucoLowerPart.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
+                this.UcoPartnerTabSet_HookupPartnerEditDataChange);
             ucoLowerPart.InitChildUserControl();
+
+            if (FNewPartnerWithAutoCreatedAddress)
+            {
+                // hardcoded for the first Address of a new Partner
+                ucoLowerPart.DisableNewButtonOnAutoCreatedAddress();
+            }
 
             switch (FCurrentModuleTabGroup)
             {
@@ -910,11 +929,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FUppperPartInitiallyCollapsed)
             {
-                ViewUpperScreenPartCollapsed(this, null);
+// TODO                ViewUpperScreenPartCollapsed(this, null);
             }
             else
             {
-                ViewUpperScreenPartExpanded(this, null);
+// TODO                ViewUpperScreenPartExpanded(this, null);
             }
 
             // Disable 'Local Partner Data' MenuItem if there are no Office Specific Data Labels available
@@ -934,8 +953,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ucoUpperPart.Focus();
             this.Cursor = Cursors.Default;
-
-//            MessageBox.Show("Data loaded successfully (might not look like it, but this screen isn't finished yet...!");
         }
 
         private void UcoUpperPart_PartnerClassMainDataChanged(System.Object Sender, TPartnerClassMainDataChangedEventArgs e)
@@ -965,6 +982,57 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ucoUpperPart.Caption = "";
                 ucoUpperPart.SubCaption = "";
             }
+        }
+
+        private void UcoPartnerTabSet_EnableDisableOtherScreenParts(System.Object sender, TEnableDisableEventArgs e)
+        {
+            // MessageBox.Show('TPartnerEditDSWinForm.ucoPartnerTabEnableDisableOtherScreenParts = ' + e.Enable.ToString + ')';
+            EnableDisableUpperPart(e.Enable);
+
+// TODO            tbrMain.Enabled = e.Enable;
+
+            if (!e.Enable)
+            {
+                SetupAvailableModuleDataItems((!e.Enable), FCurrentModuleTabGroup);
+                EnableSave(false);
+                FPetraUtilsObject.DetailEditMode = true;
+            }
+            else
+            {
+                SetupAvailableModuleDataItems(e.Enable, TModuleSwitchEnum.msNone);
+                EnableSave(FPetraUtilsObject.HasChanges);
+                FPetraUtilsObject.DetailEditMode = false;
+            }
+        }
+
+        private void UcoPartnerTabSet_HookupDataChange(System.Object sender, System.EventArgs e)
+        {
+            HookupDataChangeEvents();
+        }
+
+        private void UcoPartnerTabSet_HookupPartnerEditDataChange(System.Object sender, THookupPartnerEditDataChangeEventArgs e)
+        {
+            HookupPartnerEditDataChangeEvents(e.TabPage);
+        }
+
+        private void UcoPartnerTabSet_ShowTab(System.Object sender, TShowTabEventArgs e)
+        {
+// TODO foundation
+#if TODO
+            if (e.TabName == "tbpFoundationDetails")
+            {
+                if (e.Show)
+                {
+                    FFoundationDetailsEnabled = true;
+                    mniMaintainFoundationDetails.Enabled = true;
+                }
+                else
+                {
+                    FFoundationDetailsEnabled = false;
+                    mniMaintainFoundationDetails.Enabled = false;
+                }
+            }
+#endif
         }
 
         #endregion
@@ -2160,6 +2228,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                 tbbSave.Enabled = false;
             }
 #endif
+        }
+
+        private void EnableDisableUpperPart(bool AEnable)
+        {
+            ucoUpperPart.Enabled = AEnable;
+        }
+
+        private void HookupDataChangeEvents()
+        {
+            HookupPartnerEditDataChangeEvents(TPartnerEditTabPageEnum.petpAddresses);
         }
 
         #endregion

@@ -186,6 +186,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public new void InitUserControl()
         {
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public new void SpecialInitUserControl()
+        {
             // Set up screen logic
             FLogic.MultiTableDS = FMainDS;
             FLogic.PartnerEditUIConnector = FPartnerEditUIConnector;
