@@ -201,24 +201,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         }
 
         /// <summary>
-        /// for all negative location numbers, get the new location number;
-        /// this assumes that the order of locations is still the same
-        /// </summary>
-        /// <returns></returns>
-        private static bool ApplyNewLocationNumbers(ref PartnerEditTDS AMainDS)
-        {
-            foreach (PartnerEditTDSPPartnerLocationRow partnerlocationRow in AMainDS.PPartnerLocation.Rows)
-            {
-                if (partnerlocationRow.LocationKey < 0)
-                {
-                    partnerlocationRow.LocationKey = AMainDS.PLocation[(partnerlocationRow.LocationKey * -1) - 1].LocationKey;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// imports partner data from file
         /// </summary>
         /// <returns></returns>
@@ -239,87 +221,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             PartnerEditTDS InspectDS = MainDS.GetChangesTyped(true);
 
-            TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
 
             AVerificationResult = null;
 
             if (InspectDS != null)
             {
-                AVerificationResult = new TVerificationResultCollection();
-                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                try
-                {
-                    if ((InspectDS.PPartner != null) && !PPartnerAccess.SubmitChanges(InspectDS.PPartner, SubmitChangesTransaction,
-                            out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                    else if ((InspectDS.PPartnerType != null) && !PPartnerTypeAccess.SubmitChanges(InspectDS.PPartnerType, SubmitChangesTransaction,
-                                 out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                    else if ((InspectDS.PSubscription != null)
-                             && !PSubscriptionAccess.SubmitChanges(InspectDS.PSubscription, SubmitChangesTransaction,
-                                 out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                    else if ((InspectDS.PFamily != null) && !PFamilyAccess.SubmitChanges(InspectDS.PFamily, SubmitChangesTransaction,
-                                 out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                    else if ((InspectDS.PPerson != null) && !PPersonAccess.SubmitChanges(InspectDS.PPerson, SubmitChangesTransaction,
-                                 out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                    else if ((InspectDS.PLocation != null)
-                             && !PLocationAccess.SubmitChanges(InspectDS.PLocation, SubmitChangesTransaction, out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                    else
-                    {
-                        ApplyNewLocationNumbers(ref InspectDS);
-                        SubmissionResult = TSubmitChangesResult.scrOK;
-                    }
-
-                    if ((SubmissionResult == TSubmitChangesResult.scrOK)
-                        && (InspectDS.PPartnerLocation != null)
-                        && !PPartnerLocationAccess.SubmitChanges(InspectDS.PPartnerLocation, SubmitChangesTransaction,
-                            out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                    else
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrOK;
-                    }
-
-                    if (SubmissionResult == TSubmitChangesResult.scrOK)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-                }
-                catch (Exception e)
-                {
-                    TLogging.Log("after submitchanges: exception " + e.Message);
-
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-
-                    throw new Exception(e.ToString() + " " + e.Message);
-                }
+                SubmissionResult = PartnerEditTDSAccess.SubmitChanges(InspectDS, out AVerificationResult);
             }
-
-            // hier kommt er hin:
-            TLogging.Log("after submitchanges: " + SubmissionResult.ToString());
 
             return SubmissionResult == TSubmitChangesResult.scrOK;
         }

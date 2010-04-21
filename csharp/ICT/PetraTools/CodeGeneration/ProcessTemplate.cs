@@ -236,8 +236,18 @@ namespace Ict.Tools.CodeGeneration
                         Environment.NewLine + "We are missing the ENDIFN for: " + APlaceHolderName);
                 }
 
-                string before = s.Substring(0, s.LastIndexOf(Environment.NewLine, posPlaceholder + 1));
-                string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter));
+                string before = String.Empty;
+                string after = String.Empty;
+
+                if (s.LastIndexOf(Environment.NewLine, posPlaceholder + 1) != -1)
+                {
+                    before = s.Substring(0, s.LastIndexOf(Environment.NewLine, posPlaceholder + 1));
+                }
+
+                if (s.IndexOf(Environment.NewLine, posPlaceholderAfter) != -1)
+                {
+                    after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter));
+                }
 
                 s = before + after;
 
@@ -264,9 +274,11 @@ namespace Ict.Tools.CodeGeneration
             {
                 string name = s.Substring(posPlaceholder + 9, s.IndexOf("}", posPlaceholder) - posPlaceholder - 9);
 
-                s = s.Replace("{#IFNDEF " + name + "}" + Environment.NewLine, "");
+                string leadingSpaces = "".PadLeft(posPlaceholder - s.LastIndexOf(Environment.NewLine, posPlaceholder));
+
+                s = s.Replace(leadingSpaces + "{#IFNDEF " + name + "}" + Environment.NewLine, "");
                 s = s.Replace("{#IFNDEF " + name + "}", "");
-                s = s.Replace("{#ENDIFN " + name + "}" + Environment.NewLine, "");
+                s = s.Replace(leadingSpaces + "{#ENDIFN " + name + "}" + Environment.NewLine, "");
                 s = s.Replace("{#ENDIFN " + name + "}", "");
 
                 posPlaceholder = s.IndexOf("{#IFNDEF ");
