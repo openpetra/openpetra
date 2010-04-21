@@ -25,6 +25,8 @@
  ************************************************************************/
 using System;
 
+using Ict.Common;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner;
 
@@ -46,10 +48,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         #region Events
 
         /// <summary>todoComment</summary>
-        public event System.EventHandler DataLoadingStarted;
+        public event THookupDataChangeEventHandler HookupDataChange;
 
         /// <summary>todoComment</summary>
-        public event System.EventHandler DataLoadingFinished;
+        public event THookupPartnerEditDataChangeEventHandler HookupPartnerEditDataChange;
+
+        /// <summary>todoComment</summary>
+        public event TEnableDisableScreenPartsEventHandler EnableDisableOtherScreenParts;
+
+        /// <summary>todoComment</summary>
+        public event TShowTabEventHandler ShowTab;
 
         #endregion
 
@@ -102,6 +110,20 @@ namespace Ict.Petra.Client.MPartner.Gui
         #region Public Methods
 
         /// <summary>
+        /// Initialises the UserControl that has the Tabs for the currently selected Tab.
+        /// </summary>
+        public void InitChildUserControl()
+        {
+            ucoPartnerTabSet.PetraUtilsObject = FPetraUtilsObject;
+            ucoPartnerTabSet.PartnerEditUIConnector = FPartnerEditUIConnector;
+            ucoPartnerTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
+            ucoPartnerTabSet.MainDS = FMainDS;
+            ucoPartnerTabSet.SpecialInitUserControl();
+
+            // TODO Other TabSets (Personnel Data, Finance Data)
+        }
+
+        /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="ADelegateFunction"></param>
@@ -109,6 +131,20 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             // set the delegate function from the calling System.Object
             FDelegateIsNewPartner = ADelegateFunction;
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void DisableNewButtonOnAutoCreatedAddress()
+        {
+            if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
+            {
+                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                ucoPartnerTabSet.SetUpPartnerAddress();
+            }
+
+            ucoPartnerTabSet.DisableNewButtonOnAutoCreatedAddress();
         }
 
         #endregion

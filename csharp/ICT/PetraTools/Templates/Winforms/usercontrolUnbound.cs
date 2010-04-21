@@ -36,7 +36,8 @@ namespace {#NAMESPACE}
     private {#DATASETTYPE} FMainDS;
 
 {#IFDEF TABPAGECTRL}
-    private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;
+    private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;       
+    private event TTabPageEventHandler FTabPageEvent;
 {#ENDIF TABPAGECTRL}
 
     /// constructor
@@ -169,6 +170,14 @@ namespace {#NAMESPACE}
         }
     }
 
+    private void OnTabPageEvent(TTabPageEventArgs e)
+    {
+        if (FTabPageEvent != null)
+        {
+            FTabPageEvent(this, e);
+        }
+    }
+
     /// <summary>
     /// Dynamically loads UserControls that are associated with the Tabs. AUTO-GENERATED, don't modify by hand!
     /// </summary>
@@ -176,11 +185,14 @@ namespace {#NAMESPACE}
     /// <param name="e"></param>
     private void TabSelectionChanged(System.Object sender, EventArgs e)
     {
-        //MessageBox.Show("TabSelectionChanged!");
+        //MessageBox.Show("TabSelectionChanged. Current Tab: " + tabPartners.SelectedTab.ToString());
 
         if (FTabSetup == null)
 	    {
-		     FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
+		    FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
+
+            // The first time we run this Method we exit straight away; this is when the Form gets initialised        
+            return;
 	    }
 
         {#DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED}
@@ -201,6 +213,7 @@ namespace {#NAMESPACE}
 
         return ReturnValue;
     }
+
 {#ENDIF TABPAGECTRL}
   }
 }

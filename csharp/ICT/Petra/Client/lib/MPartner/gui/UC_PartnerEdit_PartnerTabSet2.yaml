@@ -17,7 +17,7 @@ RootNode:
             Image: Addresses.ico
             DynamicControlType: Ict.Petra.Client.MCommon.TUCPartnerAddresses
             
-        tpgDetails: {LoadPageDynamically=true}
+        tpgPartnerDetails: {LoadPageDynamically=true}
             Label: Partner Details         
             Image: Details.ico
             DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2
@@ -32,7 +32,7 @@ RootNode:
             Label: Subscriptions ({0})
             Image: Subscriptions.ico
                        
-        tpgSpecialTypes: {LoadPageDynamically=true}
+        tpgPartnerTypes: {LoadPageDynamically=true}
             Label: Special Types ({0})
             Image: Types.ico
             DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes

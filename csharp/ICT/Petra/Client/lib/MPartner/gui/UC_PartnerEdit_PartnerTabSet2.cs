@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     private Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS FMainDS;
 
     private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;
+    private event TTabPageEventHandler FTabPageEvent;
 
     /// constructor
     public TUC_PartnerEdit_PartnerTabSet2() : base()
@@ -69,10 +70,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.tpgAddresses.Text = Catalog.GetString("Addresses ({0})");
-      this.tpgDetails.Text = Catalog.GetString("Partner Details");
+      this.tpgPartnerDetails.Text = Catalog.GetString("Partner Details");
       this.tpgFoundationDetails.Text = Catalog.GetString("Foundation Details");
       this.tpgSubscriptions.Text = Catalog.GetString("Subscriptions ({0})");
-      this.tpgSpecialTypes.Text = Catalog.GetString("Special Types ({0})");
+      this.tpgPartnerTypes.Text = Catalog.GetString("Special Types ({0})");
       this.tpgFamilyMembers.Text = Catalog.GetString("Family Members");
       this.tpgNotes.Text = Catalog.GetString("Notes ({0})");
       this.tpgOfficeSpecific.Text = Catalog.GetString("Local Data");
@@ -112,10 +113,10 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         ///<summary>Denotes dynamic loadable UserControl tpgAddresses</summary>
         dlucAddresses,
-        ///<summary>Denotes dynamic loadable UserControl tpgDetails</summary>
-        dlucDetails,
-        ///<summary>Denotes dynamic loadable UserControl tpgSpecialTypes</summary>
-        dlucSpecialTypes,
+        ///<summary>Denotes dynamic loadable UserControl tpgPartnerDetails</summary>
+        dlucPartnerDetails,
+        ///<summary>Denotes dynamic loadable UserControl tpgPartnerTypes</summary>
+        dlucPartnerTypes,
         ///<summary>Denotes dynamic loadable UserControl tpgNotes</summary>
         dlucNotes,
     }
@@ -123,6 +124,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
+        InitializeManualCode();
         tabPartners.SelectedIndex = 0;
         TabSelectionChanged(null, null);
     }
@@ -175,6 +177,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
     }
 
+    private void OnTabPageEvent(TTabPageEventArgs e)
+    {
+        if (FTabPageEvent != null)
+        {
+            FTabPageEvent(this, e);
+        }
+    }
+
     /// <summary>
     /// Dynamically loads UserControls that are associated with the Tabs. AUTO-GENERATED, don't modify by hand!
     /// </summary>
@@ -182,11 +192,14 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// <param name="e"></param>
     private void TabSelectionChanged(System.Object sender, EventArgs e)
     {
-        //MessageBox.Show("TabSelectionChanged!");
+        //MessageBox.Show("TabSelectionChanged. Current Tab: " + tabPartners.SelectedTab.ToString());
 
         if (FTabSetup == null)
 	    {
-		     FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
+		    FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
+
+            // The first time we run this Method we exit straight away; this is when the Form gets initialised
+            return;
 	    }
 
         /*
@@ -213,15 +226,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                 UCAddresses.InitUserControl();
                 ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UCAddresses);
 
+                OnTabPageEvent(new TTabPageEventArgs(tpgAddresses, UCAddresses, "FurtherInit"));
+
                 this.Cursor = Cursors.Default;
             }
         }
 
-        if (tabPartners.SelectedTab == tpgDetails)
+        if (tabPartners.SelectedTab == tpgPartnerDetails)
         {
-            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucDetails))
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetails))
             {
-                Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2 UCDetails;
+                Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2 UCPartnerDetails;
 
                 if (TClientSettings.DelayedDataLoading)
                 {
@@ -229,21 +244,23 @@ namespace Ict.Petra.Client.MPartner.Gui
                     this.Cursor = Cursors.AppStarting;
                 }
 
-                UCDetails = (Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucDetails);
-                UCDetails.MainDS = FMainDS;
-                UCDetails.PetraUtilsObject = FPetraUtilsObject;
-                UCDetails.InitUserControl();
-                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UCDetails);
+                UCPartnerDetails = (Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerDetails);
+                UCPartnerDetails.MainDS = FMainDS;
+                UCPartnerDetails.PetraUtilsObject = FPetraUtilsObject;
+                UCPartnerDetails.InitUserControl();
+                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UCPartnerDetails);
+
+                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, UCPartnerDetails, "FurtherInit"));
 
                 this.Cursor = Cursors.Default;
             }
         }
 
-        if (tabPartners.SelectedTab == tpgSpecialTypes)
+        if (tabPartners.SelectedTab == tpgPartnerTypes)
         {
-            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucSpecialTypes))
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerTypes))
             {
-                Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes UCSpecialTypes;
+                Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes UCPartnerTypes;
 
                 if (TClientSettings.DelayedDataLoading)
                 {
@@ -251,11 +268,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                     this.Cursor = Cursors.AppStarting;
                 }
 
-                UCSpecialTypes = (Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucSpecialTypes);
-                UCSpecialTypes.MainDS = FMainDS;
-                UCSpecialTypes.PetraUtilsObject = FPetraUtilsObject;
-                UCSpecialTypes.InitUserControl();
-                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UCSpecialTypes);
+                UCPartnerTypes = (Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerTypes);
+                UCPartnerTypes.MainDS = FMainDS;
+                UCPartnerTypes.PetraUtilsObject = FPetraUtilsObject;
+                UCPartnerTypes.InitUserControl();
+                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UCPartnerTypes);
+
+                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, UCPartnerTypes, "FurtherInit"));
 
                 this.Cursor = Cursors.Default;
             }
@@ -278,6 +297,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 UCNotes.PetraUtilsObject = FPetraUtilsObject;
                 UCNotes.InitUserControl();
                 ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UCNotes);
+
+                OnTabPageEvent(new TTabPageEventArgs(tpgNotes, UCNotes, "FurtherInit"));
 
                 this.Cursor = Cursors.Default;
             }
@@ -331,21 +352,21 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ReturnValue = ucoAddresses;
                 break;
 
-            case TDynamicLoadableUserControls.dlucDetails:
+            case TDynamicLoadableUserControls.dlucPartnerDetails:
                 // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
-                Panel pnlHostForUCDetails = new Panel();
-                pnlHostForUCDetails.AutoSize = true;
-                pnlHostForUCDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-                pnlHostForUCDetails.Location = new System.Drawing.Point(0, 0);
-                pnlHostForUCDetails.Padding = new System.Windows.Forms.Padding(2);
-                tpgDetails.Controls.Add(pnlHostForUCDetails);
+                Panel pnlHostForUCPartnerDetails = new Panel();
+                pnlHostForUCPartnerDetails.AutoSize = true;
+                pnlHostForUCPartnerDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+                pnlHostForUCPartnerDetails.Location = new System.Drawing.Point(0, 0);
+                pnlHostForUCPartnerDetails.Padding = new System.Windows.Forms.Padding(2);
+                tpgPartnerDetails.Controls.Add(pnlHostForUCPartnerDetails);
 
                 // Create the UserControl
-                Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2 ucoDetails = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2();
-                FTabSetup.Add(TDynamicLoadableUserControls.dlucDetails, ucoDetails);
-                ucoDetails.Location = new Point(0, 2);
-                ucoDetails.Dock = DockStyle.Fill;
-                pnlHostForUCDetails.Controls.Add(ucoDetails);
+                Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2 ucoPartnerDetails = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2();
+                FTabSetup.Add(TDynamicLoadableUserControls.dlucPartnerDetails, ucoPartnerDetails);
+                ucoPartnerDetails.Location = new Point(0, 2);
+                ucoPartnerDetails.Dock = DockStyle.Fill;
+                pnlHostForUCPartnerDetails.Controls.Add(ucoPartnerDetails);
 
                 /*
                  * The following four commands seem strange and unnecessary; however, they are necessary
@@ -355,28 +376,28 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
                     this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-                    pnlHostForUCDetails.Dock = System.Windows.Forms.DockStyle.None;
-                    pnlHostForUCDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+                    pnlHostForUCPartnerDetails.Dock = System.Windows.Forms.DockStyle.None;
+                    pnlHostForUCPartnerDetails.Dock = System.Windows.Forms.DockStyle.Fill;
                 }
 
-                ReturnValue = ucoDetails;
+                ReturnValue = ucoPartnerDetails;
                 break;
 
-            case TDynamicLoadableUserControls.dlucSpecialTypes:
+            case TDynamicLoadableUserControls.dlucPartnerTypes:
                 // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
-                Panel pnlHostForUCSpecialTypes = new Panel();
-                pnlHostForUCSpecialTypes.AutoSize = true;
-                pnlHostForUCSpecialTypes.Dock = System.Windows.Forms.DockStyle.Fill;
-                pnlHostForUCSpecialTypes.Location = new System.Drawing.Point(0, 0);
-                pnlHostForUCSpecialTypes.Padding = new System.Windows.Forms.Padding(2);
-                tpgSpecialTypes.Controls.Add(pnlHostForUCSpecialTypes);
+                Panel pnlHostForUCPartnerTypes = new Panel();
+                pnlHostForUCPartnerTypes.AutoSize = true;
+                pnlHostForUCPartnerTypes.Dock = System.Windows.Forms.DockStyle.Fill;
+                pnlHostForUCPartnerTypes.Location = new System.Drawing.Point(0, 0);
+                pnlHostForUCPartnerTypes.Padding = new System.Windows.Forms.Padding(2);
+                tpgPartnerTypes.Controls.Add(pnlHostForUCPartnerTypes);
 
                 // Create the UserControl
-                Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes ucoSpecialTypes = new Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes();
-                FTabSetup.Add(TDynamicLoadableUserControls.dlucSpecialTypes, ucoSpecialTypes);
-                ucoSpecialTypes.Location = new Point(0, 2);
-                ucoSpecialTypes.Dock = DockStyle.Fill;
-                pnlHostForUCSpecialTypes.Controls.Add(ucoSpecialTypes);
+                Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes ucoPartnerTypes = new Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes();
+                FTabSetup.Add(TDynamicLoadableUserControls.dlucPartnerTypes, ucoPartnerTypes);
+                ucoPartnerTypes.Location = new Point(0, 2);
+                ucoPartnerTypes.Dock = DockStyle.Fill;
+                pnlHostForUCPartnerTypes.Controls.Add(ucoPartnerTypes);
 
                 /*
                  * The following four commands seem strange and unnecessary; however, they are necessary
@@ -386,11 +407,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
                     this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-                    pnlHostForUCSpecialTypes.Dock = System.Windows.Forms.DockStyle.None;
-                    pnlHostForUCSpecialTypes.Dock = System.Windows.Forms.DockStyle.Fill;
+                    pnlHostForUCPartnerTypes.Dock = System.Windows.Forms.DockStyle.None;
+                    pnlHostForUCPartnerTypes.Dock = System.Windows.Forms.DockStyle.Fill;
                 }
 
-                ReturnValue = ucoSpecialTypes;
+                ReturnValue = ucoPartnerTypes;
                 break;
 
             case TDynamicLoadableUserControls.dlucNotes:
@@ -427,5 +448,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         return ReturnValue;
     }
+
   }
 }
