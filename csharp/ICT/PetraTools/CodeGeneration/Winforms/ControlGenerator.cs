@@ -109,7 +109,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 if (!ctrl.HasAttribute("DynamicControlType"))
                 {
-                    throw new Exception("TabPage '" +ctrl.controlName + "': 'DynamicControlType' property needs to be specified if 'LoadPageDynamically' is specified");
+                    throw new Exception("TabPage '" + ctrl.controlName + "': 'DynamicControlType' property needs to be specified if 'LoadPageDynamically' is specified");
                 }
                 else
                 {
@@ -139,6 +139,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 DynamicTabPageInitialisation += "        UC" + CntrlNameWithoutPrefix + ".PetraUtilsObject = FPetraUtilsObject;" + Environment.NewLine;
                 DynamicTabPageInitialisation += "        UC" + CntrlNameWithoutPrefix + ".InitUserControl();" + Environment.NewLine;
                 DynamicTabPageInitialisation += "        ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UC" + CntrlNameWithoutPrefix + ");" + Environment.NewLine + Environment.NewLine;
+                DynamicTabPageInitialisation += "        OnTabPageEvent(new TTabPageEventArgs(" + ctrl.controlName + ", UC" + CntrlNameWithoutPrefix + ", \"FurtherInit\"));" + Environment.NewLine + Environment.NewLine;
                 DynamicTabPageInitialisation += "        this.Cursor = Cursors.Default;" + Environment.NewLine;
                 DynamicTabPageInitialisation += "    }" + Environment.NewLine;
                 DynamicTabPageInitialisation += "}" + Environment.NewLine + Environment.NewLine;
