@@ -211,7 +211,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// constructor
         /// </summary>
-        public SplitButton() : base ()
+        public SplitButton() : base()
         {
             //
             // Required for Windows Form Designer support

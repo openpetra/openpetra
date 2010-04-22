@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MCommon
         /// <summary>
         /// constructor
         /// </summary>
-        public TUCOfficeSpecificDataLabels() : base ()
+        public TUCOfficeSpecificDataLabels() : base()
         {
             //
             // Required for Windows Form Designer support

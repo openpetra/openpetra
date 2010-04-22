@@ -1270,7 +1270,7 @@ todo: move setstatusbar to constructor
         /// <summary>
         /// constructor
         /// </summary>
-        public TUC_PartnerFoundation() : base ()
+        public TUC_PartnerFoundation() : base()
         {
             //
             // Required for Windows Form Designer support

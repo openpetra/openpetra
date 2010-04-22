@@ -160,7 +160,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        public TPartnerNewDialogWinForm(IntPtr AParentFormHandle) : base ()
+        public TPartnerNewDialogWinForm(IntPtr AParentFormHandle) : base()
         {
             //
             // Required for Windows Form Designer support

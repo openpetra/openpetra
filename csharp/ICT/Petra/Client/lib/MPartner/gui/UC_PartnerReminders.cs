@@ -154,7 +154,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TUCPartnerReminders() : base ()
+        public TUCPartnerReminders() : base()
         {
             //
             // Required for Windows Form Designer support

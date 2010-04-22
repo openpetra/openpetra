@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <param name="AResult"></param>
         /// <param name="AParameters"></param>
         /// <param name="APrinter"></param>
-        public TReportPrinterLayout(TResultList AResult, TParameterList AParameters, TPrinter APrinter) : base (AResult, AParameters, APrinter)
+        public TReportPrinterLayout(TResultList AResult, TParameterList AParameters, TPrinter APrinter) : base(AResult, AParameters, APrinter)
         {
             if (AParameters.Get("ReportWidth").ToDouble() > 20)
             {

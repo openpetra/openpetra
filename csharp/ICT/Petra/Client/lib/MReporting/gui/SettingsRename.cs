@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// Private Declarations
         /// </summary>
         /// <returns>void</returns>
-        public TFrmSettingsRename() : base ()
+        public TFrmSettingsRename() : base()
         {
             //
             // Required for Windows Form Designer support

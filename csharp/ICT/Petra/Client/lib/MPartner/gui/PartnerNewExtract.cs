@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Constructor
         /// </summary>
-        public TPartnerNewExtract() : base ()
+        public TPartnerNewExtract() : base()
         {
             //
             // The InitializeComponent() call is required for Windows Forms designer support.

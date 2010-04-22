@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MCommon
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TFieldOfServiceWinForm(Form AParentForm) : base ()
+        public TFieldOfServiceWinForm(Form AParentForm) : base()
         {
             //
             // Required for Windows Form Designer support

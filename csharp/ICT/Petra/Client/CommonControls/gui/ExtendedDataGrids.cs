@@ -130,7 +130,7 @@ namespace Ict.Petra.Client.CommonControls
         /// constructor
         /// </summary>
         public TDataGridControlledSort()
-            : base ()
+            : base()
         {
             FNotSortableColumns = new ArrayList();
         }

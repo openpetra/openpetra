@@ -40,7 +40,7 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>
         /// constructor
         /// </summary>
-        public TUnhandledExceptionDetailsForm() : base ()
+        public TUnhandledExceptionDetailsForm() : base()
         {
             // TODO: TUnhandledExceptionDetailsForm
         }

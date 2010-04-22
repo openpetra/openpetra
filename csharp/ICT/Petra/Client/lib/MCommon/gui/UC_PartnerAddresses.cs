@@ -209,7 +209,7 @@ namespace Ict.Petra.Client.MCommon
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TUCPartnerAddresses() : base ()
+        public TUCPartnerAddresses() : base()
         {
             //
             // Required for Windows Form Designer support

@@ -52,7 +52,7 @@ namespace Ict.Petra.Client.CommonControls
         /// constructor
         /// </summary>
         public TUITE_ListBox()
-            : base ()
+            : base()
         {
             ArrayList ListItemsArray;
 

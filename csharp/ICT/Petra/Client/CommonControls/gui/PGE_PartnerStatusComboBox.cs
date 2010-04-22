@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.CommonControls
         /// constructor
         /// </summary>
         public TPGE_PartnerStatusComboBox()
-            : base ()
+            : base()
         {
             ArrayList ListItemsArray;
             DataTable DataCache_PartnerStatusListTable;

@@ -99,7 +99,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Private Declarations
         /// </summary>
         /// <returns>void</returns>
-        public TExtractPartnersSubscribedWinForm() : base ()
+        public TExtractPartnersSubscribedWinForm() : base()
         {
             //
             // Required for Windows Form Designer support

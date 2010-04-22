@@ -143,7 +143,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
-        public TUC_PartnerOfficeSpecific() : base ()
+        public TUC_PartnerOfficeSpecific() : base()
         {
             //
             // Required for Windows Form Designer support

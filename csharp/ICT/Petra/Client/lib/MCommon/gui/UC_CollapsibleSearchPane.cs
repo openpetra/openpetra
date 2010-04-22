@@ -472,7 +472,7 @@ namespace Ict.Petra.Client.MCommon
         /// Private Declarations
         /// </summary>
         /// <returns>void</returns>
-        public TUC_CollapsibleSearchPane() : base ()
+        public TUC_CollapsibleSearchPane() : base()
         {
             //
             // Required for Windows Form Designer support

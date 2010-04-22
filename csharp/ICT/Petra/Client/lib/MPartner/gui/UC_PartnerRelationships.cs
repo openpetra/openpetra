@@ -155,7 +155,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TUCPartnerRelationships() : base ()
+        public TUCPartnerRelationships() : base()
         {
             //
             // Required for Windows Form Designer support

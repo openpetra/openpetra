@@ -618,7 +618,7 @@ todo: move statusbar things to constructor
             Application.DoEvents();
         }
 
-        public TPartnerPrintSectionDialog() : base ()
+        public TPartnerPrintSectionDialog() : base()
         {
             //
             // Required for Windows Form Designer support

@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.App.Core
         /// Starts the KeepAliveThread.
         ///
         /// </summary>
-        public TEnsureKeepAlive() : base ()
+        public TEnsureKeepAlive() : base()
         {
             Thread TheThread;
 

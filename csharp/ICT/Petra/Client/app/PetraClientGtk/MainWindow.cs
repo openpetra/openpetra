@@ -46,7 +46,7 @@ public class TFrmMain : Gtk.Window
     /// <param name="AProcessID">process ID of Appdomain on the server</param>
     /// <param name="AWelcomeMessage">welcome message from the server</param>
     /// <param name="ASystemEnabled">is the Petra system enabled at all</param>
-    public TFrmMain(System.Version APetraVersion, Int32 AProcessID, String AWelcomeMessage, Boolean ASystemEnabled) : base ("")
+    public TFrmMain(System.Version APetraVersion, Int32 AProcessID, String AWelcomeMessage, Boolean ASystemEnabled) : base("")
     {
         // leave out 'Revision' and 'Build'
         this.Title = String.Format(Catalog.GetString("OpenPetra.org {0} Main Menu"), APetraVersion.ToString(2));

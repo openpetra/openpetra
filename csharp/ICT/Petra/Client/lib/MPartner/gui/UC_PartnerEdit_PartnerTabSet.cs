@@ -277,7 +277,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        public TUC_PartnerEdit_PartnerTabSet() : base ()
+        public TUC_PartnerEdit_PartnerTabSet() : base()
         {
             //
             // Required for Windows Form Designer support

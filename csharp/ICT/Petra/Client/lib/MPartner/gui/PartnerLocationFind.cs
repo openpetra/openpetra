@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private String FDefaultCriteriaXML;
         private DataView FDataView;
 
-        public TPartnerLocationFind() : base ()
+        public TPartnerLocationFind() : base()
         {
             //
             // Required for Windows Form Designer support
