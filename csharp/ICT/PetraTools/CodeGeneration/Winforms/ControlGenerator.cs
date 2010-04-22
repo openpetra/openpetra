@@ -158,7 +158,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 DynamicTabPageLoading += "case TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + ":" + Environment.NewLine;
                 DynamicTabPageLoading +=
                     "    // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl"
-                    + Environment.NewLine;
+                    +
+                    Environment.NewLine;
                 DynamicTabPageLoading += "    Panel pnlHostForUC" + CntrlNameWithoutPrefix + " = new Panel();" + Environment.NewLine;
                 DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".AutoSize = true;" + Environment.NewLine;
                 DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".Dock = System.Windows.Forms.DockStyle.Fill;" +
@@ -265,7 +266,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class DateTimePickerGenerator : TControlGenerator
     {
         public DateTimePickerGenerator()
-            : base("dtp", typeof(DateTimePicker))
+            : base("dtp", typeof(Ict.Petra.Client.CommonControls.TtxtPetraDate))
         {
         }
 
@@ -273,21 +274,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (AFieldTypeDotNet == null)
             {
-                return ctrl.controlName + ".Value == DateTime.MinValue";
+                return ctrl.controlName + ".Date == null";
             }
 
-            return ctrl.controlName + ".Value";
+            return ctrl.controlName + ".Date";
         }
 
         protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
         {
             if (AFieldOrNull == null)
             {
-                AFieldOrNull = "DateTime.MinValue";
-                return ctrl.controlName + ".Value = " + AFieldOrNull + ";";
+                return ctrl.controlName + ".Date = null;";
             }
 
-            return ctrl.controlName + ".Value = " + AFieldOrNull + ".Value;";
+            return ctrl.controlName + ".Date = " + AFieldOrNull + ";";
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
