@@ -28,13 +28,17 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Drawing;
+
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Formatting;
 using Ict.Petra.Client.App.Gui;
+using Mono.Unix;
 
 namespace Ict.Petra.Client.CommonControls
 {
+    #region TtxtPetraDate
+
     /// <summary>
     /// A Control that derives from System.Windows.Forms.TextBox that allows entry
     /// and formatting of dates in the Petra-specific format and with all the Petra
@@ -51,7 +55,7 @@ namespace Ict.Petra.Client.CommonControls
     /// </summary>
     public class TtxtPetraDate : System.Windows.Forms.TextBox
     {
-        private DateTime FDate;
+        private DateTime? FDate;
         private Boolean FSuppressTextChangeEvent;
         private Boolean FAllowEmpty;
         private Boolean FAllowFutureDate;
@@ -85,7 +89,7 @@ namespace Ict.Petra.Client.CommonControls
         /// This property determines the Date that the Control should display.
         ///
         /// </summary>
-        public DateTime Date
+        public DateTime ? Date
         {
             get
             {
@@ -120,9 +124,16 @@ namespace Ict.Petra.Client.CommonControls
                                 DateChangeArgs = new TPetraDateChangedEventArgs(DateTime.MinValue, false);
                             }
 
-                            // Raise OnDateChanged Event  whether the Date was valid or not!
+                            // Raise OnDateChanged Event whether the Date was valid or not!
                             OnDateChanged(DateChangeArgs);
                         }
+                    }
+                    else
+                    {
+                        FDate = null;
+
+                        // Raise OnDateChanged Event whether the Date was valid or not!
+                        OnDateChanged(new TPetraDateChangedEventArgs(FDate, true));
                     }
                 }
                 catch (System.MissingMethodException)
@@ -155,8 +166,7 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
-        /// This property determines whether a Date in the future is allowed to be entered.
-        ///
+        /// This property determines whether a Date in the future is allowed to be entered. (Default: true)
         /// </summary>
         public Boolean AllowFutureDate
         {
@@ -172,8 +182,7 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
-        /// This property determines whether a Date in the past is allowed to be entered.
-        ///
+        /// This property determines whether a Date in the past is allowed to be entered. (Default: true)
         /// </summary>
         public Boolean AllowPastDate
         {
@@ -189,8 +198,7 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
-        /// This property determines whether an empty value will be allowed to be entered.
-        ///
+        /// This property determines whether an empty value will be allowed to be entered. (Default: true)
         /// </summary>
         public Boolean AllowEmpty
         {
@@ -207,7 +215,7 @@ namespace Ict.Petra.Client.CommonControls
 
         /// <summary>
         /// This property determines whether the user will be allowed to leave the Date
-        /// TextBox if it contains an invalid date.
+        /// TextBox if it contains an invalid date. (Default: true)
         ///
         /// </summary>
         public Boolean LeavingOnFailedValidationOK
@@ -224,13 +232,9 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
-        /// / Custom Events
         /// This Event is thrown when the Date has changed.
-        ///
         /// </summary>
         public event TPetraDateChangedEventHandler DateChanged;
-
-        #region TtxtPetraDate
 
         /// <summary>
         /// constructor
@@ -254,6 +258,7 @@ namespace Ict.Petra.Client.CommonControls
 
             // MessageBox.Show('TtxtPetraDate.Create: after assigning ''Width'' Property');
             this.Validating += new CancelEventHandler(this.Date_Validating);
+            this.DoubleClick += new EventHandler(TtxtPetraDate_DoubleClick);
 
             // MessageBox.Show('TtxtPetraDate.Create: after hooking up ''Validating'' Event');
             // Include(this.TextChanged, this.Date_TextChanged);
@@ -262,6 +267,29 @@ namespace Ict.Petra.Client.CommonControls
             AllowPastDate = true;
             AllowEmpty = true;
             LeavingOnFailedValidationOK = true;
+        }
+
+        void TtxtPetraDate_DoubleClick(object sender, EventArgs e)
+        {
+            DialogResult ReplaceExistingDate;
+
+            if (FDate == null)
+            {
+                this.Date = DateTime.Today;
+            }
+            else
+            {
+                ReplaceExistingDate =
+                    MessageBox.Show(Catalog.GetString(
+                            "The date is not empty. By double-clicking it you would set the date to today's date.\r\n\r\nAre you sure you want to set the date to today's date?"),
+                        Catalog.GetString("Replace Date With Today's Date?"), MessageBoxButtons.YesNoCancel,
+                        MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+
+                if (ReplaceExistingDate == DialogResult.Yes)
+                {
+                    this.Date = DateTime.Today;
+                }
+            }
         }
 
         /// <summary>
@@ -308,7 +336,6 @@ namespace Ict.Petra.Client.CommonControls
 
         /// <summary>
         /// Verifies the Date value.
-        ///
         /// </summary>
         /// <param name="AShowVerificationError">Set to true to show errors if verification
         /// failed, or to false to suppress error messages</param>
@@ -340,11 +367,12 @@ namespace Ict.Petra.Client.CommonControls
         private Boolean VerifyDate(Boolean AShowVerificationError)
         {
             Boolean ReturnValue = true;
+            DateTime? DateBeforeChange = FDate;
             DateTime Text2Date;
             TVerificationResult DateVerificationResult1;
             TVerificationResult DateVerificationResult2;
 
-            // MessageBox.Show('About to verify Date.' + "\r\n" + 'Calling LongDateStringToDateTime2...');
+//MessageBox.Show("About to verify Date." + "\r\n" + "Calling LongDateStringToDateTime2...");
             // Convert TextBox's Text to Date
             Text2Date = DataBinding.LongDateStringToDateTime2(
                 this.Text,
@@ -355,7 +383,7 @@ namespace Ict.Petra.Client.CommonControls
             if (DateVerificationResult1 == null)
             {
                 // Conversion was successful
-                // MessageBox.Show('Date conversion was successful: ' + Text2Date.ToString);
+//MessageBox.Show("Date conversion was successful: " + Text2Date.ToString());
                 if (!AllowFutureDate)
                 {
                     DateVerificationResult2 = TDateChecks.IsCurrentOrPastDate(Text2Date, FDateDescription);
@@ -370,7 +398,9 @@ namespace Ict.Petra.Client.CommonControls
 
                         // Reset the Date to what it was before!
                         // this.Date := FDate;
-                        ReturnValue = false;
+
+                        OnDateChanged(new TPetraDateChangedEventArgs(FDate, false));
+
                         return false;
                     }
                 }
@@ -389,7 +419,9 @@ namespace Ict.Petra.Client.CommonControls
 
                         // Reset the Date to what it was before!
                         // this.Date := FDate;
-                        ReturnValue = false;
+
+                        OnDateChanged(new TPetraDateChangedEventArgs(FDate, false));
+
                         return false;
                     }
                 }
@@ -408,24 +440,47 @@ namespace Ict.Petra.Client.CommonControls
 
                         // Reset the Date to what it was before!
                         // this.Date := FDate;
-                        ReturnValue = false;
+
+                        OnDateChanged(new TPetraDateChangedEventArgs(FDate, false));
+
                         return false;
                     }
                 }
 
                 // Store the Date for later use
-                FDate = Text2Date;
+                if (Text2Date != DateTime.MinValue)
+                {
+                    FDate = Text2Date;
+                }
+                else
+                {
+                    FDate = null;
+                }
 
                 // Now update the TextBox's Text with the newly formatted date
                 FSuppressTextChangeEvent = true;
-                this.Text = DataBinding.DateTimeToLongDateString2(FDate);
+
+                if (FDate != null)
+                {
+                    this.Text = DataBinding.DateTimeToLongDateString2(FDate.Value);
+                }
+                else
+                {
+                    this.Text = "";
+                }
+
                 FSuppressTextChangeEvent = false;
                 ReturnValue = true;
             }
             else
             {
-                // MessageBox.Show('Date conversion was NOT successful!');
+//MessageBox.Show("Date conversion was NOT successful!");
                 ReturnValue = false;
+            }
+
+            if (DateBeforeChange != FDate)
+            {
+                OnDateChanged(new TPetraDateChangedEventArgs(FDate, true));
             }
 
             return ReturnValue;
@@ -441,8 +496,9 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         #endregion
-        #endregion
     }
+
+    #endregion
 
     /// <summary>todoComment</summary>
     public delegate void TPetraDateChangedEventHandler(System.Object Sender, TPetraDateChangedEventArgs e);
@@ -452,11 +508,11 @@ namespace Ict.Petra.Client.CommonControls
     /// </summary>
     public class TPetraDateChangedEventArgs : System.EventArgs
     {
-        private DateTime FDate;
+        private DateTime? FDate;
         private Boolean FValidDate;
 
         /// <summary>todoComment</summary>
-        public DateTime DateTime
+        public DateTime ? DateTime
         {
             get
             {
@@ -498,7 +554,7 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         /// <param name="ADate"></param>
         /// <param name="AValidDate"></param>
-        public TPetraDateChangedEventArgs(DateTime ADate, Boolean AValidDate)
+        public TPetraDateChangedEventArgs(DateTime? ADate, Boolean AValidDate)
             : base()
         {
             FDate = ADate;

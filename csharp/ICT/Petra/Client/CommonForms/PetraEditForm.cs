@@ -34,10 +34,12 @@ using System.Resources;
 using System.Runtime.Remoting.Lifetime;
 using System.Runtime.InteropServices;
 using Mono.Unix;
+
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
 
 namespace Ict.Petra.Client.CommonForms
@@ -241,12 +243,16 @@ namespace Ict.Petra.Client.CommonForms
                 else if (ctrl.GetType() == typeof(TCmbVersatile))
                 {
                     ((TCmbVersatile)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);
-
-                    // the remaining controls are listed in order to be able to
-                    // warn the developer if a new control is added to a form
-                    // which isn't hooked up to the system!
-                    //
                 }
+                else if (ctrl.GetType() == typeof(TtxtPetraDate))
+                {
+                    ((TtxtPetraDate)ctrl).DateChanged += new TPetraDateChangedEventHandler(this.TFrmPetraEditUtils_DateChanged);
+                }
+                /*
+                 * The remaining controls are listed in order to be able to
+                 * warn the developer if a new control is added to a form
+                 * which isn't hooked up to the system!
+                 */
                 else if ((ctrl.GetType() == typeof(Button))
                          || (ctrl.GetType() == typeof(System.Windows.Forms.ToolStrip))
                          || (ctrl.GetType() == typeof(System.Windows.Forms.MenuStrip))
@@ -327,6 +333,17 @@ namespace Ict.Petra.Client.CommonForms
 
                 // TLogging.Log(DateTime.Now.ToString() + ' MULTIEVENT Ctrl: ' + ctrlname + ' Type: ' + ctrltype);
             }
+        }
+
+        /// <summary>
+        /// Event Handler for the TtxtPetraDate Control. Simply calls <see cref="MultiEventHandler" />
+        /// so we get an Event that the Control's value has changed.
+        /// </summary>
+        /// <param name="Sender">Sending Object.</param>
+        /// <param name="e">Event Arguments (not used).</param>
+        protected void TFrmPetraEditUtils_DateChanged(object Sender, TPetraDateChangedEventArgs e)
+        {
+            MultiEventHandler(Sender, null);
         }
 
         #region Event Handlers

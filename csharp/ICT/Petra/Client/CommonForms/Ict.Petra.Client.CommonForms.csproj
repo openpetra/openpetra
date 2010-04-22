@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{115F2398-E0E0-4F79-854C-BBFC5DEB076F}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -93,6 +93,10 @@
     <ProjectReference Include="..\app\Gui\Ict.Petra.Client.App.Gui.csproj">
       <Project>{7C72F5ED-C494-4B58-AA90-2B948D4CF1D7}</Project>
       <Name>Ict.Petra.Client.App.Gui</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommonControls\gui\Ict.Petra.Client.CommonControls.Gui.csproj">
+      <Project>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</Project>
+      <Name>Ict.Petra.Client.CommonControls.Gui</Name>
     </ProjectReference>
     <ProjectReference Include="..\lib\MCommon\logic\Ict.Petra.Client.MCommon.Logic.csproj">
       <Project>{0BC4E544-F1E7-48AC-869C-71312E31AC2D}</Project>
