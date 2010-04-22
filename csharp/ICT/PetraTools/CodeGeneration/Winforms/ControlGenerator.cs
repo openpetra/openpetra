@@ -101,87 +101,107 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             string DynamicControlType;
             string CntrlNameWithoutPrefix = ctrl.controlName.Substring(3);
-            
+
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl.controlName, "Dock", "Fill");
-            
+
             if (ctrl.HasAttribute("LoadPageDynamically") && (ctrl.GetAttribute("LoadPageDynamically").ToLower() == "true"))
             {
                 if (!ctrl.HasAttribute("DynamicControlType"))
                 {
-                    throw new Exception("TabPage '" + ctrl.controlName + "': 'DynamicControlType' property needs to be specified if 'LoadPageDynamically' is specified");
+                    throw new Exception(
+                        "TabPage '" + ctrl.controlName +
+                        "': 'DynamicControlType' property needs to be specified if 'LoadPageDynamically' is specified");
                 }
                 else
                 {
                     DynamicControlType = ctrl.GetAttribute("DynamicControlType");
                 }
-                
-                    
+
                 string DynamicTabPageEnums = "";
                 DynamicTabPageEnums += "///<summary>Denotes dynamic loadable UserControl " + ctrl.controlName + "</summary>" + Environment.NewLine;
                 DynamicTabPageEnums += "dluc" + CntrlNameWithoutPrefix + "," + Environment.NewLine;
-                
+
                 writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", DynamicTabPageEnums);
-                
+
                 string DynamicTabPageInitialisation = "";
-                DynamicTabPageInitialisation += "if (tabPartners.SelectedTab == " + ctrl.controlName + ")" + Environment.NewLine;  // " + TabControlGenerator.TabControlName + 
+                DynamicTabPageInitialisation += "if (tabPartners.SelectedTab == " + ctrl.controlName + ")" + Environment.NewLine;  // " + TabControlGenerator.TabControlName +
                 DynamicTabPageInitialisation += "{" + Environment.NewLine;
-                DynamicTabPageInitialisation += "    if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + "))" + Environment.NewLine;
+                DynamicTabPageInitialisation += "    if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + "))" +
+                                                Environment.NewLine;
                 DynamicTabPageInitialisation += "    {" + Environment.NewLine;
-                DynamicTabPageInitialisation += "        " + DynamicControlType + " UC" + CntrlNameWithoutPrefix + ";" + Environment.NewLine + Environment.NewLine;
+                DynamicTabPageInitialisation += "        " + DynamicControlType + " UC" + CntrlNameWithoutPrefix + ";" + Environment.NewLine +
+                                                Environment.NewLine;
                 DynamicTabPageInitialisation += "        if (TClientSettings.DelayedDataLoading)" + Environment.NewLine;
                 DynamicTabPageInitialisation += "        {" + Environment.NewLine;
                 DynamicTabPageInitialisation += "            // Signalise the user that data is beeing loaded" + Environment.NewLine;
                 DynamicTabPageInitialisation += "            this.Cursor = Cursors.AppStarting;" + Environment.NewLine;
                 DynamicTabPageInitialisation += "        }" + Environment.NewLine + Environment.NewLine;
-                DynamicTabPageInitialisation += "        UC" + CntrlNameWithoutPrefix + " = (" + DynamicControlType + ")DynamicLoadUserControl(TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + ");" + Environment.NewLine;
+                DynamicTabPageInitialisation += "        UC" + CntrlNameWithoutPrefix + " = (" + DynamicControlType +
+                                                ")DynamicLoadUserControl(TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + ");" +
+                                                Environment.NewLine;
                 DynamicTabPageInitialisation += "        UC" + CntrlNameWithoutPrefix + ".MainDS = FMainDS;" + Environment.NewLine;
-                DynamicTabPageInitialisation += "        UC" + CntrlNameWithoutPrefix + ".PetraUtilsObject = FPetraUtilsObject;" + Environment.NewLine;
+                DynamicTabPageInitialisation += "        UC" + CntrlNameWithoutPrefix + ".PetraUtilsObject = FPetraUtilsObject;" +
+                                                Environment.NewLine;
                 DynamicTabPageInitialisation += "        UC" + CntrlNameWithoutPrefix + ".InitUserControl();" + Environment.NewLine;
-                DynamicTabPageInitialisation += "        ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UC" + CntrlNameWithoutPrefix + ");" + Environment.NewLine + Environment.NewLine;
-                DynamicTabPageInitialisation += "        OnTabPageEvent(new TTabPageEventArgs(" + ctrl.controlName + ", UC" + CntrlNameWithoutPrefix + ", \"FurtherInit\"));" + Environment.NewLine + Environment.NewLine;
+                DynamicTabPageInitialisation += "        ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UC" +
+                                                CntrlNameWithoutPrefix + ");" + Environment.NewLine + Environment.NewLine;
+                DynamicTabPageInitialisation += "        OnTabPageEvent(new TTabPageEventArgs(" + ctrl.controlName + ", UC" +
+                                                CntrlNameWithoutPrefix + ", \"FurtherInit\"));" + Environment.NewLine + Environment.NewLine;
                 DynamicTabPageInitialisation += "        this.Cursor = Cursors.Default;" + Environment.NewLine;
                 DynamicTabPageInitialisation += "    }" + Environment.NewLine;
                 DynamicTabPageInitialisation += "}" + Environment.NewLine + Environment.NewLine;
-                
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", DynamicTabPageInitialisation);                
-                
+
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", DynamicTabPageInitialisation);
+
                 string DynamicTabPageLoading = "";
-                DynamicTabPageLoading += "case TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + ":" + Environment.NewLine;               
-                DynamicTabPageLoading += "    // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl" + Environment.NewLine;
-                DynamicTabPageLoading += "    Panel pnlHostForUC" + CntrlNameWithoutPrefix + " = new Panel();"  + Environment.NewLine;                
+                DynamicTabPageLoading += "case TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + ":" + Environment.NewLine;
+                DynamicTabPageLoading +=
+                    "    // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl"
+                    + Environment.NewLine;
+                DynamicTabPageLoading += "    Panel pnlHostForUC" + CntrlNameWithoutPrefix + " = new Panel();" + Environment.NewLine;
                 DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".AutoSize = true;" + Environment.NewLine;
-                DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".Dock = System.Windows.Forms.DockStyle.Fill;" + Environment.NewLine;
-                DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".Location = new System.Drawing.Point(0, 0);" + Environment.NewLine;
-                DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".Padding = new System.Windows.Forms.Padding(2);" + Environment.NewLine;
-                DynamicTabPageLoading += "    " + ctrl.controlName + ".Controls.Add(" + "pnlHostForUC" + CntrlNameWithoutPrefix + ");" + Environment.NewLine + Environment.NewLine;
+                DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".Dock = System.Windows.Forms.DockStyle.Fill;" +
+                                         Environment.NewLine;
+                DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".Location = new System.Drawing.Point(0, 0);" +
+                                         Environment.NewLine;
+                DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".Padding = new System.Windows.Forms.Padding(2);" +
+                                         Environment.NewLine;
+                DynamicTabPageLoading += "    " + ctrl.controlName + ".Controls.Add(" + "pnlHostForUC" + CntrlNameWithoutPrefix + ");" +
+                                         Environment.NewLine + Environment.NewLine;
                 DynamicTabPageLoading += "    // Create the UserControl" + Environment.NewLine;
-                DynamicTabPageLoading += "    " + DynamicControlType + " uco" + CntrlNameWithoutPrefix + " = new "+ DynamicControlType + "();" + Environment.NewLine;
-                DynamicTabPageLoading += "    FTabSetup.Add(TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + ", uco" + CntrlNameWithoutPrefix + ");" + Environment.NewLine;
+                DynamicTabPageLoading += "    " + DynamicControlType + " uco" + CntrlNameWithoutPrefix + " = new " + DynamicControlType + "();" +
+                                         Environment.NewLine;
+                DynamicTabPageLoading += "    FTabSetup.Add(TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + ", uco" +
+                                         CntrlNameWithoutPrefix + ");" + Environment.NewLine;
                 DynamicTabPageLoading += "    uco" + CntrlNameWithoutPrefix + ".Location = new Point(0, 2);" + Environment.NewLine;
                 DynamicTabPageLoading += "    uco" + CntrlNameWithoutPrefix + ".Dock = DockStyle.Fill;" + Environment.NewLine;
-                DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".Controls.Add(uco" + CntrlNameWithoutPrefix + ");" + Environment.NewLine + Environment.NewLine;
+                DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".Controls.Add(uco" + CntrlNameWithoutPrefix + ");" +
+                                         Environment.NewLine + Environment.NewLine;
                 DynamicTabPageLoading += "    /*" + Environment.NewLine;
-                DynamicTabPageLoading += "     * The following four commands seem strange and unnecessary; however, they are necessary" + Environment.NewLine;
+                DynamicTabPageLoading += "     * The following four commands seem strange and unnecessary; however, they are necessary" +
+                                         Environment.NewLine;
                 DynamicTabPageLoading += "     * to make things scale correctly on \"Large Fonts (120DPI)\" display setting." + Environment.NewLine;
                 DynamicTabPageLoading += "    */" + Environment.NewLine;
                 DynamicTabPageLoading += "    if (TClientSettings.GUIRunningOnNonStandardDPI)" + Environment.NewLine;
                 DynamicTabPageLoading += "    {" + Environment.NewLine;
                 DynamicTabPageLoading += "        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);" + Environment.NewLine;
                 DynamicTabPageLoading += "        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;" + Environment.NewLine;
-                DynamicTabPageLoading += "        pnlHostForUC" + CntrlNameWithoutPrefix + ".Dock = System.Windows.Forms.DockStyle.None;" + Environment.NewLine;
-                DynamicTabPageLoading += "        pnlHostForUC" + CntrlNameWithoutPrefix + ".Dock = System.Windows.Forms.DockStyle.Fill;" + Environment.NewLine;
+                DynamicTabPageLoading += "        pnlHostForUC" + CntrlNameWithoutPrefix + ".Dock = System.Windows.Forms.DockStyle.None;" +
+                                         Environment.NewLine;
+                DynamicTabPageLoading += "        pnlHostForUC" + CntrlNameWithoutPrefix + ".Dock = System.Windows.Forms.DockStyle.Fill;" +
+                                         Environment.NewLine;
                 DynamicTabPageLoading += "    }" + Environment.NewLine + Environment.NewLine;
                 DynamicTabPageLoading += "    ReturnValue = uco" + CntrlNameWithoutPrefix + ";" + Environment.NewLine;
                 DynamicTabPageLoading += "    break;" + Environment.NewLine + Environment.NewLine;
-                
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLLOADING", DynamicTabPageLoading);         
+
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLLOADING", DynamicTabPageLoading);
             }
             else
             {
                 writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", "");
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", "");                
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLLOADING", "");         
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", "");
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLLOADING", "");
             }
         }
 
@@ -1178,7 +1198,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class TabControlGenerator : ContainerGenerator
     {
         static string FTabControlName;
-        
+
         public TabControlGenerator()
             : base("tab", "Ict.Common.Controls.TTabVersatile")
         {
@@ -1189,17 +1209,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             get
             {
-               return FTabControlName; 
+                return FTabControlName;
             }
         }
-        
+
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
 
             FTabControlName = ctrl.controlName;
-            
+
             if (ctrl.HasAttribute("DragTabPageEnabled") && (ctrl.GetAttribute("DragTabPageEnabled").ToLower() == "false"))
             {
                 writer.SetControlProperty(ctrl.controlName, "AllowDrop", "false");
@@ -1216,24 +1236,28 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             writer.Template.SetCodelet("TABPAGECTRL", ctrl.controlName);
-            
+
             if (ctrl.HasAttribute("LoadPagesDynamically") && (ctrl.GetAttribute("LoadPagesDynamically").ToLower() == "true"))
             {
                 string DynamicTabPageUserControlSelectionChanged = "";
                 DynamicTabPageUserControlSelectionChanged += "/*" + Environment.NewLine;
-                DynamicTabPageUserControlSelectionChanged += " * Raise the following Event to inform the base Form that we might be loading some fresh data." + Environment.NewLine;
-                DynamicTabPageUserControlSelectionChanged += " * We need to bypass the ChangeDetection routine while this happens." + Environment.NewLine;
-                DynamicTabPageUserControlSelectionChanged += " */" + Environment.NewLine;                
-                DynamicTabPageUserControlSelectionChanged += "OnDataLoadingStarted();" + Environment.NewLine + Environment.NewLine + Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged +=
+                    " * Raise the following Event to inform the base Form that we might be loading some fresh data." + Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged += " * We need to bypass the ChangeDetection routine while this happens." +
+                                                             Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged += " */" + Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged += "OnDataLoadingStarted();" + Environment.NewLine + Environment.NewLine +
+                                                             Environment.NewLine;
                 DynamicTabPageUserControlSelectionChanged += "{#DYNAMICTABPAGEUSERCONTROLINITIALISATION}" + Environment.NewLine + Environment.NewLine;
                 DynamicTabPageUserControlSelectionChanged += "/*" + Environment.NewLine;
-                DynamicTabPageUserControlSelectionChanged += " * Raise the following Event to inform the base Form that we have finished loading fresh data." + Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged +=
+                    " * Raise the following Event to inform the base Form that we have finished loading fresh data." + Environment.NewLine;
                 DynamicTabPageUserControlSelectionChanged += " * We need to turn the ChangeDetection routine back on." + Environment.NewLine;
-                DynamicTabPageUserControlSelectionChanged += " */" + Environment.NewLine;                
+                DynamicTabPageUserControlSelectionChanged += " */" + Environment.NewLine;
                 DynamicTabPageUserControlSelectionChanged += "OnDataLoadingFinished();" + Environment.NewLine;
-                
+
                 writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED", DynamicTabPageUserControlSelectionChanged);
-            }   
+            }
             else
             {
                 writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED", "");
