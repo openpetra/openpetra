@@ -184,14 +184,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public new void InitUserControl()
+        public void InitUserControl()
         {
         }
 
         /// <summary>
         /// todoComment
         /// </summary>
-        public new void SpecialInitUserControl()
+        public void SpecialInitUserControl()
         {
             // Set up screen logic
             FLogic.MultiTableDS = FMainDS;

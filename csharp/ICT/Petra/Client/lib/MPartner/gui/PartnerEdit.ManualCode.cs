@@ -78,8 +78,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     ///     to the UIConnector class and see if errors are returned
     ///   - 1..n Addresses are displayed in a list control
     /// </summary>
-    /// <include file='doc.extra/Ict.Petra.Client.MPartner.Gui.xml'
-    /// path='doc/members/member[@name="T:Ict.Petra.Client.MPartner.TPartnerEditDSWinForm"]/*' />
     public partial class TPartnerEditDSWinForm
     {
         /// <summary>

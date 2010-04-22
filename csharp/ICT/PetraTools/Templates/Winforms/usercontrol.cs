@@ -65,6 +65,12 @@ namespace {#NAMESPACE}
         }
     }
 
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingStarted;
+
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingFinished;
+
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
@@ -82,21 +88,48 @@ namespace {#NAMESPACE}
     
     {#EVENTHANDLERSIMPLEMENTATION}
 
+{#IFDEF SHOWDATA}
     private void ShowData({#MASTERTABLE}Row ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
         {#SHOWDATA}
         FPetraUtilsObject.EnableDataChangedEvent();
     }
-    
-{#IFDEF SAVEDETAILS}
-    /// get the data from the controls and store in the currently selected detail row
-    public void GetDataFromControls()
-    {
-        GetDetailsFromControls(FPreviouslySelectedDetailRow);
-    }
+{#ENDIF SHOWDATA}
 
+{#IFDEF SHOWDETAILS}
+    private void ShowDetails({#DETAILTABLETYPE}Row ARow)
+    {
+        {#SHOWDETAILS}
+    }
+{#ENDIF SHOWDETAILS}
+
+    
+{#IFDEF MASTERTABLE}
+
+    private void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
+    {
+        {#SAVEDATA}
+    }
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}
+
+    private void GetDataFromControls()
+    {
+        {#SAVEDATA}
+    }
+{#ENDIFN MASTERTABLE}
+{#IFDEF SAVEDETAILS}
+
+    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
+    {
+        if (ARow != null)
+        {
+            {#SAVEDETAILS}
+        }
+    }
 {#ENDIF SAVEDETAILS}
+
 
 #region Implement interface functions
     /// auto generated

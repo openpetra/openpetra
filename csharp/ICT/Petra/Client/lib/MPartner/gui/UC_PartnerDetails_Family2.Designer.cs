@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.cmbMaritalStatus = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblMaritalStatus = new System.Windows.Forms.Label();
-            this.txtMaritalStatusSince = new System.Windows.Forms.TextBox();
+            this.dtpMaritalStatusSince = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblMaritalStatusSince = new System.Windows.Forms.Label();
             this.txtMaritalStatusComment = new System.Windows.Forms.TextBox();
             this.lblMaritalStatusComment = new System.Windows.Forms.Label();
@@ -184,11 +184,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblMaritalStatus.Text = "Marital Status:";
             this.lblMaritalStatus.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
-            // txtMaritalStatusSince
+            // dtpMaritalStatusSince
             //
-            this.txtMaritalStatusSince.Location = new System.Drawing.Point(2,2);
-            this.txtMaritalStatusSince.Name = "txtMaritalStatusSince";
-            this.txtMaritalStatusSince.Size = new System.Drawing.Size(150, 28);
+            this.dtpMaritalStatusSince.Location = new System.Drawing.Point(2,2);
+            this.dtpMaritalStatusSince.Name = "dtpMaritalStatusSince";
+            this.dtpMaritalStatusSince.Size = new System.Drawing.Size(150, 28);            
             //
             // lblMaritalStatusSince
             //
@@ -256,7 +256,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.Controls.Add(this.lblLanguageCode, 0, 3);
             this.tableLayoutPanel2.Controls.Add(this.lblAcquisitionCode, 0, 4);
             this.tableLayoutPanel2.Controls.Add(this.cmbMaritalStatus, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtMaritalStatusSince, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.dtpMaritalStatusSince, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.txtMaritalStatusComment, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.cmbLanguageCode, 1, 3);
             this.tableLayoutPanel2.Controls.Add(this.cmbAcquisitionCode, 1, 4);
@@ -292,7 +292,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbMaritalStatus;
         private System.Windows.Forms.Label lblMaritalStatus;
-        private System.Windows.Forms.TextBox txtMaritalStatusSince;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpMaritalStatusSince;
         private System.Windows.Forms.Label lblMaritalStatusSince;
         private System.Windows.Forms.TextBox txtMaritalStatusComment;
         private System.Windows.Forms.Label lblMaritalStatusComment;

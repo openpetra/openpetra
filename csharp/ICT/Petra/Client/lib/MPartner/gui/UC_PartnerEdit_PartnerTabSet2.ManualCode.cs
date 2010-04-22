@@ -36,6 +36,7 @@ using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Partner;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MCommon;
@@ -88,6 +89,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage = TPartnerEditTabPageEnum.petpDefault;
 
+        private TPartnerEditTabPageEnum FCurrentlySelectedTabPage;
+
         private String FPartnerClass;
 
         private Boolean FUserControlInitialised;
@@ -134,6 +137,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
                 FInitiallySelectedTabPage = value;
+            }
+        }
+
+        /// <summary>todoComment</summary>
+        public TPartnerEditTabPageEnum CurrentlySelectedTabPage
+        {
+            get
+            {
+                return FCurrentlySelectedTabPage;
+            }
+
+            set
+            {
+                FCurrentlySelectedTabPage = value;
             }
         }
 
@@ -250,6 +267,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Gets the data from all controls on this TabControl.
+        /// The data is stored in the DataTables/DataColumns to which the Controls
+        /// are mapped.
+        /// </summary>
+        public void GetDataFromControls()
+        {
+            TUC_PartnerDetails_Family2 UCPartnerDetailsFamily;
+
+            UCPartnerDetailsFamily = (TUC_PartnerDetails_Family2)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetails];
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetails))
+            {
+                UCPartnerDetailsFamily.GetDataFromControls2();
+            }
+        }
+
+        /// <summary>
         /// Tells whether a specific dynamically loadable Tab has been set up.
         /// </summary>
         /// <param name="ADynamicLoadableUserControl">The Tab.</param>
@@ -266,6 +300,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
         public void SetUpPartnerAddress()
         {
             TUCPartnerAddresses UCAddresses;
@@ -288,6 +325,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Cursor = Cursors.Default;
         }
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
         public void DisableNewButtonOnAutoCreatedAddress()
         {
             TUCPartnerAddresses UCAddresses;
@@ -295,6 +335,59 @@ namespace Ict.Petra.Client.MPartner.Gui
             UCAddresses = (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
 
             UCAddresses.DisableNewButtonOnAutoCreatedAddress();
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void CleanupRecordsBeforeMerge()
+        {
+            TUCPartnerAddresses UCAddresses;
+
+            UCAddresses = (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
+
+            UCAddresses.CleanupRecordsBeforeMerge();
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void RefreshRecordsAfterMerge()
+        {
+            TUCPartnerAddresses UCAddresses;
+
+            UCAddresses = (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
+
+            UCAddresses.RefreshRecordsAfterMerge();
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="AParameterDT"></param>
+        public void ProcessServerResponseSimilarLocations(PartnerAddressAggregateTDSSimilarLocationParametersTable AParameterDT)
+        {
+            TUCPartnerAddresses UCAddresses;
+
+            UCAddresses = (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
+
+            UCAddresses.ProcessServerResponseSimilarLocations(AParameterDT);
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="AAddedOrChangedPromotionDT"></param>
+        /// <param name="AParameterDT"></param>
+        public void ProcessServerResponseAddressAddedOrChanged(
+            PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddedOrChangedPromotionDT,
+            PartnerAddressAggregateTDSChangePromotionParametersTable AParameterDT)
+        {
+            TUCPartnerAddresses UCAddresses;
+
+            UCAddresses = (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
+
+            UCAddresses.ProcessServerResponseAddressAddedOrChanged(AAddedOrChangedPromotionDT, AParameterDT);
         }
 
         #endregion
@@ -310,6 +403,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 if (ATabPageEventArgs.Tab == tpgAddresses)
                 {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
+
                     UCAddresses = (Ict.Petra.Client.MCommon.TUCPartnerAddresses)ATabPageEventArgs.UserControlOnTabPage;
 
                     // Hook up EnableDisableOtherScreenParts Event that is fired by UserControls on Tabs
@@ -324,9 +419,28 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     UCAddresses.InitialiseUserControl();
                 }
-
-                if (ATabPageEventArgs.Tab == tpgPartnerTypes)
+                else if (ATabPageEventArgs.Tab == tpgPartnerDetails)
                 {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpDetails;
+
+                    // TODO
+                }
+                else if (ATabPageEventArgs.Tab == tpgFoundationDetails)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFoundationDetails;
+
+                    // TODO
+                }
+                else if (ATabPageEventArgs.Tab == tpgSubscriptions)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpSubscriptions;
+
+                    // TODO
+                }
+                else if (ATabPageEventArgs.Tab == tpgPartnerTypes)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerTypes;
+
                     UCSpecialTypes = (Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes)ATabPageEventArgs.UserControlOnTabPage;
 
                     // Hook up RecalculateScreenParts Event
@@ -337,12 +451,30 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     UCSpecialTypes.SpecialInitUserControl();
                 }
+                else if (ATabPageEventArgs.Tab == tpgFamilyMembers)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFamilyMembers;
+
+                    // TODO
+                }
+                else if (ATabPageEventArgs.Tab == tpgNotes)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpNotes;
+
+                    // TODO
+                }
+                else if (ATabPageEventArgs.Tab == tpgOfficeSpecific)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpOfficeSpecific;
+
+                    // TODO
+                }
             }
         }
 
         private void RecalculateTabHeaderCounters(System.Object sender, TRecalculateScreenPartsEventArgs e)
         {
-            // MessageBox.Show('TUC_PartnerEdit_PartnerTabSet.RecalculateTabHeaderCounters');
+            // MessageBox.Show('TUC_PartnerEdit_PartnerTabSet2.RecalculateTabHeaderCounters');
             if (e.ScreenPart == TScreenPartEnum.spCounters)
             {
                 CalculateTabHeaderCounters(sender);
@@ -357,7 +489,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int32 CountAll;
             Int32 CountActive;
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerAddresses))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet2) || (ASender is TUCPartnerAddresses))
             {
                 if (FMainDS.Tables.Contains(PLocationTable.GetTableName()))
                 {
@@ -401,7 +533,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerSubscriptions))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet2) || (ASender is TUCPartnerSubscriptions))
             {
                 if (FMainDS.Tables.Contains(PSubscriptionTable.GetTableName()))
                 {
@@ -438,7 +570,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerTypes))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet2) || (ASender is TUCPartnerTypes))
             {
                 if (FMainDS.Tables.Contains(PPartnerTypeTable.GetTableName()))
                 {
@@ -451,7 +583,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_FamilyMembers))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet2) || (ASender is TUC_FamilyMembers))
             {
                 // determine Tab Title
                 if (FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
@@ -475,7 +607,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
 #if TODO
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerInterests))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet2) || (ASender is TUCPartnerInterests))
             {
                 if (FMainDS.Tables.Contains(PPartnerInterestTable.GetTableName()))
                 {
@@ -489,7 +621,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 #endif
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerNotes))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet2) || (ASender is TUC_PartnerNotes))
             {
                 if ((FMainDS.PPartner[0].IsCommentNull()) || (FMainDS.PPartner[0].Comment == ""))
                 {
@@ -523,7 +655,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void UcoTab_EnableDisableOtherScreenParts(System.Object sender, TEnableDisableEventArgs e)
         {
-            // MessageBox.Show('TUC_PartnerEdit_PartnerTabSet.ucoTab_EnableDisableOtherScreenParts(' + e.Enable.ToString + ')');
+            // MessageBox.Show('TUC_PartnerEdit_PartnerTabSet2.ucoTab_EnableDisableOtherScreenParts(' + e.Enable.ToString + ')');
             // Simply fire OnEnableDisableOtherScreenParts event again so that the PartnerEdit screen can catch it
             OnEnableDisableOtherScreenParts(e);
 
