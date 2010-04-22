@@ -56,8 +56,8 @@ RootNode:
             mniGenerateReport:
             mniSeparator: {Label=-}
     Toolbar:
-        tbbClose:
         tbbGenerateReport:
         tbbSaveSettings:
         tbbSaveSettingsAs:
-        tbbLoadSettings:
+# do we show the last few settings?
+        tbbLoadSettingsDialog:
