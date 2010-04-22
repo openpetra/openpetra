@@ -611,7 +611,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
-        public TUC_PartnerDetailsChurch() : base ()
+        public TUC_PartnerDetailsChurch() : base()
         {
             FPerformDataBindingDone = false;
 

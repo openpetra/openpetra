@@ -294,7 +294,7 @@ namespace Ict.Petra.Client.App.Core
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TClientSettings() : base ()
+        public TClientSettings() : base()
         {
             TCmdOpts FCmdOptions = new TCmdOpts();
             TAppSettingsManager FAppSettings = new TAppSettingsManager();

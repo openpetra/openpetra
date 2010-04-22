@@ -131,7 +131,7 @@ namespace Ict.Petra.Client.MCommon
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TUC_PartnerAddress() : base ()
+        public TUC_PartnerAddress() : base()
         {
             //
             // Required for Windows Form Designer support

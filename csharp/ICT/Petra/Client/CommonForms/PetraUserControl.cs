@@ -104,7 +104,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// constructor
         /// </summary>
-        public TPetraUserControl() : base ()
+        public TPetraUserControl() : base()
         {
             //
             // Required for Windows Form Designer support

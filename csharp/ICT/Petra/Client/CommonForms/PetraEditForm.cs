@@ -163,9 +163,9 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="ACallerWindowHandle">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>"
-        public TFrmPetraEditUtils(IntPtr ACallerWindowHandle, IFrmPetraEdit ATheForm, TExtStatusBarHelp AStatusBar) : base (ACallerWindowHandle,
-                                                                                                                            (IFrmPetra)ATheForm,
-                                                                                                                            AStatusBar)
+        public TFrmPetraEditUtils(IntPtr ACallerWindowHandle, IFrmPetraEdit ATheForm, TExtStatusBarHelp AStatusBar) : base(ACallerWindowHandle,
+                                                                                                                          (IFrmPetra)ATheForm,
+                                                                                                                          AStatusBar)
         {
             FVerificationResultCollection = new TVerificationResultCollection();
             FCloseFormCheckRun = false;

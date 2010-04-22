@@ -903,25 +903,25 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 // Open the 'Merged Partner Info' Dialog
                 using (TPartnerMergedPartnerInfoDialog MergedPartnerInfoDialog = new TPartnerMergedPartnerInfoDialog())
-                      {
-                          MergedPartnerInfoDialog.SetParameters(APartnerKey,
-                              MergedPartnerPartnerShortName,
-                              MergedPartnerPartnerClass,
-                              AMergedIntoPartnerKey,
-                              MergedIntoPartnerShortName,
-                              MergedIntoPartnerClass,
-                              MergedBy,
-                              MergeDate);
+                {
+                    MergedPartnerInfoDialog.SetParameters(APartnerKey,
+                        MergedPartnerPartnerShortName,
+                        MergedPartnerPartnerClass,
+                        AMergedIntoPartnerKey,
+                        MergedIntoPartnerShortName,
+                        MergedIntoPartnerClass,
+                        MergedBy,
+                        MergeDate);
 
-                          if (MergedPartnerInfoDialog.ShowDialog() == DialogResult.OK)
-                          {
-                              ReturnValue = true;
-                          }
-                          else
-                          {
-                              ReturnValue = false;
-                          }
-                      }
+                    if (MergedPartnerInfoDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        ReturnValue = true;
+                    }
+                    else
+                    {
+                        ReturnValue = false;
+                    }
+                }
             }
 #endif
             return ReturnValue;

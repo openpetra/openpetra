@@ -433,7 +433,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TUCPartnerInterests() : base ()
+        public TUCPartnerInterests() : base()
         {
             //
             // Required for Windows Form Designer support

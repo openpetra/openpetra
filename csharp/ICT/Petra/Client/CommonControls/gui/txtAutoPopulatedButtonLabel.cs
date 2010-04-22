@@ -536,7 +536,7 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         /// <returns>void</returns>
         public TtxtAutoPopulatedButtonLabel()
-            : base ()
+            : base()
         {
             //
             // Required for Windows Form Designer support
@@ -1613,7 +1613,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// </summary>
         public EClickButton()
-            : base (txtAutoPopulatedButtonLabel.EXCEPTION_CLICK_BUTTON)
+            : base(txtAutoPopulatedButtonLabel.EXCEPTION_CLICK_BUTTON)
         {
         }
 
@@ -1621,7 +1621,7 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         /// <param name="AMessage"></param>
         public EClickButton(String AMessage)
-            : base (txtAutoPopulatedButtonLabel.EXCEPTION_CLICK_BUTTON + AMessage)
+            : base(txtAutoPopulatedButtonLabel.EXCEPTION_CLICK_BUTTON + AMessage)
         {
         }
     }
@@ -1634,7 +1634,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// </summary>
         public EWrongDataType()
-            : base (txtAutoPopulatedButtonLabel.EXCEPTION_WRONG_DATATYPE)
+            : base(txtAutoPopulatedButtonLabel.EXCEPTION_WRONG_DATATYPE)
         {
         }
 
@@ -1642,7 +1642,7 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         /// <param name="AMessage"></param>
         public EWrongDataType(String AMessage)
-            : base (txtAutoPopulatedButtonLabel.EXCEPTION_WRONG_DATATYPE + AMessage)
+            : base(txtAutoPopulatedButtonLabel.EXCEPTION_WRONG_DATATYPE + AMessage)
         {
         }
     }
@@ -1656,7 +1656,7 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         /// <param name="AMessage"></param>
         public EVerificationMissing(String AMessage)
-            : base (txtAutoPopulatedButtonLabel.EXCEPTION_VERIFIC_MISSING + AMessage)
+            : base(txtAutoPopulatedButtonLabel.EXCEPTION_VERIFIC_MISSING + AMessage)
         {
         }
     }

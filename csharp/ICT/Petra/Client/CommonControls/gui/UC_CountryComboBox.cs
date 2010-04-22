@@ -90,7 +90,7 @@ namespace Ict.Petra.Client.CommonControls
         /// constructor
         /// </summary>
         public TUC_CountryComboBox()
-            : base ()
+            : base()
         {
             //
             // Required for Windows Form Designer support

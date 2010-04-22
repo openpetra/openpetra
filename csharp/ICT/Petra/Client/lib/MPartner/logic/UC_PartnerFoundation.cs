@@ -148,7 +148,7 @@ namespace Ict.Petra.Client.MPartner
         /// <summary>
         /// constructor
         /// </summary>
-        public TUCPartnerFoundationLogic() : base ()
+        public TUCPartnerFoundationLogic() : base()
         {
             //FProposalSequence = -1;
             FProposalDetailSequence = -1;

@@ -84,7 +84,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        public TExtractSubscriptionAddWinForm() : base ()
+        public TExtractSubscriptionAddWinForm() : base()
         {
             //
             // Required for Windows Form Designer support

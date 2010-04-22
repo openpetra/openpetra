@@ -424,7 +424,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
-        public TUC_PartnerDetailsVenue() : base ()
+        public TUC_PartnerDetailsVenue() : base()
         {
             FPerformDataBindingDone = false;
 

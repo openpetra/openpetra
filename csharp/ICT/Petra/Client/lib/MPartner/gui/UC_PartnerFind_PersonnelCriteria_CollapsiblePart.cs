@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        public TUC_PartnerFind_PersonnelCriteria_CollapsiblePart() : base ()
+        public TUC_PartnerFind_PersonnelCriteria_CollapsiblePart() : base()
         {
             //
             // Required for Windows Form Designer support

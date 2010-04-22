@@ -379,7 +379,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
-        public TUCPartnerInterest() : base ()
+        public TUCPartnerInterest() : base()
         {
             //
             // Required for Windows Form Designer support

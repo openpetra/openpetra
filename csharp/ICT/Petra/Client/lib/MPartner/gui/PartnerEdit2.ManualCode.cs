@@ -75,10 +75,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             uictPartnerKey,
 
             /// <summary>Call the UIConnector with Partner Key, Location Key and Site Key Arguments</summary>
-            uictLocationKey,
+           uictLocationKey,
 
             /// <summary>Call the UIConnector without any Arguments, thus signalising that a new Partner should be created</summary>
-            uictNewPartner
+           uictNewPartner
         }
 
         #endregion

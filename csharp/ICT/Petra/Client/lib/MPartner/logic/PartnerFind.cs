@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MPartner
         /// <summary>
         /// constructor
         /// </summary>
-        public TPartnerFindScreenLogic() : base ()
+        public TPartnerFindScreenLogic() : base()
         {
             ULogic = this;
         }

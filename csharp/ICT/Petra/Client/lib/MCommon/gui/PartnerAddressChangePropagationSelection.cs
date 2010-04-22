@@ -266,7 +266,7 @@ namespace Ict.Petra.Client.MCommon
         #endregion
 
         #region Creation and Disposal
-        public TPartnerAddressChangePropagationSelectionWinForm() : base ()
+        public TPartnerAddressChangePropagationSelectionWinForm() : base()
         {
             //
             // Required for Windows Form Designer support

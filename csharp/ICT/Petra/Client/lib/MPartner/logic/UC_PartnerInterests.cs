@@ -151,7 +151,7 @@ namespace Ict.Petra.Client.MPartner
         /// <summary>
         /// constructor
         /// </summary>
-        public TUCPartnerInterestsLogic() : base ()
+        public TUCPartnerInterestsLogic() : base()
         {
         }
 

@@ -523,7 +523,7 @@ namespace Ict.Petra.Client.MCommon
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TUCPartnerAddressesLogic() : base ()
+        public TUCPartnerAddressesLogic() : base()
         {
             // Start FClientSideNewDataRowKey at 1, so that the first new Address gets
             // 2. This is necessary because in case a new Partner was created, the

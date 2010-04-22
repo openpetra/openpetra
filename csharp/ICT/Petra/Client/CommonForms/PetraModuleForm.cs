@@ -85,7 +85,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>
         public TFrmPetraModuleUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm, TExtStatusBarHelp AStatusBar)
-            : base (ACallerWindowHandle, ATheForm, AStatusBar)
+            : base(ACallerWindowHandle, ATheForm, AStatusBar)
         {
         }
 

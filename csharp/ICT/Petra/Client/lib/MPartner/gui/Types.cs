@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// constructor
         /// </summary>
         /// <returns>void</returns>
-        public THookupPartnerEditDataChangeEventArgs() : base ()
+        public THookupPartnerEditDataChangeEventArgs() : base()
         {
         }
 
@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// todoComment
         /// </summary>
         /// <param name="ATabPage"></param>
-        public THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum ATabPage) : base ()
+        public THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum ATabPage) : base()
         {
             FTabPage = ATabPage;
         }
