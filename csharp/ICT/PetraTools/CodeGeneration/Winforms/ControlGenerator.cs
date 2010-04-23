@@ -84,7 +84,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FRightAlign)
             {
-                writer.SetControlProperty(ctrl.controlName, "Dock", "System.Windows.Forms.DockStyle.Right;");
+                writer.SetControlProperty(ctrl.controlName, "Dock", "System.Windows.Forms.DockStyle.Right");
             }
         }
     }
@@ -286,8 +286,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class DateTimePickerGenerator : TControlGenerator
     {
         public DateTimePickerGenerator()
-            : base("dtp", typeof(Ict.Petra.Client.CommonControls.TtxtPetraDate))
+            : base("dtp", "Ict.Petra.Client.CommonControls.TtxtPetraDate")
         {
+            this.FChangeEventName = "DateChanged";
+            this.FChangeEventHandlerType = "TPetraDateChangedEventHandler";
         }
 
         protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
@@ -297,7 +299,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".Date == null";
             }
 
-            return ctrl.controlName + ".Date";
+            if (AFieldTypeDotNet.Contains("Date?"))
+            {
+                return ctrl.controlName + ".Date";
+            }
+
+            return ctrl.controlName + ".Date.Value";
         }
 
         protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)

@@ -78,7 +78,7 @@ namespace {#NAMESPACE}
         {#INITMANUALCODE}
 {#IFDEF ACTIONENABLING}
         FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
-{#ENDIF ACTIONENABLING}     
+{#ENDIF ACTIONENABLING}
 
         if(FMainDS != null)
         {

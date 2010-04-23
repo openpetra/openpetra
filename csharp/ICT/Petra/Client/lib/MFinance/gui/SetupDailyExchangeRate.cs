@@ -216,7 +216,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         cmbDetailFromCurrencyCode.Enabled = (ARow.RowState == DataRowState.Added);
         cmbDetailToCurrencyCode.SetSelectedString(ARow.ToCurrencyCode);
         cmbDetailToCurrencyCode.Enabled = (ARow.RowState == DataRowState.Added);
-        dtpDetailDateEffectiveFrom.Value = ARow.DateEffectiveFrom;
+        dtpDetailDateEffectiveFrom.Date = ARow.DateEffectiveFrom;
         dtpDetailDateEffectiveFrom.Enabled = (ARow.RowState == DataRowState.Added);
         txtDetailRateOfExchange.Text = ARow.RateOfExchange.ToString();
     }
@@ -241,7 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             ARow.FromCurrencyCode = cmbDetailFromCurrencyCode.GetSelectedString();
             ARow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
-            ARow.DateEffectiveFrom = dtpDetailDateEffectiveFrom.Value;
+            ARow.DateEffectiveFrom = dtpDetailDateEffectiveFrom.Date.Value;
             ARow.RateOfExchange = Convert.ToDouble(txtDetailRateOfExchange.Text);
             GetDetailDataFromControlsManual(ARow);
         }

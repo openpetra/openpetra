@@ -192,6 +192,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblPartnerKey.AutoSize = true;
             this.lblPartnerKey.Text = "Partner Key:";
             this.lblPartnerKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblPartnerKey.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // btnEditPartner
             //
@@ -237,6 +238,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblPartnerName.AutoSize = true;
             this.lblPartnerName.Text = "Partner Name:";
             this.lblPartnerName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblPartnerName.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -285,6 +287,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblCurrency.AutoSize = true;
             this.lblCurrency.Text = "&Currency:";
             this.lblCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCurrency.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbSupplierType
             //
@@ -300,6 +303,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblSupplierType.AutoSize = true;
             this.lblSupplierType.Text = "Supplier &Type:";
             this.lblSupplierType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblSupplierType.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel5.ColumnCount = 2;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -338,6 +342,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblInvoiceAging.AutoSize = true;
             this.lblInvoiceAging.Text = "Invoice A&ging (in months):";
             this.lblInvoiceAging.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblInvoiceAging.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // nudCreditTerms
             //
@@ -352,6 +357,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblCreditTerms.AutoSize = true;
             this.lblCreditTerms.Text = "C&redit Terms (in days):";
             this.lblCreditTerms.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCreditTerms.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDefaultPaymentType
             //
@@ -367,6 +373,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDefaultPaymentType.AutoSize = true;
             this.lblDefaultPaymentType.Text = "Default &Payment Type:";
             this.lblDefaultPaymentType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDefaultPaymentType.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // nudDiscountDays
             //
@@ -382,6 +389,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDiscountDays.AutoSize = true;
             this.lblDiscountDays.Text = "Number of Days for &Discount (0 for none):";
             this.lblDiscountDays.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDiscountDays.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDiscountValue
             //
@@ -396,6 +404,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDiscountValue.AutoSize = true;
             this.lblDiscountValue.Text = "Discount &Value (%):";
             this.lblDiscountValue.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDiscountValue.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel6.ColumnCount = 2;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -451,6 +460,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblAPAccount.AutoSize = true;
             this.lblAPAccount.Text = "&AP Account:";
             this.lblAPAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAPAccount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDefaultBankAccount
             //
@@ -466,6 +476,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDefaultBankAccount.AutoSize = true;
             this.lblDefaultBankAccount.Text = "Default &Bank Account:";
             this.lblDefaultBankAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDefaultBankAccount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbCostCentre
             //
@@ -481,6 +492,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblCostCentre.AutoSize = true;
             this.lblCostCentre.Text = "Default C&ost Centre:";
             this.lblCostCentre.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCostCentre.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbExpenseAccount
             //
@@ -496,6 +508,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblExpenseAccount.AutoSize = true;
             this.lblExpenseAccount.Text = "Default &Expense Account:";
             this.lblExpenseAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblExpenseAccount.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel7.ColumnCount = 2;
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

@@ -153,7 +153,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
       ACalc.AddParameter("param_conference_key_n", this.txtConferenceKey.Text);
       ACalc.AddParameter("param_motivations", this.txtMotivationCodes.Text);
-      ACalc.AddParameter("param_start_date_payments", this.dtpStartPayments.Value);
+      ACalc.AddParameter("param_start_date_payments", this.dtpStartPayments.Date);
 
     }
 
@@ -169,12 +169,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       txtConferenceKey.Text = AParameters.Get("param_conference_key_n").ToString();
       txtMotivationCodes.Text = AParameters.Get("param_motivations").ToString();
       DateTime dtpStartPaymentsDate = AParameters.Get("param_start_date_payments").ToDate();
-      if ((dtpStartPaymentsDate < dtpStartPayments.MinDate)
-          || (dtpStartPaymentsDate > dtpStartPayments.MaxDate))
+      if ((dtpStartPaymentsDate <= DateTime.MinValue)
+          || (dtpStartPaymentsDate >= DateTime.MaxValue))
       {
           dtpStartPaymentsDate = DateTime.Now;
       }
-      dtpStartPayments.Value = dtpStartPaymentsDate;
+      dtpStartPayments.Date = dtpStartPaymentsDate;
     }
 #endregion
 

@@ -249,8 +249,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       ACalc.AddParameter("param_start_period_i", this.txtStartPeriod.Text);
       ACalc.AddParameter("param_end_period_i", this.txtEndPeriod.Text);
       ACalc.AddParameter("param_year_i", this.cmbPeriodYear.GetSelectedString());
-      ACalc.AddParameter("param_start_date", this.dtpDateStart.Value);
-      ACalc.AddParameter("param_end_date", this.dtpDateEnd.Value);
+      ACalc.AddParameter("param_start_date", this.dtpDateStart.Date);
+      ACalc.AddParameter("param_end_date", this.dtpDateEnd.Date);
       if (rbtPeriodRange.Checked)
       {
         ACalc.AddParameter("param_rgrPeriod", "PeriodRange");
@@ -320,19 +320,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
       cmbPeriodYear.SetSelectedString(AParameters.Get("param_year_i").ToString());
       DateTime dtpDateStartDate = AParameters.Get("param_start_date").ToDate();
-      if ((dtpDateStartDate < dtpDateStart.MinDate)
-          || (dtpDateStartDate > dtpDateStart.MaxDate))
+      if ((dtpDateStartDate <= DateTime.MinValue)
+          || (dtpDateStartDate >= DateTime.MaxValue))
       {
           dtpDateStartDate = DateTime.Now;
       }
-      dtpDateStart.Value = dtpDateStartDate;
+      dtpDateStart.Date = dtpDateStartDate;
       DateTime dtpDateEndDate = AParameters.Get("param_end_date").ToDate();
-      if ((dtpDateEndDate < dtpDateEnd.MinDate)
-          || (dtpDateEndDate > dtpDateEnd.MaxDate))
+      if ((dtpDateEndDate <= DateTime.MinValue)
+          || (dtpDateEndDate >= DateTime.MaxValue))
       {
           dtpDateEndDate = DateTime.Now;
       }
-      dtpDateEnd.Value = dtpDateEndDate;
+      dtpDateEnd.Date = dtpDateEndDate;
       rbtPeriodRange.Checked = AParameters.Get("param_rgrPeriod").ToString() == "PeriodRange";
       rbtDateRange.Checked = AParameters.Get("param_rgrPeriod").ToString() == "DateRange";
       txtReferenceFrom.Text = AParameters.Get("param_reference_start").ToString();

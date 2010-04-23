@@ -52,10 +52,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Int32 AdjustmentGiftBatch =
                 TRemote.MFinance.Gift.WebConnectors.FieldChangeAdjustment(FLedgerNumber,
                     Convert.ToInt64(txtRecipientKey.Text),
-                    dtpStartDate.Value,
-                    dtpEndDate.Value,
+                    dtpStartDate.Date.Value,
+                    dtpEndDate.Date.Value,
                     Convert.ToInt64(txtOldFieldKey.Text),
-                    dtpDateEffective.Value,
+                    dtpDateEffective.Date.Value,
                     !chkNoReceipt.Checked);
 
             if (AdjustmentGiftBatch != -1)

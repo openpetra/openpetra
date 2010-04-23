@@ -43,7 +43,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             nudLedgerNumber.Maximum = 9999;
             nudLedgerNumber.Minimum = 1;
             nudLedgerNumber.Value = 99;
-            dtpCalendarStartDate.Value = new DateTime(DateTime.Now.Year, 1, 1);
+            dtpCalendarStartDate.Date = new DateTime(DateTime.Now.Year, 1, 1);
             nudNumberOfFwdPostingPeriods.Value = 8;
             nudNumberOfPeriods.Value = 12;
             nudCurrentPeriod.Value = DateTime.Now.Month;
@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     cmbCountryCode.GetSelectedString(),
                     cmbBaseCurrency.GetSelectedString(),
                     cmbIntlCurrency.GetSelectedString(),
-                    dtpCalendarStartDate.Value,
+                    dtpCalendarStartDate.Date.Value,
                     Convert.ToInt32(nudNumberOfPeriods.Value),
                     Convert.ToInt32(nudCurrentPeriod.Value),
                     Convert.ToInt32(nudNumberOfFwdPostingPeriods.Value),

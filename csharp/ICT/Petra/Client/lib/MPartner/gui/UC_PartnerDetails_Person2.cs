@@ -103,18 +103,24 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
     }
 
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingStarted;
+
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingFinished;
+
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
         FPetraUtilsObject.SetStatusBarText(txtPreferredName, Catalog.GetString("Enter the name this person is commonly known by"));
         FPetraUtilsObject.SetStatusBarText(txtPreviousName, Catalog.GetString("Enter the previously used Surname (eg before marriage)"));
         FPetraUtilsObject.SetStatusBarText(txtLocalName, Catalog.GetString("Enter a short name for this partner in your local language"));
-        FPetraUtilsObject.SetStatusBarText(txtDateOfBirth, Catalog.GetString("Enter the date the person was born"));
+        FPetraUtilsObject.SetStatusBarText(dtpDateOfBirth, Catalog.GetString("Enter the date the person was born"));
         FPetraUtilsObject.SetStatusBarText(txtDecorations, Catalog.GetString("ie. Nobel Peace Prize, Olympic Gold Medal, ?, etc."));
         FPetraUtilsObject.SetStatusBarText(cmbMaritalStatus, Catalog.GetString("Select marital status"));
         cmbMaritalStatus.InitialiseUserControl();
         FPetraUtilsObject.SetStatusBarText(txtAcademicTitle, Catalog.GetString("Enter the academic title for the person"));
-        FPetraUtilsObject.SetStatusBarText(txtMaritalStatusSince, Catalog.GetString("Date from which the marital status is valid"));
+        FPetraUtilsObject.SetStatusBarText(dtpMaritalStatusSince, Catalog.GetString("Date from which the marital status is valid"));
         FPetraUtilsObject.SetStatusBarText(txtMaritalStatusComment, Catalog.GetString("Enter a comment for the marital status"));
         FPetraUtilsObject.SetStatusBarText(cmbLanguageCode, Catalog.GetString("Select the partner's preferred language"));
         cmbLanguageCode.InitialiseUserControl();
@@ -157,11 +163,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
         if (ARow.IsDateOfBirthNull())
         {
-            txtDateOfBirth.Text = String.Empty;
+            dtpDateOfBirth.Date = null;
         }
         else
         {
-            txtDateOfBirth.Text = ARow.DateOfBirth.ToString();
+            dtpDateOfBirth.Date = ARow.DateOfBirth;
         }
         if (ARow.IsDecorationsNull())
         {
@@ -189,11 +195,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
         if (ARow.IsMaritalStatusSinceNull())
         {
-            txtMaritalStatusSince.Text = String.Empty;
+            dtpMaritalStatusSince.Date = null;
         }
         else
         {
-            txtMaritalStatusSince.Text = ARow.MaritalStatusSince.ToString();
+            dtpMaritalStatusSince.Date = ARow.MaritalStatusSince;
         }
         if (ARow.IsMaritalStatusCommentNull())
         {
@@ -228,6 +234,106 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtOccupationCode.Text = String.Format("{0:0000000000}", ARow.OccupationCode);
         }
         FPetraUtilsObject.EnableDataChangedEvent();
+    }
+
+    private void GetDataFromControls(PartnerEditTDSPPersonRow ARow)
+    {
+        if (txtPreferredName.Text.Length == 0)
+        {
+            ARow.SetPreferedNameNull();
+        }
+        else
+        {
+            ARow.PreferedName = txtPreferredName.Text;
+        }
+        if (txtPreviousName.Text.Length == 0)
+        {
+            FMainDS.PPartner[0].SetPreviousNameNull();
+        }
+        else
+        {
+            FMainDS.PPartner[0].PreviousName = txtPreviousName.Text;
+        }
+        if (txtLocalName.Text.Length == 0)
+        {
+            FMainDS.PPartner[0].SetPartnerShortNameLocNull();
+        }
+        else
+        {
+            FMainDS.PPartner[0].PartnerShortNameLoc = txtLocalName.Text;
+        }
+        if (dtpDateOfBirth.Date == null)
+        {
+            ARow.SetDateOfBirthNull();
+        }
+        else
+        {
+            ARow.DateOfBirth = dtpDateOfBirth.Date.Value;
+        }
+        if (txtDecorations.Text.Length == 0)
+        {
+            ARow.SetDecorationsNull();
+        }
+        else
+        {
+            ARow.Decorations = txtDecorations.Text;
+        }
+        if (cmbMaritalStatus.SelectedIndex == -1)
+        {
+            ARow.SetMaritalStatusNull();
+        }
+        else
+        {
+            ARow.MaritalStatus = cmbMaritalStatus.GetSelectedString();
+        }
+        if (txtAcademicTitle.Text.Length == 0)
+        {
+            ARow.SetAcademicTitleNull();
+        }
+        else
+        {
+            ARow.AcademicTitle = txtAcademicTitle.Text;
+        }
+        if (dtpMaritalStatusSince.Date == null)
+        {
+            ARow.SetMaritalStatusSinceNull();
+        }
+        else
+        {
+            ARow.MaritalStatusSince = dtpMaritalStatusSince.Date.Value;
+        }
+        if (txtMaritalStatusComment.Text.Length == 0)
+        {
+            ARow.SetMaritalStatusCommentNull();
+        }
+        else
+        {
+            ARow.MaritalStatusComment = txtMaritalStatusComment.Text;
+        }
+        if (cmbLanguageCode.SelectedIndex == -1)
+        {
+            FMainDS.PPartner[0].SetLanguageCodeNull();
+        }
+        else
+        {
+            FMainDS.PPartner[0].LanguageCode = cmbLanguageCode.GetSelectedString();
+        }
+        if (cmbAcquisitionCode.SelectedIndex == -1)
+        {
+            FMainDS.PPartner[0].SetAcquisitionCodeNull();
+        }
+        else
+        {
+            FMainDS.PPartner[0].AcquisitionCode = cmbAcquisitionCode.GetSelectedString();
+        }
+        if (txtOccupationCode.Text.Length == 0)
+        {
+            ARow.SetOccupationCodeNull();
+        }
+        else
+        {
+            ARow.OccupationCode = txtOccupationCode.Text;
+        }
     }
 
 #region Implement interface functions

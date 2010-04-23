@@ -130,6 +130,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPreviousName.AutoSize = true;
             this.lblPreviousName.Text = "Previous Name:";
             this.lblPreviousName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblPreviousName.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtLocalName
             //
@@ -144,6 +145,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLocalName.AutoSize = true;
             this.lblLocalName.Text = "Local Name:";
             this.lblLocalName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLocalName.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -183,12 +185,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblMaritalStatus.AutoSize = true;
             this.lblMaritalStatus.Text = "Marital Status:";
             this.lblMaritalStatus.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblMaritalStatus.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // dtpMaritalStatusSince
             //
             this.dtpMaritalStatusSince.Location = new System.Drawing.Point(2,2);
             this.dtpMaritalStatusSince.Name = "dtpMaritalStatusSince";
-            this.dtpMaritalStatusSince.Size = new System.Drawing.Size(150, 28);            
+            this.dtpMaritalStatusSince.Size = new System.Drawing.Size(150, 28);
             //
             // lblMaritalStatusSince
             //
@@ -197,6 +200,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblMaritalStatusSince.AutoSize = true;
             this.lblMaritalStatusSince.Text = "Marital Status Since:";
             this.lblMaritalStatusSince.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblMaritalStatusSince.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtMaritalStatusComment
             //
@@ -211,6 +215,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblMaritalStatusComment.AutoSize = true;
             this.lblMaritalStatusComment.Text = "Marital Status Comment:";
             this.lblMaritalStatusComment.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblMaritalStatusComment.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbLanguageCode
             //
@@ -226,6 +231,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLanguageCode.AutoSize = true;
             this.lblLanguageCode.Text = "Language Code:";
             this.lblLanguageCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLanguageCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbAcquisitionCode
             //
@@ -241,6 +247,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblAcquisitionCode.AutoSize = true;
             this.lblAcquisitionCode.Text = "Acquisition Code:";
             this.lblAcquisitionCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAcquisitionCode.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

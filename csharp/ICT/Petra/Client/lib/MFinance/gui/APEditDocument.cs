@@ -275,8 +275,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         {
             txtReference.Text = ARow.Reference;
         }
-        dtpDateIssued.Value = ARow.DateIssued;
-        dtpDateDue.Value = ARow.DateDue;
+        dtpDateIssued.Date = ARow.DateIssued;
+        dtpDateDue.Date = ARow.DateDue;
         if (ARow.IsCreditTermsNull())
         {
             nudCreditTerms.Value = 0;
@@ -406,8 +406,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         {
             ARow.Reference = txtReference.Text;
         }
-        ARow.DateIssued = dtpDateIssued.Value;
-        ARow.DateDue = dtpDateDue.Value;
+        ARow.DateIssued = dtpDateIssued.Date.Value;
+        ARow.DateDue = dtpDateDue.Date.Value;
         ARow.CreditTerms = (Int32)nudCreditTerms.Value;
         ARow.DiscountDays = (Int32)nudDiscountDays.Value;
         if (txtDiscountPercentage.Text.Length == 0)

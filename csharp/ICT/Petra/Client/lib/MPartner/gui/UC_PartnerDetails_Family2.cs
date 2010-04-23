@@ -217,7 +217,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
         else
         {
-            ARow.MaritalStatusSince = dtpMaritalStatusSince.Date;
+            ARow.MaritalStatusSince = dtpMaritalStatusSince.Date.Value;
         }
         if (txtMaritalStatusComment.Text.Length == 0)
         {

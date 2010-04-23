@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblBaseCurrency = new System.Windows.Forms.Label();
             this.cmbIntlCurrency = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblIntlCurrency = new System.Windows.Forms.Label();
-            this.dtpCalendarStartDate = new System.Windows.Forms.DateTimePicker();
+            this.dtpCalendarStartDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblCalendarStartDate = new System.Windows.Forms.Label();
             this.nudNumberOfPeriods = new System.Windows.Forms.NumericUpDown();
             this.lblNumberOfPeriods = new System.Windows.Forms.Label();
@@ -136,6 +136,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblLedgerNumber.AutoSize = true;
             this.lblLedgerNumber.Text = "Ledger Number:";
             this.lblLedgerNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLedgerNumber.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtLedgerName
             //
@@ -150,6 +151,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblLedgerName.AutoSize = true;
             this.lblLedgerName.Text = "Ledger Name:";
             this.lblLedgerName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLedgerName.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbCountryCode
             //
@@ -165,6 +167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblCountryCode.AutoSize = true;
             this.lblCountryCode.Text = "Country Code:";
             this.lblCountryCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCountryCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbBaseCurrency
             //
@@ -180,6 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblBaseCurrency.AutoSize = true;
             this.lblBaseCurrency.Text = "Base Currency:";
             this.lblBaseCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblBaseCurrency.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbIntlCurrency
             //
@@ -195,6 +199,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblIntlCurrency.AutoSize = true;
             this.lblIntlCurrency.Text = "Intl Currency:";
             this.lblIntlCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblIntlCurrency.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // dtpCalendarStartDate
             //
@@ -209,6 +214,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblCalendarStartDate.AutoSize = true;
             this.lblCalendarStartDate.Text = "First Day of the Financial Year:";
             this.lblCalendarStartDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCalendarStartDate.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // nudNumberOfPeriods
             //
@@ -223,6 +229,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblNumberOfPeriods.AutoSize = true;
             this.lblNumberOfPeriods.Text = "Number Of Periods:";
             this.lblNumberOfPeriods.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblNumberOfPeriods.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // nudCurrentPeriod
             //
@@ -237,6 +244,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblCurrentPeriod.AutoSize = true;
             this.lblCurrentPeriod.Text = "Current Period:";
             this.lblCurrentPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCurrentPeriod.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // nudNumberOfFwdPostingPeriods
             //
@@ -251,6 +259,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblNumberOfFwdPostingPeriods.AutoSize = true;
             this.lblNumberOfFwdPostingPeriods.Text = "Number Of Fwd Posting Periods:";
             this.lblNumberOfFwdPostingPeriods.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblNumberOfFwdPostingPeriods.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -420,7 +429,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private System.Windows.Forms.Label lblBaseCurrency;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbIntlCurrency;
         private System.Windows.Forms.Label lblIntlCurrency;
-        private System.Windows.Forms.DateTimePicker dtpCalendarStartDate;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpCalendarStartDate;
         private System.Windows.Forms.Label lblCalendarStartDate;
         private System.Windows.Forms.NumericUpDown nudNumberOfPeriods;
         private System.Windows.Forms.Label lblNumberOfPeriods;

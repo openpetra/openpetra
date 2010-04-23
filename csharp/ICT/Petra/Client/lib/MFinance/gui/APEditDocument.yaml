@@ -43,7 +43,7 @@ RootNode:
         nudCreditTerms:
             Label: Credit &Terms
             Width: 50
-            OnChange: UpdateCreditTerms
+            OnChange: UpdateCreditTermsOverload
         dtpDateDue:
             Label: Date D&ue
             Tooltip: Credit Terms is the number of days between date issued and due date

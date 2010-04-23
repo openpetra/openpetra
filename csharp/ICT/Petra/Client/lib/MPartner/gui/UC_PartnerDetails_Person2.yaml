@@ -23,19 +23,19 @@ RootNode:
          
         grpMisc: {Label=Miscellaneous, Dock=Top}
             Controls: 
-                Row0: [txtDateOfBirth, txtDecorations]
+                Row0: [dtpDateOfBirth, txtDecorations]
                 Row1: [cmbMaritalStatus, txtAcademicTitle]
-                Row2: [txtMaritalStatusSince]
+                Row2: [dtpMaritalStatusSince]
                 Row3: [txtMaritalStatusComment]
                 Row4: [cmbLanguageCode]
                 Row5: [cmbAcquisitionCode]
                 Row6: [txtOccupationCode]
 
-        txtDateOfBirth:
+        dtpDateOfBirth:
         txtDecorations:
         cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList}
         txtAcademicTitle:
-        txtMaritalStatusSince:
+        dtpMaritalStatusSince:
         txtMaritalStatusComment: {ColSpan=2}
 # TODO: MultiLine!        
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}

@@ -230,6 +230,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         protected string FChangeEventName = "ValueChanged";
+        protected string FChangeEventHandlerType = "System.EventHandler";
 
         /// <summary>
         /// to assign event handler for the event that the value of the control has changed
@@ -238,6 +239,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public string GetEventNameForChangeEvent()
         {
             return FChangeEventName;
+        }
+
+        public string GetEventHandlerTypeForChangeEvent()
+        {
+            return FChangeEventHandlerType;
         }
 
         public virtual void SetControlProperties(IFormWriter writer, TControlDef ctrl)
@@ -402,7 +408,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ctrl.HasAttribute("OnChange"))
             {
-                AssignEventHandlerToControl(writer, ctrl, GetEventNameForChangeEvent(), ctrl.GetAttribute("OnChange"));
+                AssignEventHandlerToControl(writer, ctrl,
+                    GetEventNameForChangeEvent(),
+                    GetEventHandlerTypeForChangeEvent(),
+                    ctrl.GetAttribute("OnChange"));
             }
 
             if (ctrl.HasAttribute("Tooltip"))

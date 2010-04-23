@@ -192,6 +192,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblSupplierCode.AutoSize = true;
             this.lblSupplierCode.Text = "S&earch Supplier:";
             this.lblSupplierCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblSupplierCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // pnlSearchFilter
             //
@@ -359,6 +360,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblSupplierCurrency.AutoSize = true;
             this.lblSupplierCurrency.Text = "C&urrency:";
             this.lblSupplierCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblSupplierCurrency.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel6.ColumnCount = 4;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -454,6 +456,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblSumTagged.AutoSize = true;
             this.lblSumTagged.Text = "Sum of Tagged:";
             this.lblSumTagged.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblSumTagged.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel8.ColumnCount = 6;
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

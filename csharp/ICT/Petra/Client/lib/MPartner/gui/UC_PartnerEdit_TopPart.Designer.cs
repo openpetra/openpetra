@@ -168,6 +168,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerKey.AutoSize = true;
             this.lblPartnerKey.Text = "Key:";
             this.lblPartnerKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblPartnerKey.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // lblEmpty2
             //
@@ -191,6 +192,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerClass.AutoSize = true;
             this.lblPartnerClass.Text = "Class:";
             this.lblPartnerClass.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblPartnerClass.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 5;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -231,6 +233,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblFamilyTitle.AutoSize = true;
             this.lblFamilyTitle.Text = "Title/Na&me:";
             this.lblFamilyTitle.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblFamilyTitle.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtFirstName
             //
@@ -266,6 +269,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblAddresseeTypeCode.AutoSize = true;
             this.lblAddresseeTypeCode.Text = "&Addressee Type:";
             this.lblAddresseeTypeCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAddresseeTypeCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // chkNoSolicitations
             //
@@ -321,6 +325,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLastGift.AutoSize = true;
             this.lblLastGift.Text = "Last Gift:";
             this.lblLastGift.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLastGift.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -372,6 +377,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerStatus.AutoSize = true;
             this.lblPartnerStatus.Text = "Partner &Status:";
             this.lblPartnerStatus.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblPartnerStatus.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtStatusUpdated
             //
@@ -387,6 +393,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblStatusUpdated.AutoSize = true;
             this.lblStatusUpdated.Text = "Status Updated:";
             this.lblStatusUpdated.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblStatusUpdated.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtLastContact
             //
@@ -402,6 +409,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLastContact.AutoSize = true;
             this.lblLastContact.Text = "Last Contact:";
             this.lblLastContact.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLastContact.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel4.ColumnCount = 3;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

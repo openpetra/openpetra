@@ -225,16 +225,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             writer.Template.AddToCodelet("READCONTROLS",
-                "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".Value);" +
+                "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".Date);" +
                 Environment.NewLine);
 
             string NewCode = "DateTime " + controlName + "Date = AParameters.Get(\"" + paramName + "\").ToDate();" + Environment.NewLine +
-                             "if ((" + controlName + "Date < " + controlName + ".MinDate)" + Environment.NewLine +
-                             "    || (" + controlName + "Date > " + controlName + ".MaxDate))" + Environment.NewLine +
+                             "if ((" + controlName + "Date <= " + "DateTime.MinValue)" + Environment.NewLine +
+                             "    || (" + controlName + "Date >= " + "DateTime.MaxValue))" + Environment.NewLine +
                              "{" + Environment.NewLine +
                              "    " + controlName + "Date = DateTime.Now;" + Environment.NewLine +
                              "}" + Environment.NewLine +
-                             controlName + ".Value = " + controlName + "Date;" + Environment.NewLine;
+                             controlName + ".Date = " + controlName + "Date;" + Environment.NewLine;
             writer.Template.AddToCodelet("SETCONTROLS", NewCode);
         }
     }

@@ -101,6 +101,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
     }
 
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingStarted;
+
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingFinished;
+
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
@@ -200,6 +206,51 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtLastContact.Text = FMainDS.MiscellaneousData[0].LastContactDate.ToString();
         }
         FPetraUtilsObject.EnableDataChangedEvent();
+    }
+
+    private void GetDataFromControls(PPartnerRow ARow)
+    {
+        if (txtFamilyTitle.Text.Length == 0)
+        {
+            FMainDS.PFamily[0].SetTitleNull();
+        }
+        else
+        {
+            FMainDS.PFamily[0].Title = txtFamilyTitle.Text;
+        }
+        if (txtFirstName.Text.Length == 0)
+        {
+            FMainDS.PFamily[0].SetFirstNameNull();
+        }
+        else
+        {
+            FMainDS.PFamily[0].FirstName = txtFirstName.Text;
+        }
+        if (txtFamilyName.Text.Length == 0)
+        {
+            FMainDS.PFamily[0].SetFamilyNameNull();
+        }
+        else
+        {
+            FMainDS.PFamily[0].FamilyName = txtFamilyName.Text;
+        }
+        if (cmbAddresseeTypeCode.SelectedIndex == -1)
+        {
+            ARow.SetAddresseeTypeCodeNull();
+        }
+        else
+        {
+            ARow.AddresseeTypeCode = cmbAddresseeTypeCode.GetSelectedString();
+        }
+        ARow.NoSolicitations = chkNoSolicitations.Checked;
+        if (cmbPartnerStatus.SelectedIndex == -1)
+        {
+            ARow.SetStatusCodeNull();
+        }
+        else
+        {
+            ARow.StatusCode = cmbPartnerStatus.GetSelectedString();
+        }
     }
 
 #region Implement interface functions

@@ -253,7 +253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 txtDetailReference.Text = ARow.Reference;
             }
-            dtpDetailTransactionDate.Value = ARow.TransactionDate;
+            dtpDetailTransactionDate.Date = ARow.TransactionDate;
             if (ARow.IsKeyMinistryKeyNull())
             {
                 cmbDetailKeyMinistryKey.SelectedIndex = -1;
@@ -309,7 +309,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ARow.Reference = txtDetailReference.Text;
             }
-            ARow.TransactionDate = dtpDetailTransactionDate.Value;
+            ARow.TransactionDate = dtpDetailTransactionDate.Date.Value;
             if (cmbDetailKeyMinistryKey.SelectedIndex == -1)
             {
                 ARow.SetKeyMinistryKeyNull();

@@ -45,9 +45,6 @@
     <Reference Include="Ict.Common.Controls">
       <HintPath>..\..\..\Common\_bin\Debug\Ict.Common.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Petra.Client.CommonControls.Gui">
-      <HintPath>..\..\..\Petra\Client\_bin\Debug\Ict.Petra.Client.CommonControls.Gui.dll</HintPath>
-    </Reference>
     <Reference Include="SourceGrid">
       <HintPath>..\..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>

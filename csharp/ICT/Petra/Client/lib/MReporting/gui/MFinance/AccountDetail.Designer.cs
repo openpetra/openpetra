@@ -93,8 +93,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblPeriodYear = new System.Windows.Forms.Label();
             this.rbtDateRange = new System.Windows.Forms.RadioButton();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.dtpDateStart = new System.Windows.Forms.DateTimePicker();
-            this.dtpDateEnd = new System.Windows.Forms.DateTimePicker();
+            this.dtpDateStart = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
+            this.dtpDateEnd = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDateEnd = new System.Windows.Forms.Label();
             this.rgrSorting = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
@@ -234,6 +234,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblLedger.AutoSize = true;
             this.lblLedger.Text = "Ledger:";
             this.lblLedger.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLedger.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbAccountHierarchy
             //
@@ -249,6 +250,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblAccountHierarchy.AutoSize = true;
             this.lblAccountHierarchy.Text = "Account Hierarchy:";
             this.lblAccountHierarchy.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAccountHierarchy.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -289,6 +291,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblCurrency.AutoSize = true;
             this.lblCurrency.Text = "Currency:";
             this.lblCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCurrency.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -338,6 +341,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblStartPeriod.AutoSize = true;
             this.lblStartPeriod.Text = "from:";
             this.lblStartPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblStartPeriod.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtEndPeriod
             //
@@ -352,6 +356,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblEndPeriod.AutoSize = true;
             this.lblEndPeriod.Text = "to:";
             this.lblEndPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblEndPeriod.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbPeriodYear
             //
@@ -367,6 +372,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblPeriodYear.AutoSize = true;
             this.lblPeriodYear.Text = "Year:";
             this.lblPeriodYear.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblPeriodYear.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel4.ColumnCount = 6;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -416,6 +422,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblDateEnd.AutoSize = true;
             this.lblDateEnd.Text = "to:";
             this.lblDateEnd.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDateEnd.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel5.ColumnCount = 3;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -492,6 +499,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblReferenceFrom.AutoSize = true;
             this.lblReferenceFrom.Text = "from:";
             this.lblReferenceFrom.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblReferenceFrom.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtReferenceTo
             //
@@ -506,6 +514,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblReferenceTo.AutoSize = true;
             this.lblReferenceTo.Text = "to:";
             this.lblReferenceTo.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblReferenceTo.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel7.ColumnCount = 4;
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -545,6 +554,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblAnalysisTypeFrom.AutoSize = true;
             this.lblAnalysisTypeFrom.Text = "from:";
             this.lblAnalysisTypeFrom.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAnalysisTypeFrom.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtAnalysisTypeTo
             //
@@ -559,6 +569,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblAnalysisTypeTo.AutoSize = true;
             this.lblAnalysisTypeTo.Text = "to:";
             this.lblAnalysisTypeTo.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAnalysisTypeTo.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel8.ColumnCount = 4;
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -645,6 +656,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblAccountStart.AutoSize = true;
             this.lblAccountStart.Text = "From:";
             this.lblAccountStart.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAccountStart.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbAccountEnd
             //
@@ -660,6 +672,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblAccountEnd.AutoSize = true;
             this.lblAccountEnd.Text = "To:";
             this.lblAccountEnd.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAccountEnd.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel11.ColumnCount = 2;
             this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -758,6 +771,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblCostCentreStart.AutoSize = true;
             this.lblCostCentreStart.Text = "From:";
             this.lblCostCentreStart.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCostCentreStart.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbCostCentreEnd
             //
@@ -773,6 +787,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblCostCentreEnd.AutoSize = true;
             this.lblCostCentreEnd.Text = "To:";
             this.lblCostCentreEnd.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCostCentreEnd.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel14.ColumnCount = 2;
             this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -1151,8 +1166,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private System.Windows.Forms.Label lblPeriodYear;
         private System.Windows.Forms.RadioButton rbtDateRange;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
-        private System.Windows.Forms.DateTimePicker dtpDateStart;
-        private System.Windows.Forms.DateTimePicker dtpDateEnd;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDateStart;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDateEnd;
         private System.Windows.Forms.Label lblDateEnd;
         private System.Windows.Forms.GroupBox rgrSorting;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;

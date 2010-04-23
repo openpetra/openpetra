@@ -76,7 +76,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblConferenceKey = new System.Windows.Forms.Label();
             this.txtMotivationCodes = new System.Windows.Forms.TextBox();
             this.lblMotivationCodes = new System.Windows.Forms.Label();
-            this.dtpStartPayments = new System.Windows.Forms.DateTimePicker();
+            this.dtpStartPayments = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblStartPayments = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbGenerateReport = new System.Windows.Forms.ToolStripButton();
@@ -142,6 +142,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblConferenceKey.AutoSize = true;
             this.lblConferenceKey.Text = "Partner Key of Conference:";
             this.lblConferenceKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblConferenceKey.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtMotivationCodes
             //
@@ -156,6 +157,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblMotivationCodes.AutoSize = true;
             this.lblMotivationCodes.Text = "Motivation Codes:";
             this.lblMotivationCodes.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblMotivationCodes.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // dtpStartPayments
             //
@@ -170,6 +172,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblStartPayments.AutoSize = true;
             this.lblStartPayments.Text = "Start of Payments:";
             this.lblStartPayments.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblStartPayments.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -459,7 +462,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private System.Windows.Forms.Label lblConferenceKey;
         private System.Windows.Forms.TextBox txtMotivationCodes;
         private System.Windows.Forms.Label lblMotivationCodes;
-        private System.Windows.Forms.DateTimePicker dtpStartPayments;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpStartPayments;
         private System.Windows.Forms.Label lblStartPayments;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbGenerateReport;

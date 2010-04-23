@@ -181,6 +181,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblCurrency.AutoSize = true;
             this.lblCurrency.Text = "Currency:";
             this.lblCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCurrency.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbPaymentType
             //
@@ -197,6 +198,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblPaymentType.AutoSize = true;
             this.lblPaymentType.Text = "Payment T&ype:";
             this.lblPaymentType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblPaymentType.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtTotalAmount
             //
@@ -212,6 +214,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblTotalAmount.AutoSize = true;
             this.lblTotalAmount.Text = "&Amount:";
             this.lblTotalAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblTotalAmount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtExchangeRate
             //
@@ -226,6 +229,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblExchangeRate.AutoSize = true;
             this.lblExchangeRate.Text = "Exchange Rate:";
             this.lblExchangeRate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblExchangeRate.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbBankAccount
             //
@@ -241,6 +245,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblBankAccount.AutoSize = true;
             this.lblBankAccount.Text = "Bank Account:";
             this.lblBankAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblBankAccount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtReference
             //
@@ -255,6 +260,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblReference.AutoSize = true;
             this.lblReference.Text = "&Reference:";
             this.lblReference.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblReference.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // chkPrintRemittance
             //
@@ -293,6 +299,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblChequeNumber.AutoSize = true;
             this.lblChequeNumber.Text = "Cheque Number:";
             this.lblChequeNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblChequeNumber.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -414,6 +421,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblAmountToPay.AutoSize = true;
             this.lblAmountToPay.Text = "Amount To Pay:";
             this.lblAmountToPay.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAmountToPay.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

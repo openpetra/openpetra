@@ -73,11 +73,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.pnlParameters = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.dtpStartDate = new System.Windows.Forms.DateTimePicker();
+            this.dtpStartDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblStartDate = new System.Windows.Forms.Label();
-            this.dtpEndDate = new System.Windows.Forms.DateTimePicker();
+            this.dtpEndDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblEndDate = new System.Windows.Forms.Label();
-            this.dtpDateEffective = new System.Windows.Forms.DateTimePicker();
+            this.dtpDateEffective = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDateEffective = new System.Windows.Forms.Label();
             this.txtRecipientKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.lblRecipientKey = new System.Windows.Forms.Label();
@@ -146,6 +146,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblStartDate.AutoSize = true;
             this.lblStartDate.Text = "Start Date:";
             this.lblStartDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblStartDate.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // dtpEndDate
             //
@@ -160,6 +161,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblEndDate.AutoSize = true;
             this.lblEndDate.Text = "End Date:";
             this.lblEndDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblEndDate.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // dtpDateEffective
             //
@@ -174,6 +176,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDateEffective.AutoSize = true;
             this.lblDateEffective.Text = "Date Effective:";
             this.lblDateEffective.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDateEffective.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtRecipientKey
             //
@@ -199,6 +202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblRecipientKey.AutoSize = true;
             this.lblRecipientKey.Text = "Recipient Key:";
             this.lblRecipientKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblRecipientKey.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtOldFieldKey
             //
@@ -224,6 +228,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblOldFieldKey.AutoSize = true;
             this.lblOldFieldKey.Text = "Old Field Key:";
             this.lblOldFieldKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblOldFieldKey.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // chkNoReceipt
             //
@@ -392,11 +397,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel pnlParameters;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.DateTimePicker dtpStartDate;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpStartDate;
         private System.Windows.Forms.Label lblStartDate;
-        private System.Windows.Forms.DateTimePicker dtpEndDate;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpEndDate;
         private System.Windows.Forms.Label lblEndDate;
-        private System.Windows.Forms.DateTimePicker dtpDateEffective;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDateEffective;
         private System.Windows.Forms.Label lblDateEffective;
         private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtRecipientKey;
         private System.Windows.Forms.Label lblRecipientKey;

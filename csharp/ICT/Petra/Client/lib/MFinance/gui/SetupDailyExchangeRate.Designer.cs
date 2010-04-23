@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailFromCurrencyCode = new System.Windows.Forms.Label();
             this.cmbDetailToCurrencyCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailToCurrencyCode = new System.Windows.Forms.Label();
-            this.dtpDetailDateEffectiveFrom = new System.Windows.Forms.DateTimePicker();
+            this.dtpDetailDateEffectiveFrom = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDetailDateEffectiveFrom = new System.Windows.Forms.Label();
             this.txtDetailRateOfExchange = new System.Windows.Forms.TextBox();
             this.lblDetailRateOfExchange = new System.Windows.Forms.Label();
@@ -210,6 +210,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailFromCurrencyCode.AutoSize = true;
             this.lblDetailFromCurrencyCode.Text = "&From Currency Code:";
             this.lblDetailFromCurrencyCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailFromCurrencyCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailToCurrencyCode
             //
@@ -225,6 +226,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailToCurrencyCode.AutoSize = true;
             this.lblDetailToCurrencyCode.Text = "&To Currency Code:";
             this.lblDetailToCurrencyCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailToCurrencyCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // dtpDetailDateEffectiveFrom
             //
@@ -239,6 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailDateEffectiveFrom.AutoSize = true;
             this.lblDetailDateEffectiveFrom.Text = "D&ate:";
             this.lblDetailDateEffectiveFrom.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailDateEffectiveFrom.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailRateOfExchange
             //
@@ -253,6 +256,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailRateOfExchange.AutoSize = true;
             this.lblDetailRateOfExchange.Text = "&Rate of exchange:";
             this.lblDetailRateOfExchange.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailRateOfExchange.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // lblValueOneDirection
             //
@@ -527,7 +531,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private System.Windows.Forms.Label lblDetailFromCurrencyCode;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailToCurrencyCode;
         private System.Windows.Forms.Label lblDetailToCurrencyCode;
-        private System.Windows.Forms.DateTimePicker dtpDetailDateEffectiveFrom;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailDateEffectiveFrom;
         private System.Windows.Forms.Label lblDetailDateEffectiveFrom;
         private System.Windows.Forms.TextBox txtDetailRateOfExchange;
         private System.Windows.Forms.Label lblDetailRateOfExchange;

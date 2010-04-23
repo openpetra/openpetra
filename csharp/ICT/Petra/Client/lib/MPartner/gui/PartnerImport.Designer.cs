@@ -168,12 +168,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblFilename.AutoSize = true;
             this.lblFilename.Text = "Filename:";
             this.lblFilename.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblFilename.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // btnSelectFile
             //
             this.btnSelectFile.Location = new System.Drawing.Point(2,2);
             this.btnSelectFile.Name = "btnSelectFile";
             this.btnSelectFile.AutoSize = true;
+            this.btnSelectFile.Click += new System.EventHandler(this.OpenFile);
             this.btnSelectFile.Text = "Select File";
             //
             // cmbDelimiter
@@ -190,6 +192,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblDelimiter.AutoSize = true;
             this.lblDelimiter.Text = "Delimiter:";
             this.lblDelimiter.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDelimiter.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel2.ColumnCount = 5;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -250,6 +253,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblExplanation.AutoSize = true;
             this.lblExplanation.Text = "Explanation:";
             this.lblExplanation.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblExplanation.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // btnSkip
             //

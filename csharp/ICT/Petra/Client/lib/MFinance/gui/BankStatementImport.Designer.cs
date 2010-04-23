@@ -189,6 +189,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblSelectBankAccount.AutoSize = true;
             this.lblSelectBankAccount.Text = "Select Bank Account:";
             this.lblSelectBankAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblSelectBankAccount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // rgrSelectTransaction
             //
@@ -429,6 +430,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblAmount.AutoSize = true;
             this.lblAmount.Text = "Amount:";
             this.lblAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAmount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbMotivationDetail
             //
@@ -445,6 +447,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblMotivationDetail.AutoSize = true;
             this.lblMotivationDetail.Text = "Motivation Detail:";
             this.lblMotivationDetail.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblMotivationDetail.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbGiftAccount
             //
@@ -461,6 +464,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblGiftAccount.AutoSize = true;
             this.lblGiftAccount.Text = "Account:";
             this.lblGiftAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblGiftAccount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbGiftCostCentre
             //
@@ -476,6 +480,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblGiftCostCentre.AutoSize = true;
             this.lblGiftCostCentre.Text = "Cost Centre:";
             this.lblGiftCostCentre.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblGiftCostCentre.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel5.ColumnCount = 2;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -519,6 +524,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblGLNarrative.AutoSize = true;
             this.lblGLNarrative.Text = "Narrative:";
             this.lblGLNarrative.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblGLNarrative.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtGLReference
             //
@@ -533,6 +539,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblGLReference.AutoSize = true;
             this.lblGLReference.Text = "Reference:";
             this.lblGLReference.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblGLReference.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbGLAccount
             //
@@ -548,6 +555,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblGLAccount.AutoSize = true;
             this.lblGLAccount.Text = "Account:";
             this.lblGLAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblGLAccount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbGLCostCentre
             //
@@ -563,6 +571,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblGLCostCentre.AutoSize = true;
             this.lblGLCostCentre.Text = "Cost Centre:";
             this.lblGLCostCentre.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblGLCostCentre.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel6.ColumnCount = 2;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
