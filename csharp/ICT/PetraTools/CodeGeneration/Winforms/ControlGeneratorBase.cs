@@ -273,6 +273,29 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl, "Dock");
             }
 
+            if (ctrl.HasAttribute("Visible")
+                && (ctrl.GetAttribute("Visible").ToLower() == "false"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "Visible", "false");
+            }
+
+            if (ctrl.HasAttribute("TabStop")
+                && (ctrl.GetAttribute("TabStop").ToLower() == "false"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "TabStop", "false");
+            }
+
+            if (ctrl.HasAttribute("TabIndex"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "TabIndex", ctrl.GetAttribute("TabIndex"));
+            }
+
+            if (ctrl.HasAttribute("BorderStyle"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "BorderStyle", "System.Windows.Forms.BorderStyle." + ctrl.GetAttribute("BorderStyle"));
+                writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(0, 7, 0, 0)");
+            }
+
             if ((ctrl.HasAttribute("Width") || ctrl.HasAttribute("Height")) && (ctrl.GetAttribute("GenerateWithOtherControls") != "yes"))
             {
                 if (!ctrl.HasAttribute("Width"))
@@ -466,7 +489,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         "true");
                     writer.SetControlProperty(ctrl.controlName,
                         "TabStop",
-                        "false");                    
+                        "false");
                 }
                 else
                 {
