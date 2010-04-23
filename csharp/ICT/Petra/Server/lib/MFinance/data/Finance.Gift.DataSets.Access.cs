@@ -116,7 +116,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.ALedger, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -125,7 +124,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGiftBatch, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -134,7 +132,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGift, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -143,7 +140,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGiftDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -152,7 +148,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AMotivationGroup, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -161,7 +156,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AMotivationDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -271,7 +265,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGiftDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -280,7 +273,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
@@ -308,7 +300,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                         }
                     }
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
@@ -336,7 +327,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                         }
                     }
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AEpTransaction, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -345,7 +335,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
@@ -373,7 +362,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                         }
                     }
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.ACostCentre, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -382,7 +370,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AMotivationDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -438,7 +425,6 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGift, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,

@@ -115,7 +115,6 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
@@ -157,7 +156,6 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                         }
                     }
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.DataLabelUseList, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -166,7 +164,6 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.DataLabelLookupList, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -175,7 +172,6 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.DataLabelLookupCategoryList, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -184,7 +180,6 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.PDataLabelValueApplication, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -193,7 +188,6 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.PDataLabelValuePartner, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -290,7 +284,6 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartner, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -299,7 +292,6 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerFieldOfService, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -308,7 +300,6 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.PPerson, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -317,7 +308,6 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.PFamily, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
@@ -326,7 +316,6 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
                 if (SubmissionResult == TSubmitChangesResult.scrOK)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
