@@ -59,7 +59,24 @@ namespace Ict.Tools.CodeGeneration
 
             StreamReader r;
             r = File.OpenText(AFullPath);
-            FTemplateCode = r.ReadToEnd();
+            FTemplateCode = r.ReadToEnd() + Environment.NewLine;
+            r.Close();
+
+            // add other files, {#INCLUDE <filename>}
+            while (FTemplateCode.Contains("{#INCLUDE "))
+            {
+                Int32 pos = FTemplateCode.IndexOf("{#INCLUDE ");
+                Int32 newLinePos = FTemplateCode.IndexOf(Environment.NewLine, pos);
+                string line = FTemplateCode.Substring(pos, newLinePos - pos);
+                Int32 bracketClosePos = FTemplateCode.IndexOf("}", pos);
+                string filename = FTemplateCode.Substring(pos + "{#INCLUDE ".Length, bracketClosePos - pos - "{#INCLUDE ".Length).Trim();
+
+                r = File.OpenText(Path.GetDirectoryName(AFullPath) + Path.DirectorySeparatorChar + filename);
+                string includeCode = r.ReadToEnd();
+                r.Close();
+
+                FTemplateCode = FTemplateCode.Replace(line, includeCode);
+            }
 
             // split off snippets (identified by "{##")
             if (FTemplateCode.Contains("{##"))
@@ -76,13 +93,14 @@ namespace Ict.Tools.CodeGeneration
                     // exclude first newline
                     string snippetText = snippets[counter].Substring(snippets[counter].IndexOf(Environment.NewLine) + Environment.NewLine.Length);
 
-                    // remove all whitespaces from the end
-                    snippetText = snippetText.TrimEnd(new char[] { '\n', '\r', ' ', '\t' });
+                    // remove all whitespaces from the end, but keep one line ending for ENDIF etc
+                    snippetText = snippetText.TrimEnd(new char[] { '\n', '\r', ' ', '\t' }) + Environment.NewLine;
                     FSnippets.Add(snippetName, snippetText);
                 }
             }
 
-            r.Close();
+            // just make sure that there is a newline at the end, for ENDIF etc
+            FTemplateCode += Environment.NewLine;
         }
 
         /// <summary>
@@ -133,7 +151,7 @@ namespace Ict.Tools.CodeGeneration
         {
             ASnippet.ReplaceCodelets();
 
-            if (FCodelets.ContainsKey(ACodeletName))
+            if (FCodelets.ContainsKey(ACodeletName) && !((string)FCodelets[ACodeletName]).EndsWith(Environment.NewLine))
             {
                 AddToCodelet(ACodeletName, Environment.NewLine);
             }
@@ -209,8 +227,8 @@ namespace Ict.Tools.CodeGeneration
                         Environment.NewLine + "We are missing the ENDIF for: " + name);
                 }
 
-                string before = s.Substring(0, s.LastIndexOf(Environment.NewLine, posPlaceholder + 1));
-                string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter));
+                string before = s.Substring(0, posPlaceholder);
+                string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter) + Environment.NewLine.Length);
 
                 s = before + after;
 
@@ -236,18 +254,8 @@ namespace Ict.Tools.CodeGeneration
                         Environment.NewLine + "We are missing the ENDIFN for: " + APlaceHolderName);
                 }
 
-                string before = String.Empty;
-                string after = String.Empty;
-
-                if (s.LastIndexOf(Environment.NewLine, posPlaceholder + 1) != -1)
-                {
-                    before = s.Substring(0, s.LastIndexOf(Environment.NewLine, posPlaceholder + 1));
-                }
-
-                if (s.IndexOf(Environment.NewLine, posPlaceholderAfter) != -1)
-                {
-                    after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter));
-                }
+                string before = s.Substring(0, posPlaceholder);
+                string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter) + Environment.NewLine.Length);
 
                 s = before + after;
 
@@ -260,9 +268,7 @@ namespace Ict.Tools.CodeGeneration
         public string ActivateDefinedIFDEF(string s, string APlaceholder)
         {
             s = s.Replace("{#IFDEF " + APlaceholder + "}" + Environment.NewLine, "");
-            s = s.Replace("{#IFDEF " + APlaceholder + "}", "");
             s = s.Replace("{#ENDIF " + APlaceholder + "}" + Environment.NewLine, "");
-            s = s.Replace("{#ENDIF " + APlaceholder + "}", "");
             return s;
         }
 
@@ -274,12 +280,8 @@ namespace Ict.Tools.CodeGeneration
             {
                 string name = s.Substring(posPlaceholder + 9, s.IndexOf("}", posPlaceholder) - posPlaceholder - 9);
 
-                string leadingSpaces = "".PadLeft(posPlaceholder - s.LastIndexOf(Environment.NewLine, posPlaceholder));
-
-                s = s.Replace(leadingSpaces + "{#IFNDEF " + name + "}" + Environment.NewLine, "");
-                s = s.Replace("{#IFNDEF " + name + "}", "");
-                s = s.Replace(leadingSpaces + "{#ENDIFN " + name + "}" + Environment.NewLine, "");
-                s = s.Replace("{#ENDIFN " + name + "}", "");
+                s = s.Replace("{#IFNDEF " + name + "}" + Environment.NewLine, "");
+                s = s.Replace("{#ENDIFN " + name + "}" + Environment.NewLine, "");
 
                 posPlaceholder = s.IndexOf("{#IFNDEF ");
             }
@@ -437,6 +439,11 @@ namespace Ict.Tools.CodeGeneration
         // create a new codelet, overwrites existing one
         public string SetCodelet(string APlaceholder, string ACodelet)
         {
+            if (ACodelet == null)
+            {
+                ACodelet = "";
+            }
+
             if (!FCodelets.ContainsKey(APlaceholder + FCodeletPostfix))
             {
                 FCodelets.Add(APlaceholder + FCodeletPostfix, "");
@@ -574,15 +581,13 @@ namespace Ict.Tools.CodeGeneration
                         // indent the value by the given whitespaces
                         string whitespaces = FTemplateCode.Substring(posNewline, posPlaceholder - posNewline);
                         AValue = whitespaces + AValue.Replace(Environment.NewLine, whitespaces).TrimEnd(new char[] { '\n', '\r', ' ', '\t' });
-                    }
 
-                    // for debugging
-//                    if (false && APlaceholder == "ODBCPARAMETERSFOREIGNKEY")
-//                    {
-//                        FTemplateCode = before + ">" + AValue + "<" + after;
-//                        Console.WriteLine(FTemplateCode.Substring(before.Length - 20, AValue.Length + 60));
-//                        Environment.Exit(-2);
-//                    }
+                        // no trailing spaces for IFDEF and IFNDEF and ENDIFN and ENDIF
+                        AValue = AValue.Replace(whitespaces + "{#IFDEF ", Environment.NewLine + "{#IFDEF ");
+                        AValue = AValue.Replace(whitespaces + "{#IFNDEF ", Environment.NewLine + "{#IFNDEF ");
+                        AValue = AValue.Replace(whitespaces + "{#ENDIF ", Environment.NewLine + "{#ENDIF ");
+                        AValue = AValue.Replace(whitespaces + "{#ENDIFN ", Environment.NewLine + "{#ENDIFN ");
+                    }
 
                     FTemplateCode = before + AValue + after;
                 }
@@ -657,6 +662,10 @@ namespace Ict.Tools.CodeGeneration
             FTemplateCode = RemoveUndefinedIFDEFs(FTemplateCode);
             FTemplateCode = ActivateUndefinedIFNDEFs(FTemplateCode);
             FTemplateCode = BeautifyCode(FTemplateCode);
+
+            // just one line break at the end
+            FTemplateCode = FTemplateCode.TrimEnd(new char[] { ' ', '\t', '\r', '\n' }) + Environment.NewLine;
+
             FDestinationFile = System.IO.Path.GetDirectoryName(AXAMLFilename) +
                                System.IO.Path.DirectorySeparatorChar +
                                System.IO.Path.GetFileNameWithoutExtension(AXAMLFilename) +
