@@ -65,7 +65,6 @@ namespace Ict.Petra.Client.MPartner.Gui
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblFilename.Text = Catalog.GetString("Filename:");
       this.btnSelectFile.Text = Catalog.GetString("Select File");
-      this.lblDelimiter.Text = Catalog.GetString("Delimiter:");
       this.lblExplanation.Text = Catalog.GetString("Explanation:");
       this.btnSkip.Text = Catalog.GetString("Skip");
       this.btnCreateNewFamilyAndPerson.Text = Catalog.GetString("Create New Family And Person");
@@ -167,6 +166,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             tbbSave.Enabled = e.Enabled;
             mniFileSave.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actStartImport")
+        {
+            tbbStartImport.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actCancelImport")
+        {
+            tbbCancelImport.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {

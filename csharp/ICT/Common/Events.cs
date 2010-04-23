@@ -63,7 +63,7 @@ namespace Ict.Common
     /// todoComment
     /// </summary>
     public delegate void TTabPageEventHandler(System.Object Sender, TTabPageEventArgs e);
-    
+
     /// <summary>
     /// todoComment
     /// </summary>
@@ -240,7 +240,7 @@ namespace Ict.Common
             UserControlOnTabPage = AUserControlOnTabPage;
             Event = AEvent;
         }
-        
+
         /// <summary>
         /// TabPage which this Event is about.
         /// </summary>
@@ -248,15 +248,15 @@ namespace Ict.Common
 
         /// <summary>
         /// UserControl which makes up the content of the TabPage (if any).
-        /// </summary>        
+        /// </summary>
         public UserControl UserControlOnTabPage;
-            
+
         /// <summary>
         /// Event which is happening for the TabPage.
         /// </summary>
         public string Event;
     }
-    
+
     /// <summary>
     /// todoComment
     /// </summary>

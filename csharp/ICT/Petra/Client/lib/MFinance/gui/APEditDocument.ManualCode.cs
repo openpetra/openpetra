@@ -93,10 +93,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 dtpDateDue.Date = dtpDateIssued.Date.Value.AddDays((double)nudCreditTerms.Value);
             }
         }
-        
+
         private void UpdateCreditTermsOverload(object sender, EventArgs e)
         {
-        	UpdateCreditTerms(sender, null);
+            UpdateCreditTerms(sender, null);
         }
 
         /// initialise some comboboxes

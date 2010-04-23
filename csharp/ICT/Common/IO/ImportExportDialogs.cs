@@ -83,13 +83,26 @@ namespace Ict.Common.IO
         /// convert from all sorts of formats into xml document;
         /// shows a dialog to the user to select the file to import
         /// </summary>
-        /// <param name="ADialogTitle"></param>
         /// <returns></returns>
         public static XmlDocument ImportWithDialog(string ADialogTitle)
+        {
+            string temp;
+
+            return ImportWithDialog(ADialogTitle, out temp);
+        }
+
+        /// <summary>
+        /// convert from all sorts of formats into xml document;
+        /// shows a dialog to the user to select the file to import
+        /// </summary>
+        /// <returns></returns>
+        public static XmlDocument ImportWithDialog(string ADialogTitle, out string AFilename)
         {
             // TODO support import from Excel and OpenOffice files
             // See also http://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=Data_liberation
             OpenFileDialog DialogOpen = new OpenFileDialog();
+
+            AFilename = "";
 
             DialogOpen.Filter = Catalog.GetString(
                 "Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Spreadsheet file (*.csv)|All supported file formats (*.yml, *.xml, *.csv)|*.csv;*.yml;*.xml|");
@@ -99,8 +112,12 @@ namespace Ict.Common.IO
 
             if (DialogOpen.ShowDialog() == DialogResult.OK)
             {
+                AFilename = DialogOpen.FileName;
+
                 if (DialogOpen.FileName.ToLower().EndsWith("csv"))
                 {
+                    XmlDocument doc = TCsv2Xml.ParseCSV2Xml(DialogOpen.FileName);
+                    return doc;
                 }
                 else if (DialogOpen.FileName.ToLower().EndsWith("xml"))
                 {
