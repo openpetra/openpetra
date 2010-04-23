@@ -464,6 +464,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     writer.SetControlProperty(ctrl.controlName,
                         "ReadOnly",
                         "true");
+                    writer.SetControlProperty(ctrl.controlName,
+                        "TabStop",
+                        "false");                    
                 }
                 else
                 {
