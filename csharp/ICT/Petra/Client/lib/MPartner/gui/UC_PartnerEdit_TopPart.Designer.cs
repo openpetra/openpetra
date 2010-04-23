@@ -183,6 +183,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtPartnerClass.Location = new System.Drawing.Point(2,2);
             this.txtPartnerClass.Name = "txtPartnerClass";
+            this.txtPartnerClass.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtPartnerClass.Margin = new System.Windows.Forms.Padding(0, 7, 0, 0);
             this.txtPartnerClass.Size = new System.Drawing.Size(150, 28);
             this.txtPartnerClass.ReadOnly = true;
             this.txtPartnerClass.TabStop = false;
@@ -317,6 +319,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtLastGift.Location = new System.Drawing.Point(2,2);
             this.txtLastGift.Name = "txtLastGift";
+            this.txtLastGift.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtLastGift.Margin = new System.Windows.Forms.Padding(0, 7, 0, 0);
             this.txtLastGift.Size = new System.Drawing.Size(420, 28);
             this.txtLastGift.ReadOnly = true;
             this.txtLastGift.TabStop = false;
@@ -363,6 +367,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtWorkerField.Location = new System.Drawing.Point(2,2);
             this.txtWorkerField.Name = "txtWorkerField";
+            this.txtWorkerField.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtWorkerField.Margin = new System.Windows.Forms.Padding(0, 7, 0, 0);
             this.txtWorkerField.Size = new System.Drawing.Size(115, 28);
             this.txtWorkerField.ReadOnly = true;
             this.txtWorkerField.TabStop = false;
@@ -387,6 +393,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtStatusUpdated.Location = new System.Drawing.Point(2,2);
             this.txtStatusUpdated.Name = "txtStatusUpdated";
+            this.txtStatusUpdated.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtStatusUpdated.Margin = new System.Windows.Forms.Padding(0, 7, 0, 0);
             this.txtStatusUpdated.Size = new System.Drawing.Size(115, 28);
             this.txtStatusUpdated.ReadOnly = true;
             this.txtStatusUpdated.TabStop = false;
@@ -404,6 +412,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtLastContact.Location = new System.Drawing.Point(2,2);
             this.txtLastContact.Name = "txtLastContact";
+            this.txtLastContact.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtLastContact.Margin = new System.Windows.Forms.Padding(0, 7, 0, 0);
             this.txtLastContact.Size = new System.Drawing.Size(115, 28);
             this.txtLastContact.ReadOnly = true;
             this.txtLastContact.TabStop = false;
