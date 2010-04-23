@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from {#XAMLSRCFILE} and template controlMaintainTable
+/* auto generated with nant generateWinforms from {#XAMLSRCFILE} and template usercontrol
  *
  * DO NOT edit manually, DO NOT edit with the designer
  *
@@ -181,3 +181,5 @@ namespace {#NAMESPACE}
 {#ENDIF ACTIONENABLING}
   }
 }
+
+{#INCLUDE copyvalues.cs}

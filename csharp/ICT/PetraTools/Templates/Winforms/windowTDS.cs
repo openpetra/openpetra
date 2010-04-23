@@ -395,3 +395,5 @@ namespace {#NAMESPACE}
 {#ENDIF TABPAGECTRL}
   }
 }
+
+{#INCLUDE copyvalues.cs}

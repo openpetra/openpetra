@@ -557,81 +557,57 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return;
             }
 
-            string AssignValue = "";
             string tablename = TTable.NiceTableName(AField.strTableName);
             string fieldname = TTable.NiceFieldName(AField);
             string RowName = "FMainDS." + tablename + "[0]";
+            string TestForNullTable = "FMainDS." + tablename;
 
             if ((tablename == writer.CodeStorage.GetAttribute("DetailTable")) || (tablename == writer.CodeStorage.GetAttribute("MasterTable")))
             {
                 RowName = "ARow";
+                TestForNullTable = "";
             }
 
-            if (!AField.bNotNull)
+            string targetCodelet = "SHOWDATA";
+
+            if (tablename == writer.CodeStorage.GetAttribute("DetailTable"))
             {
-                // need to check for IsNull
-                AssignValue += "if (" + RowName + ".Is" + fieldname + "Null())" + Environment.NewLine;
-                AssignValue += "{" + Environment.NewLine;
-                AssignValue += "    " + this.AssignValue(ctrl, null, null) + Environment.NewLine;
-                AssignValue += "}" + Environment.NewLine;
-                AssignValue += "else" + Environment.NewLine;
-                AssignValue += "{" + Environment.NewLine;
-                AssignValue += "    " +
-                               this.AssignValue(ctrl, RowName + "." + fieldname, AField.GetDotNetType()) + Environment.NewLine;
-                AssignValue += "}" + Environment.NewLine;
+                targetCodelet = "SHOWDETAILS";
             }
-            else
-            {
-                AssignValue += this.AssignValue(ctrl, RowName + "." + fieldname, AField.GetDotNetType()) + Environment.NewLine;
-            }
+
+            ProcessTemplate snippetShowData = writer.Template.GetSnippet("SHOWDATAFORCOLUMN");
+
+            snippetShowData.SetCodelet("CANBENULL", !AField.bNotNull ? "yes" : "");
+            snippetShowData.SetCodelet("DETERMINECONTROLISNULL", this.GetControlValue(ctrl, null));
+            snippetShowData.SetCodelet("NOTDEFAULTTABLE", TestForNullTable);
+            snippetShowData.SetCodelet("ROW", RowName);
+            snippetShowData.SetCodelet("COLUMNNAME", fieldname);
+            snippetShowData.SetCodelet("SETNULLVALUE", this.AssignValue(ctrl, null, null));
+            snippetShowData.SetCodelet("SETCONTROLVALUE", this.AssignValue(ctrl, RowName + "." + fieldname, AField.GetDotNetType()));
+
+            writer.Template.InsertSnippet(targetCodelet, snippetShowData);
 
             if (AField.bPartOfPrimKey)
             {
                 // check if the current row is new; then allow changing the primary key; otherwise make the control readonly
-                AssignValue += ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = " +
-                               "(" + RowName + ".RowState " + (FHasReadOnlyProperty ? "!=" : "==") + " DataRowState.Added);" + Environment.NewLine;
-            }
-
-            if (tablename == writer.CodeStorage.GetAttribute("DetailTable"))
-            {
-                writer.Template.AddToCodelet("SHOWDETAILS", AssignValue);
-            }
-            else
-            {
-                writer.Template.AddToCodelet("SHOWDATA", AssignValue);
+                writer.Template.AddToCodelet(targetCodelet, ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = " +
+                    "(" + RowName + ".RowState " + (FHasReadOnlyProperty ? "!=" : "==") + " DataRowState.Added);" + Environment.NewLine);
             }
 
             if (ctrl.GetAttribute("ReadOnly").ToLower() != "true")
             {
-                string GetValue = "";
+                targetCodelet = targetCodelet.Replace("SHOW", "SAVE");
 
-                if (!AField.bNotNull && (this.GetControlValue(ctrl, null) != null))
-                {
-                    // need to check for IsNull
-                    GetValue += "if (" + this.GetControlValue(ctrl, null) + ")" + Environment.NewLine;
-                    GetValue += "{" + Environment.NewLine;
-                    GetValue += "    " + RowName + ".Set" + fieldname + "Null();" + Environment.NewLine;
-                    GetValue += "}" + Environment.NewLine;
-                    GetValue += "else" + Environment.NewLine;
-                    GetValue += "{" + Environment.NewLine;
-                    GetValue += "    " + RowName + "." + fieldname + " = " +
-                                this.GetControlValue(ctrl, AField.GetDotNetType()) + ";" + Environment.NewLine;
-                    GetValue += "}" + Environment.NewLine;
-                }
-                else
-                {
-                    GetValue += RowName + "." + fieldname + " = " +
-                                this.GetControlValue(ctrl, AField.GetDotNetType()) + ";" + Environment.NewLine;
-                }
+                ProcessTemplate snippetGetData = writer.Template.GetSnippet("GETDATAFORCOLUMNTHATCANBENULL");
 
-                if (tablename == writer.CodeStorage.GetAttribute("DetailTable"))
-                {
-                    writer.Template.AddToCodelet("SAVEDETAILS", GetValue);
-                }
-                else
-                {
-                    writer.Template.AddToCodelet("SAVEDATA", GetValue);
-                }
+                snippetGetData.SetCodelet("CANBENULL", !AField.bNotNull && (this.GetControlValue(ctrl, null) != null) ? "yes" : "");
+                snippetGetData.SetCodelet("NOTDEFAULTTABLE", TestForNullTable);
+                snippetGetData.SetCodelet("DETERMINECONTROLISNULL", this.GetControlValue(ctrl, null));
+                snippetGetData.SetCodelet("ROW", RowName);
+                snippetGetData.SetCodelet("COLUMNNAME", fieldname);
+                snippetGetData.SetCodelet("CONTROLVALUE", this.GetControlValue(ctrl, AField.GetDotNetType()));
+
+                writer.Template.InsertSnippet(targetCodelet, snippetGetData);
             }
 
             // setstatusbar tooltips for datafields, with getstring plus value from petra.xml

@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from UC_PartnerDetails_Person2.yaml and template controlMaintainTable
+/* auto generated with nant generateWinforms from UC_PartnerDetails_Person2.yaml and template usercontrol
  *
  * DO NOT edit manually, DO NOT edit with the designer
  *
@@ -145,7 +145,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtPreferredName.Text = ARow.PreferedName;
         }
-        if (FMainDS.PPartner[0].IsPreviousNameNull())
+        if (FMainDS.PPartner == null || FMainDS.PPartner[0].IsPreviousNameNull())
         {
             txtPreviousName.Text = String.Empty;
         }
@@ -153,7 +153,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtPreviousName.Text = FMainDS.PPartner[0].PreviousName;
         }
-        if (FMainDS.PPartner[0].IsPartnerShortNameLocNull())
+        if (FMainDS.PPartner == null || FMainDS.PPartner[0].IsPartnerShortNameLocNull())
         {
             txtLocalName.Text = String.Empty;
         }
@@ -209,7 +209,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtMaritalStatusComment.Text = ARow.MaritalStatusComment;
         }
-        if (FMainDS.PPartner[0].IsLanguageCodeNull())
+        if (FMainDS.PPartner == null || FMainDS.PPartner[0].IsLanguageCodeNull())
         {
             cmbLanguageCode.SelectedIndex = -1;
         }
@@ -217,7 +217,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             cmbLanguageCode.SetSelectedString(FMainDS.PPartner[0].LanguageCode);
         }
-        if (FMainDS.PPartner[0].IsAcquisitionCodeNull())
+        if (FMainDS.PPartner == null || FMainDS.PPartner[0].IsAcquisitionCodeNull())
         {
             cmbAcquisitionCode.SelectedIndex = -1;
         }
@@ -246,21 +246,27 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ARow.PreferedName = txtPreferredName.Text;
         }
-        if (txtPreviousName.Text.Length == 0)
+        if (FMainDS.PPartner != null)
         {
-            FMainDS.PPartner[0].SetPreviousNameNull();
+            if (txtPreviousName.Text.Length == 0)
+            {
+                FMainDS.PPartner[0].SetPreviousNameNull();
+            }
+            else
+            {
+                FMainDS.PPartner[0].PreviousName = txtPreviousName.Text;
+            }
         }
-        else
+        if (FMainDS.PPartner != null)
         {
-            FMainDS.PPartner[0].PreviousName = txtPreviousName.Text;
-        }
-        if (txtLocalName.Text.Length == 0)
-        {
-            FMainDS.PPartner[0].SetPartnerShortNameLocNull();
-        }
-        else
-        {
-            FMainDS.PPartner[0].PartnerShortNameLoc = txtLocalName.Text;
+            if (txtLocalName.Text.Length == 0)
+            {
+                FMainDS.PPartner[0].SetPartnerShortNameLocNull();
+            }
+            else
+            {
+                FMainDS.PPartner[0].PartnerShortNameLoc = txtLocalName.Text;
+            }
         }
         if (dtpDateOfBirth.Date == null)
         {
@@ -310,21 +316,27 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ARow.MaritalStatusComment = txtMaritalStatusComment.Text;
         }
-        if (cmbLanguageCode.SelectedIndex == -1)
+        if (FMainDS.PPartner != null)
         {
-            FMainDS.PPartner[0].SetLanguageCodeNull();
+            if (cmbLanguageCode.SelectedIndex == -1)
+            {
+                FMainDS.PPartner[0].SetLanguageCodeNull();
+            }
+            else
+            {
+                FMainDS.PPartner[0].LanguageCode = cmbLanguageCode.GetSelectedString();
+            }
         }
-        else
+        if (FMainDS.PPartner != null)
         {
-            FMainDS.PPartner[0].LanguageCode = cmbLanguageCode.GetSelectedString();
-        }
-        if (cmbAcquisitionCode.SelectedIndex == -1)
-        {
-            FMainDS.PPartner[0].SetAcquisitionCodeNull();
-        }
-        else
-        {
-            FMainDS.PPartner[0].AcquisitionCode = cmbAcquisitionCode.GetSelectedString();
+            if (cmbAcquisitionCode.SelectedIndex == -1)
+            {
+                FMainDS.PPartner[0].SetAcquisitionCodeNull();
+            }
+            else
+            {
+                FMainDS.PPartner[0].AcquisitionCode = cmbAcquisitionCode.GetSelectedString();
+            }
         }
         if (txtOccupationCode.Text.Length == 0)
         {

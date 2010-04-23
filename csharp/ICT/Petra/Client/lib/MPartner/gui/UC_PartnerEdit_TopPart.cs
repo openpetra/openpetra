@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from UC_PartnerEdit_TopPart.yaml and template controlMaintainTable
+/* auto generated with nant generateWinforms from UC_PartnerEdit_TopPart.yaml and template usercontrol
  *
  * DO NOT edit manually, DO NOT edit with the designer
  *
@@ -141,7 +141,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtPartnerClass.Text = ARow.PartnerClass;
         }
-        if (FMainDS.PFamily[0].IsTitleNull())
+        if (FMainDS.PFamily == null || FMainDS.PFamily[0].IsTitleNull())
         {
             txtFamilyTitle.Text = String.Empty;
         }
@@ -149,7 +149,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtFamilyTitle.Text = FMainDS.PFamily[0].Title;
         }
-        if (FMainDS.PFamily[0].IsFirstNameNull())
+        if (FMainDS.PFamily == null || FMainDS.PFamily[0].IsFirstNameNull())
         {
             txtFirstName.Text = String.Empty;
         }
@@ -157,7 +157,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtFirstName.Text = FMainDS.PFamily[0].FirstName;
         }
-        if (FMainDS.PFamily[0].IsFamilyNameNull())
+        if (FMainDS.PFamily == null || FMainDS.PFamily[0].IsFamilyNameNull())
         {
             txtFamilyName.Text = String.Empty;
         }
@@ -181,7 +181,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             chkNoSolicitations.Checked = ARow.NoSolicitations;
         }
-        if (FMainDS.MiscellaneousData[0].IsLastGiftInfoNull())
+        if (FMainDS.MiscellaneousData == null || FMainDS.MiscellaneousData[0].IsLastGiftInfoNull())
         {
             txtLastGift.Text = String.Empty;
         }
@@ -197,7 +197,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             cmbPartnerStatus.SetSelectedString(ARow.StatusCode);
         }
-        if (FMainDS.MiscellaneousData[0].IsLastContactDateNull())
+        if (FMainDS.MiscellaneousData == null || FMainDS.MiscellaneousData[0].IsLastContactDateNull())
         {
             txtLastContact.Text = String.Empty;
         }
@@ -210,29 +210,38 @@ namespace Ict.Petra.Client.MPartner.Gui
 
     private void GetDataFromControls(PPartnerRow ARow)
     {
-        if (txtFamilyTitle.Text.Length == 0)
+        if (FMainDS.PFamily != null)
         {
-            FMainDS.PFamily[0].SetTitleNull();
+            if (txtFamilyTitle.Text.Length == 0)
+            {
+                FMainDS.PFamily[0].SetTitleNull();
+            }
+            else
+            {
+                FMainDS.PFamily[0].Title = txtFamilyTitle.Text;
+            }
         }
-        else
+        if (FMainDS.PFamily != null)
         {
-            FMainDS.PFamily[0].Title = txtFamilyTitle.Text;
+            if (txtFirstName.Text.Length == 0)
+            {
+                FMainDS.PFamily[0].SetFirstNameNull();
+            }
+            else
+            {
+                FMainDS.PFamily[0].FirstName = txtFirstName.Text;
+            }
         }
-        if (txtFirstName.Text.Length == 0)
+        if (FMainDS.PFamily != null)
         {
-            FMainDS.PFamily[0].SetFirstNameNull();
-        }
-        else
-        {
-            FMainDS.PFamily[0].FirstName = txtFirstName.Text;
-        }
-        if (txtFamilyName.Text.Length == 0)
-        {
-            FMainDS.PFamily[0].SetFamilyNameNull();
-        }
-        else
-        {
-            FMainDS.PFamily[0].FamilyName = txtFamilyName.Text;
+            if (txtFamilyName.Text.Length == 0)
+            {
+                FMainDS.PFamily[0].SetFamilyNameNull();
+            }
+            else
+            {
+                FMainDS.PFamily[0].FamilyName = txtFamilyName.Text;
+            }
         }
         if (cmbAddresseeTypeCode.SelectedIndex == -1)
         {

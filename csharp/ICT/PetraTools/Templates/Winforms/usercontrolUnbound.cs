@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from {#XAMLSRCFILE} and template controlMaintainTable
+/* auto generated with nant generateWinforms from {#XAMLSRCFILE} and template usercontrolUnbound
  *
  * DO NOT edit manually, DO NOT edit with the designer
  *
@@ -217,3 +217,5 @@ namespace {#NAMESPACE}
 {#ENDIF TABPAGECTRL}
   }
 }
+
+{#INCLUDE copyvalues.cs}

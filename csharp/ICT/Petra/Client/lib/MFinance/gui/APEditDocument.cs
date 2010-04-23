@@ -257,7 +257,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             out partnerShortName,
             out partnerClass);
         txtSupplierName.Text = partnerShortName;
-        txtSupplierCurrency.Text = FMainDS.AApSupplier[0].CurrencyCode;
+        if (FMainDS.AApSupplier != null)
+        {
+            txtSupplierCurrency.Text = FMainDS.AApSupplier[0].CurrencyCode;
+        }
         if (ARow.IsDocumentCodeNull())
         {
             txtDocumentCode.Text = String.Empty;
