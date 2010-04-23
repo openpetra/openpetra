@@ -534,6 +534,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 lblGenerator.GenerateDeclaration(writer, newLabel);
+                lblGenerator.RightAlign = true;
                 lblGenerator.SetControlProperties(writer, newLabel);
 
                 AddControl(lblName,

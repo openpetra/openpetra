@@ -38,11 +38,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
 {
     public class LabelGenerator : TControlGenerator
     {
+        bool FRightAlign = false;
+
         public LabelGenerator()
             : base("lbl", typeof(Label))
         {
             FAutoSize = true;
             FGenerateLabel = false;
+        }
+
+        public bool RightAlign
+        {
+            get
+            {
+                return FRightAlign;
+            }
+
+            set
+            {
+                FRightAlign = true;
+            }
         }
 
         public string CalculateName(string controlName)
@@ -66,6 +81,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + labelText + "\"");
             writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 7, 3, 0)");
+
+            if (FRightAlign)
+            {
+                writer.SetControlProperty(ctrl.controlName, "Dock", "System.Windows.Forms.DockStyle.Right;");
+            }
         }
     }
     public class ButtonGenerator : TControlGenerator
