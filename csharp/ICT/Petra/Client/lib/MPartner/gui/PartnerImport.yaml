@@ -3,7 +3,7 @@ RootNode:
     FormTitle: Import Partners
     Namespace: Ict.Petra.Client.MPartner.Gui
     FormType: edit
-    Action:
+    Actions:
         actStartImport: {ActionClick=StartImport}
         actCancelImport: {ActionClick=CancelImport}
     Controls:
@@ -13,12 +13,10 @@ RootNode:
         pnlImportSettings:
             Dock: Top
             Controls:
-                Row0: [txtFilename, btnSelectFile, cmbDelimiter]
+                Row0: [txtFilename, btnSelectFile]
                 # todo: other options, eg. skip partners that have already been imported, log file, etc.
         txtFilename: {ReadOnly=true}
         btnSelectFile: {ActionClick=OpenFile}
-        cmbDelimiter:
-            OptionalValues: [",", ";", "|", "TAB"]
         pnlImportRecord:
             Controls:
                 Row0: [grdParsedValues, pnlActions]

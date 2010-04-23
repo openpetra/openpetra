@@ -76,8 +76,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtFilename = new System.Windows.Forms.TextBox();
             this.lblFilename = new System.Windows.Forms.Label();
             this.btnSelectFile = new System.Windows.Forms.Button();
-            this.cmbDelimiter = new Ict.Common.Controls.TCmbAutoComplete();
-            this.lblDelimiter = new System.Windows.Forms.Label();
             this.pnlImportRecord = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.grdParsedValues = new Ict.Common.Controls.TSgrdDataGridPaged();
@@ -178,25 +176,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnSelectFile.AutoSize = true;
             this.btnSelectFile.Click += new System.EventHandler(this.OpenFile);
             this.btnSelectFile.Text = "Select File";
-            //
-            // cmbDelimiter
-            //
-            this.cmbDelimiter.Location = new System.Drawing.Point(2,2);
-            this.cmbDelimiter.Name = "cmbDelimiter";
-            this.cmbDelimiter.Size = new System.Drawing.Size(150, 28);
-            this.cmbDelimiter.Items.AddRange(new object[] {",",";","|","TAB"});
-            //
-            // lblDelimiter
-            //
-            this.lblDelimiter.Location = new System.Drawing.Point(2,2);
-            this.lblDelimiter.Name = "lblDelimiter";
-            this.lblDelimiter.AutoSize = true;
-            this.lblDelimiter.Text = "Delimiter:";
-            this.lblDelimiter.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDelimiter.Dock = System.Windows.Forms.DockStyle.Right;
-            this.tableLayoutPanel2.ColumnCount = 5;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnCount = 3;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -205,8 +185,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.Controls.Add(this.lblFilename, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.txtFilename, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.btnSelectFile, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDelimiter, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.cmbDelimiter, 4, 0);
             //
             // pnlImportRecord
             //
@@ -341,12 +319,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.tbbStartImport.Name = "tbbStartImport";
             this.tbbStartImport.AutoSize = true;
+            this.tbbStartImport.Click += new System.EventHandler(this.StartImport);
             this.tbbStartImport.Text = "Start Import";
             //
             // tbbCancelImport
             //
             this.tbbCancelImport.Name = "tbbCancelImport";
             this.tbbCancelImport.AutoSize = true;
+            this.tbbCancelImport.Click += new System.EventHandler(this.CancelImport);
             this.tbbCancelImport.Text = "Cancel Import";
             //
             // tbrMain
@@ -549,8 +529,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.TextBox txtFilename;
         private System.Windows.Forms.Label lblFilename;
         private System.Windows.Forms.Button btnSelectFile;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDelimiter;
-        private System.Windows.Forms.Label lblDelimiter;
         private System.Windows.Forms.Panel pnlImportRecord;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private Ict.Common.Controls.TSgrdDataGridPaged grdParsedValues;

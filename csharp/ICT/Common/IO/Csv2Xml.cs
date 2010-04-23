@@ -135,72 +135,103 @@ namespace Ict.Common.IO
 
             StreamReader sr = new StreamReader(ACSVFilename);
 
-            string headerLine = sr.ReadLine();
-
-            if (!headerLine.StartsWith("#"))
+            try
             {
-                throw new Exception(Catalog.GetString("Cannot open CSV file, because it is missing the header line"));
-            }
+                string headerLine = sr.ReadLine();
 
-            // read separator from header line
-            string separator = headerLine[headerLine.IndexOf("#", 2) - 1].ToString();
-
-            List <string>AllAttributes = new List <string>();
-
-            while (headerLine.Length > 0)
-            {
-                string attrName = StringHelper.GetNextCSV(ref headerLine, separator);
-
-                if (attrName.StartsWith("#"))
+                if (!headerLine.StartsWith("#") && !headerLine.StartsWith("\"#"))
                 {
-                    AllAttributes.Add(attrName.Substring(1));
+                    throw new Exception(Catalog.GetString("Cannot open CSV file, because it is missing the header line.") +
+                        Environment.NewLine +
+                        Catalog.GetString("There must be a row with the column captions, each caption starting with the # character."));
+                }
+
+                // read separator from header line. at least the first two columns need a # at the beginning of the column name
+                string separator = ",";
+
+                if (headerLine[0] == '"')
+                {
+                    separator = headerLine[StringHelper.FindMatchingQuote(headerLine.Substring(1)) + 3].ToString();
                 }
                 else
                 {
-                    throw new Exception(
-                        String.Format(Catalog.GetString("Cannot parse CSV file header of file {0}, caption {1} is missing the #"),
-                            ACSVFilename, attrName));
+                    separator = headerLine[headerLine.IndexOf("#", 2) - 1].ToString();
+
+                    if (separator == "\"")
+                    {
+                        separator = headerLine[headerLine.IndexOf("#", 2) - 2].ToString();
+                    }
+                }
+
+                List <string>AllAttributes = new List <string>();
+
+                while (headerLine.Length > 0)
+                {
+                    string attrName = StringHelper.GetNextCSV(ref headerLine, separator);
+
+                    if (attrName.StartsWith("#"))
+                    {
+                        attrName = attrName.Substring(1);
+                    }
+                    else if (attrName.Length == 0)
+                    {
+                        throw new Exception(Catalog.GetString("There is an empty column name. This is not allowed"));
+                    }
+
+                    AllAttributes.Add(StringHelper.UpperCamelCase(attrName, " ", false, false));
+                }
+
+                while (!sr.EndOfStream)
+                {
+                    string line = sr.ReadLine();
+
+                    SortedList <string, string>AttributePairs = new SortedList <string, string>();
+
+                    foreach (string attrName in AllAttributes)
+                    {
+                        AttributePairs.Add(attrName, StringHelper.GetNextCSV(ref line, separator));
+                    }
+
+                    string rowName = "Element";
+
+                    if (AttributePairs.ContainsKey("name"))
+                    {
+                        rowName = AttributePairs["name"];
+                    }
+
+                    XmlNode newNode = myDoc.CreateElement("", rowName, "");
+
+                    if (AttributePairs.ContainsKey("childOf"))
+                    {
+                        XmlNode parentNode = TXMLParser.FindNodeRecursive(myDoc.DocumentElement, AttributePairs["childOf"]);
+
+                        if (parentNode == null)
+                        {
+                            parentNode = myDoc.DocumentElement;
+                        }
+
+                        parentNode.AppendChild(newNode);
+                    }
+                    else
+                    {
+                        myDoc.DocumentElement.AppendChild(newNode);
+                    }
+
+                    foreach (string attrName in AllAttributes)
+                    {
+                        if ((attrName != "name") && (attrName != "childOf"))
+                        {
+                            XmlAttribute attr = myDoc.CreateAttribute(attrName);
+                            attr.Value = AttributePairs[attrName];
+                            newNode.Attributes.Append(attr);
+                        }
+                    }
                 }
             }
-
-            while (!sr.EndOfStream)
+            catch (Exception)
             {
-                string line = sr.ReadLine();
-
-                SortedList <string, string>AttributePairs = new SortedList <string, string>();
-
-                foreach (string attrName in AllAttributes)
-                {
-                    AttributePairs.Add(attrName, StringHelper.GetNextCSV(ref line, separator));
-                }
-
-                XmlNode newNode = myDoc.CreateElement("", AttributePairs["name"], "");
-
-                if (AttributePairs.ContainsKey("childOf"))
-                {
-                    XmlNode parentNode = TXMLParser.FindNodeRecursive(myDoc.DocumentElement, AttributePairs["childOf"]);
-
-                    if (parentNode == null)
-                    {
-                        parentNode = myDoc.DocumentElement;
-                    }
-
-                    parentNode.AppendChild(newNode);
-                }
-                else
-                {
-                    myDoc.DocumentElement.AppendChild(newNode);
-                }
-
-                foreach (string attrName in AllAttributes)
-                {
-                    if ((attrName != "name") && (attrName != "childOf"))
-                    {
-                        XmlAttribute attr = myDoc.CreateAttribute(attrName);
-                        attr.Value = AttributePairs[attrName];
-                        newNode.Attributes.Append(attr);
-                    }
-                }
+                sr.Close();
+                throw;
             }
 
             return myDoc;

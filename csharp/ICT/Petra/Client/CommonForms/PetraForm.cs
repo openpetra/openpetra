@@ -27,6 +27,7 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Windows.Forms;
@@ -264,6 +265,8 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         public event ActionEventHandler ActionEnablingEvent;
 
+        private SortedList <string, bool>FActionStates = new SortedList <string, bool>();
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -271,8 +274,16 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="enable"></param>
         public void EnableAction(string AActionName, bool enable)
         {
-            //TODO
-            //store action enabled ?
+            // store action enabled
+            if (FActionStates.ContainsKey(AActionName))
+            {
+                FActionStates[AActionName] = enable;
+            }
+            else
+            {
+                FActionStates.Add(AActionName, enable);
+            }
+
             //trigger event
             ActionEnablingEvent(this, new ActionEventArgs(AActionName, enable));
         }
@@ -284,7 +295,11 @@ namespace Ict.Petra.Client.CommonForms
         /// <returns></returns>
         public bool IsEnabled(string AActionName)
         {
-            // TODO
+            if (FActionStates.ContainsKey(AActionName))
+            {
+                return FActionStates[AActionName];
+            }
+
             return true;
         }
 
