@@ -162,6 +162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtLedgerNumber.Name = "txtLedgerNumber";
             this.txtLedgerNumber.Size = new System.Drawing.Size(150, 28);
             this.txtLedgerNumber.ReadOnly = true;
+            this.txtLedgerNumber.TabStop = false;
             //
             // lblLedgerNumber
             //

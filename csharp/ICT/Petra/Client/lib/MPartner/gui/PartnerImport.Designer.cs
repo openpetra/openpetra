@@ -160,6 +160,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtFilename.Name = "txtFilename";
             this.txtFilename.Size = new System.Drawing.Size(150, 28);
             this.txtFilename.ReadOnly = true;
+            this.txtFilename.TabStop = false;
             //
             // lblFilename
             //
@@ -245,6 +246,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtExplanation.Name = "txtExplanation";
             this.txtExplanation.Size = new System.Drawing.Size(150, 28);
             this.txtExplanation.ReadOnly = true;
+            this.txtExplanation.TabStop = false;
             //
             // lblExplanation
             //

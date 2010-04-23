@@ -226,6 +226,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.txtLedger.Name = "txtLedger";
             this.txtLedger.Size = new System.Drawing.Size(150, 28);
             this.txtLedger.ReadOnly = true;
+            this.txtLedger.TabStop = false;
             //
             // lblLedger
             //

@@ -448,6 +448,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtSumTagged.Name = "txtSumTagged";
             this.txtSumTagged.Size = new System.Drawing.Size(150, 28);
             this.txtSumTagged.ReadOnly = true;
+            this.txtSumTagged.TabStop = false;
             //
             // lblSumTagged
             //

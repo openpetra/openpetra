@@ -141,6 +141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtLedgerNumber.Name = "txtLedgerNumber";
             this.txtLedgerNumber.Size = new System.Drawing.Size(150, 28);
             this.txtLedgerNumber.ReadOnly = true;
+            this.txtLedgerNumber.TabStop = false;
             //
             // lblLedgerNumber
             //
@@ -157,6 +158,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtBatchNumber.Name = "txtBatchNumber";
             this.txtBatchNumber.Size = new System.Drawing.Size(150, 28);
             this.txtBatchNumber.ReadOnly = true;
+            this.txtBatchNumber.TabStop = false;
             //
             // lblBatchNumber
             //
@@ -313,6 +315,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtCurrencyCode.Name = "txtCurrencyCode";
             this.txtCurrencyCode.Size = new System.Drawing.Size(150, 28);
             this.txtCurrencyCode.ReadOnly = true;
+            this.txtCurrencyCode.TabStop = false;
             //
             // txtDetailRecipientKey
             //
@@ -380,6 +383,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtDetailCostCentreCode.Name = "txtDetailCostCentreCode";
             this.txtDetailCostCentreCode.Size = new System.Drawing.Size(150, 28);
             this.txtDetailCostCentreCode.ReadOnly = true;
+            this.txtDetailCostCentreCode.TabStop = false;
             //
             // lblDetailCostCentreCode
             //
@@ -396,6 +400,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtDetailAccountCode.Name = "txtDetailAccountCode";
             this.txtDetailAccountCode.Size = new System.Drawing.Size(150, 28);
             this.txtDetailAccountCode.ReadOnly = true;
+            this.txtDetailAccountCode.TabStop = false;
             //
             // lblDetailAccountCode
             //

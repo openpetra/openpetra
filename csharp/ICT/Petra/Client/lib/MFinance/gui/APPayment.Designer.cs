@@ -173,6 +173,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtCurrency.Name = "txtCurrency";
             this.txtCurrency.Size = new System.Drawing.Size(150, 28);
             this.txtCurrency.ReadOnly = true;
+            this.txtCurrency.TabStop = false;
             //
             // lblCurrency
             //
@@ -206,6 +207,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtTotalAmount.Name = "txtTotalAmount";
             this.txtTotalAmount.Size = new System.Drawing.Size(150, 28);
             this.txtTotalAmount.ReadOnly = true;
+            this.txtTotalAmount.TabStop = false;
             //
             // lblTotalAmount
             //
@@ -413,6 +415,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtAmountToPay.Name = "txtAmountToPay";
             this.txtAmountToPay.Size = new System.Drawing.Size(150, 28);
             this.txtAmountToPay.ReadOnly = true;
+            this.txtAmountToPay.TabStop = false;
             //
             // lblAmountToPay
             //

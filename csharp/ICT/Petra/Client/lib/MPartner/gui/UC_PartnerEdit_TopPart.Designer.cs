@@ -160,6 +160,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPartnerKey.Name = "txtPartnerKey";
             this.txtPartnerKey.Size = new System.Drawing.Size(90, 28);
             this.txtPartnerKey.ReadOnly = true;
+            this.txtPartnerKey.TabStop = false;
             //
             // lblPartnerKey
             //
@@ -184,6 +185,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPartnerClass.Name = "txtPartnerClass";
             this.txtPartnerClass.Size = new System.Drawing.Size(150, 28);
             this.txtPartnerClass.ReadOnly = true;
+            this.txtPartnerClass.TabStop = false;
             //
             // lblPartnerClass
             //
@@ -317,6 +319,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtLastGift.Name = "txtLastGift";
             this.txtLastGift.Size = new System.Drawing.Size(420, 28);
             this.txtLastGift.ReadOnly = true;
+            this.txtLastGift.TabStop = false;
             //
             // lblLastGift
             //
@@ -362,6 +365,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtWorkerField.Name = "txtWorkerField";
             this.txtWorkerField.Size = new System.Drawing.Size(115, 28);
             this.txtWorkerField.ReadOnly = true;
+            this.txtWorkerField.TabStop = false;
             //
             // cmbPartnerStatus
             //
@@ -385,6 +389,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtStatusUpdated.Name = "txtStatusUpdated";
             this.txtStatusUpdated.Size = new System.Drawing.Size(115, 28);
             this.txtStatusUpdated.ReadOnly = true;
+            this.txtStatusUpdated.TabStop = false;
             //
             // lblStatusUpdated
             //
@@ -401,6 +406,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtLastContact.Name = "txtLastContact";
             this.txtLastContact.Size = new System.Drawing.Size(115, 28);
             this.txtLastContact.ReadOnly = true;
+            this.txtLastContact.TabStop = false;
             //
             // lblLastContact
             //

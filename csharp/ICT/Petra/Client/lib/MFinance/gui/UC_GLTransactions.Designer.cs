@@ -159,6 +159,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtLedgerNumber.Name = "txtLedgerNumber";
             this.txtLedgerNumber.Size = new System.Drawing.Size(150, 28);
             this.txtLedgerNumber.ReadOnly = true;
+            this.txtLedgerNumber.TabStop = false;
             //
             // lblLedgerNumber
             //
@@ -175,6 +176,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtBatchNumber.Name = "txtBatchNumber";
             this.txtBatchNumber.Size = new System.Drawing.Size(150, 28);
             this.txtBatchNumber.ReadOnly = true;
+            this.txtBatchNumber.TabStop = false;
             //
             // lblBatchNumber
             //
@@ -191,6 +193,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtJournalNumber.Name = "txtJournalNumber";
             this.txtJournalNumber.Size = new System.Drawing.Size(150, 28);
             this.txtJournalNumber.ReadOnly = true;
+            this.txtJournalNumber.TabStop = false;
             //
             // lblJournalNumber
             //
@@ -421,6 +424,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtDebitAmountBase.Name = "txtDebitAmountBase";
             this.txtDebitAmountBase.Size = new System.Drawing.Size(150, 28);
             this.txtDebitAmountBase.ReadOnly = true;
+            this.txtDebitAmountBase.TabStop = false;
             //
             // lblDebitAmountBase
             //
@@ -453,6 +457,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtCreditAmountBase.Name = "txtCreditAmountBase";
             this.txtCreditAmountBase.Size = new System.Drawing.Size(150, 28);
             this.txtCreditAmountBase.ReadOnly = true;
+            this.txtCreditAmountBase.TabStop = false;
             //
             // lblCreditAmountBase
             //
@@ -469,6 +474,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtDebitTotalAmount.Name = "txtDebitTotalAmount";
             this.txtDebitTotalAmount.Size = new System.Drawing.Size(150, 28);
             this.txtDebitTotalAmount.ReadOnly = true;
+            this.txtDebitTotalAmount.TabStop = false;
             //
             // lblDebitTotalAmount
             //
@@ -485,6 +491,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtDebitTotalAmountBase.Name = "txtDebitTotalAmountBase";
             this.txtDebitTotalAmountBase.Size = new System.Drawing.Size(150, 28);
             this.txtDebitTotalAmountBase.ReadOnly = true;
+            this.txtDebitTotalAmountBase.TabStop = false;
             //
             // lblDebitTotalAmountBase
             //
@@ -501,6 +508,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtCreditTotalAmount.Name = "txtCreditTotalAmount";
             this.txtCreditTotalAmount.Size = new System.Drawing.Size(150, 28);
             this.txtCreditTotalAmount.ReadOnly = true;
+            this.txtCreditTotalAmount.TabStop = false;
             //
             // lblCreditTotalAmount
             //
@@ -517,6 +525,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtCreditTotalAmountBase.Name = "txtCreditTotalAmountBase";
             this.txtCreditTotalAmountBase.Size = new System.Drawing.Size(150, 28);
             this.txtCreditTotalAmountBase.ReadOnly = true;
+            this.txtCreditTotalAmountBase.TabStop = false;
             //
             // lblCreditTotalAmountBase
             //

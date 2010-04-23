@@ -185,6 +185,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtCurrentSupplierName.Name = "txtCurrentSupplierName";
             this.txtCurrentSupplierName.Size = new System.Drawing.Size(150, 28);
             this.txtCurrentSupplierName.ReadOnly = true;
+            this.txtCurrentSupplierName.TabStop = false;
             //
             // lblCurrentSupplierName
             //
@@ -201,6 +202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtCurrentSupplierCurrency.Name = "txtCurrentSupplierCurrency";
             this.txtCurrentSupplierCurrency.Size = new System.Drawing.Size(150, 28);
             this.txtCurrentSupplierCurrency.ReadOnly = true;
+            this.txtCurrentSupplierCurrency.TabStop = false;
             //
             // lblCurrentSupplierCurrency
             //
@@ -388,6 +390,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtSumOfTagged.Name = "txtSumOfTagged";
             this.txtSumOfTagged.Size = new System.Drawing.Size(150, 28);
             this.txtSumOfTagged.ReadOnly = true;
+            this.txtSumOfTagged.TabStop = false;
             //
             // lblSumOfTagged
             //
@@ -438,6 +441,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtDisplayedBalance.Name = "txtDisplayedBalance";
             this.txtDisplayedBalance.Size = new System.Drawing.Size(150, 28);
             this.txtDisplayedBalance.ReadOnly = true;
+            this.txtDisplayedBalance.TabStop = false;
             //
             // lblDisplayedBalance
             //

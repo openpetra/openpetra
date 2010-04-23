@@ -184,6 +184,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtPartnerKey.Name = "txtPartnerKey";
             this.txtPartnerKey.Size = new System.Drawing.Size(150, 28);
             this.txtPartnerKey.ReadOnly = true;
+            this.txtPartnerKey.TabStop = false;
             //
             // lblPartnerKey
             //
@@ -230,6 +231,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtPartnerName.Name = "txtPartnerName";
             this.txtPartnerName.Size = new System.Drawing.Size(150, 28);
             this.txtPartnerName.ReadOnly = true;
+            this.txtPartnerName.TabStop = false;
             //
             // lblPartnerName
             //

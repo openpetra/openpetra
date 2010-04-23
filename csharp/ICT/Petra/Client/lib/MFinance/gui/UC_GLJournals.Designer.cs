@@ -135,6 +135,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtLedgerNumber.Name = "txtLedgerNumber";
             this.txtLedgerNumber.Size = new System.Drawing.Size(150, 28);
             this.txtLedgerNumber.ReadOnly = true;
+            this.txtLedgerNumber.TabStop = false;
             //
             // lblLedgerNumber
             //
@@ -151,6 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtBatchNumber.Name = "txtBatchNumber";
             this.txtBatchNumber.Size = new System.Drawing.Size(150, 28);
             this.txtBatchNumber.ReadOnly = true;
+            this.txtBatchNumber.TabStop = false;
             //
             // lblBatchNumber
             //
