@@ -145,7 +145,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", DynamicTabPageEnums);
 
                 string DynamicTabPageInitialisation = "";
-                DynamicTabPageInitialisation += "if (tabPartners.SelectedTab == " + ctrl.controlName + ")" + Environment.NewLine;  // " + TabControlGenerator.TabControlName +
+                DynamicTabPageInitialisation += "if (" + TabControlGenerator.TabControlName + ".SelectedTab == " + ctrl.controlName + ")" + Environment.NewLine;  // " + TabControlGenerator.TabControlName +
                 DynamicTabPageInitialisation += "{" + Environment.NewLine;
                 DynamicTabPageInitialisation += "    if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + "))" +
                                                 Environment.NewLine;
@@ -1245,8 +1245,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
 
-            FTabControlName = ctrl.controlName;
-
             if (ctrl.HasAttribute("DragTabPageEnabled") && (ctrl.GetAttribute("DragTabPageEnabled").ToLower() == "false"))
             {
                 writer.SetControlProperty(ctrl.controlName, "AllowDrop", "false");
@@ -1295,6 +1293,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             ArrayList tabPages = new ArrayList();
 
+            FTabControlName = ATabControl.controlName;
+            
             // need to save tab pages in a temporary list,
             // because TableLayoutPanelGenerator.CreateLayout will add to the FControlList
             foreach (TControlDef ctrl in ATabControl.FCodeStorage.FSortedControlList.Values)
