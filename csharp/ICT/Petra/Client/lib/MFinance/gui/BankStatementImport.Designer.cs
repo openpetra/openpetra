@@ -268,6 +268,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.pnlDetails.Name = "pnlDetails";
             this.pnlDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlDetails.Visible = false;
             this.pnlDetails.AutoSize = true;
             this.pnlDetails.Controls.Add(this.pnlHostCategorySpecificEdit);
             this.pnlDetails.Controls.Add(this.rgrTransactionCategory);
@@ -502,6 +503,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.pnlGLEdit.Name = "pnlGLEdit";
             this.pnlGLEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlGLEdit.Visible = false;
             this.pnlGLEdit.AutoSize = true;
             //
             // tableLayoutPanel6

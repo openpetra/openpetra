@@ -38,11 +38,13 @@ RootNode:
             DataField: MiscellaneousData.LastGiftInfo
             ReadOnly: true
             Width: 420
+            BorderStyle: None
         txtLastContact:
             DataField: MiscellaneousData.LastContactDate
             ReadOnly: true
             ColSpan: 2
             Width: 115
+            BorderStyle: None
         pnlPartnerInfo:
             Controls: 
                 Row0: [txtPartnerKey, lblEmpty2, txtPartnerClass]            
@@ -53,12 +55,15 @@ RootNode:
             ReadOnly: true
             NoLabel: true
             Width: 115
+            BorderStyle: None
         cmbPartnerStatus: {Label=Partner &Status, DataField=StatusCode, List=PartnerStatusList, ColSpan = 2, Width = 100}
         txtStatusUpdated:
             ReadOnly: true
             ColSpan: 2
             Width: 115
-        pnlFamily:
+            BorderStyle: None
+            
+        pnlFamily: {Visible=true}
             Controls: 
                 Row1: [txtFamilyTitle, txtFirstName, txtFamilyName]
                 Row2: [lblEmpty, cmbAddresseeTypeCode, chkNoSolicitations]
@@ -71,6 +76,7 @@ RootNode:
         txtPartnerClass:
             ReadOnly: true
             Label: Class
+            BorderStyle: None
         txtFamilyTitle:
             Label: Title/Na&me            
             Width: 90
@@ -91,7 +97,7 @@ RootNode:
             Label: No Solicitations
             DataField: NoSolicitations
 
-        pnlPerson:
+        pnlPerson: {Visible=false}
             Controls: 
                 Row1: [txtPersonTitle, txtFirstNamePers, txtMiddleName1, txtFamilyNamePers]
                 Row2: [cmbGender, cmbAddresseeTypeCodePers, chkNoSolicitationsPers]
