@@ -466,7 +466,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         "true");
                     writer.SetControlProperty(ctrl.controlName,
                         "TabStop",
-                        "false");                    
+                        "false");
                 }
                 else
                 {

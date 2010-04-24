@@ -115,6 +115,10 @@
       <Project>{2DF8D7E4-74C8-49D0-9EA3-D5E93BA3C093}</Project>
       <Name>Ict.Petra.Shared.MPersonnel</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MSysMan\data\Ict.Petra.Shared.MSysMan.DataSets.csproj">
+      <Project>{EE491F69-FB10-4009-AEC5-A77AE8D8A532}</Project>
+      <Name>Ict.Petra.Shared.MSysMan.DataSets</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MSysMan\data\Ict.Petra.Shared.MSysMan.DataTables.csproj">
       <Project>{E5C3D047-F530-4AAA-B7BE-3CEE79A45BCE}</Project>
       <Name>Ict.Petra.Shared.MSysMan.DataTables</Name>

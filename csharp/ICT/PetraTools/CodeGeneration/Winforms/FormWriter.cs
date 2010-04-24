@@ -113,6 +113,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new LabelGenerator());
                 AvailableControlGenerators.Add(new ButtonGenerator());
                 AvailableControlGenerators.Add(new CheckBoxGenerator());
+                AvailableControlGenerators.Add(new TClbVersatileGenerator());
                 AvailableControlGenerators.Add(new DateTimePickerGenerator());
                 AvailableControlGenerators.Add(new TreeViewGenerator());
                 AvailableControlGenerators.Add(new TextBoxGenerator());

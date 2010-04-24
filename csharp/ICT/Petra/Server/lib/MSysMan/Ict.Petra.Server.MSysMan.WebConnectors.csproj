@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{88C4BED3-FB27-46F8-85A7-F461989B7A34}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -92,6 +92,10 @@
     <ProjectReference Include="data\Ict.Petra.Server.MSysMan.DataAccess.csproj">
       <Project>{CF8F3805-344B-4B75-8498-C93205B2A2A9}</Project>
       <Name>Ict.Petra.Server.MSysMan.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="data\Ict.Petra.Server.MSysMan.DatasetAccess.csproj">
+      <Project>{45FE3810-367A-4C3F-B35C-4F4485228AE8}</Project>
+      <Name>Ict.Petra.Server.MSysMan.DatasetAccess</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -26,6 +26,10 @@ using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager;
+#region ManualCode
+using System.Xml;
+using Ict.Petra.Shared.MSysMan.Data;
+#endregion
 namespace Ict.Petra.Shared.Interfaces.MSysMan
 {
     /// <summary>auto generated</summary>
@@ -210,6 +214,9 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.WebConnectors
         bool CreateUser(string AUsername,
                         string APassword,
                         string AModulePermissions);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
+        TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS,
+                                       out TVerificationResultCollection AVerificationResult);
     }
 
 }

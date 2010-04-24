@@ -1337,6 +1337,13 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.CreateUser(AUsername, APassword, AModulePermissions);
         }
 
+        /// generated method from connector
+        public TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS,
+                                              out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SaveSUser(ref ASubmitDS, out AVerificationResult);
+        }
+
     }
 }
 
