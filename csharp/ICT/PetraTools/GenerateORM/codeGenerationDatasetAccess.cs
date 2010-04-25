@@ -102,6 +102,9 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 tempSnippet.SetCodelet("SEQUENCEDCOLUMNNAME", TTable.NiceFieldName(SequenceColumn));
 
                                 ProcessTemplate updateSnippet = snippetDataset.GetSnippet("UPDATESEQUENCEINOTHERTABLES");
+                                bool canbeNull =
+                                    !table.GetField(constraint.strThisFields[constraint.strOtherFields.IndexOf(SequenceColumn)]).bNotNull;
+                                updateSnippet.SetCodelet("TESTFORNULL", canbeNull ? "!otherRow.Is{#REFCOLUMNNAME}Null() && " : "");
                                 updateSnippet.SetCodelet("REFERENCINGTABLEROWTYPE", TTable.NiceTableName(table.tablename) + "Row");
                                 updateSnippet.SetCodelet("REFERENCINGTABLENAME", table.tablealias);
                                 updateSnippet.SetCodelet("REFCOLUMNNAME",

@@ -293,7 +293,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     {
                         foreach (AEpStatementRow otherRow in AInspectDS.AEpStatement.Rows)
                         {
-                            if (otherRow.BankAccountKey < 0)
+                            if (!otherRow.IsBankAccountKeyNull() && otherRow.BankAccountKey < 0)
                             {
                                 otherRow.BankAccountKey = AInspectDS.PBankingDetails[OldSequenceValuesRow[otherRow.BankAccountKey]].BankingDetailsKey;
                             }
@@ -355,7 +355,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     {
                         foreach (AEpTransactionRow otherRow in AInspectDS.AEpTransaction.Rows)
                         {
-                            if (otherRow.EpMatchKey < 0)
+                            if (!otherRow.IsEpMatchKeyNull() && otherRow.EpMatchKey < 0)
                             {
                                 otherRow.EpMatchKey = AInspectDS.AEpMatch[OldSequenceValuesRow[otherRow.EpMatchKey]].EpMatchKey;
                             }

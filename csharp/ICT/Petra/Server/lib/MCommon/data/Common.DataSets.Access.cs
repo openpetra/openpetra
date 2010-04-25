@@ -336,7 +336,7 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                     {
                         foreach (PPartnerFieldOfServiceRow otherRow in AInspectDS.PPartnerFieldOfService.Rows)
                         {
-                            if (otherRow.CommitmentKey < 0)
+                            if (!otherRow.IsCommitmentKeyNull() && otherRow.CommitmentKey < 0)
                             {
                                 otherRow.CommitmentKey = AInspectDS.PmStaffData[OldSequenceValuesRow[otherRow.CommitmentKey]].Key;
                             }

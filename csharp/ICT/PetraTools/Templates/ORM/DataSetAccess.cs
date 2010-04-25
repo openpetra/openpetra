@@ -104,7 +104,7 @@ if (SubmissionResult == TSubmitChangesResult.scrOK)
 {##UPDATESEQUENCEINOTHERTABLES}
 foreach ({#REFERENCINGTABLEROWTYPE} otherRow in AInspectDS.{#REFERENCINGTABLENAME}.Rows)
 {
-    if (otherRow.{#REFCOLUMNNAME} < 0)
+    if ({#TESTFORNULL}otherRow.{#REFCOLUMNNAME} < 0)
     {
         otherRow.{#REFCOLUMNNAME} = AInspectDS.{#TABLEVARIABLENAME}[OldSequenceValuesRow[otherRow.{#REFCOLUMNNAME}]].{#SEQUENCEDCOLUMNNAME};
     }

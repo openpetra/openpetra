@@ -540,7 +540,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     {
                         foreach (PPartnerReminderRow otherRow in AInspectDS.PPartnerReminder.Rows)
                         {
-                            if (otherRow.ContactId < 0)
+                            if (!otherRow.IsContactIdNull() && otherRow.ContactId < 0)
                             {
                                 otherRow.ContactId = AInspectDS.PPartnerContact[OldSequenceValuesRow[otherRow.ContactId]].ContactId;
                             }
