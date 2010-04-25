@@ -1,4 +1,4 @@
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{88C4BED3-FB27-46F8-85A7-F461989B7A34}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -66,6 +66,9 @@
     </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MSysMan.DataSets">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.DataSets.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MSysMan.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.DataTables.dll</HintPath>

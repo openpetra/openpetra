@@ -214,6 +214,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// </summary>
         public TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = null;
+            return TSubmitChangesResult.scrError;
         }
     }
 }
