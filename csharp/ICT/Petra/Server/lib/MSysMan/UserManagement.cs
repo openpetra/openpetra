@@ -212,7 +212,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// <summary>
         /// this is called from the MaintainUsers screen, for adding users, retiring users, set the password, etc
         /// </summary>
-        public TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
+        public static TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
             return TSubmitChangesResult.scrError;

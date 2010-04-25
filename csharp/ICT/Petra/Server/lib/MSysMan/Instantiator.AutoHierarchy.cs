@@ -75,6 +75,10 @@ using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 //using Ict.Petra.Server.MSysMan.Security.UserManager;
 
 
+#region ManualCode
+using Ict.Common.Verification;
+using Ict.Petra.Shared.MSysMan.Data;
+#endregion ManualCode
 namespace Ict.Petra.Server.MSysMan.Instantiator
 {
     /// <summary>
