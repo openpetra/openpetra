@@ -56,6 +56,8 @@ RootNode:
             mniGenerateReport:
             mniSeparator: {Label=-}
     Toolbar:
+        tbbClose:
         tbbGenerateReport:
         tbbSaveSettings:
         tbbSaveSettingsAs:
+        tbbLoadSettings:
