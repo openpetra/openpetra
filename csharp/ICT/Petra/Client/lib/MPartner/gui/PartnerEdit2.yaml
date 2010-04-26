@@ -7,131 +7,44 @@ RootNode:
     FormType: edit
     Template: windowEditUIConnector 
     UIConnectorType: Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors.IPartnerUIConnectorsPartnerEdit
-    UIConnectorCreate: TRemote.MPartner.Partner.UIConnectors.PartnerEdit2
+    UIConnectorCreate: TRemote.MPartner.Partner.UIConnectors.PartnerEdit
     MasterTable: PPartner
     WindowWidth: 750
     WindowHeight: 700
+    
+    Events:
+        Load: {class=System.EventHandler, method=TFrmPartnerEdit2_Load}    
+        
     Controls:
         pnlContent:
-            Controls: [grpCollapsible, tabPartners]
+            Controls: [ucoUpperPart, pnlLowerPart]
             Dock: Fill
             RootControl: true
-        grpCollapsible:
-            Controls: [pnlLeft, pnlRight]
-            ControlsOrientation: horizontal
-            Label: Partner
-            Dock: Top  
-        pnlLeft:
-            Controls: [pnlPartnerInfo, pnlFamily, pnlAdditionalInfo]
+
+        pnlLowerPart:
+            Controls: [ucoLowerPart]
             Dock: Fill
-        pnlRight:
-            Controls: 
-                Row0: [btnWorkerField, txtWorkerField]
-                Row1: [cmbPartnerStatus]
-                Row2: [txtStatusUpdated]
-                Row3: [txtLastContact]
-            Dock: Right
-        pnlAdditionalInfo:
-            Controls: [txtLastGift]
+            
+        ucoUpperPart:
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_TopPart
             Dock: Top
-        txtLastGift:
-            #DataField: MiscellaneousData.LastGiftInfo
-            ReadOnly: true
-            Width: 420
-        txtLastContact:
-            #DataField: MiscellaneousData.LastContactDate
-            ReadOnly: true
-            ColSpan: 2
-            Width: 115
-        pnlPartnerInfo:
-            Controls: 
-                Row0: [txtPartnerKey, lblEmpty2, txtPartnerClass]            
-            Dock: Top
-        btnWorkerField:
-            Label: &OMer Field...
-            Icon: OMerField.ico
-        txtWorkerField:
-            ReadOnly: true
-            NoLabel: true
-            Width: 115
-        cmbPartnerStatus: {Label=Partner &Status, DataField=StatusCode, List=PartnerStatusList, ColSpan = 2, Width = 100}
-        txtStatusUpdated:
-            ReadOnly: true
-            ColSpan: 2
-            Width: 115
-        pnlFamily:
-            Controls: 
-                Row1: [txtTitle, txtFirstName, txtFamilyName]
-                Row2: [lblEmpty, cmbAddresseeTypeCode, chkNoSolicitations]
-            Dock: Top              
-        txtPartnerKey:
-            ReadOnly: true
-            Label: Key
-            Type: PartnerKey
-            Width: 90
-        txtPartnerClass:
-            ReadOnly: true
-            Label: Class
-        txtTitle:
-            Label: Title/Na&me
-            Width: 90
-            DataField: PFamily.Title
-        txtFirstName:
-            NoLabel: true
-            DataField: PFamily.FirstName
-        txtFamilyName:
-            NoLabel: true
-            DataField: PFamily.FamilyName
-        lblEmpty:
-            NoLabel: true
-            Width: 90            
-        lblEmpty2:
-            NoLabel: true            
-        cmbAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}
-        chkNoSolicitations:
-            Label: No Solicitations
-            DataField: NoSolicitations
-
-        pnlPerson:
-            Controls: 
-                Row1: [txtTitlePers, txtFirstNamePers, txtMiddleName1, txtFamilyNamePers]
-                Row2: [cmbGender, cmbAddresseeTypeCodePers, chkNoSolicitationsPers]
-            Dock: Top
-            Visible: False
-        lblEmpty3:
-            NoLabel: true                        
-        txtTitlePers:
-            Label: Title/Na&me
-            DataField: PPerson.Title
-            Width: 90
-        txtFirstNamePers:
-            NoLabel: true
-            DataField: PPerson.FirstName
-            Width: 157
-        txtMiddleName1:
-            NoLabel: true
-            DataField: PPerson.MiddleName1
-            Width: 30
-        txtFamilyNamePers:
-            NoLabel: true
-            DataField: PPerson.FamilyName
-        cmbGender: {Label=&Gender, DataField=PPerson.Gender, List=GenderList, Width=88}
-        cmbAddresseeTypeCodePers: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105, ColSpan=2}
-        chkNoSolicitationsPers:
-            Label: No Solicitations
-            DataField: NoSolicitations
-
-        tabPartners: {Dock=Fill, DragTabPageEnabled=true}
-        tpgAddresses:
-            Label: Addresses ({0})
-            Controls: [lblTest]
-        lblTest:
-            Label: Test only
-        tpgDetails:
-            Label: Partner Details
-            Controls: [ucoPartnerDetails]           
-        ucoPartnerDetails:
-           Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetailsPerson
-        tpgSubscriptions:
-            Label: Subscriptions ({0})
+            
+        ucoLowerPart:
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_LowerPart
+            Dock: Fill
+            
+#        tabPartners: {Dock=Fill, DragTabPageEnabled=true}
+#        tpgAddresses:
+#            Label: Addresses ({0})
+#            Controls: [lblTest]
+#        lblTest:
+#            Label: Test only
+#        tpgDetails:
+#            Label: Partner Details
+#            Controls: [ucoPartnerDetails]           
+            
+#        ucoPartnerDetails:
+#           Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetailsPerson
+#        tpgSubscriptions:
+#            Label: Subscriptions ({0})
             #Controls: []
