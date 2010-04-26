@@ -532,7 +532,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tabPartners.Controls.Add(this.tpgAddresses);
             this.tabPartners.Controls.Add(this.tpgDetails);
             this.tabPartners.Controls.Add(this.tpgSubscriptions);
-            this.tabPartners.SelectedIndexChanged += new System.EventHandler(this.TabSelectionChanged);
             //
             // tbbSave
             //
