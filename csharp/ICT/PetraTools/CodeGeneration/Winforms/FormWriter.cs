@@ -801,6 +801,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 TDataBinding.FDatasetTables = TDataBinding.LoadDatasetTables(CSParser.ICTPath, FCodeStorage.GetAttribute("DatasetType"), FCodeStorage);
             }
+            else
+            {
+                TDataBinding.FCodeStorage = FCodeStorage;
+            }
 
             if (FCodeStorage.HasAttribute("MasterTable"))
             {
@@ -824,6 +828,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                 }
             }
+            else
+            {
+                FTemplate.AddToCodelet("MASTERTABLE", "");
+                FTemplate.AddToCodelet("MASTERTABLETYPE", "");
+            }
 
             if (FCodeStorage.HasAttribute("DetailTable"))
             {
@@ -838,6 +847,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     FTemplate.AddToCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
                     FTemplate.AddToCodelet("DETAILTABLETYPE", FCodeStorage.GetAttribute("DetailTable"));
                 }
+            }
+            else
+            {
+                FTemplate.AddToCodelet("DETAILTABLE", "");
+                FTemplate.AddToCodelet("DETAILTABLETYPE", "");
             }
 
             // find the first control that is a panel or groupbox or tab control

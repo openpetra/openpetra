@@ -107,9 +107,13 @@ class Program
             {
                 foreach (string file in System.IO.Directory.GetFiles(ymlfileParam, "*.yaml"))
                 {
+                    // reset the dataset each time to force reload
+                    TDataBinding.FDatasetTables = null;
+
                     // only look for main files, not language specific files (*.XY.yaml)
                     if (file[file.Length - 8] != '.')
                     {
+                        Console.WriteLine("working on " + file);
                         ProcessFile(file, SelectedLocalisation);
                     }
                 }

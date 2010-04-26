@@ -56,8 +56,8 @@ RootNode:
                 Row4: [cmbDetailMotivationDetailCode]
                 Row5: [txtDetailCostCentreCode, txtDetailAccountCode]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
-        dtpDateEntered: {Help: This date is used for receipt printing}
-        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=3}
+        dtpDateEntered: {Help: This date is used for receipt printing, Unbound=true}
+        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=3, Unbound=true}
         txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, ColSpan=3}
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged}

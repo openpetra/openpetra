@@ -11,6 +11,8 @@ RootNode:
         actNew: {Label=&Add, ActionClick=NewRow}
         actDelete: {Label=&Cancel, ActionClick=CancelRow}
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
+        actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
+        actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
     Controls:
         pnlContent:
             Dock: Fill
@@ -19,10 +21,11 @@ RootNode:
             Controls: [pnlLedgerInfo, rgrShowBatches]
             Dock: Top
         rgrShowBatches: 
-            Label: Show batches available for
+            Label: Show batches
             ControlsOrientation: horizontal
             SuppressChangeDetection: true
-            OptionalValues: [Posting, Editing, All]
+            OptionalValues: [Posted, =Editing, All]
+            OnChange: ChangeBatchFilter
         pnlLedgerInfo:
             Controls: [txtLedgerNumber]
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
@@ -73,3 +76,5 @@ RootNode:
             mniPost: {Action=actPostBatch}
     Toolbar:
         tbbPostBatch: {Action=actPostBatch}
+        tbbExportBatches:
+        tbbImportBatches:
