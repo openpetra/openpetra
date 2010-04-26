@@ -283,11 +283,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public ComboBoxGenerator()
             : base("cmb", "Ict.Common.Controls.TCmbAutoComplete")
         {
+        	this.FChangeEventName = "SelectedValueChanged";
         }
 
         public ComboBoxGenerator(string APrefix, string AType)
             : base(APrefix, AType)
         {
+        	this.FChangeEventName = "SelectedValueChanged";
         }
 
         public override bool ControlFitsNode(XmlNode curNode)
