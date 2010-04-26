@@ -108,11 +108,11 @@ public class TServer
 
                 if (TheServerManager.ConfigurationFileName == "")
                 {
-                    RemotingConfiguration.Configure(Environment.GetCommandLineArgs()[0] + ".config");
+                    RemotingConfiguration.Configure(Environment.GetCommandLineArgs()[0] + ".config", false);
                 }
                 else
                 {
-                    RemotingConfiguration.Configure(TheServerManager.ConfigurationFileName);
+                    RemotingConfiguration.Configure(TheServerManager.ConfigurationFileName, false);
                 }
             }
             catch (Exception)
@@ -438,7 +438,7 @@ ReadClientTaskPriority:
                      * the PetraServer is only accessed through .NET Remoting and has no
                      * interaction with the Console anymore.
                      */
-                    Thread.CurrentThread.Suspend();
+                    Thread.Sleep(Timeout.Infinite);
                 } while (!(false));
             }
 
