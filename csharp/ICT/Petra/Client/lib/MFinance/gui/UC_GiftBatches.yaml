@@ -25,7 +25,7 @@ RootNode:
             OptionalValues: [Posting, Editing, All]
         pnlLedgerInfo:
             Controls: [txtLedgerNumber]
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger}
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]

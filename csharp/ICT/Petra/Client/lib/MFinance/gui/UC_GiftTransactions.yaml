@@ -19,8 +19,8 @@ RootNode:
             Controls:
                 Row0: [txtLedgerNumber, txtBatchNumber]
             Dock: Top
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger}
-        txtBatchNumber: {ReadOnly=true, Label=Gift Batch}
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+        txtBatchNumber: {ReadOnly=true, Label=Gift Batch, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]
@@ -64,4 +64,4 @@ RootNode:
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         txtDetailGiftTransactionAmount: {Label=Amount}
-        txtCurrencyCode: {NoLabel=true, ReadOnly=true}
+        txtCurrencyCode: {NoLabel=true, ReadOnly=true, Unbound=true}

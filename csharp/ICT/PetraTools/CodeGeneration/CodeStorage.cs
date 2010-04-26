@@ -24,6 +24,7 @@
  *
  ************************************************************************/
 using System;
+using System.IO;
 using System.Xml;
 using System.Collections;
 using System.Collections.Specialized;
@@ -347,6 +348,107 @@ namespace Ict.Tools.CodeGeneration
         }
 
         public static TDataDefinitionStore FPetraXMLStore = null;
+        public static SortedList <string, TTable>FDatasetTables = null;
+
+        /// <summary>
+        /// load the dataset tables
+        /// </summary>
+        /// <param name="ADataSetTypeWithNamespace"></param>
+        /// <returns></returns>
+        public SortedList <string, TTable>LoadDatasetTables(string ADataSetTypeWithNamespace)
+        {
+            if (!ADataSetTypeWithNamespace.StartsWith("Ict.Petra.Shared"))
+            {
+                throw new Exception("the DatasetType must contain the full namespace, starting with Ict.Petra.Shared");
+            }
+
+            string[] datasetTypeSplit = ADataSetTypeWithNamespace.Split(new char[] { '.' });
+            string module = datasetTypeSplit[3];
+            string datasetName = datasetTypeSplit[datasetTypeSplit.Length - 1];
+
+            // find the correct xml file for the dataset.
+            // look in Ict/Petra/Shared/lib/MODULE/data
+            string dataPath = CSParser.ICTPath + "/Petra/Shared/lib/" + module + "/data/";
+
+            DirectoryInfo directory = new DirectoryInfo(dataPath);
+            FileInfo[] xmlFiles = directory.GetFiles("*.xml");
+            XmlNode datasetNode = null;
+
+            foreach (FileInfo fileinfo in xmlFiles)
+            {
+                if (datasetNode == null)
+                {
+                    TXMLParser parser = new TXMLParser(dataPath + "/" + fileinfo.Name, false);
+                    datasetNode = parser.GetDocument().SelectSingleNode(String.Format("//DataSet[@name='{0}']", datasetName));
+                }
+            }
+
+            if (datasetNode == null)
+            {
+                throw new Exception("cannot find the xml file for dataset " + ADataSetTypeWithNamespace);
+            }
+
+            SortedList <string, TTable>result = new SortedList <string, TTable>();
+            XmlNodeList tables = datasetNode.SelectNodes("Table|CustomTable");
+
+            foreach (XmlNode tableNode in tables)
+            {
+                TTable table;
+                string tablename;
+
+                if (tableNode.Name == "Table")
+                {
+                    tablename = TTable.NiceTableName(tableNode.Attributes["sqltable"].Value);
+                    table = FPetraXMLStore.GetTable(tablename);
+                    table.strVariableNameInDataset = TXMLParser.HasAttribute(tableNode, "name") ? tableNode.Attributes["name"].Value : tablename;
+
+                    if ((tableNode.SelectNodes("CustomField").Count > 0) || (tableNode.SelectNodes("Field").Count > 0))
+                    {
+                        table.strDotNetName = datasetName + tablename;
+                    }
+                }
+                else
+                {
+                    table = new TTable();
+                    tablename = tableNode.Attributes["name"].Value;
+                    table.strName = tablename;
+                    table.strDotNetName = tablename;
+                    table.strVariableNameInDataset = tablename;
+                }
+
+                // add the custom fields if there are any
+                XmlNodeList customFields = tableNode.SelectNodes("CustomField");
+
+                foreach (XmlNode customField in customFields)
+                {
+                    TTableField newField = new TTableField();
+                    newField.strName = customField.Attributes["name"].Value;
+                    newField.strNameDotNet = newField.strName;
+                    newField.strType = customField.Attributes["type"].Value;
+                    newField.strTypeDotNet = customField.Attributes["type"].Value;
+                    newField.strTableName = tablename;
+                    newField.strDescription = "";
+                    newField.bNotNull =
+                        TXMLParser.HasAttribute(customField, "notnull") && TXMLParser.GetAttribute(customField, "notnull").ToLower() == "true";
+                    table.grpTableField.List.Add(newField);
+                }
+
+                // add other fields from other tables that are defined in petra.xml
+                XmlNodeList otherFields = tableNode.SelectNodes("Field");
+
+                foreach (XmlNode otherField in otherFields)
+                {
+                    TTable otherTable = FPetraXMLStore.GetTable(otherField.Attributes["sqltable"].Value);
+                    TTableField newField = new TTableField(otherTable.GetField(otherField.Attributes["sqlfield"].Value));
+                    newField.strTableName = tablename;
+                    table.grpTableField.List.Add(newField);
+                }
+
+                result.Add(tablename, table);
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// resolve a reference to a field in the database;
@@ -362,22 +464,135 @@ namespace Ict.Tools.CodeGeneration
             out bool AIsDetailNotMaster,
             bool AShowWarningNonExistingField)
         {
-            if (ADataField.IndexOf(".") == -1)
+            string tablename = "";
+            string fieldname = "";
+
+            // is there an explicit specification for which datafield to use
+            if (ADataField.IndexOf(".") > 0)
+            {
+                tablename = ADataField.Split('.')[0];
+                fieldname = ADataField.Split('.')[1];
+            }
+            else
             {
                 if (ACtrl != null)
                 {
-                    if (ACtrl.controlName.Substring(ACtrl.controlTypePrefix.Length).StartsWith("Detail"))
+                    if (ACtrl.HasAttribute("Unbound") && (ACtrl.GetAttribute("Unbound").ToLower() == "true"))
                     {
-                        if (ADataField.StartsWith("Detail"))
+                        AIsDetailNotMaster = false;
+                        return null;
+                    }
+
+                    if (ADataField.Length == 0)
+                    {
+                        ADataField = ACtrl.controlName.Substring(ACtrl.controlTypePrefix.Length);
+                    }
+
+                    if (ADataField.StartsWith("Detail"))
+                    {
+                        fieldname = ADataField;
+
+                        if (fieldname.StartsWith("Detail"))
                         {
-                            ADataField = ADataField.Substring("Detail".Length);
+                            fieldname = fieldname.Substring("Detail".Length);
                         }
 
-                        ADataField = GetAttribute("DetailTable") + "." + ADataField;
+                        tablename = GetAttribute("DetailTable");
                     }
                     else
                     {
-                        ADataField = GetAttribute("MasterTable") + "." + ADataField;
+                        // check for other tables in the typed Dataset
+                        if (FDatasetTables != null)
+                        {
+                            // ADataField can either contain just the field, or the table name and the field
+
+                            // does ADataField start with a table name?
+                            foreach (TTable table2 in FDatasetTables.Values)
+                            {
+                                if (ADataField.StartsWith(table2.strDotNetName) || ADataField.StartsWith(TTable.NiceTableName(table2.strName)))
+                                {
+                                    if (ADataField.StartsWith(table2.strDotNetName))
+                                    {
+                                        tablename = table2.strDotNetName;
+                                    }
+                                    else
+                                    {
+                                        tablename = TTable.NiceTableName(table2.strName);
+                                    }
+
+                                    foreach (TTableField field in table2.grpTableField.List)
+                                    {
+                                        if (TTable.NiceFieldName(field.strName) == ADataField.Substring(tablename.Length))
+                                        {
+                                            fieldname = TTable.NiceFieldName(field.strName);
+                                        }
+
+                                        if (field.strNameDotNet == ADataField.Substring(tablename.Length))
+                                        {
+                                            fieldname = field.strNameDotNet;
+                                        }
+                                    }
+                                }
+                            }
+
+                            // check if the master table has such a field
+                            if ((fieldname.Length == 0) && HasAttribute("MasterTable"))
+                            {
+                                TTable table2 = FDatasetTables[GetAttribute("MasterTable")];
+
+                                foreach (TTableField field in table2.grpTableField.List)
+                                {
+                                    if ((TTable.NiceFieldName(field.strName) == ADataField) || (field.strNameDotNet == ADataField))
+                                    {
+                                        tablename = GetAttribute("MasterTable");
+                                        fieldname = ADataField;
+                                    }
+                                }
+                            }
+
+                            // check if there is a unique match for this control name in all the tables
+                            if (fieldname.Length == 0)
+                            {
+                                foreach (TTable table2 in FDatasetTables.Values)
+                                {
+                                    foreach (TTableField field in table2.grpTableField.List)
+                                    {
+                                        if ((TTable.NiceFieldName(field.strName) == ADataField) || (field.strNameDotNet == ADataField))
+                                        {
+                                            if (fieldname.Length > 0)
+                                            {
+                                                throw new Exception(
+                                                    String.Format("there are a several tables with field {0}: {1} and {2}",
+                                                        fieldname, tablename, table2.strDotNetName));
+                                            }
+
+                                            if ((table2.strDotNetName != null) && (table2.strDotNetName.Length > 0))
+                                            {
+                                                tablename = table2.strDotNetName;
+                                            }
+                                            else
+                                            {
+                                                tablename = TTable.NiceTableName(table2.strName);
+                                            }
+
+                                            if ((field.strNameDotNet != null) && (field.strNameDotNet.Length > 0))
+                                            {
+                                                fieldname = field.strNameDotNet;
+                                            }
+                                            else
+                                            {
+                                                fieldname = TTable.NiceFieldName(field.strName);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            tablename = GetAttribute("MasterTable");
+                            fieldname = ADataField;
+                        }
                     }
                 }
                 else
@@ -385,40 +600,40 @@ namespace Ict.Tools.CodeGeneration
                     // eg used for columns in datagrid
                     if (ADataField.StartsWith("Detail"))
                     {
-                        ADataField = GetAttribute("DetailTable") + "." + ADataField.Substring("Detail".Length);
+                        tablename = GetAttribute("DetailTable");
+                        fieldname = ADataField.Substring("Detail".Length);
                     }
                     else
                     {
-                        ADataField = GetAttribute("MasterTable") + "." + ADataField;
+                        tablename = GetAttribute("MasterTable");
+                        fieldname = ADataField;
                     }
                 }
             }
 
-            string tablename = ADataField.Split('.')[0];
-            string fieldname = ADataField.Split('.')[1];
-
             AIsDetailNotMaster = GetAttribute("DetailTable") == tablename;
-
-            if (tablename.Contains("TDS"))
-            {
-                // eg. GiftBatchTDSAGiftDetailTable
-                // this is a derived data table;
-                // petra.xml only contains the original base tables
-                tablename = tablename.Substring(tablename.IndexOf("TDS") + 3);
-            }
 
             if (tablename.Length == 0)
             {
                 // this is probably no data field at all
                 if (AShowWarningNonExistingField)
                 {
-                    Console.WriteLine("Expected data field but cannot resolve " + ADataField.Substring(1));
+                    Console.WriteLine("Expected data field but cannot resolve " + ADataField);
                 }
 
                 return null;
             }
 
-            TTable table = FPetraXMLStore.GetTable(tablename);
+            TTable table = null;
+
+            if ((FDatasetTables != null) && FDatasetTables.ContainsKey(tablename))
+            {
+                table = FDatasetTables[tablename];
+            }
+            else
+            {
+                table = FPetraXMLStore.GetTable(tablename);
+            }
 
             if (table == null)
             {

@@ -34,6 +34,7 @@ using DDW;
 using Ict.Common.IO;
 using Ict.Common;
 using Ict.Tools.CodeGeneration;
+using Ict.Tools.DBXML;
 
 namespace Ict.Tools.CodeGeneration.Winforms
 {
@@ -795,23 +796,48 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("USINGNAMESPACES", "");
             }
 
+            // load the dataset if there is a dataset defined for this screen. this allows us to reference customtables and custom fields
+            if (FCodeStorage.HasAttribute("DatasetType") && (TCodeStorage.FDatasetTables == null))
+            {
+                TCodeStorage.FDatasetTables = FCodeStorage.LoadDatasetTables(FCodeStorage.GetAttribute("DatasetType"));
+            }
+
             if (FCodeStorage.HasAttribute("MasterTable"))
             {
-                FTemplate.AddToCodelet("MASTERTABLE", FCodeStorage.GetAttribute("MasterTable"));
-
-                if (FCodeStorage.HasAttribute("MasterTableType"))
+                if ((TCodeStorage.FDatasetTables != null) && TCodeStorage.FDatasetTables.ContainsKey(FCodeStorage.GetAttribute("MasterTable")))
                 {
-                    FTemplate.AddToCodelet("MASTERTABLETYPE", FCodeStorage.GetAttribute("MasterTableType"));
+                    TTable table = TCodeStorage.FDatasetTables[FCodeStorage.GetAttribute("MasterTable")];
+                    FTemplate.AddToCodelet("MASTERTABLE", table.strVariableNameInDataset);
+                    FTemplate.AddToCodelet("MASTERTABLETYPE", table.strDotNetName);
                 }
                 else
                 {
-                    FTemplate.AddToCodelet("MASTERTABLETYPE", FCodeStorage.GetAttribute("MasterTable"));
+                    FTemplate.AddToCodelet("MASTERTABLE", FCodeStorage.GetAttribute("MasterTable"));
+
+                    if (FCodeStorage.HasAttribute("MasterTableType"))
+                    {
+                        FTemplate.AddToCodelet("MASTERTABLETYPE", FCodeStorage.GetAttribute("MasterTableType"));
+                    }
+                    else
+                    {
+                        FTemplate.AddToCodelet("MASTERTABLETYPE", FCodeStorage.GetAttribute("MasterTable"));
+                    }
                 }
             }
 
             if (FCodeStorage.HasAttribute("DetailTable"))
             {
-                FTemplate.AddToCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
+                if ((TCodeStorage.FDatasetTables != null) && TCodeStorage.FDatasetTables.ContainsKey(FCodeStorage.GetAttribute("DetailTable")))
+                {
+                    TTable table = TCodeStorage.FDatasetTables[FCodeStorage.GetAttribute("DetailTable")];
+                    FTemplate.AddToCodelet("DETAILTABLE", table.strVariableNameInDataset);
+                    FTemplate.AddToCodelet("DETAILTABLETYPE", table.strDotNetName);
+                }
+                else
+                {
+                    FTemplate.AddToCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
+                    FTemplate.AddToCodelet("DETAILTABLETYPE", FCodeStorage.GetAttribute("DetailTable"));
+                }
             }
 
             // find the first control that is a panel or groupbox or tab control
@@ -850,7 +876,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     msg += o.controlName + " ";
                 }
 
-                TLogging.Log("WARNING: There are some controls without parent control: " + msg);
+                TLogging.Log("WARNING: There are some controls that will not be part of the screen (missing parent control?): " + msg);
             }
 
             // add form events

@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
   public partial class TFrmAPEditDocument: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
-    private AccountsPayableTDS FMainDS;
+    private Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS FMainDS;
 
     /// constructor
     public TFrmAPEditDocument(IntPtr AParentFormHandle) : base()
@@ -129,7 +129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       FPetraUtilsObject.SetStatusBarText(txtDetailAmount, Catalog.GetString("The amount of money this detail is worth."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailCostCentreCode, Catalog.GetString("Reference to the cost centre to use for this detail."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailAccountCode, Catalog.GetString("Reference to the account to use for this detail"));
-      FMainDS = new AccountsPayableTDS();
+      FMainDS = new Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS();
       grdDetails.Columns.Clear();
       grdDetails.AddCurrencyColumn("Amount", FMainDS.AApDocumentDetail.ColumnAmount);
       grdDetails.AddTextColumn("Narrative", FMainDS.AApDocumentDetail.ColumnNarrative);
@@ -247,7 +247,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         return true;
     }
 
-    private void ShowData(AApDocumentRow ARow)
+    private void ShowData(AccountsPayableTDSAApDocumentRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
         TPartnerClass partnerClass;
@@ -276,6 +276,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             txtReference.Text = ARow.Reference;
         }
         dtpDateIssued.Value = ARow.DateIssued;
+        dtpDateDue.Value = ARow.DateDue;
         if (ARow.IsCreditTermsNull())
         {
             nudCreditTerms.Value = 0;
@@ -386,7 +387,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         pnlDetails.Enabled = true;
     }
 
-    private void GetDataFromControls(AApDocumentRow ARow)
+    private void GetDataFromControls(AccountsPayableTDSAApDocumentRow ARow)
     {
         if (txtDocumentCode.Text.Length == 0)
         {
@@ -406,6 +407,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             ARow.Reference = txtReference.Text;
         }
         ARow.DateIssued = dtpDateIssued.Value;
+        ARow.DateDue = dtpDateDue.Value;
         ARow.CreditTerms = (Int32)nudCreditTerms.Value;
         ARow.DiscountDays = (Int32)nudDiscountDays.Value;
         if (txtDiscountPercentage.Text.Length == 0)
@@ -548,7 +550,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
 
-                AccountsPayableTDS SubmitDS = FMainDS.GetChangesTyped(true);
+                Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS SubmitDS = FMainDS.GetChangesTyped(true);
 
                 if (SubmitDS == null)
                 {
