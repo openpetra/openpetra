@@ -703,11 +703,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                     else if (ctrl.HasAttribute("TableName"))
                     {
-                        field = FCodeStorage.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster, true);
+                        field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster, true);
                     }
                     else
                     {
-                        field = FCodeStorage.GetTableField(null, ColumnFieldName, out IsDetailNotMaster, true);
+                        field = TDataBinding.GetTableField(null, ColumnFieldName, out IsDetailNotMaster, true);
                     }
 
                     if (field != null)
@@ -749,13 +749,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                         if ((SortOrderPart.Split(' ')[0].IndexOf(".") == -1) && ctrl.HasAttribute("TableName"))
                         {
-                            field = FCodeStorage.GetTableField(null, ctrl.GetAttribute("TableName") + "." + SortOrderPart.Split(
+                            field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + SortOrderPart.Split(
                                     ' ')[0], out temp, true);
                         }
                         else
                         {
                             field =
-                                writer.CodeStorage.GetTableField(
+                                TDataBinding.GetTableField(
                                     null,
                                     SortOrderPart.Split(' ')[0],
                                     out temp, true);
@@ -782,7 +782,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         bool temp;
                         string columnName =
-                            writer.CodeStorage.GetTableField(
+                            TDataBinding.GetTableField(
                                 null,
                                 RowFilterPart,
                                 out temp, true).strName;
@@ -875,11 +875,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                     else if (ctrl.HasAttribute("TableName"))
                     {
-                        field = FCodeStorage.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster, true);
+                        field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster, true);
                     }
                     else
                     {
-                        field = FCodeStorage.GetTableField(null, ColumnFieldName, out IsDetailNotMaster, true);
+                        field = TDataBinding.GetTableField(null, ColumnFieldName, out IsDetailNotMaster, true);
                     }
 
                     if (field != null)
@@ -935,13 +935,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                         if ((SortOrderPart.Split(' ')[0].IndexOf(".") == -1) && ctrl.HasAttribute("TableName"))
                         {
-                            field = FCodeStorage.GetTableField(null, ctrl.GetAttribute("TableName") + "." + SortOrderPart.Split(
+                            field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + SortOrderPart.Split(
                                     ' ')[0], out temp, true);
                         }
                         else
                         {
                             field =
-                                writer.CodeStorage.GetTableField(
+                                TDataBinding.GetTableField(
                                     null,
                                     SortOrderPart.Split(' ')[0],
                                     out temp, true);
@@ -968,7 +968,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         bool temp;
                         string columnName =
-                            writer.CodeStorage.GetTableField(
+                            TDataBinding.GetTableField(
                                 null,
                                 RowFilterPart,
                                 out temp, true).strName;
