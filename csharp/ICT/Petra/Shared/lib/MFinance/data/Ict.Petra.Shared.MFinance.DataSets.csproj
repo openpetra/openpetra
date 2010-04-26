@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -48,12 +48,6 @@
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
-      <HintPath>..\..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.MSysMan.DataTables">
-      <HintPath>..\..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.DataTables.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -68,6 +62,10 @@
     <ProjectReference Include="..\..\MPartner\data\Ict.Petra.Shared.MPartner.DataTables.csproj">
       <Project>{6A8AF588-522A-469E-BEC4-C154CBC8866A}</Project>
       <Name>Ict.Petra.Shared.MPartner.DataTables</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MSysMan\data\Ict.Petra.Shared.MSysMan.DataTables.csproj">
+      <Project>{E5C3D047-F530-4AAA-B7BE-3CEE79A45BCE}</Project>
+      <Name>Ict.Petra.Shared.MSysMan.DataTables</Name>
     </ProjectReference>
     <ProjectReference Include="Ict.Petra.Shared.MFinance.DataTables.csproj">
       <Project>{17586D04-2FFF-478C-A1AD-7DCDA49FB1FA}</Project>
