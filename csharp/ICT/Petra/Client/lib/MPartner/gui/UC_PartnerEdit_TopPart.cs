@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.lblAddresseeTypeCode.Text = Catalog.GetString("&Addressee Type:");
       this.chkNoSolicitations.Text = Catalog.GetString("No Solicitations");
       this.lblLastGift.Text = Catalog.GetString("Last Gift:");
-      this.btnWorkerField.Text = Catalog.GetString("&OMer Field...");
+      this.btnWorkerField.Text = Catalog.GetString("&Worker Field...");
       this.lblPartnerStatus.Text = Catalog.GetString("Partner &Status:");
       this.lblStatusUpdated.Text = Catalog.GetString("Status Updated:");
       this.lblLastContact.Text = Catalog.GetString("Last Contact:");
@@ -114,6 +114,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         FPetraUtilsObject.SetStatusBarText(chkNoSolicitations, Catalog.GetString("Set this if the partner does not want extra mailings"));
         FPetraUtilsObject.SetStatusBarText(cmbPartnerStatus, Catalog.GetString("Select a partner status"));
         cmbPartnerStatus.InitialiseUserControl();
+        FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
         if(FMainDS != null)
         {
@@ -215,6 +216,19 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
+#endregion
+
+#region Action Handling
+
+    /// auto generated
+    public void ActionEnabledEvent(object sender, ActionEventArgs e)
+    {
+        if (e.ActionName == "actMaintainWorkerField")
+        {
+            btnWorkerField.Enabled = e.Enabled;
+        }
+    }
+
 #endregion
   }
 }

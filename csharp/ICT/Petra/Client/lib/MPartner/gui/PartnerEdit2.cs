@@ -70,9 +70,31 @@ namespace Ict.Petra.Client.MPartner.Gui
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
+      this.tbbNewPartner.Text = Catalog.GetString("&New Partner");
+      this.tbbSeparator0.Text = Catalog.GetString("Separator");
+      this.tbbViewPartnerData.Text = Catalog.GetString("&Partner Data");
+      this.tbbViewPersonnelData.Text = Catalog.GetString("P&ersonnel Data");
+      this.tbbViewFinanceData.Text = Catalog.GetString("&Finance Data");
+      this.mniNewPartner.Text = Catalog.GetString("&New Partner...");
+      this.mniNewPartnerWithShepherdPerson.Text = Catalog.GetString("Add &Person with Shepherd...");
+      this.mniNewPartnerWithShepherdFamily.Text = Catalog.GetString("Add &Family with Shepherd...");
+      this.mniNewPartnerWithShepherdChurch.Text = Catalog.GetString("Add &Church with Shepherd...");
+      this.mniNewPartnerWithShepherdOrganisation.Text = Catalog.GetString("Add &Organisation with Shepherd...");
+      this.mniNewPartnerWithShepherdUnit.Text = Catalog.GetString("Add &Unit with Shepherd...");
+      this.mniNewPartnerWithShepherd.Text = Catalog.GetString("New Partner With Shepherd");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
+      this.mniDeactivatePartner.Text = Catalog.GetString("Deacti&vate Partner...");
+      this.mniDeletePartner.Text = Catalog.GetString("&Delete THIS Partner...");
+      this.mniSeparator2.Text = Catalog.GetString("Separator");
+      this.mniSendEmail.Text = Catalog.GetString("Send E&mail to Partner");
+      this.mniSeparator3.Text = Catalog.GetString("Separator");
+      this.mniPrint.Text = Catalog.GetString("Print Partner...");
+      this.mniPrintSection.Text = Catalog.GetString("P&rint Section...");
+      this.mniSeparator4.Text = Catalog.GetString("Separator");
+      this.mniExportPartner.Text = Catalog.GetString("E&xport Partner");
+      this.mniSeparator5.Text = Catalog.GetString("Separator");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
       this.mniFile.Text = Catalog.GetString("&File");
@@ -80,6 +102,12 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.mniEditUndoScreen.Text = Catalog.GetString("&Undo Screen");
       this.mniEditFind.Text = Catalog.GetString("&Find...");
       this.mniEdit.Text = Catalog.GetString("&Edit");
+      this.mniAddresses.Text = Catalog.GetString("&Addresses");
+      this.mniMaintain.Text = Catalog.GetString("Ma&intain");
+      this.mniViewPartnerData.Text = Catalog.GetString("&Partner Data");
+      this.mniViewPersonnelData.Text = Catalog.GetString("P&ersonnel Data");
+      this.mniViewFinanceData.Text = Catalog.GetString("&Finance Data");
+      this.mniView.Text = Catalog.GetString("Vie&w");
       this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
       this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
@@ -95,6 +123,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       ucoLowerPart.PetraUtilsObject = FPetraUtilsObject;
       ucoLowerPart.MainDS = FMainDS;
       ucoLowerPart.InitUserControl();
+      InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
@@ -181,9 +210,77 @@ namespace Ict.Petra.Client.MPartner.Gui
             tbbSave.Enabled = e.Enabled;
             mniFileSave.Enabled = e.Enabled;
         }
+        if (e.ActionName == "actNewPartner")
+        {
+            tbbNewPartner.Enabled = e.Enabled;
+            mniNewPartner.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actViewPartnerData")
+        {
+            tbbViewPartnerData.Enabled = e.Enabled;
+            mniViewPartnerData.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actViewPersonnelData")
+        {
+            tbbViewPersonnelData.Enabled = e.Enabled;
+            mniViewPersonnelData.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actViewFinanceData")
+        {
+            tbbViewFinanceData.Enabled = e.Enabled;
+            mniViewFinanceData.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actNewPartnerWithShepherdPerson")
+        {
+            mniNewPartnerWithShepherdPerson.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actNewPartnerWithShepherdFamily")
+        {
+            mniNewPartnerWithShepherdFamily.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actNewPartnerWithShepherdChurch")
+        {
+            mniNewPartnerWithShepherdChurch.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actNewPartnerWithShepherdOrganisation")
+        {
+            mniNewPartnerWithShepherdOrganisation.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actNewPartnerWithShepherdUnit")
+        {
+            mniNewPartnerWithShepherdUnit.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actDeactivatePartner")
+        {
+            mniDeactivatePartner.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actDeletePartner")
+        {
+            mniDeletePartner.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actSendEmail")
+        {
+            mniSendEmail.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actPrint")
+        {
+            mniPrint.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actPrintSection")
+        {
+            mniPrintSection.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actExportPartner")
+        {
+            mniExportPartner.Enabled = e.Enabled;
+        }
         if (e.ActionName == "actClose")
         {
             mniClose.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actMaintainAddresses")
+        {
+            mniAddresses.Enabled = e.Enabled;
         }
         mniFilePrint.Enabled = false;
         mniEditUndoCurrentField.Enabled = false;

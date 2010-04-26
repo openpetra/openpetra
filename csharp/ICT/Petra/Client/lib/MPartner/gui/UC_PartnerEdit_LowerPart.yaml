@@ -8,8 +8,12 @@ RootNode:
     Template: usercontrolUnbound
     Controls:
         pnlContent:
-            Controls: [lblDynamicLoad]
+            Controls: [lblDynamicLoad, ucoPartnerTabSet]
             Dock: Fill
             
         lblDynamicLoad:
-            Label: Controls are added dynamically at runtime!
+            Label: Controls are added dynamically at runtime! See below for an example!
+            
+        ucoPartnerTabSet:
+           Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_PartnerTabSet2            
+           Dock: Fill
