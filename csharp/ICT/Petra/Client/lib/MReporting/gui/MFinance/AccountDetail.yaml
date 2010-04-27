@@ -9,6 +9,7 @@
         XMLFILES: [accountdetail.xml,accountdetailcommon.xml,finance.xml,common.xml]
         REPORTNAME: Account Detail
         CURRENTREPORT: Account Detail
+        ADDAVAILABLEFUNCTIONS: BLANK
         SETAVAILABLEFUNCTIONS: BLANK
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK

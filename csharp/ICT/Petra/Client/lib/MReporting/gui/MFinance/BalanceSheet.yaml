@@ -9,6 +9,7 @@
         XMLFILES: [balancesheet.xml,finance.xml,common.xml]
         REPORTNAME: Balance Sheet
         CURRENTREPORT: Balance Sheet
+        ADDAVAILABLEFUNCTIONS: BLANK
         SETAVAILABLEFUNCTIONS: BLANK
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK

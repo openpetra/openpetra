@@ -59,10 +59,11 @@ namespace {#NAMESPACE}
       FPetraUtilsObject.InitialiseData("");
       // FPetraUtilsObject.InitialiseSettingsGui(ucoReportColumns, mniLoadSettings, /*ConMnuLoadSettings*/null, 
       //                                 mniSaveSettings, mniSaveSettingsAs, mniLoadSettingsDialog, mniMaintainSettings);
-      // this.SetAvailableFunctions();
-      // ucoReportColumns.InitialiseData(FPetraUtilsObject.FColumnParameters);
+      this.SetAvailableFunctions();
       
       {#INITIALISESCREEN}
+	  
+	  FPetraUtilsObject.LoadDefaultSettings();
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -75,11 +76,8 @@ namespace {#NAMESPACE}
        Reads the selected values from the controls, and stores them into the parameter system of FCalculator
 
     */
-    public void ReadControls(TRptCalculator ACalc)
+    public void ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
     {
-      //ucoReportSorting.ReadControls(ACalc);
-      //ucoReportOutput.ReadControls(ACalc);
-      
       {#READCONTROLSLOCALVARS}
 
       {#READCONTROLS}
@@ -93,9 +91,6 @@ namespace {#NAMESPACE}
     */
     public void SetControls(TParameterList AParameters)
     {
-      //ucoReportSorting.SetControls(AParameters);
-      //ucoReportOutput.SetControls(AParameters);
-
       {#SETCONTROLSLOCALVARS}
 
       {#SETCONTROLS}
@@ -110,11 +105,11 @@ namespace {#NAMESPACE}
     public void SetAvailableFunctions()
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
-
+	  
+	  {#ADDAVAILABLEFUNCTIONS}
+	  
       {#SETAVAILABLEFUNCTIONS}
       
-      //ucoReportColumns.SetAvailableFunctions(availableFunctions);
-      //ucoReportSorting.SetAvailableFunctions(availableFunctions);
     }
 #endregion
         

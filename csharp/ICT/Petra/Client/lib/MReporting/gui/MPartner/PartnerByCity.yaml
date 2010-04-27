@@ -1,5 +1,5 @@
 ﻿RootNode:
-    BaseYaml: ../ReportingForm.yaml
+    BaseYaml: ../PartnerReportingForm.yaml
     FormType: report
     FormTitle: Partner by City
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
@@ -7,7 +7,7 @@
         XMLFILES: [partnerbycity.xml]
         REPORTNAME: Partner by City
         CURRENTREPORT: Partner by City
-        SETAVAILABLEFUNCTIONS: BLANK
+        ADDAVAILABLEFUNCTIONS: FPetraUtilsObject.AddAvailableFunction("Partner Name", 2.5); FPetraUtilsObject.AddAvailableFunction("Partner Key", 2.5); FPetraUtilsObject.AddAvailableFunction("City", 2.5); FPetraUtilsObject.AddAvailableFunction("Post Code", 2.5); FPetraUtilsObject.AddAvailableFunction("Country", 2.5);
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK

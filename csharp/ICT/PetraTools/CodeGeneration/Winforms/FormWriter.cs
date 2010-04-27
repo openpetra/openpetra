@@ -89,6 +89,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new RadioGroupComplexReportGenerator());
                 AvailableControlGenerators.Add(new RadioGroupSimpleReportGenerator());
                 AvailableControlGenerators.Add(new RadioButtonReportGenerator());
+                AvailableControlGenerators.Add(new UserControlReportGenerator());
             }
             else
             {

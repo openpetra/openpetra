@@ -61,3 +61,4 @@ RootNode:
         tbbSaveSettingsAs:
 # do we show the last few settings?
         tbbLoadSettingsDialog:
+  # todo:  Add contextmenu for the last 5 used items

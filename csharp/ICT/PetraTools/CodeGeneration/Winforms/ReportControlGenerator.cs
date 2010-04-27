@@ -323,4 +323,28 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // no writing or reading of parameters, should be done in RadioGroup
         }
     }
+    
+    public class UserControlReportGenerator : UserControlGenerator
+    {
+        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        {
+            string controlName = curNode.Name;
+
+            writer.Template.AddToCodelet("INITIALISESCREEN",
+                controlName + ".InitialiseData();" +
+                Environment.NewLine);
+            
+            writer.Template.AddToCodelet("READCONTROLS", 
+                controlName + ".ReadControls(ACalc, AReportAction);" +
+                Environment.NewLine);
+            
+            writer.Template.AddToCodelet("SETCONTROLS",
+                controlName + ".SetControls(AParameters);" +
+                Environment.NewLine);
+            
+            writer.Template.AddToCodelet("SETAVAILABLEFUNCTIONS",
+                controlName + ".SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());" +
+                Environment.NewLine);
+        }
+    }
 }
