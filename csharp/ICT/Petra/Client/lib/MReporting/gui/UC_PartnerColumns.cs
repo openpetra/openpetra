@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from UC_Sorting.yaml and template controlMaintainTable
+/* auto generated with nant generateWinforms from UC_PartnerColumns.yaml and template controlMaintainTable
  *
  * DO NOT edit manually, DO NOT edit with the designer
  *
@@ -49,14 +49,14 @@ namespace Ict.Petra.Client.MReporting.Gui
 {
 
   /// auto generated user control
-  public partial class TFrmUC_Sorting: UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
+  public partial class TFrmUC_PartnerColumns: UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private TFrmPetraReportingUtils FPetraUtilsObject;
 
-    private int FMainDS;
+    private Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS FMainDS;
 
     /// constructor
-    public TFrmUC_Sorting() : base()
+    public TFrmUC_PartnerColumns() : base()
     {
       //
       // Required for Windows Form Designer support
@@ -65,9 +65,17 @@ namespace Ict.Petra.Client.MReporting.Gui
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblSortBy1.Text = Catalog.GetString("Sort First By:");
-      this.lblSortBy2.Text = Catalog.GetString("Sort Then By:");
-      this.lblSortBy3.Text = Catalog.GetString("Sort Last By:");
+      this.btnDummy.Text = Catalog.GetString("DummyButton");
+      this.btnMoveColumn2Left.Text = Catalog.GetString("Left:");
+      this.btnMoveColumn2Right.Text = Catalog.GetString("Right");
+      this.btnAddColumn.Text = Catalog.GetString("Add");
+      this.btnRemoveColumn.Text = Catalog.GetString("Remove");
+      this.lblCalculation.Text = Catalog.GetString("Content of Column::");
+      this.lblColumnWidth.Text = Catalog.GetString("Width of Column::");
+      this.lblCm.Text = Catalog.GetString("cm:");
+      this.btnCancel.Text = Catalog.GetString("&Cancel");
+      this.btnApply.Text = Catalog.GetString("A&pply");
+      this.grpDefineColumn.Text = Catalog.GetString("Define Column");
       #endregion
 
     }
@@ -82,7 +90,7 @@ namespace Ict.Petra.Client.MReporting.Gui
     }
 
     /// dataset for the whole screen
-    public int MainDS
+    public Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS MainDS
     {
         set
         {
@@ -93,6 +101,7 @@ namespace Ict.Petra.Client.MReporting.Gui
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
+        FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
     }
 
 #region Implement interface functions
@@ -125,6 +134,39 @@ namespace Ict.Petra.Client.MReporting.Gui
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
+#endregion
+
+#region Action Handling
+
+    /// auto generated
+    public void ActionEnabledEvent(object sender, ActionEventArgs e)
+    {
+        if (e.ActionName == "actMoveColumn2Left")
+        {
+            btnMoveColumn2Left.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actMoveColumn2Right")
+        {
+            btnMoveColumn2Right.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actAddColumn")
+        {
+            btnAddColumn.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actRemoveColumn")
+        {
+            btnRemoveColumn.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actCancelColumn")
+        {
+            btnCancel.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actApplyColumn")
+        {
+            btnApply.Enabled = e.Enabled;
+        }
+    }
+
 #endregion
   }
 }

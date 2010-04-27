@@ -1,0 +1,157 @@
+#~ RootNode:
+    #~ BaseClass: UserControl
+    #~ Namespace: Ict.Petra.Client.MReporting.Gui   
+    #~ DatasetType: int
+    #~ FormType: edit
+    #~ Template: usercontrolUnbound
+    #~ Actions:
+        #~ actApplyColumn:
+            #~ ActionClick: ApplyColumn
+        #~ actCancelColumn:
+            #~ ActionClick: CancelColumn
+        #~ actAddColumn:
+            #~ ActionClick: AddColumn
+        #~ actRemoveColumn:
+            #~ ActionClick: RemoveColumn
+        #~ actMoveColumn2Left:
+            #~ ActionClick: MoveColumn2Left
+        #~ actMoveColumn2Right:
+            #~ ActionClick: MoveColumn2Right
+    #~ Controls:
+        #~ pnlContent:
+            #~ Controls: [pnlTop, pnlBottom]
+            #~ Dock: Fill
+        #~ pnlTop:
+            #~ Controls: [pnlColumns, pnlAddRemButtons]
+            #~ Dock: Top
+        #~ pnlColumns:
+            #~ Controls: [pnlGrid, pnlMoveColumn]
+            #~ ControlsOrientation: horizontal
+            #~ Dock: Fill
+        #~ pnlGrid:
+            #~ Controls:[grdColumns, btnDummy]
+            #~ Dock: Fill
+        #~ pnlMoveColumn:
+            #~ Controls:
+                #~ Row0: [btnMoveColumn2Left]
+                #~ Row1: [btnMoveColumn2Right]
+                #~ Dock: Left
+        #~ pnlAddRemButtons:
+            #~ Controls: 
+                #~ Row0: [btnAddColumn, btnRemoveColumn]
+            #~ Dock: Bottom
+        #~ grdColumns:
+            #~ Dock: Fill
+            #~ Columns: [Test3]
+            #~ CustomColumns:
+                #~ Test1: {Label=Test1, Type=String}
+                #~ Test2: {Label=Test2, Type=String}
+        #~ btnMoveColumn2Right:
+            #~ Label: Right
+            #~ Action: actMoveColumn2Right
+        #~ btnMoveColumn2Left:
+            #~ Label: Left:
+            #~ Action: actMoveColumn2Left
+        #~ btnAddColumn:
+            #~ Label: Add
+            #~ Action: actAddColumn
+        #~ btnRemoveColumn:
+            #~ Label: Remove
+            #~ Action: actRemoveColumn
+        #~ btnDummy:
+            #~ Label: DummyButton
+            #~ Visible: false
+        #~ pnlBottom:
+            #~ Controls: [grpDefineColumn]
+            #~ Dock: Bottom
+        #~ grpDefineColumn:
+            #~ Controls: [pnlColumnDefinition, pnlLowerButtons]
+            #~ Dock: Fill
+            #~ Label: Define Column
+        #~ pnlColumnDefinition:
+            #~ Dock: Fill
+            #~ Controls:
+                #~ Row0: [cmbCalculation]
+                #~ Row1: [txtColumnWidth, lblCm]
+        #~ pnlLowerButtons:
+            #~ Dock: Bottom
+            #~ Controls:
+                #~ Row0: [btnCancel, btnApply]
+        #~ cmbCalculation: {OnChange=CmbContentChanged}
+            #~ Label: Content of Column:
+        #~ txtColumnWidth:
+            #~ Label: Width of Column:
+        #~ lblCm:
+            #~ Label: cm
+        #~ btnCancel:
+            #~ Label: &Cancel
+            #~ Action: actCancelColumn
+        #~ btnApply:
+            #~ Label: A&pply
+            #~ Action: actApplyColumn
+RootNode:
+    BaseClass: UserControl
+    Namespace: Ict.Petra.Client.MReporting.Gui   
+    DatasetType: int
+    FormType: edit
+    Template: usercontrolUnbound
+    Actions:
+        #~ actApplyColumn:
+            #~ ActionClick: ApplyColumn
+        #~ actCancelColumn:
+            #~ ActionClick: CancelColumn
+        #~ actAddColumn:
+            #~ ActionClick: AddColumn
+        #~ actRemoveColumn:
+            #~ ActionClick: RemoveColumn
+        #~ actMoveColumn2Left:
+            #~ ActionClick: MoveColumn2Left
+        #~ actMoveColumn2Right:
+            #~ ActionClick: MoveColumn2Right
+    Controls:
+        pnlContent:
+            Controls: [pnlTop, pnlBottom]
+            Dock: Fill
+        pnlTop:
+            Controls: [pnlColumns, pnlAddRemButtons]
+            Dock: Top
+        pnlColumns:
+            Controls: [pnlGrid, pnlMoveColumn]
+            ControlsOrientation: horizontal
+            Dock: Fill
+        pnlGrid:
+            Controls:[grdColumns, btnDummy]
+            Dock: Fill
+        pnlMoveColumn:
+            Controls:
+                Row0: [btnMoveColumn2Left]
+                Row1: [btnMoveColumn2Right]
+                Dock: Left
+        pnlAddRemButtons:
+            Controls: 
+                Row0: [btnAddColumn, btnRemoveColumn]
+            Dock: Bottom
+        grdColumns:
+            Dock: Fill
+            Columns: [Test3]
+            CustomColumns:
+                Test1: {Label=Test1, Type=String}
+                Test2: {Label=Test2, Type=String}
+        btnMoveColumn2Right:
+            Label: Right
+ #           Action: actMoveColumn2Right
+        btnMoveColumn2Left:
+            Label: Left:
+ #           Action: actMoveColumn2Left
+        btnAddColumn:
+            Label: Add
+ #           Action: actAddColumn
+        btnRemoveColumn:
+            Label: Remove
+#            Action: actRemoveColumn
+        btnDummy:
+            Label: DummyButton
+            Visible: false
+        pnlBottom:
+            #Controls: []
+            Dock: Bottom

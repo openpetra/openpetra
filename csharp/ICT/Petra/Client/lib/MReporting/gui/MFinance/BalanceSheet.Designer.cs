@@ -111,6 +111,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.tbbGenerateReport = new System.Windows.Forms.ToolStripButton();
             this.tbbSaveSettings = new System.Windows.Forms.ToolStripButton();
             this.tbbSaveSettingsAs = new System.Windows.Forms.ToolStripButton();
+            this.tbbLoadSettingsDialog = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniLoadSettings = new System.Windows.Forms.ToolStripMenuItem();
@@ -540,6 +541,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.tbbSaveSettingsAs.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbSaveSettingsAs.Glyph"));
             this.tbbSaveSettingsAs.Text = "Save Settings &As...";
             //
+            // tbbLoadSettingsDialog
+            //
+            this.tbbLoadSettingsDialog.Name = "tbbLoadSettingsDialog";
+            this.tbbLoadSettingsDialog.AutoSize = true;
+            this.tbbLoadSettingsDialog.Click += new System.EventHandler(this.actLoadSettingsDialog);
+            this.tbbLoadSettingsDialog.Text = "&Open...";
+            //
             // tbrMain
             //
             this.tbrMain.Name = "tbrMain";
@@ -548,7 +556,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbGenerateReport,
                         tbbSaveSettings,
-                        tbbSaveSettingsAs});
+                        tbbSaveSettingsAs,
+                        tbbLoadSettingsDialog});
             //
             // mniLoadSettingsDialog
             //
@@ -830,6 +839,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private System.Windows.Forms.ToolStripButton tbbGenerateReport;
         private System.Windows.Forms.ToolStripButton tbbSaveSettings;
         private System.Windows.Forms.ToolStripButton tbbSaveSettingsAs;
+        private System.Windows.Forms.ToolStripButton tbbLoadSettingsDialog;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniLoadSettings;

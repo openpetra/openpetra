@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from UC_Columns.yaml
+/* auto generated with nant generateWinforms from UC_PartnerColumns.yaml
  *
  * DO NOT edit manually, DO NOT edit with the designer
  * use a user control if you need to modify the screen content
@@ -37,7 +37,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
-    partial class TFrmUC_Columns
+    partial class TFrmUC_PartnerColumns
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmUC_Columns));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmUC_PartnerColumns));
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.pnlTop = new System.Windows.Forms.Panel();
@@ -86,6 +86,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.btnAddColumn = new System.Windows.Forms.Button();
             this.btnRemoveColumn = new System.Windows.Forms.Button();
             this.pnlBottom = new System.Windows.Forms.Panel();
+            this.grpDefineColumn = new System.Windows.Forms.GroupBox();
+            this.pnlColumnDefinition = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.cmbCalculation = new Ict.Common.Controls.TCmbAutoComplete();
+            this.lblCalculation = new System.Windows.Forms.Label();
+            this.txtColumnWidth = new System.Windows.Forms.TextBox();
+            this.lblColumnWidth = new System.Windows.Forms.Label();
+            this.lblCm = new System.Windows.Forms.Label();
+            this.pnlLowerButtons = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.btnApply = new System.Windows.Forms.Button();
 
             this.pnlContent.SuspendLayout();
             this.pnlTop.SuspendLayout();
@@ -98,6 +110,11 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.pnlAddRemButtons.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.pnlBottom.SuspendLayout();
+            this.grpDefineColumn.SuspendLayout();
+            this.pnlColumnDefinition.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
+            this.pnlLowerButtons.SuspendLayout();
+            this.tableLayoutPanel6.SuspendLayout();
 
             //
             // pnlContent
@@ -179,6 +196,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.btnMoveColumn2Left.Location = new System.Drawing.Point(2,2);
             this.btnMoveColumn2Left.Name = "btnMoveColumn2Left";
             this.btnMoveColumn2Left.AutoSize = true;
+            this.btnMoveColumn2Left.Click += new System.EventHandler(this.MoveColumn2Left);
             this.btnMoveColumn2Left.Text = "Left:";
             //
             // btnMoveColumn2Right
@@ -186,6 +204,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.btnMoveColumn2Right.Location = new System.Drawing.Point(2,2);
             this.btnMoveColumn2Right.Name = "btnMoveColumn2Right";
             this.btnMoveColumn2Right.AutoSize = true;
+            this.btnMoveColumn2Right.Click += new System.EventHandler(this.MoveColumn2Right);
             this.btnMoveColumn2Right.Text = "Right";
             this.tableLayoutPanel3.ColumnCount = 1;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -220,6 +239,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.btnAddColumn.Location = new System.Drawing.Point(2,2);
             this.btnAddColumn.Name = "btnAddColumn";
             this.btnAddColumn.AutoSize = true;
+            this.btnAddColumn.Click += new System.EventHandler(this.AddColumn);
             this.btnAddColumn.Text = "Add";
             //
             // btnRemoveColumn
@@ -227,6 +247,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.btnRemoveColumn.Location = new System.Drawing.Point(2,2);
             this.btnRemoveColumn.Name = "btnRemoveColumn";
             this.btnRemoveColumn.AutoSize = true;
+            this.btnRemoveColumn.Click += new System.EventHandler(this.RemoveColumn);
             this.btnRemoveColumn.Text = "Remove";
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -241,18 +262,131 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.pnlBottom.Name = "pnlBottom";
             this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlBottom.AutoSize = true;
+            this.pnlBottom.Controls.Add(this.grpDefineColumn);
+            //
+            // grpDefineColumn
+            //
+            this.grpDefineColumn.Name = "grpDefineColumn";
+            this.grpDefineColumn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpDefineColumn.AutoSize = true;
+            this.grpDefineColumn.Controls.Add(this.pnlColumnDefinition);
+            this.grpDefineColumn.Controls.Add(this.pnlLowerButtons);
+            //
+            // pnlColumnDefinition
+            //
+            this.pnlColumnDefinition.Name = "pnlColumnDefinition";
+            this.pnlColumnDefinition.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlColumnDefinition.AutoSize = true;
+            //
+            // tableLayoutPanel5
+            //
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.AutoSize = true;
+            this.pnlColumnDefinition.Controls.Add(this.tableLayoutPanel5);
+            //
+            // cmbCalculation
+            //
+            this.cmbCalculation.Location = new System.Drawing.Point(2,2);
+            this.cmbCalculation.Name = "cmbCalculation";
+            this.cmbCalculation.Size = new System.Drawing.Size(150, 28);
+            this.cmbCalculation.SelectedValueChanged += new System.EventHandler(this.CmbContentChanged);
+            //
+            // lblCalculation
+            //
+            this.lblCalculation.Location = new System.Drawing.Point(2,2);
+            this.lblCalculation.Name = "lblCalculation";
+            this.lblCalculation.AutoSize = true;
+            this.lblCalculation.Text = "Content of Column::";
+            this.lblCalculation.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // txtColumnWidth
+            //
+            this.txtColumnWidth.Location = new System.Drawing.Point(2,2);
+            this.txtColumnWidth.Name = "txtColumnWidth";
+            this.txtColumnWidth.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblColumnWidth
+            //
+            this.lblColumnWidth.Location = new System.Drawing.Point(2,2);
+            this.lblColumnWidth.Name = "lblColumnWidth";
+            this.lblColumnWidth.AutoSize = true;
+            this.lblColumnWidth.Text = "Width of Column::";
+            this.lblColumnWidth.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // lblCm
+            //
+            this.lblCm.Location = new System.Drawing.Point(2,2);
+            this.lblCm.Name = "lblCm";
+            this.lblCm.AutoSize = true;
+            this.lblCm.Text = "cm:";
+            this.lblCm.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel5.ColumnCount = 3;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.RowCount = 2;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.Controls.Add(this.lblCalculation, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblColumnWidth, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.cmbCalculation, 1, 0);
+            this.tableLayoutPanel5.Controls.Add(this.txtColumnWidth, 1, 1);
+            this.tableLayoutPanel5.Controls.Add(this.lblCm, 2, 1);
+            //
+            // pnlLowerButtons
+            //
+            this.pnlLowerButtons.Name = "pnlLowerButtons";
+            this.pnlLowerButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlLowerButtons.AutoSize = true;
+            //
+            // tableLayoutPanel6
+            //
+            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
+            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel6.AutoSize = true;
+            this.pnlLowerButtons.Controls.Add(this.tableLayoutPanel6);
+            //
+            // btnCancel
+            //
+            this.btnCancel.Location = new System.Drawing.Point(2,2);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.AutoSize = true;
+            this.btnCancel.Click += new System.EventHandler(this.CancelColumn);
+            this.btnCancel.Text = "&Cancel";
+            //
+            // btnApply
+            //
+            this.btnApply.Location = new System.Drawing.Point(2,2);
+            this.btnApply.Name = "btnApply";
+            this.btnApply.AutoSize = true;
+            this.btnApply.Click += new System.EventHandler(this.ApplyColumn);
+            this.btnApply.Text = "A&pply";
+            this.tableLayoutPanel6.ColumnCount = 2;
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel6.RowCount = 1;
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel6.Controls.Add(this.btnCancel, 0, 0);
+            this.tableLayoutPanel6.Controls.Add(this.btnApply, 1, 0);
+            this.grpDefineColumn.Text = "Define Column";
 
             //
-            // TFrmUC_Columns
+            // TFrmUC_PartnerColumns
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(700, 500);
             // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
             this.Controls.Add(this.pnlContent);
-            this.Name = "TFrmUC_Columns";
+            this.Name = "TFrmUC_PartnerColumns";
             this.Text = "";
 
 	
+            this.tableLayoutPanel6.ResumeLayout(false);
+            this.pnlLowerButtons.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.pnlColumnDefinition.ResumeLayout(false);
+            this.grpDefineColumn.ResumeLayout(false);
             this.pnlBottom.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.pnlAddRemButtons.ResumeLayout(false);
@@ -284,5 +418,17 @@ namespace Ict.Petra.Client.MReporting.Gui
         private System.Windows.Forms.Button btnAddColumn;
         private System.Windows.Forms.Button btnRemoveColumn;
         private System.Windows.Forms.Panel pnlBottom;
+        private System.Windows.Forms.GroupBox grpDefineColumn;
+        private System.Windows.Forms.Panel pnlColumnDefinition;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private Ict.Common.Controls.TCmbAutoComplete cmbCalculation;
+        private System.Windows.Forms.Label lblCalculation;
+        private System.Windows.Forms.TextBox txtColumnWidth;
+        private System.Windows.Forms.Label lblColumnWidth;
+        private System.Windows.Forms.Label lblCm;
+        private System.Windows.Forms.Panel pnlLowerButtons;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
+        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.Button btnApply;
     }
 }

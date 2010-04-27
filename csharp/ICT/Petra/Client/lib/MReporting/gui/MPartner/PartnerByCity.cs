@@ -71,10 +71,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblCityName.Text = Catalog.GetString("Name of City:");
       this.tpgReportSpecific.Text = Catalog.GetString("Report parameters");
+      this.tpgReportSorting.Text = Catalog.GetString("Sorting");
+      this.tpgColumns.Text = Catalog.GetString("Columns");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
       this.tbbSaveSettings.Text = Catalog.GetString("&Save Settings");
       this.tbbSaveSettingsAs.Text = Catalog.GetString("Save Settings &As...");
+      this.tbbLoadSettingsDialog.Text = Catalog.GetString("&Open...");
       this.mniLoadSettingsDialog.Text = Catalog.GetString("&Open...");
       this.mniLoadSettings1.Text = Catalog.GetString("RecentSettings");
       this.mniLoadSettings2.Text = Catalog.GetString("RecentSettings");
@@ -109,9 +112,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       FPetraUtilsObject.InitialiseData("");
       // FPetraUtilsObject.InitialiseSettingsGui(ucoReportColumns, mniLoadSettings, /*ConMnuLoadSettings*/null,
       //                                 mniSaveSettings, mniSaveSettingsAs, mniLoadSettingsDialog, mniMaintainSettings);
-      // this.SetAvailableFunctions();
-      // ucoReportColumns.InitialiseData(FPetraUtilsObject.FColumnParameters);
+      this.SetAvailableFunctions();
 
+      ucoReportSorting.InitialiseData();
+      ucoReportColumns.InitialiseData();
+	
+	  FPetraUtilsObject.LoadDefaultSettings();
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -142,14 +148,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
        Reads the selected values from the controls, and stores them into the parameter system of FCalculator
 
     */
-    public void ReadControls(TRptCalculator ACalc)
+    public void ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
     {
-      //ucoReportSorting.ReadControls(ACalc);
-      //ucoReportOutput.ReadControls(ACalc);
-
       ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
 
       ACalc.AddParameter("param_city", this.txtCityName.Text);
+      ucoReportSorting.ReadControls(ACalc, AReportAction);
+      ucoReportColumns.ReadControls(ACalc, AReportAction);
 
     }
 
@@ -159,10 +164,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     */
     public void SetControls(TParameterList AParameters)
     {
-      //ucoReportSorting.SetControls(AParameters);
-      //ucoReportOutput.SetControls(AParameters);
 
       txtCityName.Text = AParameters.Get("param_city").ToString();
+      ucoReportSorting.SetControls(AParameters);
+      ucoReportColumns.SetControls(AParameters);
     }
 #endregion
 
@@ -174,9 +179,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     public void SetAvailableFunctions()
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
+	
+	  FPetraUtilsObject.AddAvailableFunction("Partner Name", 2.5); FPetraUtilsObject.AddAvailableFunction("Partner Key", 2.5); FPetraUtilsObject.AddAvailableFunction("City", 2.5); FPetraUtilsObject.AddAvailableFunction("Post Code", 2.5); FPetraUtilsObject.AddAvailableFunction("Country", 2.5);
+	
+      ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
+      ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
-      //ucoReportColumns.SetAvailableFunctions(availableFunctions);
-      //ucoReportSorting.SetAvailableFunctions(availableFunctions);
     }
 #endregion
 

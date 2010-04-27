@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from PartnerByCity.yaml
+/* auto generated with nant generateWinforms from PartnerReportingForm.yaml
  *
  * DO NOT edit manually, DO NOT edit with the designer
  * use a user control if you need to modify the screen content
@@ -37,7 +37,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPartner
 {
-    partial class TFrmPartnerByCity
+    partial class TFrmPartnerReportingForm
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -67,13 +67,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmPartnerByCity));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmPartnerReportingForm));
 
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgReportSpecific = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtCityName = new System.Windows.Forms.TextBox();
-            this.lblCityName = new System.Windows.Forms.Label();
             this.tpgReportSorting = new System.Windows.Forms.TabPage();
             this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
             this.tpgColumns = new System.Windows.Forms.TabPage();
@@ -111,7 +108,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             this.tabReportSettings.SuspendLayout();
             this.tpgReportSpecific.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
             this.tpgReportSorting.SuspendLayout();
             this.tpgColumns.SuspendLayout();
             this.tbrMain.SuspendLayout();
@@ -124,35 +120,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tpgReportSpecific.Location = new System.Drawing.Point(2,2);
             this.tpgReportSpecific.Name = "tpgReportSpecific";
             this.tpgReportSpecific.AutoSize = true;
-            //
-            // tableLayoutPanel1
-            //
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.AutoSize = true;
-            this.tpgReportSpecific.Controls.Add(this.tableLayoutPanel1);
-            //
-            // txtCityName
-            //
-            this.txtCityName.Location = new System.Drawing.Point(2,2);
-            this.txtCityName.Name = "txtCityName";
-            this.txtCityName.Size = new System.Drawing.Size(150, 28);
-            //
-            // lblCityName
-            //
-            this.lblCityName.Location = new System.Drawing.Point(2,2);
-            this.lblCityName.Name = "lblCityName";
-            this.lblCityName.AutoSize = true;
-            this.lblCityName.Text = "Name of City:";
-            this.lblCityName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.lblCityName, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.txtCityName, 1, 0);
-            this.tpgReportSpecific.Text = "Report parameters";
+            this.tpgReportSpecific.Text = "Report Specific";
             this.tpgReportSpecific.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgReportSorting
@@ -430,7 +398,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmPartnerByCity
+            // TFrmPartnerReportingForm
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(700, 500);
@@ -441,8 +409,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
-            this.Name = "TFrmPartnerByCity";
-            this.Text = "Partner by City";
+            this.Name = "TFrmPartnerReportingForm";
+            this.Text = "";
 
 	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
 	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
@@ -455,7 +423,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tbrMain.ResumeLayout(false);
             this.tpgColumns.ResumeLayout(false);
             this.tpgReportSorting.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
             this.tpgReportSpecific.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -463,9 +430,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         }
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgReportSpecific;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TextBox txtCityName;
-        private System.Windows.Forms.Label lblCityName;
         private System.Windows.Forms.TabPage tpgReportSorting;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
         private System.Windows.Forms.TabPage tpgColumns;

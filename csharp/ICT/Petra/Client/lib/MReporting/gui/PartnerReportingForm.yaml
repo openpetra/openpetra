@@ -1,0 +1,25 @@
+﻿RootNode:
+    BaseYaml: ReportingForm.yaml
+    UtilObjectClass: TFrmPetraReportingUtils
+    InterfaceName: IFrmReporting
+    Template: reportwindow
+    #don't generate this file with designer code, because it should not have the menuitems and toolbar
+    FormType: abstract
+    FormType: abstract
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Controls:
+        tpgReportSorting:
+            Label: Sorting
+            Controls: [ucoReportSorting]
+            Order: AlwaysFirst
+        tpgColumns:
+            Controls: [ucoReportColumns]
+            Order: AlwaysLast
+        ucoReportSorting:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
+            Dock: Fill
+        ucoReportColumns:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
+            Dock: Fill

@@ -1,9 +1,15 @@
+/* auto generated with nant generateWinforms from UC_Sorting.yaml
+ *
+ * DO NOT edit manually, DO NOT edit with the designer
+ * use a user control if you need to modify the screen content
+ *
+ */
 /*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * @Authors:
- *       timop
+ *       auto generated
  *
  * Copyright 2004-2009 by OM International
  *
@@ -24,11 +30,14 @@
  *
  ************************************************************************/
 using System;
+using System.Windows.Forms;
+using Mono.Unix;
 using Ict.Common.Controls;
+using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
-    partial class UC_Sorting
+    partial class TFrmUC_Sorting
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -36,7 +45,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
-        /// Disposes resources used by the control.
+        /// Disposes resources used by the form.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
@@ -48,7 +57,6 @@ namespace Ict.Petra.Client.MReporting.Gui
                     components.Dispose();
                 }
             }
-
             base.Dispose(disposing);
         }
 
@@ -59,101 +67,115 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         private void InitializeComponent()
         {
-            this.cmbSortby3 = new Ict.Common.Controls.TCmbAutoComplete();
-            this.lblSortBy3 = new System.Windows.Forms.Label();
-            this.cmbSortby2 = new Ict.Common.Controls.TCmbAutoComplete();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmUC_Sorting));
+
+            this.pnlContent = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.cmbSortBy1 = new Ict.Common.Controls.TCmbAutoComplete();
+            this.lblSortBy1 = new System.Windows.Forms.Label();
+            this.cmbSortBy2 = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblSortBy2 = new System.Windows.Forms.Label();
-            this.cmbSortby1 = new Ict.Common.Controls.TCmbAutoComplete();
-            this.LblSortBy1 = new System.Windows.Forms.Label();
+            this.cmbSortBy3 = new Ict.Common.Controls.TCmbAutoComplete();
+            this.lblSortBy3 = new System.Windows.Forms.Label();
 
-            this.SuspendLayout();
-
-            //
-            // cmbSortby3
-            //
-            this.cmbSortby3.AcceptNewValues = false;
-            this.cmbSortby3.CaseSensitiveSearch = false;
-            this.cmbSortby3.ColumnsToSearch = null;
-            this.cmbSortby3.Location = new System.Drawing.Point(163, 103);
-            this.cmbSortby3.Name = "cmbSortby3";
-            this.cmbSortby3.Size = new System.Drawing.Size(240, 21);
-            this.cmbSortby3.SuppressSelectionColor = true;
-            this.cmbSortby3.TabIndex = 11;
-            this.cmbSortby3.SelectedIndexChanged += new System.EventHandler(this.CmbSortby_SelectedIndexChanged);
+            this.pnlContent.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
 
             //
-            // lblSortBy3
+            // pnlContent
             //
-            this.lblSortBy3.Location = new System.Drawing.Point(38, 103);
-            this.lblSortBy3.Name = "lblSortBy3";
-            this.lblSortBy3.Size = new System.Drawing.Size(120, 25);
-            this.lblSortBy3.TabIndex = 10;
-            this.lblSortBy3.Text = "Sort last by:";
-
+            this.pnlContent.Name = "pnlContent";
+            this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.AutoSize = true;
             //
-            // cmbSortby2
+            // tableLayoutPanel1
             //
-            this.cmbSortby2.AcceptNewValues = false;
-            this.cmbSortby2.CaseSensitiveSearch = false;
-            this.cmbSortby2.ColumnsToSearch = null;
-            this.cmbSortby2.Location = new System.Drawing.Point(163, 69);
-            this.cmbSortby2.Name = "cmbSortby2";
-            this.cmbSortby2.Size = new System.Drawing.Size(240, 21);
-            this.cmbSortby2.SuppressSelectionColor = true;
-            this.cmbSortby2.TabIndex = 9;
-            this.cmbSortby2.SelectedIndexChanged += new System.EventHandler(this.CmbSortby_SelectedIndexChanged);
-
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
+            this.pnlContent.Controls.Add(this.tableLayoutPanel1);
+            //
+            // cmbSortBy1
+            //
+            this.cmbSortBy1.Location = new System.Drawing.Point(2,2);
+            this.cmbSortBy1.Name = "cmbSortBy1";
+            this.cmbSortBy1.Size = new System.Drawing.Size(150, 28);
+            this.cmbSortBy1.SelectedValueChanged += new System.EventHandler(this.CmbSortBy_SelectedValueChanged);
+            //
+            // lblSortBy1
+            //
+            this.lblSortBy1.Location = new System.Drawing.Point(2,2);
+            this.lblSortBy1.Name = "lblSortBy1";
+            this.lblSortBy1.AutoSize = true;
+            this.lblSortBy1.Text = "Sort First By:";
+            this.lblSortBy1.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // cmbSortBy2
+            //
+            this.cmbSortBy2.Location = new System.Drawing.Point(2,2);
+            this.cmbSortBy2.Name = "cmbSortBy2";
+            this.cmbSortBy2.Size = new System.Drawing.Size(150, 28);
+            this.cmbSortBy2.SelectedValueChanged += new System.EventHandler(this.CmbSortBy_SelectedValueChanged);
             //
             // lblSortBy2
             //
-            this.lblSortBy2.Location = new System.Drawing.Point(38, 69);
+            this.lblSortBy2.Location = new System.Drawing.Point(2,2);
             this.lblSortBy2.Name = "lblSortBy2";
-            this.lblSortBy2.Size = new System.Drawing.Size(120, 25);
-            this.lblSortBy2.TabIndex = 8;
-            this.lblSortBy2.Text = "Sort then by:";
+            this.lblSortBy2.AutoSize = true;
+            this.lblSortBy2.Text = "Sort Then By:";
+            this.lblSortBy2.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // cmbSortBy3
+            //
+            this.cmbSortBy3.Location = new System.Drawing.Point(2,2);
+            this.cmbSortBy3.Name = "cmbSortBy3";
+            this.cmbSortBy3.Size = new System.Drawing.Size(150, 28);
+            this.cmbSortBy3.SelectedValueChanged += new System.EventHandler(this.CmbSortBy_SelectedValueChanged);
+            //
+            // lblSortBy3
+            //
+            this.lblSortBy3.Location = new System.Drawing.Point(2,2);
+            this.lblSortBy3.Name = "lblSortBy3";
+            this.lblSortBy3.AutoSize = true;
+            this.lblSortBy3.Text = "Sort Last By:";
+            this.lblSortBy3.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.lblSortBy1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lblSortBy2, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lblSortBy3, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.cmbSortBy1, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.cmbSortBy2, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.cmbSortBy3, 1, 2);
 
             //
-            // cmbSortby1
-            //
-            this.cmbSortby1.AcceptNewValues = false;
-            this.cmbSortby1.CaseSensitiveSearch = false;
-            this.cmbSortby1.ColumnsToSearch = null;
-            this.cmbSortby1.Location = new System.Drawing.Point(163, 34);
-            this.cmbSortby1.Name = "cmbSortby1";
-            this.cmbSortby1.Size = new System.Drawing.Size(240, 21);
-            this.cmbSortby1.SuppressSelectionColor = true;
-            this.cmbSortby1.TabIndex = 7;
-            this.cmbSortby1.SelectedIndexChanged += new System.EventHandler(this.CmbSortby_SelectedIndexChanged);
-
-            //
-            // LblSortBy1
-            //
-            this.LblSortBy1.Location = new System.Drawing.Point(38, 34);
-            this.LblSortBy1.Name = "LblSortBy1";
-            this.LblSortBy1.Size = new System.Drawing.Size(120, 25);
-            this.LblSortBy1.TabIndex = 6;
-            this.LblSortBy1.Text = "Sort first by:";
-
-            //
-            // UC_Sorting
+            // TFrmUC_Sorting
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Name = "UC_Sorting";
-            this.Size = new System.Drawing.Size(650, 386);
-            this.Controls.Add(cmbSortby1);
-            this.Controls.Add(cmbSortby2);
-            this.Controls.Add(cmbSortby3);
-            this.Controls.Add(LblSortBy1);
-            this.Controls.Add(lblSortBy2);
-            this.Controls.Add(lblSortBy3);
-            this.ResumeLayout(false);
-        }
+            this.ClientSize = new System.Drawing.Size(700, 500);
+            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+            this.Controls.Add(this.pnlContent);
+            this.Name = "TFrmUC_Sorting";
+            this.Text = "";
 
-        private TCmbAutoComplete cmbSortby3;
-        private System.Windows.Forms.Label lblSortBy3;
-        private TCmbAutoComplete cmbSortby2;
+	
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.pnlContent.ResumeLayout(false);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+        private System.Windows.Forms.Panel pnlContent;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private Ict.Common.Controls.TCmbAutoComplete cmbSortBy1;
+        private System.Windows.Forms.Label lblSortBy1;
+        private Ict.Common.Controls.TCmbAutoComplete cmbSortBy2;
         private System.Windows.Forms.Label lblSortBy2;
-        private TCmbAutoComplete cmbSortby1;
-        private System.Windows.Forms.Label LblSortBy1;
+        private Ict.Common.Controls.TCmbAutoComplete cmbSortBy3;
+        private System.Windows.Forms.Label lblSortBy3;
     }
 }

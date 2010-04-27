@@ -95,6 +95,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
       this.tbbSaveSettings.Text = Catalog.GetString("&Save Settings");
       this.tbbSaveSettingsAs.Text = Catalog.GetString("Save Settings &As...");
+      this.tbbLoadSettingsDialog.Text = Catalog.GetString("&Open...");
       this.mniLoadSettingsDialog.Text = Catalog.GetString("&Open...");
       this.mniLoadSettings1.Text = Catalog.GetString("RecentSettings");
       this.mniLoadSettings2.Text = Catalog.GetString("RecentSettings");
@@ -129,10 +130,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       FPetraUtilsObject.InitialiseData("");
       // FPetraUtilsObject.InitialiseSettingsGui(ucoReportColumns, mniLoadSettings, /*ConMnuLoadSettings*/null,
       //                                 mniSaveSettings, mniSaveSettingsAs, mniLoadSettingsDialog, mniMaintainSettings);
-      // this.SetAvailableFunctions();
-      // ucoReportColumns.InitialiseData(FPetraUtilsObject.FColumnParameters);
+      this.SetAvailableFunctions();
 
       rbtSelectedCostCentresCheckedChanged(null, null);
+	
+	  FPetraUtilsObject.LoadDefaultSettings();
     }
 
     void rbtSelectedCostCentresCheckedChanged(object sender, System.EventArgs e)
@@ -169,10 +171,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
        Reads the selected values from the controls, and stores them into the parameter system of FCalculator
 
     */
-    public void ReadControls(TRptCalculator ACalc)
+    public void ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
     {
-      //ucoReportSorting.ReadControls(ACalc);
-      //ucoReportOutput.ReadControls(ACalc);
 
       ACalc.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
       if (this.cmbCurrency.SelectedItem != null)
@@ -226,8 +226,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     */
     public void SetControls(TParameterList AParameters)
     {
-      //ucoReportSorting.SetControls(AParameters);
-      //ucoReportOutput.SetControls(AParameters);
 
       cmbAccountHierarchy.SetSelectedString(AParameters.Get("param_account_hierarchy_c").ToString());
       cmbCurrency.SelectedValue = AParameters.Get("param_currency").ToString();
@@ -254,9 +252,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public void SetAvailableFunctions()
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
+	
+	
 
-      //ucoReportColumns.SetAvailableFunctions(availableFunctions);
-      //ucoReportSorting.SetAvailableFunctions(availableFunctions);
     }
 #endregion
 
