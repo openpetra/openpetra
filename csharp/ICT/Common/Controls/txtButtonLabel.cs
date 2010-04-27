@@ -188,7 +188,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// should the label be displayed
         /// </summary>
-        protected bool FShowLabel;
+        protected bool FShowLabel = true;
 
         /// <summary>
         /// TodoComment
@@ -652,6 +652,19 @@ namespace Ict.Common.Controls
             }
         }
 
+        public System.Windows.Forms.BorderStyle BorderStyle
+        {
+            get
+            {
+                return this.txtTextBox.BorderStyle;
+            }
+            set
+            {
+                this.txtTextBox.BorderStyle = value;
+                RelocateLabel();
+            }
+        }
+
         /// <summary>
         /// Here the hosting form may provide a routine for setting the label without verification..
         ///
@@ -888,6 +901,18 @@ namespace Ict.Common.Controls
             }
 
             mYCoord = mOffset / 2.0;
+
+            // In case the underlying control has a BoderStyle of BorderStyle.None we need to relocate the Label slightly
+            if (this.txtTextBox.BorderStyle == BorderStyle.None)
+            {
+                mYCoord = mYCoord - 3;
+
+                if (mYCoord < 0)
+                {
+                    mYCoord = 0;
+                }
+            }
+
             return System.Convert.ToInt32(mYCoord);
         }
 
