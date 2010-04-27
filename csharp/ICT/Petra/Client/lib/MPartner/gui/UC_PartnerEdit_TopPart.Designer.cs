@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.pnlPartnerInfo = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtPartnerKey = new System.Windows.Forms.TextBox();
+            this.txtPartnerKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.lblPartnerKey = new System.Windows.Forms.Label();
             this.lblEmpty2 = new System.Windows.Forms.Label();
             this.txtPartnerClass = new System.Windows.Forms.TextBox();
@@ -158,9 +158,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtPartnerKey.Location = new System.Drawing.Point(2,2);
             this.txtPartnerKey.Name = "txtPartnerKey";
-            this.txtPartnerKey.Size = new System.Drawing.Size(90, 28);
+            this.txtPartnerKey.TabStop = false;
+            this.txtPartnerKey.Size = new System.Drawing.Size(80, 28);
             this.txtPartnerKey.ReadOnly = true;
             this.txtPartnerKey.TabStop = false;
+            this.txtPartnerKey.ShowLabel = false;
+            this.txtPartnerKey.ASpecialSetting = true;
+            this.txtPartnerKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.txtPartnerKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
+            this.txtPartnerKey.PartnerClass = "";
+            this.txtPartnerKey.MaxLength = 32767;
+            this.txtPartnerKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtPartnerKey.TextBoxWidth = 80;
+            this.txtPartnerKey.ButtonWidth = 0;
+            this.txtPartnerKey.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtPartnerKey.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
             //
             // lblPartnerKey
             //
@@ -479,7 +491,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Panel pnlLeft;
         private System.Windows.Forms.Panel pnlPartnerInfo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TextBox txtPartnerKey;
+        private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtPartnerKey;
         private System.Windows.Forms.Label lblPartnerKey;
         private System.Windows.Forms.Label lblEmpty2;
         private System.Windows.Forms.TextBox txtPartnerClass;

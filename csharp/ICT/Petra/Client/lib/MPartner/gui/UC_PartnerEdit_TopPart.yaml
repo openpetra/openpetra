@@ -72,7 +72,8 @@ RootNode:
             ReadOnly: true
             Label: Key
             Type: PartnerKey
-            Width: 90
+            ShowLabel: false
+            TabStop: false
         txtPartnerClass:
             ReadOnly: true
             Label: Class
