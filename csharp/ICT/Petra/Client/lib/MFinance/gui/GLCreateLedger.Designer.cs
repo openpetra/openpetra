@@ -205,7 +205,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             this.dtpCalendarStartDate.Location = new System.Drawing.Point(2,2);
             this.dtpCalendarStartDate.Name = "dtpCalendarStartDate";
-            this.dtpCalendarStartDate.Size = new System.Drawing.Size(150, 28);
+            this.dtpCalendarStartDate.Size = new System.Drawing.Size(94, 28);
             //
             // lblCalendarStartDate
             //

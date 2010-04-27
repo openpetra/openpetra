@@ -143,7 +143,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.dtpStartDate.Location = new System.Drawing.Point(2,2);
             this.dtpStartDate.Name = "dtpStartDate";
-            this.dtpStartDate.Size = new System.Drawing.Size(150, 28);
+            this.dtpStartDate.Size = new System.Drawing.Size(94, 28);
             //
             // lblStartDate
             //
@@ -158,7 +158,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.dtpEndDate.Location = new System.Drawing.Point(2,2);
             this.dtpEndDate.Name = "dtpEndDate";
-            this.dtpEndDate.Size = new System.Drawing.Size(150, 28);
+            this.dtpEndDate.Size = new System.Drawing.Size(94, 28);
             //
             // lblEndDate
             //

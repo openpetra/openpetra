@@ -292,7 +292,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.dtpDateIssued.Location = new System.Drawing.Point(2,2);
             this.dtpDateIssued.Name = "dtpDateIssued";
-            this.dtpDateIssued.Size = new System.Drawing.Size(150, 28);
+            this.dtpDateIssued.Size = new System.Drawing.Size(94, 28);
             this.dtpDateIssued.DateChanged += new TPetraDateChangedEventHandler(this.UpdateCreditTerms);
             //
             // lblDateIssued
@@ -308,7 +308,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.dtpDateDue.Location = new System.Drawing.Point(2,2);
             this.dtpDateDue.Name = "dtpDateDue";
-            this.dtpDateDue.Size = new System.Drawing.Size(150, 28);
+            this.dtpDateDue.Size = new System.Drawing.Size(94, 28);
             this.dtpDateDue.DateChanged += new TPetraDateChangedEventHandler(this.UpdateCreditTerms);
             //
             // lblDateDue

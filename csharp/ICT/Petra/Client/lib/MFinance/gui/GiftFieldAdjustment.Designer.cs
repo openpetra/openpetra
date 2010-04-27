@@ -137,7 +137,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.dtpStartDate.Location = new System.Drawing.Point(2,2);
             this.dtpStartDate.Name = "dtpStartDate";
-            this.dtpStartDate.Size = new System.Drawing.Size(150, 28);
+            this.dtpStartDate.Size = new System.Drawing.Size(94, 28);
             //
             // lblStartDate
             //
@@ -152,7 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.dtpEndDate.Location = new System.Drawing.Point(2,2);
             this.dtpEndDate.Name = "dtpEndDate";
-            this.dtpEndDate.Size = new System.Drawing.Size(150, 28);
+            this.dtpEndDate.Size = new System.Drawing.Size(94, 28);
             //
             // lblEndDate
             //
@@ -167,7 +167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.dtpDateEffective.Location = new System.Drawing.Point(2,2);
             this.dtpDateEffective.Name = "dtpDateEffective";
-            this.dtpDateEffective.Size = new System.Drawing.Size(150, 28);
+            this.dtpDateEffective.Size = new System.Drawing.Size(94, 28);
             //
             // lblDateEffective
             //
@@ -185,14 +185,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtRecipientKey.Size = new System.Drawing.Size(370, 28);
             this.txtRecipientKey.ASpecialSetting = true;
             this.txtRecipientKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.txtRecipientKey.ButtonWidth = 40;
-            this.txtRecipientKey.MaxLength = 32767;
-            this.txtRecipientKey.ReadOnly = false;
-            this.txtRecipientKey.TextBoxWidth = 80;
-            this.txtRecipientKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtRecipientKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
             this.txtRecipientKey.PartnerClass = "";
+            this.txtRecipientKey.MaxLength = 32767;
             this.txtRecipientKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtRecipientKey.TextBoxWidth = 80;
+            this.txtRecipientKey.ButtonWidth = 40;
+            this.txtRecipientKey.ReadOnly = false;
+            this.txtRecipientKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtRecipientKey.ButtonText = "Find";
             //
             // lblRecipientKey
@@ -211,14 +211,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtOldFieldKey.Size = new System.Drawing.Size(370, 28);
             this.txtOldFieldKey.ASpecialSetting = true;
             this.txtOldFieldKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.txtOldFieldKey.ButtonWidth = 40;
-            this.txtOldFieldKey.MaxLength = 32767;
-            this.txtOldFieldKey.ReadOnly = false;
-            this.txtOldFieldKey.TextBoxWidth = 80;
-            this.txtOldFieldKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtOldFieldKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
             this.txtOldFieldKey.PartnerClass = "";
+            this.txtOldFieldKey.MaxLength = 32767;
             this.txtOldFieldKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtOldFieldKey.TextBoxWidth = 80;
+            this.txtOldFieldKey.ButtonWidth = 40;
+            this.txtOldFieldKey.ReadOnly = false;
+            this.txtOldFieldKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtOldFieldKey.ButtonText = "Find";
             //
             // lblOldFieldKey

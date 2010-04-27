@@ -191,7 +191,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.dtpMaritalStatusSince.Location = new System.Drawing.Point(2,2);
             this.dtpMaritalStatusSince.Name = "dtpMaritalStatusSince";
-            this.dtpMaritalStatusSince.Size = new System.Drawing.Size(150, 28);
+            this.dtpMaritalStatusSince.Size = new System.Drawing.Size(94, 28);
             //
             // lblMaritalStatusSince
             //

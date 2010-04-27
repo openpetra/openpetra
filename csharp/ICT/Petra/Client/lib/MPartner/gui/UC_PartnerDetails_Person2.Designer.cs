@@ -205,7 +205,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.dtpDateOfBirth.Location = new System.Drawing.Point(2,2);
             this.dtpDateOfBirth.Name = "dtpDateOfBirth";
-            this.dtpDateOfBirth.Size = new System.Drawing.Size(150, 28);
+            this.dtpDateOfBirth.Size = new System.Drawing.Size(94, 28);
             //
             // lblDateOfBirth
             //
@@ -266,7 +266,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.dtpMaritalStatusSince.Location = new System.Drawing.Point(2,2);
             this.dtpMaritalStatusSince.Name = "dtpMaritalStatusSince";
-            this.dtpMaritalStatusSince.Size = new System.Drawing.Size(150, 28);
+            this.dtpMaritalStatusSince.Size = new System.Drawing.Size(94, 28);
             //
             // lblMaritalStatusSince
             //
@@ -331,14 +331,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtOccupationCode.Size = new System.Drawing.Size(150, 28);
             this.txtOccupationCode.ASpecialSetting = true;
             this.txtOccupationCode.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.txtOccupationCode.ButtonWidth = 40;
-            this.txtOccupationCode.MaxLength = 32767;
-            this.txtOccupationCode.ReadOnly = false;
-            this.txtOccupationCode.TextBoxWidth = 80;
-            this.txtOccupationCode.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtOccupationCode.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.OccupationList;
             this.txtOccupationCode.PartnerClass = "";
+            this.txtOccupationCode.MaxLength = 32767;
             this.txtOccupationCode.Tag = "CustomDisableAlthoughInvisible";
+            this.txtOccupationCode.TextBoxWidth = 80;
+            this.txtOccupationCode.ButtonWidth = 40;
+            this.txtOccupationCode.ReadOnly = false;
+            this.txtOccupationCode.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtOccupationCode.ButtonText = "Find";
             //
             // lblOccupationCode

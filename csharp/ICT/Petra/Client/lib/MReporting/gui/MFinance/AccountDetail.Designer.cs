@@ -408,13 +408,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.dtpDateStart.Location = new System.Drawing.Point(2,2);
             this.dtpDateStart.Name = "dtpDateStart";
-            this.dtpDateStart.Size = new System.Drawing.Size(150, 28);
+            this.dtpDateStart.Size = new System.Drawing.Size(94, 28);
             //
             // dtpDateEnd
             //
             this.dtpDateEnd.Location = new System.Drawing.Point(2,2);
             this.dtpDateEnd.Name = "dtpDateEnd";
-            this.dtpDateEnd.Size = new System.Drawing.Size(150, 28);
+            this.dtpDateEnd.Size = new System.Drawing.Size(94, 28);
             //
             // lblDateEnd
             //

@@ -260,14 +260,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtDetailDonorKey.Size = new System.Drawing.Size(370, 28);
             this.txtDetailDonorKey.ASpecialSetting = true;
             this.txtDetailDonorKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.txtDetailDonorKey.ButtonWidth = 40;
-            this.txtDetailDonorKey.MaxLength = 32767;
-            this.txtDetailDonorKey.ReadOnly = false;
-            this.txtDetailDonorKey.TextBoxWidth = 80;
-            this.txtDetailDonorKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtDetailDonorKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
             this.txtDetailDonorKey.PartnerClass = "";
+            this.txtDetailDonorKey.MaxLength = 32767;
             this.txtDetailDonorKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtDetailDonorKey.TextBoxWidth = 80;
+            this.txtDetailDonorKey.ButtonWidth = 40;
+            this.txtDetailDonorKey.ReadOnly = false;
+            this.txtDetailDonorKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtDetailDonorKey.ButtonText = "Find";
             //
             // lblDetailDonorKey
@@ -283,7 +283,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.dtpDateEntered.Location = new System.Drawing.Point(2,2);
             this.dtpDateEntered.Name = "dtpDateEntered";
-            this.dtpDateEntered.Size = new System.Drawing.Size(150, 28);
+            this.dtpDateEntered.Size = new System.Drawing.Size(94, 28);
             //
             // lblDateEntered
             //
@@ -324,14 +324,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtDetailRecipientKey.Size = new System.Drawing.Size(370, 28);
             this.txtDetailRecipientKey.ASpecialSetting = true;
             this.txtDetailRecipientKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.txtDetailRecipientKey.ButtonWidth = 40;
-            this.txtDetailRecipientKey.MaxLength = 32767;
-            this.txtDetailRecipientKey.ReadOnly = false;
-            this.txtDetailRecipientKey.TextBoxWidth = 80;
-            this.txtDetailRecipientKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtDetailRecipientKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
             this.txtDetailRecipientKey.PartnerClass = "";
+            this.txtDetailRecipientKey.MaxLength = 32767;
             this.txtDetailRecipientKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtDetailRecipientKey.TextBoxWidth = 80;
+            this.txtDetailRecipientKey.ButtonWidth = 40;
+            this.txtDetailRecipientKey.ReadOnly = false;
+            this.txtDetailRecipientKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtDetailRecipientKey.ButtonText = "Find";
             //
             // lblDetailRecipientKey

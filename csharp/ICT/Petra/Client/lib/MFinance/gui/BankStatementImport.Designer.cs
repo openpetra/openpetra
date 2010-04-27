@@ -345,14 +345,14 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.txtDonorKey.AutoSize = true;
             this.txtDonorKey.ASpecialSetting = true;
             this.txtDonorKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.txtDonorKey.ButtonWidth = 40;
-            this.txtDonorKey.MaxLength = 32767;
-            this.txtDonorKey.ReadOnly = false;
-            this.txtDonorKey.TextBoxWidth = 80;
-            this.txtDonorKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtDonorKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
             this.txtDonorKey.PartnerClass = "";
+            this.txtDonorKey.MaxLength = 32767;
             this.txtDonorKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtDonorKey.TextBoxWidth = 80;
+            this.txtDonorKey.ButtonWidth = 40;
+            this.txtDonorKey.ReadOnly = false;
+            this.txtDonorKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtDonorKey.ButtonText = "Find";
             //
             // pnlDetailGrid

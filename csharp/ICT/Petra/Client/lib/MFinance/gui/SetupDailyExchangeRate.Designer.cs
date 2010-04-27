@@ -232,7 +232,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             this.dtpDetailDateEffectiveFrom.Location = new System.Drawing.Point(2,2);
             this.dtpDetailDateEffectiveFrom.Name = "dtpDetailDateEffectiveFrom";
-            this.dtpDetailDateEffectiveFrom.Size = new System.Drawing.Size(150, 28);
+            this.dtpDetailDateEffectiveFrom.Size = new System.Drawing.Size(94, 28);
             //
             // lblDetailDateEffectiveFrom
             //

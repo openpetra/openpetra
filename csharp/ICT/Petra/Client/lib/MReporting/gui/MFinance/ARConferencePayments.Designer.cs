@@ -163,7 +163,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             this.dtpStartPayments.Location = new System.Drawing.Point(2,2);
             this.dtpStartPayments.Name = "dtpStartPayments";
-            this.dtpStartPayments.Size = new System.Drawing.Size(150, 28);
+            this.dtpStartPayments.Size = new System.Drawing.Size(94, 28);
             //
             // lblStartPayments
             //

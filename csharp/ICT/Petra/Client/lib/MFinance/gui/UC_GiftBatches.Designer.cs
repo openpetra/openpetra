@@ -381,7 +381,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.dtpDetailGlEffectiveDate.Location = new System.Drawing.Point(2,2);
             this.dtpDetailGlEffectiveDate.Name = "dtpDetailGlEffectiveDate";
-            this.dtpDetailGlEffectiveDate.Size = new System.Drawing.Size(150, 28);
+            this.dtpDetailGlEffectiveDate.Size = new System.Drawing.Size(94, 28);
             //
             // lblDetailGlEffectiveDate
             //
