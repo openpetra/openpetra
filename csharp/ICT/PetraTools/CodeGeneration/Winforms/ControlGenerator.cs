@@ -291,6 +291,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             this.FChangeEventName = "DateChanged";
             this.FChangeEventHandlerType = "TPetraDateChangedEventHandler";
+            FDefaultWidth = 94;
         }
 
         protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
@@ -631,7 +632,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 if (TYml2Xml.GetAttribute(curNode, "ReadOnly").ToLower() == "true")
                 {
-                    return true;
+                    if ((TXMLParser.GetAttribute(curNode, "Type") != "PartnerKey"))
+                    {
+                        return true;
+                    }
                 }
 
                 if ((TXMLParser.GetAttribute(curNode, "Type") == "PartnerKey")
@@ -1138,15 +1142,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (base.ControlFitsNode(curNode))
             {
-                if (TYml2Xml.GetAttribute(curNode, "ReadOnly").ToLower() == "true")
-                {
-                    return false;
-                }
-
                 if (TYml2Xml.GetAttribute(curNode, "Type") == "PartnerKey")
                 {
                     FButtonLabelType = "PartnerKey";
-                    FDefaultWidth = 370;
+
+                    if (!(TYml2Xml.HasAttribute(curNode, "ShowLabel") && (TYml2Xml.GetAttribute(curNode, "ShowLabel").ToLower() == "false")))
+                    {
+                        FDefaultWidth = 370;
+                    }
+                    else
+                    {
+                        FDefaultWidth = 80;
+                    }
+
+                    FHasReadOnlyProperty = true;
+
                     return true;
                 }
                 else if (TYml2Xml.GetAttribute(curNode, "Type") == "Extract")
@@ -1200,25 +1210,39 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             string ControlName = ctrl.controlName;
-            Int32 buttonWidth = 40, textBoxWidth = 80;
+            Int32 buttonWidth = 40;
+            Int32 textBoxWidth = 80;
 
             base.SetControlProperties(writer, ctrl);
 
+            if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
+            {
+                writer.SetControlProperty(ControlName, "ShowLabel", "false");
+            }
+            // Note: the control defaults to 'ShowLabel' true, so this doesn't need to be set to 'true' in code.
+
+            writer.SetControlProperty(ControlName, "ASpecialSetting", "true");
+            writer.SetControlProperty(ControlName, "ButtonTextAlign", "System.Drawing.ContentAlignment.MiddleCenter");
+            writer.SetControlProperty(ControlName, "ListTable", "TtxtAutoPopulatedButtonLabel.TListTableEnum." + FButtonLabelType);
+            writer.SetControlProperty(ControlName, "PartnerClass", "\"\"");
+            writer.SetControlProperty(ControlName, "MaxLength", "32767");
+            writer.SetControlProperty(ControlName, "Tag", "\"CustomDisableAlthoughInvisible\"");
+            writer.SetControlProperty(ControlName, "TextBoxWidth", textBoxWidth.ToString());
+
             if (!(ctrl.HasAttribute("ReadOnly") && (ctrl.GetAttribute("ReadOnly").ToLower() == "true")))
             {
-                writer.SetControlProperty(ControlName, "ASpecialSetting", "true");
-                writer.SetControlProperty(ControlName, "ButtonTextAlign", "System.Drawing.ContentAlignment.MiddleCenter");
                 writer.SetControlProperty(ControlName, "ButtonWidth", buttonWidth.ToString());
-                writer.SetControlProperty(ControlName, "MaxLength", "32767");
                 writer.SetControlProperty(ControlName, "ReadOnly", "false");
-                writer.SetControlProperty(ControlName, "TextBoxWidth", textBoxWidth.ToString());
                 writer.SetControlProperty(ControlName,
                     "Font",
                     "new System.Drawing.Font(\"Verdana\", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0)");
-                writer.SetControlProperty(ControlName, "ListTable", "TtxtAutoPopulatedButtonLabel.TListTableEnum." + FButtonLabelType);
-                writer.SetControlProperty(ControlName, "PartnerClass", "\"\"");
-                writer.SetControlProperty(ControlName, "Tag", "\"CustomDisableAlthoughInvisible\"");
                 writer.SetControlProperty(ControlName, "ButtonText", "\"Find\"");
+            }
+            else
+            {
+                writer.SetControlProperty(ControlName, "ButtonWidth", "0");
+                writer.SetControlProperty(ctrl.controlName, "BorderStyle", "System.Windows.Forms.BorderStyle.None");
+                writer.SetControlProperty(ctrl.controlName, "Padding", "new System.Windows.Forms.Padding(0, 2, 0, 0)");
             }
         }
     }
