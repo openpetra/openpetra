@@ -21,3 +21,4 @@
             Label: Report parameters
             Controls: [txtCityName]
         txtCityName: {Label=Name of City, ParameterName=param_city}
+
