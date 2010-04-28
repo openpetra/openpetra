@@ -1472,13 +1472,14 @@ namespace Ict.Petra.Client.MPartner.Gui
              * Set up top part of the Screen
              */
 
-// TODO            ucoUpperPart.InitialiseDelegateMaintainWorkerField(new TDelegateMaintainWorkerField(MaintainWorkerField));
+            ucoUpperPart.InitialiseDelegateMaintainWorkerField(new TDelegateMaintainWorkerField(MaintainWorkerField));
             ucoUpperPart.MainDS = FMainDS;
             ucoUpperPart.VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-            ucoUpperPart.PartnerEditUIConnector = FPartnerEditUIConnector;
+            ucoUpperPart.PartnerEditUIConnector = FPartnerEditUIConnector;           
+            ucoUpperPart.InitialiseUserControl();
 
             // Show data in the top part of the screen
-            ucoUpperPart.ShowData();
+            ucoUpperPart.ShowData();            
 
             // Set up screen caption
             SetScreenCaption();
@@ -1512,6 +1513,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ucoUpperPart.Focus();
             this.Cursor = Cursors.Default;
+            
+
+            // Checks whether there any Tips to show to the User; if there are, they will be
+            // shown.
+// TODO            ucoUpperPart.CheckForUserTips();            
         }
 
         private void UcoUpperPart_PartnerClassMainDataChanged(System.Object Sender, TPartnerClassMainDataChangedEventArgs e)
@@ -1764,6 +1770,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// This Method is called through a Delegate from UC_PartnerEdit_TopPart.ManualCode.cs!
+        /// </summary>
+        private void MaintainWorkerField()
+        {
+            MaintainWorkerField(this, null);
+        }
+        
         private void MaintainWorkerField(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();

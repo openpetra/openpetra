@@ -21,108 +21,193 @@ RootNode:
             ControlsOrientation: horizontal
             Label: Key Partner Data
             Dock: Top  
+            
         pnlLeft:
-            Controls: [pnlPartnerInfo, pnlFamily, pnlAdditionalInfo]
+            Controls: [pnlPartnerInfo, pnlFamily, pnlPerson, pnlChurch, pnlOrganisation, pnlUnit, pnlBank, pnlVenue, pnlOther, pnlAdditionalInfo]
             Dock: Fill
+
+
+# Right-hand Panel (misc. information)            
         pnlRight:
-            Controls: 
-                Row0: [btnWorkerField, txtWorkerField]
-                Row1: [cmbPartnerStatus]
-                Row2: [txtStatusUpdated]
-                Row3: [txtLastContact]
+            Controls: [pnlWorkerField, pnlSpacer, cmbPartnerStatus, txtStatusUpdated, txtLastContact]
             Dock: Right
-        pnlAdditionalInfo:
-            Controls: [txtLastGift]
-            Dock: Top
-        txtLastGift:
-            DataField: MiscellaneousData.LastGiftInfo
-            ReadOnly: true
-            Width: 420
-            BorderStyle: None
-        txtLastContact:
-            DataField: MiscellaneousData.LastContactDate
-            ReadOnly: true
-            ColSpan: 2
-            Width: 115
-            BorderStyle: None
-        pnlPartnerInfo:
+            
+        pnlWorkerField: {Visible=false}
             Controls: 
-                Row0: [txtPartnerKey, lblEmpty2, txtPartnerClass]            
-            Dock: Top
+                Row0: [btnWorkerField, txtWorkerField]        
         btnWorkerField:
             Action: actMaintainWorkerField
         txtWorkerField:
             ReadOnly: true
             NoLabel: true
-            Width: 115
-            BorderStyle: None
-        cmbPartnerStatus: {Label=Partner &Status, DataField=StatusCode, List=PartnerStatusList, ColSpan = 2, Width = 100}
-        txtStatusUpdated:
-            ReadOnly: true
-            ColSpan: 2
-            Width: 115
+            Width: 100
             BorderStyle: None
             
-        pnlFamily: {Visible=true}
+        pnlSpacer:
+            Controls: [lblEmptySpacer]
+        lblEmptySpacer:
+            NoLabel: true                        
+            
+        cmbPartnerStatus: {Label=Partner &Status, DataField=StatusCode, List=PartnerStatusList, Width=100}
+        txtStatusUpdated:
+            ReadOnly: true
+            Width: 100
+            BorderStyle: None
+        txtLastContact:
+            DataField: MiscellaneousData.LastContactDate
+            ReadOnly: true
+            Width: 100
+            BorderStyle: None
+
+            
+# Header (Partner 'Head' Data)
+        pnlPartnerInfo:
             Controls: 
-                Row1: [txtFamilyTitle, txtFirstName, txtFamilyName]
-                Row2: [lblEmpty, cmbAddresseeTypeCode, chkNoSolicitations]
-            Dock: Top              
+                Row0: [txtPartnerKey, lblFamilyEmpty2, txtPartnerClass]            
+            Dock: Top
         txtPartnerKey:
             ReadOnly: true
             Label: Key
             Type: PartnerKey
             ShowLabel: false
             TabStop: false
+        lblFamilyEmpty2:
+            NoLabel: true                        
         txtPartnerClass:
             ReadOnly: true
             Label: Class
+            BorderStyle: None                        
+
+
+# Footer (Gift Information)
+        pnlAdditionalInfo: {ControlsOrientation=horizontal}
+            Controls: [txtLastGiftDetailsDate, txtLastGiftDetails]
+            Dock: Bottom
+        txtLastGiftDetailsDate:
+            Label: Last Gift
+            DataField: MiscellaneousData.LastGiftDate
+            ReadOnly: true
+            Width: 88
+            BorderStyle: None        
+        txtLastGiftDetails:
+            NoLabel: true
+            DataField: MiscellaneousData.LastGiftInfo
+            ReadOnly: true
+            Width: 328
             BorderStyle: None
+                            
+ 
+# Data Fields for Partner Class FAMILY 
+        pnlFamily: {Visible=false}
+            Controls: 
+                Row1: [txtFamilyTitle, txtFamilyFirstName, txtFamilyFamilyName]
+                Row2: [lblFamilyEmpty, cmbFamilyAddresseeTypeCode, chkFamilyNoSolicitations]
+            Dock: Top                          
         txtFamilyTitle:
             Label: Title/Na&me            
             Width: 90
             DataField: PFamily.Title
-        txtFirstName:
+        txtFamilyFirstName:
             NoLabel: true
             DataField: PFamily.FirstName
-        txtFamilyName:
+        txtFamilyFamilyName:
             NoLabel: true
             DataField: PFamily.FamilyName
-        lblEmpty:
+        lblFamilyEmpty:
             NoLabel: true
             Width: 90            
-        lblEmpty2:
-            NoLabel: true            
-        cmbAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}
-        chkNoSolicitations:
+        cmbFamilyAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}
+        chkFamilyNoSolicitations:
             Label: No Solicitations
             DataField: NoSolicitations
+            OnChange: UpdateNoSolicitationsColouring
 
+            
+# Data Fields for Partner Class PERSON
         pnlPerson: {Visible=false}
             Controls: 
-                Row1: [txtPersonTitle, txtFirstNamePers, txtMiddleName1, txtFamilyNamePers]
-                Row2: [cmbGender, cmbAddresseeTypeCodePers, chkNoSolicitationsPers]
+                Row1: [txtPersonTitle, txtPersonFirstName, txtPersonMiddleName, txtPersonFamilyName]
+                Row2: [cmbPersonGender, cmbPersonAddresseeTypeCode, chkPersonNoSolicitations]
             Dock: Top
             Visible: False
-        lblEmpty3:
-            NoLabel: true                        
         txtPersonTitle:
             Label: Title/Na&me
             DataField: PPerson.Title
             Width: 90
-        txtFirstNamePers:
+        txtPersonFirstName:
             NoLabel: true
             DataField: PPerson.FirstName
             Width: 157
-        txtMiddleName1:
+        txtPersonMiddleName:
             NoLabel: true
             DataField: PPerson.MiddleName1
             Width: 30
-        txtFamilyNamePers:
+        txtPersonFamilyName:
             NoLabel: true
             DataField: PPerson.FamilyName
-        cmbGender: {Label=&Gender, DataField=PPerson.Gender, List=GenderList, Width=88}
-        cmbAddresseeTypeCodePers: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105, ColSpan=2}
-        chkNoSolicitationsPers:
+        cmbPersonGender: {Label=&Gender, DataField=PPerson.Gender, List=GenderList, Width=88}
+        cmbPersonAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105, ColSpan=2}
+        chkPersonNoSolicitations:
             Label: No Solicitations
             DataField: NoSolicitations
+            OnChange: UpdateNoSolicitationsColouring
+
+            
+# Data Fields for Partner Class CHURCH            
+        pnlChurch: {Visible=false}
+            Controls: [txtChurchName]
+            Dock: Top
+        txtChurchName:
+            Label: Title/Na&me            
+            Width: 428
+            
+            
+# Data Fields for Partner Class ORGANISATION      
+        pnlOrganisation: {Visible=false}
+            Controls: [txtOrganisationName]
+            Dock: Top
+        txtOrganisationName:
+            Label: Title/Na&me            
+            Width: 428
+            
+            
+# Data Fields for Partner Class UNIT
+        pnlUnit: {Visible=false}
+            Controls: [txtUnitName]
+            Dock: Top
+        txtUnitName:
+            Label: Title/Na&me            
+            Width: 428
+            DataField: PUnit.UnitName
+            
+            
+# Data Fields for Partner Class BANK
+        pnlBank: {Visible=false}
+            Controls: [txtBankName]
+            Dock: Top
+        txtBankName:
+            Label: Title/Na&me            
+            Width: 428
+			
+# Data Fields for Partner Class VENUE
+        pnlVenue: {Visible=false}
+            Controls: [txtVenueName]
+            Dock: Top
+        txtVenueName:
+            Label: Title/Na&me            
+            Width: 428
+
+			
+# Data Fields for all other Partner Classes
+        pnlOther: {ControlsOrientation=horizontal, Visible=false}
+            Controls: [lblOtherEmpty, cmbOtherAddresseeTypeCode, chkOtherNoSolicitations]
+            Dock: Fill                          
+        lblOtherEmpty:
+            NoLabel: true
+            Width: 90            
+        cmbOtherAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}
+        chkOtherNoSolicitations:
+            Label: No Solicitations
+            DataField: NoSolicitations
+            OnChange: UpdateNoSolicitationsColouring
+        
