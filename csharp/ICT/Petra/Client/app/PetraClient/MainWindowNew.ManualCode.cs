@@ -50,29 +50,38 @@ namespace Ict.Petra.Client.App.PetraClient
             RunTestAction();
         }
 
+        /// <summary>
+        /// For development and testing purposes this Method can open a screen with parameters that
+        /// come either from the .config file or Command Line.
+        /// The 'Test Action' will not be run if the Control Key is pressed.
+        /// </summary>
+        /// <remarks>
+        /// sample action: TestAction="Namespace=Ict.Petra.Client.MPartner.Gui,ActionOpenScreen=TFrmPartnerEdit2,PartnerKey=0043005002,InitiallySelectedTabPage=petpDetails"
+        ///</remarks>
         private void RunTestAction()
         {
-            // for testing purposes. we can open a screen with parameters by default with a value in the config file or commandline
-            // sample action: TestAction="Namespace=Ict.Petra.Client.MPartner.Gui,ActionOpenScreen=TFrmPartnerEdit2,PartnerKey=0043005002,InitiallySelectedTabPage=petpDetails"
-            string testAction = TAppSettingsManager.GetValueStatic("TestAction");
-
-            if (testAction.Length > 0)
+            if (System.Windows.Forms.Form.ModifierKeys != Keys.Control)
             {
-                XmlDocument temp = new XmlDocument();
-                XmlNode testActionNode = temp.CreateElement("testAction");
-                temp.AppendChild(testActionNode);
+                string testAction = TAppSettingsManager.GetValueStatic("TestAction");
 
-                testAction = testAction.Trim(new char[] { '"' });
-
-                while (testAction.Length > 0)
+                if (testAction.Length > 0)
                 {
-                    string[] pair = StringHelper.GetNextCSV(ref testAction, ",").Split(new char[] { '=' });
-                    XmlAttribute attr = temp.CreateAttribute(pair[0]);
-                    attr.Value = pair[1];
-                    testActionNode.Attributes.Append(attr);
-                }
+                    XmlDocument temp = new XmlDocument();
+                    XmlNode testActionNode = temp.CreateElement("testAction");
+                    temp.AppendChild(testActionNode);
 
-                TLstTasks.ExecuteAction(testActionNode, IntPtr.Zero);
+                    testAction = testAction.Trim(new char[] { '"' });
+
+                    while (testAction.Length > 0)
+                    {
+                        string[] pair = StringHelper.GetNextCSV(ref testAction, ",").Split(new char[] { '=' });
+                        XmlAttribute attr = temp.CreateAttribute(pair[0]);
+                        attr.Value = pair[1];
+                        testActionNode.Attributes.Append(attr);
+                    }
+
+                    TLstTasks.ExecuteAction(testActionNode, IntPtr.Zero);
+                }
             }
         }
 
