@@ -150,6 +150,12 @@ namespace Ict.Tools.CodeGeneration
                 XmlNode rootNode = (XmlNode)yamlParser.FCodeStorage.FXmlNodes[TParseXAML.ROOTNODEYML];
                 string formType = TYml2Xml.GetAttribute(rootNode, "FormType");
 
+                if (formType == "abstract")
+                {
+                	Console.WriteLine("Ignore yaml file because it has the formtype abstract: " + FXamlFilename);
+                	return true;
+                }
+                
                 // the Template attribute is also quite important, because it determines which code is written
                 // FormType is mainly important for the difference of the controls of reports and normal screens
                 writer = GetWriter(formType);

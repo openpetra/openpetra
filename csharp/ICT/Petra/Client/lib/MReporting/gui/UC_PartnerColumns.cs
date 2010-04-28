@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from UC_PartnerColumns.yaml and template controlMaintainTable
+/* auto generated with nant generateWinforms from UC_PartnerColumns.yaml and template usercontrolUnbound
  *
  * DO NOT edit manually, DO NOT edit with the designer
  *
@@ -97,6 +97,12 @@ namespace Ict.Petra.Client.MReporting.Gui
             FMainDS = value;
         }
     }
+
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingStarted;
+
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingFinished;
 
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()

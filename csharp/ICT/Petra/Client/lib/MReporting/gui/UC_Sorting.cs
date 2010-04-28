@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from UC_Sorting.yaml and template controlMaintainTable
+/* auto generated with nant generateWinforms from UC_Sorting.yaml and template usercontrolUnbound
  *
  * DO NOT edit manually, DO NOT edit with the designer
  *
@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.MReporting.Gui
   {
     private TFrmPetraReportingUtils FPetraUtilsObject;
 
-    private int FMainDS;
+    private Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS FMainDS;
 
     /// constructor
     public TFrmUC_Sorting() : base()
@@ -82,13 +82,19 @@ namespace Ict.Petra.Client.MReporting.Gui
     }
 
     /// dataset for the whole screen
-    public int MainDS
+    public Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS MainDS
     {
         set
         {
             FMainDS = value;
         }
     }
+
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingStarted;
+
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingFinished;
 
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()

@@ -168,6 +168,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             //
             this.btnDummy.Location = new System.Drawing.Point(2,2);
             this.btnDummy.Name = "btnDummy";
+            this.btnDummy.Visible = false;
             this.btnDummy.AutoSize = true;
             this.btnDummy.Text = "DummyButton";
             this.tableLayoutPanel2.ColumnCount = 1;
@@ -299,6 +300,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.lblCalculation.AutoSize = true;
             this.lblCalculation.Text = "Content of Column::";
             this.lblCalculation.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCalculation.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtColumnWidth
             //
@@ -313,6 +315,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.lblColumnWidth.AutoSize = true;
             this.lblColumnWidth.Text = "Width of Column::";
             this.lblColumnWidth.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblColumnWidth.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // lblCm
             //

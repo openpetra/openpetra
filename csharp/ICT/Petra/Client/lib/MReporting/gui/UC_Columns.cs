@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from UC_Columns.yaml and template controlMaintainTable
+/* auto generated with nant generateWinforms from UC_Columns.yaml and template usercontrolUnbound
  *
  * DO NOT edit manually, DO NOT edit with the designer
  *
@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.MReporting.Gui
   {
     private Ict.Petra.Client.CommonForms.TFrmPetraUtils FPetraUtilsObject;
 
-    private int FMainDS;
+    private Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS FMainDS;
 
     /// constructor
     public TFrmUC_Columns() : base()
@@ -84,7 +84,7 @@ namespace Ict.Petra.Client.MReporting.Gui
     }
 
     /// dataset for the whole screen
-    public int MainDS
+    public Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS MainDS
     {
         set
         {
@@ -92,10 +92,16 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
     }
 
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingStarted;
+
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingFinished;
+
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
-        grdColumns.Columns.Clear();
+        FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
     }
 
 #region Implement interface functions
@@ -129,6 +135,30 @@ namespace Ict.Petra.Client.MReporting.Gui
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
 #endregion
+
+#region Action Handling
+
+    /// auto generated
+    public void ActionEnabledEvent(object sender, ActionEventArgs e)
+    {
+        if (e.ActionName == "actMoveColumn2Left")
+        {
+            btnMoveColumn2Left.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actMoveColumn2Right")
+        {
+            btnMoveColumn2Right.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actAddColumn")
+        {
+            btnAddColumn.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actRemoveColumn")
+        {
+            btnRemoveColumn.Enabled = e.Enabled;
+        }
+    }
+
+#endregion
   }
-  
 }

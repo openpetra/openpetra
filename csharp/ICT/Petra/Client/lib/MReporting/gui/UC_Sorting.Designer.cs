@@ -109,6 +109,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.lblSortBy1.AutoSize = true;
             this.lblSortBy1.Text = "Sort First By:";
             this.lblSortBy1.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblSortBy1.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbSortBy2
             //
@@ -124,6 +125,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.lblSortBy2.AutoSize = true;
             this.lblSortBy2.Text = "Sort Then By:";
             this.lblSortBy2.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblSortBy2.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbSortBy3
             //
@@ -139,6 +141,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.lblSortBy3.AutoSize = true;
             this.lblSortBy3.Text = "Sort Last By:";
             this.lblSortBy3.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblSortBy3.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
