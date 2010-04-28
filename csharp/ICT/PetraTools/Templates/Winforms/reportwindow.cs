@@ -48,6 +48,8 @@ namespace {#NAMESPACE}
       {#CATALOGI18N}
       #endregion
 
+      {#ASSIGNFONTATTRIBUTES}
+      
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
 
       FPetraUtilsObject.FXMLFiles = "{#XMLFILES}";
