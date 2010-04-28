@@ -150,7 +150,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
 #endif
             FAsyncExecProgress = new TAsynchronousExecutionProgress();
-            FPagedDataSetObject = new TPagedDataSet();
+            FPagedDataSetObject = new TPagedDataSet(new PartnerFindTDSSearchResultTable());
 
             /* Pass the TAsynchronousExecutionProgress object to FPagedDataSetObject so that it
              * can update execution status */
@@ -343,9 +343,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             // Thread.Sleep(500);    enable only for simulation of slow (modem) connection!
 
-            TPPartnerAddressAggregate.ApplySecurity(ref ReturnValue);
+            if (ReturnValue != null)
+            {
+                TPPartnerAddressAggregate.ApplySecurity(ref ReturnValue);
+            }
 
-            return ReturnValue;
+            return (PartnerFindTDSSearchResultTable)ReturnValue;
         }
 
         /// <summary>
