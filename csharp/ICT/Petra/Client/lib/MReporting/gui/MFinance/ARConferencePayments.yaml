@@ -7,7 +7,6 @@
         XMLFILES: [AccountsReceivable/ConferencePayments.xml]
         REPORTNAME: ConferencePayments
         CURRENTREPORT: ConferencePayments
-        ADDAVAILABLEFUNCTIONS: BLANK
         SETAVAILABLEFUNCTIONS: BLANK
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK

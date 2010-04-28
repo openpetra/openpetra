@@ -9,7 +9,6 @@
         XMLFILES: [incomeexpensestatement.xml,finance.xml,common.xml]
         REPORTNAME: Income Expense Statement
         CURRENTREPORT: Income Expense Statement
-        ADDAVAILABLEFUNCTIONS: BLANK
         SETAVAILABLEFUNCTIONS: BLANK
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK

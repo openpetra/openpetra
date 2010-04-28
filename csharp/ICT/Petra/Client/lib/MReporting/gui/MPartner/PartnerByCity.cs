@@ -182,7 +182,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
 	
-	  FPetraUtilsObject.AddAvailableFunction("Partner Name", 2.5); FPetraUtilsObject.AddAvailableFunction("Partner Key", 2.5); FPetraUtilsObject.AddAvailableFunction("City", 2.5); FPetraUtilsObject.AddAvailableFunction("Post Code", 2.5); FPetraUtilsObject.AddAvailableFunction("Country", 2.5);
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("City", 4.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Name", 3.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Key", 2.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Post Code", 2.5));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Country", 3.5));
 	
       ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
       ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());

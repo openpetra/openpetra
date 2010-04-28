@@ -7,7 +7,6 @@
         XMLFILES: [partnerbycity.xml]
         REPORTNAME: Partner by City
         CURRENTREPORT: Partner by City
-        ADDAVAILABLEFUNCTIONS: FPetraUtilsObject.AddAvailableFunction("Partner Name", 2.5); FPetraUtilsObject.AddAvailableFunction("Partner Key", 2.5); FPetraUtilsObject.AddAvailableFunction("City", 2.5); FPetraUtilsObject.AddAvailableFunction("Post Code", 2.5); FPetraUtilsObject.AddAvailableFunction("Country", 2.5);
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
@@ -23,3 +22,20 @@
             Order: AlwaysFirst
         txtCityName: {Label=Name of City, ParameterName=param_city}
 
+    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
+        Para1:
+            Name: City
+            Parameter: 4.0
+        Para2:
+            Name: Partner Name
+            Parameter: 3.0
+        Para3:
+            Name: Partner Key
+            Parameter: 2.0
+        Para4:
+            Name: Post Code
+            Parameter: 2.5
+        Para5:
+            Name: Country
+            Parameter: 3.5
+            

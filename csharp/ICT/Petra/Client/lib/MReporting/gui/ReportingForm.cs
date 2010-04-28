@@ -772,9 +772,18 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         /// <param name="AName">Name of the field</param>
         /// <param name="AWidth">Default width of the field</param>
-        public void AddAvailableFunction(String AName, double AWidth)
+        public void AddAvailableFunction(String AName)
         {
-        	FAvailableFunctions.Add(new TColumnFunction(AName, AWidth));
+        	FAvailableFunctions.Add(new TColumnFunction(AName));
+        }
+        
+        /// <summary>
+        /// Add an item to the fields that can be selected in the report
+        /// </summary>
+        /// <param name="AFunction">The function to add</param>
+        public void AddAvailableFunction(TColumnFunction AFunction)
+        {
+        	FAvailableFunctions.Add(AFunction);
         }
 
         /// <summary>
@@ -915,9 +924,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>e.g.: Regional Director; This will be displayed</summary>
         public String FCalculationParameterValue;
         
-        /// <summary>width of the column in cm e.g 1.5 </summary>
-        public double FColumnWidth;
-
         /// <summary>
         /// Initialisation
         /// </summary>
@@ -934,10 +940,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// 
         /// </summary>
         /// <returns>void</returns>
-        public TColumnFunction(String ADescription, double AColumnWidth, System.Int32 ANumberColumns)
+        public TColumnFunction(String ADescription, System.Int32 ANumberColumns)
         {
             FDescription = ADescription;
-            FColumnWidth = AColumnWidth;
             FNumberColumns = ANumberColumns;
             FCalculationParameterName = "";
             FCalculationParameterValue = "";
@@ -947,11 +952,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// Constructor
         /// </summary>
         /// <param name="ADescription">Name of the field</param>
-        /// <param name="AColumnWidth">Default width</param>
-        public TColumnFunction(String ADescription, double AColumnWidth)
+        public TColumnFunction(String ADescription)
         {
             FDescription = ADescription;
-            FColumnWidth = AColumnWidth;
             FNumberColumns = 0;
             FCalculationParameterName = "";
             FCalculationParameterValue = "";
@@ -963,14 +966,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="ADescription">Name of the field</param>
         /// <param name="ACalculationParameterName">Name of the report header</param>
         /// <param name="ACalculationParameterValue">Name of the variable during report calculation</param>
-        /// <param name="AColumnWidth">Default width</param>
-        public TColumnFunction(String ADescription, String ACalculationParameterName, String ACalculationParameterValue, double AColumnWidth)
+        public TColumnFunction(String ADescription, String ACalculationParameterName, String ACalculationParameterValue)
         {
             FNumberColumns = 0;
             FDescription = ADescription;
             FCalculationParameterName = ACalculationParameterName;
             FCalculationParameterValue = ACalculationParameterValue;
-            FColumnWidth = AColumnWidth;
         }
 
         /// <summary>
@@ -997,6 +998,58 @@ namespace Ict.Petra.Client.MReporting.Gui
         	return String.Compare(this.FDescription, tmp.FDescription);
         }
         #endregion
+    }
+    
+    /// <summary>
+    /// Column function for partner module
+    /// </summary>
+    public class TPartnerColumnFunction : TColumnFunction
+    {
+    	/// <summary>Default width of the column in cm e.g 1.5 </summary>
+    	public double FColumnWidth;
+    	
+    	/// <summary>
+        /// constructor used for functions between columns
+        /// 
+        /// </summary>
+        /// <returns>void</returns>
+        public TPartnerColumnFunction(String ADescription, double AColumnWidth, System.Int32 ANumberColumns) :
+        	base (ADescription, ANumberColumns)
+        {
+            FColumnWidth = AColumnWidth;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="ADescription">Name of the field</param>
+        public TPartnerColumnFunction(String ADescription) : base(ADescription)
+        {
+            FColumnWidth = 2.0;
+        }
+        
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="ADescription">Name of the field</param>
+        /// <param name="AColumnWidth">Default width</param>
+        public TPartnerColumnFunction(String ADescription, double AColumnWidth) : base(ADescription)
+        {
+            FColumnWidth = AColumnWidth;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="ADescription">Name of the field</param>
+        /// <param name="ACalculationParameterName">Name of the report header</param>
+        /// <param name="ACalculationParameterValue">Name of the variable during report calculation</param>
+        /// <param name="AColumnWidth">Default width</param>
+        public TPartnerColumnFunction(String ADescription, String ACalculationParameterName, String ACalculationParameterValue, double AColumnWidth) :
+        	base(ADescription, ACalculationParameterName, ACalculationParameterValue)
+        {
+            FColumnWidth = AColumnWidth;
+        }
     }
     
     /// <summary>
