@@ -180,7 +180,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.btnMoveColumn2Left.Location = new System.Drawing.Point(2,2);
             this.btnMoveColumn2Left.Name = "btnMoveColumn2Left";
             this.btnMoveColumn2Left.AutoSize = true;
-            this.btnMoveColumn2Left.Click += new System.EventHandler(this.MoveColumn2Left);
             this.btnMoveColumn2Left.Text = "Left:";
             //
             // btnMoveColumn2Right
@@ -188,7 +187,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.btnMoveColumn2Right.Location = new System.Drawing.Point(2,2);
             this.btnMoveColumn2Right.Name = "btnMoveColumn2Right";
             this.btnMoveColumn2Right.AutoSize = true;
-            this.btnMoveColumn2Right.Click += new System.EventHandler(this.MoveColumn2Right);
             this.btnMoveColumn2Right.Text = "Right";
             this.tableLayoutPanel3.ColumnCount = 1;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -223,7 +221,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.btnAddColumn.Location = new System.Drawing.Point(2,2);
             this.btnAddColumn.Name = "btnAddColumn";
             this.btnAddColumn.AutoSize = true;
-            this.btnAddColumn.Click += new System.EventHandler(this.AddColumn);
             this.btnAddColumn.Text = "Add";
             //
             // btnRemoveColumn
@@ -231,7 +228,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.btnRemoveColumn.Location = new System.Drawing.Point(2,2);
             this.btnRemoveColumn.Name = "btnRemoveColumn";
             this.btnRemoveColumn.AutoSize = true;
-            this.btnRemoveColumn.Click += new System.EventHandler(this.RemoveColumn);
             this.btnRemoveColumn.Text = "Remove";
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

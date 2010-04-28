@@ -157,7 +157,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 		private void CmbContentChanged(System.Object sender, System.EventArgs e)
 		{
 			String SelectedFunction = cmbCalculation.GetSelectedString();
-			foreach(TColumnFunction Func in FAvailableFunctions)
+			foreach(TPartnerColumnFunction Func in FAvailableFunctions)
 			{
 				if (SelectedFunction == Func.GetDisplayValue())
 				{
@@ -354,7 +354,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 
                 String calculation =
                     FColumnParameters.GetOrDefault("param_calculation", ASelectedColumn, new TVariant(cmbCalculation.GetSelectedString())).ToString();
-                TColumnFunction Func = (TColumnFunction)GetFunction(calculation);
+                TPartnerColumnFunction Func = (TPartnerColumnFunction)GetFunction(calculation);
 
                 if (Func != null)
                 {
@@ -562,7 +562,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             System.Int32 counter;
             String calculation;
             System.Int32 rowCounter;
-            TColumnFunction Func;
+            TPartnerColumnFunction Func;
 
 //            /* if the columns page is not displayed, don't bother filling the grid */
 //            if (TCl_ReportSettings.TabPages.IndexOf(TPg_Columns) == -1)
@@ -588,7 +588,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             for (counter = 0; counter <= FColumnParameters.Get("MaxDisplayColumns").ToInt() - 1; counter += 1)
             {
                 calculation = FColumnParameters.GetOrDefault("param_calculation", counter, new TVariant(cmbCalculation.GetSelectedString())).ToString();
-                Func = (TColumnFunction)GetFunction(calculation);
+                Func = (TPartnerColumnFunction)GetFunction(calculation);
 
                 if (Func != null)
                 {

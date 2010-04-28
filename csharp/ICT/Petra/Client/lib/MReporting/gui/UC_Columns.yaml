@@ -4,19 +4,6 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS
     FormType: edit
     Template: usercontrolUnbound
-    Actions:
-        actApplyColumn:
-            ActionClick: ApplyColumn
-        actCancelColumn:
-            ActionClick: CancelColumn
-        actAddColumn:
-            ActionClick: AddColumn
-        actRemoveColumn:
-            ActionClick: RemoveColumn
-        actMoveColumn2Left:
-            ActionClick: MoveColumn2Left
-        actMoveColumn2Right:
-            ActionClick: MoveColumn2Right
     Controls:
         pnlContent:
             Controls: [pnlTop, pnlBottom]

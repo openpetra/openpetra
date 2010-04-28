@@ -101,7 +101,6 @@ namespace Ict.Petra.Client.MReporting.Gui
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
-        FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
     }
 
 #region Implement interface functions
@@ -134,31 +133,6 @@ namespace Ict.Petra.Client.MReporting.Gui
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
-#endregion
-
-#region Action Handling
-
-    /// auto generated
-    public void ActionEnabledEvent(object sender, ActionEventArgs e)
-    {
-        if (e.ActionName == "actMoveColumn2Left")
-        {
-            btnMoveColumn2Left.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actMoveColumn2Right")
-        {
-            btnMoveColumn2Right.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actAddColumn")
-        {
-            btnAddColumn.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actRemoveColumn")
-        {
-            btnRemoveColumn.Enabled = e.Enabled;
-        }
-    }
-
 #endregion
   }
 }
