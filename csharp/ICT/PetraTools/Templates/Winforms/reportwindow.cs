@@ -78,6 +78,8 @@ namespace {#NAMESPACE}
     */
     public void ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
     {
+      ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
+      
       {#READCONTROLSLOCALVARS}
 
       {#READCONTROLS}

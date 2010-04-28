@@ -20,5 +20,6 @@
         tpgReportSpecific:
             Label: Report parameters
             Controls: [txtCityName]
+            Order: AlwaysFirst
         txtCityName: {Label=Name of City, ParameterName=param_city}
 

@@ -53,6 +53,9 @@ namespace Ict.Petra.Client.MReporting.Gui
 	/// </summary>
 	public class TUC_ColumnHelper
 	{
+		/// <summary>
+		/// constructor
+		/// </summary>
 		public TUC_ColumnHelper()
 		{
 		}
@@ -167,29 +170,31 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// Remove one colum from the parameter list.
         /// </summary>
         /// <param name="AColumnParameters">List with the current columns</param>
-        /// <param name="AColumnIndex">Index of the column to remove</param></param>
-        /// <returns>void</returns>
-        public static void RemoveColumn(ref TParameterList AColumnParameters, int AColumnIndex)
+        /// <param name="AColumnIndex">Index of the column to remove</param>
+        /// <returns>the MaxDisplayColumns number</returns>
+        public static System.Int32 RemoveColumn(ref TParameterList AColumnParameters, int AColumnIndex)
         {
         	AColumnParameters.RemoveColumn(AColumnIndex);
 
             /* need to move the following columns to the left */
-            int MaxColumn = AColumnParameters.Get("MaxDisplayColumns").ToInt();
+            System.Int32 MaxColumn = AColumnParameters.Get("MaxDisplayColumns").ToInt() - 1;
 
-            for (int Counter = AColumnIndex + 1; Counter <= MaxColumn - 1; Counter += 1)
+            for (int Counter = AColumnIndex + 1; Counter <= MaxColumn; Counter += 1)
             {
                 AColumnParameters.MoveColumn(Counter, Counter - 1);
             }
 
-            AColumnParameters.Add("MaxDisplayColumns", MaxColumn - 1);
+            AColumnParameters.Add("MaxDisplayColumns", MaxColumn);
+            
+            return MaxColumn;
         }
         
         /// <summary>
         /// Adds a new column to the column parameter list at the specified index.
         /// </summary>
         /// <param name="AColumnParameters">List with the current columns</param>
-        /// <param name="ASelectedColumn"></param>
-        /// <returns></returns>
+        /// <param name="AColumnIndex">Index where the new column is added</param>
+        /// <returns>the MaxDisplayColumns number</returns>
         public static System.Int32  AddColumn(ref TParameterList AColumnParameters, int AColumnIndex)
         {
         	System.Int32 NewColumn;
@@ -224,8 +229,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         /// <param name="AColumnParameters">List with the current columns</param>
         /// <param name="ACalculator"></param>
-        /// <returns>void</returns>
-        public static void ReadControls(ref TParameterList AColumnParameters, ref TRptCalculator ACalculator)
+        /// <returns>the MaxDisplayColumns number</returns>
+        public static System.Int32 ReadControls(ref TParameterList AColumnParameters, ref TRptCalculator ACalculator)
         {
             System.Int32 MaxDisplayColumns;
            
@@ -238,15 +243,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             
             ACalculator.SetMaxDisplayColumns(MaxDisplayColumns);
+            
+            return MaxDisplayColumns;
         }
         
         /// <summary>
         /// Sets the selected values in the controls, using the parameters loaded from a file
         /// 
         /// </summary>
+        /// <param name="AColumnParameters">List with the current columns</param>
         /// <param name="AParameters"></param>
-        /// <returns>void</returns>
-        public static void SetControls(ref TParameterList AColumnParameters, ref TParameterList AParameters)
+        /// <returns>the MaxDisplayColumns number</returns>
+        public static System.Int32 SetControls(ref TParameterList AColumnParameters, ref TParameterList AParameters)
         {
             System.Int32 MaxDisplayColumns = 0;
 
@@ -264,15 +272,23 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
             	AColumnParameters.Copy(AParameters, Counter, -1, eParameterFit.eExact, Counter);
             }
+            
+            return MaxDisplayColumns;
         }
         
-        public static void BindDataToGrid(ref TParameterList AColumnParameters, ref TSgrdDataGridPaged AGrid, ref DataTable AColumnTable)
+        /// <summary>
+        /// Loads the data of the column parameters to the grid
+        /// </summary>
+        /// <param name="AGrid">Grid to show the values</param>
+        /// <param name="AColumnTable">Table that holds the column parameter data</param>
+        public static void LoadDataToGrid(ref TSgrdDataGridPaged AGrid,
+                                          ref DataTable AColumnTable)
         {
         	SourceGrid.Cells.ColumnHeader myColumnHeader;
             
             AGrid.Columns.Clear();
 
-            for (int counter = 0; counter <= AColumnParameters.Get("MaxDisplayColumns").ToInt() - 1; counter += 1)
+            for (int counter = 0; counter < AColumnTable.Columns.Count; ++counter)
             {
                 AGrid.AddTextColumn("Column " + Convert.ToString(counter + 1), AColumnTable.Columns[counter]);
                 myColumnHeader = (SourceGrid.Cells.ColumnHeader)AGrid.Columns[counter].HeaderCell;

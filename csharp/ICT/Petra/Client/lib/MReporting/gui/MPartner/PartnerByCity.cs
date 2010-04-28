@@ -114,8 +114,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       //                                 mniSaveSettings, mniSaveSettingsAs, mniLoadSettingsDialog, mniMaintainSettings);
       this.SetAvailableFunctions();
 
-      ucoReportSorting.InitialiseData();
-      ucoReportColumns.InitialiseData();
+      ucoReportSorting.InitialiseData(FPetraUtilsObject);
+      ucoReportColumns.InitialiseData(FPetraUtilsObject);
 	
 	  FPetraUtilsObject.LoadDefaultSettings();
     }
@@ -150,6 +150,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     */
     public void ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
     {
+      ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
+
       ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
 
       ACalc.AddParameter("param_city", this.txtCityName.Text);

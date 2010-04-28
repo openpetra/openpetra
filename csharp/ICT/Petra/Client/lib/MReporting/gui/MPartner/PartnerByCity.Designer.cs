@@ -145,6 +145,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.lblCityName.AutoSize = true;
             this.lblCityName.Text = "Name of City:";
             this.lblCityName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCityName.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

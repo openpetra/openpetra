@@ -59,9 +59,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// Initialisation
         /// </summary>
-		public void InitialiseData()
+		public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
 		{
-			
+			FPetraUtilsObject = APetraUtilsObject;
 		}
 		
         /// <summary>

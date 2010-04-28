@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -85,6 +85,9 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>this shows which column is currently selected; it is 1 if no column is selected</summary>
         protected int FSelectedColumn;
+        
+        /// <summary>holds the number of visible columns. This value is usually set from UC_PartnerColumns </summary>
+        public int FMaxDisplayColumns;
 
         /// <summary>List of functions between columns, that are available for this report; is set by SetAvailableFunctions</summary>
         protected ArrayList FAvailableFunctions;

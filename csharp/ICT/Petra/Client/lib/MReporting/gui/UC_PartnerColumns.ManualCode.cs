@@ -64,20 +64,18 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>helper variable to unselect the column in the grid after cancel or apply</summary>
         private bool FDuringApplyOrCancel;
         
-        public System.Windows.Forms.Button GetBtnApply()
-        {
-        	return btnApply;
-        }
-        
         /// <summary>
         /// Initialisation
         /// </summary>
-		public void InitialiseData()
+		public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
 		{
 			btnDummy.Visible = false;
 			
+			FPetraUtilsObject = APetraUtilsObject;
+			
         	FColumnParameters = new TParameterList();
             FColumnParameters.Add("MaxDisplayColumns", 0);
+            FPetraUtilsObject.FMaxDisplayColumns = 0;
             
             FDuringApplyOrCancel = false;
             
@@ -129,17 +127,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         public void ReadControls(TRptCalculator ACalculator, TReportActionEnum AReportAction)
         {
-            System.Int32 MaxDisplayColumns;
-           
-            MaxDisplayColumns = FColumnParameters.Get("MaxDisplayColumns").ToInt();
-            ACalculator.GetParameters().Add("MaxDisplayColumns", MaxDisplayColumns);
-
-            for (int Counter = 0; Counter <= MaxDisplayColumns - 1; Counter += 1)
-            {
-            	ACalculator.GetParameters().Copy(FColumnParameters, Counter, -1, eParameterFit.eExact, Counter);
-            }
+        	System.Int32 MaxDisplayColumns;
+        	
+        	MaxDisplayColumns = TUC_ColumnHelper.ReadControls(ref FColumnParameters, ref ACalculator);
             
-            ACalculator.SetMaxDisplayColumns(MaxDisplayColumns);
+            FPetraUtilsObject.FMaxDisplayColumns = MaxDisplayColumns;
         }
 
         /// <summary>
@@ -150,22 +142,13 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         public void SetControls(TParameterList AParameters)
         {
-            System.Int32 MaxDisplayColumns = 0;
+            System.Int32 MaxDisplayColumns;
 
+            MaxDisplayColumns = TUC_ColumnHelper.SetControls(ref FColumnParameters, ref AParameters);
             /* copy values for columns to the current set of parameters */
-            FColumnParameters.Clear();
-            
-            if (AParameters.Exists("MaxDisplayColumns"))
-            {
-	            MaxDisplayColumns = AParameters.Get("MaxDisplayColumns").ToInt();
-            }
-            
-            FColumnParameters.Add("MaxDisplayColumns", MaxDisplayColumns);
 
-            for (int Counter = 0; Counter <= MaxDisplayColumns - 1; Counter += 1)
-            {
-            	FColumnParameters.Copy(AParameters, Counter, -1, eParameterFit.eExact, Counter);
-            }
+            FPetraUtilsObject.FMaxDisplayColumns = MaxDisplayColumns;
+            
             FillColumnGrid();
         }
 #endregion
@@ -422,33 +405,13 @@ namespace Ict.Petra.Client.MReporting.Gui
         protected bool AddColumn(System.Int32 ASelectedColumn)
         {
             bool ReturnValue;
-
             System.Int32 NewColumn;
-            System.Int32 NewMaxColumn;
-            System.Int32 Counter;
             ReturnValue = false;
 
             if (SelectColumn(-1))
             {
-                if (ASelectedColumn == -1)
-                {
-                	NewMaxColumn = FColumnParameters.Get("MaxDisplayColumns").ToInt();
-                    NewColumn = NewMaxColumn;
-                    FColumnParameters.Add("MaxDisplayColumns", NewColumn + 1);
-                }
-                else
-                {
-                    NewColumn = ASelectedColumn + 1;
-                    NewMaxColumn = FColumnParameters.Get("MaxDisplayColumns").ToInt() + 1;
-                    FColumnParameters.Add("MaxDisplayColumns", NewMaxColumn);
-
-                    /* need to move the columns to the right */
-                    for (Counter = NewMaxColumn - 1; Counter >= NewColumn + 1; Counter -= 1)
-                    {
-                        FColumnParameters.MoveColumn(Counter - 1, Counter);
-                    }
-                }
-
+            	NewColumn = TUC_ColumnHelper.AddColumn(ref FColumnParameters, ASelectedColumn);
+                
                 FillColumnGrid();
                 SelectColumn(NewColumn);
                 ApplyColumn(NewColumn, false);
@@ -491,7 +454,8 @@ namespace Ict.Petra.Client.MReporting.Gui
 			ReturnValue = false;
             double ColumnWidth = 2.0;
 
-            if (!ACheckForDoubleEntries || CheckAddDoubleEntry(this.cmbCalculation.GetSelectedString(0), ASelectedColumn))
+            if (!ACheckForDoubleEntries || 
+                TUC_ColumnHelper.CheckAddDoubleEntry(ref FColumnParameters, this.cmbCalculation.GetSelectedString(0), ASelectedColumn))
             {
             	try
             	{
@@ -541,25 +505,18 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             bool ReturnValue;
 
-            System.Int32 Counter;
-            System.Int32 MaxColumn;
+            System.Int32 NewMaxColumn;
             ReturnValue = false;
 
             if ((!AAskBeforeRemove)
                 || (MessageBox.Show("Do you really want to delete this column?", "Really delete?",
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {
-                FColumnParameters.RemoveColumn(ASelectedColumn);
-
+                NewMaxColumn = TUC_ColumnHelper.RemoveColumn(ref FColumnParameters, ASelectedColumn);
                 /* need to move the following columns to the left */
-                MaxColumn = FColumnParameters.Get("MaxDisplayColumns").ToInt();
-
-                for (Counter = ASelectedColumn + 1; Counter <= MaxColumn - 1; Counter += 1)
-                {
-                    FColumnParameters.MoveColumn(Counter, Counter - 1);
-                }
-
-                FColumnParameters.Add("MaxDisplayColumns", MaxColumn - 1);
+                
+                FPetraUtilsObject.FMaxDisplayColumns = NewMaxColumn;
+                
                 FillColumnGrid();
                 FSelectedColumn = -1;
                 SelectColumn(-1);
@@ -577,54 +534,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         protected virtual void MoveColumn(System.Int32 ASelectedColumn, System.Int32 ANewColumnPosition)
         {
-            System.Int32 MaxDisplayColumns;
-            System.Int32 Counter;
-            System.Int32 ReferencedColumn;
-
             if ((ANewColumnPosition > -1) && (ANewColumnPosition < FColumnParameters.Get("MaxDisplayColumns").ToInt()))
             {
                 if (SelectColumn(-1))
                 {
-                    FColumnParameters.SwitchColumn(ASelectedColumn, ANewColumnPosition);
-
-                    /* switch the referenced columns in calculation */
-                    MaxDisplayColumns = FColumnParameters.Get("MaxDisplayColumns").ToInt();
-
-                    for (Counter = 0; Counter <= MaxDisplayColumns - 1; Counter += 1)
-                    {
-                        if (FColumnParameters.Exists("FirstColumn", Counter))
-                        {
-                        	ReferencedColumn = FColumnParameters.Get("FirstColumn", Counter).ToInt();
-
-                            if (ReferencedColumn == ASelectedColumn)
-                            {
-                                ReferencedColumn = ANewColumnPosition;
-                            }
-                            else if (ReferencedColumn == ANewColumnPosition)
-                            {
-                                ReferencedColumn = ASelectedColumn;
-                            }
-
-                            FColumnParameters.Add("FirstColumn", new TVariant(ReferencedColumn), Counter);
-                        }
-
-                        if (FColumnParameters.Exists("SecondColumn", Counter))
-                        {
-                        	ReferencedColumn = FColumnParameters.Get("SecondColumn", Counter).ToInt();
-
-                            if (ReferencedColumn == ASelectedColumn)
-                            {
-                                ReferencedColumn = ANewColumnPosition;
-                            }
-                            else if (ReferencedColumn == ANewColumnPosition)
-                            {
-                                ReferencedColumn = ASelectedColumn;
-                            }
-
-                            FColumnParameters.Add("SecondColumn", new TVariant(ReferencedColumn), Counter);
-                        }
-                    }
-
+                	TUC_ColumnHelper.SwitchColumn(ref FColumnParameters, ASelectedColumn, ANewColumnPosition);
+                	
                     FillColumnGrid();
                     SelectColumn(ANewColumnPosition);
                 }
@@ -647,7 +562,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             System.Int32 counter;
             String calculation;
             System.Int32 rowCounter;
-            SourceGrid.Cells.ColumnHeader myColumnHeader;
             TColumnFunction Func;
 
 //            /* if the columns page is not displayed, don't bother filling the grid */
@@ -688,51 +602,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             columnTab.Rows.InsertAt(rowContent, rowCounter);
             rowCounter = rowCounter + 1;
             columnTab.Rows.InsertAt(rowDisplayWidth, rowCounter);
-            grdColumns.Columns.Clear();
-
-            for (counter = 0; counter <= FColumnParameters.Get("MaxDisplayColumns").ToInt() - 1; counter += 1)
-            {
-                grdColumns.AddTextColumn("Column " + Convert.ToString(counter + 1), columnTab.Columns[counter]);
-                myColumnHeader = (SourceGrid.Cells.ColumnHeader)grdColumns.Columns[counter].HeaderCell;
-            }
-
-            grdColumns.DataSource = new DevAge.ComponentModel.BoundDataView(new DataView(columnTab));
-            grdColumns.DataSource.AllowEdit = false;
-            grdColumns.DataSource.AllowNew = false;
-            grdColumns.DataSource.AllowDelete = false;
-            grdColumns.AutoSizeCells();
-
-            /* grdColumns.Width := 576;   it is necessary to reassign the width because the columns don't take up the maximum width */
-        }
-        
-        /// <summary>
-        /// Checks if there is already a field with the same name in the grid. If yes, ask
-        /// if the field should be added again.
-        /// </summary>
-        /// <param name="AColumnName">Name of the field</param>
-        /// <param name="ASelectedColumn">Index of the column in the grid</param>
-        /// <returns>True if the field should be added. Otherwise false</returns>
-        protected bool CheckAddDoubleEntry(String AColumnName, int ASelectedColumn)
-        {
-        	bool ReturnValue = true;
-        	DataTable ColumnTable = FColumnParameters.ToDataTable();
-
-        	String NewField = "eString:" + AColumnName;
-
-        	foreach(DataRow Row in ColumnTable.Rows)
-        	{
-        		if ((Row["value"].ToString() == NewField) &&
-        		     (((int)Row["column"]) != ASelectedColumn))
-        		{
-        			if (MessageBox.Show("The column is already there.\nDo you want to add it anyway?", "Add field?", MessageBoxButtons.YesNo) == DialogResult.No)
-        			{
-        				ReturnValue = false;
-        			}
-        			break;
-        		}
-        	}
-        	
-        	return ReturnValue;
+            
+            TUC_ColumnHelper.LoadDataToGrid(ref grdColumns, ref columnTab);
         }
         
         /// <summary>
@@ -742,18 +613,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </returns>
         protected TColumnFunction GetFunction(String calculation)
         {
-            if (FAvailableFunctions != null)
-            {
-                foreach (TColumnFunction Func in FAvailableFunctions)
-                {
-                    if (Func.GetDisplayValue() == calculation)
-                    {
-                        return Func;
-                    }
-                }
-            }
-
-            return null;
+        	return TUC_ColumnHelper.GetFunction(ref FAvailableFunctions, calculation);
         }
 	}
 }
