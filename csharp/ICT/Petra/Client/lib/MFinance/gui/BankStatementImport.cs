@@ -102,6 +102,10 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.Text = Catalog.GetString("Import Bank Statements");
       #endregion
 
+      this.txtAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtGLNarrative.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtGLReference.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
       InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;

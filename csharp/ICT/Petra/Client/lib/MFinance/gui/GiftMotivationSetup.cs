@@ -95,6 +95,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.Text = Catalog.GetString("Gift Motivations");
       #endregion
 
+      this.txtDetailMotivationGroupCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailMotivationDetailCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailMotivationDetailDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       FPetraUtilsObject.SetStatusBarText(txtDetailMotivationGroupCode, Catalog.GetString("Enter a motivation group code"));
       FPetraUtilsObject.SetStatusBarText(txtDetailMotivationDetailCode, Catalog.GetString("Enter a motivation detail code"));

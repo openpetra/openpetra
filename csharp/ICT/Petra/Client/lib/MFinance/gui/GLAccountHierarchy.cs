@@ -106,6 +106,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.Text = Catalog.GetString("GL Account Hierarchy");
       #endregion
 
+      this.txtDetailAccountCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailEngAccountCodeLongDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailEngAccountCodeShortDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailAccountCodeLongDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailAccountCodeShortDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS();
       FPetraUtilsObject.SetStatusBarText(txtDetailAccountCode, Catalog.GetString("Enter a code for the account."));

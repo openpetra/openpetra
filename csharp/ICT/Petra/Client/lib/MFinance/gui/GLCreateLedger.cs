@@ -84,6 +84,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.Text = Catalog.GetString("Create Ledger");
       #endregion
 
+      this.txtLedgerName.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
       cmbCountryCode.InitialiseUserControl();
       cmbBaseCurrency.InitialiseUserControl();

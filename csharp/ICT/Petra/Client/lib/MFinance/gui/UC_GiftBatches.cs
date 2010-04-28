@@ -94,6 +94,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.mniBatch.Text = Catalog.GetString("&Batch");
       #endregion
 
+      this.txtLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailBatchDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailBatchHashTotal.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailExchangeRateToBase.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen

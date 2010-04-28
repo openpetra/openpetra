@@ -92,6 +92,9 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.Text = Catalog.GetString("Import Partners");
       #endregion
 
+      this.txtFilename.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtExplanation.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 

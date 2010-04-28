@@ -108,6 +108,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       this.Text = Catalog.GetString("Supplier Transactions");
       #endregion
 
+      this.txtCurrentSupplierName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtCurrentSupplierCurrency.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtSumOfTagged.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDisplayedBalance.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
       FMainDS = new Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS();
       FPetraUtilsObject.SetStatusBarText(txtCurrentSupplierCurrency, Catalog.GetString("The currency code to use for this supplier."));

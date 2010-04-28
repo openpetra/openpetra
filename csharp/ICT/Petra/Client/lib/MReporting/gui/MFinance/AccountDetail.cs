@@ -131,6 +131,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       this.Text = Catalog.GetString("Account Detail");
       #endregion
 
+      this.txtLedger.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtStartPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtEndPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtReferenceFrom.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtReferenceTo.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtAnalysisTypeFrom.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtAnalysisTypeTo.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
       FPetraUtilsObject.FXMLFiles = "accountdetail.xml,accountdetailcommon.xml,finance.xml,common.xml";

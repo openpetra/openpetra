@@ -101,6 +101,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.Text = Catalog.GetString("Daily Exchange Rate List");
       #endregion
 
+      this.txtDetailRateOfExchange.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       FPetraUtilsObject.SetStatusBarText(cmbDetailFromCurrencyCode, Catalog.GetString("Enter a currency code"));
       cmbDetailFromCurrencyCode.InitialiseUserControl();

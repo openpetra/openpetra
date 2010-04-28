@@ -104,6 +104,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       this.Text = Catalog.GetString("AP Supplier Edit");
       #endregion
 
+      this.txtDiscountValue.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       FPetraUtilsObject.SetStatusBarText(txtPartnerKey, Catalog.GetString("Reference to the partner key for this supplier"));
       FPetraUtilsObject.SetStatusBarText(cmbCurrency, Catalog.GetString("The currency code to use for this supplier."));

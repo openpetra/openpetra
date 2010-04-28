@@ -100,6 +100,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       this.Text = Catalog.GetString("Payments for Conference");
       #endregion
 
+      this.txtConferenceKey.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtMotivationCodes.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
       FPetraUtilsObject.FXMLFiles = "AccountsReceivable/ConferencePayments.xml";

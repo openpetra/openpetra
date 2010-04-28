@@ -94,6 +94,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       this.Text = Catalog.GetString("AP Payment");
       #endregion
 
+      this.txtCurrency.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtTotalAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtExchangeRate.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtReference.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtChequeNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtAmountToPay.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
       FPetraUtilsObject.SetStatusBarText(txtCurrency, Catalog.GetString("The currency code to use for this supplier."));
       FPetraUtilsObject.SetStatusBarText(cmbPaymentType, Catalog.GetString("The default type of payment to use when paying this supplier."));

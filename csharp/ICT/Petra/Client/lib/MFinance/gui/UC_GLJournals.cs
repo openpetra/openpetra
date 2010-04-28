@@ -78,6 +78,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.lblDetailExchangeRateToBase.Text = Catalog.GetString("Exchange Rate to Base:");
       #endregion
 
+      this.txtLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtBatchNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailJournalDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailExchangeRateToBase.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen

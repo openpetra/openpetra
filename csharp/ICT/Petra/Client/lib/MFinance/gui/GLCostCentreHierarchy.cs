@@ -93,6 +93,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.Text = Catalog.GetString("GL Cost Centre Hierarchy");
       #endregion
 
+      this.txtDetailCostCentreCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailCostCentreName.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS();
       FPetraUtilsObject.SetStatusBarText(txtDetailCostCentreCode, Catalog.GetString("Enter a cost centre code"));
