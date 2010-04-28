@@ -110,5 +110,13 @@ namespace Plugin.AuthenticationPetraProgress
 
             return true;
         }
+
+        /// <summary>
+        /// this will not be implemented
+        /// </summary>
+        public bool CreateUser(string AUsername, string APassword)
+        {
+            return false;
+        }
     }
 }

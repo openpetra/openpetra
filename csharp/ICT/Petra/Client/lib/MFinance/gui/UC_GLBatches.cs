@@ -235,7 +235,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 txtDetailBatchControlTotal.Text = ARow.BatchControlTotal.ToString();
             }
-            dtpDetailDateEffective.Value = ARow.DateEffective;
+            dtpDetailDateEffective.Date = ARow.DateEffective;
             ShowDetailsManual(ARow);
         }
         FPetraUtilsObject.EnableDataChangedEvent();
@@ -281,7 +281,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ARow.BatchControlTotal = Convert.ToDouble(txtDetailBatchControlTotal.Text);
             }
-            ARow.DateEffective = dtpDetailDateEffective.Value;
+            ARow.DateEffective = dtpDetailDateEffective.Date.Value;
             ARow.EndEdit();
         }
     }

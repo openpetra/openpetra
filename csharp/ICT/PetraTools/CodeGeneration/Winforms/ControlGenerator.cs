@@ -38,11 +38,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
 {
     public class LabelGenerator : TControlGenerator
     {
+        bool FRightAlign = false;
+
         public LabelGenerator()
             : base("lbl", typeof(Label))
         {
             FAutoSize = true;
             FGenerateLabel = false;
+        }
+
+        public bool RightAlign
+        {
+            get
+            {
+                return FRightAlign;
+            }
+
+            set
+            {
+                FRightAlign = true;
+            }
         }
 
         public string CalculateName(string controlName)
@@ -66,6 +81,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + labelText + "\"");
             writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 7, 3, 0)");
+
+            if (FRightAlign)
+            {
+                writer.SetControlProperty(ctrl.controlName, "Dock", "System.Windows.Forms.DockStyle.Right");
+            }
         }
     }
     public class ButtonGenerator : TControlGenerator
@@ -99,8 +119,112 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
+            string DynamicControlType;
+            string CntrlNameWithoutPrefix = ctrl.controlName.Substring(3);
+
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl.controlName, "Dock", "Fill");
+
+            if (ctrl.HasAttribute("LoadPageDynamically") && (ctrl.GetAttribute("LoadPageDynamically").ToLower() == "true"))
+            {
+                if (!ctrl.HasAttribute("DynamicControlType"))
+                {
+                    throw new Exception(
+                        "TabPage '" + ctrl.controlName +
+                        "': 'DynamicControlType' property needs to be specified if 'LoadPageDynamically' is specified");
+                }
+                else
+                {
+                    DynamicControlType = ctrl.GetAttribute("DynamicControlType");
+                }
+
+                string DynamicTabPageEnums = "";
+                DynamicTabPageEnums += "///<summary>Denotes dynamic loadable UserControl " + ctrl.controlName + "</summary>" + Environment.NewLine;
+                DynamicTabPageEnums += "dluc" + CntrlNameWithoutPrefix + "," + Environment.NewLine;
+
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", DynamicTabPageEnums);
+
+                string DynamicTabPageInitialisation = "";
+                DynamicTabPageInitialisation += "if (" + TabControlGenerator.TabControlName + ".SelectedTab == " + ctrl.controlName + ")" +
+                                                Environment.NewLine;                                                                                              // " + TabControlGenerator.TabControlName +
+                DynamicTabPageInitialisation += "{" + Environment.NewLine;
+                DynamicTabPageInitialisation += "    if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + "))" +
+                                                Environment.NewLine;
+                DynamicTabPageInitialisation += "    {" + Environment.NewLine;
+                DynamicTabPageInitialisation += "        " + DynamicControlType + " UC" + CntrlNameWithoutPrefix + ";" + Environment.NewLine +
+                                                Environment.NewLine;
+                DynamicTabPageInitialisation += "        if (TClientSettings.DelayedDataLoading)" + Environment.NewLine;
+                DynamicTabPageInitialisation += "        {" + Environment.NewLine;
+                DynamicTabPageInitialisation += "            // Signalise the user that data is beeing loaded" + Environment.NewLine;
+                DynamicTabPageInitialisation += "            this.Cursor = Cursors.AppStarting;" + Environment.NewLine;
+                DynamicTabPageInitialisation += "        }" + Environment.NewLine + Environment.NewLine;
+                DynamicTabPageInitialisation += "        UC" + CntrlNameWithoutPrefix + " = (" + DynamicControlType +
+                                                ")DynamicLoadUserControl(TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + ");" +
+                                                Environment.NewLine;
+                DynamicTabPageInitialisation += "        UC" + CntrlNameWithoutPrefix + ".MainDS = FMainDS;" + Environment.NewLine;
+                DynamicTabPageInitialisation += "        UC" + CntrlNameWithoutPrefix + ".PetraUtilsObject = FPetraUtilsObject;" +
+                                                Environment.NewLine;
+                DynamicTabPageInitialisation += "        UC" + CntrlNameWithoutPrefix + ".InitUserControl();" + Environment.NewLine;
+                DynamicTabPageInitialisation += "        ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UC" +
+                                                CntrlNameWithoutPrefix + ");" + Environment.NewLine + Environment.NewLine;
+                DynamicTabPageInitialisation += "        OnTabPageEvent(new TTabPageEventArgs(" + ctrl.controlName + ", UC" +
+                                                CntrlNameWithoutPrefix + ", \"FurtherInit\"));" + Environment.NewLine + Environment.NewLine;
+                DynamicTabPageInitialisation += "        this.Cursor = Cursors.Default;" + Environment.NewLine;
+                DynamicTabPageInitialisation += "    }" + Environment.NewLine;
+                DynamicTabPageInitialisation += "}" + Environment.NewLine + Environment.NewLine;
+
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", DynamicTabPageInitialisation);
+
+                string DynamicTabPageLoading = "";
+                DynamicTabPageLoading += "case TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + ":" + Environment.NewLine;
+                DynamicTabPageLoading +=
+                    "    // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl"
+                    +
+                    Environment.NewLine;
+                DynamicTabPageLoading += "    Panel pnlHostForUC" + CntrlNameWithoutPrefix + " = new Panel();" + Environment.NewLine;
+                DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".AutoSize = true;" + Environment.NewLine;
+                DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".Dock = System.Windows.Forms.DockStyle.Fill;" +
+                                         Environment.NewLine;
+                DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".Location = new System.Drawing.Point(0, 0);" +
+                                         Environment.NewLine;
+                DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".Padding = new System.Windows.Forms.Padding(2);" +
+                                         Environment.NewLine;
+                DynamicTabPageLoading += "    " + ctrl.controlName + ".Controls.Add(" + "pnlHostForUC" + CntrlNameWithoutPrefix + ");" +
+                                         Environment.NewLine + Environment.NewLine;
+                DynamicTabPageLoading += "    // Create the UserControl" + Environment.NewLine;
+                DynamicTabPageLoading += "    " + DynamicControlType + " uco" + CntrlNameWithoutPrefix + " = new " + DynamicControlType + "();" +
+                                         Environment.NewLine;
+                DynamicTabPageLoading += "    FTabSetup.Add(TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + ", uco" +
+                                         CntrlNameWithoutPrefix + ");" + Environment.NewLine;
+                DynamicTabPageLoading += "    uco" + CntrlNameWithoutPrefix + ".Location = new Point(0, 2);" + Environment.NewLine;
+                DynamicTabPageLoading += "    uco" + CntrlNameWithoutPrefix + ".Dock = DockStyle.Fill;" + Environment.NewLine;
+                DynamicTabPageLoading += "    pnlHostForUC" + CntrlNameWithoutPrefix + ".Controls.Add(uco" + CntrlNameWithoutPrefix + ");" +
+                                         Environment.NewLine + Environment.NewLine;
+                DynamicTabPageLoading += "    /*" + Environment.NewLine;
+                DynamicTabPageLoading += "     * The following four commands seem strange and unnecessary; however, they are necessary" +
+                                         Environment.NewLine;
+                DynamicTabPageLoading += "     * to make things scale correctly on \"Large Fonts (120DPI)\" display setting." + Environment.NewLine;
+                DynamicTabPageLoading += "    */" + Environment.NewLine;
+                DynamicTabPageLoading += "    if (TClientSettings.GUIRunningOnNonStandardDPI)" + Environment.NewLine;
+                DynamicTabPageLoading += "    {" + Environment.NewLine;
+                DynamicTabPageLoading += "        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);" + Environment.NewLine;
+                DynamicTabPageLoading += "        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;" + Environment.NewLine;
+                DynamicTabPageLoading += "        pnlHostForUC" + CntrlNameWithoutPrefix + ".Dock = System.Windows.Forms.DockStyle.None;" +
+                                         Environment.NewLine;
+                DynamicTabPageLoading += "        pnlHostForUC" + CntrlNameWithoutPrefix + ".Dock = System.Windows.Forms.DockStyle.Fill;" +
+                                         Environment.NewLine;
+                DynamicTabPageLoading += "    }" + Environment.NewLine + Environment.NewLine;
+                DynamicTabPageLoading += "    ReturnValue = uco" + CntrlNameWithoutPrefix + ";" + Environment.NewLine;
+                DynamicTabPageLoading += "    break;" + Environment.NewLine + Environment.NewLine;
+
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLLOADING", DynamicTabPageLoading);
+            }
+            else
+            {
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", "");
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", "");
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLLOADING", "");
+            }
         }
 
 /*
@@ -163,19 +287,36 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class DateTimePickerGenerator : TControlGenerator
     {
         public DateTimePickerGenerator()
-            : base("dtp", typeof(DateTimePicker))
+            : base("dtp", "Ict.Petra.Client.CommonControls.TtxtPetraDate")
         {
+            this.FChangeEventName = "DateChanged";
+            this.FChangeEventHandlerType = "TPetraDateChangedEventHandler";
+            FDefaultWidth = 94;
+        }
+
+        protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet == null)
+            {
+                return ctrl.controlName + ".Date == null";
+            }
+
+            if (AFieldTypeDotNet.Contains("Date?"))
+            {
+                return ctrl.controlName + ".Date";
+            }
+
+            return ctrl.controlName + ".Date.Value";
         }
 
         protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
         {
             if (AFieldOrNull == null)
             {
-                // Date never can be null; cause compiler error to tell the developer to mark field in database as NOT NULL
-                return ctrl.controlName + ".Value = " + "Please use NOT NULL in petra.xml" + ";";
+                return ctrl.controlName + ".Date = null;";
             }
 
-            return ctrl.controlName + ".Value = " + AFieldOrNull + ";";
+            return ctrl.controlName + ".Date = " + AFieldOrNull + ";";
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
@@ -493,7 +634,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 if (TYml2Xml.GetAttribute(curNode, "ReadOnly").ToLower() == "true")
                 {
-                    return true;
+                    if ((TXMLParser.GetAttribute(curNode, "Type") != "PartnerKey"))
+                    {
+                        return true;
+                    }
                 }
 
                 if ((TXMLParser.GetAttribute(curNode, "Type") == "PartnerKey")
@@ -1000,15 +1144,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (base.ControlFitsNode(curNode))
             {
-                if (TYml2Xml.GetAttribute(curNode, "ReadOnly").ToLower() == "true")
-                {
-                    return false;
-                }
-
                 if (TYml2Xml.GetAttribute(curNode, "Type") == "PartnerKey")
                 {
                     FButtonLabelType = "PartnerKey";
-                    FDefaultWidth = 370;
+
+                    if (!(TYml2Xml.HasAttribute(curNode, "ShowLabel") && (TYml2Xml.GetAttribute(curNode, "ShowLabel").ToLower() == "false")))
+                    {
+                        FDefaultWidth = 370;
+                    }
+                    else
+                    {
+                        FDefaultWidth = 80;
+                    }
+
+                    FHasReadOnlyProperty = true;
+
                     return true;
                 }
                 else if (TYml2Xml.GetAttribute(curNode, "Type") == "Extract")
@@ -1021,7 +1171,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     FButtonLabelType = "OccupationList";
                     return true;
                 }
-                
             }
 
             return false;
@@ -1063,35 +1212,59 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
             string ControlName = ctrl.controlName;
-            Int32 buttonWidth = 40, textBoxWidth = 80;
+            Int32 buttonWidth = 40;
+            Int32 textBoxWidth = 80;
 
             base.SetControlProperties(writer, ctrl);
 
+            if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
+            {
+                writer.SetControlProperty(ControlName, "ShowLabel", "false");
+            }
+            // Note: the control defaults to 'ShowLabel' true, so this doesn't need to be set to 'true' in code.
+
+            writer.SetControlProperty(ControlName, "ASpecialSetting", "true");
+            writer.SetControlProperty(ControlName, "ButtonTextAlign", "System.Drawing.ContentAlignment.MiddleCenter");
+            writer.SetControlProperty(ControlName, "ListTable", "TtxtAutoPopulatedButtonLabel.TListTableEnum." + FButtonLabelType);
+            writer.SetControlProperty(ControlName, "PartnerClass", "\"\"");
+            writer.SetControlProperty(ControlName, "MaxLength", "32767");
+            writer.SetControlProperty(ControlName, "Tag", "\"CustomDisableAlthoughInvisible\"");
+            writer.SetControlProperty(ControlName, "TextBoxWidth", textBoxWidth.ToString());
+
             if (!(ctrl.HasAttribute("ReadOnly") && (ctrl.GetAttribute("ReadOnly").ToLower() == "true")))
             {
-                writer.SetControlProperty(ControlName, "ASpecialSetting", "true");
-                writer.SetControlProperty(ControlName, "ButtonTextAlign", "System.Drawing.ContentAlignment.MiddleCenter");
                 writer.SetControlProperty(ControlName, "ButtonWidth", buttonWidth.ToString());
-                writer.SetControlProperty(ControlName, "MaxLength", "32767");
                 writer.SetControlProperty(ControlName, "ReadOnly", "false");
-                writer.SetControlProperty(ControlName, "TextBoxWidth", textBoxWidth.ToString());
                 writer.SetControlProperty(ControlName,
                     "Font",
                     "new System.Drawing.Font(\"Verdana\", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0)");
-                writer.SetControlProperty(ControlName, "ListTable", "TtxtAutoPopulatedButtonLabel.TListTableEnum." + FButtonLabelType);
-                writer.SetControlProperty(ControlName, "PartnerClass", "\"\"");
-                writer.SetControlProperty(ControlName, "Tag", "\"CustomDisableAlthoughInvisible\"");
                 writer.SetControlProperty(ControlName, "ButtonText", "\"Find\"");
+            }
+            else
+            {
+                writer.SetControlProperty(ControlName, "ButtonWidth", "0");
+                writer.SetControlProperty(ctrl.controlName, "BorderStyle", "System.Windows.Forms.BorderStyle.None");
+                writer.SetControlProperty(ctrl.controlName, "Padding", "new System.Windows.Forms.Padding(0, 2, 0, 0)");
             }
         }
     }
 
     public class TabControlGenerator : ContainerGenerator
     {
+        static string FTabControlName;
+
         public TabControlGenerator()
             : base("tab", "Ict.Common.Controls.TTabVersatile")
         {
             FGenerateLabel = false;
+        }
+
+        public static string TabControlName
+        {
+            get
+            {
+                return FTabControlName;
+            }
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
@@ -1115,11 +1288,39 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             writer.Template.SetCodelet("TABPAGECTRL", ctrl.controlName);
+
+            if (ctrl.HasAttribute("LoadPagesDynamically") && (ctrl.GetAttribute("LoadPagesDynamically").ToLower() == "true"))
+            {
+                string DynamicTabPageUserControlSelectionChanged = "";
+                DynamicTabPageUserControlSelectionChanged += "/*" + Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged +=
+                    " * Raise the following Event to inform the base Form that we might be loading some fresh data." + Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged += " * We need to bypass the ChangeDetection routine while this happens." +
+                                                             Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged += " */" + Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged += "OnDataLoadingStarted();" + Environment.NewLine + Environment.NewLine +
+                                                             Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged += "{#DYNAMICTABPAGEUSERCONTROLINITIALISATION}" + Environment.NewLine + Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged += "/*" + Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged +=
+                    " * Raise the following Event to inform the base Form that we have finished loading fresh data." + Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged += " * We need to turn the ChangeDetection routine back on." + Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged += " */" + Environment.NewLine;
+                DynamicTabPageUserControlSelectionChanged += "OnDataLoadingFinished();" + Environment.NewLine;
+
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED", DynamicTabPageUserControlSelectionChanged);
+            }
+            else
+            {
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED", "");
+            }
         }
 
         protected void CreateCode(IFormWriter writer, TControlDef ATabControl)
         {
             ArrayList tabPages = new ArrayList();
+
+            FTabControlName = ATabControl.controlName;
 
             // need to save tab pages in a temporary list,
             // because TableLayoutPanelGenerator.CreateLayout will add to the FControlList

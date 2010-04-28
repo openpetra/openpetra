@@ -720,10 +720,23 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             try
             {
-                TPartnerEditDSWinForm frm = new TPartnerEditDSWinForm(this.Handle);
-                frm.SetParameters(TScreenMode.smEdit, FLogic.PartnerKey,
-                    FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, AShowTabPage);
-                frm.Show();
+                // If ALT held down, show the new, generated Partner Edit screen, otherwise the conventional one.
+                if (System.Windows.Forms.Form.ModifierKeys == Keys.Alt)
+                {
+                    TFrmPartnerEdit2 frm = new TFrmPartnerEdit2(this.Handle);
+
+                    frm.SetParameters(TScreenMode.smEdit, FLogic.PartnerKey,
+                        FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, AShowTabPage);
+                    frm.Show();
+                }
+                else
+                {
+                    TPartnerEditDSWinForm frm = new TPartnerEditDSWinForm(this.Handle);
+
+                    frm.SetParameters(TScreenMode.smEdit, FLogic.PartnerKey,
+                        FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, AShowTabPage);
+                    frm.Show();
+                }
             }
             finally
             {

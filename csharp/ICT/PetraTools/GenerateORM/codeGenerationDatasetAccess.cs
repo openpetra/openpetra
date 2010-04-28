@@ -39,7 +39,9 @@ namespace Ict.Tools.CodeGeneration.DataStore
 {
     public class codeGenerationDatasetAccess
     {
-        private static void AddTableToDataset(TTable ASqltable,
+        private static void AddTableToDataset(
+            List <TDataSetTable>ATables,
+            TTable ASqltable,
             string tabletype,
             string variablename,
             ProcessTemplate snippetDataset,
@@ -49,7 +51,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             if (ASqltable != null)
             {
-                string SequenceFields = "";
+                string SequenceColumn = "";
+                string SequenceName = "";
 
                 foreach (TTableField tablefield in ASqltable.grpTableField.List)
                 {
@@ -57,7 +60,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     // yes: get the next value of that sequence and assign to row
                     if (tablefield.strSequence.Length > 0)
                     {
-                        SequenceFields = ", \"" + tablefield.strSequence + "\", \"" + tablefield.strName + "\"";
+                        SequenceName = tablefield.strSequence;
+                        SequenceColumn = tablefield.strName;
 
                         // assume only one sequence per table
                         break;
@@ -69,7 +73,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 tempSnippet.SetCodelet("TABLETYPENAME", tabletype);
                 tempSnippet.SetCodelet("TABLEVARIABLENAME", variablename);
                 tempSnippet.SetCodelet("SQLOPERATION", "eDelete");
-                tempSnippet.SetCodelet("SEQUENCENAMEANDFIELD", SequenceFields);
+                tempSnippet.SetCodelet("SEQUENCENAMEANDFIELD", "");
                 ASnippetSubmitChanges.InsertSnippetPrepend("SUBMITCHANGESDELETE", tempSnippet);
 
                 tempSnippet = snippetDataset.GetSnippet("SUBMITCHANGES");
@@ -77,7 +81,42 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 tempSnippet.SetCodelet("TABLETYPENAME", tabletype);
                 tempSnippet.SetCodelet("TABLEVARIABLENAME", variablename);
                 tempSnippet.SetCodelet("SQLOPERATION", "eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate");
-                tempSnippet.SetCodelet("SEQUENCENAMEANDFIELD", SequenceFields);
+                tempSnippet.SetCodelet("SEQUENCENAMEANDFIELD", "");
+
+                if (SequenceName.Length > 0)
+                {
+                    tempSnippet.SetCodelet("SEQUENCENAMEANDFIELD", ", \"" + SequenceName + "\", \"" + SequenceColumn + "\"");
+
+                    // look for other tables in the dataset that have a foreign key on the sequenced column
+                    // eg. p_location_key_i is set when storing p_location.
+                    //     now we should update p_partner_location, which still has negative values in p_location_key_i
+                    foreach (TDataSetTable table in ATables)
+                    {
+                        foreach (TConstraint constraint in table.grpConstraint.List)
+                        {
+                            if ((constraint.strType == "foreignkey")
+                                && (constraint.strOtherTable == ASqltable.strName)
+                                && constraint.strOtherFields.Contains(SequenceColumn))
+                            {
+                                tempSnippet.SetCodelet("TABLEROWTYPE", TTable.NiceTableName(ASqltable.strName) + "Row");
+                                tempSnippet.SetCodelet("SEQUENCEDCOLUMNNAME", TTable.NiceFieldName(SequenceColumn));
+
+                                ProcessTemplate updateSnippet = snippetDataset.GetSnippet("UPDATESEQUENCEINOTHERTABLES");
+                                bool canbeNull =
+                                    !table.GetField(constraint.strThisFields[constraint.strOtherFields.IndexOf(SequenceColumn)]).bNotNull;
+                                updateSnippet.SetCodelet("TESTFORNULL", canbeNull ? "!otherRow.Is{#REFCOLUMNNAME}Null() && " : "");
+                                updateSnippet.SetCodelet("REFERENCINGTABLEROWTYPE", TTable.NiceTableName(table.tablename) + "Row");
+                                updateSnippet.SetCodelet("REFERENCINGTABLENAME", table.tablealias);
+                                updateSnippet.SetCodelet("REFCOLUMNNAME",
+                                    TTable.NiceFieldName(constraint.strThisFields[constraint.strOtherFields.IndexOf(SequenceColumn)]));
+                                updateSnippet.SetCodelet("SEQUENCEDCOLUMNNAME", TTable.NiceFieldName(SequenceColumn));
+
+                                tempSnippet.InsertSnippet("UPDATESEQUENCEINOTHERTABLES", updateSnippet);
+                            }
+                        }
+                    }
+                }
+
                 ASnippetSubmitChanges.InsertSnippet("SUBMITCHANGESINSERT", tempSnippet);
 
                 ASnippetSubmitChanges.AddToCodelet("SUBMITCHANGESUPDATE", "");
@@ -139,10 +178,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     ProcessTemplate snippetSubmitChanges = snippetDataset.GetSnippet("SUBMITCHANGESFUNCTION");
                     snippetSubmitChanges.AddToCodelet("DATASETNAME", datasetname);
 
-                    SortedList <string, TDataSetTable>tables = new SortedList <string, TDataSetTable>();
+                    List <TDataSetTable>tables = new List <TDataSetTable>();
 
                     XmlNode curChild = cur.FirstChild;
 
+                    // first collect the tables
                     while (curChild != null)
                     {
                         if (curChild.Name.ToLower() == "table")
@@ -159,14 +199,20 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 store.GetTable(tabletype));
                             XmlNode tableNodes = curChild.FirstChild;
 
-                            tables.Add(table.tableorig, table);
-
-                            AddTableToDataset(store.GetTable(table.tableorig), tabletype, variablename,
-                                snippetDataset,
-                                snippetSubmitChanges);
+                            tables.Add(table);
                         }
 
                         curChild = curChild.NextSibling;
+                    }
+
+                    foreach (TDataSetTable table in tables)
+                    {
+                        AddTableToDataset(tables,
+                            store.GetTable(table.tableorig),
+                            table.tablename,
+                            table.tablealias,
+                            snippetDataset,
+                            snippetSubmitChanges);
                     }
 
                     // there is one codelet for the dataset name.

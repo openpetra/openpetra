@@ -114,6 +114,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new LabelGenerator());
                 AvailableControlGenerators.Add(new ButtonGenerator());
                 AvailableControlGenerators.Add(new CheckBoxGenerator());
+                AvailableControlGenerators.Add(new TClbVersatileGenerator());
                 AvailableControlGenerators.Add(new DateTimePickerGenerator());
                 AvailableControlGenerators.Add(new TreeViewGenerator());
                 AvailableControlGenerators.Add(new TextBoxGenerator());
@@ -611,9 +612,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("ADDMAINCONTROLS", "this.Controls.Add(this." + ctrl.controlName + ");" + Environment.NewLine);
             }
 
-            if ((prefix == "mnu") 
-                && !(FCodeStorage.GetAttribute("BaseClass").Contains("UserControl")) 
-                    || (FCodeStorage.GetAttribute("BaseClass").Contains("TGrpCollapsible")))
+            if ((prefix == "mnu")
+                && !((FCodeStorage.GetAttribute("BaseClass").Contains("UserControl"))
+                     || (FCodeStorage.GetAttribute("BaseClass").Contains("TGrpCollapsible"))))
             {
                 FTemplate.AddToCodelet("ADDMAINCONTROLS", "this.MainMenuStrip = " + ctrl.controlName + ";" + Environment.NewLine);
             }
@@ -738,6 +739,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // init some template variables that can be empty
             FTemplate.AddToCodelet("INITUSERCONTROLS", "");
             FTemplate.AddToCodelet("INITMANUALCODE", "");
+            FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "");
             FTemplate.AddToCodelet("EXITMANUALCODE", "");
             FTemplate.AddToCodelet("INITNEWROWMANUAL", "");
             FTemplate.AddToCodelet("STOREMANUALCODE", "");
@@ -755,6 +757,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("InitializeManualCode"))
             {
                 FTemplate.AddToCodelet("INITMANUALCODE", "InitializeManualCode();" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("RunOnceOnActivationManual"))
+            {
+                FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "RunOnceOnActivationManual();" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("ExitManualCode"))

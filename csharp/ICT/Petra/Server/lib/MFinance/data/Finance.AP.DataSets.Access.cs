@@ -35,6 +35,7 @@ using Ict.Petra.Shared;
 using System;
 using System.Data;
 using System.Data.Odbc;
+using System.Collections.Generic;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -67,6 +68,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AApPayment, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
@@ -75,6 +77,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AApDocumentPayment, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
@@ -83,6 +86,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
@@ -91,6 +95,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
@@ -99,6 +104,7 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AApSupplier, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,

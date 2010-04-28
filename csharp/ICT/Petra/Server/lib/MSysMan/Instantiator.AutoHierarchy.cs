@@ -75,6 +75,10 @@ using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 //using Ict.Petra.Server.MSysMan.Security.UserManager;
 
 
+#region ManualCode
+using Ict.Common.Verification;
+using Ict.Petra.Shared.MSysMan.Data;
+#endregion ManualCode
 namespace Ict.Petra.Server.MSysMan.Instantiator
 {
     /// <summary>
@@ -1327,6 +1331,21 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
                                     string APassword)
         {
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SetUserPassword(AUsername, APassword);
+        }
+
+        /// generated method from connector
+        public bool CreateUser(string AUsername,
+                               string APassword,
+                               string AModulePermissions)
+        {
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.CreateUser(AUsername, APassword, AModulePermissions);
+        }
+
+        /// generated method from connector
+        public TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS,
+                                              out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SaveSUser(ref ASubmitDS, out AVerificationResult);
         }
 
     }

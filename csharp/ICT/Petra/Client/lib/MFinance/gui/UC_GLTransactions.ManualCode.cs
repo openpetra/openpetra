@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -170,11 +170,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDebitTotalAmount.Text = journal.JournalDebitTotal.ToString();
             txtCreditTotalAmountBase.Text = (journal.JournalCreditTotal *
                                              TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                                                 dtpDetailTransactionDate.Value)
+                                                 dtpDetailTransactionDate.Date.Value)
                                              ).ToString();
             txtDebitTotalAmountBase.Text = (journal.JournalDebitTotal *
                                             TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                                                dtpDetailTransactionDate.Value)
+                                                dtpDetailTransactionDate.Date.Value)
                                             ).ToString();
         }
 
@@ -254,10 +254,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 txtDebitAmountBase.Text =
                     (TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                         dtpDetailTransactionDate.Value) * Convert.ToDouble(txtDebitAmount.Text)).ToString();
+                         dtpDetailTransactionDate.Date.Value) * Convert.ToDouble(txtDebitAmount.Text)).ToString();
                 txtCreditAmountBase.Text =
                     (TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                         dtpDetailTransactionDate.Value) * Convert.ToDouble(txtCreditAmount.Text)).ToString();
+                         dtpDetailTransactionDate.Date.Value) * Convert.ToDouble(txtCreditAmount.Text)).ToString();
             }
             catch (Exception)
             {

@@ -13,7 +13,6 @@
         tpgReportSorting:
             Label: Sorting
             Controls: [ucoReportSorting]
-            Order: AlwaysFirst
         tpgColumns:
             Controls: [ucoReportColumns]
             Order: AlwaysLast

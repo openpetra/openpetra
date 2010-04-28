@@ -364,3 +364,5 @@ namespace {#NAMESPACE}
 #endregion
   }
 }
+
+{#INCLUDE copyvalues.cs}

@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber, out StartDateCurrentPeriod, out EndDateLastForwardingPeriod, out DefaultDate);
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
-            dtpDetailGlEffectiveDate.Value = DefaultDate;
+            dtpDetailGlEffectiveDate.Date = DefaultDate;
 
             ShowData();
         }

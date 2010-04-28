@@ -96,6 +96,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPartner.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance.DatasetAccess", "Petra\Server\lib\MFinance\data\Ict.Petra.Server.MFinance.DatasetAccess.csproj", "{6EF08752-CDB0-4F94-8A17-D91BDDF45FA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MSysMan.DatasetAccess", "Petra\Server\lib\MSysMan\data\Ict.Petra.Server.MSysMan.DatasetAccess.csproj", "{45FE3810-367A-4C3F-B35C-4F4485228AE8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -290,5 +292,9 @@ Global
 		{6EF08752-CDB0-4F94-8A17-D91BDDF45FA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EF08752-CDB0-4F94-8A17-D91BDDF45FA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EF08752-CDB0-4F94-8A17-D91BDDF45FA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45FE3810-367A-4C3F-B35C-4F4485228AE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45FE3810-367A-4C3F-B35C-4F4485228AE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45FE3810-367A-4C3F-B35C-4F4485228AE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45FE3810-367A-4C3F-B35C-4F4485228AE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from UC_PartnerDetails_Family2.yaml and template controlMaintainTable
+/* auto generated with nant generateWinforms from UC_PartnerDetails_Family2.yaml and template usercontrol
  *
  * DO NOT edit manually, DO NOT edit with the designer
  *
@@ -97,6 +97,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
     }
 
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingStarted;
+
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingFinished;
+
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
@@ -104,7 +110,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         FPetraUtilsObject.SetStatusBarText(txtLocalName, Catalog.GetString("Enter a short name for this partner in your local language"));
         FPetraUtilsObject.SetStatusBarText(cmbMaritalStatus, Catalog.GetString("Select marital status"));
         cmbMaritalStatus.InitialiseUserControl();
-        FPetraUtilsObject.SetStatusBarText(txtMaritalStatusSince, Catalog.GetString("Date from which the marital status is valid"));
+        FPetraUtilsObject.SetStatusBarText(dtpMaritalStatusSince, Catalog.GetString("Date from which the marital status is valid"));
         FPetraUtilsObject.SetStatusBarText(txtMaritalStatusComment, Catalog.GetString("Enter a comment for the marital status"));
         FPetraUtilsObject.SetStatusBarText(cmbLanguageCode, Catalog.GetString("Select the partner's preferred language"));
         cmbLanguageCode.InitialiseUserControl();
@@ -120,7 +126,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     private void ShowData(PFamilyRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
-        if (FMainDS.PPartner[0].IsPreviousNameNull())
+        if (FMainDS.PPartner == null || FMainDS.PPartner[0].IsPreviousNameNull())
         {
             txtPreviousName.Text = String.Empty;
         }
@@ -128,7 +134,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtPreviousName.Text = FMainDS.PPartner[0].PreviousName;
         }
-        if (FMainDS.PPartner[0].IsPartnerShortNameLocNull())
+        if (FMainDS.PPartner == null || FMainDS.PPartner[0].IsPartnerShortNameLocNull())
         {
             txtLocalName.Text = String.Empty;
         }
@@ -146,11 +152,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
         if (ARow.IsMaritalStatusSinceNull())
         {
-            txtMaritalStatusSince.Text = String.Empty;
+            dtpMaritalStatusSince.Date = null;
         }
         else
         {
-            txtMaritalStatusSince.Text = ARow.MaritalStatusSince.ToString();
+            dtpMaritalStatusSince.Date = ARow.MaritalStatusSince;
         }
         if (ARow.IsMaritalStatusCommentNull())
         {
@@ -160,7 +166,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtMaritalStatusComment.Text = ARow.MaritalStatusComment;
         }
-        if (FMainDS.PPartner[0].IsLanguageCodeNull())
+        if (FMainDS.PPartner == null || FMainDS.PPartner[0].IsLanguageCodeNull())
         {
             cmbLanguageCode.SelectedIndex = -1;
         }
@@ -168,7 +174,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             cmbLanguageCode.SetSelectedString(FMainDS.PPartner[0].LanguageCode);
         }
-        if (FMainDS.PPartner[0].IsAcquisitionCodeNull())
+        if (FMainDS.PPartner == null || FMainDS.PPartner[0].IsAcquisitionCodeNull())
         {
             cmbAcquisitionCode.SelectedIndex = -1;
         }
@@ -177,6 +183,78 @@ namespace Ict.Petra.Client.MPartner.Gui
             cmbAcquisitionCode.SetSelectedString(FMainDS.PPartner[0].AcquisitionCode);
         }
         FPetraUtilsObject.EnableDataChangedEvent();
+    }
+
+    private void GetDataFromControls(PartnerEditTDSPFamilyRow ARow)
+    {
+        if (FMainDS.PPartner != null)
+        {
+            if (txtPreviousName.Text.Length == 0)
+            {
+                FMainDS.PPartner[0].SetPreviousNameNull();
+            }
+            else
+            {
+                FMainDS.PPartner[0].PreviousName = txtPreviousName.Text;
+            }
+        }
+        if (FMainDS.PPartner != null)
+        {
+            if (txtLocalName.Text.Length == 0)
+            {
+                FMainDS.PPartner[0].SetPartnerShortNameLocNull();
+            }
+            else
+            {
+                FMainDS.PPartner[0].PartnerShortNameLoc = txtLocalName.Text;
+            }
+        }
+        if (cmbMaritalStatus.SelectedIndex == -1)
+        {
+            ARow.SetMaritalStatusNull();
+        }
+        else
+        {
+            ARow.MaritalStatus = cmbMaritalStatus.GetSelectedString();
+        }
+        if (dtpMaritalStatusSince.Date == null)
+        {
+            ARow.SetMaritalStatusSinceNull();
+        }
+        else
+        {
+            ARow.MaritalStatusSince = dtpMaritalStatusSince.Date.Value;
+        }
+        if (txtMaritalStatusComment.Text.Length == 0)
+        {
+            ARow.SetMaritalStatusCommentNull();
+        }
+        else
+        {
+            ARow.MaritalStatusComment = txtMaritalStatusComment.Text;
+        }
+        if (FMainDS.PPartner != null)
+        {
+            if (cmbLanguageCode.SelectedIndex == -1)
+            {
+                FMainDS.PPartner[0].SetLanguageCodeNull();
+            }
+            else
+            {
+                FMainDS.PPartner[0].LanguageCode = cmbLanguageCode.GetSelectedString();
+            }
+        }
+        if (FMainDS.PPartner != null)
+        {
+            if (cmbAcquisitionCode.SelectedIndex == -1)
+            {
+                FMainDS.PPartner[0].SetAcquisitionCodeNull();
+            }
+            else
+            {
+                FMainDS.PPartner[0].AcquisitionCode = cmbAcquisitionCode.GetSelectedString();
+            }
+        }
     }
 
 #region Implement interface functions

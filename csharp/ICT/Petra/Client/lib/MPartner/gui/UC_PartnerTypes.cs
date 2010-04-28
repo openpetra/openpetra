@@ -52,6 +52,8 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public partial class TUCPartnerTypes : TPetraUserControl
     {
+        private TFrmPetraEditUtils FPetraUtilsObject;
+
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
@@ -84,6 +86,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
                 FPartnerEditUIConnector = value;
+            }
+        }
+
+        /// helper object for the whole screen
+        public TFrmPetraEditUtils PetraUtilsObject
+        {
+            set
+            {
+                FPetraUtilsObject = value;
             }
         }
 
@@ -173,7 +184,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public new void InitialiseUserControl()
+        public void InitUserControl()
+        {
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void SpecialInitUserControl()
         {
             // Set up screen logic
             FLogic.MultiTableDS = FMainDS;

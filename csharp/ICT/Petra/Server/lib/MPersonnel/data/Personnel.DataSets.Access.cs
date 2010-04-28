@@ -35,6 +35,7 @@ using Ict.Petra.Shared;
 using System;
 using System.Data;
 using System.Data.Odbc;
+using System.Collections.Generic;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access

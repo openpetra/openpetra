@@ -189,6 +189,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblSelectBankAccount.AutoSize = true;
             this.lblSelectBankAccount.Text = "Select Bank Account:";
             this.lblSelectBankAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblSelectBankAccount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // rgrSelectTransaction
             //
@@ -267,6 +268,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.pnlDetails.Name = "pnlDetails";
             this.pnlDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlDetails.Visible = false;
             this.pnlDetails.AutoSize = true;
             this.pnlDetails.Controls.Add(this.pnlHostCategorySpecificEdit);
             this.pnlDetails.Controls.Add(this.rgrTransactionCategory);
@@ -343,14 +345,14 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.txtDonorKey.AutoSize = true;
             this.txtDonorKey.ASpecialSetting = true;
             this.txtDonorKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.txtDonorKey.ButtonWidth = 40;
-            this.txtDonorKey.MaxLength = 32767;
-            this.txtDonorKey.ReadOnly = false;
-            this.txtDonorKey.TextBoxWidth = 80;
-            this.txtDonorKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtDonorKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
             this.txtDonorKey.PartnerClass = "";
+            this.txtDonorKey.MaxLength = 32767;
             this.txtDonorKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtDonorKey.TextBoxWidth = 80;
+            this.txtDonorKey.ButtonWidth = 40;
+            this.txtDonorKey.ReadOnly = false;
+            this.txtDonorKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtDonorKey.ButtonText = "Find";
             //
             // pnlDetailGrid
@@ -429,6 +431,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblAmount.AutoSize = true;
             this.lblAmount.Text = "Amount:";
             this.lblAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAmount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbMotivationDetail
             //
@@ -445,6 +448,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblMotivationDetail.AutoSize = true;
             this.lblMotivationDetail.Text = "Motivation Detail:";
             this.lblMotivationDetail.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblMotivationDetail.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbGiftAccount
             //
@@ -461,6 +465,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblGiftAccount.AutoSize = true;
             this.lblGiftAccount.Text = "Account:";
             this.lblGiftAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblGiftAccount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbGiftCostCentre
             //
@@ -476,6 +481,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblGiftCostCentre.AutoSize = true;
             this.lblGiftCostCentre.Text = "Cost Centre:";
             this.lblGiftCostCentre.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblGiftCostCentre.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel5.ColumnCount = 2;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -497,6 +503,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.pnlGLEdit.Name = "pnlGLEdit";
             this.pnlGLEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlGLEdit.Visible = false;
             this.pnlGLEdit.AutoSize = true;
             //
             // tableLayoutPanel6
@@ -519,6 +526,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblGLNarrative.AutoSize = true;
             this.lblGLNarrative.Text = "Narrative:";
             this.lblGLNarrative.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblGLNarrative.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtGLReference
             //
@@ -533,6 +541,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblGLReference.AutoSize = true;
             this.lblGLReference.Text = "Reference:";
             this.lblGLReference.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblGLReference.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbGLAccount
             //
@@ -548,6 +557,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblGLAccount.AutoSize = true;
             this.lblGLAccount.Text = "Account:";
             this.lblGLAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblGLAccount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbGLCostCentre
             //
@@ -563,6 +573,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.lblGLCostCentre.AutoSize = true;
             this.lblGLCostCentre.Text = "Cost Centre:";
             this.lblGLCostCentre.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblGLCostCentre.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel6.ColumnCount = 2;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -610,7 +621,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             //
             this.cmbSelectStatement.Location = new System.Drawing.Point(2,2);
             this.cmbSelectStatement.Name = "cmbSelectStatement";
-            this.cmbSelectStatement.Size = new System.Drawing.Size(150, 28);
+            this.cmbSelectStatement.Size = new System.Drawing.Size(250, 28);
             //
             // tchSelectStatement
             //

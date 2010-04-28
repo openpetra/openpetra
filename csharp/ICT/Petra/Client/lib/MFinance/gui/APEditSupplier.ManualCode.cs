@@ -105,6 +105,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             FMainDS.AApSupplier.Rows.Add(row);
 
             ShowData(row);
+
+            // Make PartnerKey Readonly again -
+            // ShowData makes it writeable because it is the Primary Key of the Table and we are adding a record!
+            txtPartnerKey.ReadOnly = true;
         }
 
         /// <summary>

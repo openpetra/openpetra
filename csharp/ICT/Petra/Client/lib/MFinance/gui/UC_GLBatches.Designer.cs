@@ -94,7 +94,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailBatchDescription = new System.Windows.Forms.Label();
             this.txtDetailBatchControlTotal = new System.Windows.Forms.TextBox();
             this.lblDetailBatchControlTotal = new System.Windows.Forms.Label();
-            this.dtpDetailDateEffective = new System.Windows.Forms.DateTimePicker();
+            this.dtpDetailDateEffective = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDetailDateEffective = new System.Windows.Forms.Label();
             this.lblValidDateRange = new System.Windows.Forms.Label();
             this.tbrTabPage = new System.Windows.Forms.ToolStrip();
@@ -162,6 +162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtLedgerNumber.Name = "txtLedgerNumber";
             this.txtLedgerNumber.Size = new System.Drawing.Size(150, 28);
             this.txtLedgerNumber.ReadOnly = true;
+            this.txtLedgerNumber.TabStop = false;
             //
             // lblLedgerNumber
             //
@@ -170,6 +171,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblLedgerNumber.AutoSize = true;
             this.lblLedgerNumber.Text = "Ledger:";
             this.lblLedgerNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLedgerNumber.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -321,6 +323,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailBatchDescription.AutoSize = true;
             this.lblDetailBatchDescription.Text = "Batch Description:";
             this.lblDetailBatchDescription.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailBatchDescription.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailBatchControlTotal
             //
@@ -335,12 +338,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailBatchControlTotal.AutoSize = true;
             this.lblDetailBatchControlTotal.Text = "Batch Hash Total:";
             this.lblDetailBatchControlTotal.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailBatchControlTotal.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // dtpDetailDateEffective
             //
             this.dtpDetailDateEffective.Location = new System.Drawing.Point(2,2);
             this.dtpDetailDateEffective.Name = "dtpDetailDateEffective";
-            this.dtpDetailDateEffective.Size = new System.Drawing.Size(150, 28);
+            this.dtpDetailDateEffective.Size = new System.Drawing.Size(94, 28);
             //
             // lblDetailDateEffective
             //
@@ -349,6 +353,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailDateEffective.AutoSize = true;
             this.lblDetailDateEffective.Text = "Effective Date:";
             this.lblDetailDateEffective.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailDateEffective.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // lblValidDateRange
             //
@@ -483,7 +488,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Label lblDetailBatchDescription;
         private System.Windows.Forms.TextBox txtDetailBatchControlTotal;
         private System.Windows.Forms.Label lblDetailBatchControlTotal;
-        private System.Windows.Forms.DateTimePicker dtpDetailDateEffective;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailDateEffective;
         private System.Windows.Forms.Label lblDetailDateEffective;
         private System.Windows.Forms.Label lblValidDateRange;
         private System.Windows.Forms.ToolStrip tbrTabPage;

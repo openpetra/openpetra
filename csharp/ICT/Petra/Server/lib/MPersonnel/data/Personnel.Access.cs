@@ -15654,25 +15654,25 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
             return LoadByPrimaryKey(ASiteKey, AKey, AFieldList, ATransaction, null, 0, 0);
         }
         /// this method is called by all overloads
-        public static void LoadByUniqueKey(DataSet ADataSet, Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static void LoadByUniqueKey(DataSet ADataSet, Int64 APartnerKey, System.DateTime? AEndDate, System.DateTime? AStartDate, String APrevLocation, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             LoadByUniqueKey(PmPastExperienceTable.TableId, ADataSet, new System.Object[4]{APartnerKey, AEndDate, AStartDate, APrevLocation}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
-        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, TDBTransaction ATransaction)
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime? AEndDate, System.DateTime? AStartDate, String APrevLocation, TDBTransaction ATransaction)
         {
             LoadByUniqueKey(AData, APartnerKey, AEndDate, AStartDate, APrevLocation, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime? AEndDate, System.DateTime? AStartDate, String APrevLocation, StringCollection AFieldList, TDBTransaction ATransaction)
         {
             LoadByUniqueKey(AData, APartnerKey, AEndDate, AStartDate, APrevLocation, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static PmPastExperienceTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PmPastExperienceTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime? AEndDate, System.DateTime? AStartDate, String APrevLocation, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             PmPastExperienceTable Data = new PmPastExperienceTable();
             LoadByUniqueKey(PmPastExperienceTable.TableId, Data, new System.Object[4]{APartnerKey, AEndDate, AStartDate, APrevLocation}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
@@ -15680,13 +15680,13 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         }
 
         /// auto generated
-        public static PmPastExperienceTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, TDBTransaction ATransaction)
+        public static PmPastExperienceTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime? AEndDate, System.DateTime? AStartDate, String APrevLocation, TDBTransaction ATransaction)
         {
             return LoadByUniqueKey(APartnerKey, AEndDate, AStartDate, APrevLocation, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static PmPastExperienceTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PmPastExperienceTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime? AEndDate, System.DateTime? AStartDate, String APrevLocation, StringCollection AFieldList, TDBTransaction ATransaction)
         {
             return LoadByUniqueKey(APartnerKey, AEndDate, AStartDate, APrevLocation, AFieldList, ATransaction, null, 0, 0);
         }
@@ -15786,7 +15786,7 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         }
 
         /// check if a row exists by using the unique key
-        public static bool Exists(Int64 APartnerKey, System.DateTime AEndDate, System.DateTime AStartDate, String APrevLocation, TDBTransaction ATransaction)
+        public static bool Exists(Int64 APartnerKey, System.DateTime? AEndDate, System.DateTime? AStartDate, String APrevLocation, TDBTransaction ATransaction)
         {
             return Exists(PmPastExperienceTable.TableId, new System.Object[4]{APartnerKey, AEndDate, AStartDate, APrevLocation}, ATransaction);
         }
@@ -26203,25 +26203,25 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
             return LoadByPrimaryKey(ASiteKey, AKey, AFieldList, ATransaction, null, 0, 0);
         }
         /// this method is called by all overloads
-        public static void LoadByUniqueKey(DataSet ADataSet, Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static void LoadByUniqueKey(DataSet ADataSet, Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime? AEndOfCommitment, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             LoadByUniqueKey(PmStaffDataTable.TableId, ADataSet, new System.Object[3]{APartnerKey, AStartOfCommitment, AEndOfCommitment}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
         }
 
         /// auto generated
-        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, TDBTransaction ATransaction)
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime? AEndOfCommitment, TDBTransaction ATransaction)
         {
             LoadByUniqueKey(AData, APartnerKey, AStartOfCommitment, AEndOfCommitment, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static void LoadByUniqueKey(DataSet AData, Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime? AEndOfCommitment, StringCollection AFieldList, TDBTransaction ATransaction)
         {
             LoadByUniqueKey(AData, APartnerKey, AStartOfCommitment, AEndOfCommitment, AFieldList, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static PmStaffDataTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+        public static PmStaffDataTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime? AEndOfCommitment, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             PmStaffDataTable Data = new PmStaffDataTable();
             LoadByUniqueKey(PmStaffDataTable.TableId, Data, new System.Object[3]{APartnerKey, AStartOfCommitment, AEndOfCommitment}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
@@ -26229,13 +26229,13 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         }
 
         /// auto generated
-        public static PmStaffDataTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, TDBTransaction ATransaction)
+        public static PmStaffDataTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime? AEndOfCommitment, TDBTransaction ATransaction)
         {
             return LoadByUniqueKey(APartnerKey, AStartOfCommitment, AEndOfCommitment, null, ATransaction, null, 0, 0);
         }
 
         /// auto generated
-        public static PmStaffDataTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, StringCollection AFieldList, TDBTransaction ATransaction)
+        public static PmStaffDataTable LoadByUniqueKey(Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime? AEndOfCommitment, StringCollection AFieldList, TDBTransaction ATransaction)
         {
             return LoadByUniqueKey(APartnerKey, AStartOfCommitment, AEndOfCommitment, AFieldList, ATransaction, null, 0, 0);
         }
@@ -26335,7 +26335,7 @@ namespace Ict.Petra.Server.MPersonnel.Personnel.Data.Access
         }
 
         /// check if a row exists by using the unique key
-        public static bool Exists(Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime AEndOfCommitment, TDBTransaction ATransaction)
+        public static bool Exists(Int64 APartnerKey, System.DateTime AStartOfCommitment, System.DateTime? AEndOfCommitment, TDBTransaction ATransaction)
         {
             return Exists(PmStaffDataTable.TableId, new System.Object[3]{APartnerKey, AStartOfCommitment, AEndOfCommitment}, ATransaction);
         }

@@ -84,6 +84,26 @@ namespace Ict.Petra.Client.App.PetraClient
 
     }
 
+    private void TFrmPetra_Activated(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.TFrmPetra_Activated(sender, e);
+    }
+
+    private void TFrmPetra_Load(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.TFrmPetra_Load(sender, e);
+    }
+
+    private void TFrmPetra_Closing(object sender, CancelEventArgs e)
+    {
+        FPetraUtilsObject.TFrmPetra_Closing(sender, e);
+    }
+
+    private void Form_KeyDown(object sender, KeyEventArgs e)
+    {
+        FPetraUtilsObject.Form_KeyDown(sender, e);
+    }
+
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
         // TODO? Save Window position
@@ -95,6 +115,7 @@ namespace Ict.Petra.Client.App.PetraClient
     /// auto generated
     public void RunOnceOnActivation()
     {
+        RunOnceOnActivationManual();
     }
 
     /// <summary>

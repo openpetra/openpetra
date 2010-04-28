@@ -240,7 +240,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre);
             cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode);
-            dtpDetailGlEffectiveDate.Value = ARow.GlEffectiveDate;
+            dtpDetailGlEffectiveDate.Date = ARow.GlEffectiveDate;
             cmbDetailCurrencyCode.SetSelectedString(ARow.CurrencyCode);
             txtDetailExchangeRateToBase.Text = ARow.ExchangeRateToBase.ToString();
             ShowDetailsManual(ARow);
@@ -282,7 +282,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             ARow.BankCostCentre = cmbDetailBankCostCentre.GetSelectedString();
             ARow.BankAccountCode = cmbDetailBankAccountCode.GetSelectedString();
-            ARow.GlEffectiveDate = dtpDetailGlEffectiveDate.Value;
+            ARow.GlEffectiveDate = dtpDetailGlEffectiveDate.Date.Value;
             ARow.CurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
             ARow.ExchangeRateToBase = Convert.ToDouble(txtDetailExchangeRateToBase.Text);
             ARow.EndEdit();

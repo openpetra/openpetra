@@ -482,6 +482,21 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// Sets the BorderStyle of the underlying TextBox.
+        /// </summary>
+        public System.Windows.Forms.BorderStyle BorderStyle
+        {
+            get
+            {
+                return this.txtAutoPopulated.BorderStyle;
+            }
+            set
+            {
+                this.txtAutoPopulated.BorderStyle = value;
+            }
+        }
+
+        /// <summary>
         /// This property is used to provide a function which sets the Label''s and TextBox's Texts.
         /// </summary>
         public event TDelegateClickButton ClickButton;
@@ -527,6 +542,23 @@ namespace Ict.Petra.Client.CommonControls
                 this.txtAutoPopulated.AutomaticallyUpdateDataSource = value;
             }
         }
+
+        /// <summary>
+        /// This property determines whether the label is blank or not.
+        /// </summary>
+        public bool ShowLabel
+        {
+            get
+            {
+                return this.txtAutoPopulated.ShowLabel;
+            }
+
+            set
+            {
+                this.txtAutoPopulated.ShowLabel = value;
+            }
+        }
+
 
         #region Creation and disposal
 
@@ -610,7 +642,12 @@ namespace Ict.Petra.Client.CommonControls
                     this.FLookUpColumnIndex = -1;
                     this.txtAutoPopulated.txtTextBox.Text = "0000000000";
                     this.txtAutoPopulated.Size = this.Size;
-                    this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
+
+                    if (ShowLabel)
+                    {
+                        this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
+                    }
+
                     #endregion
                     break;
 
@@ -629,7 +666,12 @@ namespace Ict.Petra.Client.CommonControls
                     this.FLookUpColumnIndex = -1;
                     this.txtAutoPopulated.txtTextBox.Text = "";
                     this.txtAutoPopulated.Size = this.Size;
-                    this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
+
+                    if (ShowLabel)
+                    {
+                        this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
+                    }
+
                     #endregion
                     break;
             }
@@ -652,7 +694,7 @@ namespace Ict.Petra.Client.CommonControls
                 this.txtAutoPopulated.ButtonTextAlign = this.ButtonTextAlign;
 
                 // ButtonWidth
-                if (this.ButtonWidth <= 0)
+                if (this.ButtonWidth < 0)
                 {
                     this.ButtonWidth = this.FDefaultButtonWidth;
                 }
@@ -1333,8 +1375,11 @@ namespace Ict.Petra.Client.CommonControls
 
             if (currentText.Length > 0)
             {
-                this.TxtAutoPopulated_SetLabel(currentText, out result);
-                this.txtAutoPopulated.lblLabel.Text = result;
+                if (ShowLabel)
+                {
+                    this.TxtAutoPopulated_SetLabel(currentText, out result);
+                    this.txtAutoPopulated.lblLabel.Text = result;
+                }
             }
         }
 

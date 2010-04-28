@@ -430,7 +430,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date from which this code was made unassignable.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -438,17 +438,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -482,7 +482,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -490,17 +490,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -534,7 +534,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -542,17 +542,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -1156,7 +1156,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the record was last updated.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -1164,17 +1164,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -1234,7 +1234,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -1242,17 +1242,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -1286,7 +1286,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -1294,17 +1294,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -1902,7 +1902,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the record was last updated.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -1910,17 +1910,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -1954,7 +1954,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -1962,17 +1962,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -2006,7 +2006,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -2014,17 +2014,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -3303,7 +3303,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the application was closed.
-        public System.DateTime DateClosed
+        public System.DateTime? DateClosed
         {
             get
             {
@@ -3311,17 +3311,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateClosed.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateClosed)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateClosed])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateClosed])) != value)))
                 {
                     this[this.myTable.ColumnDateClosed] = value;
                 }
@@ -3433,7 +3433,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the application was cancelled.
-        public System.DateTime GenAppCancelled
+        public System.DateTime? GenAppCancelled
         {
             get
             {
@@ -3441,17 +3441,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnGenAppCancelled.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnGenAppCancelled)
-                            || (((System.DateTime)(this[this.myTable.ColumnGenAppCancelled])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnGenAppCancelled])) != value)))
                 {
                     this[this.myTable.ColumnGenAppCancelled] = value;
                 }
@@ -3485,7 +3485,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the receiving field accepted the applicant.
-        public System.DateTime GenAppRecvgFldAccept
+        public System.DateTime? GenAppRecvgFldAccept
         {
             get
             {
@@ -3493,17 +3493,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnGenAppRecvgFldAccept.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnGenAppRecvgFldAccept)
-                            || (((System.DateTime)(this[this.myTable.ColumnGenAppRecvgFldAccept])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnGenAppRecvgFldAccept])) != value)))
                 {
                     this[this.myTable.ColumnGenAppRecvgFldAccept] = value;
                 }
@@ -3537,7 +3537,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the sending field accepted the applicant.
-        public System.DateTime GenAppSendFldAcceptDate
+        public System.DateTime? GenAppSendFldAcceptDate
         {
             get
             {
@@ -3545,17 +3545,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnGenAppSendFldAcceptDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnGenAppSendFldAcceptDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnGenAppSendFldAcceptDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnGenAppSendFldAcceptDate])) != value)))
                 {
                     this[this.myTable.ColumnGenAppSendFldAcceptDate] = value;
                 }
@@ -3615,7 +3615,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Indicates the date the record was last updated.
-        public System.DateTime GenAppUpdate
+        public System.DateTime? GenAppUpdate
         {
             get
             {
@@ -3623,17 +3623,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnGenAppUpdate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnGenAppUpdate)
-                            || (((System.DateTime)(this[this.myTable.ColumnGenAppUpdate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnGenAppUpdate])) != value)))
                 {
                     this[this.myTable.ColumnGenAppUpdate] = value;
                 }
@@ -3745,7 +3745,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -3753,17 +3753,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -3797,7 +3797,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -3805,17 +3805,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -4802,7 +4802,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Effective Date of the chosen Application Status
-        public System.DateTime StatusDateEffective
+        public System.DateTime? StatusDateEffective
         {
             get
             {
@@ -4810,17 +4810,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnStatusDateEffective.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnStatusDateEffective)
-                            || (((System.DateTime)(this[this.myTable.ColumnStatusDateEffective])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnStatusDateEffective])) != value)))
                 {
                     this[this.myTable.ColumnStatusDateEffective] = value;
                 }
@@ -4854,7 +4854,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -4862,17 +4862,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -4906,7 +4906,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -4914,17 +4914,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -5535,7 +5535,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date from which this code was made unassignable.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -5543,17 +5543,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -5587,7 +5587,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -5595,17 +5595,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -5639,7 +5639,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -5647,17 +5647,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -6242,7 +6242,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date from which this code was made unassignable.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -6250,17 +6250,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -6294,7 +6294,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -6302,17 +6302,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -6346,7 +6346,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -6354,17 +6354,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -6949,7 +6949,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date from which this code was made unassignable.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -6957,17 +6957,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -7001,7 +7001,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -7009,17 +7009,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -7053,7 +7053,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -7061,17 +7061,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -7656,7 +7656,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date from which this code was made unassignable.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -7664,17 +7664,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -7708,7 +7708,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -7716,17 +7716,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -7760,7 +7760,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -7768,17 +7768,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -8484,7 +8484,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date from which this role was made unassignable.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -8492,17 +8492,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -8640,7 +8640,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -8648,17 +8648,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -8692,7 +8692,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -8700,17 +8700,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -9360,7 +9360,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date from which this code was made unassignable.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -9368,17 +9368,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -9412,7 +9412,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -9420,17 +9420,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -9464,7 +9464,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -9472,17 +9472,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -10067,7 +10067,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date from which this code was made unassignable.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -10075,17 +10075,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -10119,7 +10119,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -10127,17 +10127,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -10171,7 +10171,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -10179,17 +10179,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -12198,7 +12198,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Indicates the date of the review of the scholarship.
-        public System.DateTime StScholarshipReviewDate
+        public System.DateTime? StScholarshipReviewDate
         {
             get
             {
@@ -12206,17 +12206,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnStScholarshipReviewDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnStScholarshipReviewDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnStScholarshipReviewDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnStScholarshipReviewDate])) != value)))
                 {
                     this[this.myTable.ColumnStScholarshipReviewDate] = value;
                 }
@@ -12562,7 +12562,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date of arrival at the conference.
-        public System.DateTime Arrival
+        public System.DateTime? Arrival
         {
             get
             {
@@ -12570,17 +12570,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnArrival.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnArrival)
-                            || (((System.DateTime)(this[this.myTable.ColumnArrival])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnArrival])) != value)))
                 {
                     this[this.myTable.ColumnArrival] = value;
                 }
@@ -12692,7 +12692,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date of expected arrival at the conference (if no transport from arrival point is needed).
-        public System.DateTime ArrivalExp
+        public System.DateTime? ArrivalExp
         {
             get
             {
@@ -12700,17 +12700,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnArrivalExp.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnArrivalExp)
-                            || (((System.DateTime)(this[this.myTable.ColumnArrivalExp])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnArrivalExp])) != value)))
                 {
                     this[this.myTable.ColumnArrivalExp] = value;
                 }
@@ -12874,7 +12874,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date of departure from the conference.
-        public System.DateTime Departure
+        public System.DateTime? Departure
         {
             get
             {
@@ -12882,17 +12882,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDeparture.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDeparture)
-                            || (((System.DateTime)(this[this.myTable.ColumnDeparture])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDeparture])) != value)))
                 {
                     this[this.myTable.ColumnDeparture] = value;
                 }
@@ -13004,7 +13004,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date of expected departure from the conference (if no transport to departure point is needed).
-        public System.DateTime DepartureExp
+        public System.DateTime? DepartureExp
         {
             get
             {
@@ -13012,17 +13012,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDepartureExp.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDepartureExp)
-                            || (((System.DateTime)(this[this.myTable.ColumnDepartureExp])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDepartureExp])) != value)))
                 {
                     this[this.myTable.ColumnDepartureExp] = value;
                 }
@@ -13577,7 +13577,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -13585,17 +13585,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -13629,7 +13629,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -13637,17 +13637,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -15624,7 +15624,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Indicates the begin date for the scholarship.
-        public System.DateTime YpScholarshipBeginDate
+        public System.DateTime? YpScholarshipBeginDate
         {
             get
             {
@@ -15632,17 +15632,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYpScholarshipBeginDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnYpScholarshipBeginDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnYpScholarshipBeginDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnYpScholarshipBeginDate])) != value)))
                 {
                     this[this.myTable.ColumnYpScholarshipBeginDate] = value;
                 }
@@ -15650,7 +15650,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Indicates the end date for the scholarship.
-        public System.DateTime YpScholarshipEndDate
+        public System.DateTime? YpScholarshipEndDate
         {
             get
             {
@@ -15658,17 +15658,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYpScholarshipEndDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnYpScholarshipEndDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnYpScholarshipEndDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnYpScholarshipEndDate])) != value)))
                 {
                     this[this.myTable.ColumnYpScholarshipEndDate] = value;
                 }
@@ -15676,7 +15676,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Indicates the date of the review of the scholarship.
-        public System.DateTime YpScholarshipReviewDate
+        public System.DateTime? YpScholarshipReviewDate
         {
             get
             {
@@ -15684,17 +15684,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYpScholarshipReviewDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnYpScholarshipReviewDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnYpScholarshipReviewDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnYpScholarshipReviewDate])) != value)))
                 {
                     this[this.myTable.ColumnYpScholarshipReviewDate] = value;
                 }
@@ -15780,7 +15780,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the expected date their commitment starts.
-        public System.DateTime StartOfCommitment
+        public System.DateTime? StartOfCommitment
         {
             get
             {
@@ -15788,17 +15788,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnStartOfCommitment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnStartOfCommitment)
-                            || (((System.DateTime)(this[this.myTable.ColumnStartOfCommitment])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnStartOfCommitment])) != value)))
                 {
                     this[this.myTable.ColumnStartOfCommitment] = value;
                 }
@@ -15806,7 +15806,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the expected date their commitment ends.
-        public System.DateTime EndOfCommitment
+        public System.DateTime? EndOfCommitment
         {
             get
             {
@@ -15814,17 +15814,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnEndOfCommitment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnEndOfCommitment)
-                            || (((System.DateTime)(this[this.myTable.ColumnEndOfCommitment])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnEndOfCommitment])) != value)))
                 {
                     this[this.myTable.ColumnEndOfCommitment] = value;
                 }
@@ -15936,7 +15936,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -15944,17 +15944,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -15988,7 +15988,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -15996,17 +15996,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -16890,7 +16890,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -16898,17 +16898,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -16942,7 +16942,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -16950,17 +16950,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -17808,7 +17808,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date the form was sent.
-        public System.DateTime FormSentDate
+        public System.DateTime? FormSentDate
         {
             get
             {
@@ -17816,17 +17816,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnFormSentDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnFormSentDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnFormSentDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnFormSentDate])) != value)))
                 {
                     this[this.myTable.ColumnFormSentDate] = value;
                 }
@@ -17834,7 +17834,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date the form was received.
-        public System.DateTime FormReceivedDate
+        public System.DateTime? FormReceivedDate
         {
             get
             {
@@ -17842,17 +17842,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnFormReceivedDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnFormReceivedDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnFormReceivedDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnFormReceivedDate])) != value)))
                 {
                     this[this.myTable.ColumnFormReceivedDate] = value;
                 }
@@ -17912,7 +17912,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -17920,17 +17920,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -17964,7 +17964,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -17972,17 +17972,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -18703,7 +18703,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date from which this code was made unassignable.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -18711,17 +18711,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -18755,7 +18755,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -18763,17 +18763,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -18807,7 +18807,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -18815,17 +18815,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -19468,7 +19468,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date from which this code was made unassignable.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -19476,17 +19476,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -19520,7 +19520,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -19528,17 +19528,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -19572,7 +19572,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -19580,17 +19580,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -20399,7 +20399,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the document was issued.
-        public System.DateTime DateOfIssue
+        public System.DateTime? DateOfIssue
         {
             get
             {
@@ -20407,17 +20407,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateOfIssue.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateOfIssue)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateOfIssue])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateOfIssue])) != value)))
                 {
                     this[this.myTable.ColumnDateOfIssue] = value;
                 }
@@ -20425,7 +20425,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date the document takes effect.
-        public System.DateTime DateOfStart
+        public System.DateTime? DateOfStart
         {
             get
             {
@@ -20433,17 +20433,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateOfStart.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateOfStart)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateOfStart])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateOfStart])) != value)))
                 {
                     this[this.myTable.ColumnDateOfStart] = value;
                 }
@@ -20451,7 +20451,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date the document expires
-        public System.DateTime DateOfExpiration
+        public System.DateTime? DateOfExpiration
         {
             get
             {
@@ -20459,17 +20459,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateOfExpiration.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateOfExpiration)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateOfExpiration])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateOfExpiration])) != value)))
                 {
                     this[this.myTable.ColumnDateOfExpiration] = value;
                 }
@@ -20555,7 +20555,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -20563,17 +20563,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -20607,7 +20607,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -20615,17 +20615,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -21301,7 +21301,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date from which this code was made unassignable.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -21309,17 +21309,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -21353,7 +21353,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -21361,17 +21361,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -21405,7 +21405,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -21413,17 +21413,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -22212,7 +22212,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date of Birth
-        public System.DateTime PassportDob
+        public System.DateTime? PassportDob
         {
             get
             {
@@ -22220,17 +22220,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnPassportDob.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnPassportDob)
-                            || (((System.DateTime)(this[this.myTable.ColumnPassportDob])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnPassportDob])) != value)))
                 {
                     this[this.myTable.ColumnPassportDob] = value;
                 }
@@ -22290,7 +22290,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date the passport expires
-        public System.DateTime DateOfExpiration
+        public System.DateTime? DateOfExpiration
         {
             get
             {
@@ -22298,17 +22298,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateOfExpiration.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateOfExpiration)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateOfExpiration])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateOfExpiration])) != value)))
                 {
                     this[this.myTable.ColumnDateOfExpiration] = value;
                 }
@@ -22368,7 +22368,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the passport was issued.
-        public System.DateTime DateOfIssue
+        public System.DateTime? DateOfIssue
         {
             get
             {
@@ -22376,17 +22376,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateOfIssue.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateOfIssue)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateOfIssue])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateOfIssue])) != value)))
                 {
                     this[this.myTable.ColumnDateOfIssue] = value;
                 }
@@ -22420,7 +22420,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -22428,17 +22428,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -22472,7 +22472,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -22480,17 +22480,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -24304,7 +24304,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the support figure was agreed upon.
-        public System.DateTime AgreementDate
+        public System.DateTime? AgreementDate
         {
             get
             {
@@ -24312,17 +24312,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnAgreementDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAgreementDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnAgreementDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnAgreementDate])) != value)))
                 {
                     this[this.myTable.ColumnAgreementDate] = value;
                 }
@@ -24330,7 +24330,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the support figure agreement is reviewed.
-        public System.DateTime ReviewDate
+        public System.DateTime? ReviewDate
         {
             get
             {
@@ -24338,17 +24338,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnReviewDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnReviewDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnReviewDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnReviewDate])) != value)))
                 {
                     this[this.myTable.ColumnReviewDate] = value;
                 }
@@ -24356,7 +24356,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -24364,17 +24364,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -24408,7 +24408,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -24416,17 +24416,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -25355,7 +25355,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date from which this contact can no longer be assigned.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -25363,17 +25363,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -25433,7 +25433,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -25441,17 +25441,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -25485,7 +25485,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -25493,17 +25493,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -26179,7 +26179,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the years of experience were up to date.
-        public System.DateTime YearsOfExperienceAsOf
+        public System.DateTime? YearsOfExperienceAsOf
         {
             get
             {
@@ -26187,17 +26187,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYearsOfExperienceAsOf.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnYearsOfExperienceAsOf)
-                            || (((System.DateTime)(this[this.myTable.ColumnYearsOfExperienceAsOf])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnYearsOfExperienceAsOf])) != value)))
                 {
                     this[this.myTable.ColumnYearsOfExperienceAsOf] = value;
                 }
@@ -26335,7 +26335,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -26343,17 +26343,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -26387,7 +26387,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -26395,17 +26395,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -27042,7 +27042,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the record was last updated.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -27050,17 +27050,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -27094,7 +27094,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -27102,17 +27102,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -27146,7 +27146,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -27154,17 +27154,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -27940,7 +27940,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -27948,17 +27948,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -27992,7 +27992,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -28000,17 +28000,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -28769,7 +28769,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Start date of previous experience.
-        public System.DateTime StartDate
+        public System.DateTime? StartDate
         {
             get
             {
@@ -28777,17 +28777,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnStartDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnStartDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnStartDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnStartDate])) != value)))
                 {
                     this[this.myTable.ColumnStartDate] = value;
                 }
@@ -28795,7 +28795,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// End date of previous experience.
-        public System.DateTime EndDate
+        public System.DateTime? EndDate
         {
             get
             {
@@ -28803,17 +28803,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnEndDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnEndDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnEndDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnEndDate])) != value)))
                 {
                     this[this.myTable.ColumnEndDate] = value;
                 }
@@ -29003,7 +29003,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -29011,17 +29011,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -29055,7 +29055,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -29063,17 +29063,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -29794,7 +29794,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the record was last updated.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -29802,17 +29802,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -29846,7 +29846,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -29854,17 +29854,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -29898,7 +29898,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -29906,17 +29906,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -30516,7 +30516,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the record was last updated.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -30524,17 +30524,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -30568,7 +30568,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -30576,17 +30576,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -30620,7 +30620,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -30628,17 +30628,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -31289,7 +31289,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the years of experience were up to date.
-        public System.DateTime YearsOfExperienceAsOf
+        public System.DateTime? YearsOfExperienceAsOf
         {
             get
             {
@@ -31297,17 +31297,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYearsOfExperienceAsOf.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnYearsOfExperienceAsOf)
-                            || (((System.DateTime)(this[this.myTable.ColumnYearsOfExperienceAsOf])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnYearsOfExperienceAsOf])) != value)))
                 {
                     this[this.myTable.ColumnYearsOfExperienceAsOf] = value;
                 }
@@ -31367,7 +31367,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -31375,17 +31375,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -31419,7 +31419,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -31427,17 +31427,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -32048,7 +32048,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the record was last updated.
-        public System.DateTime QualificationDate
+        public System.DateTime? QualificationDate
         {
             get
             {
@@ -32056,17 +32056,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnQualificationDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnQualificationDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnQualificationDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnQualificationDate])) != value)))
                 {
                     this[this.myTable.ColumnQualificationDate] = value;
                 }
@@ -32100,7 +32100,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -32108,17 +32108,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -32152,7 +32152,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -32160,17 +32160,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -32755,7 +32755,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the record was last updated.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -32763,17 +32763,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -32807,7 +32807,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -32815,17 +32815,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -32859,7 +32859,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -32867,17 +32867,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -33539,7 +33539,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the years of experience were up to date.
-        public System.DateTime YearsOfExperienceAsOf
+        public System.DateTime? YearsOfExperienceAsOf
         {
             get
             {
@@ -33547,17 +33547,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYearsOfExperienceAsOf.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnYearsOfExperienceAsOf)
-                            || (((System.DateTime)(this[this.myTable.ColumnYearsOfExperienceAsOf])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnYearsOfExperienceAsOf])) != value)))
                 {
                     this[this.myTable.ColumnYearsOfExperienceAsOf] = value;
                 }
@@ -33644,7 +33644,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the person qualified.
-        public System.DateTime QualificationDate
+        public System.DateTime? QualificationDate
         {
             get
             {
@@ -33652,17 +33652,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnQualificationDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnQualificationDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnQualificationDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnQualificationDate])) != value)))
                 {
                     this[this.myTable.ColumnQualificationDate] = value;
                 }
@@ -33670,7 +33670,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the qualification expires.
-        public System.DateTime QualificationExpiry
+        public System.DateTime? QualificationExpiry
         {
             get
             {
@@ -33678,17 +33678,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnQualificationExpiry.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnQualificationExpiry)
-                            || (((System.DateTime)(this[this.myTable.ColumnQualificationExpiry])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnQualificationExpiry])) != value)))
                 {
                     this[this.myTable.ColumnQualificationExpiry] = value;
                 }
@@ -33696,7 +33696,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -33704,17 +33704,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -33748,7 +33748,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -33756,17 +33756,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -34403,7 +34403,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the record was last updated.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -34411,17 +34411,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -34455,7 +34455,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -34463,17 +34463,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -34507,7 +34507,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -34515,17 +34515,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -35110,7 +35110,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the record was last updated.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -35118,17 +35118,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -35162,7 +35162,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -35170,17 +35170,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -35214,7 +35214,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -35222,17 +35222,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -36118,7 +36118,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the years of experience were up to date.
-        public System.DateTime YearsOfExperienceAsOf
+        public System.DateTime? YearsOfExperienceAsOf
         {
             get
             {
@@ -36126,17 +36126,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnYearsOfExperienceAsOf.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnYearsOfExperienceAsOf)
-                            || (((System.DateTime)(this[this.myTable.ColumnYearsOfExperienceAsOf])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnYearsOfExperienceAsOf])) != value)))
                 {
                     this[this.myTable.ColumnYearsOfExperienceAsOf] = value;
                 }
@@ -36274,7 +36274,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -36282,17 +36282,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -36326,7 +36326,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -36334,17 +36334,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -37233,7 +37233,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -37241,17 +37241,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -37285,7 +37285,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -37293,17 +37293,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -37927,7 +37927,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date from which this code was made unassignable.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -37935,17 +37935,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -37979,7 +37979,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -37987,17 +37987,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -38031,7 +38031,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -38039,17 +38039,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -39088,7 +39088,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -39096,17 +39096,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -39140,7 +39140,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -39148,17 +39148,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -40947,7 +40947,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -40955,17 +40955,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -40999,7 +40999,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -41007,17 +41007,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -42175,7 +42175,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -42183,17 +42183,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -42227,7 +42227,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -42235,17 +42235,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -43217,7 +43217,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -43225,17 +43225,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -43269,7 +43269,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -43277,17 +43277,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -44258,7 +44258,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Label value for type Date.
-        public System.DateTime ValueDate
+        public System.DateTime? ValueDate
         {
             get
             {
@@ -44266,17 +44266,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnValueDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnValueDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnValueDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnValueDate])) != value)))
                 {
                     this[this.myTable.ColumnValueDate] = value;
                 }
@@ -44362,7 +44362,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -44370,17 +44370,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -44414,7 +44414,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -44422,17 +44422,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -45263,7 +45263,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -45271,17 +45271,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -45315,7 +45315,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -45323,17 +45323,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -46060,7 +46060,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date of next evaluation.
-        public System.DateTime NextEvaluationDate
+        public System.DateTime? NextEvaluationDate
         {
             get
             {
@@ -46068,17 +46068,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnNextEvaluationDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnNextEvaluationDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnNextEvaluationDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnNextEvaluationDate])) != value)))
                 {
                     this[this.myTable.ColumnNextEvaluationDate] = value;
                 }
@@ -46086,7 +46086,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -46094,17 +46094,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -46138,7 +46138,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -46146,17 +46146,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -46767,7 +46767,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the record was last updated.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -46775,17 +46775,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -46819,7 +46819,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -46827,17 +46827,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -46871,7 +46871,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -46879,17 +46879,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -47474,7 +47474,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date the record was last updated.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -47482,17 +47482,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -47526,7 +47526,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -47534,17 +47534,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -47578,7 +47578,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -47586,17 +47586,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -48188,7 +48188,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -48196,17 +48196,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -48240,7 +48240,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -48248,17 +48248,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -48927,7 +48927,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -48935,17 +48935,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -48979,7 +48979,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -48987,17 +48987,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -49846,7 +49846,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the expected date their committment ends.
-        public System.DateTime EndOfCommitment
+        public System.DateTime? EndOfCommitment
         {
             get
             {
@@ -49854,17 +49854,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnEndOfCommitment.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnEndOfCommitment)
-                            || (((System.DateTime)(this[this.myTable.ColumnEndOfCommitment])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnEndOfCommitment])) != value)))
                 {
                     this[this.myTable.ColumnEndOfCommitment] = value;
                 }
@@ -50054,7 +50054,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -50062,17 +50062,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -50106,7 +50106,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -50114,17 +50114,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -50961,7 +50961,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Date from which this code was made unassignable.
-        public System.DateTime UnassignableDate
+        public System.DateTime? UnassignableDate
         {
             get
             {
@@ -50969,17 +50969,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnUnassignableDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnUnassignableDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnUnassignableDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnUnassignableDate])) != value)))
                 {
                     this[this.myTable.ColumnUnassignableDate] = value;
                 }
@@ -51013,7 +51013,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -51021,17 +51021,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -51065,7 +51065,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -51073,17 +51073,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -51669,7 +51669,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -51677,17 +51677,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -51721,7 +51721,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -51729,17 +51729,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -52260,7 +52260,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -52268,17 +52268,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -52312,7 +52312,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -52320,17 +52320,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -53280,7 +53280,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This is the date to which a job is expected to be filled.
-        public System.DateTime ToDate
+        public System.DateTime? ToDate
         {
             get
             {
@@ -53288,17 +53288,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnToDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnToDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnToDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnToDate])) != value)))
                 {
                     this[this.myTable.ColumnToDate] = value;
                 }
@@ -53332,7 +53332,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This date field indicating the date the leaving code was updated.
-        public System.DateTime LeavingCodeUpdatedDate
+        public System.DateTime? LeavingCodeUpdatedDate
         {
             get
             {
@@ -53340,17 +53340,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnLeavingCodeUpdatedDate.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnLeavingCodeUpdatedDate)
-                            || (((System.DateTime)(this[this.myTable.ColumnLeavingCodeUpdatedDate])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnLeavingCodeUpdatedDate])) != value)))
                 {
                     this[this.myTable.ColumnLeavingCodeUpdatedDate] = value;
                 }
@@ -53436,7 +53436,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -53444,17 +53444,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -53488,7 +53488,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -53496,17 +53496,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -54241,7 +54241,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -54249,17 +54249,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -54293,7 +54293,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -54301,17 +54301,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -54890,7 +54890,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -54898,17 +54898,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -54942,7 +54942,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -54950,17 +54950,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }
@@ -55584,7 +55584,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was created.
-        public System.DateTime DateCreated
+        public System.DateTime? DateCreated
         {
             get
             {
@@ -55592,17 +55592,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateCreated.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateCreated)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateCreated])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateCreated])) != value)))
                 {
                     this[this.myTable.ColumnDateCreated] = value;
                 }
@@ -55636,7 +55636,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The date the record was modified.
-        public System.DateTime DateModified
+        public System.DateTime? DateModified
         {
             get
             {
@@ -55644,17 +55644,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 ret = this[this.myTable.ColumnDateModified.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
-                    return DateTime.MinValue;
+                    return null;
                 }
                 else
                 {
-                    return ((System.DateTime)(ret));
+                    return ((System.DateTime?)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDateModified)
-                            || (((System.DateTime)(this[this.myTable.ColumnDateModified])) != value)))
+                            || (((System.DateTime?)(this[this.myTable.ColumnDateModified])) != value)))
                 {
                     this[this.myTable.ColumnDateModified] = value;
                 }

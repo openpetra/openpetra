@@ -95,7 +95,7 @@ RootNode:
     Toolbar:
         tbbImportNewStatement:
         tbbSeparator:
-        cmbSelectStatement:
+        cmbSelectStatement: {Width=250}
         tbbSeparator:
         tbbSaveMatches:
         tbbCreateGiftBatch:

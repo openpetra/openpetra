@@ -1,7 +1,7 @@
 RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
-    Namespace: Ict.Petra.Client.MPartner.Gui   
+    Namespace: Ict.Petra.Client.MPartner.Gui
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     FormType: edit
     Template: usercontrolUnbound
@@ -10,35 +10,44 @@ RootNode:
             Controls: [tabPartners]
             Dock: Fill
 
-        tabPartners: {Dock=Fill, DragTabPageEnabled=true}     
-           
-        tpgAddresses:
+        tabPartners: {Dock=Fill, DragTabPageEnabled=true, LoadPagesDynamically=true}
+        
+        tpgAddresses: {LoadPageDynamically=true}
             Label: Addresses ({0})
-            Controls: [lblTest]
             Image: Addresses.ico
-        lblTest:
-            Label: Test only
-        tpgDetails:
-            Label: Partner Details
-            Controls: [ucoPartnerDetails]           
-            Image: Details.ico
+            DynamicControlType: Ict.Petra.Client.MCommon.TUCPartnerAddresses
             
-        ucoPartnerDetails:
-           Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Person2
-           #Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2
-           Dock: Fill
+        tpgPartnerDetails: {LoadPageDynamically=true}
+            Label: Partner Details         
+            Image: Details.ico
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2
+            
+        tpgFoundationDetails:
+# TODO {LoadPageDynamically=true}
+            Label: Foundation Details
+            Image: Foundations.ico
            
-        tpgSubscriptions:
+        tpgSubscriptions: 
+# TODO {LoadPageDynamically=true}
             Label: Subscriptions ({0})
             Image: Subscriptions.ico
-            #Controls: []
-            
-        tpgSpecialTypes:
+                       
+        tpgPartnerTypes: {LoadPageDynamically=true}
             Label: Special Types ({0})
             Image: Types.ico
-            #Controls: []
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes
             
-        tpgNotes:
+        tpgFamilyMembers:
+# TODO {LoadPageDynamically=true}
+            Label: Family Members
+            Image: FamilyMembers.ico
+
+        tpgNotes: {LoadPageDynamically=true}
             Label: Notes ({0})
             Image: Notes.ico
-            #Controls: []                        
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_PartnerNotes
+            
+        tpgOfficeSpecific:
+# TODO {LoadPageDynamically=true}        
+            Label: Local Data
+            Image: OfficeSpecific.ico            

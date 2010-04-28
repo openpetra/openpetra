@@ -66,6 +66,7 @@ namespace {#NAMESPACE}
     /// auto generated
     public void RunOnceOnActivation()
     {
+        {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }
 
@@ -112,3 +113,5 @@ namespace {#NAMESPACE}
 {#ENDIF ACTIONENABLING}
   }
 }
+
+{#INCLUDE copyvalues.cs}

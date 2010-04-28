@@ -24,6 +24,7 @@
  *
  ************************************************************************/
 using System;
+using System.Windows.Forms;
 
 namespace Ict.Common
 {
@@ -57,6 +58,11 @@ namespace Ict.Common
     /// todoComment
     /// </summary>
     public delegate void TShowTabEventHandler(System.Object Sender, TShowTabEventArgs e);
+
+    /// <summary>
+    /// todoComment
+    /// </summary>
+    public delegate void TTabPageEventHandler(System.Object Sender, TTabPageEventArgs e);
 
     /// <summary>
     /// todoComment
@@ -203,6 +209,52 @@ namespace Ict.Common
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Event Arguments for the TTabPage Event
+    /// </summary>
+    public class TTabPageEventArgs : System.EventArgs
+    {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="ATabPage">TabPage which this Event is about.</param>
+        /// <param name="AEvent">Event which is happening for the TabPage.</param>
+        public TTabPageEventArgs(TabPage ATabPage, string AEvent)
+        {
+            Tab = ATabPage;
+            UserControlOnTabPage = null;
+            Event = AEvent;
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="ATabPage">TabPage which this Event is about.</param>
+        /// <param name="AUserControlOnTabPage">UserControl which makes up the content of the TabPage (if any).</param>
+        /// <param name="AEvent">Event which is happening for the TabPage.</param>
+        public TTabPageEventArgs(TabPage ATabPage, UserControl AUserControlOnTabPage, string AEvent)
+        {
+            Tab = ATabPage;
+            UserControlOnTabPage = AUserControlOnTabPage;
+            Event = AEvent;
+        }
+
+        /// <summary>
+        /// TabPage which this Event is about.
+        /// </summary>
+        public TabPage Tab;
+
+        /// <summary>
+        /// UserControl which makes up the content of the TabPage (if any).
+        /// </summary>
+        public UserControl UserControlOnTabPage;
+
+        /// <summary>
+        /// Event which is happening for the TabPage.
+        /// </summary>
+        public string Event;
     }
 
     /// <summary>

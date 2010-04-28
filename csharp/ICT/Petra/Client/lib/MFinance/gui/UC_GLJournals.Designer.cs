@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailTransactionTypeCode = new System.Windows.Forms.Label();
             this.cmbDetailTransactionCurrency = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailTransactionCurrency = new System.Windows.Forms.Label();
-            this.dtpDetailDateEffective = new System.Windows.Forms.DateTimePicker();
+            this.dtpDetailDateEffective = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDetailDateEffective = new System.Windows.Forms.Label();
             this.txtDetailExchangeRateToBase = new System.Windows.Forms.TextBox();
             this.lblDetailExchangeRateToBase = new System.Windows.Forms.Label();
@@ -135,6 +135,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtLedgerNumber.Name = "txtLedgerNumber";
             this.txtLedgerNumber.Size = new System.Drawing.Size(150, 28);
             this.txtLedgerNumber.ReadOnly = true;
+            this.txtLedgerNumber.TabStop = false;
             //
             // lblLedgerNumber
             //
@@ -143,6 +144,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblLedgerNumber.AutoSize = true;
             this.lblLedgerNumber.Text = "Ledger:";
             this.lblLedgerNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLedgerNumber.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtBatchNumber
             //
@@ -150,6 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtBatchNumber.Name = "txtBatchNumber";
             this.txtBatchNumber.Size = new System.Drawing.Size(150, 28);
             this.txtBatchNumber.ReadOnly = true;
+            this.txtBatchNumber.TabStop = false;
             //
             // lblBatchNumber
             //
@@ -158,6 +161,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblBatchNumber.AutoSize = true;
             this.lblBatchNumber.Text = "Batch:";
             this.lblBatchNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblBatchNumber.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -246,6 +250,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailJournalDescription.AutoSize = true;
             this.lblDetailJournalDescription.Text = "Journal Description:";
             this.lblDetailJournalDescription.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailJournalDescription.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailSubSystemCode
             //
@@ -261,6 +266,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailSubSystemCode.AutoSize = true;
             this.lblDetailSubSystemCode.Text = "Sub System:";
             this.lblDetailSubSystemCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailSubSystemCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailTransactionTypeCode
             //
@@ -276,6 +282,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailTransactionTypeCode.AutoSize = true;
             this.lblDetailTransactionTypeCode.Text = "Transaction Type:";
             this.lblDetailTransactionTypeCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailTransactionTypeCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailTransactionCurrency
             //
@@ -291,12 +298,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailTransactionCurrency.AutoSize = true;
             this.lblDetailTransactionCurrency.Text = "Currency:";
             this.lblDetailTransactionCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailTransactionCurrency.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // dtpDetailDateEffective
             //
             this.dtpDetailDateEffective.Location = new System.Drawing.Point(2,2);
             this.dtpDetailDateEffective.Name = "dtpDetailDateEffective";
-            this.dtpDetailDateEffective.Size = new System.Drawing.Size(150, 28);
+            this.dtpDetailDateEffective.Size = new System.Drawing.Size(94, 28);
             this.dtpDetailDateEffective.Enabled = false;
             //
             // lblDetailDateEffective
@@ -306,6 +314,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailDateEffective.AutoSize = true;
             this.lblDetailDateEffective.Text = "Effective Date:";
             this.lblDetailDateEffective.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailDateEffective.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailExchangeRateToBase
             //
@@ -320,6 +329,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailExchangeRateToBase.AutoSize = true;
             this.lblDetailExchangeRateToBase.Text = "Exchange Rate to Base:";
             this.lblDetailExchangeRateToBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailExchangeRateToBase.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -388,7 +398,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Label lblDetailTransactionTypeCode;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailTransactionCurrency;
         private System.Windows.Forms.Label lblDetailTransactionCurrency;
-        private System.Windows.Forms.DateTimePicker dtpDetailDateEffective;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailDateEffective;
         private System.Windows.Forms.Label lblDetailDateEffective;
         private System.Windows.Forms.TextBox txtDetailExchangeRateToBase;
         private System.Windows.Forms.Label lblDetailExchangeRateToBase;

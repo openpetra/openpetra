@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -154,7 +154,7 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             cmbSelectStatement.BeginUpdate();
             cmbSelectStatement.DataSource = stmts.DefaultView;
-            cmbSelectStatement.DisplayMember = AEpStatementTable.GetDateDBName();
+            cmbSelectStatement.DisplayMember = AEpStatementTable.GetFilenameDBName();
             cmbSelectStatement.ValueMember = AEpStatementTable.GetStatementKeyDBName();
             cmbSelectStatement.DataSource = stmts.DefaultView;
             cmbSelectStatement.EndUpdate();

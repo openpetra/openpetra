@@ -27,8 +27,20 @@ using System;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
-    public class TUC_PartnerDetails_Family2
+    public partial class TUC_PartnerDetails_Family2
     {
+        #region Public Methods
 
+        /// <summary>
+        /// Gets the data from all controls on this UserControl.
+        /// The data is stored in the DataTables/DataColumns to which the Controls
+        /// are mapped.
+        /// </summary>
+        public void GetDataFromControls2()
+        {
+            GetDataFromControls(FMainDS.PFamily[0]);
+        }
+
+        #endregion
     }
 }

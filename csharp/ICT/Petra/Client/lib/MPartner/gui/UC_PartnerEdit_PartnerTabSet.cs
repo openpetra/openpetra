@@ -24,6 +24,7 @@
  *
  ************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Collections;
@@ -101,7 +102,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TUC_PartnerDetailsPerson FUcoPartnerDetailsPerson;
 
 // TODO        private TUCPartnerSubscriptions FUcoPartnerSubscriptions;
-        private TUCPartnerTypes FUcoPartnerTypes;
 
 // TODO        private TUC_PartnerDetailsFamily FUcoPartnerDetailsFamily;
 // TODO        private TUC_PartnerDetailsChurch FUcoPartnerDetailsChurch;
@@ -119,7 +119,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 // TODO        private TUCPartnerRelationships FUcoRelationships;
 // TODO        private TUCPartnerReminders FUcoReminders;
 // TODO                private Boolean FTabSetupPartnerSubscriptions;
-        private Boolean FTabSetupPartnerTypes;
+        private SortedList <TDynamicLoadableUserControls, UserControl>FTabSetup;
+
+//        private Boolean FTabSetupPartnerTypes;
         private Boolean FTabSetupPartnerAddresses;
         private Boolean FTabSetupPartnerDetails;
 
@@ -133,6 +135,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 // TODO                private Boolean FTabSetupReminders;
 // TODO                private Boolean FTabSetupRelationships;
         private Boolean FUserControlInitialised;
+
+        private event TTabPageEventHandler TabPageEvent;
 
         /// <summary>todoComment</summary>
         public PartnerEditTDS MainDS
@@ -195,6 +199,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void InitUserControl()
         {
+            TabPageEvent += this.TabPageEventHandler;
         }
 
         /// <summary>
@@ -551,6 +556,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Determine which Tabs to show in the ucoPartnerTabSet
             FPartnerClass = FMainDS.PPartner[0].PartnerClass;
             TabsToHide = new ArrayList();
+            FTabSetup = new SortedList <TDynamicLoadableUserControls, UserControl>();
 
             if (FPartnerClass == "PERSON")
             {
@@ -823,8 +829,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Cursor = Cursors.Default;
         }
 
-        private void DynamicLoadUserControl(TDynamicLoadableUserControls AUserControl)
+        private UserControl DynamicLoadUserControl(TDynamicLoadableUserControls AUserControl)
         {
+            UserControl ReturnValue = null;
+
             switch (AUserControl)
             {
                 case TDynamicLoadableUserControls.dlucAddresses:
@@ -1026,10 +1034,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 #endif
 
                 case TDynamicLoadableUserControls.dlucPartnerTypes:
-                    FUcoPartnerTypes = new TUCPartnerTypes();
-                    FUcoPartnerTypes.Location = new Point(0, 2);
-                    FUcoPartnerTypes.Dock = DockStyle.Fill;
-                    pnlPartnerTypes.Controls.Add(FUcoPartnerTypes);
+                    TUCPartnerTypes TabUserControl = new TUCPartnerTypes();
+
+                    FTabSetup.Add(TDynamicLoadableUserControls.dlucPartnerTypes, TabUserControl);
+                    TabUserControl.Location = new Point(0, 2);
+                    TabUserControl.Dock = DockStyle.Fill;
+                    pnlPartnerTypes.Controls.Add(TabUserControl);
 
                     /*
                      *  The following four commands seem strange and unnecessary; however, they are necessary
@@ -1044,7 +1054,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     // Hook up RecalculateScreenParts Event
-                    FUcoPartnerTypes.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(this.RecalculateTabHeaderCounters);
+                    TabUserControl.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(this.RecalculateTabHeaderCounters);
+                    ReturnValue = TabUserControl;
                     break;
 
                 case TDynamicLoadableUserControls.dlucPartnerNotes:
@@ -1221,6 +1232,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 #endif
             }
+
+            return ReturnValue;
         }
 
         private Boolean GetPartnerShortName(Int64 APartnerKey, out String APartnerShortName, out TPartnerClass APartnerClass)
@@ -1731,24 +1744,29 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 this.FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerTypes;
 
-                if (!FTabSetupPartnerTypes)
+                if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerTypes))
                 {
+                    TUCPartnerTypes TabUserControl;
+
                     if (TClientSettings.DelayedDataLoading)
                     {
                         // Signalise the user that data is beeing loaded
                         this.Cursor = Cursors.AppStarting;
                     }
 
-                    DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerTypes);
+                    TabUserControl = (TUCPartnerTypes)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerTypes);
 
-                    FUcoPartnerTypes.MainDS = FMainDS;
-                    FUcoPartnerTypes.PartnerEditUIConnector = FPartnerEditUIConnector;
-                    FUcoPartnerTypes.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(this.Uco_HookupPartnerEditDataChange);
-                    FUcoPartnerTypes.InitialiseUserControl();
-                    ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPartnerTypes);
+                    TabUserControl.MainDS = FMainDS;
+                    TabUserControl.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    TabUserControl.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(this.Uco_HookupPartnerEditDataChange);
+                    TabUserControl.InitUserControl();
+                    ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(TabUserControl);
+
+                    OnTabPageEvent(new TTabPageEventArgs(tbpPartnerTypes, "FurtherInit"));
 
                     // MessageBox.Show('TabSetupPartnerTypes finished');
-                    FTabSetupPartnerTypes = true;
+//                    FTabSetupPartnerTypes = true;
+
                     this.Cursor = Cursors.Default;
                 }
             }
@@ -1909,7 +1927,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // No need for this.Cursor := Cursors.AppStarting here since this data is always retrieved...
                     FUcoPartnerNotes.MainDS = FMainDS;
                     FUcoPartnerNotes.PetraUtilsObject = FPetraUtilsObject;
-                    FUcoPartnerNotes.InitialiseUserControl();
+                    FUcoPartnerNotes.InitUserControl();
 
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPartnerNotes);
 
@@ -1927,6 +1945,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             // We need to turn the ChangeDetection routine
             // back on
             OnDataLoadingFinished();
+        }
+
+        private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
+        {
+            if (ATabPageEventArgs.Event == "FurtherInit")
+            {
+//                if (ATabPageEventArgs.Tab == tbpPartnerTypes)
+//                {
+//                    MessageBox.Show("TabPageEventHandler for tbpPartnerTypes");
+//                }
+            }
         }
 
         private void UcoTab_EnableDisableOtherScreenParts(System.Object sender, TEnableDisableEventArgs e)
@@ -1984,6 +2013,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // raise Event here so that PartnerEdit Form can catch it
             OnShowTab(new TShowTabEventArgs(e.TabName, e.Show, e.ShowNextToTabName));
+        }
+
+        private void OnTabPageEvent(TTabPageEventArgs e)
+        {
+            if (TabPageEvent != null)
+            {
+                TabPageEvent(this, e);
+            }
         }
 
         #endregion

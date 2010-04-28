@@ -118,8 +118,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PCountryTable MyPCountryTable = PCountryAccess.LoadViaPInternationalPostalType(AInternatPostalTypeCode, StringHelper.StrSplit("p_country_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPCountryTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PCountryAccess.DeleteUsingTemplate(MyPCountryTable[countRow], null, ATransaction);
-                                }
+                    PCountryAccess.DeleteUsingTemplate(MyPCountryTable[countRow], null, ATransaction);
+                }
             }
             PInternationalPostalTypeAccess.DeleteByPrimaryKey(AInternatPostalTypeCode, ATransaction);
         }
@@ -133,8 +133,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PCountryTable MyPCountryTable = PCountryAccess.LoadViaPInternationalPostalTypeTemplate(ATemplateRow, StringHelper.StrSplit("p_country_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPCountryTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PCountryAccess.DeleteUsingTemplate(MyPCountryTable[countRow], null, ATransaction);
-                                }
+                    PCountryAccess.DeleteUsingTemplate(MyPCountryTable[countRow], null, ATransaction);
+                }
             }
             PInternationalPostalTypeAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
@@ -632,7 +632,7 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
     public class SBatchJobCascading : TTypedDataAccess
     {
         /// cascading delete
-        public static void DeleteByPrimaryKey(String AFileName, String AUserId, System.DateTime ADateSubmitted, Int32 ATimeSubmitted, TDBTransaction ATransaction, bool AWithCascDelete)
+        public static void DeleteByPrimaryKey(String AFileName, String AUserId, System.DateTime? ADateSubmitted, Int32 ATimeSubmitted, TDBTransaction ATransaction, bool AWithCascDelete)
         {
             SBatchJobAccess.DeleteByPrimaryKey(AFileName, AUserId, ADateSubmitted, ATimeSubmitted, ATransaction);
         }
@@ -688,8 +688,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPartnerTable MyPPartnerTable = PPartnerAccess.LoadViaPPartnerStatus(AStatusCode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                                }
+                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                }
             }
             PPartnerStatusAccess.DeleteByPrimaryKey(AStatusCode, ATransaction);
         }
@@ -703,8 +703,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPartnerTable MyPPartnerTable = PPartnerAccess.LoadViaPPartnerStatusTemplate(ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                                }
+                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                }
             }
             PPartnerStatusAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
@@ -722,8 +722,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPartnerTable MyPPartnerTable = PPartnerAccess.LoadViaPAcquisition(AAcquisitionCode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                                }
+                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                }
                 PmShortTermApplicationTable MyPmShortTermApplicationTable = PmShortTermApplicationAccess.LoadViaPAcquisition(AAcquisitionCode, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -742,8 +742,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPartnerTable MyPPartnerTable = PPartnerAccess.LoadViaPAcquisitionTemplate(ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                                }
+                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                }
                 PmShortTermApplicationTable MyPmShortTermApplicationTable = PmShortTermApplicationAccess.LoadViaPAcquisitionTemplate(ATemplateRow, StringHelper.StrSplit("p_partner_key_n,pm_application_key_i,pm_registration_office_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPmShortTermApplicationTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -771,8 +771,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPartnerTable MyPPartnerTable = PPartnerAccess.LoadViaPAddresseeType(AAddresseeTypeCode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                                }
+                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                }
                 PFormalityTable MyPFormalityTable = PFormalityAccess.LoadViaPAddresseeType(AAddresseeTypeCode, StringHelper.StrSplit("p_language_code_c,p_country_code_c,p_addressee_type_code_c,p_formality_level_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPFormalityTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -796,8 +796,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPartnerTable MyPPartnerTable = PPartnerAccess.LoadViaPAddresseeTypeTemplate(ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                                }
+                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                }
                 PFormalityTable MyPFormalityTable = PFormalityAccess.LoadViaPAddresseeTypeTemplate(ATemplateRow, StringHelper.StrSplit("p_language_code_c,p_country_code_c,p_addressee_type_code_c,p_formality_level_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPFormalityTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -836,8 +836,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPartnerTable MyPPartnerTable = PPartnerAccess.LoadViaPPartnerClasses(APartnerClass, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                                }
+                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                }
                 PPartnerFieldOfServiceTable MyPPartnerFieldOfServiceTable = PPartnerFieldOfServiceAccess.LoadViaPPartnerClasses(APartnerClass, StringHelper.StrSplit("p_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerFieldOfServiceTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -856,8 +856,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPartnerTable MyPPartnerTable = PPartnerAccess.LoadViaPPartnerClassesTemplate(ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                                }
+                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                }
                 PPartnerFieldOfServiceTable MyPPartnerFieldOfServiceTable = PPartnerFieldOfServiceAccess.LoadViaPPartnerClassesTemplate(ATemplateRow, StringHelper.StrSplit("p_key_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerFieldOfServiceTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -1084,8 +1084,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PUnitTable MyPUnitTable = PUnitAccess.LoadViaUUnitType(AUnitTypeCode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPUnitTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PUnitAccess.DeleteUsingTemplate(MyPUnitTable[countRow], null, ATransaction);
-                                }
+                    PUnitAccess.DeleteUsingTemplate(MyPUnitTable[countRow], null, ATransaction);
+                }
                 PtPositionTable MyPtPositionTable = PtPositionAccess.LoadViaUUnitType(AUnitTypeCode, StringHelper.StrSplit("pt_position_name_c,pt_position_scope_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPtPositionTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -1104,8 +1104,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PUnitTable MyPUnitTable = PUnitAccess.LoadViaUUnitTypeTemplate(ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPUnitTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PUnitAccess.DeleteUsingTemplate(MyPUnitTable[countRow], null, ATransaction);
-                                }
+                    PUnitAccess.DeleteUsingTemplate(MyPUnitTable[countRow], null, ATransaction);
+                }
                 PtPositionTable MyPtPositionTable = PtPositionAccess.LoadViaUUnitTypeTemplate(ATemplateRow, StringHelper.StrSplit("pt_position_name_c,pt_position_scope_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPtPositionTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -1144,8 +1144,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPersonTable MyPPersonTable = PPersonAccess.LoadViaPFamily(APartnerKey, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPersonTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
-                                }
+                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
+                }
             }
             PFamilyAccess.DeleteByPrimaryKey(APartnerKey, ATransaction);
         }
@@ -1159,8 +1159,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPersonTable MyPPersonTable = PPersonAccess.LoadViaPFamilyTemplate(ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPersonTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
-                                }
+                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
+                }
             }
             PFamilyAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
@@ -1183,8 +1183,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPersonTable MyPPersonTable = PPersonAccess.LoadViaPtMaritalStatus(ACode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPersonTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
-                                }
+                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
+                }
             }
             PtMaritalStatusAccess.DeleteByPrimaryKey(ACode, ATransaction);
         }
@@ -1203,8 +1203,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPersonTable MyPPersonTable = PPersonAccess.LoadViaPtMaritalStatusTemplate(ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPersonTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
-                                }
+                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
+                }
             }
             PtMaritalStatusAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
@@ -1222,8 +1222,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPersonTable MyPPersonTable = PPersonAccess.LoadViaPOccupation(AOccupationCode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPersonTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
-                                }
+                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
+                }
             }
             POccupationAccess.DeleteByPrimaryKey(AOccupationCode, ATransaction);
         }
@@ -1237,8 +1237,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPersonTable MyPPersonTable = PPersonAccess.LoadViaPOccupationTemplate(ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPersonTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
-                                }
+                    PPersonAccess.DeleteUsingTemplate(MyPPersonTable[countRow], null, ATransaction);
+                }
             }
             POccupationAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
@@ -1501,8 +1501,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 AAccountTable MyAAccountTable = AAccountAccess.LoadViaPBankingDetails(ABankingDetailsKey, StringHelper.StrSplit("a_ledger_number_i,a_account_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAAccountTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
-                                }
+                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
+                }
             }
             PBankingDetailsAccess.DeleteByPrimaryKey(ABankingDetailsKey, ATransaction);
         }
@@ -1531,8 +1531,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 AAccountTable MyAAccountTable = AAccountAccess.LoadViaPBankingDetailsTemplate(ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_account_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAAccountTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
-                                }
+                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
+                }
             }
             PBankingDetailsAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
@@ -2868,8 +2868,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 ALedgerTable MyALedgerTable = ALedgerAccess.LoadViaATaxType(ATaxTypeCode, StringHelper.StrSplit("a_ledger_number_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyALedgerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    ALedgerAccess.DeleteUsingTemplate(MyALedgerTable[countRow], null, ATransaction);
-                                }
+                    ALedgerAccess.DeleteUsingTemplate(MyALedgerTable[countRow], null, ATransaction);
+                }
                 ATaxTableTable MyATaxTableTable = ATaxTableAccess.LoadViaATaxType(ATaxTypeCode, StringHelper.StrSplit("a_ledger_number_i,a_tax_type_code_c,a_tax_rate_code_c,a_tax_valid_from_d", ","), ATransaction);
                 for (countRow = 0; (countRow != MyATaxTableTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -2893,8 +2893,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 ALedgerTable MyALedgerTable = ALedgerAccess.LoadViaATaxTypeTemplate(ATemplateRow, StringHelper.StrSplit("a_ledger_number_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyALedgerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    ALedgerAccess.DeleteUsingTemplate(MyALedgerTable[countRow], null, ATransaction);
-                                }
+                    ALedgerAccess.DeleteUsingTemplate(MyALedgerTable[countRow], null, ATransaction);
+                }
                 ATaxTableTable MyATaxTableTable = ATaxTableAccess.LoadViaATaxTypeTemplate(ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_tax_type_code_c,a_tax_rate_code_c,a_tax_valid_from_d", ","), ATransaction);
                 for (countRow = 0; (countRow != MyATaxTableTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -2982,8 +2982,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 AAccountTable MyAAccountTable = AAccountAccess.LoadViaABudgetType(ABudgetTypeCode, StringHelper.StrSplit("a_ledger_number_i,a_account_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAAccountTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
-                                }
+                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
+                }
                 ABudgetTable MyABudgetTable = ABudgetAccess.LoadViaABudgetType(ABudgetTypeCode, StringHelper.StrSplit("a_budget_sequence_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyABudgetTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -3002,8 +3002,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 AAccountTable MyAAccountTable = AAccountAccess.LoadViaABudgetTypeTemplate(ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_account_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyAAccountTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
-                                }
+                    AAccountAccess.DeleteUsingTemplate(MyAAccountTable[countRow], null, ATransaction);
+                }
                 ABudgetTable MyABudgetTable = ABudgetAccess.LoadViaABudgetTypeTemplate(ATemplateRow, StringHelper.StrSplit("a_budget_sequence_i", ","), ATransaction);
                 for (countRow = 0; (countRow != MyABudgetTable.Rows.Count); countRow = (countRow + 1))
                 {
@@ -3126,8 +3126,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 ACostCentreTable MyACostCentreTable = ACostCentreAccess.LoadViaACostCentreTypes(ALedgerNumber, ACostCentreType, StringHelper.StrSplit("a_ledger_number_i,a_cost_centre_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyACostCentreTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
-                                }
+                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
+                }
             }
             ACostCentreTypesAccess.DeleteByPrimaryKey(ALedgerNumber, ACostCentreType, ATransaction);
         }
@@ -3141,8 +3141,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 ACostCentreTable MyACostCentreTable = ACostCentreAccess.LoadViaACostCentreTypesTemplate(ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_cost_centre_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyACostCentreTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
-                                }
+                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
+                }
             }
             ACostCentreTypesAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
@@ -8654,8 +8654,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPartnerTable MyPPartnerTable = PPartnerAccess.LoadViaPFirstContact(AFirstContactCode, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                                }
+                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                }
             }
             PFirstContactAccess.DeleteByPrimaryKey(AFirstContactCode, ATransaction);
         }
@@ -8669,8 +8669,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 PPartnerTable MyPPartnerTable = PPartnerAccess.LoadViaPFirstContactTemplate(ATemplateRow, StringHelper.StrSplit("p_partner_key_n", ","), ATransaction);
                 for (countRow = 0; (countRow != MyPPartnerTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
-                                }
+                    PPartnerAccess.DeleteUsingTemplate(MyPPartnerTable[countRow], null, ATransaction);
+                }
             }
             PFirstContactAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }
@@ -8688,8 +8688,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 ACostCentreTable MyACostCentreTable = ACostCentreAccess.LoadViaAKeyFocusArea(AKeyFocusArea, StringHelper.StrSplit("a_ledger_number_i,a_cost_centre_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyACostCentreTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
-                                }
+                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
+                }
             }
             AKeyFocusAreaAccess.DeleteByPrimaryKey(AKeyFocusArea, ATransaction);
         }
@@ -8703,8 +8703,8 @@ namespace Ict.Petra.Server.MCommon.Data.Cascading
                 ACostCentreTable MyACostCentreTable = ACostCentreAccess.LoadViaAKeyFocusAreaTemplate(ATemplateRow, StringHelper.StrSplit("a_ledger_number_i,a_cost_centre_code_c", ","), ATransaction);
                 for (countRow = 0; (countRow != MyACostCentreTable.Rows.Count); countRow = (countRow + 1))
                 {
-                                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
-                                }
+                    ACostCentreAccess.DeleteUsingTemplate(MyACostCentreTable[countRow], null, ATransaction);
+                }
             }
             AKeyFocusAreaAccess.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
         }

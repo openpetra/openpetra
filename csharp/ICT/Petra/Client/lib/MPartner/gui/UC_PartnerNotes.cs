@@ -117,7 +117,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void InitialiseUserControl()
+        public void InitUserControl()
         {
             // Special information
             btnCreatedPartner.UpdateFields(FMainDS.PPartner);

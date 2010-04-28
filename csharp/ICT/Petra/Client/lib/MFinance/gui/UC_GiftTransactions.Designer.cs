@@ -87,7 +87,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailDonorKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.lblDetailDonorKey = new System.Windows.Forms.Label();
-            this.dtpDateEntered = new System.Windows.Forms.DateTimePicker();
+            this.dtpDateEntered = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDateEntered = new System.Windows.Forms.Label();
             this.txtDetailGiftTransactionAmount = new System.Windows.Forms.TextBox();
             this.lblDetailGiftTransactionAmount = new System.Windows.Forms.Label();
@@ -141,6 +141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtLedgerNumber.Name = "txtLedgerNumber";
             this.txtLedgerNumber.Size = new System.Drawing.Size(150, 28);
             this.txtLedgerNumber.ReadOnly = true;
+            this.txtLedgerNumber.TabStop = false;
             //
             // lblLedgerNumber
             //
@@ -149,6 +150,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblLedgerNumber.AutoSize = true;
             this.lblLedgerNumber.Text = "Ledger:";
             this.lblLedgerNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLedgerNumber.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtBatchNumber
             //
@@ -156,6 +158,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtBatchNumber.Name = "txtBatchNumber";
             this.txtBatchNumber.Size = new System.Drawing.Size(150, 28);
             this.txtBatchNumber.ReadOnly = true;
+            this.txtBatchNumber.TabStop = false;
             //
             // lblBatchNumber
             //
@@ -164,6 +167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblBatchNumber.AutoSize = true;
             this.lblBatchNumber.Text = "Gift Batch:";
             this.lblBatchNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblBatchNumber.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -256,14 +260,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtDetailDonorKey.Size = new System.Drawing.Size(370, 28);
             this.txtDetailDonorKey.ASpecialSetting = true;
             this.txtDetailDonorKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.txtDetailDonorKey.ButtonWidth = 40;
-            this.txtDetailDonorKey.MaxLength = 32767;
-            this.txtDetailDonorKey.ReadOnly = false;
-            this.txtDetailDonorKey.TextBoxWidth = 80;
-            this.txtDetailDonorKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtDetailDonorKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
             this.txtDetailDonorKey.PartnerClass = "";
+            this.txtDetailDonorKey.MaxLength = 32767;
             this.txtDetailDonorKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtDetailDonorKey.TextBoxWidth = 80;
+            this.txtDetailDonorKey.ButtonWidth = 40;
+            this.txtDetailDonorKey.ReadOnly = false;
+            this.txtDetailDonorKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtDetailDonorKey.ButtonText = "Find";
             //
             // lblDetailDonorKey
@@ -273,12 +277,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailDonorKey.AutoSize = true;
             this.lblDetailDonorKey.Text = "Donor:";
             this.lblDetailDonorKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailDonorKey.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // dtpDateEntered
             //
             this.dtpDateEntered.Location = new System.Drawing.Point(2,2);
             this.dtpDateEntered.Name = "dtpDateEntered";
-            this.dtpDateEntered.Size = new System.Drawing.Size(150, 28);
+            this.dtpDateEntered.Size = new System.Drawing.Size(94, 28);
             //
             // lblDateEntered
             //
@@ -287,6 +292,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDateEntered.AutoSize = true;
             this.lblDateEntered.Text = "Date Entered:";
             this.lblDateEntered.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDateEntered.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailGiftTransactionAmount
             //
@@ -301,6 +307,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailGiftTransactionAmount.AutoSize = true;
             this.lblDetailGiftTransactionAmount.Text = "Amount:";
             this.lblDetailGiftTransactionAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailGiftTransactionAmount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtCurrencyCode
             //
@@ -308,6 +315,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtCurrencyCode.Name = "txtCurrencyCode";
             this.txtCurrencyCode.Size = new System.Drawing.Size(150, 28);
             this.txtCurrencyCode.ReadOnly = true;
+            this.txtCurrencyCode.TabStop = false;
             //
             // txtDetailRecipientKey
             //
@@ -316,14 +324,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtDetailRecipientKey.Size = new System.Drawing.Size(370, 28);
             this.txtDetailRecipientKey.ASpecialSetting = true;
             this.txtDetailRecipientKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.txtDetailRecipientKey.ButtonWidth = 40;
-            this.txtDetailRecipientKey.MaxLength = 32767;
-            this.txtDetailRecipientKey.ReadOnly = false;
-            this.txtDetailRecipientKey.TextBoxWidth = 80;
-            this.txtDetailRecipientKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtDetailRecipientKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
             this.txtDetailRecipientKey.PartnerClass = "";
+            this.txtDetailRecipientKey.MaxLength = 32767;
             this.txtDetailRecipientKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtDetailRecipientKey.TextBoxWidth = 80;
+            this.txtDetailRecipientKey.ButtonWidth = 40;
+            this.txtDetailRecipientKey.ReadOnly = false;
+            this.txtDetailRecipientKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtDetailRecipientKey.ButtonText = "Find";
             //
             // lblDetailRecipientKey
@@ -333,6 +341,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailRecipientKey.AutoSize = true;
             this.lblDetailRecipientKey.Text = "Recipient:";
             this.lblDetailRecipientKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailRecipientKey.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailMotivationGroupCode
             //
@@ -349,6 +358,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMotivationGroupCode.AutoSize = true;
             this.lblDetailMotivationGroupCode.Text = "Motivation Group:";
             this.lblDetailMotivationGroupCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailMotivationGroupCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailMotivationDetailCode
             //
@@ -365,6 +375,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMotivationDetailCode.AutoSize = true;
             this.lblDetailMotivationDetailCode.Text = "Motivation Detail:";
             this.lblDetailMotivationDetailCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailMotivationDetailCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailCostCentreCode
             //
@@ -372,6 +383,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtDetailCostCentreCode.Name = "txtDetailCostCentreCode";
             this.txtDetailCostCentreCode.Size = new System.Drawing.Size(150, 28);
             this.txtDetailCostCentreCode.ReadOnly = true;
+            this.txtDetailCostCentreCode.TabStop = false;
             //
             // lblDetailCostCentreCode
             //
@@ -380,6 +392,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailCostCentreCode.AutoSize = true;
             this.lblDetailCostCentreCode.Text = "Cost Centre:";
             this.lblDetailCostCentreCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailCostCentreCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailAccountCode
             //
@@ -387,6 +400,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtDetailAccountCode.Name = "txtDetailAccountCode";
             this.txtDetailAccountCode.Size = new System.Drawing.Size(150, 28);
             this.txtDetailAccountCode.ReadOnly = true;
+            this.txtDetailAccountCode.TabStop = false;
             //
             // lblDetailAccountCode
             //
@@ -395,6 +409,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailAccountCode.AutoSize = true;
             this.lblDetailAccountCode.Text = "Account:";
             this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailAccountCode.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel3.ColumnCount = 4;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -469,7 +484,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtDetailDonorKey;
         private System.Windows.Forms.Label lblDetailDonorKey;
-        private System.Windows.Forms.DateTimePicker dtpDateEntered;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDateEntered;
         private System.Windows.Forms.Label lblDateEntered;
         private System.Windows.Forms.TextBox txtDetailGiftTransactionAmount;
         private System.Windows.Forms.Label lblDetailGiftTransactionAmount;

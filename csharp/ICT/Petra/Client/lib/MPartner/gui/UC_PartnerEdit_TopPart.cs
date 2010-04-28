@@ -1,4 +1,4 @@
-/* auto generated with nant generateWinforms from UC_PartnerEdit_TopPart.yaml and template controlMaintainTable
+/* auto generated with nant generateWinforms from UC_PartnerEdit_TopPart.yaml and template usercontrol
  *
  * DO NOT edit manually, DO NOT edit with the designer
  *
@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.lblPartnerKey.Text = Catalog.GetString("Key:");
       this.lblEmpty2.Text = Catalog.GetString("Empty2:");
       this.lblPartnerClass.Text = Catalog.GetString("Class:");
-      this.lblTitle.Text = Catalog.GetString("Title/Na&me:");
+      this.lblFamilyTitle.Text = Catalog.GetString("Title/Na&me:");
       this.lblEmpty.Text = Catalog.GetString("Empty:");
       this.lblAddresseeTypeCode.Text = Catalog.GetString("&Addressee Type:");
       this.chkNoSolicitations.Text = Catalog.GetString("No Solicitations");
@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.lblPartnerStatus.Text = Catalog.GetString("Partner &Status:");
       this.lblStatusUpdated.Text = Catalog.GetString("Status Updated:");
       this.lblLastContact.Text = Catalog.GetString("Last Contact:");
-      this.grpCollapsible.Text = Catalog.GetString("Partner");
+      this.grpCollapsible.Text = Catalog.GetString("Key Partner Data");
       #endregion
 
     }
@@ -101,12 +101,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
     }
 
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingStarted;
+
+    /// <summary>todoComment</summary>
+    public event System.EventHandler DataLoadingFinished;
+
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
         FPetraUtilsObject.SetStatusBarText(txtPartnerKey, Catalog.GetString("Enter the partner key (SiteID + Number)"));
         FPetraUtilsObject.SetStatusBarText(txtPartnerClass, Catalog.GetString("Select a partner class"));
-        FPetraUtilsObject.SetStatusBarText(txtTitle, Catalog.GetString("e.g. Family, Mr & Mrs, Herr und Frau"));
+        FPetraUtilsObject.SetStatusBarText(txtFamilyTitle, Catalog.GetString("e.g. Family, Mr & Mrs, Herr und Frau"));
         FPetraUtilsObject.SetStatusBarText(txtFirstName, Catalog.GetString("Enter the person's full first name"));
         FPetraUtilsObject.SetStatusBarText(txtFamilyName, Catalog.GetString("Enter a Last Name/Surname/Family Name"));
         FPetraUtilsObject.SetStatusBarText(cmbAddresseeTypeCode, Catalog.GetString("Enter an addressee type code"));
@@ -135,15 +141,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtPartnerClass.Text = ARow.PartnerClass;
         }
-        if (FMainDS.PFamily[0].IsTitleNull())
+        if (FMainDS.PFamily == null || FMainDS.PFamily[0].IsTitleNull())
         {
-            txtTitle.Text = String.Empty;
+            txtFamilyTitle.Text = String.Empty;
         }
         else
         {
-            txtTitle.Text = FMainDS.PFamily[0].Title;
+            txtFamilyTitle.Text = FMainDS.PFamily[0].Title;
         }
-        if (FMainDS.PFamily[0].IsFirstNameNull())
+        if (FMainDS.PFamily == null || FMainDS.PFamily[0].IsFirstNameNull())
         {
             txtFirstName.Text = String.Empty;
         }
@@ -151,7 +157,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtFirstName.Text = FMainDS.PFamily[0].FirstName;
         }
-        if (FMainDS.PFamily[0].IsFamilyNameNull())
+        if (FMainDS.PFamily == null || FMainDS.PFamily[0].IsFamilyNameNull())
         {
             txtFamilyName.Text = String.Empty;
         }
@@ -175,6 +181,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             chkNoSolicitations.Checked = ARow.NoSolicitations;
         }
+        if (FMainDS.MiscellaneousData == null || FMainDS.MiscellaneousData[0].IsLastGiftInfoNull())
+        {
+            txtLastGift.Text = String.Empty;
+        }
+        else
+        {
+            txtLastGift.Text = FMainDS.MiscellaneousData[0].LastGiftInfo;
+        }
         if (ARow.IsStatusCodeNull())
         {
             cmbPartnerStatus.SelectedIndex = -1;
@@ -183,7 +197,69 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             cmbPartnerStatus.SetSelectedString(ARow.StatusCode);
         }
+        if (FMainDS.MiscellaneousData == null || FMainDS.MiscellaneousData[0].IsLastContactDateNull())
+        {
+            txtLastContact.Text = String.Empty;
+        }
+        else
+        {
+            txtLastContact.Text = FMainDS.MiscellaneousData[0].LastContactDate.ToString();
+        }
         FPetraUtilsObject.EnableDataChangedEvent();
+    }
+
+    private void GetDataFromControls(PPartnerRow ARow)
+    {
+        if (FMainDS.PFamily != null)
+        {
+            if (txtFamilyTitle.Text.Length == 0)
+            {
+                FMainDS.PFamily[0].SetTitleNull();
+            }
+            else
+            {
+                FMainDS.PFamily[0].Title = txtFamilyTitle.Text;
+            }
+        }
+        if (FMainDS.PFamily != null)
+        {
+            if (txtFirstName.Text.Length == 0)
+            {
+                FMainDS.PFamily[0].SetFirstNameNull();
+            }
+            else
+            {
+                FMainDS.PFamily[0].FirstName = txtFirstName.Text;
+            }
+        }
+        if (FMainDS.PFamily != null)
+        {
+            if (txtFamilyName.Text.Length == 0)
+            {
+                FMainDS.PFamily[0].SetFamilyNameNull();
+            }
+            else
+            {
+                FMainDS.PFamily[0].FamilyName = txtFamilyName.Text;
+            }
+        }
+        if (cmbAddresseeTypeCode.SelectedIndex == -1)
+        {
+            ARow.SetAddresseeTypeCodeNull();
+        }
+        else
+        {
+            ARow.AddresseeTypeCode = cmbAddresseeTypeCode.GetSelectedString();
+        }
+        ARow.NoSolicitations = chkNoSolicitations.Checked;
+        if (cmbPartnerStatus.SelectedIndex == -1)
+        {
+            ARow.SetStatusCodeNull();
+        }
+        else
+        {
+            ARow.StatusCode = cmbPartnerStatus.GetSelectedString();
+        }
     }
 
 #region Implement interface functions

@@ -14,16 +14,13 @@ RootNode:
         cndDiscountEnabled: {InitialValue=false}
     Controls:
         pnlContent:
-            Controls: [pnlPartnerInfo, pnlPartnerInfo2, pnlDefaults, grpAccountInformation]
+            Controls: [pnlPartnerInfo, pnlDefaults, grpAccountInformation]
             Dock: Fill
         pnlPartnerInfo:
             Controls: [txtPartnerKey, btnEditPartner]
             ControlsOrientation: horizontal
             Dock:Top
         btnEditPartner: {Label=&Edit Partner info of Supplier, ActionClick=EditPartner}
-        pnlPartnerInfo2:
-            Controls: [txtPartnerName]
-            Dock:Top
         pnlDefaults:
             Controls: [grpGeneralInformation, grpMiscDefaults]
             ControlsOrientation: horizontal
@@ -37,7 +34,6 @@ RootNode:
         grpAccountInformation:
             Label: Account Information
             Controls: [cmbAPAccount, cmbDefaultBankAccount, cmbCostCentre, cmbExpenseAccount]
-        txtPartnerName: {Label=Partner Name, ReadOnly=true, PartnerShortNameLookup=AApSupplier.PartnerKey}
         txtPartnerKey: {Label=Partner Key, ReadOnly=true, DataField=AApSupplier.PartnerKey, Type=PartnerKey}
         cmbCurrency: {Label=&Currency, DataField=AApSupplier.CurrencyCode, List=CurrencyCodeList}
         cmbSupplierType: 

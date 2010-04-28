@@ -1143,6 +1143,11 @@ namespace Ict.Tools.DBXML
             }
             else if (strType.ToLower() == "date")
             {
+                if (!bNotNull)
+                {
+                    return "System.DateTime?";
+                }
+
                 return "System.DateTime";
             }
             else if (strType.ToLower() == "boolean")

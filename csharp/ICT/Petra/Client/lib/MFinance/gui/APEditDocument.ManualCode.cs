@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using Mono.Unix;
 using Ict.Common.Verification;
 using Ict.Common;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.GL;
@@ -73,24 +74,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             FMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
         }
 
-        private void UpdateCreditTerms(object sender, EventArgs e)
+        private void UpdateCreditTerms(object sender, TPetraDateChangedEventArgs e)
         {
             if (sender == dtpDateDue)
             {
-                int diffDays = (dtpDateDue.Value - dtpDateIssued.Value).Days;
+                int diffDays = (dtpDateDue.Date.Value - dtpDateIssued.Date.Value).Days;
 
                 if (diffDays < 0)
                 {
                     diffDays = 0;
-                    dtpDateDue.Value = dtpDateIssued.Value;
+                    dtpDateDue.Date = dtpDateIssued.Date.Value;
                 }
 
                 nudCreditTerms.Value = diffDays;
             }
             else if ((sender == dtpDateIssued) || (sender == nudCreditTerms))
             {
-                dtpDateDue.Value = dtpDateIssued.Value.AddDays((double)nudCreditTerms.Value);
+                dtpDateDue.Date = dtpDateIssued.Date.Value.AddDays((double)nudCreditTerms.Value);
             }
+        }
+
+        private void UpdateCreditTermsOverload(object sender, EventArgs e)
+        {
+            UpdateCreditTerms(sender, null);
         }
 
         /// initialise some comboboxes

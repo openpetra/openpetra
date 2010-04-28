@@ -181,6 +181,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountCode.AutoSize = true;
             this.lblDetailAccountCode.Text = "Account Code:";
             this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailAccountCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailAccountType
             //
@@ -196,6 +197,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountType.AutoSize = true;
             this.lblDetailAccountType.Text = "Account Type:";
             this.lblDetailAccountType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailAccountType.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailEngAccountCodeLongDesc
             //
@@ -210,6 +212,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailEngAccountCodeLongDesc.AutoSize = true;
             this.lblDetailEngAccountCodeLongDesc.Text = "Description Long English:";
             this.lblDetailEngAccountCodeLongDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailEngAccountCodeLongDesc.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailEngAccountCodeShortDesc
             //
@@ -224,6 +227,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailEngAccountCodeShortDesc.AutoSize = true;
             this.lblDetailEngAccountCodeShortDesc.Text = "Description Short English:";
             this.lblDetailEngAccountCodeShortDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailEngAccountCodeShortDesc.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailAccountCodeLongDesc
             //
@@ -238,6 +242,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountCodeLongDesc.AutoSize = true;
             this.lblDetailAccountCodeLongDesc.Text = "Description Long Local:";
             this.lblDetailAccountCodeLongDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailAccountCodeLongDesc.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailAccountCodeShortDesc
             //
@@ -252,6 +257,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountCodeShortDesc.AutoSize = true;
             this.lblDetailAccountCodeShortDesc.Text = "Description Short Local:";
             this.lblDetailAccountCodeShortDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailAccountCodeShortDesc.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailValidCcCombo
             //
@@ -267,6 +273,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailValidCcCombo.AutoSize = true;
             this.lblDetailValidCcCombo.Text = "Valid Cost Centres:";
             this.lblDetailValidCcCombo.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailValidCcCombo.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // chkDetailAccountActiveFlag
             //

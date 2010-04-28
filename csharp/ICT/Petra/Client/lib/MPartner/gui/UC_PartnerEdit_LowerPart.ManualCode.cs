@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -25,18 +25,239 @@
  ************************************************************************/
 using System;
 
+using Ict.Common;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+
 namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_PartnerEdit_LowerPart
     {
+        #region Fields
+
+        private TFrmPartnerEdit2.TModuleSwitchEnum FCurrentModuleTabGroup;
+        private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
+        private TPartnerEditTabPageEnum FCurrentlySelectedTabPage;
+
+        /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
+        private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
+
+        private TDelegateIsNewPartner FDelegateIsNewPartner;
+
+        #endregion
+
         #region Events
-        
-        /// <summary>todoComment</summary>
-        public event System.EventHandler DataLoadingStarted;
 
         /// <summary>todoComment</summary>
-        public event System.EventHandler DataLoadingFinished;
-        
+        public event THookupDataChangeEventHandler HookupDataChange;
+
+        /// <summary>todoComment</summary>
+        public event THookupPartnerEditDataChangeEventHandler HookupPartnerEditDataChange;
+
+        /// <summary>todoComment</summary>
+        public event TEnableDisableScreenPartsEventHandler EnableDisableOtherScreenParts;
+
+        /// <summary>todoComment</summary>
+        public event TShowTabEventHandler ShowTab;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>todoComment</summary>
+        public TFrmPartnerEdit2.TModuleSwitchEnum CurrentModuleTabGroup
+        {
+            get
+            {
+                return FCurrentModuleTabGroup;
+            }
+
+            set
+            {
+                FCurrentModuleTabGroup = value;
+            }
+        }
+
+        /// <summary>todoComment</summary>
+        public TPartnerEditTabPageEnum InitiallySelectedTabPage
+        {
+            get
+            {
+                return FInitiallySelectedTabPage;
+            }
+
+            set
+            {
+                FInitiallySelectedTabPage = value;
+            }
+        }
+
+        /// <summary>todoComment</summary>
+        public TPartnerEditTabPageEnum CurrentlySelectedTabPage
+        {
+            get
+            {
+                return FCurrentlySelectedTabPage;
+            }
+
+            set
+            {
+                FCurrentlySelectedTabPage = value;
+            }
+        }
+
+        /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
+        public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
+        {
+            get
+            {
+                return FPartnerEditUIConnector;
+            }
+
+            set
+            {
+                FPartnerEditUIConnector = value;
+            }
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Initialises the UserControl that has the Tabs for the currently selected Tab.
+        /// </summary>
+        public void InitChildUserControl()
+        {
+            switch (FCurrentModuleTabGroup)
+            {
+                case TFrmPartnerEdit2.TModuleSwitchEnum.msPartner:
+
+                    ucoPartnerTabSet.PetraUtilsObject = FPetraUtilsObject;
+                    ucoPartnerTabSet.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    ucoPartnerTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
+                    ucoPartnerTabSet.MainDS = FMainDS;
+                    ucoPartnerTabSet.SpecialInitUserControl();
+
+                    break;
+            }
+
+            // TODO Other TabSets (Personnel Data, Finance Data)
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="ADelegateFunction"></param>
+        public void InitialiseDelegateIsNewPartner(TDelegateIsNewPartner ADelegateFunction)
+        {
+            // set the delegate function from the calling System.Object
+            FDelegateIsNewPartner = ADelegateFunction;
+        }
+
+        /// <summary>
+        /// Gets the data from all controls on this TabControl.
+        /// The data is stored in the DataTables/DataColumns to which the Controls
+        /// are mapped.
+        /// </summary>
+        public void GetDataFromControls()
+        {
+            ucoPartnerTabSet.GetDataFromControls();
+
+            // TODO Other TabSets (Personnel Data, Finance Data)
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void DisableNewButtonOnAutoCreatedAddress()
+        {
+            if (FCurrentModuleTabGroup == TFrmPartnerEdit2.TModuleSwitchEnum.msPartner)
+            {
+                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
+                {
+                    // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                    ucoPartnerTabSet.SetUpPartnerAddress();
+                }
+
+                ucoPartnerTabSet.DisableNewButtonOnAutoCreatedAddress();
+            }
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void CleanupAddressesBeforeMerge()
+        {
+            if (FCurrentModuleTabGroup == TFrmPartnerEdit2.TModuleSwitchEnum.msPartner)
+            {
+                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
+                {
+                    // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                    ucoPartnerTabSet.SetUpPartnerAddress();
+                }
+
+                ucoPartnerTabSet.CleanupRecordsBeforeMerge();
+            }
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void RefreshAddressesAfterMerge()
+        {
+            if (FCurrentModuleTabGroup == TFrmPartnerEdit2.TModuleSwitchEnum.msPartner)
+            {
+                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
+                {
+                    // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                    ucoPartnerTabSet.SetUpPartnerAddress();
+                }
+
+                ucoPartnerTabSet.RefreshRecordsAfterMerge();
+            }
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="AParameterDT"></param>
+        public void SimilarLocationsProcessing(PartnerAddressAggregateTDSSimilarLocationParametersTable AParameterDT)
+        {
+            if (FCurrentModuleTabGroup == TFrmPartnerEdit2.TModuleSwitchEnum.msPartner)
+            {
+                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
+                {
+                    // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                    ucoPartnerTabSet.SetUpPartnerAddress();
+                }
+
+                ucoPartnerTabSet.ProcessServerResponseSimilarLocations(AParameterDT);
+            }
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="AAddedOrChangedPromotionDT"></param>
+        /// <param name="AParameterDT"></param>
+        public void AddressAddedOrChangedProcessing(PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddedOrChangedPromotionDT,
+            PartnerAddressAggregateTDSChangePromotionParametersTable AParameterDT)
+        {
+            if (FCurrentModuleTabGroup == TFrmPartnerEdit2.TModuleSwitchEnum.msPartner)
+            {
+                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
+                {
+                    // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                    ucoPartnerTabSet.SetUpPartnerAddress();
+                }
+
+                ucoPartnerTabSet.ProcessServerResponseAddressAddedOrChanged(AAddedOrChangedPromotionDT, AParameterDT);
+            }
+        }
+
         #endregion
     }
 }

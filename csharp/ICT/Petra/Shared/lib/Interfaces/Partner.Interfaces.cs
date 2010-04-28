@@ -141,7 +141,7 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Extracts.UIConnectors.TPartnerNewExtractUIConnector)</summary>
         bool CreateNewExtract(String AExtractName,
                               String AExtractDescription,
-                              out Int32 ANewExtractID,
+                              out Int32 AExtractID,
                               out Boolean AExtractAlreadyExists,
                               out TVerificationResultCollection AVerificationResults);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Extracts.UIConnectors.TPartnerNewExtractUIConnector)</summary>

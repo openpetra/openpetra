@@ -277,3 +277,5 @@ namespace {#NAMESPACE}
 {#ENDIF ACTIONENABLING}
   }
 }
+
+{#INCLUDE copyvalues.cs}

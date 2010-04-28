@@ -173,6 +173,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     */
     public void ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
     {
+      ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
       ACalc.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
       if (this.cmbCurrency.SelectedItem != null)

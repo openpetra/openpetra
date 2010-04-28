@@ -84,9 +84,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDocumentType = new System.Windows.Forms.Label();
             this.txtReference = new System.Windows.Forms.TextBox();
             this.lblReference = new System.Windows.Forms.Label();
-            this.dtpDateIssued = new System.Windows.Forms.DateTimePicker();
+            this.dtpDateIssued = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDateIssued = new System.Windows.Forms.Label();
-            this.dtpDateDue = new System.Windows.Forms.DateTimePicker();
+            this.dtpDateDue = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDateDue = new System.Windows.Forms.Label();
             this.nudCreditTerms = new System.Windows.Forms.NumericUpDown();
             this.lblCreditTerms = new System.Windows.Forms.Label();
@@ -189,6 +189,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtSupplierName.Name = "txtSupplierName";
             this.txtSupplierName.Size = new System.Drawing.Size(150, 28);
             this.txtSupplierName.ReadOnly = true;
+            this.txtSupplierName.TabStop = false;
             //
             // lblSupplierName
             //
@@ -197,6 +198,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblSupplierName.AutoSize = true;
             this.lblSupplierName.Text = "Current Supplier:";
             this.lblSupplierName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblSupplierName.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtSupplierCurrency
             //
@@ -204,6 +206,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtSupplierCurrency.Name = "txtSupplierCurrency";
             this.txtSupplierCurrency.Size = new System.Drawing.Size(150, 28);
             this.txtSupplierCurrency.ReadOnly = true;
+            this.txtSupplierCurrency.TabStop = false;
             //
             // lblSupplierCurrency
             //
@@ -212,6 +215,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblSupplierCurrency.AutoSize = true;
             this.lblSupplierCurrency.Text = "Currency:";
             this.lblSupplierCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblSupplierCurrency.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -250,6 +254,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDocumentCode.AutoSize = true;
             this.lblDocumentCode.Text = "Invoice &Number:";
             this.lblDocumentCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDocumentCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDocumentType
             //
@@ -266,6 +271,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDocumentType.AutoSize = true;
             this.lblDocumentType.Text = "T&ype:";
             this.lblDocumentType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDocumentType.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtReference
             //
@@ -280,13 +286,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblReference.AutoSize = true;
             this.lblReference.Text = "&Reference:";
             this.lblReference.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblReference.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // dtpDateIssued
             //
             this.dtpDateIssued.Location = new System.Drawing.Point(2,2);
             this.dtpDateIssued.Name = "dtpDateIssued";
-            this.dtpDateIssued.Size = new System.Drawing.Size(150, 28);
-            this.dtpDateIssued.ValueChanged += new System.EventHandler(this.UpdateCreditTerms);
+            this.dtpDateIssued.Size = new System.Drawing.Size(94, 28);
+            this.dtpDateIssued.DateChanged += new TPetraDateChangedEventHandler(this.UpdateCreditTerms);
             //
             // lblDateIssued
             //
@@ -295,13 +302,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDateIssued.AutoSize = true;
             this.lblDateIssued.Text = "&Date Issued:";
             this.lblDateIssued.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDateIssued.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // dtpDateDue
             //
             this.dtpDateDue.Location = new System.Drawing.Point(2,2);
             this.dtpDateDue.Name = "dtpDateDue";
-            this.dtpDateDue.Size = new System.Drawing.Size(150, 28);
-            this.dtpDateDue.ValueChanged += new System.EventHandler(this.UpdateCreditTerms);
+            this.dtpDateDue.Size = new System.Drawing.Size(94, 28);
+            this.dtpDateDue.DateChanged += new TPetraDateChangedEventHandler(this.UpdateCreditTerms);
             //
             // lblDateDue
             //
@@ -310,13 +318,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDateDue.AutoSize = true;
             this.lblDateDue.Text = "Date D&ue:";
             this.lblDateDue.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDateDue.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // nudCreditTerms
             //
             this.nudCreditTerms.Location = new System.Drawing.Point(2,2);
             this.nudCreditTerms.Name = "nudCreditTerms";
             this.nudCreditTerms.Size = new System.Drawing.Size(50, 28);
-            this.nudCreditTerms.ValueChanged += new System.EventHandler(this.UpdateCreditTerms);
+            this.nudCreditTerms.ValueChanged += new System.EventHandler(this.UpdateCreditTermsOverload);
             //
             // lblCreditTerms
             //
@@ -325,6 +334,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblCreditTerms.AutoSize = true;
             this.lblCreditTerms.Text = "Credit &Terms:";
             this.lblCreditTerms.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCreditTerms.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // nudDiscountDays
             //
@@ -340,6 +350,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDiscountDays.AutoSize = true;
             this.lblDiscountDays.Text = "Discount &Days:";
             this.lblDiscountDays.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDiscountDays.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDiscountPercentage
             //
@@ -354,6 +365,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDiscountPercentage.AutoSize = true;
             this.lblDiscountPercentage.Text = "Discount &Value (%):";
             this.lblDiscountPercentage.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDiscountPercentage.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtTotalAmount
             //
@@ -368,6 +380,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblTotalAmount.AutoSize = true;
             this.lblTotalAmount.Text = "&Amount:";
             this.lblTotalAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblTotalAmount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtExchangeRateToBase
             //
@@ -382,6 +395,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblExchangeRateToBase.AutoSize = true;
             this.lblExchangeRateToBase.Text = "E&xchange Rate:";
             this.lblExchangeRateToBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblExchangeRateToBase.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel2.ColumnCount = 6;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -510,6 +524,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailNarrative.AutoSize = true;
             this.lblDetailNarrative.Text = "Narrati&ve:";
             this.lblDetailNarrative.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailNarrative.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailItemRef
             //
@@ -524,6 +539,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailItemRef.AutoSize = true;
             this.lblDetailItemRef.Text = "Detail &Ref:";
             this.lblDetailItemRef.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailItemRef.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailAmount
             //
@@ -538,6 +554,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailAmount.AutoSize = true;
             this.lblDetailAmount.Text = "A&mount:";
             this.lblDetailAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailAmount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailCostCentreCode
             //
@@ -553,6 +570,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailCostCentreCode.AutoSize = true;
             this.lblDetailCostCentreCode.Text = "C&ost Centre:";
             this.lblDetailCostCentreCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailCostCentreCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // btnUseTaxAccountCostCentre
             //
@@ -567,6 +585,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.txtDetailBaseAmount.Name = "txtDetailBaseAmount";
             this.txtDetailBaseAmount.Size = new System.Drawing.Size(150, 28);
             this.txtDetailBaseAmount.ReadOnly = true;
+            this.txtDetailBaseAmount.TabStop = false;
             //
             // lblDetailBaseAmount
             //
@@ -575,6 +594,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailBaseAmount.AutoSize = true;
             this.lblDetailBaseAmount.Text = "Base:";
             this.lblDetailBaseAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailBaseAmount.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailAccountCode
             //
@@ -590,6 +610,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDetailAccountCode.AutoSize = true;
             this.lblDetailAccountCode.Text = "Accou&nt:";
             this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailAccountCode.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel4.ColumnCount = 5;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -844,9 +865,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         private System.Windows.Forms.Label lblDocumentType;
         private System.Windows.Forms.TextBox txtReference;
         private System.Windows.Forms.Label lblReference;
-        private System.Windows.Forms.DateTimePicker dtpDateIssued;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDateIssued;
         private System.Windows.Forms.Label lblDateIssued;
-        private System.Windows.Forms.DateTimePicker dtpDateDue;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDateDue;
         private System.Windows.Forms.Label lblDateDue;
         private System.Windows.Forms.NumericUpDown nudCreditTerms;
         private System.Windows.Forms.Label lblCreditTerms;

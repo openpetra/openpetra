@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -52,8 +52,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitializeManualCode()
         {
-            dtpStartDate.Value = new DateTime(DateTime.Now.Year - 1, 1, 1);
-            dtpEndDate.Value = new DateTime(DateTime.Now.Year - 1, 12, 31);
+            dtpStartDate.Date = new DateTime(DateTime.Now.Year - 1, 1, 1);
+            dtpEndDate.Date = new DateTime(DateTime.Now.Year - 1, 12, 31);
         }
 
         private Int32 FNumberOfPages = 0;
@@ -90,8 +90,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             sr.Close();
 
             string AllLetters = TRemote.MFinance.Gift.WebConnectors.CreateAnnualGiftReceipts(FLedgerNumber,
-                dtpStartDate.Value,
-                dtpEndDate.Value,
+                dtpStartDate.Date.Value,
+                dtpEndDate.Date.Value,
                 htmlTemplate);
 
             if (AllLetters.Length == 0)

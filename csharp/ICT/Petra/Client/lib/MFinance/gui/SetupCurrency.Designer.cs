@@ -206,6 +206,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailCurrencyCode.AutoSize = true;
             this.lblDetailCurrencyCode.Text = "Currency Code:";
             this.lblDetailCurrencyCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailCurrencyCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailCurrencyName
             //
@@ -220,6 +221,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailCurrencyName.AutoSize = true;
             this.lblDetailCurrencyName.Text = "Currency Name:";
             this.lblDetailCurrencyName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailCurrencyName.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailCurrencySymbol
             //
@@ -234,6 +236,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailCurrencySymbol.AutoSize = true;
             this.lblDetailCurrencySymbol.Text = "Currency Symbol:";
             this.lblDetailCurrencySymbol.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailCurrencySymbol.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailCountryCode
             //
@@ -249,6 +252,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailCountryCode.AutoSize = true;
             this.lblDetailCountryCode.Text = "Country Code:";
             this.lblDetailCountryCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailCountryCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailDisplayFormat
             //
@@ -263,6 +267,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailDisplayFormat.AutoSize = true;
             this.lblDetailDisplayFormat.Text = "Number of Decimals:";
             this.lblDetailDisplayFormat.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailDisplayFormat.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

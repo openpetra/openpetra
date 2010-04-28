@@ -70,7 +70,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblPartnerKey.Text = Catalog.GetString("Partner Key:");
       this.btnEditPartner.Text = Catalog.GetString("&Edit Partner info of Supplier");
-      this.lblPartnerName.Text = Catalog.GetString("Partner Name:");
       this.lblCurrency.Text = Catalog.GetString("&Currency:");
       this.lblSupplierType.Text = Catalog.GetString("Supplier &Type:");
       this.grpGeneralInformation.Text = Catalog.GetString("General Information");
@@ -171,13 +170,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
     {
         txtPartnerKey.Text = String.Format("{0:0000000000}", ARow.PartnerKey);
         txtPartnerKey.ReadOnly = (ARow.RowState != DataRowState.Added);
-        TPartnerClass partnerClass;
-        string partnerShortName;
-        TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
-            ARow.PartnerKey,
-            out partnerShortName,
-            out partnerClass);
-        txtPartnerName.Text = partnerShortName;
         cmbCurrency.SetSelectedString(ARow.CurrencyCode);
         if (ARow.IsSupplierTypeNull())
         {

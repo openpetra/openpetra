@@ -13,13 +13,14 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DocumentationFile>..\..\..\_bin\Debug\Ict.Petra.Client.MPartner.Gui.xml</DocumentationFile>
+    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\christiank\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>../../../_bin\Debug\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;DEBUGMODE;SHOWCHANGES</DefineConstants>
     <IntermediateOutputPath>../../../_bin\Debug\</IntermediateOutputPath>
     <Optimize>False</Optimize>
   </PropertyGroup>
@@ -140,6 +141,13 @@
     <Compile Include="PartnerFind_Options.Designer.cs">
       <DependentUpon>PartnerFind_Options.cs</DependentUpon>
     </Compile>
+    <Compile Include="PartnerImport.cs" />
+    <Compile Include="PartnerImport.Designer.cs">
+      <DependentUpon>PartnerImport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PartnerImport.ManualCode.cs">
+      <DependentUpon>PartnerImport.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartnerMain.cs" />
     <Compile Include="PartnerMain.Designer.cs">
       <DependentUpon>PartnerMain.cs</DependentUpon>
@@ -161,6 +169,7 @@
     <Compile Include="UC_PartnerDetails_Family2.Designer.cs">
       <DependentUpon>UC_PartnerDetails_Family2.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_PartnerDetails_Family2.ManualCode.cs" />
     <Compile Include="UC_PartnerDetails_Person2.ManualCode.cs">
       <DependentUpon>UC_PartnerDetails_Person2.cs</DependentUpon>
     </Compile>
@@ -237,6 +246,9 @@
     <EmbeddedResource Include="PartnerFind_Options.resx">
       <DependentUpon>PartnerFind_Options.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PartnerImport.resx">
+      <DependentUpon>PartnerImport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PartnerMain.resx">
       <DependentUpon>PartnerMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -288,9 +300,6 @@
     <EmbeddedResource Include="UC_PartnerTypes.resx">
       <DependentUpon>UC_PartnerTypes.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="UC_PartnerDetails_Family2.ManualCode.cs">
-      <DependentUpon>UC_PartnerDetails_Family2.cs</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\app\Core\Ict.Petra.Client.App.Core.csproj">

@@ -65,6 +65,7 @@
         <echo message="generateWinforms: generates the User Interface using System.Windows.Forms"/>
         <echo message="generateWinform: generate a single Winform. requires parameter: -D:file=MFinance/gui/GLCreateLedger.yaml"/>
         <echo message="cleanPetra: prepare for a clean build"/>
+        <echo message="deleteBakFiles: delete all backup files"/>
         <echo message="compilePetra: build all Petra C# code"/>
         <echo message="compileQx: compile the javascript webclient, using Qooxdoo"/>
         <echo message="startPetraServer: run a local Petra Server"/>
@@ -249,6 +250,11 @@
             </if>
         </if>
     </target>
+    
+    <target name="deleteBakFiles" description="delete all backup files">
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/**.bak" /></fileset></delete>
+    </target>
+    
     <target name="cleanPetra" description="remove all compiled code of Petra">
         <!-- alternatively could use solution task: http://nant.sourceforge.net/release/latest/help/tasks/solution.html -->
         <!-- but the clean task is not implemented yet: see https://sourceforge.net/tracker/?func=detail&atid=402868&aid=1534755&group_id=31650 -->
@@ -563,6 +569,7 @@
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.AP.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MFinance.AP.Data -outputFilename:Finance.AP.DataSets -StartTableId:5400 -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.GL.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MFinance.GL.Data -outputFilename:Finance.GL.DataSets -StartTableId:5500 -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.Gift.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MFinance.Gift.Data -outputFilename:Finance.Gift.DataSets -StartTableId:5600 -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MSysMan/data/SysMan.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MSysMan.Data -outputFilename:SysMan.DataSets -StartTableId:5700 -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
     </target>
     
     <target name="generateORM" depends="compilePetraTools,generateORMTables,generateORMAccess,generateORMDatasets" description="Generate the typed datastore.">
@@ -585,6 +592,7 @@
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MPartner ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MFinance ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MFinance/gui ${generateWinformsParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MSysMan/gui ${generateWinformsParameters}"/>
     </target>
 
     <target name="generateWinform" depends="" description="Generate a single Winform">

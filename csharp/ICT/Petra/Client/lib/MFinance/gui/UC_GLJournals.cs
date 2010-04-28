@@ -233,7 +233,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 cmbDetailTransactionTypeCode.SetSelectedString(ARow.TransactionTypeCode);
             }
             cmbDetailTransactionCurrency.SetSelectedString(ARow.TransactionCurrency);
-            dtpDetailDateEffective.Value = ARow.DateEffective;
+            dtpDetailDateEffective.Date = ARow.DateEffective;
             txtDetailExchangeRateToBase.Text = ARow.ExchangeRateToBase.ToString();
             ShowDetailsManual(ARow);
         }

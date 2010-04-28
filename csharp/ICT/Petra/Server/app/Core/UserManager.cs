@@ -188,7 +188,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 if (!UserDR.IsFailedLoginDateNull())
                 {
-                    FailedLoginDateTime = UserDR.FailedLoginDate;
+                    FailedLoginDateTime = UserDR.FailedLoginDate.Value;
                     FailedLoginDateTime = FailedLoginDateTime.AddSeconds(Convert.ToDouble(UserDR.FailedLoginTime));
                 }
                 else
@@ -198,7 +198,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 if (!UserDR.IsLastLoginDateNull())
                 {
-                    LastLoginDateTime = UserDR.LastLoginDate;
+                    LastLoginDateTime = UserDR.LastLoginDate.Value;
                     LastLoginDateTime = LastLoginDateTime.AddSeconds(Convert.ToDouble(UserDR.LastLoginTime));
                 }
                 else
@@ -327,8 +327,8 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     throw new ESystemDisabledException(String.Format(StrSystemDisabled1,
                             SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine +
-                        String.Format(StrSystemDisabled2, StringHelper.DateToLocalizedString(SystemStatusDT[0].SystemAvailableDate),
-                            SystemStatusDT[0].SystemAvailableDate.AddSeconds(SystemStatusDT[0].SystemAvailableTime).ToShortTimeString()));
+                        String.Format(StrSystemDisabled2, StringHelper.DateToLocalizedString(SystemStatusDT[0].SystemAvailableDate.Value),
+                            SystemStatusDT[0].SystemAvailableDate.Value.AddSeconds(SystemStatusDT[0].SystemAvailableTime).ToShortTimeString()));
                 }
             }
 

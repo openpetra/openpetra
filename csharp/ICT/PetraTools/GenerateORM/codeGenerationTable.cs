@@ -181,6 +181,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 tempTemplate = Template.GetSnippet("INITCLASSADDCOLUMN");
                 tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
                 tempTemplate.SetCodelet("COLUMNDOTNETTYPE", col.GetDotNetType());
+                tempTemplate.SetCodelet("COLUMNDOTNETTYPENOTNULLABLE", col.GetDotNetType().Replace("?", ""));
                 snippet.InsertSnippet("INITCLASSADDCOLUMN", tempTemplate);
 
                 tempTemplate = Template.GetSnippet("INITVARSCOLUMN");
@@ -242,7 +243,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
                     tempTemplate.SetCodelet("COLUMNDOTNETTYPE", col.GetDotNetType());
 
-                    if (col.GetDotNetType().Contains("DateTime"))
+                    if (col.GetDotNetType().Contains("DateTime?"))
+                    {
+                        tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "return null;");
+                    }
+                    else if (col.GetDotNetType().Contains("DateTime"))
                     {
                         tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "return DateTime.MinValue;");
                     }

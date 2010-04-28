@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -325,7 +325,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // show cost centre
             MotivationDetailChanged(null, null);
 
-            dtpDateEntered.Value = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
+            dtpDateEntered.Date = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
             txtDetailDonorKey.Text = String.Format("{0:0000000000}", ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey);
 
             dtpDateEntered.Enabled = (ARow.DetailNumber == 1);
@@ -338,7 +338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
             giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
-            giftRow.DateEntered = dtpDateEntered.Value;
+            giftRow.DateEntered = dtpDateEntered.Date.Value;
 
             ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered = giftRow.DateEntered;
             ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey = giftRow.DonorKey;

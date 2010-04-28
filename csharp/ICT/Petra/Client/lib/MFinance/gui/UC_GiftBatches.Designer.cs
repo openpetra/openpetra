@@ -96,7 +96,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailBankCostCentre = new System.Windows.Forms.Label();
             this.cmbDetailBankAccountCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailBankAccountCode = new System.Windows.Forms.Label();
-            this.dtpDetailGlEffectiveDate = new System.Windows.Forms.DateTimePicker();
+            this.dtpDetailGlEffectiveDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDetailGlEffectiveDate = new System.Windows.Forms.Label();
             this.lblValidDateRange = new System.Windows.Forms.Label();
             this.txtDetailBatchHashTotal = new System.Windows.Forms.TextBox();
@@ -179,6 +179,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtLedgerNumber.Name = "txtLedgerNumber";
             this.txtLedgerNumber.Size = new System.Drawing.Size(150, 28);
             this.txtLedgerNumber.ReadOnly = true;
+            this.txtLedgerNumber.TabStop = false;
             //
             // lblLedgerNumber
             //
@@ -187,6 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblLedgerNumber.AutoSize = true;
             this.lblLedgerNumber.Text = "Ledger:";
             this.lblLedgerNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLedgerNumber.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -341,6 +343,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailBatchDescription.AutoSize = true;
             this.lblDetailBatchDescription.Text = "Batch Description:";
             this.lblDetailBatchDescription.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailBatchDescription.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailBankCostCentre
             //
@@ -356,6 +359,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailBankCostCentre.AutoSize = true;
             this.lblDetailBankCostCentre.Text = "Cost Centre:";
             this.lblDetailBankCostCentre.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailBankCostCentre.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailBankAccountCode
             //
@@ -371,12 +375,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailBankAccountCode.AutoSize = true;
             this.lblDetailBankAccountCode.Text = "Bank Account:";
             this.lblDetailBankAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailBankAccountCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // dtpDetailGlEffectiveDate
             //
             this.dtpDetailGlEffectiveDate.Location = new System.Drawing.Point(2,2);
             this.dtpDetailGlEffectiveDate.Name = "dtpDetailGlEffectiveDate";
-            this.dtpDetailGlEffectiveDate.Size = new System.Drawing.Size(150, 28);
+            this.dtpDetailGlEffectiveDate.Size = new System.Drawing.Size(94, 28);
             //
             // lblDetailGlEffectiveDate
             //
@@ -385,6 +390,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailGlEffectiveDate.AutoSize = true;
             this.lblDetailGlEffectiveDate.Text = "GL Effective Date:";
             this.lblDetailGlEffectiveDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailGlEffectiveDate.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // lblValidDateRange
             //
@@ -407,6 +413,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailBatchHashTotal.AutoSize = true;
             this.lblDetailBatchHashTotal.Text = "Hash Total:";
             this.lblDetailBatchHashTotal.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailBatchHashTotal.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailCurrencyCode
             //
@@ -422,6 +429,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailCurrencyCode.AutoSize = true;
             this.lblDetailCurrencyCode.Text = "Currency Code:";
             this.lblDetailCurrencyCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailCurrencyCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailExchangeRateToBase
             //
@@ -436,6 +444,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailExchangeRateToBase.AutoSize = true;
             this.lblDetailExchangeRateToBase.Text = "Exchange Rate To Base:";
             this.lblDetailExchangeRateToBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailExchangeRateToBase.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailMethodOfPayment
             //
@@ -450,6 +459,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMethodOfPayment.AutoSize = true;
             this.lblDetailMethodOfPayment.Text = "Method of Payment:";
             this.lblDetailMethodOfPayment.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailMethodOfPayment.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // rgrDetailGiftType
             //
@@ -646,7 +656,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.Label lblDetailBankCostCentre;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailBankAccountCode;
         private System.Windows.Forms.Label lblDetailBankAccountCode;
-        private System.Windows.Forms.DateTimePicker dtpDetailGlEffectiveDate;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailGlEffectiveDate;
         private System.Windows.Forms.Label lblDetailGlEffectiveDate;
         private System.Windows.Forms.Label lblValidDateRange;
         private System.Windows.Forms.TextBox txtDetailBatchHashTotal;

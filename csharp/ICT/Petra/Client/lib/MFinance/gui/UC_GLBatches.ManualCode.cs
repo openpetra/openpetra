@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -95,7 +95,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.CreateNewABatch();
 
-            dtpDetailDateEffective.Value = DefaultDate;
+            dtpDetailDateEffective.Date = DefaultDate;
 
             // TODO: this.dtpDateCantBeBeyond.Value = AAccountingPeriod[ALedger.CurrentPeriod + ALedger.ForwardingPostingPeriods].EndOfPeriod
 
@@ -383,7 +383,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ARefJournalRow.JournalDebitTotal = sumDebits;
             ARefJournalRow.JournalDescription = Path.GetFileNameWithoutExtension(ADataFilename);
 
-            dtpDetailDateEffective.Value = LatestTransactionDate;
+            dtpDetailDateEffective.Date = LatestTransactionDate;
             txtDetailBatchDescription.Text = Path.GetFileNameWithoutExtension(ADataFilename);
             ABatchRow RefBatch = (ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1];
             RefBatch.BatchCreditTotal = sumCredits;

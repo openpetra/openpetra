@@ -74,15 +74,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.pnlPartnerInfo = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtPartnerKey = new System.Windows.Forms.TextBox();
+            this.txtPartnerKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.lblPartnerKey = new System.Windows.Forms.Label();
             this.lblEmpty2 = new System.Windows.Forms.Label();
             this.txtPartnerClass = new System.Windows.Forms.TextBox();
             this.lblPartnerClass = new System.Windows.Forms.Label();
             this.pnlFamily = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtTitle = new System.Windows.Forms.TextBox();
-            this.lblTitle = new System.Windows.Forms.Label();
+            this.txtFamilyTitle = new System.Windows.Forms.TextBox();
+            this.lblFamilyTitle = new System.Windows.Forms.Label();
             this.txtFirstName = new System.Windows.Forms.TextBox();
             this.txtFamilyName = new System.Windows.Forms.TextBox();
             this.lblEmpty = new System.Windows.Forms.Label();
@@ -158,8 +158,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtPartnerKey.Location = new System.Drawing.Point(2,2);
             this.txtPartnerKey.Name = "txtPartnerKey";
-            this.txtPartnerKey.Size = new System.Drawing.Size(90, 28);
+            this.txtPartnerKey.TabStop = false;
+            this.txtPartnerKey.Size = new System.Drawing.Size(80, 28);
             this.txtPartnerKey.ReadOnly = true;
+            this.txtPartnerKey.TabStop = false;
+            this.txtPartnerKey.ShowLabel = false;
+            this.txtPartnerKey.ASpecialSetting = true;
+            this.txtPartnerKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.txtPartnerKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
+            this.txtPartnerKey.PartnerClass = "";
+            this.txtPartnerKey.MaxLength = 32767;
+            this.txtPartnerKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtPartnerKey.TextBoxWidth = 80;
+            this.txtPartnerKey.ButtonWidth = 0;
+            this.txtPartnerKey.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtPartnerKey.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
             //
             // lblPartnerKey
             //
@@ -168,6 +181,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerKey.AutoSize = true;
             this.lblPartnerKey.Text = "Key:";
             this.lblPartnerKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblPartnerKey.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // lblEmpty2
             //
@@ -181,8 +195,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtPartnerClass.Location = new System.Drawing.Point(2,2);
             this.txtPartnerClass.Name = "txtPartnerClass";
+            this.txtPartnerClass.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtPartnerClass.Margin = new System.Windows.Forms.Padding(0, 7, 0, 0);
             this.txtPartnerClass.Size = new System.Drawing.Size(150, 28);
             this.txtPartnerClass.ReadOnly = true;
+            this.txtPartnerClass.TabStop = false;
             //
             // lblPartnerClass
             //
@@ -191,6 +208,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerClass.AutoSize = true;
             this.lblPartnerClass.Text = "Class:";
             this.lblPartnerClass.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblPartnerClass.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 5;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -218,19 +236,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.AutoSize = true;
             this.pnlFamily.Controls.Add(this.tableLayoutPanel2);
             //
-            // txtTitle
+            // txtFamilyTitle
             //
-            this.txtTitle.Location = new System.Drawing.Point(2,2);
-            this.txtTitle.Name = "txtTitle";
-            this.txtTitle.Size = new System.Drawing.Size(90, 28);
+            this.txtFamilyTitle.Location = new System.Drawing.Point(2,2);
+            this.txtFamilyTitle.Name = "txtFamilyTitle";
+            this.txtFamilyTitle.Size = new System.Drawing.Size(90, 28);
             //
-            // lblTitle
+            // lblFamilyTitle
             //
-            this.lblTitle.Location = new System.Drawing.Point(2,2);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.AutoSize = true;
-            this.lblTitle.Text = "Title/Na&me:";
-            this.lblTitle.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblFamilyTitle.Location = new System.Drawing.Point(2,2);
+            this.lblFamilyTitle.Name = "lblFamilyTitle";
+            this.lblFamilyTitle.AutoSize = true;
+            this.lblFamilyTitle.Text = "Title/Na&me:";
+            this.lblFamilyTitle.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblFamilyTitle.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtFirstName
             //
@@ -266,6 +285,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblAddresseeTypeCode.AutoSize = true;
             this.lblAddresseeTypeCode.Text = "&Addressee Type:";
             this.lblAddresseeTypeCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAddresseeTypeCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // chkNoSolicitations
             //
@@ -283,10 +303,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.lblTitle, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblFamilyTitle, 0, 0);
             this.tableLayoutPanel2.SetColumnSpan(this.lblEmpty, 2);
             this.tableLayoutPanel2.Controls.Add(this.lblEmpty, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtTitle, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtFamilyTitle, 1, 0);
             this.tableLayoutPanel2.SetColumnSpan(this.txtFirstName, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtFirstName, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblAddresseeTypeCode, 2, 1);
@@ -311,8 +331,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtLastGift.Location = new System.Drawing.Point(2,2);
             this.txtLastGift.Name = "txtLastGift";
+            this.txtLastGift.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtLastGift.Margin = new System.Windows.Forms.Padding(0, 7, 0, 0);
             this.txtLastGift.Size = new System.Drawing.Size(420, 28);
             this.txtLastGift.ReadOnly = true;
+            this.txtLastGift.TabStop = false;
             //
             // lblLastGift
             //
@@ -321,6 +344,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLastGift.AutoSize = true;
             this.lblLastGift.Text = "Last Gift:";
             this.lblLastGift.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLastGift.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -355,8 +379,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtWorkerField.Location = new System.Drawing.Point(2,2);
             this.txtWorkerField.Name = "txtWorkerField";
+            this.txtWorkerField.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtWorkerField.Margin = new System.Windows.Forms.Padding(0, 7, 0, 0);
             this.txtWorkerField.Size = new System.Drawing.Size(115, 28);
             this.txtWorkerField.ReadOnly = true;
+            this.txtWorkerField.TabStop = false;
             //
             // cmbPartnerStatus
             //
@@ -372,13 +399,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerStatus.AutoSize = true;
             this.lblPartnerStatus.Text = "Partner &Status:";
             this.lblPartnerStatus.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblPartnerStatus.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtStatusUpdated
             //
             this.txtStatusUpdated.Location = new System.Drawing.Point(2,2);
             this.txtStatusUpdated.Name = "txtStatusUpdated";
+            this.txtStatusUpdated.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtStatusUpdated.Margin = new System.Windows.Forms.Padding(0, 7, 0, 0);
             this.txtStatusUpdated.Size = new System.Drawing.Size(115, 28);
             this.txtStatusUpdated.ReadOnly = true;
+            this.txtStatusUpdated.TabStop = false;
             //
             // lblStatusUpdated
             //
@@ -387,13 +418,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblStatusUpdated.AutoSize = true;
             this.lblStatusUpdated.Text = "Status Updated:";
             this.lblStatusUpdated.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblStatusUpdated.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtLastContact
             //
             this.txtLastContact.Location = new System.Drawing.Point(2,2);
             this.txtLastContact.Name = "txtLastContact";
+            this.txtLastContact.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtLastContact.Margin = new System.Windows.Forms.Padding(0, 7, 0, 0);
             this.txtLastContact.Size = new System.Drawing.Size(115, 28);
             this.txtLastContact.ReadOnly = true;
+            this.txtLastContact.TabStop = false;
             //
             // lblLastContact
             //
@@ -402,6 +437,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLastContact.AutoSize = true;
             this.lblLastContact.Text = "Last Contact:";
             this.lblLastContact.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLastContact.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel4.ColumnCount = 3;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -423,7 +459,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel4.SetColumnSpan(this.txtLastContact, 2);
             this.tableLayoutPanel4.Controls.Add(this.txtLastContact, 1, 3);
             this.tableLayoutPanel4.Controls.Add(this.txtWorkerField, 2, 0);
-            this.grpCollapsible.Text = "Partner";
+            this.grpCollapsible.Text = "Key Partner Data";
 
             //
             // TUC_PartnerEdit_TopPart
@@ -432,7 +468,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ClientSize = new System.Drawing.Size(700, 500);
             // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
             this.Controls.Add(this.pnlContent);
-//            this.MainMenuStrip = pnlContent;
             this.Name = "TUC_PartnerEdit_TopPart";
             this.Text = "";
 
@@ -456,15 +491,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Panel pnlLeft;
         private System.Windows.Forms.Panel pnlPartnerInfo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TextBox txtPartnerKey;
+        private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtPartnerKey;
         private System.Windows.Forms.Label lblPartnerKey;
         private System.Windows.Forms.Label lblEmpty2;
         private System.Windows.Forms.TextBox txtPartnerClass;
         private System.Windows.Forms.Label lblPartnerClass;
         private System.Windows.Forms.Panel pnlFamily;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox txtTitle;
-        private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.TextBox txtFamilyTitle;
+        private System.Windows.Forms.Label lblFamilyTitle;
         private System.Windows.Forms.TextBox txtFirstName;
         private System.Windows.Forms.TextBox txtFamilyName;
         private System.Windows.Forms.Label lblEmpty;

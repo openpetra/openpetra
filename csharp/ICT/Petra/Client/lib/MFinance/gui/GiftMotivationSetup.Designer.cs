@@ -198,6 +198,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMotivationGroupCode.AutoSize = true;
             this.lblDetailMotivationGroupCode.Text = "Group:";
             this.lblDetailMotivationGroupCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailMotivationGroupCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailMotivationDetailCode
             //
@@ -212,6 +213,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMotivationDetailCode.AutoSize = true;
             this.lblDetailMotivationDetailCode.Text = "Detail:";
             this.lblDetailMotivationDetailCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailMotivationDetailCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtDetailMotivationDetailDesc
             //
@@ -226,6 +228,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMotivationDetailDesc.AutoSize = true;
             this.lblDetailMotivationDetailDesc.Text = "Description:";
             this.lblDetailMotivationDetailDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailMotivationDetailDesc.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailAccountCode
             //
@@ -241,6 +244,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailAccountCode.AutoSize = true;
             this.lblDetailAccountCode.Text = "Account:";
             this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailAccountCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbDetailCostCentreCode
             //
@@ -256,6 +260,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailCostCentreCode.AutoSize = true;
             this.lblDetailCostCentreCode.Text = "Cost Centre:";
             this.lblDetailCostCentreCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailCostCentreCode.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // chkDetailMotivationStatus
             //

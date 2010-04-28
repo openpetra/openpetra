@@ -73,9 +73,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.pnlParameters = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.dtpStartDate = new System.Windows.Forms.DateTimePicker();
+            this.dtpStartDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblStartDate = new System.Windows.Forms.Label();
-            this.dtpEndDate = new System.Windows.Forms.DateTimePicker();
+            this.dtpEndDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblEndDate = new System.Windows.Forms.Label();
             this.preLetters = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
@@ -143,7 +143,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.dtpStartDate.Location = new System.Drawing.Point(2,2);
             this.dtpStartDate.Name = "dtpStartDate";
-            this.dtpStartDate.Size = new System.Drawing.Size(150, 28);
+            this.dtpStartDate.Size = new System.Drawing.Size(94, 28);
             //
             // lblStartDate
             //
@@ -152,12 +152,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblStartDate.AutoSize = true;
             this.lblStartDate.Text = "Start Date:";
             this.lblStartDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblStartDate.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // dtpEndDate
             //
             this.dtpEndDate.Location = new System.Drawing.Point(2,2);
             this.dtpEndDate.Name = "dtpEndDate";
-            this.dtpEndDate.Size = new System.Drawing.Size(150, 28);
+            this.dtpEndDate.Size = new System.Drawing.Size(94, 28);
             //
             // lblEndDate
             //
@@ -166,6 +167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblEndDate.AutoSize = true;
             this.lblEndDate.Text = "End Date:";
             this.lblEndDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblEndDate.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -396,9 +398,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel pnlParameters;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.DateTimePicker dtpStartDate;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpStartDate;
         private System.Windows.Forms.Label lblStartDate;
-        private System.Windows.Forms.DateTimePicker dtpEndDate;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpEndDate;
         private System.Windows.Forms.Label lblEndDate;
         private System.Windows.Forms.GroupBox preLetters;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;

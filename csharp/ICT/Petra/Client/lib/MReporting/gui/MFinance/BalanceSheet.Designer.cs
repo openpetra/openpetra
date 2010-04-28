@@ -191,6 +191,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.txtLedger.Name = "txtLedger";
             this.txtLedger.Size = new System.Drawing.Size(150, 28);
             this.txtLedger.ReadOnly = true;
+            this.txtLedger.TabStop = false;
             //
             // lblLedger
             //
@@ -199,6 +200,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblLedger.AutoSize = true;
             this.lblLedger.Text = "Ledger:";
             this.lblLedger.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblLedger.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbAccountHierarchy
             //
@@ -214,6 +216,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblAccountHierarchy.AutoSize = true;
             this.lblAccountHierarchy.Text = "Account Hierarchy:";
             this.lblAccountHierarchy.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAccountHierarchy.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -254,6 +257,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblCurrency.AutoSize = true;
             this.lblCurrency.Text = "Currency:";
             this.lblCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCurrency.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -289,6 +293,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblStartPeriod.AutoSize = true;
             this.lblStartPeriod.Text = "from:";
             this.lblStartPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblStartPeriod.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // txtEndPeriod
             //
@@ -303,6 +308,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblEndPeriod.AutoSize = true;
             this.lblEndPeriod.Text = "to:";
             this.lblEndPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblEndPeriod.Dock = System.Windows.Forms.DockStyle.Right;
             //
             // cmbPeriodYear
             //
@@ -318,6 +324,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblPeriodYear.AutoSize = true;
             this.lblPeriodYear.Text = "Year:";
             this.lblPeriodYear.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblPeriodYear.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel4.ColumnCount = 6;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
