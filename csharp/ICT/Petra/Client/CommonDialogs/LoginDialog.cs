@@ -167,14 +167,21 @@ namespace Ict.Petra.Client.CommonDialogs
 
                 TCmdOpts CmdOpts = new TCmdOpts();
 
-                if (CmdOpts.IsFlagSet("AutoLogin") == true)
+                if (System.Windows.Forms.Form.ModifierKeys != Keys.Alt)
                 {
-                    txtUserName.Text = CmdOpts.GetOptValue("AutoLogin").ToUpper();
-
-                    if (CmdOpts.IsFlagSet("AutoLoginPasswd"))
+                    if (TAppSettingsManager.GetValueStatic("AutoLogin") != TAppSettingsManager.UNDEFINEDVALUE)
                     {
-                        txtPassword.Text = CmdOpts.GetOptValue("AutoLoginPasswd");
-                        BtnLogin_Click(null, null);
+                        txtUserName.Text = TAppSettingsManager.GetValueStatic("AutoLogin").ToUpper();
+
+                        if (TAppSettingsManager.GetValueStatic("AutoLoginPasswd") != TAppSettingsManager.UNDEFINEDVALUE)
+                        {
+                            txtPassword.Text = TAppSettingsManager.GetValueStatic("AutoLoginPasswd");
+                            BtnLogin_Click(null, null);
+                        }
+                    }
+                    else
+                    {
+                        GetUsers();
                     }
                 }
                 else
