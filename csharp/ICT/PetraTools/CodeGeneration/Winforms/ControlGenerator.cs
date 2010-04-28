@@ -518,6 +518,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.FAutoSize = true;
             base.FGenerateLabel = false;
+            this.FChangeEventName = "CheckedChanged";
         }
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
@@ -1219,6 +1220,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.SetControlProperty(ControlName, "ShowLabel", "false");
             }
+
             // Note: the control defaults to 'ShowLabel' true, so this doesn't need to be set to 'true' in code.
 
             writer.SetControlProperty(ControlName, "ASpecialSetting", "true");
@@ -1405,7 +1407,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
             foreach (string ctrlname in controlNamesCollection)
             {
                 TControlDef ctrl = writer.CodeStorage.GetControl(ctrlname);
-                ctrl.parentName = curNode.Name;
+
+                if (ctrl != null)
+                {
+                    ctrl.parentName = curNode.Name;
+                }
+                else
+                {
+                    throw new Exception("cannot find control with name " + ctrlname + "; it belongs to " + curNode.Name);
+                }
             }
 
             return controlNamesCollection;
