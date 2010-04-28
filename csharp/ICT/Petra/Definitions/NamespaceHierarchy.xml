@@ -82,6 +82,10 @@
                         <Name>UIConnectors</Name>
                         <Description>User Interface Connectors</Description>
                     </SubNamespace>
+                    <SubNamespace>
+                        <Name>WebConnectors</Name>
+                        <Description>Web Connectors</Description>
+                    </SubNamespace>
                 </Children>
             </SubNamespace>
             <SubNamespace>

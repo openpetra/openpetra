@@ -1814,9 +1814,9 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
                     new TTypedColumnInfo(1, "SelectedSiteKey", "p_site_key_n", "Site Key", OdbcType.Decimal, 10, true),
                     new TTypedColumnInfo(2, "SelectedLocationKey", "p_location_key_i", "Location Key", OdbcType.Int, -1, true),
-                    new TTypedColumnInfo(3, "LastGiftDate", "LastGiftDate", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(4, "LastGiftInfo", "LastGiftInfo", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "LastContactDate", "LastContactDate", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(3, "LastGiftDate", "LastGiftDate", "", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(4, "LastGiftInfo", "LastGiftInfo", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(5, "LastContactDate", "LastContactDate", "", OdbcType.Date, -1, false),
                     new TTypedColumnInfo(6, "ItemsCountAddresses", "ItemsCountAddresses", "", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(7, "ItemsCountAddressesActive", "ItemsCountAddressesActive", "", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(8, "ItemsCountSubscriptions", "ItemsCountSubscriptions", "", OdbcType.Int, -1, false),
@@ -1827,10 +1827,10 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(13, "ItemsCountReminders", "ItemsCountReminders", "", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(14, "ItemsCountRelationships", "ItemsCountRelationships", "", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(15, "ItemsCountContacts", "ItemsCountContacts", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(16, "OfficeSpecificDataLabelsAvailable", "OfficeSpecificDataLabelsAvailable", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(17, "FoundationOwner1Key", "FoundationOwner1Key", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(18, "FoundationOwner2Key", "FoundationOwner2Key", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(19, "HasEXWORKERPartnerType", "HasEXWORKERPartnerType", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(16, "OfficeSpecificDataLabelsAvailable", "OfficeSpecificDataLabelsAvailable", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(17, "FoundationOwner1Key", "FoundationOwner1Key", "", OdbcType.Decimal, -1, false),
+                    new TTypedColumnInfo(18, "FoundationOwner2Key", "FoundationOwner2Key", "", OdbcType.Decimal, -1, false),
+                    new TTypedColumnInfo(19, "HasEXWORKERPartnerType", "HasEXWORKERPartnerType", "", OdbcType.Bit, -1, false)
                 },
                 new int[] {
                     0
@@ -3079,9 +3079,9 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(2, "FamilyId", "p_family_id_i", "Family ID", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(3, "Gender", "p_gender_c", "Gender", OdbcType.VarChar, 16, false),
                     new TTypedColumnInfo(4, "DateOfBirth", "p_date_of_birth_d", "Date of Birth", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(5, "TypeCodeModify", "TypeCodeModify", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "TypeCodePresent", "TypeCodePresent", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "OtherTypeCodes", "OtherTypeCodes", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(5, "TypeCodeModify", "TypeCodeModify", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "TypeCodePresent", "TypeCodePresent", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(7, "OtherTypeCodes", "OtherTypeCodes", "", OdbcType.VarChar, -1, false)
                 },
                 new int[] {
                     0
@@ -3842,9 +3842,9 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerTypeChangeFamilyMembersPromotion", "PartnerEditTDSPartnerTypeChangeFamilyMembersPromotion",
                 new TTypedColumnInfo[] {
                     new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(1, "TypeCode", "TypeCode", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(2, "AddTypeCode", "AddTypeCode", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "RemoveTypeCode", "RemoveTypeCode", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(1, "TypeCode", "TypeCode", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(2, "AddTypeCode", "AddTypeCode", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(3, "RemoveTypeCode", "RemoveTypeCode", "", OdbcType.Bit, -1, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -4892,7 +4892,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(14, "DateEffective", "p_date_effective_d", "Valid From", OdbcType.Date, -1, false),
                     new TTypedColumnInfo(15, "DateGoodUntil", "p_date_good_until_d", "Valid To", OdbcType.Date, -1, false),
                     new TTypedColumnInfo(16, "LocationType", "p_location_type_c", "Location Type", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(17, "SiteKeyOfEditedRecord", "SiteKeyOfEditedRecord", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(17, "SiteKeyOfEditedRecord", "SiteKeyOfEditedRecord", "", OdbcType.Decimal, -1, false),
                     new TTypedColumnInfo(18, "LocationKeyOfEditedRecord", "LocationKeyOfEditedRecord", "", OdbcType.Int, -1, false)
                 },
                 new int[] {
@@ -6086,13 +6086,13 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(0, "SiteKey", "p_site_key_n", "Site Key", OdbcType.Decimal, 10, true),
                     new TTypedColumnInfo(1, "LocationKey", "p_location_key_i", "Location Key", OdbcType.Int, -1, true),
                     new TTypedColumnInfo(2, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(3, "LocationChange", "LocationChange", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(4, "PartnerLocationChange", "PartnerLocationChange", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "LocationAdded", "LocationAdded", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "ChangedFields", "ChangedFields", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "UserAnswer", "UserAnswer", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(8, "AnswerProcessedClientSide", "AnswerProcessedClientSide", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(9, "AnswerProcessedServerSide", "AnswerProcessedServerSide", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(3, "LocationChange", "LocationChange", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "PartnerLocationChange", "PartnerLocationChange", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(5, "LocationAdded", "LocationAdded", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "ChangedFields", "ChangedFields", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(7, "UserAnswer", "UserAnswer", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(8, "AnswerProcessedClientSide", "AnswerProcessedClientSide", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(9, "AnswerProcessedServerSide", "AnswerProcessedServerSide", "", OdbcType.Bit, -1, false)
                 },
                 new int[] {
                 }));
@@ -7492,8 +7492,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "PartnerAdditionalInfo", "PartnerInfoTDSPartnerAdditionalInfo",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "MainLanguages", "MainLanguages", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(1, "AdditionalLanguages", "AdditionalLanguages", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(0, "MainLanguages", "MainLanguages", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(1, "AdditionalLanguages", "AdditionalLanguages", "", OdbcType.VarChar, -1, false),
                     new TTypedColumnInfo(2, "LastContact", "s_contact_date_d", "Contact Date", OdbcType.Date, -1, true),
                     new TTypedColumnInfo(3, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
                     new TTypedColumnInfo(4, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
@@ -8823,31 +8823,41 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
 
      /// auto generated
     [Serializable()]
-    public class SimplePartnerFindTDS : TTypedDataSet
+    public class PartnerFindTDS : TTypedDataSet
     {
 
-        private SimplePartnerFindTDSSearchResultTable TableSearchResult;
+        private PartnerFindTDSSearchCriteriaTable TableSearchCriteria;
+        private PartnerFindTDSSearchResultTable TableSearchResult;
 
         /// auto generated
-        public SimplePartnerFindTDS() :
-                base("SimplePartnerFindTDS")
+        public PartnerFindTDS() :
+                base("PartnerFindTDS")
         {
         }
 
         /// auto generated for serialization
-        public SimplePartnerFindTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+        public PartnerFindTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
 
         /// auto generated
-        public SimplePartnerFindTDS(string ADatasetName) :
+        public PartnerFindTDS(string ADatasetName) :
                 base(ADatasetName)
         {
         }
 
         /// auto generated
-        public SimplePartnerFindTDSSearchResultTable SearchResult
+        public PartnerFindTDSSearchCriteriaTable SearchCriteria
+        {
+            get
+            {
+                return this.TableSearchCriteria;
+            }
+        }
+
+        /// auto generated
+        public PartnerFindTDSSearchResultTable SearchResult
         {
             get
             {
@@ -8856,23 +8866,28 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// auto generated
-        public new virtual SimplePartnerFindTDS GetChangesTyped(bool removeEmptyTables)
+        public new virtual PartnerFindTDS GetChangesTyped(bool removeEmptyTables)
         {
-            return ((SimplePartnerFindTDS)(base.GetChangesTyped(removeEmptyTables)));
+            return ((PartnerFindTDS)(base.GetChangesTyped(removeEmptyTables)));
         }
 
         /// auto generated
         protected override void InitTables()
         {
-            this.Tables.Add(new SimplePartnerFindTDSSearchResultTable("SearchResult"));
+            this.Tables.Add(new PartnerFindTDSSearchCriteriaTable("SearchCriteria"));
+            this.Tables.Add(new PartnerFindTDSSearchResultTable("SearchResult"));
         }
 
         /// auto generated
         protected override void InitTables(System.Data.DataSet ds)
         {
+            if ((ds.Tables.IndexOf("SearchCriteria") != -1))
+            {
+                this.Tables.Add(new PartnerFindTDSSearchCriteriaTable("SearchCriteria"));
+            }
             if ((ds.Tables.IndexOf("SearchResult") != -1))
             {
-                this.Tables.Add(new SimplePartnerFindTDSSearchResultTable("SearchResult"));
+                this.Tables.Add(new PartnerFindTDSSearchResultTable("SearchResult"));
             }
         }
 
@@ -8881,6 +8896,10 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         {
             this.InitVars();
             base.MapTables();
+            if ((this.TableSearchCriteria != null))
+            {
+                this.TableSearchCriteria.InitVars();
+            }
             if ((this.TableSearchResult != null))
             {
                 this.TableSearchResult.InitVars();
@@ -8890,8 +8909,9 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// auto generated
         public override void InitVars()
         {
-            this.DataSetName = "SimplePartnerFindTDS";
-            this.TableSearchResult = ((SimplePartnerFindTDSSearchResultTable)(this.Tables["SearchResult"]));
+            this.DataSetName = "PartnerFindTDS";
+            this.TableSearchCriteria = ((PartnerFindTDSSearchCriteriaTable)(this.Tables["SearchCriteria"]));
+            this.TableSearchResult = ((PartnerFindTDSSearchResultTable)(this.Tables["SearchResult"]));
         }
 
         /// auto generated
@@ -8900,134 +8920,276 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
     }
 
-    /// Address and other data related to that address.
+    ///
     [Serializable()]
-    public class SimplePartnerFindTDSSearchResultTable : PLocationTable
+    public class PartnerFindTDSSearchCriteriaTable : TTypedDataTable
     {
         /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 40;
+        public static short TableId = 5114;
         /// used for generic TTypedDataTable functions
-        public static short ColumnPartnerClassId = 23;
+        public static short ColumnPartnerNameId = 0;
         /// used for generic TTypedDataTable functions
-        public static short ColumnStatusCodeId = 24;
+        public static short ColumnPartnerNameMatchId = 1;
         /// used for generic TTypedDataTable functions
-        public static short ColumnPartnerKeyId = 25;
+        public static short ColumnPersonalNameId = 2;
         /// used for generic TTypedDataTable functions
-        public static short ColumnFirstNameId = 26;
+        public static short ColumnPersonalNameMatchId = 3;
         /// used for generic TTypedDataTable functions
-        public static short ColumnFamilyNameId = 27;
+        public static short ColumnPreviousNameId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPreviousNameMatchId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddress1Id = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddress1MatchId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCityId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCityMatchId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPostCodeId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPostCodeMatchId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountyId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountyMatchId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountryId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMailingAddressOnlyId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerClassId = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerStatusId = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnEmailId = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnEmailMatchId = 20;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddress2Id = 21;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddress2MatchId = 22;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddress3Id = 23;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddress3MatchId = 24;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLocationKeyId = 25;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnWorkerFamOnlyId = 26;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnExactPartnerKeyMatchId = 27;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPhoneNumberId = 28;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPhoneNumberMatchId = 29;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SearchCriteria", "PartnerFindTDSSearchCriteria",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerName", "PartnerName", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(1, "PartnerNameMatch", "PartnerNameMatch", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(2, "PersonalName", "PersonalName", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(3, "PersonalNameMatch", "PersonalNameMatch", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(4, "PreviousName", "PreviousName", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(5, "PreviousNameMatch", "PreviousNameMatch", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(6, "Address1", "Address1", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(7, "Address1Match", "Address1Match", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(8, "City", "City", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(9, "CityMatch", "CityMatch", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(10, "PostCode", "PostCode", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(11, "PostCodeMatch", "PostCodeMatch", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(12, "County", "County", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(13, "CountyMatch", "CountyMatch", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(14, "Country", "Country", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(15, "MailingAddressOnly", "MailingAddressOnly", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(16, "PartnerClass", "PartnerClass", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(17, "PartnerKey", "PartnerKey", "", OdbcType.Decimal, -1, false),
+                    new TTypedColumnInfo(18, "PartnerStatus", "PartnerStatus", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(19, "Email", "Email", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(20, "EmailMatch", "EmailMatch", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(21, "Address2", "Address2", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(22, "Address2Match", "Address2Match", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(23, "Address3", "Address3", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(24, "Address3Match", "Address3Match", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(25, "LocationKey", "LocationKey", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(26, "WorkerFamOnly", "WorkerFamOnly", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(27, "ExactPartnerKeyMatch", "ExactPartnerKeyMatch", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(28, "PhoneNumber", "PhoneNumber", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(29, "PhoneNumberMatch", "PhoneNumberMatch", "", OdbcType.VarChar, -1, false)
+                },
+                new int[] {
+                }));
+            return true;
+        }
 
         /// constructor
-        public SimplePartnerFindTDSSearchResultTable() :
-                base("SearchResult")
+        public PartnerFindTDSSearchCriteriaTable() :
+                base("SearchCriteria")
         {
         }
 
         /// constructor
-        public SimplePartnerFindTDSSearchResultTable(string ATablename) :
+        public PartnerFindTDSSearchCriteriaTable(string ATablename) :
                 base(ATablename)
         {
         }
 
         /// constructor for serialization
-        public SimplePartnerFindTDSSearchResultTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+        public PartnerFindTDSSearchCriteriaTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
                 base(info, context)
         {
         }
 
-        /// This defines what type of partner this is. The classes that may be assigned are PERSON, FAMILY, CHURCH, ORGANISATION, UNIT, VENUE and BANK.
+        ///
+        public DataColumn ColumnPartnerName;
+        ///
+        public DataColumn ColumnPartnerNameMatch;
+        ///
+        public DataColumn ColumnPersonalName;
+        ///
+        public DataColumn ColumnPersonalNameMatch;
+        ///
+        public DataColumn ColumnPreviousName;
+        ///
+        public DataColumn ColumnPreviousNameMatch;
+        ///
+        public DataColumn ColumnAddress1;
+        ///
+        public DataColumn ColumnAddress1Match;
+        ///
+        public DataColumn ColumnCity;
+        ///
+        public DataColumn ColumnCityMatch;
+        ///
+        public DataColumn ColumnPostCode;
+        ///
+        public DataColumn ColumnPostCodeMatch;
+        ///
+        public DataColumn ColumnCounty;
+        ///
+        public DataColumn ColumnCountyMatch;
+        ///
+        public DataColumn ColumnCountry;
+        ///
+        public DataColumn ColumnMailingAddressOnly;
+        ///
         public DataColumn ColumnPartnerClass;
-        /// This code describes the status of a partner.
-        /// Eg,  Active, Deceased etc
-        public DataColumn ColumnStatusCode;
-        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        ///
         public DataColumn ColumnPartnerKey;
         ///
-        public DataColumn ColumnFirstName;
+        public DataColumn ColumnPartnerStatus;
         ///
-        public DataColumn ColumnFamilyName;
+        public DataColumn ColumnEmail;
+        ///
+        public DataColumn ColumnEmailMatch;
+        ///
+        public DataColumn ColumnAddress2;
+        ///
+        public DataColumn ColumnAddress2Match;
+        ///
+        public DataColumn ColumnAddress3;
+        ///
+        public DataColumn ColumnAddress3Match;
+        ///
+        public DataColumn ColumnLocationKey;
+        ///
+        public DataColumn ColumnWorkerFamOnly;
+        ///
+        public DataColumn ColumnExactPartnerKeyMatch;
+        ///
+        public DataColumn ColumnPhoneNumber;
+        ///
+        public DataColumn ColumnPhoneNumberMatch;
 
         /// create the columns
         protected override void InitClass()
         {
-            this.Columns.Add(new System.Data.DataColumn("p_site_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("p_location_key_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("p_building_1_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_building_2_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_street_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_locality_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_suburb_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_city_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_county_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_postal_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_country_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_address_3_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_geo_latitude_n", typeof(Decimal)));
-            this.Columns.Add(new System.Data.DataColumn("p_geo_longitude_n", typeof(Decimal)));
-            this.Columns.Add(new System.Data.DataColumn("p_geo_km_x_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("p_geo_km_y_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("p_geo_accuracy_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("p_restricted_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_partner_class_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_status_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("p_first_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_family_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("PartnerName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("PartnerNameMatch", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("PersonalName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("PersonalNameMatch", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("PreviousName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("PreviousNameMatch", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("Address1", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("Address1Match", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("City", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("CityMatch", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("PostCode", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("PostCodeMatch", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("County", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("CountyMatch", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("Country", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("MailingAddressOnly", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("PartnerClass", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("PartnerKey", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("PartnerStatus", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("Email", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("EmailMatch", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("Address2", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("Address2Match", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("Address3", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("Address3Match", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("LocationKey", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("WorkerFamOnly", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("ExactPartnerKeyMatch", typeof(bool)));
+            this.Columns.Add(new System.Data.DataColumn("PhoneNumber", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("PhoneNumberMatch", typeof(string)));
         }
 
         /// assign columns to properties, set primary key
         public override void InitVars()
         {
-            this.ColumnSiteKey = this.Columns["p_site_key_n"];
-            this.ColumnLocationKey = this.Columns["p_location_key_i"];
-            this.ColumnBuilding1 = this.Columns["p_building_1_c"];
-            this.ColumnBuilding2 = this.Columns["p_building_2_c"];
-            this.ColumnStreetName = this.Columns["p_street_name_c"];
-            this.ColumnLocality = this.Columns["p_locality_c"];
-            this.ColumnSuburb = this.Columns["p_suburb_c"];
-            this.ColumnCity = this.Columns["p_city_c"];
-            this.ColumnCounty = this.Columns["p_county_c"];
-            this.ColumnPostalCode = this.Columns["p_postal_code_c"];
-            this.ColumnCountryCode = this.Columns["p_country_code_c"];
-            this.ColumnAddress3 = this.Columns["p_address_3_c"];
-            this.ColumnGeoLatitude = this.Columns["p_geo_latitude_n"];
-            this.ColumnGeoLongitude = this.Columns["p_geo_longitude_n"];
-            this.ColumnGeoKmX = this.Columns["p_geo_km_x_i"];
-            this.ColumnGeoKmY = this.Columns["p_geo_km_y_i"];
-            this.ColumnGeoAccuracy = this.Columns["p_geo_accuracy_i"];
-            this.ColumnRestricted = this.Columns["p_restricted_l"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
-            this.ColumnModificationId = this.Columns["s_modification_id_c"];
-            this.ColumnPartnerClass = this.Columns["p_partner_class_c"];
-            this.ColumnStatusCode = this.Columns["p_status_code_c"];
-            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
-            this.ColumnFirstName = this.Columns["p_first_name_c"];
-            this.ColumnFamilyName = this.Columns["p_family_name_c"];
-            this.PrimaryKey = new System.Data.DataColumn[2] {
-                    ColumnSiteKey,ColumnLocationKey};
+            this.ColumnPartnerName = this.Columns["PartnerName"];
+            this.ColumnPartnerNameMatch = this.Columns["PartnerNameMatch"];
+            this.ColumnPersonalName = this.Columns["PersonalName"];
+            this.ColumnPersonalNameMatch = this.Columns["PersonalNameMatch"];
+            this.ColumnPreviousName = this.Columns["PreviousName"];
+            this.ColumnPreviousNameMatch = this.Columns["PreviousNameMatch"];
+            this.ColumnAddress1 = this.Columns["Address1"];
+            this.ColumnAddress1Match = this.Columns["Address1Match"];
+            this.ColumnCity = this.Columns["City"];
+            this.ColumnCityMatch = this.Columns["CityMatch"];
+            this.ColumnPostCode = this.Columns["PostCode"];
+            this.ColumnPostCodeMatch = this.Columns["PostCodeMatch"];
+            this.ColumnCounty = this.Columns["County"];
+            this.ColumnCountyMatch = this.Columns["CountyMatch"];
+            this.ColumnCountry = this.Columns["Country"];
+            this.ColumnMailingAddressOnly = this.Columns["MailingAddressOnly"];
+            this.ColumnPartnerClass = this.Columns["PartnerClass"];
+            this.ColumnPartnerKey = this.Columns["PartnerKey"];
+            this.ColumnPartnerStatus = this.Columns["PartnerStatus"];
+            this.ColumnEmail = this.Columns["Email"];
+            this.ColumnEmailMatch = this.Columns["EmailMatch"];
+            this.ColumnAddress2 = this.Columns["Address2"];
+            this.ColumnAddress2Match = this.Columns["Address2Match"];
+            this.ColumnAddress3 = this.Columns["Address3"];
+            this.ColumnAddress3Match = this.Columns["Address3Match"];
+            this.ColumnLocationKey = this.Columns["LocationKey"];
+            this.ColumnWorkerFamOnly = this.Columns["WorkerFamOnly"];
+            this.ColumnExactPartnerKeyMatch = this.Columns["ExactPartnerKeyMatch"];
+            this.ColumnPhoneNumber = this.Columns["PhoneNumber"];
+            this.ColumnPhoneNumberMatch = this.Columns["PhoneNumberMatch"];
         }
 
         /// Access a typed row by index
-        public new SimplePartnerFindTDSSearchResultRow this[int i]
+        public PartnerFindTDSSearchCriteriaRow this[int i]
         {
             get
             {
-                return ((SimplePartnerFindTDSSearchResultRow)(this.Rows[i]));
+                return ((PartnerFindTDSSearchCriteriaRow)(this.Rows[i]));
             }
         }
 
         /// create a new typed row
-        public new SimplePartnerFindTDSSearchResultRow NewRowTyped(bool AWithDefaultValues)
+        public PartnerFindTDSSearchCriteriaRow NewRowTyped(bool AWithDefaultValues)
         {
-            SimplePartnerFindTDSSearchResultRow ret = ((SimplePartnerFindTDSSearchResultRow)(this.NewRow()));
+            PartnerFindTDSSearchCriteriaRow ret = ((PartnerFindTDSSearchCriteriaRow)(this.NewRow()));
             if ((AWithDefaultValues == true))
             {
                 ret.InitValues();
@@ -9036,7 +9198,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// create a new typed row, always with default values
-        public new SimplePartnerFindTDSSearchResultRow NewRowTyped()
+        public PartnerFindTDSSearchCriteriaRow NewRowTyped()
         {
             return this.NewRowTyped(true);
         }
@@ -9044,25 +9206,1822 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// new typed row using DataRowBuilder
         protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
         {
-            return new SimplePartnerFindTDSSearchResultRow(builder);
+            return new PartnerFindTDSSearchCriteriaRow(builder);
         }
 
         /// get typed set of changes
-        public new SimplePartnerFindTDSSearchResultTable GetChangesTyped()
+        public PartnerFindTDSSearchCriteriaTable GetChangesTyped()
         {
-            return ((SimplePartnerFindTDSSearchResultTable)(base.GetChangesTypedInternal()));
+            return ((PartnerFindTDSSearchCriteriaTable)(base.GetChangesTypedInternal()));
         }
 
         /// return the CamelCase name of the table
-        public static new string GetTableName()
+        public static string GetTableName()
+        {
+            return "SearchCriteria";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static string GetTableDBName()
+        {
+            return "PartnerFindTDSSearchCriteria";
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerNameDBName()
+        {
+            return "PartnerName";
+        }
+
+        /// get character length for column
+        public static short GetPartnerNameLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerNameMatchDBName()
+        {
+            return "PartnerNameMatch";
+        }
+
+        /// get character length for column
+        public static short GetPartnerNameMatchLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPersonalNameDBName()
+        {
+            return "PersonalName";
+        }
+
+        /// get character length for column
+        public static short GetPersonalNameLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPersonalNameMatchDBName()
+        {
+            return "PersonalNameMatch";
+        }
+
+        /// get character length for column
+        public static short GetPersonalNameMatchLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPreviousNameDBName()
+        {
+            return "PreviousName";
+        }
+
+        /// get character length for column
+        public static short GetPreviousNameLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPreviousNameMatchDBName()
+        {
+            return "PreviousNameMatch";
+        }
+
+        /// get character length for column
+        public static short GetPreviousNameMatchLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAddress1DBName()
+        {
+            return "Address1";
+        }
+
+        /// get character length for column
+        public static short GetAddress1Length()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAddress1MatchDBName()
+        {
+            return "Address1Match";
+        }
+
+        /// get character length for column
+        public static short GetAddress1MatchLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCityDBName()
+        {
+            return "City";
+        }
+
+        /// get character length for column
+        public static short GetCityLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCityMatchDBName()
+        {
+            return "CityMatch";
+        }
+
+        /// get character length for column
+        public static short GetCityMatchLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPostCodeDBName()
+        {
+            return "PostCode";
+        }
+
+        /// get character length for column
+        public static short GetPostCodeLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPostCodeMatchDBName()
+        {
+            return "PostCodeMatch";
+        }
+
+        /// get character length for column
+        public static short GetPostCodeMatchLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCountyDBName()
+        {
+            return "County";
+        }
+
+        /// get character length for column
+        public static short GetCountyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCountyMatchDBName()
+        {
+            return "CountyMatch";
+        }
+
+        /// get character length for column
+        public static short GetCountyMatchLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCountryDBName()
+        {
+            return "Country";
+        }
+
+        /// get character length for column
+        public static short GetCountryLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMailingAddressOnlyDBName()
+        {
+            return "MailingAddressOnly";
+        }
+
+        /// get character length for column
+        public static short GetMailingAddressOnlyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerClassDBName()
+        {
+            return "PartnerClass";
+        }
+
+        /// get character length for column
+        public static short GetPartnerClassLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerKeyDBName()
+        {
+            return "PartnerKey";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerStatusDBName()
+        {
+            return "PartnerStatus";
+        }
+
+        /// get character length for column
+        public static short GetPartnerStatusLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetEmailDBName()
+        {
+            return "Email";
+        }
+
+        /// get character length for column
+        public static short GetEmailLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetEmailMatchDBName()
+        {
+            return "EmailMatch";
+        }
+
+        /// get character length for column
+        public static short GetEmailMatchLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAddress2DBName()
+        {
+            return "Address2";
+        }
+
+        /// get character length for column
+        public static short GetAddress2Length()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAddress2MatchDBName()
+        {
+            return "Address2Match";
+        }
+
+        /// get character length for column
+        public static short GetAddress2MatchLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAddress3DBName()
+        {
+            return "Address3";
+        }
+
+        /// get character length for column
+        public static short GetAddress3Length()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAddress3MatchDBName()
+        {
+            return "Address3Match";
+        }
+
+        /// get character length for column
+        public static short GetAddress3MatchLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationKeyDBName()
+        {
+            return "LocationKey";
+        }
+
+        /// get character length for column
+        public static short GetLocationKeyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetWorkerFamOnlyDBName()
+        {
+            return "WorkerFamOnly";
+        }
+
+        /// get character length for column
+        public static short GetWorkerFamOnlyLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetExactPartnerKeyMatchDBName()
+        {
+            return "ExactPartnerKeyMatch";
+        }
+
+        /// get character length for column
+        public static short GetExactPartnerKeyMatchLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPhoneNumberDBName()
+        {
+            return "PhoneNumber";
+        }
+
+        /// get character length for column
+        public static short GetPhoneNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPhoneNumberMatchDBName()
+        {
+            return "PhoneNumberMatch";
+        }
+
+        /// get character length for column
+        public static short GetPhoneNumberMatchLength()
+        {
+            return -1;
+        }
+
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerFindTDSSearchCriteriaRow : System.Data.DataRow
+    {
+        private PartnerFindTDSSearchCriteriaTable myTable;
+
+        /// Constructor
+        public PartnerFindTDSSearchCriteriaRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((PartnerFindTDSSearchCriteriaTable)(this.Table));
+        }
+
+        ///
+        public string PartnerName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerName)
+                            || (((string)(this[this.myTable.ColumnPartnerName])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerName] = value;
+                }
+            }
+        }
+
+        ///
+        public string PartnerNameMatch
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerNameMatch.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerNameMatch)
+                            || (((string)(this[this.myTable.ColumnPartnerNameMatch])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerNameMatch] = value;
+                }
+            }
+        }
+
+        ///
+        public string PersonalName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPersonalName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPersonalName)
+                            || (((string)(this[this.myTable.ColumnPersonalName])) != value)))
+                {
+                    this[this.myTable.ColumnPersonalName] = value;
+                }
+            }
+        }
+
+        ///
+        public string PersonalNameMatch
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPersonalNameMatch.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPersonalNameMatch)
+                            || (((string)(this[this.myTable.ColumnPersonalNameMatch])) != value)))
+                {
+                    this[this.myTable.ColumnPersonalNameMatch] = value;
+                }
+            }
+        }
+
+        ///
+        public string PreviousName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPreviousName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPreviousName)
+                            || (((string)(this[this.myTable.ColumnPreviousName])) != value)))
+                {
+                    this[this.myTable.ColumnPreviousName] = value;
+                }
+            }
+        }
+
+        ///
+        public string PreviousNameMatch
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPreviousNameMatch.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPreviousNameMatch)
+                            || (((string)(this[this.myTable.ColumnPreviousNameMatch])) != value)))
+                {
+                    this[this.myTable.ColumnPreviousNameMatch] = value;
+                }
+            }
+        }
+
+        ///
+        public string Address1
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAddress1.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAddress1)
+                            || (((string)(this[this.myTable.ColumnAddress1])) != value)))
+                {
+                    this[this.myTable.ColumnAddress1] = value;
+                }
+            }
+        }
+
+        ///
+        public string Address1Match
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAddress1Match.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAddress1Match)
+                            || (((string)(this[this.myTable.ColumnAddress1Match])) != value)))
+                {
+                    this[this.myTable.ColumnAddress1Match] = value;
+                }
+            }
+        }
+
+        ///
+        public string City
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCity.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCity)
+                            || (((string)(this[this.myTable.ColumnCity])) != value)))
+                {
+                    this[this.myTable.ColumnCity] = value;
+                }
+            }
+        }
+
+        ///
+        public string CityMatch
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCityMatch.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCityMatch)
+                            || (((string)(this[this.myTable.ColumnCityMatch])) != value)))
+                {
+                    this[this.myTable.ColumnCityMatch] = value;
+                }
+            }
+        }
+
+        ///
+        public string PostCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPostCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPostCode)
+                            || (((string)(this[this.myTable.ColumnPostCode])) != value)))
+                {
+                    this[this.myTable.ColumnPostCode] = value;
+                }
+            }
+        }
+
+        ///
+        public string PostCodeMatch
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPostCodeMatch.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPostCodeMatch)
+                            || (((string)(this[this.myTable.ColumnPostCodeMatch])) != value)))
+                {
+                    this[this.myTable.ColumnPostCodeMatch] = value;
+                }
+            }
+        }
+
+        ///
+        public string County
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCounty.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCounty)
+                            || (((string)(this[this.myTable.ColumnCounty])) != value)))
+                {
+                    this[this.myTable.ColumnCounty] = value;
+                }
+            }
+        }
+
+        ///
+        public string CountyMatch
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCountyMatch.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCountyMatch)
+                            || (((string)(this[this.myTable.ColumnCountyMatch])) != value)))
+                {
+                    this[this.myTable.ColumnCountyMatch] = value;
+                }
+            }
+        }
+
+        ///
+        public string Country
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCountry.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCountry)
+                            || (((string)(this[this.myTable.ColumnCountry])) != value)))
+                {
+                    this[this.myTable.ColumnCountry] = value;
+                }
+            }
+        }
+
+        ///
+        public bool MailingAddressOnly
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMailingAddressOnly.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((bool)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMailingAddressOnly)
+                            || (((bool)(this[this.myTable.ColumnMailingAddressOnly])) != value)))
+                {
+                    this[this.myTable.ColumnMailingAddressOnly] = value;
+                }
+            }
+        }
+
+        ///
+        public string PartnerClass
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerClass.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerClass)
+                            || (((string)(this[this.myTable.ColumnPartnerClass])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerClass] = value;
+                }
+            }
+        }
+
+        ///
+        public Int64 PartnerKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
+                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerKey] = value;
+                }
+            }
+        }
+
+        ///
+        public string PartnerStatus
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerStatus.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerStatus)
+                            || (((string)(this[this.myTable.ColumnPartnerStatus])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerStatus] = value;
+                }
+            }
+        }
+
+        ///
+        public string Email
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnEmail.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnEmail)
+                            || (((string)(this[this.myTable.ColumnEmail])) != value)))
+                {
+                    this[this.myTable.ColumnEmail] = value;
+                }
+            }
+        }
+
+        ///
+        public string EmailMatch
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnEmailMatch.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnEmailMatch)
+                            || (((string)(this[this.myTable.ColumnEmailMatch])) != value)))
+                {
+                    this[this.myTable.ColumnEmailMatch] = value;
+                }
+            }
+        }
+
+        ///
+        public string Address2
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAddress2.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAddress2)
+                            || (((string)(this[this.myTable.ColumnAddress2])) != value)))
+                {
+                    this[this.myTable.ColumnAddress2] = value;
+                }
+            }
+        }
+
+        ///
+        public string Address2Match
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAddress2Match.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAddress2Match)
+                            || (((string)(this[this.myTable.ColumnAddress2Match])) != value)))
+                {
+                    this[this.myTable.ColumnAddress2Match] = value;
+                }
+            }
+        }
+
+        ///
+        public string Address3
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAddress3.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAddress3)
+                            || (((string)(this[this.myTable.ColumnAddress3])) != value)))
+                {
+                    this[this.myTable.ColumnAddress3] = value;
+                }
+            }
+        }
+
+        ///
+        public string Address3Match
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAddress3Match.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAddress3Match)
+                            || (((string)(this[this.myTable.ColumnAddress3Match])) != value)))
+                {
+                    this[this.myTable.ColumnAddress3Match] = value;
+                }
+            }
+        }
+
+        ///
+        public string LocationKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLocationKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLocationKey)
+                            || (((string)(this[this.myTable.ColumnLocationKey])) != value)))
+                {
+                    this[this.myTable.ColumnLocationKey] = value;
+                }
+            }
+        }
+
+        ///
+        public bool WorkerFamOnly
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnWorkerFamOnly.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((bool)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnWorkerFamOnly)
+                            || (((bool)(this[this.myTable.ColumnWorkerFamOnly])) != value)))
+                {
+                    this[this.myTable.ColumnWorkerFamOnly] = value;
+                }
+            }
+        }
+
+        ///
+        public bool ExactPartnerKeyMatch
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnExactPartnerKeyMatch.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((bool)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnExactPartnerKeyMatch)
+                            || (((bool)(this[this.myTable.ColumnExactPartnerKeyMatch])) != value)))
+                {
+                    this[this.myTable.ColumnExactPartnerKeyMatch] = value;
+                }
+            }
+        }
+
+        ///
+        public string PhoneNumber
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPhoneNumber.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPhoneNumber)
+                            || (((string)(this[this.myTable.ColumnPhoneNumber])) != value)))
+                {
+                    this[this.myTable.ColumnPhoneNumber] = value;
+                }
+            }
+        }
+
+        ///
+        public string PhoneNumberMatch
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPhoneNumberMatch.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPhoneNumberMatch)
+                            || (((string)(this[this.myTable.ColumnPhoneNumberMatch])) != value)))
+                {
+                    this[this.myTable.ColumnPhoneNumberMatch] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public virtual void InitValues()
+        {
+            this.SetNull(this.myTable.ColumnPartnerName);
+            this[this.myTable.ColumnPartnerNameMatch.Ordinal] = "BEGINS";
+            this.SetNull(this.myTable.ColumnPersonalName);
+            this[this.myTable.ColumnPersonalNameMatch.Ordinal] = "BEGINS";
+            this.SetNull(this.myTable.ColumnPreviousName);
+            this[this.myTable.ColumnPreviousNameMatch.Ordinal] = "BEGINS";
+            this.SetNull(this.myTable.ColumnAddress1);
+            this[this.myTable.ColumnAddress1Match.Ordinal] = "BEGINS";
+            this.SetNull(this.myTable.ColumnCity);
+            this[this.myTable.ColumnCityMatch.Ordinal] = "BEGINS";
+            this.SetNull(this.myTable.ColumnPostCode);
+            this[this.myTable.ColumnPostCodeMatch.Ordinal] = "BEGINS";
+            this.SetNull(this.myTable.ColumnCounty);
+            this[this.myTable.ColumnCountyMatch.Ordinal] = "BEGINS";
+            this.SetNull(this.myTable.ColumnCountry);
+            this[this.myTable.ColumnMailingAddressOnly.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnPartnerClass);
+            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
+            this[this.myTable.ColumnPartnerStatus.Ordinal] = "ACTIVE";
+            this.SetNull(this.myTable.ColumnEmail);
+            this[this.myTable.ColumnEmailMatch.Ordinal] = "BEGINS";
+            this.SetNull(this.myTable.ColumnAddress2);
+            this[this.myTable.ColumnAddress2Match.Ordinal] = "BEGINS";
+            this.SetNull(this.myTable.ColumnAddress3);
+            this[this.myTable.ColumnAddress3Match.Ordinal] = "BEGINS";
+            this.SetNull(this.myTable.ColumnLocationKey);
+            this[this.myTable.ColumnWorkerFamOnly.Ordinal] = false;
+            this[this.myTable.ColumnExactPartnerKeyMatch.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnPhoneNumber);
+            this[this.myTable.ColumnPhoneNumberMatch.Ordinal] = "BEGINS";
+        }
+
+        /// test for NULL value
+        public bool IsPartnerNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerName);
+        }
+
+        /// assign NULL value
+        public void SetPartnerNameNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerName);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerNameMatchNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerNameMatch);
+        }
+
+        /// assign NULL value
+        public void SetPartnerNameMatchNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerNameMatch);
+        }
+
+        /// test for NULL value
+        public bool IsPersonalNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnPersonalName);
+        }
+
+        /// assign NULL value
+        public void SetPersonalNameNull()
+        {
+            this.SetNull(this.myTable.ColumnPersonalName);
+        }
+
+        /// test for NULL value
+        public bool IsPersonalNameMatchNull()
+        {
+            return this.IsNull(this.myTable.ColumnPersonalNameMatch);
+        }
+
+        /// assign NULL value
+        public void SetPersonalNameMatchNull()
+        {
+            this.SetNull(this.myTable.ColumnPersonalNameMatch);
+        }
+
+        /// test for NULL value
+        public bool IsPreviousNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnPreviousName);
+        }
+
+        /// assign NULL value
+        public void SetPreviousNameNull()
+        {
+            this.SetNull(this.myTable.ColumnPreviousName);
+        }
+
+        /// test for NULL value
+        public bool IsPreviousNameMatchNull()
+        {
+            return this.IsNull(this.myTable.ColumnPreviousNameMatch);
+        }
+
+        /// assign NULL value
+        public void SetPreviousNameMatchNull()
+        {
+            this.SetNull(this.myTable.ColumnPreviousNameMatch);
+        }
+
+        /// test for NULL value
+        public bool IsAddress1Null()
+        {
+            return this.IsNull(this.myTable.ColumnAddress1);
+        }
+
+        /// assign NULL value
+        public void SetAddress1Null()
+        {
+            this.SetNull(this.myTable.ColumnAddress1);
+        }
+
+        /// test for NULL value
+        public bool IsAddress1MatchNull()
+        {
+            return this.IsNull(this.myTable.ColumnAddress1Match);
+        }
+
+        /// assign NULL value
+        public void SetAddress1MatchNull()
+        {
+            this.SetNull(this.myTable.ColumnAddress1Match);
+        }
+
+        /// test for NULL value
+        public bool IsCityNull()
+        {
+            return this.IsNull(this.myTable.ColumnCity);
+        }
+
+        /// assign NULL value
+        public void SetCityNull()
+        {
+            this.SetNull(this.myTable.ColumnCity);
+        }
+
+        /// test for NULL value
+        public bool IsCityMatchNull()
+        {
+            return this.IsNull(this.myTable.ColumnCityMatch);
+        }
+
+        /// assign NULL value
+        public void SetCityMatchNull()
+        {
+            this.SetNull(this.myTable.ColumnCityMatch);
+        }
+
+        /// test for NULL value
+        public bool IsPostCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnPostCode);
+        }
+
+        /// assign NULL value
+        public void SetPostCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnPostCode);
+        }
+
+        /// test for NULL value
+        public bool IsPostCodeMatchNull()
+        {
+            return this.IsNull(this.myTable.ColumnPostCodeMatch);
+        }
+
+        /// assign NULL value
+        public void SetPostCodeMatchNull()
+        {
+            this.SetNull(this.myTable.ColumnPostCodeMatch);
+        }
+
+        /// test for NULL value
+        public bool IsCountyNull()
+        {
+            return this.IsNull(this.myTable.ColumnCounty);
+        }
+
+        /// assign NULL value
+        public void SetCountyNull()
+        {
+            this.SetNull(this.myTable.ColumnCounty);
+        }
+
+        /// test for NULL value
+        public bool IsCountyMatchNull()
+        {
+            return this.IsNull(this.myTable.ColumnCountyMatch);
+        }
+
+        /// assign NULL value
+        public void SetCountyMatchNull()
+        {
+            this.SetNull(this.myTable.ColumnCountyMatch);
+        }
+
+        /// test for NULL value
+        public bool IsCountryNull()
+        {
+            return this.IsNull(this.myTable.ColumnCountry);
+        }
+
+        /// assign NULL value
+        public void SetCountryNull()
+        {
+            this.SetNull(this.myTable.ColumnCountry);
+        }
+
+        /// test for NULL value
+        public bool IsMailingAddressOnlyNull()
+        {
+            return this.IsNull(this.myTable.ColumnMailingAddressOnly);
+        }
+
+        /// assign NULL value
+        public void SetMailingAddressOnlyNull()
+        {
+            this.SetNull(this.myTable.ColumnMailingAddressOnly);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerClassNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerClass);
+        }
+
+        /// assign NULL value
+        public void SetPartnerClassNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerClass);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerStatusNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerStatus);
+        }
+
+        /// assign NULL value
+        public void SetPartnerStatusNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerStatus);
+        }
+
+        /// test for NULL value
+        public bool IsEmailNull()
+        {
+            return this.IsNull(this.myTable.ColumnEmail);
+        }
+
+        /// assign NULL value
+        public void SetEmailNull()
+        {
+            this.SetNull(this.myTable.ColumnEmail);
+        }
+
+        /// test for NULL value
+        public bool IsEmailMatchNull()
+        {
+            return this.IsNull(this.myTable.ColumnEmailMatch);
+        }
+
+        /// assign NULL value
+        public void SetEmailMatchNull()
+        {
+            this.SetNull(this.myTable.ColumnEmailMatch);
+        }
+
+        /// test for NULL value
+        public bool IsAddress2Null()
+        {
+            return this.IsNull(this.myTable.ColumnAddress2);
+        }
+
+        /// assign NULL value
+        public void SetAddress2Null()
+        {
+            this.SetNull(this.myTable.ColumnAddress2);
+        }
+
+        /// test for NULL value
+        public bool IsAddress2MatchNull()
+        {
+            return this.IsNull(this.myTable.ColumnAddress2Match);
+        }
+
+        /// assign NULL value
+        public void SetAddress2MatchNull()
+        {
+            this.SetNull(this.myTable.ColumnAddress2Match);
+        }
+
+        /// test for NULL value
+        public bool IsAddress3Null()
+        {
+            return this.IsNull(this.myTable.ColumnAddress3);
+        }
+
+        /// assign NULL value
+        public void SetAddress3Null()
+        {
+            this.SetNull(this.myTable.ColumnAddress3);
+        }
+
+        /// test for NULL value
+        public bool IsAddress3MatchNull()
+        {
+            return this.IsNull(this.myTable.ColumnAddress3Match);
+        }
+
+        /// assign NULL value
+        public void SetAddress3MatchNull()
+        {
+            this.SetNull(this.myTable.ColumnAddress3Match);
+        }
+
+        /// test for NULL value
+        public bool IsLocationKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnLocationKey);
+        }
+
+        /// assign NULL value
+        public void SetLocationKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnLocationKey);
+        }
+
+        /// test for NULL value
+        public bool IsWorkerFamOnlyNull()
+        {
+            return this.IsNull(this.myTable.ColumnWorkerFamOnly);
+        }
+
+        /// assign NULL value
+        public void SetWorkerFamOnlyNull()
+        {
+            this.SetNull(this.myTable.ColumnWorkerFamOnly);
+        }
+
+        /// test for NULL value
+        public bool IsExactPartnerKeyMatchNull()
+        {
+            return this.IsNull(this.myTable.ColumnExactPartnerKeyMatch);
+        }
+
+        /// assign NULL value
+        public void SetExactPartnerKeyMatchNull()
+        {
+            this.SetNull(this.myTable.ColumnExactPartnerKeyMatch);
+        }
+
+        /// test for NULL value
+        public bool IsPhoneNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnPhoneNumber);
+        }
+
+        /// assign NULL value
+        public void SetPhoneNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnPhoneNumber);
+        }
+
+        /// test for NULL value
+        public bool IsPhoneNumberMatchNull()
+        {
+            return this.IsNull(this.myTable.ColumnPhoneNumberMatch);
+        }
+
+        /// assign NULL value
+        public void SetPhoneNumberMatchNull()
+        {
+            this.SetNull(this.myTable.ColumnPhoneNumberMatch);
+        }
+    }
+
+    ///
+    [Serializable()]
+    public class PartnerFindTDSSearchResultTable : TTypedDataTable
+    {
+        /// TableId for Ict.Common.Data generic functions
+        public static short TableId = 5115;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerClassId = 0;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerShortNameId = 1;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnStatusCodeId = 2;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPartnerKeyId = 3;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPreviousNameId = 4;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAcquisitionCodeId = 5;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFirstNameId = 6;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnFamilyKeyId = 7;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnTelephoneNumberId = 8;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLocationTypeId = 9;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnEmailAddressId = 10;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnSiteKeyId = 11;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCityId = 12;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnPostalCodeId = 13;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLocalityId = 14;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnStreetNameId = 15;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAddress3Id = 16;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountyId = 17;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountryCodeId = 18;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLocationKeyId = 19;
+
+        private static bool FInitInfoValues = InitInfoValues();
+        private static bool InitInfoValues()
+        {
+            TableInfo.Add(TableId, new TTypedTableInfo(TableId, "SearchResult", "PartnerFindTDSSearchResult",
+                new TTypedColumnInfo[] {
+                    new TTypedColumnInfo(0, "PartnerClass", "p_partner_class_c", "Partner Class", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(1, "PartnerShortName", "p_partner_short_name_c", "Short Name", OdbcType.VarChar, 160, false),
+                    new TTypedColumnInfo(2, "StatusCode", "p_status_code_c", "Partner Status", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(3, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(4, "PreviousName", "p_previous_name_c", "Previous Name", OdbcType.VarChar, 512, false),
+                    new TTypedColumnInfo(5, "AcquisitionCode", "p_acquisition_code_c", "Acquisition Code", OdbcType.VarChar, 16, false),
+                    new TTypedColumnInfo(6, "FirstName", "p_first_name_c", "First Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(7, "FamilyKey", "p_family_key_n", "Partner Key", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(8, "TelephoneNumber", "p_telephone_number_c", "Phone", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(9, "LocationType", "p_location_type_c", "Location Type", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(10, "EmailAddress", "p_email_address_c", "Email", OdbcType.VarChar, 120, false),
+                    new TTypedColumnInfo(11, "SiteKey", "p_site_key_n", "Site Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(12, "City", "p_city_c", "City", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(13, "PostalCode", "p_postal_code_c", "Post Code", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(14, "Locality", "p_locality_c", "Addr1", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(15, "StreetName", "p_street_name_c", "Addr2", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(16, "Address3", "p_address_3_c", "Addr3", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(17, "County", "p_county_c", "Province", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(18, "CountryCode", "p_country_code_c", "Country Code", OdbcType.VarChar, 8, false),
+                    new TTypedColumnInfo(19, "LocationKey", "p_location_key_i", "Location Key", OdbcType.Int, -1, true)
+                },
+                new int[] {
+                }));
+            return true;
+        }
+
+        /// constructor
+        public PartnerFindTDSSearchResultTable() :
+                base("SearchResult")
+        {
+        }
+
+        /// constructor
+        public PartnerFindTDSSearchResultTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PartnerFindTDSSearchResultTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// This defines what type of partner this is. The classes that may be assigned are PERSON, FAMILY, CHURCH, ORGANISATION, UNIT, VENUE and BANK.
+        public DataColumn ColumnPartnerClass;
+        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
+        public DataColumn ColumnPartnerShortName;
+        /// This code describes the status of a partner.
+        /// Eg,  Active, Deceased etc
+        public DataColumn ColumnStatusCode;
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
+        ///
+        public DataColumn ColumnPreviousName;
+        /// This code identifies the method of aquisition.
+        public DataColumn ColumnAcquisitionCode;
+        ///
+        public DataColumn ColumnFirstName;
+        /// A cross reference to the family record of this person.
+        /// It should be set to ? (not 0 because such a record does not exist!) when there is no family record.
+        public DataColumn ColumnFamilyKey;
+        ///
+        public DataColumn ColumnTelephoneNumber;
+        ///
+        public DataColumn ColumnLocationType;
+        ///
+        public DataColumn ColumnEmailAddress;
+        /// This is the key that tell what site created the linked location
+        public DataColumn ColumnSiteKey;
+        /// This can be a post town or city
+        public DataColumn ColumnCity;
+        /// This is the national post code
+        public DataColumn ColumnPostalCode;
+        /// This is the first element of an address
+        public DataColumn ColumnLocality;
+        /// The name of the street that the house is located on
+        public DataColumn ColumnStreetName;
+        /// This is the third element of an address (if required)
+        public DataColumn ColumnAddress3;
+        /// This can be a county (UK), a state (US), province (CDN), canton (CH) etc.
+        public DataColumn ColumnCounty;
+        /// This is a code which identifies a country.
+        /// It is taken from the ISO 3166-1-alpha-2 code elements.
+        public DataColumn ColumnCountryCode;
+        ///
+        public DataColumn ColumnLocationKey;
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("p_partner_class_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_partner_short_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_status_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_previous_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_acquisition_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_first_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_family_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_telephone_number_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_location_type_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_email_address_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_site_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_city_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_postal_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_locality_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_street_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_address_3_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_county_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_country_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_location_key_i", typeof(Int32)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnPartnerClass = this.Columns["p_partner_class_c"];
+            this.ColumnPartnerShortName = this.Columns["p_partner_short_name_c"];
+            this.ColumnStatusCode = this.Columns["p_status_code_c"];
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnPreviousName = this.Columns["p_previous_name_c"];
+            this.ColumnAcquisitionCode = this.Columns["p_acquisition_code_c"];
+            this.ColumnFirstName = this.Columns["p_first_name_c"];
+            this.ColumnFamilyKey = this.Columns["p_family_key_n"];
+            this.ColumnTelephoneNumber = this.Columns["p_telephone_number_c"];
+            this.ColumnLocationType = this.Columns["p_location_type_c"];
+            this.ColumnEmailAddress = this.Columns["p_email_address_c"];
+            this.ColumnSiteKey = this.Columns["p_site_key_n"];
+            this.ColumnCity = this.Columns["p_city_c"];
+            this.ColumnPostalCode = this.Columns["p_postal_code_c"];
+            this.ColumnLocality = this.Columns["p_locality_c"];
+            this.ColumnStreetName = this.Columns["p_street_name_c"];
+            this.ColumnAddress3 = this.Columns["p_address_3_c"];
+            this.ColumnCounty = this.Columns["p_county_c"];
+            this.ColumnCountryCode = this.Columns["p_country_code_c"];
+            this.ColumnLocationKey = this.Columns["p_location_key_i"];
+        }
+
+        /// Access a typed row by index
+        public PartnerFindTDSSearchResultRow this[int i]
+        {
+            get
+            {
+                return ((PartnerFindTDSSearchResultRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public PartnerFindTDSSearchResultRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerFindTDSSearchResultRow ret = ((PartnerFindTDSSearchResultRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public PartnerFindTDSSearchResultRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerFindTDSSearchResultRow(builder);
+        }
+
+        /// get typed set of changes
+        public PartnerFindTDSSearchResultTable GetChangesTyped()
+        {
+            return ((PartnerFindTDSSearchResultTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static string GetTableName()
         {
             return "SearchResult";
         }
 
         /// return the name of the table as it is used in the database
-        public static new string GetTableDBName()
+        public static string GetTableDBName()
         {
-            return "p_location";
+            return "PartnerFindTDSSearchResult";
         }
 
         /// get an odbc parameter for the given column
@@ -9081,6 +11040,18 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public static short GetPartnerClassLength()
         {
             return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetPartnerShortNameDBName()
+        {
+            return "p_partner_short_name_c";
+        }
+
+        /// get character length for column
+        public static short GetPartnerShortNameLength()
+        {
+            return 160;
         }
 
         /// get the name of the field in the database for this column
@@ -9108,6 +11079,30 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// get the name of the field in the database for this column
+        public static string GetPreviousNameDBName()
+        {
+            return "p_previous_name_c";
+        }
+
+        /// get character length for column
+        public static short GetPreviousNameLength()
+        {
+            return 512;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAcquisitionCodeDBName()
+        {
+            return "p_acquisition_code_c";
+        }
+
+        /// get character length for column
+        public static short GetAcquisitionCodeLength()
+        {
+            return 16;
+        }
+
+        /// get the name of the field in the database for this column
         public static string GetFirstNameDBName()
         {
             return "p_first_name_c";
@@ -9120,30 +11115,174 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// get the name of the field in the database for this column
-        public static string GetFamilyNameDBName()
+        public static string GetFamilyKeyDBName()
         {
-            return "p_family_name_c";
+            return "p_family_key_n";
         }
 
         /// get character length for column
-        public static short GetFamilyNameLength()
+        public static short GetFamilyKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetTelephoneNumberDBName()
+        {
+            return "p_telephone_number_c";
+        }
+
+        /// get character length for column
+        public static short GetTelephoneNumberLength()
+        {
+            return 50;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationTypeDBName()
+        {
+            return "p_location_type_c";
+        }
+
+        /// get character length for column
+        public static short GetLocationTypeLength()
+        {
+            return 24;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetEmailAddressDBName()
+        {
+            return "p_email_address_c";
+        }
+
+        /// get character length for column
+        public static short GetEmailAddressLength()
+        {
+            return 120;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetSiteKeyDBName()
+        {
+            return "p_site_key_n";
+        }
+
+        /// get character length for column
+        public static short GetSiteKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCityDBName()
+        {
+            return "p_city_c";
+        }
+
+        /// get character length for column
+        public static short GetCityLength()
         {
             return 64;
         }
 
+        /// get the name of the field in the database for this column
+        public static string GetPostalCodeDBName()
+        {
+            return "p_postal_code_c";
+        }
+
+        /// get character length for column
+        public static short GetPostalCodeLength()
+        {
+            return 40;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocalityDBName()
+        {
+            return "p_locality_c";
+        }
+
+        /// get character length for column
+        public static short GetLocalityLength()
+        {
+            return 100;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetStreetNameDBName()
+        {
+            return "p_street_name_c";
+        }
+
+        /// get character length for column
+        public static short GetStreetNameLength()
+        {
+            return 100;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetAddress3DBName()
+        {
+            return "p_address_3_c";
+        }
+
+        /// get character length for column
+        public static short GetAddress3Length()
+        {
+            return 100;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCountyDBName()
+        {
+            return "p_county_c";
+        }
+
+        /// get character length for column
+        public static short GetCountyLength()
+        {
+            return 64;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCountryCodeDBName()
+        {
+            return "p_country_code_c";
+        }
+
+        /// get character length for column
+        public static short GetCountryCodeLength()
+        {
+            return 8;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetLocationKeyDBName()
+        {
+            return "p_location_key_i";
+        }
+
+        /// get character length for column
+        public static short GetLocationKeyLength()
+        {
+            return -1;
+        }
+
     }
 
-    /// Address and other data related to that address.
+    ///
     [Serializable()]
-    public class SimplePartnerFindTDSSearchResultRow : PLocationRow
+    public class PartnerFindTDSSearchResultRow : System.Data.DataRow
     {
-        private SimplePartnerFindTDSSearchResultTable myTable;
+        private PartnerFindTDSSearchResultTable myTable;
 
         /// Constructor
-        public SimplePartnerFindTDSSearchResultRow(System.Data.DataRowBuilder rb) :
+        public PartnerFindTDSSearchResultRow(System.Data.DataRowBuilder rb) :
                 base(rb)
         {
-            this.myTable = ((SimplePartnerFindTDSSearchResultTable)(this.Table));
+            this.myTable = ((PartnerFindTDSSearchResultTable)(this.Table));
         }
 
         /// This defines what type of partner this is. The classes that may be assigned are PERSON, FAMILY, CHURCH, ORGANISATION, UNIT, VENUE and BANK.
@@ -9168,6 +11307,32 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                             || (((String)(this[this.myTable.ColumnPartnerClass])) != value)))
                 {
                     this[this.myTable.ColumnPartnerClass] = value;
+                }
+            }
+        }
+
+        /// Name of the person or organisation.  If a person, more name info is stored in p_person.
+        public String PartnerShortName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerShortName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerShortName)
+                            || (((String)(this[this.myTable.ColumnPartnerShortName])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerShortName] = value;
                 }
             }
         }
@@ -9226,6 +11391,58 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         ///
+        public String PreviousName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPreviousName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPreviousName)
+                            || (((String)(this[this.myTable.ColumnPreviousName])) != value)))
+                {
+                    this[this.myTable.ColumnPreviousName] = value;
+                }
+            }
+        }
+
+        /// This code identifies the method of aquisition.
+        public String AcquisitionCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAcquisitionCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAcquisitionCode)
+                            || (((String)(this[this.myTable.ColumnAcquisitionCode])) != value)))
+                {
+                    this[this.myTable.ColumnAcquisitionCode] = value;
+                }
+            }
+        }
+
+        ///
         public String FirstName
         {
             get
@@ -9251,13 +11468,40 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
         }
 
-        ///
-        public String FamilyName
+        /// A cross reference to the family record of this person.
+        /// It should be set to ? (not 0 because such a record does not exist!) when there is no family record.
+        public Int64 FamilyKey
         {
             get
             {
                 object ret;
-                ret = this[this.myTable.ColumnFamilyName.Ordinal];
+                ret = this[this.myTable.ColumnFamilyKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFamilyKey)
+                            || (((Int64)(this[this.myTable.ColumnFamilyKey])) != value)))
+                {
+                    this[this.myTable.ColumnFamilyKey] = value;
+                }
+            }
+        }
+
+        ///
+        public String TelephoneNumber
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnTelephoneNumber.Ordinal];
                 if ((ret == System.DBNull.Value))
                 {
                     return String.Empty;
@@ -9269,45 +11513,324 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
             set
             {
-                if ((this.IsNull(this.myTable.ColumnFamilyName)
-                            || (((String)(this[this.myTable.ColumnFamilyName])) != value)))
+                if ((this.IsNull(this.myTable.ColumnTelephoneNumber)
+                            || (((String)(this[this.myTable.ColumnTelephoneNumber])) != value)))
                 {
-                    this[this.myTable.ColumnFamilyName] = value;
+                    this[this.myTable.ColumnTelephoneNumber] = value;
+                }
+            }
+        }
+
+        ///
+        public String LocationType
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLocationType.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLocationType)
+                            || (((String)(this[this.myTable.ColumnLocationType])) != value)))
+                {
+                    this[this.myTable.ColumnLocationType] = value;
+                }
+            }
+        }
+
+        ///
+        public String EmailAddress
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnEmailAddress.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnEmailAddress)
+                            || (((String)(this[this.myTable.ColumnEmailAddress])) != value)))
+                {
+                    this[this.myTable.ColumnEmailAddress] = value;
+                }
+            }
+        }
+
+        /// This is the key that tell what site created the linked location
+        public Int64 SiteKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnSiteKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnSiteKey)
+                            || (((Int64)(this[this.myTable.ColumnSiteKey])) != value)))
+                {
+                    this[this.myTable.ColumnSiteKey] = value;
+                }
+            }
+        }
+
+        /// This can be a post town or city
+        public String City
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCity.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCity)
+                            || (((String)(this[this.myTable.ColumnCity])) != value)))
+                {
+                    this[this.myTable.ColumnCity] = value;
+                }
+            }
+        }
+
+        /// This is the national post code
+        public String PostalCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPostalCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPostalCode)
+                            || (((String)(this[this.myTable.ColumnPostalCode])) != value)))
+                {
+                    this[this.myTable.ColumnPostalCode] = value;
+                }
+            }
+        }
+
+        /// This is the first element of an address
+        public String Locality
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLocality.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLocality)
+                            || (((String)(this[this.myTable.ColumnLocality])) != value)))
+                {
+                    this[this.myTable.ColumnLocality] = value;
+                }
+            }
+        }
+
+        /// The name of the street that the house is located on
+        public String StreetName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnStreetName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnStreetName)
+                            || (((String)(this[this.myTable.ColumnStreetName])) != value)))
+                {
+                    this[this.myTable.ColumnStreetName] = value;
+                }
+            }
+        }
+
+        /// This is the third element of an address (if required)
+        public String Address3
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnAddress3.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnAddress3)
+                            || (((String)(this[this.myTable.ColumnAddress3])) != value)))
+                {
+                    this[this.myTable.ColumnAddress3] = value;
+                }
+            }
+        }
+
+        /// This can be a county (UK), a state (US), province (CDN), canton (CH) etc.
+        public String County
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCounty.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCounty)
+                            || (((String)(this[this.myTable.ColumnCounty])) != value)))
+                {
+                    this[this.myTable.ColumnCounty] = value;
+                }
+            }
+        }
+
+        /// This is a code which identifies a country.
+        /// It is taken from the ISO 3166-1-alpha-2 code elements.
+        public String CountryCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCountryCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCountryCode)
+                            || (((String)(this[this.myTable.ColumnCountryCode])) != value)))
+                {
+                    this[this.myTable.ColumnCountryCode] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 LocationKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnLocationKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnLocationKey)
+                            || (((Int32)(this[this.myTable.ColumnLocationKey])) != value)))
+                {
+                    this[this.myTable.ColumnLocationKey] = value;
                 }
             }
         }
 
         /// set default values
-        public override void InitValues()
+        public virtual void InitValues()
         {
-            this[this.myTable.ColumnSiteKey.Ordinal] = 0;
-            this[this.myTable.ColumnLocationKey.Ordinal] = 0;
-            this.SetNull(this.myTable.ColumnBuilding1);
-            this.SetNull(this.myTable.ColumnBuilding2);
-            this.SetNull(this.myTable.ColumnStreetName);
-            this.SetNull(this.myTable.ColumnLocality);
-            this.SetNull(this.myTable.ColumnSuburb);
-            this.SetNull(this.myTable.ColumnCity);
-            this.SetNull(this.myTable.ColumnCounty);
-            this.SetNull(this.myTable.ColumnPostalCode);
-            this.SetNull(this.myTable.ColumnCountryCode);
-            this.SetNull(this.myTable.ColumnAddress3);
-            this.SetNull(this.myTable.ColumnGeoLatitude);
-            this.SetNull(this.myTable.ColumnGeoLongitude);
-            this.SetNull(this.myTable.ColumnGeoKmX);
-            this.SetNull(this.myTable.ColumnGeoKmY);
-            this[this.myTable.ColumnGeoAccuracy.Ordinal] = -1;
-            this[this.myTable.ColumnRestricted.Ordinal] = false;
-            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
-            this.SetNull(this.myTable.ColumnCreatedBy);
-            this.SetNull(this.myTable.ColumnDateModified);
-            this.SetNull(this.myTable.ColumnModifiedBy);
-            this.SetNull(this.myTable.ColumnModificationId);
             this.SetNull(this.myTable.ColumnPartnerClass);
+            this.SetNull(this.myTable.ColumnPartnerShortName);
             this.SetNull(this.myTable.ColumnStatusCode);
             this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnPreviousName);
+            this.SetNull(this.myTable.ColumnAcquisitionCode);
             this.SetNull(this.myTable.ColumnFirstName);
-            this.SetNull(this.myTable.ColumnFamilyName);
+            this[this.myTable.ColumnFamilyKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnTelephoneNumber);
+            this.SetNull(this.myTable.ColumnLocationType);
+            this.SetNull(this.myTable.ColumnEmailAddress);
+            this[this.myTable.ColumnSiteKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnCity);
+            this.SetNull(this.myTable.ColumnPostalCode);
+            this.SetNull(this.myTable.ColumnLocality);
+            this.SetNull(this.myTable.ColumnStreetName);
+            this.SetNull(this.myTable.ColumnAddress3);
+            this.SetNull(this.myTable.ColumnCounty);
+            this.SetNull(this.myTable.ColumnCountryCode);
+            this[this.myTable.ColumnLocationKey.Ordinal] = 0;
         }
 
         /// test for NULL value
@@ -9320,6 +11843,18 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public void SetPartnerClassNull()
         {
             this.SetNull(this.myTable.ColumnPartnerClass);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerShortNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerShortName);
+        }
+
+        /// assign NULL value
+        public void SetPartnerShortNameNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerShortName);
         }
 
         /// test for NULL value
@@ -9347,6 +11882,30 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// test for NULL value
+        public bool IsPreviousNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnPreviousName);
+        }
+
+        /// assign NULL value
+        public void SetPreviousNameNull()
+        {
+            this.SetNull(this.myTable.ColumnPreviousName);
+        }
+
+        /// test for NULL value
+        public bool IsAcquisitionCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnAcquisitionCode);
+        }
+
+        /// assign NULL value
+        public void SetAcquisitionCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnAcquisitionCode);
+        }
+
+        /// test for NULL value
         public bool IsFirstNameNull()
         {
             return this.IsNull(this.myTable.ColumnFirstName);
@@ -9359,15 +11918,159 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// test for NULL value
-        public bool IsFamilyNameNull()
+        public bool IsFamilyKeyNull()
         {
-            return this.IsNull(this.myTable.ColumnFamilyName);
+            return this.IsNull(this.myTable.ColumnFamilyKey);
         }
 
         /// assign NULL value
-        public void SetFamilyNameNull()
+        public void SetFamilyKeyNull()
         {
-            this.SetNull(this.myTable.ColumnFamilyName);
+            this.SetNull(this.myTable.ColumnFamilyKey);
+        }
+
+        /// test for NULL value
+        public bool IsTelephoneNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnTelephoneNumber);
+        }
+
+        /// assign NULL value
+        public void SetTelephoneNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnTelephoneNumber);
+        }
+
+        /// test for NULL value
+        public bool IsLocationTypeNull()
+        {
+            return this.IsNull(this.myTable.ColumnLocationType);
+        }
+
+        /// assign NULL value
+        public void SetLocationTypeNull()
+        {
+            this.SetNull(this.myTable.ColumnLocationType);
+        }
+
+        /// test for NULL value
+        public bool IsEmailAddressNull()
+        {
+            return this.IsNull(this.myTable.ColumnEmailAddress);
+        }
+
+        /// assign NULL value
+        public void SetEmailAddressNull()
+        {
+            this.SetNull(this.myTable.ColumnEmailAddress);
+        }
+
+        /// test for NULL value
+        public bool IsSiteKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnSiteKey);
+        }
+
+        /// assign NULL value
+        public void SetSiteKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnSiteKey);
+        }
+
+        /// test for NULL value
+        public bool IsCityNull()
+        {
+            return this.IsNull(this.myTable.ColumnCity);
+        }
+
+        /// assign NULL value
+        public void SetCityNull()
+        {
+            this.SetNull(this.myTable.ColumnCity);
+        }
+
+        /// test for NULL value
+        public bool IsPostalCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnPostalCode);
+        }
+
+        /// assign NULL value
+        public void SetPostalCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnPostalCode);
+        }
+
+        /// test for NULL value
+        public bool IsLocalityNull()
+        {
+            return this.IsNull(this.myTable.ColumnLocality);
+        }
+
+        /// assign NULL value
+        public void SetLocalityNull()
+        {
+            this.SetNull(this.myTable.ColumnLocality);
+        }
+
+        /// test for NULL value
+        public bool IsStreetNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnStreetName);
+        }
+
+        /// assign NULL value
+        public void SetStreetNameNull()
+        {
+            this.SetNull(this.myTable.ColumnStreetName);
+        }
+
+        /// test for NULL value
+        public bool IsAddress3Null()
+        {
+            return this.IsNull(this.myTable.ColumnAddress3);
+        }
+
+        /// assign NULL value
+        public void SetAddress3Null()
+        {
+            this.SetNull(this.myTable.ColumnAddress3);
+        }
+
+        /// test for NULL value
+        public bool IsCountyNull()
+        {
+            return this.IsNull(this.myTable.ColumnCounty);
+        }
+
+        /// assign NULL value
+        public void SetCountyNull()
+        {
+            this.SetNull(this.myTable.ColumnCounty);
+        }
+
+        /// test for NULL value
+        public bool IsCountryCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnCountryCode);
+        }
+
+        /// assign NULL value
+        public void SetCountryCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnCountryCode);
+        }
+
+        /// test for NULL value
+        public bool IsLocationKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnLocationKey);
+        }
+
+        /// assign NULL value
+        public void SetLocationKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnLocationKey);
         }
     }
 }

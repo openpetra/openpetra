@@ -276,11 +276,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     {
                         defaultValue = "DateTime.Today";
                     }
-                    else if (col.strType == "bit")
+                    else if ((col.strType == "bit") || ((col.strTypeDotNet != null) && col.strTypeDotNet.ToLower().Contains("bool")))
                     {
-                        defaultValue = (defaultValue == "1").ToString().ToLower();
+                        defaultValue = (defaultValue == "1" || defaultValue.ToLower() == "true").ToString().ToLower();
                     }
-                    else if (col.strType == "varchar")
+                    else if ((col.strType == "varchar") || ((col.strTypeDotNet != null) && col.strTypeDotNet.ToLower().Contains("string")))
                     {
                         defaultValue = '"' + defaultValue + '"';
                     }

@@ -1219,6 +1219,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.SetControlProperty(ControlName, "ShowLabel", "false");
             }
+
             // Note: the control defaults to 'ShowLabel' true, so this doesn't need to be set to 'true' in code.
 
             writer.SetControlProperty(ControlName, "ASpecialSetting", "true");

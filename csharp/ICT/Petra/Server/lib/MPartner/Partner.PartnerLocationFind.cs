@@ -89,7 +89,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             FCriteria = ACriteriaData;
             FAsyncExecProgress = new TAsynchronousExecutionProgress();
-            FPagedDataSetObject = new TPagedDataSet();
+            FPagedDataSetObject = new TPagedDataSet(new PartnerFindTDSSearchResultTable());
             FPagedDataSetObject.AsyncExecProgress = FAsyncExecProgress;
             ColumnNameMapping = null;
 
@@ -229,7 +229,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
             ATotalPages = FPagedDataSetObject.TotalPages;
             ATotalRecords = FPagedDataSetObject.TotalRecords;
-            return ReturnValue;
+            return (PartnerFindTDSSearchResultTable)ReturnValue;
         }
     }
 }

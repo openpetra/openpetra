@@ -363,13 +363,13 @@ namespace Ict.Petra.Shared.MCommon.Data
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "Contents", "CacheableTablesTDSContents",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "TableName", "TableName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(1, "DataUpToDate", "DataUpToDate", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(2, "DataChanged", "DataChanged", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "ChangesSavedExternally", "ChangesSavedExternally", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(4, "CachedSince", "CachedSince", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "LastAccessed", "LastAccessed", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "HashCode", "HashCode", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(0, "TableName", "TableName", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(1, "DataUpToDate", "DataUpToDate", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(2, "DataChanged", "DataChanged", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(3, "ChangesSavedExternally", "ChangesSavedExternally", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(4, "CachedSince", "CachedSince", "", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(5, "LastAccessed", "LastAccessed", "", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(6, "HashCode", "HashCode", "", OdbcType.VarChar, -1, false),
                     new TTypedColumnInfo(7, "TableSize", "TableSize", "", OdbcType.Int, -1, false)
                 },
                 new int[] {

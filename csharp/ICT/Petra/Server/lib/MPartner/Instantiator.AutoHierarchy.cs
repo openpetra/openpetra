@@ -39,6 +39,7 @@ using Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.ServerLookups;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.PartnerMerge.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Subscriptions.Cacheable;
 using Ict.Petra.Shared.Interfaces.MPartner.Subscriptions.UIConnectors;
@@ -60,6 +61,7 @@ using Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements;
 using Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnectors;
 using Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups;
 using Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors;
+using Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors;
 using Ict.Petra.Server.MPartner.Instantiator.PartnerMerge.UIConnectors;
 using Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable;
 using Ict.Petra.Server.MPartner.Instantiator.Subscriptions.UIConnectors;
@@ -81,6 +83,7 @@ using Ict.Petra.Server.MPartner.ImportExport.WebConnectors;
 //using Ict.Petra.Server.MPartner.Partner.DataElements.UIConnectors;
 //using Ict.Petra.Server.MPartner.Partner.ServerLookups;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
+using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 //using Ict.Petra.Server.MPartner.PartnerMerge.UIConnectors;
 //using Ict.Petra.Server.MPartner.Subscriptions.Cacheable;
 //using Ict.Petra.Server.MPartner.Subscriptions.UIConnectors;
@@ -88,6 +91,7 @@ using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 
 
 #region ManualCode
+using System.Collections.Specialized;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -1412,6 +1416,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
         private TPartnerDataElementsNamespace FPartnerDataElementsSubNamespace;
         private TPartnerServerLookupsNamespace FPartnerServerLookupsSubNamespace;
         private TPartnerUIConnectorsNamespace FPartnerUIConnectorsSubNamespace;
+        private TPartnerWebConnectorsNamespace FPartnerWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TPartnerNamespace()
@@ -1597,6 +1602,37 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
 
 
                 return (IPartnerUIConnectorsNamespace)FPartnerUIConnectorsSubNamespace;
+            }
+
+        }
+
+
+        /// <summary>The 'PartnerWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IPartnerWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'Partner.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'Partner.WebConnectors' sub-namespace
+                //
+
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FPartnerWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.Partner.Instantiator.WebConnectors') should be automatically contructable.
+                    FPartnerWebConnectorsSubNamespace = new TPartnerWebConnectorsNamespace();
+                }
+
+
+                return (IPartnerWebConnectorsNamespace)FPartnerWebConnectorsSubNamespace;
             }
 
         }
@@ -2453,6 +2489,93 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
         public IPartnerUIConnectorsPartnerLocationFind PartnerLocationFind(DataTable ACriteriaData)
         {
             return new TPartnerLocationFindUIConnector(ACriteriaData);
+        }
+
+    }
+}
+
+
+namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
+{
+
+    /// <summary>auto generated class </summary>
+    public class TPartnerWebConnectorsNamespace : MarshalByRefObject, IPartnerWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TPartnerWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TPartnerWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TPartnerWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+
+        /// generated method from connector
+        public PartnerFindTDS FindPartners(string AFirstName,
+                                                 string AFamilyNameOrOrganisation,
+                                                 string ACity,
+                                                 StringCollection APartnerClasses)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector.FindPartners(AFirstName, AFamilyNameOrOrganisation, ACity, APartnerClasses);
         }
 
     }

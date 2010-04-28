@@ -767,57 +767,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
     }
      /// auto generated
     [Serializable()]
-    public class SimplePartnerFindTDSAccess
+    public class PartnerFindTDSAccess
     {
-
-        /// auto generated
-        static public TSubmitChangesResult SubmitChanges(SimplePartnerFindTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
-        {
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
-
-            try
-            {
-                SubmissionResult = TSubmitChangesResult.scrOK;
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.SearchResult, SubmitChangesTransaction,
-                            TTypedDataAccess.eSubmitChangesOperations.eDelete,
-                            out AVerificationResult,
-                            UserInfo.GUserInfo.UserID))
-                {
-                    SubmissionResult = TSubmitChangesResult.scrError;
-                }
-                if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.SearchResult, SubmitChangesTransaction,
-                            TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
-                            out AVerificationResult,
-                            UserInfo.GUserInfo.UserID, "seq_location_number", "p_location_key_i"))
-                {
-                    SubmissionResult = TSubmitChangesResult.scrError;
-                }
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("exception during saving dataset SimplePartnerFindTDS:" + e.Message);
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                throw new Exception(e.ToString() + " " + e.Message);
-            }
-
-            return SubmissionResult;
-        }
     }
 }

@@ -27,12 +27,14 @@ using System;
 using System.Xml;
 using System.Data;
 using System.Windows.Forms;
+using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -104,6 +106,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdParsedValues.DataSource = new DevAge.ComponentModel.BoundDataView(ValuePairs.DefaultView);
 
             this.FPetraUtilsObject.EnableAction("actStartImport", false);
+
+            // TODO: get SimplePartnerFindTDS with all matching persons and families (family name, city)
+
+            PartnerFindTDS result = TRemote.MPartner.Partner.WebConnectors.FindPartners("", "Pok", "", new StringCollection());
+
+            grdMatchingRecords.Columns.Clear();
+            grdMatchingRecords.AddTextColumn(Catalog.GetString("Class"), result.SearchResult.ColumnPartnerClass, 50);
+            grdMatchingRecords.AddTextColumn(Catalog.GetString("Name"), result.SearchResult.ColumnPartnerShortName, 200);
+            grdMatchingRecords.AddTextColumn(Catalog.GetString("Address"), result.SearchResult.ColumnAddress3, 200);
+            grdMatchingRecords.AddTextColumn(Catalog.GetString("City"), result.SearchResult.ColumnCity, 150);
+            result.SearchResult.DefaultView.AllowNew = false;
+            grdMatchingRecords.DataSource = new DevAge.ComponentModel.BoundDataView(result.SearchResult.DefaultView);
         }
 
         private void CancelImport(Object sender, EventArgs e)
