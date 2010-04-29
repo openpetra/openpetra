@@ -207,6 +207,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tabPartnerFindMethods.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabPartnerFindMethods.Controls.Add(this.tpgFindPartner);
             this.tabPartnerFindMethods.Controls.Add(this.tpgFindBankDetails);
+            this.tabPartnerFindMethods.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             //
             // pnlModalButtons
             //

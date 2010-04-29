@@ -521,6 +521,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabReportSettings.Controls.Add(this.tpgReportSpecific);
             this.tabReportSettings.Controls.Add(this.tpgCostCentres);
+            this.tabReportSettings.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             //
             // tbbGenerateReport
             //

@@ -166,6 +166,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tabGLBatch.Controls.Add(this.tpgBatches);
             this.tabGLBatch.Controls.Add(this.tpgJournals);
             this.tabGLBatch.Controls.Add(this.tpgTransactions);
+            this.tabGLBatch.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabGLBatch.AllowDrop = false;
             this.tabGLBatch.SelectedIndexChanged += new System.EventHandler(this.TabSelectionChanged);
             //

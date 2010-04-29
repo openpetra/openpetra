@@ -494,6 +494,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tabSearchResult.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabSearchResult.Controls.Add(this.tpgSuppliers);
             this.tabSearchResult.Controls.Add(this.tpgOutstandingInvoices);
+            this.tabSearchResult.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
