@@ -125,6 +125,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl.controlName, "Dock", "Fill");
 
+            if (ctrl.HasAttribute("ToolTip"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "ToolTipText", "\"" + ctrl.GetAttribute("ToolTip") + "\"");
+            }
+
             if (ctrl.HasAttribute("LoadPageDynamically") && (ctrl.GetAttribute("LoadPageDynamically").ToLower() == "true"))
             {
                 if (!ctrl.HasAttribute("DynamicControlType"))
@@ -218,12 +223,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 DynamicTabPageLoading += "    break;" + Environment.NewLine + Environment.NewLine;
 
                 writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLLOADING", DynamicTabPageLoading);
-            }
-            else
-            {
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", "");
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", "");
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLLOADING", "");
             }
         }
 
@@ -1280,9 +1279,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
 
+            writer.SetControlProperty(ctrl.controlName, "DrawMode", "System.Windows.Forms.TabDrawMode.OwnerDrawFixed");
+
             if (ctrl.HasAttribute("DragTabPageEnabled") && (ctrl.GetAttribute("DragTabPageEnabled").ToLower() == "false"))
             {
                 writer.SetControlProperty(ctrl.controlName, "AllowDrop", "false");
+            }
+
+            if (ctrl.HasAttribute("ShowToolTips") && (ctrl.GetAttribute("ShowToolTips").ToLower() == "true"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "ShowToolTips", "true");
             }
 
             // writer.Template.FTemplateCode.Contains is not very clean, since it might be in a snippet or in an ifdef that will not be part of the resulting file

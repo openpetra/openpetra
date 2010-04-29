@@ -296,6 +296,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(0, 7, 0, 0)");
             }
 
+            if (ctrl.HasAttribute("Padding"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "Padding", "new System.Windows.Forms.Padding(" + ctrl.GetAttribute("Padding") + ")");
+            }
+
+            if (ctrl.HasAttribute("Margin"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(" + ctrl.GetAttribute("Margin") + ")");
+            }
+
+            if (ctrl.HasAttribute("BackColor"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "BackColor", ctrl.GetAttribute("BackColor"));
+            }
+
             if ((ctrl.HasAttribute("Width") || ctrl.HasAttribute("Height")) && (ctrl.GetAttribute("GenerateWithOtherControls") != "yes"))
             {
                 if (!ctrl.HasAttribute("Width"))
