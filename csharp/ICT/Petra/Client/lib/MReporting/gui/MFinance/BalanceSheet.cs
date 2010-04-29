@@ -125,9 +125,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
-      FPetraUtilsObject.FXMLFiles = "balancesheet.xml,finance.xml,common.xml";
+      FPetraUtilsObject.FXMLFiles = "Finance\\\\balancesheet.xml,Finance\\\\finance.xml,common.xml";
       FPetraUtilsObject.FReportName = "Balance Sheet";
       FPetraUtilsObject.FCurrentReport = "Balance Sheet";
+	  FPetraUtilsObject.FSettingsDirectory = "Finance";
 
       // Hook up Event that is fired by ucoReportColumns
       // ucoReportColumns.FillColumnGridEventHandler += new TFillColumnGridEventHandler(FPetraUtilsObject.FillColumnGrid);

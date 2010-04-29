@@ -78,6 +78,7 @@ namespace Ict.Petra.Client.MReporting.Gui
       this.grpDefineColumn.Text = Catalog.GetString("Define Column");
       #endregion
 
+      this.txtColumnWidth.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen

@@ -105,9 +105,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
-      FPetraUtilsObject.FXMLFiles = "partnerbycity.xml";
+      FPetraUtilsObject.FXMLFiles = "Partner\\\\partnerbycity.xml";
       FPetraUtilsObject.FReportName = "Partner by City";
       FPetraUtilsObject.FCurrentReport = "Partner by City";
+	  FPetraUtilsObject.FSettingsDirectory = "Partner";
 
       // Hook up Event that is fired by ucoReportColumns
       // ucoReportColumns.FillColumnGridEventHandler += new TFillColumnGridEventHandler(FPetraUtilsObject.FillColumnGrid);

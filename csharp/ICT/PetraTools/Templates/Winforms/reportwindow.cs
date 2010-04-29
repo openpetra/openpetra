@@ -55,6 +55,7 @@ namespace {#NAMESPACE}
       FPetraUtilsObject.FXMLFiles = "{#XMLFILES}";
       FPetraUtilsObject.FReportName = "{#REPORTNAME}";
       FPetraUtilsObject.FCurrentReport = "{#CURRENTREPORT}";
+	  FPetraUtilsObject.FSettingsDirectory = "{#REPORTSETTINGSDIRECTORY}";
       
       // Hook up Event that is fired by ucoReportColumns
       // ucoReportColumns.FillColumnGridEventHandler += new TFillColumnGridEventHandler(FPetraUtilsObject.FillColumnGrid);

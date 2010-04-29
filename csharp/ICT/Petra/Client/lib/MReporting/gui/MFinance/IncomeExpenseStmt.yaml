@@ -1,12 +1,12 @@
 ﻿RootNode:
-    BaseYaml: ../ReportingForm.yaml
+    BaseYaml: FinanceReportingForm.yaml
     FormType: report
     FormTitle: Income Expense Statement
     WindowWidth: 650
     WindowHeight: 600
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
-        XMLFILES: [incomeexpensestatement.xml,finance.xml,common.xml]
+        XMLFILES: [Finance\\\\incomeexpensestatement.xml,Finance\\\\finance.xml,common.xml]
         REPORTNAME: Income Expense Statement
         CURRENTREPORT: Income Expense Statement
         SETAVAILABLEFUNCTIONS: BLANK

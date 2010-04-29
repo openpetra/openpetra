@@ -73,6 +73,9 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>the name of the report, as it is used in the xml file</summary>
         public string FCurrentReport;
+        
+        /// <summary>the name of the sub directory where the settings are stored</summary>
+        public string FSettingsDirectory;
 
         /// <summary>to be able to add the currently loaded settings name to the caption of the window.</summary>
         protected string FWindowCaption;
@@ -203,7 +206,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.FCalculator = new TRptCalculator();
 
             FWindowCaption = FWinForm.Text;
-            string SettingsDirectory = TClientSettings.ReportingPathReportSettings;
+            string SettingsDirectory = TClientSettings.ReportingPathReportSettings + 
+            	System.IO.Path.DirectorySeparatorChar + this.FSettingsDirectory;
             this.FStoredSettings = new TStoredSettings(FReportName, SettingsDirectory);
             UpdateLoadingMenu(this.FStoredSettings.GetRecentlyUsedSettings());
             FSelectedColumn = -1;

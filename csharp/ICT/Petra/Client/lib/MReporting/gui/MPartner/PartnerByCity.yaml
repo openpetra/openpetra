@@ -4,7 +4,7 @@
     FormTitle: Partner by City
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     TemplateParameters:
-        XMLFILES: [partnerbycity.xml]
+        XMLFILES: [Partner\\\\partnerbycity.xml]
         REPORTNAME: Partner by City
         CURRENTREPORT: Partner by City
         CONTROLSUSPENDLAYOUT: BLANK

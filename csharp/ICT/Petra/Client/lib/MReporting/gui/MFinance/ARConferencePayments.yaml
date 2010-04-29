@@ -1,10 +1,10 @@
 ﻿RootNode:
-    BaseYaml: ../ReportingForm.yaml
+    BaseYaml: FinanceReportingForm.yaml
     FormType: report
     FormTitle: Payments for Conference
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
-        XMLFILES: [AccountsReceivable/ConferencePayments.xml]
+        XMLFILES: [Finance\\\\AccountsReceivable/ConferencePayments.xml]
         REPORTNAME: ConferencePayments
         CURRENTREPORT: ConferencePayments
         SETAVAILABLEFUNCTIONS: BLANK
