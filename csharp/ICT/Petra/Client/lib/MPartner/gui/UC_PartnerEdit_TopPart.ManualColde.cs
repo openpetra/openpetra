@@ -205,7 +205,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FDelegateMaintainWorkerField = ADelegateFunction;
         }
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -229,7 +229,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return TmpString;
         }
-        
+
         /// <summary>
         /// Sets the Text of the Worker Field.
         /// </summary>
@@ -238,7 +238,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtWorkerField.Text = AWorkerField;
         }
-        
 
         #endregion
 
@@ -455,8 +454,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void MaintainWorkerField(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
-            
-#if TODO            
+
+#if TODO
             if (this.FDelegateMaintainWorkerField != null)
             {
                 try
@@ -468,7 +467,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     throw new EVerificationMissing(Catalog.GetString("this.FDelegateGetPartnerShortName could not be called!"));
                 }
             }
-#endif            
+#endif
         }
 
         #endregion
