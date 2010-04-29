@@ -101,6 +101,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       this.Text = Catalog.GetString("Partner by City");
       #endregion
 
+      this.txtCityName.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
       FPetraUtilsObject.FXMLFiles = "partnerbycity.xml";

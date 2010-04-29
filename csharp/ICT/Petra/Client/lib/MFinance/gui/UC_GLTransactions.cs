@@ -90,6 +90,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.lblCreditTotalAmountBase.Text = Catalog.GetString("Credit Total:");
       #endregion
 
+      this.txtLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtBatchNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtJournalNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailNarrative.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailReference.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDebitAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDebitAmountBase.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtCreditAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtCreditAmountBase.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDebitTotalAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDebitTotalAmountBase.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtCreditTotalAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtCreditTotalAmountBase.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen

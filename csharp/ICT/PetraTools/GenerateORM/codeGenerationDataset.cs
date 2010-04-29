@@ -245,6 +245,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                     customField.strName = TXMLParser.GetAttribute(tableNodes, "name");
                                     customField.strTypeDotNet = TXMLParser.GetAttribute(tableNodes, "type");
                                     customField.strDescription = TXMLParser.GetAttribute(tableNodes, "comment");
+                                    customField.strDefault = TXMLParser.GetAttribute(tableNodes, "initial");
                                     table.grpTableField.List.Add(customField);
 
                                     OverloadTable = true;
@@ -347,6 +348,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                     customField.strName = TXMLParser.GetAttribute(customTableNodes, "name");
                                     customField.strTypeDotNet = TXMLParser.GetAttribute(customTableNodes, "type");
                                     customField.strDescription = TXMLParser.GetAttribute(customTableNodes, "comment");
+                                    customField.strDefault = TXMLParser.GetAttribute(customTableNodes, "initial");
                                     customTable.grpTableField.List.Add(customField);
                                 }
 

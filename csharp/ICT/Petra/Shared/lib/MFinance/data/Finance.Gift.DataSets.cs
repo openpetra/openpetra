@@ -2992,13 +2992,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "Gift", "DonorHistoryTDSGift",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(1, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(2, "RecipientDescription", "RecipientDescription", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "DateOfGift", "DateOfGift", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(0, "DonorKey", "DonorKey", "", OdbcType.Decimal, -1, false),
+                    new TTypedColumnInfo(1, "DonorShortName", "DonorShortName", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(2, "RecipientDescription", "RecipientDescription", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(3, "DateOfGift", "DateOfGift", "", OdbcType.Date, -1, false),
                     new TTypedColumnInfo(4, "GiftAmount", "GiftAmount", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "MotivationGroupCode", "MotivationGroupCode", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "MotivationDetailCode", "MotivationDetailCode", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(5, "MotivationGroupCode", "MotivationGroupCode", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(6, "MotivationDetailCode", "MotivationDetailCode", "", OdbcType.VarChar, -1, false)
                 },
                 new int[] {
                 }));
@@ -3538,21 +3538,21 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         {
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "Donor", "DonorHistoryTDSDonor",
                 new TTypedColumnInfo[] {
-                    new TTypedColumnInfo(0, "DonorKey", "DonorKey", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(1, "DonorShortName", "DonorShortName", "", OdbcType.Int, -1, false),
+                    new TTypedColumnInfo(0, "DonorKey", "DonorKey", "", OdbcType.Decimal, -1, false),
+                    new TTypedColumnInfo(1, "DonorShortName", "DonorShortName", "", OdbcType.VarChar, -1, false),
                     new TTypedColumnInfo(2, "GiftTotalCount", "GiftTotalCount", "", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(3, "GiftTotalAmount", "GiftTotalAmount", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(4, "Email", "Email", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(5, "ValidAddress", "ValidAddress", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(6, "Locality", "Locality", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(7, "StreetName", "StreetName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(8, "Building1", "Building1", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(9, "Building2", "Building2", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(10, "Address3", "Address3", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(11, "CountryCode", "CountryCode", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(12, "CountryName", "CountryName", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(13, "PostalCode", "PostalCode", "", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(14, "City", "City", "", OdbcType.Int, -1, false)
+                    new TTypedColumnInfo(4, "Email", "Email", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(5, "ValidAddress", "ValidAddress", "", OdbcType.Bit, -1, false),
+                    new TTypedColumnInfo(6, "Locality", "Locality", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(7, "StreetName", "StreetName", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(8, "Building1", "Building1", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(9, "Building2", "Building2", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(10, "Address3", "Address3", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(11, "CountryCode", "CountryCode", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(12, "CountryName", "CountryName", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(13, "PostalCode", "PostalCode", "", OdbcType.VarChar, -1, false),
+                    new TTypedColumnInfo(14, "City", "City", "", OdbcType.VarChar, -1, false)
                 },
                 new int[] {
                 }));

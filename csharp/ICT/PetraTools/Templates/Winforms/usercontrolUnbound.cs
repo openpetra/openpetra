@@ -53,6 +53,7 @@ namespace {#NAMESPACE}
       {#CATALOGI18N}
       #endregion
 
+      {#ASSIGNFONTATTRIBUTES}
     }
 
     /// helper object for the whole screen

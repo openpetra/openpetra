@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean FWorkerFamOnly;
         private string[] FRestrictedParterClasses;
         private String FDefaultPartnerClass;
-        private DataRow FDefaultValues;
+        private PartnerFindTDSSearchCriteriaRow FDefaultValues;
 
 // TODO        private int FPreviousSelectedPartnerClass;
         private Boolean FShowAllPartnerClasses;
@@ -126,7 +126,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 try
                 {
-                    FFindCriteriaDataSet.Tables[0].Rows[0]["PartnerStatus"] = value;
+                    FFindCriteriaDataTable.Rows[0]["PartnerStatus"] = value;
                 }
                 catch (Exception)
                 {
@@ -190,6 +190,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // CustomEnablingDisabling.EnableControlGroup(pnlRightColumn);
             }
         }
+
+        private PartnerFindTDSSearchCriteriaTable FFindCriteriaDataTable;
 
         /// <summary>todoComment</summary>
         public DataTable CriteriaData
@@ -293,6 +295,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public TUC_PartnerFindCriteria() : base()
         {
+            FFindCriteriaDataTable = new PartnerFindTDSSearchCriteriaTable();
+            FDefaultValues = FFindCriteriaDataTable.NewRowTyped();
+
             //
             // Required for Windows Form Designer support
             //
@@ -324,8 +329,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblCountry.Text = Catalog.GetString("Co&untry:");
             this.lblMailingAddressOnly.Text = Catalog.GetString("Mailin&g Addresses Only:");
             #endregion
-
-            FDefaultValues = FFindCriteriaDataTable.NewRow();
         }
 
         private TFrmPetraUtils FPetraUtilsObject;

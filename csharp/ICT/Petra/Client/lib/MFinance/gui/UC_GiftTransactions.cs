@@ -83,6 +83,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.lblDetailAccountCode.Text = Catalog.GetString("Account:");
       #endregion
 
+      this.txtLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtBatchNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailGiftTransactionAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtCurrencyCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailCostCentreCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailAccountCode.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen

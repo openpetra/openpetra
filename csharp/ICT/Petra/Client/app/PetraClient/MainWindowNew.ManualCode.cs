@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.App.PetraClient
         ///</remarks>
         private void RunTestAction()
         {
-            if (System.Windows.Forms.Form.ModifierKeys != Keys.Control)
+            if (System.Windows.Forms.Form.ModifierKeys != Keys.Control)                
             {
                 string testAction = TAppSettingsManager.GetValueStatic("TestAction");
 

@@ -48,19 +48,19 @@ namespace Ict.Tools.CodeGeneration
         /// convert the type from the xml file to an ODBC type
         public static string ToOdbcTypeString(TTableField tableField)
         {
-            if (tableField.strType == "number")
+            if ((tableField.strType == "number") || ((tableField.strTypeDotNet != null) && tableField.strTypeDotNet.ToLower().Contains("int64")))
             {
                 return "OdbcType.Decimal";
             }
-            else if (tableField.strType == "varchar")
+            else if ((tableField.strType == "varchar") || ((tableField.strTypeDotNet != null) && tableField.strTypeDotNet.ToLower().Contains("string")))
             {
                 return "OdbcType.VarChar";
             }
-            else if (tableField.strType == "bit")
+            else if ((tableField.strType == "bit") || ((tableField.strTypeDotNet != null) && tableField.strTypeDotNet.ToLower().Contains("bool")))
             {
                 return "OdbcType.Bit";
             }
-            else if (tableField.strType == "date")
+            else if ((tableField.strType == "date") || ((tableField.strTypeDotNet != null) && tableField.strTypeDotNet.ToLower().Contains("datetime")))
             {
                 return "OdbcType.Date";
             }

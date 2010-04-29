@@ -48,7 +48,9 @@ namespace {#NAMESPACE}
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       {#CATALOGI18N}
       #endregion
-
+      
+      {#ASSIGNFONTATTRIBUTES}
+      
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
       {#INITUSERCONTROLS}
       FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();

@@ -112,6 +112,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       this.Text = Catalog.GetString("AP Document Edit");
       #endregion
 
+      this.txtSupplierName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtSupplierCurrency.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDocumentCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtReference.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDiscountPercentage.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtTotalAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtExchangeRateToBase.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailNarrative.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailItemRef.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailBaseAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       FPetraUtilsObject.SetStatusBarText(txtSupplierCurrency, Catalog.GetString("The currency code to use for this supplier."));
       FPetraUtilsObject.SetStatusBarText(txtDocumentCode, Catalog.GetString("The code given on the document itself (be it invoice or credit note). This will have to be unique for each supplier."));

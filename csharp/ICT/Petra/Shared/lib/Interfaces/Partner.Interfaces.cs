@@ -17,6 +17,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
+using System.Collections.Specialized;
 #endregion ManualCode
 using Ict.Petra.Shared.Interfaces.MPartner.Extracts;
 using Ict.Petra.Shared.Interfaces.MPartner.ImportExport;
@@ -35,6 +36,7 @@ using Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.ServerLookups;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.PartnerMerge.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Subscriptions.Cacheable;
 using Ict.Petra.Shared.Interfaces.MPartner.Subscriptions.UIConnectors;
@@ -274,6 +276,12 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner
 
         /// <summary>access to sub namespace</summary>
         IPartnerUIConnectorsNamespace UIConnectors
+        {
+            get;
+        }
+
+        /// <summary>access to sub namespace</summary>
+        IPartnerWebConnectorsNamespace WebConnectors
         {
             get;
         }
@@ -534,6 +542,21 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
                                      System.Int16 APageSize,
                                      out System.Int32 ATotalRecords,
                                      out System.Int16 ATotalPages);
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IPartnerWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TQuickPartnerFindWebConnector)</summary>
+        PartnerFindTDS FindPartners(string AFirstName,
+                                          string AFamilyNameOrOrganisation,
+                                          string ACity,
+                                          StringCollection APartnerClasses);
     }
 
 }

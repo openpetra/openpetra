@@ -230,7 +230,7 @@ namespace Ict.Petra.Server.MCommon
         String FSelectSQL;
 
         /// <summary>DataTable holding all DataRows that are returned by the query</summary>
-        DataTable FTmpDataTable;
+        DataTable FTmpDataTable = new DataTable();
 
         /// <summary>DataTable holding DataRows for the current Page</summary>
         DataTable FPageDataTable;
@@ -299,9 +299,15 @@ namespace Ict.Petra.Server.MCommon
         /// class.
         ///
         /// </summary>
+        /// <param name="ATypedTable">if you want the result to be a typed datatable, you need to specify the type here, otherwise just pass new DataTable()</param>
         /// <returns>void</returns>
-        public TPagedDataSet() : base()
+        public TPagedDataSet(DataTable ATypedTable) : base()
         {
+            if (ATypedTable != null)
+            {
+                FTmpDataTable = ATypedTable.Clone();
+            }
+
 #if DEBUGMODE
             if (TSrvSetting.DL >= 7)
             {
@@ -389,8 +395,8 @@ namespace Ict.Petra.Server.MCommon
             }
 #endif
 
-            // create temp table
-            FTmpDataTable = new DataTable(FFindParameters.FPagedTable + "_for_paging");
+            // use temp table
+            FTmpDataTable.TableName = FFindParameters.FPagedTable + "_for_paging";
             try
             {
                 // Fill temporary table with query results (all records)
@@ -400,15 +406,13 @@ namespace Ict.Petra.Server.MCommon
 
 //                FDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(FSelectSQL, null, FFindParameters.FParametersArray);
 
-//              FTmpDataTable = new DataTable();
                 FDataAdapter = null;
                 DBAccess.GDBAccessObj.PrepareNextCommand();
                 DBAccess.GDBAccessObj.SetTimeoutForNextCommand(60);
 
-                FTmpDataTable = DBAccess.GDBAccessObj.SelectDT(FSelectSQL,
-                    FFindParameters.FPagedTable + "_for_paging",
+                DBAccess.GDBAccessObj.SelectDT(FTmpDataTable, FSelectSQL,
                     null,
-                    FFindParameters.FParametersArray);
+                    FFindParameters.FParametersArray, -1, -1);
             }
             finally
             {

@@ -119,6 +119,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       this.Text = Catalog.GetString("Balance Sheet");
       #endregion
 
+      this.txtLedger.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtStartPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtEndPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
       FPetraUtilsObject.FXMLFiles = "balancesheet.xml,finance.xml,common.xml";

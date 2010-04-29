@@ -52,6 +52,8 @@ namespace {#NAMESPACE}
       {#CATALOGI18N}
       #endregion
 
+      {#ASSIGNFONTATTRIBUTES}
+      
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
 {#IFDEF DATASETTYPE}
       FMainDS = new {#DATASETTYPE}();

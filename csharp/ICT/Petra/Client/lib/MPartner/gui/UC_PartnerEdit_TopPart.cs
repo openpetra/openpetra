@@ -67,20 +67,51 @@ namespace Ict.Petra.Client.MPartner.Gui
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblPartnerKey.Text = Catalog.GetString("Key:");
-      this.lblEmpty2.Text = Catalog.GetString("Empty2:");
+      this.lblFamilyEmpty2.Text = Catalog.GetString("Family Empty2:");
       this.lblPartnerClass.Text = Catalog.GetString("Class:");
       this.lblFamilyTitle.Text = Catalog.GetString("Title/Na&me:");
-      this.lblEmpty.Text = Catalog.GetString("Empty:");
-      this.lblAddresseeTypeCode.Text = Catalog.GetString("&Addressee Type:");
-      this.chkNoSolicitations.Text = Catalog.GetString("No Solicitations");
-      this.lblLastGift.Text = Catalog.GetString("Last Gift:");
+      this.lblFamilyEmpty.Text = Catalog.GetString("Family Empty:");
+      this.lblFamilyAddresseeTypeCode.Text = Catalog.GetString("&Addressee Type:");
+      this.chkFamilyNoSolicitations.Text = Catalog.GetString("No Solicitations");
+      this.lblPersonTitle.Text = Catalog.GetString("Title/Na&me:");
+      this.lblPersonGender.Text = Catalog.GetString("&Gender:");
+      this.lblPersonAddresseeTypeCode.Text = Catalog.GetString("&Addressee Type:");
+      this.chkPersonNoSolicitations.Text = Catalog.GetString("No Solicitations");
+      this.lblChurchName.Text = Catalog.GetString("Title/Na&me:");
+      this.lblOrganisationName.Text = Catalog.GetString("Title/Na&me:");
+      this.lblUnitName.Text = Catalog.GetString("Title/Na&me:");
+      this.lblBankName.Text = Catalog.GetString("Title/Na&me:");
+      this.lblVenueName.Text = Catalog.GetString("Title/Na&me:");
+      this.lblOtherEmpty.Text = Catalog.GetString("Other Empty:");
+      this.lblOtherAddresseeTypeCode.Text = Catalog.GetString("&Addressee Type:");
+      this.chkOtherNoSolicitations.Text = Catalog.GetString("No Solicitations");
+      this.lblLastGiftDetailsDate.Text = Catalog.GetString("Last Gift:");
       this.btnWorkerField.Text = Catalog.GetString("&Worker Field...");
+      this.lblEmptySpacer.Text = Catalog.GetString("Empty Spacer:");
       this.lblPartnerStatus.Text = Catalog.GetString("Partner &Status:");
       this.lblStatusUpdated.Text = Catalog.GetString("Status Updated:");
       this.lblLastContact.Text = Catalog.GetString("Last Contact:");
       this.grpCollapsible.Text = Catalog.GetString("Key Partner Data");
       #endregion
 
+      this.txtPartnerClass.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtFamilyTitle.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtFamilyFirstName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtFamilyFamilyName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtPersonTitle.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtPersonFirstName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtPersonMiddleName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtPersonFamilyName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtChurchName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtOrganisationName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtUnitName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtBankName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtVenueName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtLastGiftDetailsDate.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtLastGiftDetails.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtWorkerField.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtStatusUpdated.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtLastContact.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen
@@ -113,11 +144,27 @@ namespace Ict.Petra.Client.MPartner.Gui
         FPetraUtilsObject.SetStatusBarText(txtPartnerKey, Catalog.GetString("Enter the partner key (SiteID + Number)"));
         FPetraUtilsObject.SetStatusBarText(txtPartnerClass, Catalog.GetString("Select a partner class"));
         FPetraUtilsObject.SetStatusBarText(txtFamilyTitle, Catalog.GetString("e.g. Family, Mr & Mrs, Herr und Frau"));
-        FPetraUtilsObject.SetStatusBarText(txtFirstName, Catalog.GetString("Enter the person's full first name"));
-        FPetraUtilsObject.SetStatusBarText(txtFamilyName, Catalog.GetString("Enter a Last Name/Surname/Family Name"));
-        FPetraUtilsObject.SetStatusBarText(cmbAddresseeTypeCode, Catalog.GetString("Enter an addressee type code"));
-        cmbAddresseeTypeCode.InitialiseUserControl();
-        FPetraUtilsObject.SetStatusBarText(chkNoSolicitations, Catalog.GetString("Set this if the partner does not want extra mailings"));
+        FPetraUtilsObject.SetStatusBarText(txtFamilyFirstName, Catalog.GetString("Enter the person's full first name"));
+        FPetraUtilsObject.SetStatusBarText(txtFamilyFamilyName, Catalog.GetString("Enter a Last Name/Surname/Family Name"));
+        FPetraUtilsObject.SetStatusBarText(cmbFamilyAddresseeTypeCode, Catalog.GetString("Enter an addressee type code"));
+        cmbFamilyAddresseeTypeCode.InitialiseUserControl();
+        FPetraUtilsObject.SetStatusBarText(chkFamilyNoSolicitations, Catalog.GetString("Set this if the partner does not want extra mailings"));
+        FPetraUtilsObject.SetStatusBarText(txtPersonTitle, Catalog.GetString("e.g. Herr, Mr(s)., Frau, Miss., Senor(ita), M., Mme., Dr., et"));
+        FPetraUtilsObject.SetStatusBarText(txtPersonFirstName, Catalog.GetString("Enter the person's full first name"));
+        FPetraUtilsObject.SetStatusBarText(txtPersonMiddleName, Catalog.GetString("Enter the person's full middle name or initial"));
+        FPetraUtilsObject.SetStatusBarText(txtPersonFamilyName, Catalog.GetString("Enter a Last Name/Surname/Family Name"));
+        FPetraUtilsObject.SetStatusBarText(cmbPersonGender, Catalog.GetString("Select the gender of the Person"));
+        cmbPersonGender.InitialiseUserControl();
+        FPetraUtilsObject.SetStatusBarText(cmbPersonAddresseeTypeCode, Catalog.GetString("Enter an addressee type code"));
+        cmbPersonAddresseeTypeCode.InitialiseUserControl();
+        FPetraUtilsObject.SetStatusBarText(chkPersonNoSolicitations, Catalog.GetString("Set this if the partner does not want extra mailings"));
+        FPetraUtilsObject.SetStatusBarText(txtChurchName, Catalog.GetString("Enter the name of the church"));
+        FPetraUtilsObject.SetStatusBarText(txtOrganisationName, Catalog.GetString("Enter the name of the organisation"));
+        FPetraUtilsObject.SetStatusBarText(txtUnitName, Catalog.GetString("Enter the name of the unit"));
+        FPetraUtilsObject.SetStatusBarText(txtVenueName, Catalog.GetString("Enter the name of the venue"));
+        FPetraUtilsObject.SetStatusBarText(cmbOtherAddresseeTypeCode, Catalog.GetString("Enter an addressee type code"));
+        cmbOtherAddresseeTypeCode.InitialiseUserControl();
+        FPetraUtilsObject.SetStatusBarText(chkOtherNoSolicitations, Catalog.GetString("Set this if the partner does not want extra mailings"));
         FPetraUtilsObject.SetStatusBarText(cmbPartnerStatus, Catalog.GetString("Select a partner status"));
         cmbPartnerStatus.InitialiseUserControl();
         FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
@@ -151,43 +198,155 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
         if (FMainDS.PFamily == null || FMainDS.PFamily[0].IsFirstNameNull())
         {
-            txtFirstName.Text = String.Empty;
+            txtFamilyFirstName.Text = String.Empty;
         }
         else
         {
-            txtFirstName.Text = FMainDS.PFamily[0].FirstName;
+            txtFamilyFirstName.Text = FMainDS.PFamily[0].FirstName;
         }
         if (FMainDS.PFamily == null || FMainDS.PFamily[0].IsFamilyNameNull())
         {
-            txtFamilyName.Text = String.Empty;
+            txtFamilyFamilyName.Text = String.Empty;
         }
         else
         {
-            txtFamilyName.Text = FMainDS.PFamily[0].FamilyName;
+            txtFamilyFamilyName.Text = FMainDS.PFamily[0].FamilyName;
         }
         if (ARow.IsAddresseeTypeCodeNull())
         {
-            cmbAddresseeTypeCode.SelectedIndex = -1;
+            cmbFamilyAddresseeTypeCode.SelectedIndex = -1;
         }
         else
         {
-            cmbAddresseeTypeCode.SetSelectedString(ARow.AddresseeTypeCode);
+            cmbFamilyAddresseeTypeCode.SetSelectedString(ARow.AddresseeTypeCode);
         }
         if (ARow.IsNoSolicitationsNull())
         {
-            chkNoSolicitations.Checked = false;
+            chkFamilyNoSolicitations.Checked = false;
         }
         else
         {
-            chkNoSolicitations.Checked = ARow.NoSolicitations;
+            chkFamilyNoSolicitations.Checked = ARow.NoSolicitations;
+        }
+        if (FMainDS.PPerson == null || FMainDS.PPerson[0].IsTitleNull())
+        {
+            txtPersonTitle.Text = String.Empty;
+        }
+        else
+        {
+            txtPersonTitle.Text = FMainDS.PPerson[0].Title;
+        }
+        if (FMainDS.PPerson == null || FMainDS.PPerson[0].IsFirstNameNull())
+        {
+            txtPersonFirstName.Text = String.Empty;
+        }
+        else
+        {
+            txtPersonFirstName.Text = FMainDS.PPerson[0].FirstName;
+        }
+        if (FMainDS.PPerson == null || FMainDS.PPerson[0].IsMiddleName1Null())
+        {
+            txtPersonMiddleName.Text = String.Empty;
+        }
+        else
+        {
+            txtPersonMiddleName.Text = FMainDS.PPerson[0].MiddleName1;
+        }
+        if (FMainDS.PPerson == null || FMainDS.PPerson[0].IsFamilyNameNull())
+        {
+            txtPersonFamilyName.Text = String.Empty;
+        }
+        else
+        {
+            txtPersonFamilyName.Text = FMainDS.PPerson[0].FamilyName;
+        }
+        if (FMainDS.PPerson == null || FMainDS.PPerson[0].IsGenderNull())
+        {
+            cmbPersonGender.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbPersonGender.SetSelectedString(FMainDS.PPerson[0].Gender);
+        }
+        if (ARow.IsAddresseeTypeCodeNull())
+        {
+            cmbPersonAddresseeTypeCode.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbPersonAddresseeTypeCode.SetSelectedString(ARow.AddresseeTypeCode);
+        }
+        if (ARow.IsNoSolicitationsNull())
+        {
+            chkPersonNoSolicitations.Checked = false;
+        }
+        else
+        {
+            chkPersonNoSolicitations.Checked = ARow.NoSolicitations;
+        }
+        if (FMainDS.PChurch == null || FMainDS.PChurch[0].IsChurchNameNull())
+        {
+            txtChurchName.Text = String.Empty;
+        }
+        else
+        {
+            txtChurchName.Text = FMainDS.PChurch[0].ChurchName;
+        }
+        if (FMainDS.POrganisation == null || FMainDS.POrganisation[0].IsOrganisationNameNull())
+        {
+            txtOrganisationName.Text = String.Empty;
+        }
+        else
+        {
+            txtOrganisationName.Text = FMainDS.POrganisation[0].OrganisationName;
+        }
+        if (FMainDS.PUnit == null || FMainDS.PUnit[0].IsUnitNameNull())
+        {
+            txtUnitName.Text = String.Empty;
+        }
+        else
+        {
+            txtUnitName.Text = FMainDS.PUnit[0].UnitName;
+        }
+        if (FMainDS.PVenue == null || FMainDS.PVenue[0].IsVenueNameNull())
+        {
+            txtVenueName.Text = String.Empty;
+        }
+        else
+        {
+            txtVenueName.Text = FMainDS.PVenue[0].VenueName;
+        }
+        if (ARow.IsAddresseeTypeCodeNull())
+        {
+            cmbOtherAddresseeTypeCode.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbOtherAddresseeTypeCode.SetSelectedString(ARow.AddresseeTypeCode);
+        }
+        if (ARow.IsNoSolicitationsNull())
+        {
+            chkOtherNoSolicitations.Checked = false;
+        }
+        else
+        {
+            chkOtherNoSolicitations.Checked = ARow.NoSolicitations;
+        }
+        if (FMainDS.MiscellaneousData == null || FMainDS.MiscellaneousData[0].IsLastGiftDateNull())
+        {
+            txtLastGiftDetailsDate.Text = String.Empty;
+        }
+        else
+        {
+            txtLastGiftDetailsDate.Text = FMainDS.MiscellaneousData[0].LastGiftDate.ToString();
         }
         if (FMainDS.MiscellaneousData == null || FMainDS.MiscellaneousData[0].IsLastGiftInfoNull())
         {
-            txtLastGift.Text = String.Empty;
+            txtLastGiftDetails.Text = String.Empty;
         }
         else
         {
-            txtLastGift.Text = FMainDS.MiscellaneousData[0].LastGiftInfo;
+            txtLastGiftDetails.Text = FMainDS.MiscellaneousData[0].LastGiftInfo;
         }
         if (ARow.IsStatusCodeNull())
         {
@@ -223,35 +382,152 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
         if (FMainDS.PFamily != null)
         {
-            if (txtFirstName.Text.Length == 0)
+            if (txtFamilyFirstName.Text.Length == 0)
             {
                 FMainDS.PFamily[0].SetFirstNameNull();
             }
             else
             {
-                FMainDS.PFamily[0].FirstName = txtFirstName.Text;
+                FMainDS.PFamily[0].FirstName = txtFamilyFirstName.Text;
             }
         }
         if (FMainDS.PFamily != null)
         {
-            if (txtFamilyName.Text.Length == 0)
+            if (txtFamilyFamilyName.Text.Length == 0)
             {
                 FMainDS.PFamily[0].SetFamilyNameNull();
             }
             else
             {
-                FMainDS.PFamily[0].FamilyName = txtFamilyName.Text;
+                FMainDS.PFamily[0].FamilyName = txtFamilyFamilyName.Text;
             }
         }
-        if (cmbAddresseeTypeCode.SelectedIndex == -1)
+        if (cmbFamilyAddresseeTypeCode.SelectedIndex == -1)
         {
             ARow.SetAddresseeTypeCodeNull();
         }
         else
         {
-            ARow.AddresseeTypeCode = cmbAddresseeTypeCode.GetSelectedString();
+            ARow.AddresseeTypeCode = cmbFamilyAddresseeTypeCode.GetSelectedString();
         }
-        ARow.NoSolicitations = chkNoSolicitations.Checked;
+        ARow.NoSolicitations = chkFamilyNoSolicitations.Checked;
+        if (FMainDS.PPerson != null)
+        {
+            if (txtPersonTitle.Text.Length == 0)
+            {
+                FMainDS.PPerson[0].SetTitleNull();
+            }
+            else
+            {
+                FMainDS.PPerson[0].Title = txtPersonTitle.Text;
+            }
+        }
+        if (FMainDS.PPerson != null)
+        {
+            if (txtPersonFirstName.Text.Length == 0)
+            {
+                FMainDS.PPerson[0].SetFirstNameNull();
+            }
+            else
+            {
+                FMainDS.PPerson[0].FirstName = txtPersonFirstName.Text;
+            }
+        }
+        if (FMainDS.PPerson != null)
+        {
+            if (txtPersonMiddleName.Text.Length == 0)
+            {
+                FMainDS.PPerson[0].SetMiddleName1Null();
+            }
+            else
+            {
+                FMainDS.PPerson[0].MiddleName1 = txtPersonMiddleName.Text;
+            }
+        }
+        if (FMainDS.PPerson != null)
+        {
+            if (txtPersonFamilyName.Text.Length == 0)
+            {
+                FMainDS.PPerson[0].SetFamilyNameNull();
+            }
+            else
+            {
+                FMainDS.PPerson[0].FamilyName = txtPersonFamilyName.Text;
+            }
+        }
+        if (FMainDS.PPerson != null)
+        {
+            if (cmbPersonGender.SelectedIndex == -1)
+            {
+                FMainDS.PPerson[0].SetGenderNull();
+            }
+            else
+            {
+                FMainDS.PPerson[0].Gender = cmbPersonGender.GetSelectedString();
+            }
+        }
+        if (cmbPersonAddresseeTypeCode.SelectedIndex == -1)
+        {
+            ARow.SetAddresseeTypeCodeNull();
+        }
+        else
+        {
+            ARow.AddresseeTypeCode = cmbPersonAddresseeTypeCode.GetSelectedString();
+        }
+        ARow.NoSolicitations = chkPersonNoSolicitations.Checked;
+        if (FMainDS.PChurch != null)
+        {
+            if (txtChurchName.Text.Length == 0)
+            {
+                FMainDS.PChurch[0].SetChurchNameNull();
+            }
+            else
+            {
+                FMainDS.PChurch[0].ChurchName = txtChurchName.Text;
+            }
+        }
+        if (FMainDS.POrganisation != null)
+        {
+            if (txtOrganisationName.Text.Length == 0)
+            {
+                FMainDS.POrganisation[0].SetOrganisationNameNull();
+            }
+            else
+            {
+                FMainDS.POrganisation[0].OrganisationName = txtOrganisationName.Text;
+            }
+        }
+        if (FMainDS.PUnit != null)
+        {
+            if (txtUnitName.Text.Length == 0)
+            {
+                FMainDS.PUnit[0].SetUnitNameNull();
+            }
+            else
+            {
+                FMainDS.PUnit[0].UnitName = txtUnitName.Text;
+            }
+        }
+        if (FMainDS.PVenue != null)
+        {
+            if (txtVenueName.Text.Length == 0)
+            {
+                FMainDS.PVenue[0].SetVenueNameNull();
+            }
+            else
+            {
+                FMainDS.PVenue[0].VenueName = txtVenueName.Text;
+            }
+        }
+        if (cmbOtherAddresseeTypeCode.SelectedIndex == -1)
+        {
+            ARow.SetAddresseeTypeCodeNull();
+        }
+        else
+        {
+            ARow.AddresseeTypeCode = cmbOtherAddresseeTypeCode.GetSelectedString();
+        }
+        ARow.NoSolicitations = chkOtherNoSolicitations.Checked;
         if (cmbPartnerStatus.SelectedIndex == -1)
         {
             ARow.SetStatusCodeNull();

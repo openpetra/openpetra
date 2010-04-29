@@ -700,6 +700,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
+            CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "DefaultValue"))
@@ -708,6 +709,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "Text",
                     "\"" + TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue") + "\"");
             }
+        }
+
+        protected void CreateCode(IFormWriter writer, TControlDef ATextControl)
+        {
+            writer.Template.AddToCodelet("ASSIGNFONTATTRIBUTES",
+                "this." + ATextControl.controlName + ".Font = TAppSettingsManager.GetDefaultBoldFont();" + Environment.NewLine);
         }
     }
 
@@ -761,6 +768,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
     }
+
     public class SourceGridGenerator : TControlGenerator
     {
         public SourceGridGenerator()

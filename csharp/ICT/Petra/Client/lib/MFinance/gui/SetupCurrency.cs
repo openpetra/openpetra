@@ -97,6 +97,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.Text = Catalog.GetString("Currency List");
       #endregion
 
+      this.txtDetailCurrencyCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailCurrencyName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailCurrencySymbol.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailDisplayFormat.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       FPetraUtilsObject.SetStatusBarText(txtDetailCurrencyCode, Catalog.GetString("Enter a currency code"));
       FPetraUtilsObject.SetStatusBarText(txtDetailCurrencyName, Catalog.GetString("Enter the currency name"));

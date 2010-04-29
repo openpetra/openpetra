@@ -47,6 +47,8 @@ namespace {#NAMESPACE}
       {#CATALOGI18N}
       #endregion
 
+      {#ASSIGNFONTATTRIBUTES}
+      
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
       {#INITUSERCONTROLS}
       {#INITMANUALCODE}

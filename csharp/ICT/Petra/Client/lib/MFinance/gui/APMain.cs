@@ -115,6 +115,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
       this.Text = Catalog.GetString("Accounts Payable");
       #endregion
 
+      this.txtSumTagged.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
       FPetraUtilsObject.SetStatusBarText(cmbSupplierCode, Catalog.GetString("Search by supplier name or partner key"));
       this.cmbSupplierCode.AcceptNewEntries += new TAcceptNewEntryEventHandler(FPetraUtilsObject.AddComboBoxHistory);

@@ -138,7 +138,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
         public void PerformSearch(DataTable ACriteriaData)
         {
             FAsyncExecProgress = new TAsynchronousExecutionProgress();
-            FPagedDataSetObject = new TPagedDataSet();
+            FPagedDataSetObject = new TPagedDataSet(null);
 
             // Pass the TAsynchronousExecutionProgress object to FPagedDataSetObject so that it
             // can update execution status

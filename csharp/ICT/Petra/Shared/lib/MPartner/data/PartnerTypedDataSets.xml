@@ -198,14 +198,61 @@
         </CustomTable>        
     </DataSet>    
     
-    <DataSet name="SimplePartnerFindTDS">
-        <Table name="SearchResult" sqltable="p_location">
+    <DataSet name="PartnerFindTDS">
+        <CustomTable name="SearchCriteria">
+            <CustomField name="PartnerName" type="string"/>
+            <CustomField name="PartnerNameMatch" type="string" initial="BEGINS"/>
+            <CustomField name="PersonalName" type="string"/>
+            <CustomField name="PersonalNameMatch" type="string" initial="BEGINS"/>
+            <CustomField name="PreviousName" type="string"/>
+            <CustomField name="PreviousNameMatch" type="string" initial="BEGINS"/>
+            <CustomField name="Address1" type="string"/>
+            <CustomField name="Address1Match" type="string" initial="BEGINS"/>
+            <CustomField name="City" type="string"/>
+            <CustomField name="CityMatch" type="string" initial="BEGINS"/>
+            <CustomField name="PostCode" type="string"/>
+            <CustomField name="PostCodeMatch" type="string" initial="BEGINS"/>
+            <CustomField name="County" type="string"/>
+            <CustomField name="CountyMatch" type="string" initial="BEGINS"/>
+            <CustomField name="Country" type="string"/>
+            <CustomField name="MailingAddressOnly" type="bool" initial="false"/>
+            <CustomField name="PartnerClass" type="string"/>
+            <CustomField name="PartnerKey" type="Int64" initial="0"/>
+            <CustomField name="PartnerStatus" type="string" initial="ACTIVE"/>
+            <CustomField name="Email" type="string"/>
+            <CustomField name="EmailMatch" type="string" initial="BEGINS"/>
+            <CustomField name="Address2" type="string"/>
+            <CustomField name="Address2Match" type="string" initial="BEGINS"/>
+            <CustomField name="Address3" type="string"/>
+            <CustomField name="Address3Match" type="string" initial="BEGINS"/>
+            <CustomField name="LocationKey" type="string"/>
+            <CustomField name="WorkerFamOnly" type="bool" initial="false"/>
+            <CustomField name="ExactPartnerKeyMatch" type="bool" initial="false"/>
+            <CustomField name="PhoneNumber" type="string"/>
+            <CustomField name="PhoneNumberMatch" type="string" initial="BEGINS"/>
+        </CustomTable>
+        <CustomTable name="SearchResult">
             <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
+            <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
             <Field sqltable="p_partner" sqlfield="p_status_code_c"/>
-            <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
+            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+            <Field sqltable="p_partner" sqlfield="p_previous_name_c"/>
+            <Field sqltable="p_partner" sqlfield="p_acquisition_code_c"/>
             <Field sqltable="p_person" sqlfield="p_first_name_c"/>
-            <Field sqltable="p_person" sqlfield="p_family_name_c"/>
-        </Table>
+            <Field sqltable="p_person" sqlfield="p_family_key_n"/>
+            <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>
+            <Field sqltable="p_partner_location" sqlfield="p_location_type_c"/>
+            <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
+            <Field sqltable="p_partner_location" sqlfield="p_site_key_n"/>
+            <Field sqltable="p_location" sqlfield="p_city_c"/>
+            <Field sqltable="p_location" sqlfield="p_postal_code_c"/>
+            <Field sqltable="p_location" sqlfield="p_locality_c"/>
+            <Field sqltable="p_location" sqlfield="p_street_name_c"/>
+            <Field sqltable="p_location" sqlfield="p_address_3_c"/>
+            <Field sqltable="p_location" sqlfield="p_county_c"/>
+            <Field sqltable="p_location" sqlfield="p_country_code_c"/>
+            <Field sqltable="p_location" sqlfield="p_location_key_i"/>
+        </CustomTable>
     </DataSet>
 
 </PetraDataSets>

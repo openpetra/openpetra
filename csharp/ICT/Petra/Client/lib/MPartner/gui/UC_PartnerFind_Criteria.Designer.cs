@@ -62,38 +62,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.FFindCriteriaDataTable = new System.Data.DataTable();
-            this.PartnerNameDataColumn = new System.Data.DataColumn();
-            this.PartnerNameMatchColumn = new System.Data.DataColumn();
-            this.PersonalNameDataColumn = new System.Data.DataColumn();
-            this.PersonalNameMatchColumn = new System.Data.DataColumn();
-            this.PreviousNameDataColumn = new System.Data.DataColumn();
-            this.PreviousNameMatchColumn = new System.Data.DataColumn();
-            this.Address1DataColumn = new System.Data.DataColumn();
-            this.Address1Match = new System.Data.DataColumn();
-            this.CityDataColumn = new System.Data.DataColumn();
-            this.CityMatchColumn = new System.Data.DataColumn();
-            this.PostCodeDataColumn = new System.Data.DataColumn();
-            this.PostCodeMatchColumn = new System.Data.DataColumn();
-            this.CountyDataColumn = new System.Data.DataColumn();
-            this.CountyMatchColumn = new System.Data.DataColumn();
-            this.CountryDataColumn = new System.Data.DataColumn();
-            this.MailingAddressOnlyDataColumn = new System.Data.DataColumn();
-            this.PartnerClassDataColumn = new System.Data.DataColumn();
-            this.PartnerKeyDataColumn = new System.Data.DataColumn();
-            this.PartnerStatusDataColumn = new System.Data.DataColumn();
-            this.EmailDataColumn = new System.Data.DataColumn();
-            this.EmailMatchColumn = new System.Data.DataColumn();
-            this.Address2DataColumn = new System.Data.DataColumn();
-            this.Address2Match = new System.Data.DataColumn();
-            this.Address3Column = new System.Data.DataColumn();
-            this.Address3MatchColumn = new System.Data.DataColumn();
-            this.LocationKeyColumn = new System.Data.DataColumn();
-            this.WorkerFamOnlyColumn = new System.Data.DataColumn();
-            this.ExactPartnerKeyMatch = new System.Data.DataColumn();
-            this.PhoneNumberColumn = new System.Data.DataColumn();
-            this.PhoneNumberMatchColumn = new System.Data.DataColumn();
-            this.FFindCriteriaDataSet = new System.Data.DataSet();
             this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart =
                 new Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_PersonnelCriteria_CollapsiblePart();
             this.spcCriteria = new System.Windows.Forms.SplitContainer();
@@ -167,8 +135,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.chkMailingAddressOnly = new System.Windows.Forms.CheckBox();
             this.lblMailingAddressOnly = new System.Windows.Forms.Label();
             this.tipUC = new System.Windows.Forms.ToolTip(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.FFindCriteriaDataTable)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.FFindCriteriaDataSet)).BeginInit();
             this.spcCriteria.Panel1.SuspendLayout();
             this.spcCriteria.Panel2.SuspendLayout();
             this.spcCriteria.SuspendLayout();
@@ -192,229 +158,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlCountry.SuspendLayout();
             this.pnlMailingAddressOnly.SuspendLayout();
             this.SuspendLayout();
-
-            //
-            // FFindCriteriaDataTable
-            //
-            this.FFindCriteriaDataTable.Columns.AddRange(new System.Data.DataColumn[] {
-                    this.PartnerNameDataColumn,
-                    this.PartnerNameMatchColumn,
-                    this.PersonalNameDataColumn,
-                    this.PersonalNameMatchColumn,
-                    this.PreviousNameDataColumn,
-                    this.PreviousNameMatchColumn,
-                    this.Address1DataColumn,
-                    this.Address1Match,
-                    this.CityDataColumn,
-                    this.CityMatchColumn,
-                    this.PostCodeDataColumn,
-                    this.PostCodeMatchColumn,
-                    this.CountyDataColumn,
-                    this.CountyMatchColumn,
-                    this.CountryDataColumn,
-                    this.MailingAddressOnlyDataColumn,
-                    this.PartnerClassDataColumn,
-                    this.PartnerKeyDataColumn,
-                    this.PartnerStatusDataColumn,
-                    this.EmailDataColumn,
-                    this.EmailMatchColumn,
-                    this.Address2DataColumn,
-                    this.Address2Match,
-                    this.Address3Column,
-                    this.Address3MatchColumn,
-                    this.LocationKeyColumn,
-                    this.WorkerFamOnlyColumn,
-                    this.ExactPartnerKeyMatch,
-                    this.PhoneNumberColumn,
-                    this.PhoneNumberMatchColumn
-                });
-
-            this.FFindCriteriaDataTable.TableName = "CriteriaDataTable";
-
-            //
-            // PartnerNameDataColumn
-            //
-            this.PartnerNameDataColumn.ColumnName = "PartnerName";
-
-            //
-            // PartnerNameMatchColumn
-            //
-            this.PartnerNameMatchColumn.ColumnName = "PartnerNameMatch";
-            this.PartnerNameMatchColumn.DefaultValue = "BEGINS";
-
-            //
-            // PersonalNameDataColumn
-            //
-            this.PersonalNameDataColumn.ColumnName = "PersonalName";
-
-            //
-            // PersonalNameMatchColumn
-            //
-            this.PersonalNameMatchColumn.Caption = "PersonalNameMatch";
-            this.PersonalNameMatchColumn.ColumnName = "PersonalNameMatch";
-            this.PersonalNameMatchColumn.DefaultValue = "BEGINS";
-
-            //
-            // PreviousNameDataColumn
-            //
-            this.PreviousNameDataColumn.ColumnName = "PreviousName";
-
-            //
-            // PreviousNameMatchColumn
-            //
-            this.PreviousNameMatchColumn.Caption = "PreviousNameMatch";
-            this.PreviousNameMatchColumn.ColumnName = "PreviousNameMatch";
-            this.PreviousNameMatchColumn.DefaultValue = "BEGINS";
-
-            //
-            // Address1DataColumn
-            //
-            this.Address1DataColumn.ColumnName = "Address1";
-
-            //
-            // Address1Match
-            //
-            this.Address1Match.Caption = "Address1Match";
-            this.Address1Match.ColumnName = "Address1Match";
-            this.Address1Match.DefaultValue = "BEGINS";
-
-            //
-            // CityDataColumn
-            //
-            this.CityDataColumn.ColumnName = "City";
-
-            //
-            // CityMatchColumn
-            //
-            this.CityMatchColumn.Caption = "CityMatch";
-            this.CityMatchColumn.ColumnName = "CityMatch";
-            this.CityMatchColumn.DefaultValue = "BEGINS";
-
-            //
-            // PostCodeDataColumn
-            //
-            this.PostCodeDataColumn.ColumnName = "PostCode";
-
-            //
-            // PostCodeMatchColumn
-            //
-            this.PostCodeMatchColumn.Caption = "PostCodeMatch";
-            this.PostCodeMatchColumn.ColumnName = "PostCodeMatch";
-            this.PostCodeMatchColumn.DefaultValue = "BEGINS";
-
-            //
-            // CountyDataColumn
-            //
-            this.CountyDataColumn.ColumnName = "County";
-
-            //
-            // CountyMatchColumn
-            //
-            this.CountyMatchColumn.Caption = "CountyMatch";
-            this.CountyMatchColumn.ColumnName = "CountyMatch";
-            this.CountyMatchColumn.DefaultValue = "BEGINS";
-
-            //
-            // CountryDataColumn
-            //
-            this.CountryDataColumn.ColumnName = "Country";
-
-            //
-            // MailingAddressOnlyDataColumn
-            //
-            this.MailingAddressOnlyDataColumn.ColumnName = "MailingAddressOnly";
-            this.MailingAddressOnlyDataColumn.DataType = typeof(bool);
-            this.MailingAddressOnlyDataColumn.DefaultValue = false;
-
-            //
-            // PartnerClassDataColumn
-            //
-            this.PartnerClassDataColumn.ColumnName = "PartnerClass";
-
-            //
-            // PartnerKeyDataColumn
-            //
-            this.PartnerKeyDataColumn.ColumnName = "PartnerKey";
-            this.PartnerKeyDataColumn.DataType = typeof(long);
-
-            //
-            // PartnerStatusDataColumn
-            //
-            this.PartnerStatusDataColumn.ColumnName = "PartnerStatus";
-            this.PartnerStatusDataColumn.DefaultValue = "ACTIVE";
-
-            //
-            // EmailDataColumn
-            //
-            this.EmailDataColumn.ColumnName = "Email";
-
-            //
-            // EmailMatchColumn
-            //
-            this.EmailMatchColumn.ColumnName = "EmailMatch";
-            this.EmailMatchColumn.DefaultValue = "CONTAINS";
-
-            //
-            // Address2DataColumn
-            //
-            this.Address2DataColumn.ColumnName = "Address2";
-
-            //
-            // Address2Match
-            //
-            this.Address2Match.ColumnName = "Address2Match";
-            this.Address2Match.DefaultValue = "BEGINS";
-
-            //
-            // Address3Column
-            //
-            this.Address3Column.ColumnName = "Address3";
-
-            //
-            // Address3MatchColumn
-            //
-            this.Address3MatchColumn.ColumnName = "Address3Match";
-            this.Address3MatchColumn.DefaultValue = "BEGINS";
-
-            //
-            // LocationKeyColumn
-            //
-            this.LocationKeyColumn.ColumnName = "LocationKey";
-
-            //
-            // WorkerFamOnlyColumn
-            //
-            this.WorkerFamOnlyColumn.ColumnName = "WorkerFamOnly";
-            this.WorkerFamOnlyColumn.DataType = typeof(bool);
-            this.WorkerFamOnlyColumn.DefaultValue = false;
-
-            //
-            // ExactPartnerKeyMatch
-            //
-            this.ExactPartnerKeyMatch.Caption = "ExactPartnerKeyMatch";
-            this.ExactPartnerKeyMatch.ColumnName = "ExactPartnerKeyMatch";
-            this.ExactPartnerKeyMatch.DataType = typeof(bool);
-            this.ExactPartnerKeyMatch.DefaultValue = false;
-
-            //
-            // PhoneNumberColumn
-            //
-            this.PhoneNumberColumn.ColumnName = "PhoneNumber";
-
-            //
-            // PhoneNumberMatchColumn
-            //
-            this.PhoneNumberMatchColumn.Caption = "PhoneNumberMatch";
-            this.PhoneNumberMatchColumn.ColumnName = "PhoneNumberMatch";
-
-            //
-            // FFindCriteriaDataSet
-            //
-            this.FFindCriteriaDataSet.DataSetName = "FindCriteriaDataSet";
-            this.FFindCriteriaDataSet.Locale = new System.Globalization.CultureInfo("en-GB");
-            this.FFindCriteriaDataSet.Tables.AddRange(new System.Data.DataTable[] {
-                    this.FFindCriteriaDataTable
-                });
 
             //
             // ucoPartnerFind_PersonnelCriteria_CollapsiblePart
@@ -1369,8 +1112,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TUC_PartnerFindCriteria";
             this.Size = new System.Drawing.Size(655, 213);
-            ((System.ComponentModel.ISupportInitialize)(this.FFindCriteriaDataTable)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.FFindCriteriaDataSet)).EndInit();
             this.spcCriteria.Panel1.ResumeLayout(false);
             this.spcCriteria.Panel1.PerformLayout();
             this.spcCriteria.Panel2.ResumeLayout(false);
@@ -1451,20 +1192,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.CheckBox chkMailingAddressOnly;
         private System.Windows.Forms.Panel pnlPersonnelCriteria;
         private TUC_PartnerFind_PersonnelCriteria_CollapsiblePart ucoPartnerFind_PersonnelCriteria_CollapsiblePart;
-        private System.Data.DataSet FFindCriteriaDataSet;
-        private System.Data.DataTable FFindCriteriaDataTable;
-        private System.Data.DataColumn PartnerNameDataColumn;
-        private System.Data.DataColumn PersonalNameDataColumn;
-        private System.Data.DataColumn PreviousNameDataColumn;
-        private System.Data.DataColumn Address1DataColumn;
-        private System.Data.DataColumn CityDataColumn;
-        private System.Data.DataColumn PostCodeDataColumn;
-        private System.Data.DataColumn CountyDataColumn;
-        private System.Data.DataColumn CountryDataColumn;
-        private System.Data.DataColumn MailingAddressOnlyDataColumn;
-        private System.Data.DataColumn PartnerClassDataColumn;
-        private System.Data.DataColumn PartnerKeyDataColumn;
-        private System.Data.DataColumn PartnerStatusDataColumn;
         private System.Windows.Forms.TextBox txtCounty;
         private TUC_CountryComboBox ucoCountryComboBox;
         private SplitButton critPartnerName;
@@ -1474,39 +1201,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         private SplitButton critCity;
         private SplitButton critPostCode;
         private SplitButton critCounty;
-        private System.Data.DataColumn PartnerNameMatchColumn;
         private System.Windows.Forms.Panel pnlEmail;
         private SplitButton critEmail;
         private System.Windows.Forms.TextBox txtEmail;
         private System.Windows.Forms.Label lblEmail;
-        private System.Data.DataColumn EmailDataColumn;
-        private System.Data.DataColumn EmailMatchColumn;
         private System.Windows.Forms.Panel pnlAddress2;
         private SplitButton critAddress2;
         private System.Windows.Forms.TextBox txtAddress2;
         private System.Windows.Forms.Label lblAddress2;
-        private System.Data.DataColumn Address2DataColumn;
-        private System.Data.DataColumn Address2Match;
-        private System.Data.DataColumn Address3Column;
-        private System.Data.DataColumn Address3MatchColumn;
         private System.Windows.Forms.Panel pnlAddress3;
         private SplitButton critAddress3;
         private System.Windows.Forms.TextBox txtAddress3;
         private System.Windows.Forms.Label lblAddress3;
         private System.Windows.Forms.Panel pnlLocationKey;
         private System.Windows.Forms.TextBox txtLocationKey;
-        private System.Data.DataColumn LocationKeyColumn;
-        private System.Data.DataColumn PersonalNameMatchColumn;
-        private System.Data.DataColumn PreviousNameMatchColumn;
-        private System.Data.DataColumn Address1Match;
-        private System.Data.DataColumn PostCodeMatchColumn;
-        private System.Data.DataColumn CountyMatchColumn;
-        private System.Data.DataColumn CityMatchColumn;
         private System.Windows.Forms.CheckBox chkWorkerFamOnly;
-        private System.Data.DataColumn WorkerFamOnlyColumn;
-        private System.Data.DataColumn ExactPartnerKeyMatch;
-        private System.Data.DataColumn PhoneNumberColumn;
-        private System.Data.DataColumn PhoneNumberMatchColumn;
         private System.Windows.Forms.Panel pnlPhoneNumber;
         private SplitButton critPhoneNumber;
         private System.Windows.Forms.Label lblPhoneNumber;

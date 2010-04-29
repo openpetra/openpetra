@@ -77,6 +77,9 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.grpMisc.Text = Catalog.GetString("Miscellaneous");
       #endregion
 
+      this.txtPreviousName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtLocalName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtMaritalStatusComment.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen
