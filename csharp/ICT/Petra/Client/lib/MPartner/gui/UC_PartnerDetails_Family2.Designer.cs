@@ -206,7 +206,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtMaritalStatusComment.Location = new System.Drawing.Point(2,2);
             this.txtMaritalStatusComment.Name = "txtMaritalStatusComment";
-            this.txtMaritalStatusComment.Size = new System.Drawing.Size(150, 28);
+            this.txtMaritalStatusComment.Size = new System.Drawing.Size(150, 46);
+            this.txtMaritalStatusComment.Multiline = true;
+            this.txtMaritalStatusComment.ScrollBars = ScrollBars.Vertical;
             //
             // lblMaritalStatusComment
             //
