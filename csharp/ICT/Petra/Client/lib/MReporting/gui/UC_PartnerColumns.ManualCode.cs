@@ -110,6 +110,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 cmbCalculation.Items.Add(colfunc.GetDisplayValue());
             }
 			
+			cmbCalculation.Sorted = true;
+			
 			if (cmbCalculation.Items.Count > 0)
 			{
 				cmbCalculation.SelectedIndex = 0;

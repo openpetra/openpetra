@@ -27,15 +27,17 @@
             Name: City
             Parameter: 4.0
         Para2:
-            Name: Partner Name
+            Name: Partner Shortname
             Parameter: 3.0
         Para3:
             Name: Partner Key
             Parameter: 2.0
         Para4:
-            Name: Post Code
+            Name: PostCode
             Parameter: 2.5
         Para5:
-            Name: Country
+            Name: Partner Class
+            Parameter: 2.0
+        Para6:
+            Name: Street
             Parameter: 3.5
-            
