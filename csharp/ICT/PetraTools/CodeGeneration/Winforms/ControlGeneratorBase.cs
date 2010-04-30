@@ -293,7 +293,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (ctrl.HasAttribute("BorderStyle"))
             {
                 writer.SetControlProperty(ctrl.controlName, "BorderStyle", "System.Windows.Forms.BorderStyle." + ctrl.GetAttribute("BorderStyle"));
-                writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(0, 7, 0, 0)");
+
+                if (ctrl.GetAttribute("BorderStyle").ToLower() == "none")
+                {
+                    writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(0, 7, 0, 0)");
+                }
             }
 
             if (ctrl.HasAttribute("Padding"))
