@@ -66,7 +66,6 @@ namespace Ict.Petra.Client.MPartner.Gui
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblDynamicLoad.Text = Catalog.GetString("Controls are added dynamically at runtime! See below for an example!:");
       #endregion
 
     }

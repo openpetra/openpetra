@@ -125,6 +125,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl.controlName, "Dock", "Fill");
 
+            if (ctrl.HasAttribute("ToolTip"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "ToolTipText", "\"" + ctrl.GetAttribute("ToolTip") + "\"");
+            }
+
             if (ctrl.HasAttribute("LoadPageDynamically") && (ctrl.GetAttribute("LoadPageDynamically").ToLower() == "true"))
             {
                 if (!ctrl.HasAttribute("DynamicControlType"))
@@ -218,12 +223,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 DynamicTabPageLoading += "    break;" + Environment.NewLine + Environment.NewLine;
 
                 writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLLOADING", DynamicTabPageLoading);
-            }
-            else
-            {
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", "");
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", "");
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLLOADING", "");
             }
         }
 
@@ -709,6 +708,36 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "Text",
                     "\"" + TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue") + "\"");
             }
+
+            if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "Multiline")) && TXMLParser.GetAttribute(ctrl.xmlNode, "Multiline") == "true")
+            {
+                writer.SetControlProperty(ctrl.controlName, "Multiline", "true");
+                
+                if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "WordWrap")) && TXMLParser.GetAttribute(ctrl.xmlNode, "WordWrap") == "false")
+                {
+                    writer.SetControlProperty(ctrl.controlName, "WordWrap", "false");
+                }
+                
+                if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ScrollBars"))
+                {
+                    writer.SetControlProperty(ctrl.controlName, "ScrollBars", "ScrollBars." + TXMLParser.GetAttribute(ctrl.xmlNode, "ScrollBars"));
+                }                
+            }
+
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "TextAlign"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "TextAlign", TXMLParser.GetAttribute(ctrl.xmlNode, "TextAlign"));
+            }
+                                    
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "CharacterCasing"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "CharacterCasing", "CharacterCasing." + TXMLParser.GetAttribute(ctrl.xmlNode, "CharacterCasing"));
+            }
+
+            if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "PasswordEntry")) && TXMLParser.GetAttribute(ctrl.xmlNode, "PasswordEntry") == "true")
+            {
+                writer.SetControlProperty(ctrl.controlName, "UseSystemPasswordChar", "true");
+            }            
         }
 
         protected void CreateCode(IFormWriter writer, TControlDef ATextControl)
@@ -1282,9 +1311,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
 
+            writer.SetControlProperty(ctrl.controlName, "DrawMode", "System.Windows.Forms.TabDrawMode.OwnerDrawFixed");
+
             if (ctrl.HasAttribute("DragTabPageEnabled") && (ctrl.GetAttribute("DragTabPageEnabled").ToLower() == "false"))
             {
                 writer.SetControlProperty(ctrl.controlName, "AllowDrop", "false");
+            }
+
+            if (ctrl.HasAttribute("ShowToolTips") && (ctrl.GetAttribute("ShowToolTips").ToLower() == "true"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "ShowToolTips", "true");
             }
 
             // writer.Template.FTemplateCode.Contains is not very clean, since it might be in a snippet or in an ifdef that will not be part of the resulting file

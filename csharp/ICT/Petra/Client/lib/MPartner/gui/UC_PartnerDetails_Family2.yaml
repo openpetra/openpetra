@@ -31,6 +31,8 @@ RootNode:
         cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList}
         dtpMaritalStatusSince:
         txtMaritalStatusComment:
-# TODO: MultiLine!        
+            Multiline: true
+            ScrollBars: Vertical
+            Height: 46
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}

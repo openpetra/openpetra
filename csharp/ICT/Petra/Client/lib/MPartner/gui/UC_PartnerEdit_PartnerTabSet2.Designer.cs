@@ -175,6 +175,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tabPartners.Controls.Add(this.tpgFamilyMembers);
             this.tabPartners.Controls.Add(this.tpgNotes);
             this.tabPartners.Controls.Add(this.tpgOfficeSpecific);
+            this.tabPartners.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.tabPartners.ShowToolTips = true;
             this.tabPartners.SelectedIndexChanged += new System.EventHandler(this.TabSelectionChanged);
 
             //

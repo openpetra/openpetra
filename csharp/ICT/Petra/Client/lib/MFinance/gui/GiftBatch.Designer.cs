@@ -148,6 +148,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tabGiftBatch.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabGiftBatch.Controls.Add(this.tpgBatches);
             this.tabGiftBatch.Controls.Add(this.tpgTransactions);
+            this.tabGiftBatch.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabGiftBatch.AllowDrop = false;
             this.tabGiftBatch.SelectedIndexChanged += new System.EventHandler(this.TabSelectionChanged);
             //

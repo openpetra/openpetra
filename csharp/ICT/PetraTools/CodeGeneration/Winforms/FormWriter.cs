@@ -756,6 +756,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
             FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "");
             FTemplate.AddToCodelet("CLEARDETAILS", "");
+            FTemplate.AddToCodelet("CATALOGI18N", "");
+            FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", "");
+            FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", "");
+            FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLLOADING", "");
             FTemplate.AddToCodelet("ASSIGNFONTATTRIBUTES", "");
 
             if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))

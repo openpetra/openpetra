@@ -10,7 +10,11 @@ RootNode:
             Controls: [tabPartners]
             Dock: Fill
 
-        tabPartners: {Dock=Fill, DragTabPageEnabled=true, LoadPagesDynamically=true}
+        tabPartners:
+            DragTabPageEnabled: true
+            ShowToolTips: true
+            LoadPagesDynamically: true
+            Dock: Fill
         
         tpgAddresses: {LoadPageDynamically=true}
             Label: Addresses ({0})
