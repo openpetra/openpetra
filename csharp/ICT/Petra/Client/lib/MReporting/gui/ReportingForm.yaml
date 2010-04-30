@@ -12,6 +12,7 @@ RootNode:
         actLoadSettingsDialog: {Label=&Open..., ActionClick=FPetraUtilsObject.MI_LoadSettingsDialog_Click}
         actLoadSettings: {Label=RecentSettings, ActionClick=FPetraUtilsObject.MI_LoadSettings_Click}
         actMaintainSettings: {Label=&Maintain Settings..., ActionClick=FPetraUtilsObject.MI_MaintainSettings_Click}
+        actWrapColumn: {Label=&Wrap Columns, ActionClick=FPetraUtilsObject.MI_WrapColumn_Click}
     Controls:
         tabReportSettings:
             Dock: Fill
@@ -52,6 +53,8 @@ RootNode:
             mniSaveSettings:
             mniSaveSettingsAs:
             mniMaintainSettings:
+            mniSeparator: {Label=-}
+            mniWrapColumn:
             mniSeparator: {Label=-}
             mniGenerateReport:
             mniSeparator: {Label=-}

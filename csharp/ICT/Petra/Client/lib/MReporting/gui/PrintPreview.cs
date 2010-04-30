@@ -63,6 +63,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TPrintChartCallbackProcedure PrintChartProcedure;
         private bool PrintChartProcedureValid;
         private TFrmPetraUtils FPetraUtilsObject;
+        private bool FWrapColumn;
 
         #endregion
 
@@ -74,7 +75,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="duration"></param>
         /// <param name="results"></param>
         /// <param name="parameters"></param>
-        public TFrmPrintPreview(IntPtr ACallerWindowHandle, String caption, TimeSpan duration, TResultList results, TParameterList parameters)
+        /// <param name="AWrapColumn">true: Wrap the text in the column. False: Cut the text that is to long for the column</param>
+        public TFrmPrintPreview(IntPtr ACallerWindowHandle, String caption, TimeSpan duration, TResultList results,
+                                TParameterList parameters, bool AWrapColumn)
             : base()
         {
             FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(ACallerWindowHandle, this, stbMain);
@@ -127,17 +130,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Results = results;
             this.Parameters = parameters;
             FTxtPrinter = new TTxtPrinter();
-            this.ReportTxtPrinter = new TReportPrinterLayout(Results, Parameters, FTxtPrinter);
+            this.ReportTxtPrinter = new TReportPrinterLayout(Results, Parameters, FTxtPrinter, AWrapColumn);
             ReportTxtPrinter.PrintReport();
 
             this.txtOutput.Lines = FTxtPrinter.GetArrayOfString();
             FPrinterInstalled = this.PrintDocument.PrinterSettings.IsValid;
 
+            FWrapColumn = AWrapColumn;
             if (FPrinterInstalled)
             {
                 this.tabPreview.SelectedTab = tbpPreview;
                 FGfxPrinter = new TGfxPrinter(this.PrintDocument);
-                this.ReportGfxPrinter = new TReportPrinterLayout(Results, Parameters, FGfxPrinter);
+                this.ReportGfxPrinter = new TReportPrinterLayout(Results, Parameters, FGfxPrinter, AWrapColumn);
                 this.PrintPreviewControl.Document = FGfxPrinter.Document;
                 this.PrintPreviewControl.Zoom = 1; // show 100% by default
                 this.PrintPreviewControl.UseAntiAlias = true;
@@ -385,7 +389,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             // show a print window with all kinds of output options
             printWindow = new TFrmPrintPreview(this.Handle, ACalculator.GetParameters().Get("currentReport").ToString(),
                 ACalculator.GetDuration(), ACalculator.GetResults(
-                    ), ACalculator.GetParameters());
+                    ), ACalculator.GetParameters(), FWrapColumn);
             this.AddOwnedForm(printWindow);
             printWindow.Owner = this;
 

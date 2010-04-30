@@ -156,15 +156,26 @@ namespace {#NAMESPACE}
     /// <summary>
     /// initialisation
     /// </summary>
+	/// <param name="AReportParameter">Initialisation values needed for some reports</param>
     public void InitialiseData(String AReportParameter)
     {
         FPetraUtilsObject.InitialiseData(AReportParameter);
+    }
+	
+	/// <summary>
+    /// Checks / Unchecks the menu item "Wrap Columns"
+    /// </summary>
+	/// <param name="ACheck">True if menu item is to be checked. Otherwise false</param>
+	public void CheckWrapColumnMenuItem(bool ACheck)
+    {
+    	this.mniWrapColumn.Checked = ACheck;
     }
 #endregion
 
     /// <summary>
     /// allow to store and load settings
     /// </summary>
+	/// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
     public void EnableSettings(bool AEnabled)
     {   
         foreach (ToolStripItem item in mniLoadSettings.DropDownItems)
@@ -183,6 +194,7 @@ namespace {#NAMESPACE}
     /// <summary>
     /// activate and deactivate toolbar buttons and menu items depending on ongoing report calculation
     /// </summary>
+	/// <param name="ABusy">True if a report is generated and the close button should be disabled.</param>
     public void EnableBusy(bool ABusy)
     {
         mniClose.Enabled = !ABusy;
@@ -205,6 +217,9 @@ namespace {#NAMESPACE}
     /// this is used for writing the captions of the menu items and toolbar buttons for recently used report settings
     /// </summary>
     /// <returns>false if an item with that index does not exist</returns>
+	/// <param name="AIndex"></param>
+	/// <param name="mniItem"></param>
+	/// <param name="tbbItem"></param>
     public bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem)
     {
         if (AIndex < 0 || AIndex >= mniLoadSettings.DropDownItems.Count - 2)

@@ -86,6 +86,17 @@ namespace Ict.Common.Printing
         #region Manage the Y Position
 
         /// <summary>
+        /// Line Feed; increases the current y position by one
+        /// </summary>
+        /// <returns>the new current line
+        /// </returns>
+        public override float LineFeed()
+        {
+        	CurrentYPos++;
+            return CurrentYPos;
+        }
+        
+        /// <summary>
         /// Line Feed; increases the current y position by the height of the given font
         /// </summary>
         /// <returns>the new current line
@@ -352,6 +363,35 @@ namespace Ict.Common.Printing
         #endregion
 
         #region Print String
+        
+        protected float CalculateXPos(float AXPos, float AWidth, String ATxt, eAlignment AAlign)
+		{
+			float XPos = Convert.ToInt32(AXPos); /// eDefault
+			switch (AAlign)
+		    {
+		        case eAlignment.eCenter:
+		            XPos = Convert.ToInt32(AXPos) + (Convert.ToInt32(AWidth) - ATxt.Length) / 2;
+		            break;
+		
+		        case eAlignment.eLeft:
+		            XPos = Convert.ToInt32(AXPos);
+		            break;
+		
+		        case eAlignment.eRight:
+		
+		            if (Convert.ToInt32(AWidth) > ATxt.Length)
+		            {
+		                XPos = Convert.ToInt32(AXPos) + Convert.ToInt32(AWidth) - ATxt.Length;
+		            }
+		            else
+		            {
+		                XPos = Convert.ToInt32(AXPos);
+		            }
+		
+		            break;
+		    }
+			return XPos;
+		}
 
         /// <summary>
         /// prints into the current line, aligned x position
@@ -426,13 +466,15 @@ namespace Ict.Common.Printing
                 return false;
             }
 
+            ToPrint = GetFittedText(ATxt, AFont, AWidth);
+            
             // eDefault
             XPos = Convert.ToInt32(AXPos);
 
             switch (AAlign)
             {
                 case eAlignment.eCenter:
-                    XPos = Convert.ToInt32(AXPos) + (Convert.ToInt32(AWidth) - ATxt.Length) / 2;
+                    XPos = Convert.ToInt32(AXPos) + (Convert.ToInt32(AWidth) - ToPrint.Length) / 2;
                     break;
 
                 case eAlignment.eLeft:
@@ -441,9 +483,9 @@ namespace Ict.Common.Printing
 
                 case eAlignment.eRight:
 
-                    if (Convert.ToInt32(AWidth) > ATxt.Length)
+                    if (Convert.ToInt32(AWidth) > ToPrint.Length)
                     {
-                        XPos = Convert.ToInt32(AXPos) + Convert.ToInt32(AWidth) - ATxt.Length;
+                        XPos = Convert.ToInt32(AXPos) + Convert.ToInt32(AWidth) - ToPrint.Length;
                     }
                     else
                     {
@@ -453,11 +495,9 @@ namespace Ict.Common.Printing
                     break;
             }
 
-            ToPrint = ATxt;
-
-            if (ATxt.Length > Convert.ToInt32(AWidth))
+            if (ToPrint.Length > Convert.ToInt32(AWidth))
             {
-                ToPrint = ATxt.Substring(0, Convert.ToInt32(AWidth));
+                ToPrint = ToPrint.Substring(0, Convert.ToInt32(AWidth));
             }
 
             Print(XPos, Convert.ToInt32(CurrentYPos), ToPrint);
@@ -478,6 +518,193 @@ namespace Ict.Common.Printing
             return ReturnValue;
         }
 
+        /// <summary>
+        /// prints into the current line, absolute x position with width and alignment
+        /// this method uses FCurrentXPos and FCurrentYPos to be able to continue a paragraph
+        /// uses FCurrentXPos and FCurrentYPos to know where to start to print, and also sets
+        /// valid values in those member variables
+        /// </summary>
+        /// <returns>s bool true if any text was printed</returns>
+        public override bool PrintStringWrap(String ATxt, eFont AFont, float AXPos, float AWidth, eAlignment AAlign)
+        {
+            while (ATxt.Length > 0)
+            {
+                Int32 firstWordLength;
+                Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AWidth, out firstWordLength);
+
+                if ((length <= 0) && (CurrentXPos == AXPos) && (firstWordLength > 0))
+                {
+                    // the word is too long, it will never fit;
+                    // force to print the first word
+                    // todo: this overwrites the text in the next cell; should we break the line inside the word, or not print the overlap?
+                    // goal: the problem should be easy to notice by the user...
+                    length = firstWordLength;
+                    string toPrint = ATxt.Substring(0, length);
+                    TLogging.Log("the text \"" + toPrint + "\" does not fit into the assigned space!");
+                }
+
+                if (length > 0)
+                {
+                    string toPrint = ATxt.Substring(0, length);
+                    ATxt = ATxt.Substring(length);
+
+                    float XPos = CalculateXPos(AXPos, AWidth, toPrint, AAlign);
+                    
+                    //PrintString(toPrint, AFont, FCurrentXPos);
+                    Print(Convert.ToInt32(XPos), Convert.ToInt32(CurrentYPos), toPrint);
+                    //FCurrentXPos += GetWidthString(toPrint, AFont);
+                    
+                    if (ATxt.Length > 0)
+                    {
+                        // there is still more to come, we need a new line
+                        LineFeed(); // will use the biggest used font, and reset it
+                    }
+                }
+                else if ((ATxt.Length > 0) && 
+                         (CurrentXPos != AXPos))
+                {
+                    // the first word did not fit the space; needs a new line
+                    CurrentXPos = AXPos;
+                    LineFeed();
+                }
+            }
+            return true;
+        }
+        
+        /// <summary>
+        /// Check if the text will fit into the given width. If yes, the text will be returned.
+        /// If no, the text will be shortened and a "..." will be added to indicate that some text is missing.
+        /// </summary>
+        /// <param name="ATxt">the original text</param>
+        /// <param name="AFont">the font</param>
+        /// <param name="AWidth">the space available for the text in cm</param>
+        /// <returns>The input text. Either unmodified or shortened.</returns>
+        protected String GetFittedText(String ATxt, eFont AFont, float AWidth)
+        {
+        	String ReturnValue = "";
+        	
+        	if (GetWidthString(ATxt, AFont) <= AWidth)
+        	{
+        		// The whole text fits into the available space
+        		ReturnValue = ATxt;
+        	}
+        	else
+        	{
+        		// We have to cut the text
+        		float WidthDotDotDot = GetWidthString("...", AFont);
+        		float WidthForText = AWidth - WidthDotDotDot;
+        		
+        		if (WidthForText <= 0.0)
+        		{
+        			// only space for ...
+        			ReturnValue = "...";
+        		}
+        		else
+        		{
+        			ReturnValue = CutTextToLength(ATxt, AFont, WidthForText) + "...";
+        		}
+        	}
+        	
+        	return ReturnValue;
+        }
+        
+        /// <summary>
+        /// Cuts a given text so it will not extend the given width.
+        /// </summary>
+        /// <param name="ATxt">The text to cut</param>
+        /// <param name="AFont">The font used</param>
+        /// <param name="AWidth">The available length for the text in cm.</param>
+        /// <returns>The maximum part of the text that will not extend the width.</returns>
+        protected String CutTextToLength(String ATxt, eFont AFont, float AWidth)
+        {
+        	String ReturnValue = "";
+        	
+        	for (int Counter = 1; Counter <= ATxt.Length; ++Counter)
+        	{
+        		float length = GetWidthString(ATxt.Substring(0, Counter), AFont);
+        		
+        		if (length <= AWidth)
+        		{
+        			ReturnValue = ATxt.Substring(0, Counter);
+        		}
+        		else
+        		{
+        			break;
+        		}
+        	}
+        	
+        	return ReturnValue;
+        }
+        
+        /// <summary>
+        /// word wrap text, return the number of characters that fit the line width
+        /// </summary>
+        /// <param name="ATxt"></param>
+        /// <param name="AFont"></param>
+        /// <param name="AWidth"></param>
+        /// <param name="firstWordLength">returns the length of the first word; this is needed if even the first word does not fit</param>
+        /// <returns>void</returns>
+        protected Int32 GetTextLengthThatWillFit(String ATxt, eFont AFont, float AWidth, out Int32 firstWordLength)
+        {
+            // see also http://www.codeguru.com/vb/gen/vb_misc/printing/article.php/c11233
+            string buffer = ATxt;
+            string fittingText = "";
+
+            char[] whitespace = new char[] {
+                ' ', '\t', '\r', '\n', '-', ','
+            };
+            string previousWhitespace = "";
+            Int32 result = 0;
+            firstWordLength = 0;
+
+            while (GetWidthString(fittingText, AFont) < AWidth)
+            {
+                result = fittingText.Length + previousWhitespace.Length;
+
+                if (buffer.Length == 0)
+                {
+                    return result;
+                }
+
+                Int32 indexWhitespace = buffer.IndexOfAny(whitespace);
+
+                if (indexWhitespace >= 0)
+                {
+                    string nextWord = buffer.Substring(0, indexWhitespace);
+                    fittingText += previousWhitespace + nextWord;
+                    previousWhitespace = buffer[indexWhitespace].ToString();
+                    buffer = buffer.Substring(indexWhitespace + 1);
+                }
+                else // no whitespace left
+                {
+                    fittingText += previousWhitespace + buffer;
+                    previousWhitespace = "";
+                    buffer = "";
+                }
+
+                if (firstWordLength == 0)
+                {
+                    firstWordLength = fittingText.Length + previousWhitespace.Length;
+                }
+            }
+
+            if (result == 0)
+            {
+            	// the first word is to long; Let's split the word
+            	for (int Counter = 0; Counter < ATxt.Length; ++Counter)
+            	{
+            		fittingText = ATxt.Substring(0, Counter);
+            		
+            		if (GetWidthString(fittingText, AFont) >= AWidth)
+	            	{
+            			result = fittingText.Length - 1;
+            			break;
+	            	}
+            	}
+            }
+            return result;
+        }
+        
         /// <summary>
         /// This function uses the normal PrintString function to print into a given space.
         /// </summary>

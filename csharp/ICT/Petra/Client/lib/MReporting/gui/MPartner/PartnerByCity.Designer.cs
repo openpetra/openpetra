@@ -97,14 +97,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniSaveSettingsAs = new System.Windows.Forms.ToolStripMenuItem();
             this.mniMaintainSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniGenerateReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniWrapColumn = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniGenerateReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mniClose = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpPetraHelp = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
@@ -327,6 +329,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniSeparator1.AutoSize = true;
             this.mniSeparator1.Text = "-";
             //
+            // mniWrapColumn
+            //
+            this.mniWrapColumn.Name = "mniWrapColumn";
+            this.mniWrapColumn.AutoSize = true;
+            this.mniWrapColumn.Click += new System.EventHandler(this.actWrapColumn);
+            this.mniWrapColumn.Text = "&Wrap Columns";
+            //
+            // mniSeparator2
+            //
+            this.mniSeparator2.Name = "mniSeparator2";
+            this.mniSeparator2.AutoSize = true;
+            this.mniSeparator2.Text = "-";
+            //
             // mniGenerateReport
             //
             this.mniGenerateReport.Name = "mniGenerateReport";
@@ -336,11 +351,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniGenerateReport.ToolTipText = "Generate the report";
             this.mniGenerateReport.Text = "&Generate";
             //
-            // mniSeparator2
+            // mniSeparator3
             //
-            this.mniSeparator2.Name = "mniSeparator2";
-            this.mniSeparator2.AutoSize = true;
-            this.mniSeparator2.Text = "-";
+            this.mniSeparator3.Name = "mniSeparator3";
+            this.mniSeparator3.AutoSize = true;
+            this.mniSeparator3.Text = "-";
             //
             // mniClose
             //
@@ -361,8 +376,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                         mniSaveSettingsAs,
                         mniMaintainSettings,
                         mniSeparator1,
-                        mniGenerateReport,
+                        mniWrapColumn,
                         mniSeparator2,
+                        mniGenerateReport,
+                        mniSeparator3,
                         mniClose});
             this.mniFile.Text = "&File";
             //
@@ -372,11 +389,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniHelpPetraHelp.AutoSize = true;
             this.mniHelpPetraHelp.Text = "&Petra Help";
             //
-            // mniSeparator3
+            // mniSeparator4
             //
-            this.mniSeparator3.Name = "mniSeparator3";
-            this.mniSeparator3.AutoSize = true;
-            this.mniSeparator3.Text = "-";
+            this.mniSeparator4.Name = "mniSeparator4";
+            this.mniSeparator4.AutoSize = true;
+            this.mniSeparator4.Text = "-";
             //
             // mniHelpBugReport
             //
@@ -384,11 +401,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniHelpBugReport.AutoSize = true;
             this.mniHelpBugReport.Text = "Bug &Report";
             //
-            // mniSeparator4
+            // mniSeparator5
             //
-            this.mniSeparator4.Name = "mniSeparator4";
-            this.mniSeparator4.AutoSize = true;
-            this.mniSeparator4.Text = "-";
+            this.mniSeparator5.Name = "mniSeparator5";
+            this.mniSeparator5.AutoSize = true;
+            this.mniSeparator5.Text = "-";
             //
             // mniHelpAboutPetra
             //
@@ -408,9 +425,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniHelp.AutoSize = true;
             this.mniHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniHelpPetraHelp,
-                        mniSeparator3,
-                        mniHelpBugReport,
                         mniSeparator4,
+                        mniHelpBugReport,
+                        mniSeparator5,
                         mniHelpAboutPetra,
                         mniHelpDevelopmentTeam});
             this.mniHelp.Text = "&Help";
@@ -490,14 +507,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private System.Windows.Forms.ToolStripMenuItem mniSaveSettingsAs;
         private System.Windows.Forms.ToolStripMenuItem mniMaintainSettings;
         private System.Windows.Forms.ToolStripSeparator mniSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem mniGenerateReport;
+        private System.Windows.Forms.ToolStripMenuItem mniWrapColumn;
         private System.Windows.Forms.ToolStripSeparator mniSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem mniGenerateReport;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator3;
         private System.Windows.Forms.ToolStripMenuItem mniClose;
         private System.Windows.Forms.ToolStripMenuItem mniHelp;
         private System.Windows.Forms.ToolStripMenuItem mniHelpPetraHelp;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator3;
-        private System.Windows.Forms.ToolStripMenuItem mniHelpBugReport;
         private System.Windows.Forms.ToolStripSeparator mniSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem mniHelpBugReport;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator5;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;

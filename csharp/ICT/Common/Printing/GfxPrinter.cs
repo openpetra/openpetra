@@ -233,6 +233,7 @@ namespace Ict.Common.Printing
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
+            	ATxt = GetFittedText(ATxt, AFont, rect.Width);
                 FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, rect, GetStringFormat(AAlign));
             }
 
@@ -265,12 +266,78 @@ namespace Ict.Common.Printing
             {
                 StringFormat f = GetStringFormat(AAlign);
                 f.FormatFlags = StringFormatFlags.MeasureTrailingSpaces;
+                ATxt = GetFittedText(ATxt, AFont, rect.Width);
                 FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, rect, f);
             }
 
             return (ATxt != null) && (ATxt.Length != 0);
         }
 
+        /// <summary>
+        /// Check if the text will fit into the given width. If yes, the text will be returned.
+        /// If no, the text will be shortened and a "..." will be added to indicate that some text is missing.
+        /// </summary>
+        /// <param name="ATxt">the original text</param>
+        /// <param name="AFont">the font</param>
+        /// <param name="AWidth">the space available for the text in cm</param>
+        /// <returns>The input text. Either unmodified or shortened.</returns>
+        protected String GetFittedText(String ATxt, eFont AFont, float AWidth)
+        {
+        	String ReturnValue = "";
+        	
+        	if (GetWidthString(ATxt, AFont) <= AWidth)
+        	{
+        		// The whole text fits into the available space
+        		ReturnValue = ATxt;
+        	}
+        	else
+        	{
+        		// We have to cut the text
+        		float WidthDotDotDot = GetWidthString("...", AFont);
+        		float WidthForText = AWidth - WidthDotDotDot;
+        		
+        		if (WidthForText <= 0.0)
+        		{
+        			// only space for ...
+        			ReturnValue = "...";
+        		}
+        		else
+        		{
+        			ReturnValue = CutTextToLength(ATxt, AFont, WidthForText) + "...";
+        		}
+        	}
+        	
+        	return ReturnValue;
+        }
+        
+        /// <summary>
+        /// Cuts a given text so it will not extend the given width.
+        /// </summary>
+        /// <param name="ATxt">The text to cut</param>
+        /// <param name="AFont">The font used</param>
+        /// <param name="AWidth">The available length for the text in cm.</param>
+        /// <returns>The maximum part of the text that will not extend the width.</returns>
+        protected String CutTextToLength(String ATxt, eFont AFont, float AWidth)
+        {
+        	String ReturnValue = "";
+        	
+        	for (int Counter = 1; Counter <= ATxt.Length; ++Counter)
+        	{
+        		float length = GetWidthString(ATxt.Substring(0, Counter), AFont);
+        		
+        		if (length <= AWidth)
+        		{
+        			ReturnValue = ATxt.Substring(0, Counter);
+        		}
+        		else
+        		{
+        			break;
+        		}
+        	}
+        	
+        	return ReturnValue;
+        }
+        
         /// <summary>
         /// word wrap text, return the number of characters that fit the line width;
         /// if the first word does not fit the space available, wrap the word in itself
@@ -286,7 +353,7 @@ namespace Ict.Common.Printing
             string fittingText = "";
 
             char[] whitespace = new char[] {
-                ' ', '\t', '\r', '\n'
+                ' ', '\t', '\r', '\n', '-', ','
             };
             string previousWhitespaces = "";
             Int32 result = 0;
@@ -365,8 +432,10 @@ namespace Ict.Common.Printing
         {
             while (ATxt.Length > 0)
             {
-                Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AXPos + AWidth - CurrentXPos);
-
+            	// TODO check this code
+                //Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AXPos + AWidth - CurrentXPos);
+				Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AWidth);
+				
                 if (FCurrentState.FNoWrap)
                 {
                     length = ATxt.Length;
@@ -382,7 +451,9 @@ namespace Ict.Common.Printing
                         FBiggestLastUsedFont = GetFont(AFont);
                     }
 
-                    PrintString(toPrint, AFont, CurrentXPos, AWidth, AAlign);
+                    // TODO check this code
+                    //PrintString(toPrint, AFont, CurrentXPos, AWidth, AAlign);
+                    PrintString(toPrint, AFont, AXPos, AWidth, AAlign); //FCurrentXPos);
 
                     if (AAlign == eAlignment.eRight)
                     {
@@ -404,6 +475,8 @@ namespace Ict.Common.Printing
                 }
             }
 
+            // TODO: Check this code
+            CurrentXPos = 0;
             return true;
         }
 

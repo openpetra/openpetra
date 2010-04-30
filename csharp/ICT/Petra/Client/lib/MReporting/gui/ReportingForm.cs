@@ -76,6 +76,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         
         /// <summary>the name of the sub directory where the settings are stored</summary>
         public string FSettingsDirectory;
+        
+        /// <summary>Indicator if the output of the columns should be wrapped or cut of if the text
+        /// doesn't fit in the width of the column </summary>
+        public bool FWrapColumn;
 
         /// <summary>to be able to add the currently loaded settings name to the caption of the window.</summary>
         protected string FWindowCaption;
@@ -144,6 +148,19 @@ namespace Ict.Petra.Client.MReporting.Gui
             return true;
         }
 
+        /// <summary>
+        /// Event Handler that is invoked when the Form is about to close - no matter
+        /// how the closing was invoked (by calling Form.Close, a Close button, the
+        /// x Button of a Form, etc).
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">EventArgs that allow cancelling of the closing</param>
+        public override void TFrmPetra_Closing(System.Object sender, System.ComponentModel.CancelEventArgs e)
+        {
+        	FStoredSettings.SaveWrapOption(FWrapColumn);
+        	base.TFrmPetra_Closing(sender, e);
+        }
+         
 #if TODO
         private void BtnCSVDestination_Click(System.Object sender, System.EventArgs e)
         {
@@ -191,6 +208,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// setup the form
         ///
         /// </summary>
+        /// <param name="AReportParameter"></param>
         /// <returns>false if there are not enough permissions
         /// </returns>
         public virtual bool InitialiseData(String AReportParameter)
@@ -210,6 +228,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             	System.IO.Path.DirectorySeparatorChar + this.FSettingsDirectory;
             this.FStoredSettings = new TStoredSettings(FReportName, SettingsDirectory);
             UpdateLoadingMenu(this.FStoredSettings.GetRecentlyUsedSettings());
+            
+            FWrapColumn = FStoredSettings.GetWrapOption();
+            ((IFrmReporting)FTheForm).CheckWrapColumnMenuItem(FWrapColumn);
+            
             FSelectedColumn = -1;
 
             SetAvailableFunctions();
@@ -310,6 +332,20 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FGenerateReportThread.IsBackground = true;
                 FGenerateReportThread.Start();
             }
+        }
+        
+        /// <summary>
+        /// toggle the option to wrap a column in the report
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void MI_WrapColumn_Click(System.Object sender, System.EventArgs e)
+        {
+        	System.Windows.Forms.ToolStripMenuItem WrapMenuItem = (System.Windows.Forms.ToolStripMenuItem)sender;
+        	
+        	WrapMenuItem.Checked = !WrapMenuItem.Checked;
+            
+        	FWrapColumn = WrapMenuItem.Checked;
         }
 
         /// <summary>
@@ -418,7 +454,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             // show a print window with all kinds of output options
             TFrmPrintPreview printWindow = new TFrmPrintPreview(FWinForm.Handle, FReportName, FCalculator.GetDuration(),
-                FCalculator.GetResults(), FCalculator.GetParameters());
+                FCalculator.GetResults(), FCalculator.GetParameters(), FWrapColumn);
 
             this.FWinForm.AddOwnedForm(printWindow);
             printWindow.Owner = FWinForm;
@@ -775,7 +811,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// Add an item to the fields that can be selected in the report
         /// </summary>
         /// <param name="AName">Name of the field</param>
-        /// <param name="AWidth">Default width of the field</param>
         public void AddAvailableFunction(String AName)
         {
         	FAvailableFunctions.Add(new TColumnFunction(AName));
@@ -1083,6 +1118,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>false if an item with that index does not exist</returns>
         bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem);
         
+        /// <summary>
+        /// this will Check the menu item "Wrap Column"
+        /// </summary>
+        /// <param name="ACheck">True if the item is to be checked. Otherwise false.</param>
+        void CheckWrapColumnMenuItem(bool ACheck);
     }
     
     /// <summary>This enums defines what action is going on. It's needed e.g. for the ReadControls function </summary>
