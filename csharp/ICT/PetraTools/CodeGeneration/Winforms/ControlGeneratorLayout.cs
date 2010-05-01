@@ -162,19 +162,108 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            writer.SetControlProperty(ctrlname, "ColumnCount", (FColumnCount - SkippedColumns.Count).ToString());
 
+            #region ColumnStyles and RowStyles
+
+            writer.SetControlProperty(ctrlname, "ColumnCount", (FColumnCount - SkippedColumns.Count).ToString());
+            
+            /*
+             * Generate ColumnStyles which influence the width of the Columns. If custom widths are specified by the user,
+             * ColumStyles with the appropriate Arguments are generated, otherwise standard ColumnStyles, which means that
+             * Colum Widths are AutoSized at runtime.
+             */
             for (Int32 countCol = 0; countCol < FColumnCount - SkippedColumns.Count; countCol++)
             {
-                writer.CallControlFunction(ctrlname, "ColumnStyles.Add(new System.Windows.Forms.ColumnStyle())");
+                if (FColWidths != null)
+                {
+                    if (FColWidths.ContainsKey(countCol))
+                    {
+                        string[] ColWidthSpec = FColWidths[countCol].Split(':');
+
+                        if (ColWidthSpec[0].ToLower() != "auto")
+                        {
+                            if (ColWidthSpec[0].ToLower() == "fixed")
+                            {
+                                writer.CallControlFunction(ctrlname,
+                                    String.Format("ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, {0}))", ColWidthSpec[1]));
+                            }
+                            else if (ColWidthSpec[0].ToLower() == "percent")
+                            {
+                                writer.CallControlFunction(ctrlname,
+                                    String.Format("ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, {0}))", ColWidthSpec[1]));
+                            }
+                            else
+                            {
+                                throw new Exception("Invalid ColWidhts Type '" + ColWidthSpec[0] + "' for Control '" + ctrlname + "'");
+                            }
+                        }
+                        else
+                        {
+                            writer.CallControlFunction(ctrlname, "ColumnStyles.Add(new System.Windows.Forms.ColumnStyle())");
+                        }
+                    }
+                    else
+                    {
+                        writer.CallControlFunction(ctrlname, "ColumnStyles.Add(new System.Windows.Forms.ColumnStyle())");
+                    }
+                }
+                else
+                {
+                    writer.CallControlFunction(ctrlname, "ColumnStyles.Add(new System.Windows.Forms.ColumnStyle())");
+                }
             }
+
 
             writer.SetControlProperty(ctrlname, "RowCount", FRowCount.ToString());
-
+            
+            
+            /*
+             * Generate RowStyles which influence the height of the Columns. If custom heights are specified by the user,
+             * RowStyles with the appropriate Arguments are generated, otherwise standard RowStyles, which means that
+             * Row Heights are AutoSized at runtime.
+             */
             for (Int32 countRow = 0; countRow < FRowCount; countRow++)
             {
-                writer.CallControlFunction(ctrlname, "RowStyles.Add(new System.Windows.Forms.RowStyle())");
+                if (FRowHeights != null)
+                {
+                    if (FRowHeights.ContainsKey(countRow))
+                    {
+                        string[] RowHeightSpec = FRowHeights[countRow].Split(':');
+
+                        if (RowHeightSpec[0].ToLower() != "auto")
+                        {
+                            if (RowHeightSpec[0].ToLower() == "fixed")
+                            {
+                                writer.CallControlFunction(ctrlname,
+                                    String.Format("RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Absolute, {0}))", RowHeightSpec[1]));
+                            }
+                            else if (RowHeightSpec[0].ToLower() == "percent")
+                            {
+                                writer.CallControlFunction(ctrlname,
+                                    String.Format("RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Percent, {0}))", RowHeightSpec[1]));
+                            }
+                            else
+                            {
+                                throw new Exception("Invalid RowHeights Type '" + RowHeightSpec[0] + "' for Control '" + ctrlname + "'");
+                            }
+                        }
+                        else
+                        {
+                            writer.CallControlFunction(ctrlname, "RowStyles.Add(new System.Windows.Forms.RowStyle())");
+                        }
+                    }
+                    else
+                    {
+                        writer.CallControlFunction(ctrlname, "RowStyles.Add(new System.Windows.Forms.RowStyle())");
+                    }
+                }
+                else
+                {
+                    writer.CallControlFunction(ctrlname, "RowStyles.Add(new System.Windows.Forms.RowStyle())");
+                }
             }
+
+            #endregion
 
             for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
             {
@@ -236,6 +325,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
         protected Int32 FCurrentRow = 0;
         protected Int32 FCurrentColumn = 0;
         protected string FTlpName = "";
+
+        /// <summary>
+        /// Holds definitions for custom ColumnStyles which influence the width of the Columns.
+        /// </summary>
+        protected Dictionary <int, string>FColWidths;
+
+        /// <summary>
+        /// Holds definitions for custom RowStyles which influence the height of the Rows.
+        /// </summary>
+        protected Dictionary <int, string>FRowHeights;
 
         /// <summary>
         /// set the orientation based on the attribute: ControlsOrientation;
@@ -363,6 +462,54 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ctrl.parentName = FTlpName;
                 }
             }
+
+            #region Custom Column Widths and custom Row Heights
+
+            /*
+             * Record custom Column Widths, if specified.
+             */
+            XmlNode colWidthsNode = TXMLParser.GetChild(containerNode, "ColWidths");
+
+            StringCollection ColWidths = TYml2Xml.GetElements(colWidthsNode);
+
+            if (ColWidths.Count > 0)
+            {
+                FColWidths = new Dictionary <int, string>();
+
+                foreach (string colWidth in ColWidths)
+                {
+//                    Console.WriteLine(containerNode.Name + ".colWidth: " + colWidth + "    " + String.Format("FColWidths: {0}  /   {1})",
+//                            colWidth.Substring(0, colWidth.IndexOf('=')),
+//                            colWidth.Substring(colWidth.IndexOf('=') + 1)));
+
+                    FColWidths.Add(Convert.ToInt32(colWidth.Substring(0, colWidth.IndexOf('='))),
+                        colWidth.Substring(colWidth.IndexOf('=') + 1));
+                }
+            }
+
+            /*
+             * Record custom Row Heights, if specified.
+             */
+            XmlNode colHeightsNode = TXMLParser.GetChild(containerNode, "RowHeights");
+
+            StringCollection RowHeights = TYml2Xml.GetElements(colHeightsNode);
+
+            if (RowHeights.Count > 0)
+            {
+                FRowHeights = new Dictionary <int, string>();
+
+                foreach (string rowHeight in RowHeights)
+                {
+//                    Console.WriteLine(containerNode.Name + ".rowHeight: " + rowHeight + "    " + String.Format("FRowHeights: {0}  /   {1})",
+//                            rowHeight.Substring(0, rowHeight.IndexOf('=')),
+//                            rowHeight.Substring(rowHeight.IndexOf('=') + 1)));
+
+                    FRowHeights.Add(Convert.ToInt32(rowHeight.Substring(0, rowHeight.IndexOf('='))),
+                        rowHeight.Substring(rowHeight.IndexOf('=') + 1));
+                }
+            }
+
+            #endregion
 
             return FTlpName;
         }
