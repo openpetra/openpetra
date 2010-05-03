@@ -23,6 +23,8 @@
  * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
  *
  ************************************************************************/
+// #define IMPORTFROMLEGACYDB
+
 using System;
 using System.Collections;
 using System.IO;
@@ -335,6 +337,14 @@ public class TWriteSQL
             }
         }
 
+#if IMPORTFROMLEGACYDB
+        // this is useful when converting from legacy database, with columns that contain too long strings
+        if (field.strType == "varchar" && field.iLength >= 20)
+        {
+            field.strType = "text";
+        }
+#endif        
+
         if (field.strType == "bit")
         {
             result += String.Format("  {0} boolean", field.strName);
@@ -385,7 +395,7 @@ public class TWriteSQL
             {
                 result += String.Format(" DEFAULT {0}", field.strDefault);
             }
-            else if (field.strType == "varchar")
+            else if (field.strType == "varchar" || field.strType == "text")
             {
                 result += String.Format(" DEFAULT '{0}'", field.strDefault);
             }
@@ -415,6 +425,7 @@ public class TWriteSQL
             }
         }
 
+#if (!IMPORTFROMLEGACYDB)
         if (field.bNotNull)
         {
             result += String.Format(" NOT NULL");
@@ -424,6 +435,7 @@ public class TWriteSQL
         {
             result += String.Format(" CHECK {0}", field.strCheck);
         }
+#endif
 
         return result;
     }

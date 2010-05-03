@@ -8039,8 +8039,9 @@
                 notnull="yes"/>
     <tablefield name="a_property_value_c"
                 type="varchar"
-                descr="Description of this property"
-                format="X(100)"/>
+                descr="value of this property"
+                format="X(100)"
+                notnull="yes"/>
     <primarykey name="a_account_property_pk"
                 thisFields="a_ledger_number_i, a_account_code_c, a_property_code_c, a_property_value_c"/>
     <foreignkey name="a_account_property_fk1"
