@@ -158,7 +158,10 @@ OpenPetra:
             FinanceModuleSetup:
         Personnel: {Icon=personel_small.ico}
         ConferenceManagement: {Icon=conference_small.ico}
-        FinancialDevelopment: {Icon=develope_small.ico}
+        FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, LedgerNumber=43}
+            Reports:
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}
+                    IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
         SystemManager: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Finance:
                 LedgerOperations: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
