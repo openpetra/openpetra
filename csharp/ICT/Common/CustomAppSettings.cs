@@ -226,7 +226,7 @@ namespace Ict.Common
             String ReturnValue;
             XmlElement appsetting = null;
 
-            ReturnValue = "";
+            ReturnValue = UNDEFINEDVALUE;
 
             if (FCmdOpts.IsFlagSet(AKey))
             {
@@ -455,7 +455,7 @@ namespace Ict.Common
         /// </returns>
         public static String GetValueStatic(String AKey, String ADefaultValue)
         {
-            String ReturnValue = "";
+            String ReturnValue = UNDEFINEDVALUE;
             TAppSettingsManager Config;
 
             try
