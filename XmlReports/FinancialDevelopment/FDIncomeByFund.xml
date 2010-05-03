@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<!-- DO NOT MODIFY THIS FILE; IT WILL BREAK THE PATCH PROCESS -->
+<reports>
+<report id="FDIncomeByFund">
+  <description/>
+  <reportparameters>
+    <reportparameter name="param_ledger_number_i"/>
+    <reportparameter name="param_quarter"/>
+    <reportparameter name="param_start_period_i"/>
+    <reportparameter name="param_end_period_i"/>
+    <reportparameter name="param_year_i"/>
+    <reportparameter name="param_ytd"/>
+    <reportparameter name="param_currency"/>
+    <reportparameter name="param_depth"/>
+  </reportparameters>
+  <reportheader/>
+  <pageheader>
+    <field whichfield="title1">
+      <value text="Income by Fund"/>
+    </field>
+    <field whichfield="title2">
+      <value function="getLedgerName({{param_ledger_number_i}})"/>
+    </field>
+    <field whichfield="descr1">
+      <value text="Ledger "/>
+      <value variable="param_ledger_number_i"/>
+      <value text="   "/>
+      <value function="getLedgerName({{param_ledger_number_i}})"/>
+    </field>
+    <field whichfield="period1">
+      <value text="At "/>
+      <value function="getQuarterOrPeriod({{param_ledger_number_i}}, {{param_quarter}}, {{param_start_period_i}}, {{param_end_period_i}})"/>
+      <value text="  ("/>
+      <value function="getStatePeriod({{param_ledger_number_i}}, {{param_year_i}}, {{param_end_period_i}})"/>
+      <value text=")"/>
+    </field>
+    <field whichfield="period2">
+      <value function="getYTDPeriod({{param_ledger_number_i}}, {{param_end_period_i}}, {GLOBAL:param_ytd})"/>
+    </field>
+    <field whichfield="descr2">
+      <value text="Currency: "/>
+      <value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+    </field>
+    <field whichfield="type">
+      <value condition="eq({param_depth},standard)" text="Standard Income by Fund Report"/>
+      <value condition="eq({param_depth},summary)" text="Summary Income by Area Report"/>
+    </field>
+    <field whichfield="left1">
+      <value text="Area"/>
+    </field>
+    <field whichfield="left2">
+      <value condition="eq({param_depth},standard)" text="Fund"/>
+    </field>
+  </pageheader>
+  <calculations>
+    <calculation id="Select Unit Root" returns="UnitPartnerKey, UnitRootKey, UnitName" returnsFormat="row">
+      <query>
+        <queryDetail>
+          <value>          
+                    SELECT PUB_p_unit.p_partner_key_n AS UnitPartnerKey,
+                        PUB_p_unit.p_partner_key_n AS UnitRootKey,
+                        PUB_p_unit.p_unit_name_c AS UnitName
+                    FROM PUB_p_unit
+                    WHERE PUB_p_unit.u_unit_type_code_c = &quot;R&quot;
+                    
+</value>
+        </queryDetail>
+      </query>
+    </calculation>
+    <calculation id="Select Unit Children" returns="UnitPartnerKey, UnitName" returnsFormat="row">
+      <query>
+        <queryDetail>
+          <value>          
+                    SELECT um_child_unit_key_n AS UnitPartnerKey,
+                        PUB_p_unit.p_unit_name_c AS UnitName, 1
+                    FROM PUB_um_unit_structure, PUB_p_unit
+                    WHERE PUB_um_unit_structure.um_parent_unit_key_n = {{ParentUnitPartnerKey}} 
+                    AND PUB_p_unit.p_partner_key_n = um_child_unit_key_n
+                    AND 
+</value>
+          <value function="csv" text="PUB_p_unit.u_unit_type_code_c" variable="ChildrenUnitTypes"/>
+        </queryDetail>
+        
+        <queryDetail condition="exists(param_selectedAreasFunds)">
+          <value>          
+                    AND (PUB_p_unit.p_partner_key_n = {{UnitRootKey}} OR 
+</value>
+          <value function="csv" text="PUB_p_unit.p_partner_key_n" variable="param_selectedAreasFunds"/>
+          <value>          )
+</value>
+        </queryDetail>
+        
+        <queryDetail condition="and(eq({{level}},2),ne({{ParentUnitPartnerKey}},{{UnitRootKey}}))">
+          <value>          
+                    UNION 
+                    SELECT grandchild.um_child_unit_key_n AS UnitPartnerKey,
+                        PUB_p_unit.p_unit_name_c AS UnitName, 1
+                    FROM PUB_um_unit_structure AS child, PUB_um_unit_structure AS grandchild, PUB_p_unit
+                    WHERE child.um_parent_unit_key_n = {{ParentUnitPartnerKey}} 
+                    AND grandchild.um_parent_unit_key_n = child.um_child_unit_key_n
+                    AND PUB_p_unit.p_partner_key_n = grandchild.um_child_unit_key_n
+                    AND (
+</value>
+          <value function="csv" text="PUB_p_unit.u_unit_type_code_c" variable="ChildrenUnitTypes"/>
+          <value>          )
+                    
+</value>
+        </queryDetail>
+        
+        <queryDetail condition="exists(param_selectedAreasFunds)">
+          <value>          
+                    AND (PUB_p_unit.p_partner_key_n = {{UnitRootKey}} OR 
+</value>
+          <value function="csv" text="PUB_p_unit.p_partner_key_n" variable="param_selectedAreasFunds"/>
+          <value>          )
+</value>
+        </queryDetail>
+        
+        <queryDetail>
+          <value>          
+                    UNION 
+                    SELECT PUB_p_unit.p_partner_key_n AS UnitPartnerKey,
+                        PUB_p_unit.p_unit_name_c AS UnitName, 2
+                    FROM PUB_p_unit
+                    WHERE PUB_p_unit.p_partner_key_n = {{ParentUnitPartnerKey}}
+                    
+</value>
+        </queryDetail>
+        
+        <queryDetail condition="exists(param_selectedAreasFunds)">
+          <value>          
+                    AND (PUB_p_unit.p_partner_key_n = {{UnitRootKey}} OR 
+</value>
+          <value function="csv" text="PUB_p_unit.p_partner_key_n" variable="param_selectedAreasFunds"/>
+          <value>          )
+</value>
+        </queryDetail>
+        
+        <queryDetail condition="or(eq({{level}},1),eq({{ParentUnitPartnerKey}},0))">
+          <value>          
+                    UNION 
+                    SELECT 0 AS UnitPartnerKey,
+                        
+</value>
+          <value text="Gifts without recipient field key" format="quotes"/>
+          <value>           AS UnitName, 3
+                    FROM PUB_p_unit
+                    WHERE PUB_p_unit.p_partner_key_n = {{param_ledger_number_i}}* 1000000
+                    
+</value>
+        </queryDetail>
+        
+        <queryDetail condition="exists(param_selectedAreasFunds)">
+          <value>          
+                    AND (PUB_p_unit.p_partner_key_n = {{UnitRootKey}} OR 
+</value>
+          <value function="csv" text="PUB_p_unit.p_partner_key_n" variable="param_selectedAreasFunds"/>
+          <value>          )
+</value>
+        </queryDetail>
+        <queryDetail>
+          <value>          
+                    ORDER BY 3,2 
+          
+</value>
+        </queryDetail>
+      </query>
+    </calculation>
+    <calculation id="Calculate Gift Amount By Motivation" returns="Amount" returnsFormat="currency">
+      <query>
+        
+        <queryDetail>
+          <value>          
+                    SELECT SUM(detail.a_gift_amount_n) AS Amount
+                    FROM PUB_a_gift_batch as batch, PUB_a_gift_detail AS detail, PUB_a_motivation_detail as motdetail,
+                        PUB_a_cost_centre AS costcentre
+                    WHERE batch.a_ledger_number_i = {{param_ledger_number_i}}
+                    AND batch.a_batch_status_c = &quot;Posted&quot;
+                    
+</value>
+        </queryDetail>
+        <queryDetail>
+          <switch>
+            <case condition="eq({param_ytd}, true)">
+              <value>              
+                        AND batch.a_batch_year_i = {{param_year_i}}
+                        AND batch.a_batch_period_i BETWEEN 1 AND {{param_end_period_i}}
+                        
+</value>
+            </case>
+            <default>
+              <value>              
+                        AND batch.a_batch_year_i = {{param_year_i}} 
+                        AND batch.a_batch_period_i BETWEEN {{param_start_period_i}} AND {{param_end_period_i}}
+                        
+</value>
+            </default>
+          </switch>
+        </queryDetail>
+        <queryDetail>
+          <value>          
+                    AND detail.a_ledger_number_i = batch.a_ledger_number_i
+                    
+</value>
+        </queryDetail>
+        <queryDetail>
+          <value>          
+                    AND detail.a_batch_number_i = batch.a_batch_number_i
+                    AND costcentre.a_ledger_number_i = {{param_ledger_number_i}}
+                    AND costcentre.a_cost_centre_code_c = detail.a_cost_centre_code_c
+                    AND (
+</value>
+        </queryDetail>
+        <queryDetail condition="ne({{UnitPartnerKey}},0)">
+          <value>
+            
+            
+                            detail.a_recipient_ledger_number_n = {{UnitPartnerKey}}
+                            
+                            
+            
+            
+                            OR 
+                          ( 
+                                detail.a_recipient_ledger_number_n = 0 
+                            AND detail.a_cost_centre_code_c = 
+          </value>
+          <value function="UnitKeyToForeignCostCentre({{UnitPartnerKey}})" format="quotes"/>
+          <value>          
+                          )
+                           
+</value>
+        </queryDetail>
+        <queryDetail condition="eq({{UnitPartnerKey}},0)">
+          <value>
+            
+            
+                            detail.a_recipient_ledger_number_n = 0
+                            AND costcentre.a_cost_centre_type_c = &apos;Local&apos;
+                            
+          </value>
+        </queryDetail>
+        <queryDetail>
+          <value>          
+                        )
+                    AND motdetail.a_ledger_number_i = detail.a_ledger_number_i
+                    AND motdetail.a_motivation_group_code_c = detail.a_motivation_group_code_c
+                    AND motdetail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
+                    AND motdetail.a_receipt_l = 1
+                    
+</value>
+        </queryDetail>
+        <!--queryDetail condition="exists(param_exclude_motivation)"-->
+	<queryDetail condition="gt(length({param_exclude_motivation}), 1)">
+          <value>           AND NOT 
+</value>
+          <value function="csv" text="motdetail.a_motivation_group_code_c,motdetail.a_motivation_detail_code_c" variable="param_exclude_motivation"/>
+        </queryDetail>
+		<!--queryDetail condition="exists(param_explicit_motivation)"-->
+	 <queryDetail condition="gt(length({param_explicit_motivation}), 1)">
+          <value>           AND 
+</value>
+          <value function="csv" text="motdetail.a_motivation_group_code_c,motdetail.a_motivation_detail_code_c" variable="param_explicit_motivation"/>
+        </queryDetail>
+      </query>
+    </calculation>
+    <calculation id="GiftsByMotivation" returnsFormat="currency" returns="amount">
+      <caption>
+        <value variable="param_caption"/>
+        <value text="\n"/>
+        <value function="GetYTDPerColumn()"/>
+        <value condition="exists(param_explicit_motivation)" text="\nOnly motivations: "/>
+        <value condition="exists(param_explicit_motivation)" variable="param_explicit_motivation"/>
+        <value condition="exists(param_exclude_motivation)" text="\nWithout motivations: "/>
+        <value condition="exists(param_exclude_motivation)" variable="param_exclude_motivation"/>
+        <value condition="not(or(exists(param_explicit_motivation),exists(param_exclude_motivation)))" text="\nAll motivations with receipt flag"/>
+      </caption>
+      <shortcaption>
+        <value variable="param_caption"/>
+        <value text="\n"/>
+        <value function="GetYTDPerColumn()"/>
+      </shortcaption>
+      <query>
+        <queryDetail>
+          <value calculation="Calculate Gift Amount By Motivation"/>
+        </queryDetail>
+      </query>
+    </calculation>
+    <calculation id="% of Grand Income" returnsFormat="percentage2decimals" returns="functionresult">
+      <caption>
+        <value text="% of\nGrand Income"/>
+      </caption>
+      <query>
+        <queryDetail>
+          <value function="mul(div(column({{FirstColumn}}),FirstLevelColumn({{FirstColumn}})), 100)"/>
+        </queryDetail>
+      </query>
+    </calculation>
+  </calculations>
+  <levels>
+    <level name="main">
+      <detail>
+        <lowerLevelReport level="AllAreas" calculation="Select Unit Root"/>
+        <lowerLevelReport level="AllAreas" calculation="Select Unit Root" condition="eq({param_depth},detail)">
+          <parameter name="param_depth">
+            <value text="summary"/>
+          </parameter>
+        </lowerLevelReport>
+      </detail>
+    </level>
+    
+    <level name="AllAreas">
+      <detail>
+        <lowerLevelReport level="Areas" calculation="Select Unit Children" condition="or(eq({{param_depth}},standard),eq({{param_depth}},detail))">
+          <parameter name="ParentUnitPartnerKey">
+            <value variable="UnitPartnerKey"/>
+          </parameter>
+          <parameter name="ChildrenUnitTypes" value="A"/>
+        </lowerLevelReport>
+        <lowerLevelReport level="SummaryAreas" calculation="Select Unit Children" condition="eq({{param_depth}},summary)">
+          <parameter name="ParentUnitPartnerKey">
+            <value variable="UnitPartnerKey"/>
+          </parameter>
+          <parameter name="ChildrenUnitTypes" value="A"/>
+        </lowerLevelReport>
+      </detail>
+      <footer>
+        <field whichfield="left 0" pos="1cm" width="4 cm">
+          <value text="Grand Income"/>
+        </field>
+        <field whichfield="columns" pos="indented" line="above_below">
+          <value function="getSumLowerReport({{lineId}}, {{column}})"/>
+        </field>
+      </footer>
+    </level>
+    
+    <level name="Areas" identification="UnitPartnerKey" condition="or(not(exists(param_selectedAreasFunds)),ContainsCSV({param_selectedAreasFunds},{UnitPartnerKey}))">
+      <header>
+        <field whichfield="header 0" pos="0cm" width="5cm">
+          <value variable="UnitName"/>
+        </field>
+      </header>
+      <detail>
+        <lowerLevelReport level="Fund" calculation="Select Unit Children">
+          <parameter name="ParentUnitPartnerKey">
+            <value variable="UnitPartnerKey"/>
+          </parameter>
+          <parameter name="ChildrenUnitTypes" value="F,D"/>
+        </lowerLevelReport>
+      </detail>
+      <footer space="below">
+        <field whichfield="left 0" pos="1cm" width="5 cm">
+          <value text="Total "/>
+          <value variable="UnitName"/>
+        </field>
+        <field whichfield="columns" pos="indented" line="above">
+          <value function="getSumLowerReport({{lineId}}, {{column}})"/>
+        </field>
+      </footer>
+    </level>
+    
+    <level name="SummaryAreas" identification="UnitPartnerKey" condition="or(not(exists(param_selectedAreasFunds)),ContainsCSV({param_selectedAreasFunds},{UnitPartnerKey}))">
+      <detail>
+        <lowerLevelReport level="Fund" calculation="Select Unit Children">
+          <parameter name="ParentUnitPartnerKey">
+            <value variable="UnitPartnerKey"/>
+          </parameter>
+          <parameter name="ChildrenUnitTypes" value="F,D"/>
+        </lowerLevelReport>
+      </detail>
+      <footer>
+        <field whichfield="left 0" pos="0cm" width="5 cm">
+          <value variable="UnitName"/>
+        </field>
+        <field whichfield="columns">
+          <value function="getSumLowerReport({{lineId}}, {{column}})"/>
+        </field>
+      </footer>
+    </level>
+    
+    <level name="Fund" identification="UnitPartnerKey" condition="and(eq(mod({{UnitPartnerKey}},1000000),0),ne({{param_depth}},summary))">
+      
+      <detail>
+        <field whichfield="left 0" pos="0.5cm" width="1cm" align="right">
+          <value function="div({{UnitPartnerKey}}, 1000000)"/>
+        </field>
+        <field whichfield="left 1" pos="1.8cm" width="5 cm">
+          <value variable="UnitName"/>
+        </field>
+        <field whichfield="columns"/>
+      </detail>
+    </level>
+    
+  </levels>
+</report>
+
+</reports>
