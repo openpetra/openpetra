@@ -2571,9 +2571,9 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
 
         /// generated method from connector
         public PartnerFindTDS FindPartners(string AFirstName,
-                                                 string AFamilyNameOrOrganisation,
-                                                 string ACity,
-                                                 StringCollection APartnerClasses)
+                                           string AFamilyNameOrOrganisation,
+                                           string ACity,
+                                           StringCollection APartnerClasses)
         {
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector.FindPartners(AFirstName, AFamilyNameOrOrganisation, ACity, APartnerClasses);
         }

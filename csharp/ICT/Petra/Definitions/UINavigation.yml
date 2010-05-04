@@ -36,7 +36,7 @@ OpenPetra:
                         ImportPartners: {ActionClick=TFrmPartnerMain.ImportPartners, Label=Simple Import, Description="Import Partners, only useful for initial database setup"}
                         ComplexImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Sophisticated Import, Description=Import Partners without overwriting}
                         ExportPartners: {ActionClick=TFrmPartnerMain.ExportPartners}
-                Ledger43: {Label=German Ledger (43), LedgerNumber=43, Namespace=Ict.Petra.Client.MFinance.Gui}
+                Ledger: {Label=Ledger {0} {1}, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui}
                     GL: 
                         ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=GL.TFrmGLAccountHierarchy}
                         ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=GL.TFrmGLCostCentreHierarchy}
@@ -83,8 +83,8 @@ OpenPetra:
             MoreFunctions:
                 SetupPartnerModule:
         # Department
-        # SpecialType LEDGER means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
-        Finance: {Icon=accounts_small.ico, SpecialType=LEDGER, LedgerNumber=43, Namespace=Ict.Petra.Client.MFinance.Gui}
+        # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
+        Finance: {Icon=accounts_small.ico, Label=Ledger {0} {1}, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui}
             # Module
             GeneralLedger:
                 # Sub Module
@@ -158,7 +158,7 @@ OpenPetra:
             FinanceModuleSetup:
         Personnel: {Icon=personel_small.ico}
         ConferenceManagement: {Icon=conference_small.ico}
-        FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, LedgerNumber=43}
+        FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true}
             Reports:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}
                     IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}

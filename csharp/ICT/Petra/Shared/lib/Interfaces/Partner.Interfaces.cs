@@ -552,11 +552,11 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
     /// <summary>auto generated</summary>
     public interface IPartnerWebConnectorsNamespace : IInterface
     {
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TQuickPartnerFindWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector)</summary>
         PartnerFindTDS FindPartners(string AFirstName,
-                                          string AFamilyNameOrOrganisation,
-                                          string ACity,
-                                          StringCollection APartnerClasses);
+                                    string AFamilyNameOrOrganisation,
+                                    string ACity,
+                                    StringCollection APartnerClasses);
     }
 
 }

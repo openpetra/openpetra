@@ -522,6 +522,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                              Int32 ACurrentPeriod,
                              Int32 ANumberOfFwdPostingPeriods,
                              out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
+        ALedgerTable GetAvailableLedgers();
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
         bool GetCurrentPeriodDates(Int32 ALedgerNumber,
                                    out DateTime AStartDate,

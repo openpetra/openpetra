@@ -26,11 +26,15 @@
 using System;
 using System.Xml;
 using System.Windows.Forms;
+using Mono.Unix;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Controls;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.Interfaces.MReporting;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.App.PetraClient
 {
@@ -100,6 +104,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TAppSettingsManager opts = new TAppSettingsManager();
             TYml2Xml parser = new TYml2Xml(opts.GetValue("UINavigation.File"));
             XmlDocument UINavigation = parser.ParseYML2XML();
+            ALedgerTable AvailableLedgers = TRemote.MFinance.GL.WebConnectors.GetAvailableLedgers();
 
             XmlNode OpenPetraNode = UINavigation.FirstChild.NextSibling.FirstChild;
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
@@ -108,7 +113,34 @@ namespace Ict.Petra.Client.App.PetraClient
 
             while (DepartmentNode != null)
             {
-                lstFolders.AddFolder(DepartmentNode, UserInfo.GUserInfo.UserID, HasAccessPermission);
+                if (TXMLParser.GetAttribute(DepartmentNode, "DependsOnLedger").ToLower() == "true")
+                {
+                    string label = TXMLParser.GetAttribute(DepartmentNode, "Label");
+
+                    foreach (ALedgerRow ledger in AvailableLedgers.Rows)
+                    {
+                        XmlNode NewNode = DepartmentNode.Clone();
+                        DepartmentNode.ParentNode.InsertBefore(NewNode, DepartmentNode);
+                        XmlAttribute ledgerNumberAttribute = DepartmentNode.OwnerDocument.CreateAttribute("LedgerNumber");
+                        ledgerNumberAttribute.Value = ledger.LedgerNumber.ToString();
+                        NewNode.Attributes.Append(ledgerNumberAttribute);
+
+                        if (AvailableLedgers.Rows.Count > 1)
+                        {
+                            NewNode.Attributes["Label"].Value = String.Format(Catalog.GetString(label), ledger.LedgerName, ledger.LedgerNumber);
+                        }
+                        else
+                        {
+                            NewNode.Attributes["Label"].Value = String.Format(Catalog.GetString(label), "", "");
+                        }
+
+                        lstFolders.AddFolder(NewNode, UserInfo.GUserInfo.UserID, HasAccessPermission);
+                    }
+                }
+                else
+                {
+                    lstFolders.AddFolder(DepartmentNode, UserInfo.GUserInfo.UserID, HasAccessPermission);
+                }
 
                 DepartmentNode = DepartmentNode.NextSibling;
             }

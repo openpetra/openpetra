@@ -2660,6 +2660,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public ALedgerTable GetAvailableLedgers()
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.GetAvailableLedgers();
+        }
+
+        /// generated method from connector
         public bool GetCurrentPeriodDates(Int32 ALedgerNumber,
                                           out DateTime AStartDate,
                                           out DateTime AEndDate)
