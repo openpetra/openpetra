@@ -128,13 +128,15 @@ namespace Ict.Common.Controls
 
         private TPnlAccordion GetOrCreatePanel(XmlNode AFolderNode)
         {
-            if (this.sptNavigation.Panel1.Controls.ContainsKey("pnl" + AFolderNode.Name))
+            string pnlName = "pnl" + AFolderNode.Attributes["Label"].Value.Replace(" ", "");
+
+            if (this.sptNavigation.Panel1.Controls.ContainsKey(pnlName))
             {
-                return (TPnlAccordion) this.sptNavigation.Panel1.Controls["pnl" + AFolderNode.Name];
+                return (TPnlAccordion) this.sptNavigation.Panel1.Controls[pnlName];
             }
             else
             {
-                TPnlAccordion pnlAccordion = new TPnlAccordion(AFolderNode, FDashboard);
+                TPnlAccordion pnlAccordion = new TPnlAccordion(AFolderNode, FDashboard, pnlName);
 
                 pnlAccordion.Statusbar = FStatusbar;
 
