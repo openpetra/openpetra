@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{67EAEC89-7919-4CE5-819C-97AF6B618232}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -41,6 +41,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="Ict.Petra.Shared.MPartner.DataSets">
+      <HintPath>..\..\..\..\_bin\Debug\Ict.Petra.Shared.MPartner.DataSets.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.UserInfo">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.UserInfo.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -88,18 +91,39 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BriefAddressReport.cs" />
+    <Compile Include="BriefAddressReport.Designer.cs">
+      <DependentUpon>BriefAddressReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartnerByCity.cs" />
     <Compile Include="PartnerByCity.Designer.cs">
       <DependentUpon>PartnerByCity.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_PartnerSelection.cs" />
+    <Compile Include="UC_PartnerSelection.Designer.cs">
+      <DependentUpon>UC_PartnerSelection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_PartnerSelection.ManualCode.cs">
+      <DependentUpon>UC_PartnerSelection.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="BriefAddressReport.resx">
+      <DependentUpon>BriefAddressReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PartnerByCity.resx">
       <DependentUpon>PartnerByCity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_PartnerSelection.resx">
+      <DependentUpon>UC_PartnerSelection.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\app\Core\Ict.Petra.Client.App.Core.csproj">
       <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
       <Name>Ict.Petra.Client.App.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
+      <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
+      <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\CommonControls\gui\Ict.Petra.Client.CommonControls.Gui.csproj">
       <Project>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</Project>

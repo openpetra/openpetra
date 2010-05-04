@@ -11,12 +11,18 @@
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
+        #~ tpgGeneralSettings:
+            #~ Label: General Settings
+            #~ Controls: [ucoPartnerSelection]
         tpgReportSorting:
             Label: Sorting
             Controls: [ucoReportSorting]
         tpgColumns:
             Controls: [ucoReportColumns]
             Order: AlwaysLast
+        #~ ucoPartnerSelection:
+            #~ Type: Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection
+            #~ Dock: Fill
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill

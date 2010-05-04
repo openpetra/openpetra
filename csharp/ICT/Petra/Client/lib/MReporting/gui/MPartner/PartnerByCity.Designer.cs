@@ -191,9 +191,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabReportSettings.Controls.Add(this.tpgReportSpecific);
-            this.tabReportSettings.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabReportSettings.Controls.Add(this.tpgReportSorting);
             this.tabReportSettings.Controls.Add(this.tpgColumns);
+            this.tabReportSettings.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             //
             // tbbGenerateReport
             //
