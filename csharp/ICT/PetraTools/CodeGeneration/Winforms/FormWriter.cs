@@ -84,6 +84,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new TClbVersatileReportGenerator());
                 AvailableControlGenerators.Add(new DateTimePickerReportGenerator());
                 AvailableControlGenerators.Add(new TextBoxReportGenerator());
+                AvailableControlGenerators.Add(new TTxtAutoPopulatedButtonLabelGenerator());
                 AvailableControlGenerators.Add(new ComboBoxReportGenerator());
                 AvailableControlGenerators.Add(new TcmbAutoPopulatedReportGenerator());
                 AvailableControlGenerators.Add(new RadioGroupComplexReportGenerator());
