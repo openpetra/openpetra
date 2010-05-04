@@ -131,7 +131,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtPreferredName.Location = new System.Drawing.Point(2,2);
             this.txtPreferredName.Name = "txtPreferredName";
-            this.txtPreferredName.Size = new System.Drawing.Size(150, 28);
+            this.txtPreferredName.Size = new System.Drawing.Size(240, 28);
             //
             // lblPreferredName
             //
@@ -144,9 +144,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // txtPreviousName
             //
-            this.txtPreviousName.Location = new System.Drawing.Point(2,2);
             this.txtPreviousName.Name = "txtPreviousName";
-            this.txtPreviousName.Size = new System.Drawing.Size(150, 28);
+            this.txtPreviousName.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtPreviousName.AutoSize = true;
             //
             // lblPreviousName
             //
@@ -159,9 +159,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // txtLocalName
             //
-            this.txtLocalName.Location = new System.Drawing.Point(2,2);
             this.txtLocalName.Name = "txtLocalName";
-            this.txtLocalName.Size = new System.Drawing.Size(150, 28);
+            this.txtLocalName.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtLocalName.AutoSize = true;
             //
             // lblLocalName
             //
@@ -172,17 +172,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLocalName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblLocalName.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 4;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 120));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 40));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 40));
             this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Percent, 50));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Percent, 40));
             this.tableLayoutPanel1.Controls.Add(this.lblPreferredName, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblLocalName, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.txtPreferredName, 1, 0);
-            this.tableLayoutPanel1.SetColumnSpan(this.txtLocalName, 2);
+            this.tableLayoutPanel1.SetColumnSpan(this.txtLocalName, 3);
             this.tableLayoutPanel1.Controls.Add(this.txtLocalName, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.lblPreviousName, 2, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtPreviousName, 3, 0);
@@ -218,9 +218,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // txtDecorations
             //
-            this.txtDecorations.Location = new System.Drawing.Point(2,2);
             this.txtDecorations.Name = "txtDecorations";
-            this.txtDecorations.Size = new System.Drawing.Size(150, 28);
+            this.txtDecorations.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtDecorations.AutoSize = true;
             //
             // lblDecorations
             //
@@ -249,9 +249,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // txtAcademicTitle
             //
-            this.txtAcademicTitle.Location = new System.Drawing.Point(2,2);
             this.txtAcademicTitle.Name = "txtAcademicTitle";
-            this.txtAcademicTitle.Size = new System.Drawing.Size(150, 28);
+            this.txtAcademicTitle.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtAcademicTitle.AutoSize = true;
             //
             // lblAcademicTitle
             //
@@ -279,9 +279,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // txtMaritalStatusComment
             //
-            this.txtMaritalStatusComment.Location = new System.Drawing.Point(2,2);
             this.txtMaritalStatusComment.Name = "txtMaritalStatusComment";
-            this.txtMaritalStatusComment.Size = new System.Drawing.Size(150, 28);
+            this.txtMaritalStatusComment.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtMaritalStatusComment.Size = new System.Drawing.Size(150, 46);
+            this.txtMaritalStatusComment.Multiline = true;
+            this.txtMaritalStatusComment.ScrollBars = ScrollBars.Vertical;
             //
             // lblMaritalStatusComment
             //
@@ -350,10 +352,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblOccupationCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblOccupationCode.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel2.ColumnCount = 4;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 120));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 40));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 40));
             this.tableLayoutPanel2.RowCount = 7;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -372,11 +374,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.Controls.Add(this.dtpDateOfBirth, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.cmbMaritalStatus, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.dtpMaritalStatusSince, 1, 2);
-            this.tableLayoutPanel2.SetColumnSpan(this.txtMaritalStatusComment, 2);
+            this.tableLayoutPanel2.SetColumnSpan(this.txtMaritalStatusComment, 3);
             this.tableLayoutPanel2.Controls.Add(this.txtMaritalStatusComment, 1, 3);
             this.tableLayoutPanel2.Controls.Add(this.cmbLanguageCode, 1, 4);
             this.tableLayoutPanel2.Controls.Add(this.cmbAcquisitionCode, 1, 5);
-            this.tableLayoutPanel2.SetColumnSpan(this.txtOccupationCode, 2);
+            this.tableLayoutPanel2.SetColumnSpan(this.txtOccupationCode, 3);
             this.tableLayoutPanel2.Controls.Add(this.txtOccupationCode, 1, 6);
             this.tableLayoutPanel2.Controls.Add(this.lblDecorations, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblAcademicTitle, 2, 1);

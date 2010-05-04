@@ -1,0 +1,47 @@
+﻿RootNode:
+    BaseYaml: ../ReportingForm.yaml
+    FormType: report
+    FormTitle: FD Income by Fund
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
+    TemplateParameters:
+        XMLFILES: [FinancialDevelopment/FDIncomeByFund.xml, common.xml]
+        REPORTNAME: FDIncomeByFund
+        CURRENTREPORT: FDIncomeByFund
+        SETAVAILABLEFUNCTIONS: BLANK
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRFINDEV]
+    Controls:
+        tpgReportSpecific:
+            Label: Report parameters
+            Controls: 
+                Row0:[txtLedger]
+                #Row1:[cmbCurrency]
+                Row2: [rgrPeriod]
+                Row3: [chkYearToDate]
+                Row4: [cmbDepth]
+        txtLedger: {ReadOnly=true, NoParameter=true}
+        #cmbCurrency:
+        #    ParameterName: param_currency
+        #    OptionalValues: [Base, International, Transaction]
+        rgrPeriod:
+            Controls: [rbtPeriodRange, rbtQuarter]
+            Dock: Top
+        rbtPeriodRange:
+            Controls: [txtStartPeriod, txtEndPeriod, cmbPeriodYear]
+            ControlsOrientation: horizontal
+        rbtQuarter:
+            Controls: [txtQuarter, cmbPeriodYearQuarter]
+            ControlsOrientation: horizontal
+        txtStartPeriod: {Label=from, ParameterName=param_start_period_i, Width=30}
+        txtEndPeriod: {Label=to, ParameterName=param_end_period_i, Width=30}
+        cmbPeriodYear: {Label=Year, List=UserDefinedList, ParameterName=param_year_i}
+        cmbPeriodYearQuarter: {Label=Year, List=UserDefinedList, ParameterName=param_year_i}
+        txtQuarter: {Label=Quarter, ParameterName=param_quarter, Width=30}
+        chkYearToDate: {Label=YTD, ParameterName=param_ytd, Help=Should we calculate from the start of the year?}
+        cmbDepth: {Label=Depth, ParameterName=param_depth}
+            OptionalValues: [summary, =standard, detail]

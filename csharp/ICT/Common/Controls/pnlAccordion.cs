@@ -56,10 +56,10 @@ namespace Ict.Common.Controls
         static System.Drawing.Bitmap DownArrow = null;
 
         /// create an accordion with several items for the given folder, with all sub menus
-        public TPnlAccordion(XmlNode AFolderNode, TDashboard ADashboard)
+        public TPnlAccordion(XmlNode AFolderNode, TDashboard ADashboard, string APanelName)
         {
             this.FDashboard = ADashboard;
-            this.Name = "pnl" + AFolderNode.Name;
+            this.Name = APanelName;
             this.Dock = DockStyle.Top;
             this.Height = 0;
 

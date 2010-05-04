@@ -709,35 +709,36 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "\"" + TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue") + "\"");
             }
 
-            if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "Multiline")) && TXMLParser.GetAttribute(ctrl.xmlNode, "Multiline") == "true")
+            if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "Multiline")) && (TXMLParser.GetAttribute(ctrl.xmlNode, "Multiline") == "true"))
             {
                 writer.SetControlProperty(ctrl.controlName, "Multiline", "true");
-                
-                if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "WordWrap")) && TXMLParser.GetAttribute(ctrl.xmlNode, "WordWrap") == "false")
+
+                if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "WordWrap")) && (TXMLParser.GetAttribute(ctrl.xmlNode, "WordWrap") == "false"))
                 {
                     writer.SetControlProperty(ctrl.controlName, "WordWrap", "false");
                 }
-                
+
                 if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ScrollBars"))
                 {
                     writer.SetControlProperty(ctrl.controlName, "ScrollBars", "ScrollBars." + TXMLParser.GetAttribute(ctrl.xmlNode, "ScrollBars"));
-                }                
+                }
             }
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "TextAlign"))
             {
-                writer.SetControlProperty(ctrl.controlName, "TextAlign", TXMLParser.GetAttribute(ctrl.xmlNode, "TextAlign"));
-            }
-                                    
-            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "CharacterCasing"))
-            {
-                writer.SetControlProperty(ctrl.controlName, "CharacterCasing", "CharacterCasing." + TXMLParser.GetAttribute(ctrl.xmlNode, "CharacterCasing"));
+                writer.SetControlProperty(ctrl.controlName, "TextAlign", "HorizontalAlignment." + TXMLParser.GetAttribute(ctrl.xmlNode, "TextAlign"));
             }
 
-            if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "PasswordEntry")) && TXMLParser.GetAttribute(ctrl.xmlNode, "PasswordEntry") == "true")
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "CharacterCasing"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "CharacterCasing", "CharacterCasing." +
+                    TXMLParser.GetAttribute(ctrl.xmlNode, "CharacterCasing"));
+            }
+
+            if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "PasswordEntry")) && (TXMLParser.GetAttribute(ctrl.xmlNode, "PasswordEntry") == "true"))
             {
                 writer.SetControlProperty(ctrl.controlName, "UseSystemPasswordChar", "true");
-            }            
+            }
         }
 
         protected void CreateCode(IFormWriter writer, TControlDef ATextControl)

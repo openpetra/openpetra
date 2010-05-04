@@ -916,5 +916,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             return result == TSubmitChangesResult.scrOK;
         }
+
+        /// <summary>
+        /// get the ledger numbers that are available for the current user
+        /// </summary>
+        public static ALedgerTable GetAvailableLedgers()
+        {
+            // TODO check for permissions of the current user
+            StringCollection Fields = new StringCollection();
+
+            Fields.Add(ALedgerTable.GetLedgerNameDBName());
+            Fields.Add(ALedgerTable.GetLedgerNumberDBName());
+            return ALedgerAccess.LoadAll(Fields, null, null, 0, 0);
+        }
     }
 }

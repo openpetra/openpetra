@@ -16,11 +16,17 @@ RootNode:
             Controls:
                 Row0: [txtPreferredName, txtPreviousName]
                 Row1: [txtLocalName]
+            ColWidths: [0=Fixed:120, 1=Percent:40, 3=Percent:40]
+            RowHeights: [0=Percent:50, 1=Percent:40]
 
         txtPreferredName: {DataField=PPerson.PreferedName}            
+            Width: 240
         txtPreviousName: {DataField=PPartner.PreviousName}
-        txtLocalName: {DataField=PPartner.PartnerShortNameLoc, ColSpan=2}
-         
+            Dock: Top
+        txtLocalName: {DataField=PPartner.PartnerShortNameLoc}
+            ColSpan: 3
+            Dock: Top
+
         grpMisc: {Label=Miscellaneous, Dock=Top}
             Controls: 
                 Row0: [dtpDateOfBirth, txtDecorations]
@@ -30,14 +36,21 @@ RootNode:
                 Row4: [cmbLanguageCode]
                 Row5: [cmbAcquisitionCode]
                 Row6: [txtOccupationCode]
+            ColWidths: [0=Fixed:120, 1=Percent:40, 3=Percent:40]
 
         dtpDateOfBirth:
         txtDecorations:
+            Dock: Top
         cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList}
         txtAcademicTitle:
+            Dock: Top
         dtpMaritalStatusSince:
-        txtMaritalStatusComment: {ColSpan=2}
-# TODO: MultiLine!        
+        txtMaritalStatusComment:
+            ColSpan: 3
+            Height: 46
+            Multiline: true
+            ScrollBars: Vertical            
+            Dock: Top
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
-        txtOccupationCode: {Label=Occupation, Type=Occupation, ColSpan=2}
+        txtOccupationCode: {Label=Occupation, Type=Occupation, ColSpan=3}

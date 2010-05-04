@@ -26,11 +26,15 @@
 using System;
 using System.Xml;
 using System.Windows.Forms;
+using Mono.Unix;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Controls;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.Interfaces.MReporting;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.App.PetraClient
 {
@@ -95,16 +99,60 @@ namespace Ict.Petra.Client.App.PetraClient
             return true;
         }
 
+        private void AddNavigationForEachLedger(XmlNode AMenuNode, ALedgerTable AAvailableLedgers)
+        {
+            XmlNode childNode = AMenuNode.FirstChild;
+
+            while (childNode != null)
+            {
+                if (TXMLParser.GetAttribute(childNode, "DependsOnLedger").ToLower() == "true")
+                {
+                    string label = TXMLParser.GetAttribute(childNode, "Label");
+
+                    foreach (ALedgerRow ledger in AAvailableLedgers.Rows)
+                    {
+                        XmlNode NewNode = childNode.Clone();
+                        childNode.ParentNode.InsertBefore(NewNode, childNode);
+                        XmlAttribute ledgerNumberAttribute = childNode.OwnerDocument.CreateAttribute("LedgerNumber");
+                        ledgerNumberAttribute.Value = ledger.LedgerNumber.ToString();
+                        NewNode.Attributes.Append(ledgerNumberAttribute);
+
+                        if (AAvailableLedgers.Rows.Count > 1)
+                        {
+                            NewNode.Attributes["Label"].Value = String.Format(Catalog.GetString(label), ledger.LedgerName, ledger.LedgerNumber);
+                        }
+                        else
+                        {
+                            NewNode.Attributes["Label"].Value = String.Format(Catalog.GetString(label), "", "");
+                        }
+                    }
+
+                    // remove the node that has the place holder for the ledger
+                    XmlNode toRemove = childNode;
+                    childNode = childNode.NextSibling;
+                    AMenuNode.RemoveChild(toRemove);
+                }
+                else
+                {
+                    AddNavigationForEachLedger(childNode, AAvailableLedgers);
+                    childNode = childNode.NextSibling;
+                }
+            }
+        }
+
         private void LoadNavigationUI()
         {
             TAppSettingsManager opts = new TAppSettingsManager();
             TYml2Xml parser = new TYml2Xml(opts.GetValue("UINavigation.File"));
             XmlDocument UINavigation = parser.ParseYML2XML();
+            ALedgerTable AvailableLedgers = TRemote.MFinance.GL.WebConnectors.GetAvailableLedgers();
 
             XmlNode OpenPetraNode = UINavigation.FirstChild.NextSibling.FirstChild;
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
             XmlNode DepartmentNode = MainMenuNode.FirstChild;
+
+            AddNavigationForEachLedger(MainMenuNode, AvailableLedgers);
 
             while (DepartmentNode != null)
             {
@@ -122,6 +170,9 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             // make sure the application exits; also important for alternate navigation style main window
             this.Hide();
+
+            PetraClientShutdown.Shutdown.SaveUserDefaultsAndDisconnect();
+
             Environment.Exit(0);
         }
 
