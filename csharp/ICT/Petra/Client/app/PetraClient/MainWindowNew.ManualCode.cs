@@ -99,6 +99,47 @@ namespace Ict.Petra.Client.App.PetraClient
             return true;
         }
 
+        private void AddNavigationForEachLedger(XmlNode AMenuNode, ALedgerTable AAvailableLedgers)
+        {
+            XmlNode childNode = AMenuNode.FirstChild;
+
+            while (childNode != null)
+            {
+                if (TXMLParser.GetAttribute(childNode, "DependsOnLedger").ToLower() == "true")
+                {
+                    string label = TXMLParser.GetAttribute(childNode, "Label");
+
+                    foreach (ALedgerRow ledger in AAvailableLedgers.Rows)
+                    {
+                        XmlNode NewNode = childNode.Clone();
+                        childNode.ParentNode.InsertBefore(NewNode, childNode);
+                        XmlAttribute ledgerNumberAttribute = childNode.OwnerDocument.CreateAttribute("LedgerNumber");
+                        ledgerNumberAttribute.Value = ledger.LedgerNumber.ToString();
+                        NewNode.Attributes.Append(ledgerNumberAttribute);
+
+                        if (AAvailableLedgers.Rows.Count > 1)
+                        {
+                            NewNode.Attributes["Label"].Value = String.Format(Catalog.GetString(label), ledger.LedgerName, ledger.LedgerNumber);
+                        }
+                        else
+                        {
+                            NewNode.Attributes["Label"].Value = String.Format(Catalog.GetString(label), "", "");
+                        }
+                    }
+
+                    // remove the node that has the place holder for the ledger
+                    XmlNode toRemove = childNode;
+                    childNode = childNode.NextSibling;
+                    AMenuNode.RemoveChild(toRemove);
+                }
+                else
+                {
+                    AddNavigationForEachLedger(childNode, AAvailableLedgers);
+                    childNode = childNode.NextSibling;
+                }
+            }
+        }
+
         private void LoadNavigationUI()
         {
             TAppSettingsManager opts = new TAppSettingsManager();
@@ -111,36 +152,11 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
             XmlNode DepartmentNode = MainMenuNode.FirstChild;
 
+            AddNavigationForEachLedger(MainMenuNode, AvailableLedgers);
+
             while (DepartmentNode != null)
             {
-                if (TXMLParser.GetAttribute(DepartmentNode, "DependsOnLedger").ToLower() == "true")
-                {
-                    string label = TXMLParser.GetAttribute(DepartmentNode, "Label");
-
-                    foreach (ALedgerRow ledger in AvailableLedgers.Rows)
-                    {
-                        XmlNode NewNode = DepartmentNode.Clone();
-                        DepartmentNode.ParentNode.InsertBefore(NewNode, DepartmentNode);
-                        XmlAttribute ledgerNumberAttribute = DepartmentNode.OwnerDocument.CreateAttribute("LedgerNumber");
-                        ledgerNumberAttribute.Value = ledger.LedgerNumber.ToString();
-                        NewNode.Attributes.Append(ledgerNumberAttribute);
-
-                        if (AvailableLedgers.Rows.Count > 1)
-                        {
-                            NewNode.Attributes["Label"].Value = String.Format(Catalog.GetString(label), ledger.LedgerName, ledger.LedgerNumber);
-                        }
-                        else
-                        {
-                            NewNode.Attributes["Label"].Value = String.Format(Catalog.GetString(label), "", "");
-                        }
-
-                        lstFolders.AddFolder(NewNode, UserInfo.GUserInfo.UserID, HasAccessPermission);
-                    }
-                }
-                else
-                {
-                    lstFolders.AddFolder(DepartmentNode, UserInfo.GUserInfo.UserID, HasAccessPermission);
-                }
+                lstFolders.AddFolder(DepartmentNode, UserInfo.GUserInfo.UserID, HasAccessPermission);
 
                 DepartmentNode = DepartmentNode.NextSibling;
             }
