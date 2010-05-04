@@ -46,6 +46,9 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             // make sure the application exits; also important for alternate navigation style main window
             this.Hide();
+
+            PetraClientShutdown.Shutdown.SaveUserDefaultsAndDisconnect();
+
             Environment.Exit(0);
         }
 
