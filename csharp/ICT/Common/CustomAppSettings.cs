@@ -463,7 +463,7 @@ namespace Ict.Common
                 Config = new TAppSettingsManager();
                 ReturnValue = Config.GetValue(AKey, (ADefaultValue == UNDEFINEDVALUE));
 
-                if ((ReturnValue.Length == 0) && (ADefaultValue != UNDEFINEDVALUE))
+                if (ReturnValue == UNDEFINEDVALUE)
                 {
                     ReturnValue = ADefaultValue;
                 }
