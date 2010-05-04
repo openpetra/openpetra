@@ -1,0 +1,50 @@
+RootNode:
+    BaseYaml: ../PartnerReportingForm.yaml
+    FormType: report
+    FormTitle: Brief Address Report
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+    TemplateParameters:
+        XMLFILES: [Partner\\\\briefaddressreport.xml]
+        REPORTNAME: Address Report
+        CURRENTREPORT: Address Report
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        # TODO: the following things have to be set by generator
+        READCONTROLSLOCALVARS: BLANK 
+        # ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [ucoPartnerSelection]
+        ucoPartnerSelection:
+            Type: Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection
+            Dock: Fill
+    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
+        Para1:
+            Name: City
+            Parameter: 4.0
+        Para2:
+            Name: Partner Shortname
+            Parameter: 3.0
+        Para3:
+            Name: Partner Key
+            Parameter: 2.0
+        Para4:
+            Name: PostCode
+            Parameter: 2.5
+        Para5:
+            Name: Partner Class
+            Parameter: 2.0
+        Para6:
+            Name: Street
+            Parameter: 3.5
+        Para7:
+            Name: First Address Line
+            Parameter: 3.5
+        Para8:
+            Name: Third Address Line
+            Parameter: 3.5
