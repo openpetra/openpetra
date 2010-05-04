@@ -340,7 +340,7 @@ public class TWriteSQL
 
 #if IMPORTFROMLEGACYDB
         // this is useful when converting from legacy database, with columns that contain too long strings
-        if ((field.strType == "varchar") && (field.iLength >= 20))
+        if ((field.strType == "varchar") && (field.iLength >= 20) && (!field.strName.Contains("_code_")))
         {
             field.strType = "text";
         }
