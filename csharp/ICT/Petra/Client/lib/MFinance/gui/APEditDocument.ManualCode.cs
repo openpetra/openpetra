@@ -78,19 +78,26 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
         {
             if (sender == dtpDateDue)
             {
-                int diffDays = (dtpDateDue.Date.Value - dtpDateIssued.Date.Value).Days;
-
-                if (diffDays < 0)
+                if ((dtpDateDue.Date.HasValue)
+                    && (dtpDateIssued.Date.HasValue))
                 {
-                    diffDays = 0;
-                    dtpDateDue.Date = dtpDateIssued.Date.Value;
+                    int diffDays = (dtpDateDue.Date.Value - dtpDateIssued.Date.Value).Days;
+    
+                    if (diffDays < 0)
+                    {
+                        diffDays = 0;
+                        dtpDateDue.Date = dtpDateIssued.Date.Value;
+                    }
+    
+                    nudCreditTerms.Value = diffDays;                    
                 }
-
-                nudCreditTerms.Value = diffDays;
             }
             else if ((sender == dtpDateIssued) || (sender == nudCreditTerms))
             {
-                dtpDateDue.Date = dtpDateIssued.Date.Value.AddDays((double)nudCreditTerms.Value);
+                if ((dtpDateIssued.Date.HasValue)) 
+                {
+                    dtpDateDue.Date = dtpDateIssued.Date.Value.AddDays((double)nudCreditTerms.Value);
+                }                
             }
         }
 
