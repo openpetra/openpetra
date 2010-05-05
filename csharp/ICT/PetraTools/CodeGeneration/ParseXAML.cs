@@ -366,16 +366,16 @@ namespace Ict.Tools.CodeGeneration
                 }
             }
         }
-        
+
         protected void LoadReportParameters(XmlNode curNode)
         {
-        	if (curNode != null)
+            if (curNode != null)
             {
                 List <XmlNode>children = TYml2Xml.GetChildren(curNode, true);
 
                 foreach (XmlNode childNode in children)
                 {
-                	TReportParameter TempParmeter = FCodeStorage.AddReportParameter(childNode, curNode.Attributes["ColumnFunction"].Value);
+                    TReportParameter TempParmeter = FCodeStorage.AddReportParameter(childNode, curNode.Attributes["ColumnFunction"].Value);
                 }
             }
         }

@@ -63,18 +63,19 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>True: Wrap the text in a column if it is to long. Otherwise cut it </summary>
         private bool FWrapColumn;
-        
+
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="AResult"></param>
         /// <param name="AParameters"></param>
         /// <param name="APrinter"></param>
-        /// <param name="AWrapColumn">True: Wrap text in the column if it is to long. Otherwise cut it</param> 
-        public TReportPrinterLayout(TResultList AResult, TParameterList AParameters, TPrinter APrinter, bool AWrapColumn) : base(AResult, AParameters, APrinter)
+        /// <param name="AWrapColumn">True: Wrap text in the column if it is to long. Otherwise cut it</param>
+        public TReportPrinterLayout(TResultList AResult, TParameterList AParameters, TPrinter APrinter, bool AWrapColumn) : base(AResult, AParameters,
+                                                                                                                                APrinter)
         {
-        	FWrapColumn = AWrapColumn;
-        	
+            FWrapColumn = AWrapColumn;
+
             if (AParameters.Get("ReportWidth").ToDouble() > 20)
             {
                 APrinter.Init(eOrientation.eLandscape, this, eMarginType.eDefaultMargins);
@@ -352,15 +353,15 @@ namespace Ict.Petra.Client.MReporting.Logic
                     FPrinter.DrawLine(position, position + width, eLinePosition.eAbove, eFont.eDefaultFont);
                 }
 
-                if(FWrapColumn)
+                if (FWrapColumn)
                 {
-                	FPrinter.PrintStringWrap(s, eFont.eDefaultFont, position, width, GetAlignment(columnNr, level, eAlignment.eRight));
+                    FPrinter.PrintStringWrap(s, eFont.eDefaultFont, position, width, GetAlignment(columnNr, level, eAlignment.eRight));
                 }
                 else
                 {
-	                FPrinter.PrintString(s, eFont.eDefaultFont, position, width, GetAlignment(columnNr, level, eAlignment.eRight));
+                    FPrinter.PrintString(s, eFont.eDefaultFont, position, width, GetAlignment(columnNr, level, eAlignment.eRight));
                 }
-                
+
                 if (FParameters.Get("LineBelow", columnNr, level, eParameterFit.eAllColumnFit).ToBool() == true)
                 {
                     FPrinter.DrawLine(position, position + width, eLinePosition.eBelow, eFont.eDefaultFont);

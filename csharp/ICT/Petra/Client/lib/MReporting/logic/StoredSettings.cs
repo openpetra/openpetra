@@ -359,25 +359,27 @@ namespace Ict.Petra.Client.MReporting.Logic
             }
             return ReturnValue;
         }
-        
-#region settings for wrap column
-		/// <summary>
-		/// Get the user default if the Menu Item "Wrap Column" is checked
-		/// </summary>
-		/// <returns></returns>
+
+        #region settings for wrap column
+
+        /// <summary>
+        /// Get the user default if the Menu Item "Wrap Column" is checked
+        /// </summary>
+        /// <returns></returns>
         public bool GetWrapOption()
         {
-        	return TUserDefaults.GetBooleanDefault("RptSettingWrapColumn", true);
+            return TUserDefaults.GetBooleanDefault("RptSettingWrapColumn", true);
         }
-        
+
         /// <summary>
         /// Set the user default if the Menu Item "Wrap Column" is checked
         /// </summary>
         /// <param name="AWrap"></param>
         public void SaveWrapOption(bool AWrap)
         {
-        	TUserDefaults.SetDefault("RptSettingWrapColumn", AWrap);
+            TUserDefaults.SetDefault("RptSettingWrapColumn", AWrap);
         }
-#endregion
+
+        #endregion
     }
 }

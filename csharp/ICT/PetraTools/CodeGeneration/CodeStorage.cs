@@ -53,8 +53,8 @@ namespace Ict.Tools.CodeGeneration
         public SortedList <int, TControlDef>FSortedControlList = new SortedList <int, TControlDef>();
         public Dictionary <string, TEventHandler>FEventList = new Dictionary <string, TEventHandler>();
         public Dictionary <string, TActionHandler>FActionList = new Dictionary <string, TActionHandler>();
-        public Dictionary<string, TReportParameter>FReportParameterList = new Dictionary<string, TReportParameter>();
-        
+        public Dictionary <string, TReportParameter>FReportParameterList = new Dictionary <string, TReportParameter>();
+
         //public ArrayList FActionList = new ArrayList();
         public string FBaseClass = "";
         public string FInterfaceName = "";
@@ -536,8 +536,7 @@ namespace Ict.Tools.CodeGeneration
 
         public TReportParameter AddReportParameter(XmlNode AParsedNode, string AColumnFunctionClassName)
         {
-        	
-        	if (AParsedNode.Name == "base")
+            if (AParsedNode.Name == "base")
             {
                 throw new Exception("should not parse the 'base' node this way");
             }
@@ -556,12 +555,13 @@ namespace Ict.Tools.CodeGeneration
                     ReportParameter = attrib.Value;
                 }
             }
+
             TReportParameter result = new TReportParameter(AColumnFunctionClassName, ReportDescription, ReportParameter);
             FReportParameterList.Add(AParsedNode.Name, result);
-            
+
             return result;
         }
-        
+
         public void UpdateLanguageFile()
         {
             // todo: update the .po file with any text from yaml and the source code (edited by designer)
@@ -575,17 +575,17 @@ namespace Ict.Tools.CodeGeneration
     #region Helper Classes
     public class TReportParameter
     {
-    	public string columnFunctionClassName;
-    	public string functionDescription;
-    	public string functionParameters;
-    	public TReportParameter(string AColumnFunctionClassName, string AFunctionDescription, string AFunctionParameters)
-    	{
-    		this.columnFunctionClassName = AColumnFunctionClassName;
-    		this.functionDescription = AFunctionDescription;
-    		this.functionParameters = AFunctionParameters;
-    	}
+        public string columnFunctionClassName;
+        public string functionDescription;
+        public string functionParameters;
+        public TReportParameter(string AColumnFunctionClassName, string AFunctionDescription, string AFunctionParameters)
+        {
+            this.columnFunctionClassName = AColumnFunctionClassName;
+            this.functionDescription = AFunctionDescription;
+            this.functionParameters = AFunctionParameters;
+        }
     }
-    
+
     public class TEventHandler
     {
         public string eventName, eventType, eventHandler;

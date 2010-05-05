@@ -82,22 +82,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                     && (dtpDateIssued.Date.HasValue))
                 {
                     int diffDays = (dtpDateDue.Date.Value - dtpDateIssued.Date.Value).Days;
-    
+
                     if (diffDays < 0)
                     {
                         diffDays = 0;
                         dtpDateDue.Date = dtpDateIssued.Date.Value;
                     }
-    
-                    nudCreditTerms.Value = diffDays;                    
+
+                    nudCreditTerms.Value = diffDays;
                 }
             }
             else if ((sender == dtpDateIssued) || (sender == nudCreditTerms))
             {
-                if ((dtpDateIssued.Date.HasValue)) 
+                if ((dtpDateIssued.Date.HasValue))
                 {
                     dtpDateDue.Date = dtpDateIssued.Date.Value.AddDays((double)nudCreditTerms.Value);
-                }                
+                }
             }
         }
 

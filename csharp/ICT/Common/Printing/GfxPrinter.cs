@@ -233,7 +233,7 @@ namespace Ict.Common.Printing
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
-            	ATxt = GetFittedText(ATxt, AFont, rect.Width);
+                ATxt = GetFittedText(ATxt, AFont, rect.Width);
                 FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, rect, GetStringFormat(AAlign));
             }
 
@@ -283,33 +283,33 @@ namespace Ict.Common.Printing
         /// <returns>The input text. Either unmodified or shortened.</returns>
         protected String GetFittedText(String ATxt, eFont AFont, float AWidth)
         {
-        	String ReturnValue = "";
-        	
-        	if (GetWidthString(ATxt, AFont) <= AWidth)
-        	{
-        		// The whole text fits into the available space
-        		ReturnValue = ATxt;
-        	}
-        	else
-        	{
-        		// We have to cut the text
-        		float WidthDotDotDot = GetWidthString("...", AFont);
-        		float WidthForText = AWidth - WidthDotDotDot;
-        		
-        		if (WidthForText <= 0.0)
-        		{
-        			// only space for ...
-        			ReturnValue = "...";
-        		}
-        		else
-        		{
-        			ReturnValue = CutTextToLength(ATxt, AFont, WidthForText) + "...";
-        		}
-        	}
-        	
-        	return ReturnValue;
+            String ReturnValue = "";
+
+            if (GetWidthString(ATxt, AFont) <= AWidth)
+            {
+                // The whole text fits into the available space
+                ReturnValue = ATxt;
+            }
+            else
+            {
+                // We have to cut the text
+                float WidthDotDotDot = GetWidthString("...", AFont);
+                float WidthForText = AWidth - WidthDotDotDot;
+
+                if (WidthForText <= 0.0)
+                {
+                    // only space for ...
+                    ReturnValue = "...";
+                }
+                else
+                {
+                    ReturnValue = CutTextToLength(ATxt, AFont, WidthForText) + "...";
+                }
+            }
+
+            return ReturnValue;
         }
-        
+
         /// <summary>
         /// Cuts a given text so it will not extend the given width.
         /// </summary>
@@ -319,25 +319,25 @@ namespace Ict.Common.Printing
         /// <returns>The maximum part of the text that will not extend the width.</returns>
         protected String CutTextToLength(String ATxt, eFont AFont, float AWidth)
         {
-        	String ReturnValue = "";
-        	
-        	for (int Counter = 1; Counter <= ATxt.Length; ++Counter)
-        	{
-        		float length = GetWidthString(ATxt.Substring(0, Counter), AFont);
-        		
-        		if (length <= AWidth)
-        		{
-        			ReturnValue = ATxt.Substring(0, Counter);
-        		}
-        		else
-        		{
-        			break;
-        		}
-        	}
-        	
-        	return ReturnValue;
+            String ReturnValue = "";
+
+            for (int Counter = 1; Counter <= ATxt.Length; ++Counter)
+            {
+                float length = GetWidthString(ATxt.Substring(0, Counter), AFont);
+
+                if (length <= AWidth)
+                {
+                    ReturnValue = ATxt.Substring(0, Counter);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return ReturnValue;
         }
-        
+
         /// <summary>
         /// word wrap text, return the number of characters that fit the line width;
         /// if the first word does not fit the space available, wrap the word in itself
@@ -432,10 +432,10 @@ namespace Ict.Common.Printing
         {
             while (ATxt.Length > 0)
             {
-            	// TODO check this code
+                // TODO check this code
                 //Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AXPos + AWidth - CurrentXPos);
-				Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AWidth);
-				
+                Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AWidth);
+
                 if (FCurrentState.FNoWrap)
                 {
                     length = ATxt.Length;

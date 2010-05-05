@@ -73,10 +73,10 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>the name of the report, as it is used in the xml file</summary>
         public string FCurrentReport;
-        
+
         /// <summary>the name of the sub directory where the settings are stored</summary>
         public string FSettingsDirectory;
-        
+
         /// <summary>Indicator if the output of the columns should be wrapped or cut of if the text
         /// doesn't fit in the width of the column </summary>
         public bool FWrapColumn;
@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>this shows which column is currently selected; it is 1 if no column is selected</summary>
         protected int FSelectedColumn;
-        
+
         /// <summary>holds the number of visible columns. This value is usually set from UC_PartnerColumns </summary>
         public int FMaxDisplayColumns;
 
@@ -107,17 +107,17 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>the path where the application is started from.</summary>
         public static string FApplicationDirectory;
-        
+
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="ACallerWindowHandle">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>
-        public TFrmPetraReportingUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm, 
-                                       TExtStatusBarHelp AStatusBar) : base(ACallerWindowHandle,
-                                                                                                                           (IFrmPetra)ATheForm,
-                                                                                                                           AStatusBar)
+        public TFrmPetraReportingUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm,
+            TExtStatusBarHelp AStatusBar) : base(ACallerWindowHandle,
+                                                (IFrmPetra)ATheForm,
+                                                AStatusBar)
         {
             FCurrentSettingsName = "";
             FSelectedColumn = -1;
@@ -157,10 +157,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="e">EventArgs that allow cancelling of the closing</param>
         public override void TFrmPetra_Closing(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
-        	FStoredSettings.SaveWrapOption(FWrapColumn);
-        	base.TFrmPetra_Closing(sender, e);
+            FStoredSettings.SaveWrapOption(FWrapColumn);
+            base.TFrmPetra_Closing(sender, e);
         }
-         
+
 #if TODO
         private void BtnCSVDestination_Click(System.Object sender, System.EventArgs e)
         {
@@ -224,18 +224,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.FCalculator = new TRptCalculator();
 
             FWindowCaption = FWinForm.Text;
-            string SettingsDirectory = TClientSettings.ReportingPathReportSettings + 
-            	System.IO.Path.DirectorySeparatorChar + this.FSettingsDirectory;
+            string SettingsDirectory = TClientSettings.ReportingPathReportSettings +
+                                       System.IO.Path.DirectorySeparatorChar + this.FSettingsDirectory;
             this.FStoredSettings = new TStoredSettings(FReportName, SettingsDirectory);
             UpdateLoadingMenu(this.FStoredSettings.GetRecentlyUsedSettings());
-            
+
             FWrapColumn = FStoredSettings.GetWrapOption();
             ((IFrmReporting)FTheForm).CheckWrapColumnMenuItem(FWrapColumn);
-            
+
             FSelectedColumn = -1;
 
             SetAvailableFunctions();
-            
+
             return ReturnValue;
         }
 
@@ -333,7 +333,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FGenerateReportThread.Start();
             }
         }
-        
+
         /// <summary>
         /// toggle the option to wrap a column in the report
         /// </summary>
@@ -341,11 +341,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="e"></param>
         public void MI_WrapColumn_Click(System.Object sender, System.EventArgs e)
         {
-        	System.Windows.Forms.ToolStripMenuItem WrapMenuItem = (System.Windows.Forms.ToolStripMenuItem)sender;
-        	
-        	WrapMenuItem.Checked = !WrapMenuItem.Checked;
-            
-        	FWrapColumn = WrapMenuItem.Checked;
+            System.Windows.Forms.ToolStripMenuItem WrapMenuItem = (System.Windows.Forms.ToolStripMenuItem)sender;
+
+            WrapMenuItem.Checked = !WrapMenuItem.Checked;
+
+            FWrapColumn = WrapMenuItem.Checked;
         }
 
         /// <summary>
@@ -799,7 +799,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         public virtual void SetControls(TParameterList AParameters)
         {
             // TODO
-            
+
             ((IFrmReporting) this.FTheForm).SetControls(AParameters);
         }
 
@@ -813,16 +813,16 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="AName">Name of the field</param>
         public void AddAvailableFunction(String AName)
         {
-        	FAvailableFunctions.Add(new TColumnFunction(AName));
+            FAvailableFunctions.Add(new TColumnFunction(AName));
         }
-        
+
         /// <summary>
         /// Add an item to the fields that can be selected in the report
         /// </summary>
         /// <param name="AFunction">The function to add</param>
         public void AddAvailableFunction(TColumnFunction AFunction)
         {
-        	FAvailableFunctions.Add(AFunction);
+            FAvailableFunctions.Add(AFunction);
         }
 
         /// <summary>
@@ -831,9 +831,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns></returns>
         public ArrayList GetAvailableFunctions()
         {
-        	return FAvailableFunctions;
+            return FAvailableFunctions;
         }
-        
+
         /// <summary>
         /// This will return a string list of available functions
         ///
@@ -938,7 +938,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             return ReturnValue;
         }
-        
+
         #endregion
     }
 
@@ -947,7 +947,7 @@ namespace Ict.Petra.Client.MReporting.Gui
     /// or a function that is applied to one column;
     /// once it is created and added to a TFrmReporting System.Object, in one of its derived SetAvailableFunctions() Methods,
     /// it will be available in the comboboxes.
-    /// 
+    ///
     /// </summary>
     public class TColumnFunction : IComparable
     {
@@ -962,7 +962,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>e.g.: Regional Director; This will be displayed</summary>
         public String FCalculationParameterValue;
-        
+
         /// <summary>
         /// Initialisation
         /// </summary>
@@ -976,7 +976,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// todo: add column default width for personnel reports? }
         /// constructor used for functions between columns
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public TColumnFunction(String ADescription, System.Int32 ANumberColumns)
@@ -1033,27 +1033,29 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         int IComparable.CompareTo(object obj)
         {
-        	TColumnFunction tmp = (TColumnFunction)obj;
-        	return String.Compare(this.FDescription, tmp.FDescription);
+            TColumnFunction tmp = (TColumnFunction)obj;
+
+            return String.Compare(this.FDescription, tmp.FDescription);
         }
+
         #endregion
     }
-    
+
     /// <summary>
     /// Column function for partner module
     /// </summary>
     public class TPartnerColumnFunction : TColumnFunction
     {
-    	/// <summary>Default width of the column in cm e.g 1.5 </summary>
-    	public double FColumnWidth;
-    	
-    	/// <summary>
+        /// <summary>Default width of the column in cm e.g 1.5 </summary>
+        public double FColumnWidth;
+
+        /// <summary>
         /// constructor used for functions between columns
-        /// 
+        ///
         /// </summary>
         /// <returns>void</returns>
         public TPartnerColumnFunction(String ADescription, double AColumnWidth, System.Int32 ANumberColumns) :
-        	base (ADescription, ANumberColumns)
+            base(ADescription, ANumberColumns)
         {
             FColumnWidth = AColumnWidth;
         }
@@ -1066,7 +1068,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             FColumnWidth = 2.0;
         }
-        
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -1084,13 +1086,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="ACalculationParameterName">Name of the report header</param>
         /// <param name="ACalculationParameterValue">Name of the variable during report calculation</param>
         /// <param name="AColumnWidth">Default width</param>
-        public TPartnerColumnFunction(String ADescription, String ACalculationParameterName, String ACalculationParameterValue, double AColumnWidth) :
-        	base(ADescription, ACalculationParameterName, ACalculationParameterValue)
+        public TPartnerColumnFunction(String ADescription, String ACalculationParameterName, String ACalculationParameterValue,
+            double AColumnWidth) :
+            base(ADescription, ACalculationParameterName, ACalculationParameterValue)
         {
             FColumnWidth = AColumnWidth;
         }
     }
-    
+
     /// <summary>
     /// a delegate for running the report preview window
     /// </summary>
@@ -1117,22 +1120,24 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         /// <returns>false if an item with that index does not exist</returns>
         bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem);
-        
+
         /// <summary>
         /// this will Check the menu item "Wrap Column"
         /// </summary>
         /// <param name="ACheck">True if the item is to be checked. Otherwise false.</param>
         void CheckWrapColumnMenuItem(bool ACheck);
     }
-    
+
     /// <summary>This enums defines what action is going on. It's needed e.g. for the ReadControls function </summary>
     public enum TReportActionEnum
     {
-    	/// <summary> Save </summary>
-    	raSave,
-    	/// <summary> Load </summary>
-    	raLoad,
-    	/// <summary> Generate </summary>
-    	raGenerate,
+        /// <summary> Save </summary>
+        raSave,
+
+        /// <summary> Load </summary>
+        raLoad,
+
+        /// <summary> Generate </summary>
+        raGenerate,
     }
 }

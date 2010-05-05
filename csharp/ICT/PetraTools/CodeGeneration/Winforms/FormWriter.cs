@@ -325,14 +325,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public void AddReportParameterImplementaion(TReportParameter AReportParameter)
         {
-        	FCodeStorage.FReportParametersImplementation +=
-        		"FPetraUtilsObject.AddAvailableFunction(new " + 
-        		AReportParameter.columnFunctionClassName + "(\"" +
-        		AReportParameter.functionDescription + "\", " +
-        		AReportParameter.functionParameters + "));" +
-        		Environment.NewLine;
+            FCodeStorage.FReportParametersImplementation +=
+                "FPetraUtilsObject.AddAvailableFunction(new " +
+                AReportParameter.columnFunctionClassName + "(\"" +
+                AReportParameter.functionDescription + "\", " +
+                AReportParameter.functionParameters + "));" +
+                Environment.NewLine;
         }
-        
+
         public void AddActionHandlerImplementation(TActionHandler AAction)
         {
             // the actual call what happens when the action is executed
@@ -925,9 +925,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             foreach (TReportParameter ReportPara in FCodeStorage.FReportParameterList.Values)
             {
-            	AddReportParameterImplementaion(ReportPara);
+                AddReportParameterImplementaion(ReportPara);
             }
-            
+
             XmlNode rootNode = (XmlNode)FCodeStorage.FXmlNodes[TParseXAML.ROOTNODEYML];
 
             if (TYml2Xml.HasAttribute(rootNode, "UIConnectorType") && TYml2Xml.HasAttribute(rootNode, "UIConnectorCreate"))

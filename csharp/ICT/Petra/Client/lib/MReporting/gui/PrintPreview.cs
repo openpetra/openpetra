@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="parameters"></param>
         /// <param name="AWrapColumn">true: Wrap the text in the column. False: Cut the text that is to long for the column</param>
         public TFrmPrintPreview(IntPtr ACallerWindowHandle, String caption, TimeSpan duration, TResultList results,
-                                TParameterList parameters, bool AWrapColumn)
+            TParameterList parameters, bool AWrapColumn)
             : base()
         {
             FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(ACallerWindowHandle, this, stbMain);
@@ -137,6 +137,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             FPrinterInstalled = this.PrintDocument.PrinterSettings.IsValid;
 
             FWrapColumn = AWrapColumn;
+
             if (FPrinterInstalled)
             {
                 this.tabPreview.SelectedTab = tbpPreview;

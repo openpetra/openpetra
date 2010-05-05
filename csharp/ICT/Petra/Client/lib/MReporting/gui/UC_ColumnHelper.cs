@@ -48,32 +48,32 @@ using Ict.Common.Controls;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
-	/// <summary>
-	/// This class provides helper functions for UC_Columns
-	/// </summary>
-	public class TUC_ColumnHelper
-	{
-		/// <summary>
-		/// constructor
-		/// </summary>
-		public TUC_ColumnHelper()
-		{
-		}
-		
-		/// <summary>
+    /// <summary>
+    /// This class provides helper functions for UC_Columns
+    /// </summary>
+    public class TUC_ColumnHelper
+    {
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TUC_ColumnHelper()
+        {
+        }
+
+        /// <summary>
         /// This procedure will switch the two columns
         /// </summary>
         /// <param name="AColumnParameters">List with the current columns</param>
         /// <param name="AFrom">Index of the column to move</param>
         /// <param name="ATo">Index of the new position of the column to move</param>
         /// <returns>void</returns>
-		public static void  SwitchColumn(ref TParameterList AColumnParameters, int AFrom, int ATo)
-		{
-			System.Int32 MaxDisplayColumns;
+        public static void SwitchColumn(ref TParameterList AColumnParameters, int AFrom, int ATo)
+        {
+            System.Int32 MaxDisplayColumns;
             System.Int32 Counter;
             System.Int32 ReferencedColumn;
-            
-			AColumnParameters.SwitchColumn(AFrom, ATo);
+
+            AColumnParameters.SwitchColumn(AFrom, ATo);
 
             /* switch the referenced columns in calculation */
             MaxDisplayColumns = AColumnParameters.Get("MaxDisplayColumns").ToInt();
@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 if (AColumnParameters.Exists("FirstColumn", Counter))
                 {
-                	ReferencedColumn = AColumnParameters.Get("FirstColumn", Counter).ToInt();
+                    ReferencedColumn = AColumnParameters.Get("FirstColumn", Counter).ToInt();
 
                     if (ReferencedColumn == AFrom)
                     {
@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 if (AColumnParameters.Exists("SecondColumn", Counter))
                 {
-                	ReferencedColumn = AColumnParameters.Get("SecondColumn", Counter).ToInt();
+                    ReferencedColumn = AColumnParameters.Get("SecondColumn", Counter).ToInt();
 
                     if (ReferencedColumn == AFrom)
                     {
@@ -112,9 +112,9 @@ namespace Ict.Petra.Client.MReporting.Gui
                     AColumnParameters.Add("SecondColumn", new TVariant(ReferencedColumn), Counter);
                 }
             }
-		}
-	
-		/// <summary>
+        }
+
+        /// <summary>
         /// Checks if there is already a field with the same name in the grid. If yes, ask
         /// if the field should be added again.
         /// </summary>
@@ -124,26 +124,29 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>True if the field should be added. Otherwise false</returns>
         public static bool CheckAddDoubleEntry(ref TParameterList AColumnParameters, String AColumnName, int ASelectedColumn)
         {
-        	bool ReturnValue = true;
-        	DataTable ColumnTable = AColumnParameters.ToDataTable();
+            bool ReturnValue = true;
+            DataTable ColumnTable = AColumnParameters.ToDataTable();
 
-        	String NewField = "eString:" + AColumnName;
+            String NewField = "eString:" + AColumnName;
 
-        	foreach(DataRow Row in ColumnTable.Rows)
-        	{
-        		if ((Row["value"].ToString() == NewField) &&
-        		     (((int)Row["column"]) != ASelectedColumn))
-        		{
-        			if (MessageBox.Show("The column is already there.\nDo you want to add it anyway?", "Add field?", MessageBoxButtons.YesNo) == DialogResult.No)
-        			{
-        				ReturnValue = false;
-        			}
-        			break;
-        		}
-        	}
-        	return ReturnValue;
+            foreach (DataRow Row in ColumnTable.Rows)
+            {
+                if ((Row["value"].ToString() == NewField)
+                    && (((int)Row["column"]) != ASelectedColumn))
+                {
+                    if (MessageBox.Show("The column is already there.\nDo you want to add it anyway?", "Add field?",
+                            MessageBoxButtons.YesNo) == DialogResult.No)
+                    {
+                        ReturnValue = false;
+                    }
+
+                    break;
+                }
+            }
+
+            return ReturnValue;
         }
-        
+
         /// <summary>
         /// get the function System.Object of the given calculation string
         /// </summary>
@@ -163,9 +166,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                 }
             }
+
             return null;
         }
-        
+
         /// <summary>
         /// Remove one colum from the parameter list.
         /// </summary>
@@ -174,7 +178,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>the MaxDisplayColumns number</returns>
         public static System.Int32 RemoveColumn(ref TParameterList AColumnParameters, int AColumnIndex)
         {
-        	AColumnParameters.RemoveColumn(AColumnIndex);
+            AColumnParameters.RemoveColumn(AColumnIndex);
 
             /* need to move the following columns to the left */
             System.Int32 MaxColumn = AColumnParameters.Get("MaxDisplayColumns").ToInt() - 1;
@@ -185,25 +189,25 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             AColumnParameters.Add("MaxDisplayColumns", MaxColumn);
-            
+
             return MaxColumn;
         }
-        
+
         /// <summary>
         /// Adds a new column to the column parameter list at the specified index.
         /// </summary>
         /// <param name="AColumnParameters">List with the current columns</param>
         /// <param name="AColumnIndex">Index where the new column is added</param>
         /// <returns>the MaxDisplayColumns number</returns>
-        public static System.Int32  AddColumn(ref TParameterList AColumnParameters, int AColumnIndex)
+        public static System.Int32 AddColumn(ref TParameterList AColumnParameters, int AColumnIndex)
         {
-        	System.Int32 NewColumn;
+            System.Int32 NewColumn;
             System.Int32 NewMaxColumn;
             System.Int32 Counter;
-            
+
             if (AColumnIndex == -1)
             {
-            	NewMaxColumn = AColumnParameters.Get("MaxDisplayColumns").ToInt();
+                NewMaxColumn = AColumnParameters.Get("MaxDisplayColumns").ToInt();
                 NewColumn = NewMaxColumn;
                 AColumnParameters.Add("MaxDisplayColumns", NewColumn + 1);
             }
@@ -219,13 +223,14 @@ namespace Ict.Petra.Client.MReporting.Gui
                     AColumnParameters.MoveColumn(Counter - 1, Counter);
                 }
             }
+
             return NewColumn;
         }
-        
+
         /// <summary>
         /// Reads the selected values from the controls,
         /// and stores them into the parameter system of FCalculator
-        /// 
+        ///
         /// </summary>
         /// <param name="AColumnParameters">List with the current columns</param>
         /// <param name="ACalculator"></param>
@@ -233,23 +238,23 @@ namespace Ict.Petra.Client.MReporting.Gui
         public static System.Int32 ReadControls(ref TParameterList AColumnParameters, ref TRptCalculator ACalculator)
         {
             System.Int32 MaxDisplayColumns;
-           
+
             MaxDisplayColumns = AColumnParameters.Get("MaxDisplayColumns").ToInt();
             ACalculator.GetParameters().Add("MaxDisplayColumns", MaxDisplayColumns);
 
             for (int Counter = 0; Counter <= MaxDisplayColumns - 1; Counter += 1)
             {
-            	ACalculator.GetParameters().Copy(AColumnParameters, Counter, -1, eParameterFit.eExact, Counter);
+                ACalculator.GetParameters().Copy(AColumnParameters, Counter, -1, eParameterFit.eExact, Counter);
             }
-            
+
             ACalculator.SetMaxDisplayColumns(MaxDisplayColumns);
-            
+
             return MaxDisplayColumns;
         }
-        
+
         /// <summary>
         /// Sets the selected values in the controls, using the parameters loaded from a file
-        /// 
+        ///
         /// </summary>
         /// <param name="AColumnParameters">List with the current columns</param>
         /// <param name="AParameters"></param>
@@ -260,32 +265,32 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             /* copy values for columns to the current set of parameters */
             AColumnParameters.Clear();
-            
+
             if (AParameters.Exists("MaxDisplayColumns"))
             {
-	            MaxDisplayColumns = AParameters.Get("MaxDisplayColumns").ToInt();
+                MaxDisplayColumns = AParameters.Get("MaxDisplayColumns").ToInt();
             }
-            
+
             AColumnParameters.Add("MaxDisplayColumns", MaxDisplayColumns);
 
             for (int Counter = 0; Counter <= MaxDisplayColumns - 1; Counter += 1)
             {
-            	AColumnParameters.Copy(AParameters, Counter, -1, eParameterFit.eExact, Counter);
+                AColumnParameters.Copy(AParameters, Counter, -1, eParameterFit.eExact, Counter);
             }
-            
+
             return MaxDisplayColumns;
         }
-        
+
         /// <summary>
         /// Loads the data of the column parameters to the grid
         /// </summary>
         /// <param name="AGrid">Grid to show the values</param>
         /// <param name="AColumnTable">Table that holds the column parameter data</param>
         public static void LoadDataToGrid(ref TSgrdDataGridPaged AGrid,
-                                          ref DataTable AColumnTable)
+            ref DataTable AColumnTable)
         {
-        	SourceGrid.Cells.ColumnHeader myColumnHeader;
-            
+            SourceGrid.Cells.ColumnHeader myColumnHeader;
+
             AGrid.Columns.Clear();
 
             for (int counter = 0; counter < AColumnTable.Columns.Count; ++counter)
@@ -300,6 +305,5 @@ namespace Ict.Petra.Client.MReporting.Gui
             AGrid.DataSource.AllowDelete = false;
             AGrid.AutoSizeCells();
         }
-        
-	}
+    }
 }

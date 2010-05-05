@@ -92,10 +92,10 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineFeed()
         {
-        	CurrentYPos++;
+            CurrentYPos++;
             return CurrentYPos;
         }
-        
+
         /// <summary>
         /// Line Feed; increases the current y position by the height of the given font
         /// </summary>
@@ -363,35 +363,37 @@ namespace Ict.Common.Printing
         #endregion
 
         #region Print String
-        
+
         protected float CalculateXPos(float AXPos, float AWidth, String ATxt, eAlignment AAlign)
-		{
-			float XPos = Convert.ToInt32(AXPos); /// eDefault
-			switch (AAlign)
-		    {
-		        case eAlignment.eCenter:
-		            XPos = Convert.ToInt32(AXPos) + (Convert.ToInt32(AWidth) - ATxt.Length) / 2;
-		            break;
-		
-		        case eAlignment.eLeft:
-		            XPos = Convert.ToInt32(AXPos);
-		            break;
-		
-		        case eAlignment.eRight:
-		
-		            if (Convert.ToInt32(AWidth) > ATxt.Length)
-		            {
-		                XPos = Convert.ToInt32(AXPos) + Convert.ToInt32(AWidth) - ATxt.Length;
-		            }
-		            else
-		            {
-		                XPos = Convert.ToInt32(AXPos);
-		            }
-		
-		            break;
-		    }
-			return XPos;
-		}
+        {
+            float XPos = Convert.ToInt32(AXPos);             /// eDefault
+
+            switch (AAlign)
+            {
+                case eAlignment.eCenter:
+                    XPos = Convert.ToInt32(AXPos) + (Convert.ToInt32(AWidth) - ATxt.Length) / 2;
+                    break;
+
+                case eAlignment.eLeft:
+                    XPos = Convert.ToInt32(AXPos);
+                    break;
+
+                case eAlignment.eRight:
+
+                    if (Convert.ToInt32(AWidth) > ATxt.Length)
+                    {
+                        XPos = Convert.ToInt32(AXPos) + Convert.ToInt32(AWidth) - ATxt.Length;
+                    }
+                    else
+                    {
+                        XPos = Convert.ToInt32(AXPos);
+                    }
+
+                    break;
+            }
+
+            return XPos;
+        }
 
         /// <summary>
         /// prints into the current line, aligned x position
@@ -467,7 +469,7 @@ namespace Ict.Common.Printing
             }
 
             ToPrint = GetFittedText(ATxt, AFont, AWidth);
-            
+
             // eDefault
             XPos = Convert.ToInt32(AXPos);
 
@@ -549,28 +551,30 @@ namespace Ict.Common.Printing
                     ATxt = ATxt.Substring(length);
 
                     float XPos = CalculateXPos(AXPos, AWidth, toPrint, AAlign);
-                    
+
                     //PrintString(toPrint, AFont, FCurrentXPos);
                     Print(Convert.ToInt32(XPos), Convert.ToInt32(CurrentYPos), toPrint);
+
                     //FCurrentXPos += GetWidthString(toPrint, AFont);
-                    
+
                     if (ATxt.Length > 0)
                     {
                         // there is still more to come, we need a new line
                         LineFeed(); // will use the biggest used font, and reset it
                     }
                 }
-                else if ((ATxt.Length > 0) && 
-                         (CurrentXPos != AXPos))
+                else if ((ATxt.Length > 0)
+                         && (CurrentXPos != AXPos))
                 {
                     // the first word did not fit the space; needs a new line
                     CurrentXPos = AXPos;
                     LineFeed();
                 }
             }
+
             return true;
         }
-        
+
         /// <summary>
         /// Check if the text will fit into the given width. If yes, the text will be returned.
         /// If no, the text will be shortened and a "..." will be added to indicate that some text is missing.
@@ -581,33 +585,33 @@ namespace Ict.Common.Printing
         /// <returns>The input text. Either unmodified or shortened.</returns>
         protected String GetFittedText(String ATxt, eFont AFont, float AWidth)
         {
-        	String ReturnValue = "";
-        	
-        	if (GetWidthString(ATxt, AFont) <= AWidth)
-        	{
-        		// The whole text fits into the available space
-        		ReturnValue = ATxt;
-        	}
-        	else
-        	{
-        		// We have to cut the text
-        		float WidthDotDotDot = GetWidthString("...", AFont);
-        		float WidthForText = AWidth - WidthDotDotDot;
-        		
-        		if (WidthForText <= 0.0)
-        		{
-        			// only space for ...
-        			ReturnValue = "...";
-        		}
-        		else
-        		{
-        			ReturnValue = CutTextToLength(ATxt, AFont, WidthForText) + "...";
-        		}
-        	}
-        	
-        	return ReturnValue;
+            String ReturnValue = "";
+
+            if (GetWidthString(ATxt, AFont) <= AWidth)
+            {
+                // The whole text fits into the available space
+                ReturnValue = ATxt;
+            }
+            else
+            {
+                // We have to cut the text
+                float WidthDotDotDot = GetWidthString("...", AFont);
+                float WidthForText = AWidth - WidthDotDotDot;
+
+                if (WidthForText <= 0.0)
+                {
+                    // only space for ...
+                    ReturnValue = "...";
+                }
+                else
+                {
+                    ReturnValue = CutTextToLength(ATxt, AFont, WidthForText) + "...";
+                }
+            }
+
+            return ReturnValue;
         }
-        
+
         /// <summary>
         /// Cuts a given text so it will not extend the given width.
         /// </summary>
@@ -617,25 +621,25 @@ namespace Ict.Common.Printing
         /// <returns>The maximum part of the text that will not extend the width.</returns>
         protected String CutTextToLength(String ATxt, eFont AFont, float AWidth)
         {
-        	String ReturnValue = "";
-        	
-        	for (int Counter = 1; Counter <= ATxt.Length; ++Counter)
-        	{
-        		float length = GetWidthString(ATxt.Substring(0, Counter), AFont);
-        		
-        		if (length <= AWidth)
-        		{
-        			ReturnValue = ATxt.Substring(0, Counter);
-        		}
-        		else
-        		{
-        			break;
-        		}
-        	}
-        	
-        	return ReturnValue;
+            String ReturnValue = "";
+
+            for (int Counter = 1; Counter <= ATxt.Length; ++Counter)
+            {
+                float length = GetWidthString(ATxt.Substring(0, Counter), AFont);
+
+                if (length <= AWidth)
+                {
+                    ReturnValue = ATxt.Substring(0, Counter);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return ReturnValue;
         }
-        
+
         /// <summary>
         /// word wrap text, return the number of characters that fit the line width
         /// </summary>
@@ -690,21 +694,22 @@ namespace Ict.Common.Printing
 
             if (result == 0)
             {
-            	// the first word is to long; Let's split the word
-            	for (int Counter = 0; Counter < ATxt.Length; ++Counter)
-            	{
-            		fittingText = ATxt.Substring(0, Counter);
-            		
-            		if (GetWidthString(fittingText, AFont) >= AWidth)
-	            	{
-            			result = fittingText.Length - 1;
-            			break;
-	            	}
-            	}
+                // the first word is to long; Let's split the word
+                for (int Counter = 0; Counter < ATxt.Length; ++Counter)
+                {
+                    fittingText = ATxt.Substring(0, Counter);
+
+                    if (GetWidthString(fittingText, AFont) >= AWidth)
+                    {
+                        result = fittingText.Length - 1;
+                        break;
+                    }
+                }
             }
+
             return result;
         }
-        
+
         /// <summary>
         /// This function uses the normal PrintString function to print into a given space.
         /// </summary>

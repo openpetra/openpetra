@@ -37,17 +37,17 @@ using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
-	/// <summary>
-	/// Description of UC_Sorting_ManualCode.
-	/// </summary>
-	public partial class TFrmUC_Sorting
-	{
-		/// the number of columns that can be sorted is hard coded at the moment
+    /// <summary>
+    /// Description of UC_Sorting_ManualCode.
+    /// </summary>
+    public partial class TFrmUC_Sorting
+    {
+        /// the number of columns that can be sorted is hard coded at the moment
         public const Int32 NUMBER_SORTBY = 3;
 
         /// this holds the references to the comboboxes, that way it is easier to program a flexible number of comboboxes
         protected TCmbAutoComplete[] FSortByComboboxes;
-        
+
         /// the functions and column names that should be displayed in the sorting boxes
         protected ArrayList FAvailableFunctions;
 
@@ -59,11 +59,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// Initialisation
         /// </summary>
-		public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
-		{
-			FPetraUtilsObject = APetraUtilsObject;
-		}
-		
+        public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
+        {
+            FPetraUtilsObject = APetraUtilsObject;
+        }
+
         /// <summary>
         /// set the functions and column names that are available
         /// </summary>
@@ -71,15 +71,15 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void SetAvailableFunctions(ArrayList AAvailableFunctions)
         {
             FAvailableFunctions = AAvailableFunctions;
-            
+
             FSortByComboboxes = new TCmbAutoComplete[NUMBER_SORTBY];
             FSortByComboboxes[0] = cmbSortBy1;
             FSortByComboboxes[1] = cmbSortBy2;
             FSortByComboboxes[2] = cmbSortBy3;
-            
+
             UpdateSortingDetails(null);
         }
-        
+
         /**
          * This will make the correct options available in the sort comboboxes
          *
@@ -98,13 +98,13 @@ namespace Ict.Petra.Client.MReporting.Gui
             // just fill all the comboboxes
             if (ASender == null)
             {
-            	
                 for (counter = 0; counter <= NUMBER_SORTBY - 1; counter += 1)
                 {
                     FSortByComboboxes[counter].Enabled = (FAvailableFunctions.Count > counter);
+
                     foreach (TColumnFunction Func in FAvailableFunctions)
                     {
-                    	FSortByComboboxes[counter].AddStringItem(Func.GetDisplayValue());
+                        FSortByComboboxes[counter].AddStringItem(Func.GetDisplayValue());
                     }
                 }
             }
@@ -157,7 +157,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
             }
         }
-        
+
         /// <summary>
         /// read the values from the controls and give them to the calculator
         /// </summary>
@@ -204,11 +204,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             for (Int32 counter = 0; counter < NUMBER_SORTBY; counter += 1)
             {
-            	if (AParameters.Exists("orderby" + counter.ToString()))
-            	{
-	                FSortByComboboxes[counter].SetSelectedString(AParameters.Get("orderby" + counter.ToString()).ToString());
-            	}
+                if (AParameters.Exists("orderby" + counter.ToString()))
+                {
+                    FSortByComboboxes[counter].SetSelectedString(AParameters.Get("orderby" + counter.ToString()).ToString());
+                }
             }
         }
-	}
+    }
 }

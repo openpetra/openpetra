@@ -37,32 +37,31 @@ using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPartner
 {
-	/// <summary>
-	/// Description of UC_PartnerSelection.ManualCode.
-	/// </summary>
-	public partial class TFrmUC_PartnerSelection
-	{
+    /// <summary>
+    /// Description of UC_PartnerSelection.ManualCode.
+    /// </summary>
+    public partial class TFrmUC_PartnerSelection
+    {
         /// <summary>
         /// Initialisation
         /// </summary>
-		public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
-		{
-			FPetraUtilsObject = APetraUtilsObject;
-			
-			rbtPartner.Checked = true;
-			txtExtract.Enabled = false;
-			dtpCurrentStaff.Enabled = false;
-		}
-		
+        public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
+        {
+            FPetraUtilsObject = APetraUtilsObject;
+
+            rbtPartner.Checked = true;
+            txtExtract.Enabled = false;
+            dtpCurrentStaff.Enabled = false;
+        }
+
         /// <summary>
         /// set the functions and column names that are available
         /// </summary>
         /// <param name="AAvailableFunctions"></param>
         public void SetAvailableFunctions(ArrayList AAvailableFunctions)
         {
-            
         }
-        
+
         /// <summary>
         /// read the values from the controls and give them to the calculator
         /// </summary>
@@ -70,26 +69,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         /// <param name="AReportAction"></param>
         public void ReadControls(TRptCalculator ACalculator, TReportActionEnum AReportAction)
         {
-        	if (rbtPartner.Checked)
-        	{
-        		ACalculator.AddParameter("param_selection", "one partner");
-        	}
-        	else if (rbtExtract.Checked)
-        	{
-	        	ACalculator.AddParameter("param_selection", "an extract");
-        	}
-        	else if (rbtCurrentStaff.Checked)
-        	{
-        		ACalculator.AddParameter("param_selection", "all current staff");
-        	}
-        	else if (rbtAllStaff.Checked)
-        	{
-        		ACalculator.AddParameter("param_selection", "all staff");
-        	}
-        	
-        	ACalculator.AddParameter("param_extract", txtExtract.Text);
-        	ACalculator.AddParameter("param_partnerkey", txtPartnerKey.Text);
-        	ACalculator.AddParameter("param_currentstaffdate", dtpCurrentStaff.Date);
+            if (rbtPartner.Checked)
+            {
+                ACalculator.AddParameter("param_selection", "one partner");
+            }
+            else if (rbtExtract.Checked)
+            {
+                ACalculator.AddParameter("param_selection", "an extract");
+            }
+            else if (rbtCurrentStaff.Checked)
+            {
+                ACalculator.AddParameter("param_selection", "all current staff");
+            }
+            else if (rbtAllStaff.Checked)
+            {
+                ACalculator.AddParameter("param_selection", "all staff");
+            }
+
+            ACalculator.AddParameter("param_extract", txtExtract.Text);
+            ACalculator.AddParameter("param_partnerkey", txtPartnerKey.Text);
+            ACalculator.AddParameter("param_currentstaffdate", dtpCurrentStaff.Date);
         }
 
         /// <summary>
@@ -98,37 +97,37 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         /// <param name="AParameters"></param>
         public void SetControls(TParameterList AParameters)
         {
-        	rbtPartner.Checked = (AParameters.Get("param_selection").ToString() == "one partner");
-        	rbtExtract.Checked = (AParameters.Get("param_selection").ToString() == "an extract");
-        	rbtCurrentStaff.Checked = (AParameters.Get("param_selection").ToString() == "all current staff");
-        	rbtAllStaff.Checked = (AParameters.Get("param_selection").ToString() == "all staff");
-        	
-        	txtPartnerKey.Text = AParameters.Get("param_partnerkey").ToString();
-        	txtExtract.Text = AParameters.Get("param_extract").ToString();
-        	dtpCurrentStaff.Date = AParameters.Get("param_currentstaffdate").ToDate();
+            rbtPartner.Checked = (AParameters.Get("param_selection").ToString() == "one partner");
+            rbtExtract.Checked = (AParameters.Get("param_selection").ToString() == "an extract");
+            rbtCurrentStaff.Checked = (AParameters.Get("param_selection").ToString() == "all current staff");
+            rbtAllStaff.Checked = (AParameters.Get("param_selection").ToString() == "all staff");
+
+            txtPartnerKey.Text = AParameters.Get("param_partnerkey").ToString();
+            txtExtract.Text = AParameters.Get("param_extract").ToString();
+            dtpCurrentStaff.Date = AParameters.Get("param_currentstaffdate").ToDate();
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         protected void rbtSelectionChange(object sender, EventArgs e)
         {
-        	RadioButton RBtn = sender as RadioButton;
-        	
-        	if (RBtn.Name == "rbtPartner")
-        	{
-	        	txtPartnerKey.Enabled = RBtn.Checked;
-        	}
-        	else if (RBtn.Name == "rbtExtract")
-        	{
-	        	txtExtract.Enabled = RBtn.Checked;
-        	}
-        	else if (RBtn.Name == "rbtCurrentStaff")
-        	{
-	        	dtpCurrentStaff.Enabled = RBtn.Checked;
-        	}
+            RadioButton RBtn = sender as RadioButton;
+
+            if (RBtn.Name == "rbtPartner")
+            {
+                txtPartnerKey.Enabled = RBtn.Checked;
+            }
+            else if (RBtn.Name == "rbtExtract")
+            {
+                txtExtract.Enabled = RBtn.Checked;
+            }
+            else if (RBtn.Name == "rbtCurrentStaff")
+            {
+                dtpCurrentStaff.Enabled = RBtn.Checked;
+            }
         }
-	}
+    }
 }
