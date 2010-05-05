@@ -128,7 +128,12 @@ namespace Ict.Common.Controls
 
         private TPnlAccordion GetOrCreatePanel(XmlNode AFolderNode)
         {
-            string pnlName = "pnl" + AFolderNode.Attributes["Label"].Value.Replace(" ", "");
+            string pnlName = "pnl" + AFolderNode.Name;
+
+            if (AFolderNode.Attributes["Label"] != null)
+            {
+                pnlName = AFolderNode.Attributes["Label"].Value.Replace(" ", "");
+            }
 
             if (this.sptNavigation.Panel1.Controls.ContainsKey(pnlName))
             {
