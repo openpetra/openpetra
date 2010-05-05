@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -158,6 +159,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             this.pnlSupplierDetails.Name = "pnlSupplierDetails";
             this.pnlSupplierDetails.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlSupplierDetails.Padding = new System.Windows.Forms.Padding(5,0,10,0);
             this.pnlSupplierDetails.AutoSize = true;
             //
             // tableLayoutPanel1
@@ -183,12 +185,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblCurrency.Text = "Currency:";
             this.lblCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblCurrency.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCurrency.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbPaymentType
             //
             this.cmbPaymentType.Location = new System.Drawing.Point(2,2);
             this.cmbPaymentType.Name = "cmbPaymentType";
-            this.cmbPaymentType.Size = new System.Drawing.Size(150, 28);
+            this.cmbPaymentType.Size = new System.Drawing.Size(130, 28);
             this.cmbPaymentType.Items.AddRange(new object[] {"Cash","Cheque"});
             this.cmbPaymentType.Text = "Cash";
             //
@@ -200,6 +203,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblPaymentType.Text = "Payment T&ype:";
             this.lblPaymentType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblPaymentType.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblPaymentType.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtTotalAmount
             //
@@ -217,6 +221,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblTotalAmount.Text = "&Amount:";
             this.lblTotalAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblTotalAmount.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblTotalAmount.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtExchangeRate
             //
@@ -232,6 +237,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblExchangeRate.Text = "Exchange Rate:";
             this.lblExchangeRate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblExchangeRate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblExchangeRate.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbBankAccount
             //
@@ -248,6 +254,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblBankAccount.Text = "Bank Account:";
             this.lblBankAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblBankAccount.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblBankAccount.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtReference
             //
@@ -263,6 +270,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblReference.Text = "&Reference:";
             this.lblReference.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblReference.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblReference.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkPrintRemittance
             //
@@ -302,6 +310,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblChequeNumber.Text = "Cheque Number:";
             this.lblChequeNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblChequeNumber.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblChequeNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -425,6 +434,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblAmountToPay.Text = "Amount To Pay:";
             this.lblAmountToPay.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblAmountToPay.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblAmountToPay.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -546,15 +556,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             // TFrmAPPayment
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(750, 600);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmAPPayment";
             this.Text = "AP Payment";
 
@@ -576,9 +589,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.pnlSupplierDetails.ResumeLayout(false);
             this.grpPaymentList.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.GroupBox grpPaymentList;
         private Ict.Common.Controls.TSgrdDataGridPaged grdPayments;

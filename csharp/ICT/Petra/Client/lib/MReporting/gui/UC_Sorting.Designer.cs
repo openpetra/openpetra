@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -110,6 +111,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.lblSortBy1.Text = "Sort First By:";
             this.lblSortBy1.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblSortBy1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblSortBy1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbSortBy2
             //
@@ -126,6 +128,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.lblSortBy2.Text = "Sort Then By:";
             this.lblSortBy2.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblSortBy2.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblSortBy2.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbSortBy3
             //
@@ -142,6 +145,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.lblSortBy3.Text = "Sort Last By:";
             this.lblSortBy3.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblSortBy3.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblSortBy3.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -159,19 +163,24 @@ namespace Ict.Petra.Client.MReporting.Gui
             //
             // TFrmUC_Sorting
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
+
             this.Name = "TFrmUC_Sorting";
             this.Text = "";
 
 	
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private Ict.Common.Controls.TCmbAutoComplete cmbSortBy1;

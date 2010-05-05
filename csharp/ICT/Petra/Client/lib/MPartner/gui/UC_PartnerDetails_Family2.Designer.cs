@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -131,6 +132,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPreviousName.Text = "Previous Name:";
             this.lblPreviousName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblPreviousName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblPreviousName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtLocalName
             //
@@ -146,6 +148,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLocalName.Text = "Local Name:";
             this.lblLocalName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblLocalName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblLocalName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -186,6 +189,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblMaritalStatus.Text = "Marital Status:";
             this.lblMaritalStatus.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblMaritalStatus.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblMaritalStatus.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // dtpMaritalStatusSince
             //
@@ -201,6 +205,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblMaritalStatusSince.Text = "Marital Status Since:";
             this.lblMaritalStatusSince.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblMaritalStatusSince.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblMaritalStatusSince.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtMaritalStatusComment
             //
@@ -218,6 +223,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblMaritalStatusComment.Text = "Marital Status Comment:";
             this.lblMaritalStatusComment.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblMaritalStatusComment.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblMaritalStatusComment.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbLanguageCode
             //
@@ -234,6 +240,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLanguageCode.Text = "Language Code:";
             this.lblLanguageCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblLanguageCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblLanguageCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbAcquisitionCode
             //
@@ -250,6 +257,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblAcquisitionCode.Text = "Acquisition Code:";
             this.lblAcquisitionCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblAcquisitionCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblAcquisitionCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -274,10 +282,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // TUC_PartnerDetails_Family2
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
+
             this.Name = "TUC_PartnerDetails_Family2";
             this.Text = "";
 
@@ -287,9 +298,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel1.ResumeLayout(false);
             this.grpNames.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.GroupBox grpNames;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

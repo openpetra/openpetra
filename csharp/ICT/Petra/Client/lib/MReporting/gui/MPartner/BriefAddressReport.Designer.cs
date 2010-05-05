@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -502,15 +503,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             // TFrmBriefAddressReport
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.tabReportSettings);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmBriefAddressReport";
             this.Text = "Brief Address Report";
 
@@ -532,9 +536,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tpgReportSorting.ResumeLayout(false);
             this.tpgGeneralSettings.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgGeneralSettings;
         private Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection ucoPartnerSelection;

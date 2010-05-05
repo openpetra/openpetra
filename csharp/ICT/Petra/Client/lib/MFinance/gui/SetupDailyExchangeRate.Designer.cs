@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -211,6 +212,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailFromCurrencyCode.Text = "&From Currency Code:";
             this.lblDetailFromCurrencyCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailFromCurrencyCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailFromCurrencyCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDetailToCurrencyCode
             //
@@ -227,6 +229,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailToCurrencyCode.Text = "&To Currency Code:";
             this.lblDetailToCurrencyCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailToCurrencyCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailToCurrencyCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // dtpDetailDateEffectiveFrom
             //
@@ -242,6 +245,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailDateEffectiveFrom.Text = "D&ate:";
             this.lblDetailDateEffectiveFrom.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailDateEffectiveFrom.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailDateEffectiveFrom.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailRateOfExchange
             //
@@ -257,6 +261,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailRateOfExchange.Text = "&Rate of exchange:";
             this.lblDetailRateOfExchange.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailRateOfExchange.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailRateOfExchange.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // lblValueOneDirection
             //
@@ -488,15 +493,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             // TFrmSetupDailyExchangeRate
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(660, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmSetupDailyExchangeRate";
             this.Text = "Daily Exchange Rate List";
 
@@ -515,9 +523,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.pnlButtons.ResumeLayout(false);
             this.pnlGrid.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.Panel pnlGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;

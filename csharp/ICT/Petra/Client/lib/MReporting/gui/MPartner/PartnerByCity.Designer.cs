@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -148,6 +149,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.lblCityName.Text = "Name of City:";
             this.lblCityName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblCityName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCityName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -451,15 +453,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             // TFrmPartnerByCity
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.tabReportSettings);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmPartnerByCity";
             this.Text = "Partner by City";
 
@@ -477,9 +482,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tpgReportSpecific.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgReportSpecific;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

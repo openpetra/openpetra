@@ -158,7 +158,7 @@ RootNode:
             NoLabel: true
             Dock: Top
             DataField: PPerson.FirstName
-            Width: 104
+            Width: 124
         txtPersonMiddleName:
             NoLabel: true
             DataField: PPerson.MiddleName1
@@ -171,7 +171,7 @@ RootNode:
         pnlPerson2ndLine:        
             Controls: [cmbPersonGender, cmbPersonAddresseeTypeCode, chkPersonNoSolicitations]
             ControlsOrientation: horizontal
-            ColWidths: [0=Fixed:80, 2=Fixed:110]
+            ColWidths: [0=Fixed:80, 2=Fixed:130]
             RowHeights: [0=Fixed:28]
             Margin: 0,0,0,0
             ColSpan: 6

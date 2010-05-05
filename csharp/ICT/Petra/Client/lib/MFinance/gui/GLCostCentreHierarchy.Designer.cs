@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -166,6 +167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailCostCentreCode.Text = "Cost Centre Code:";
             this.lblDetailCostCentreCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCostCentreCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCostCentreCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDetailCostCentreType
             //
@@ -182,6 +184,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailCostCentreType.Text = "Cost Centre Type:";
             this.lblDetailCostCentreType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCostCentreType.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCostCentreType.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailCostCentreName
             //
@@ -197,6 +200,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailCostCentreName.Text = "Cost Centre Name:";
             this.lblDetailCostCentreName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCostCentreName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCostCentreName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkDetailCostCentreActiveFlag
             //
@@ -414,15 +418,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             // TFrmGLCostCentreHierarchy
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(660, 700);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmGLCostCentreHierarchy";
             this.Text = "GL Cost Centre Hierarchy";
 
@@ -441,9 +448,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.sptSplitter.Panel1.ResumeLayout(false);
             this.sptSplitter.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.SplitContainer sptSplitter;
         private System.Windows.Forms.TreeView trvCostCentres;

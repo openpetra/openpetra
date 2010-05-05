@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -146,6 +147,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblConferenceKey.Text = "Partner Key of Conference:";
             this.lblConferenceKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblConferenceKey.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblConferenceKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtMotivationCodes
             //
@@ -161,6 +163,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblMotivationCodes.Text = "Motivation Codes:";
             this.lblMotivationCodes.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblMotivationCodes.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblMotivationCodes.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // dtpStartPayments
             //
@@ -176,6 +179,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblStartPayments.Text = "Start of Payments:";
             this.lblStartPayments.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblStartPayments.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblStartPayments.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -455,15 +459,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // TFrmARConferencePayments
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.tabReportSettings);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmARConferencePayments";
             this.Text = "Payments for Conference";
 
@@ -479,9 +486,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tpgReportSpecific.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgReportSpecific;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

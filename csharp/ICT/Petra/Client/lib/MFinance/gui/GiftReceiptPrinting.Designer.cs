@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -153,6 +154,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblStartDate.Text = "Start Date:";
             this.lblStartDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblStartDate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblStartDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // dtpEndDate
             //
@@ -168,6 +170,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblEndDate.Text = "End Date:";
             this.lblEndDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblEndDate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblEndDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -363,15 +366,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             // TFrmGiftReceiptPrinting
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(754, 623);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmGiftReceiptPrinting";
             this.Text = "Print Annual Gift Receipts";
 
@@ -391,9 +397,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.pnlParameters.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel pnlParameters;

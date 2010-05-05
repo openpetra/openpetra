@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -209,10 +210,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             // TFrmUC_PartnerSelection
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
+
             this.Name = "TFrmUC_PartnerSelection";
             this.Text = "";
 
@@ -221,9 +225,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.grpSelection.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox grpSelection;

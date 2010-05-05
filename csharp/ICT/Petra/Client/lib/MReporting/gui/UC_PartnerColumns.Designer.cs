@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -301,6 +302,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.lblCalculation.Text = "Content of Column::";
             this.lblCalculation.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblCalculation.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCalculation.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtColumnWidth
             //
@@ -316,6 +318,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.lblColumnWidth.Text = "Width of Column::";
             this.lblColumnWidth.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblColumnWidth.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblColumnWidth.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // lblCm
             //
@@ -377,10 +380,13 @@ namespace Ict.Petra.Client.MReporting.Gui
             //
             // TFrmUC_PartnerColumns
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
+
             this.Name = "TFrmUC_PartnerColumns";
             this.Text = "";
 
@@ -401,9 +407,11 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.pnlColumns.ResumeLayout(false);
             this.pnlTop.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.Panel pnlTop;
         private System.Windows.Forms.Panel pnlColumns;

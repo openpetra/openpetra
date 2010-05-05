@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -93,18 +94,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // TUC_PartnerEdit_LowerPart
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
+
             this.Name = "TUC_PartnerEdit_LowerPart";
             this.Text = "";
 
 	
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_PartnerTabSet2 ucoPartnerTabSet;
     }

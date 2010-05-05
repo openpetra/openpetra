@@ -53,7 +53,7 @@
         rbtAllCostCentres:
         rbtAllActiveCostCentres:
         rbtAccountLevel:
-        clbCostCentres: {List=UserDefinedList, NoLabel=true, Dock=Fill, ParameterName=param_cost_centre_codes}
+        clbCostCentres: {List=UserDefinedList, NoLabel=true, Dock=Fill, ParameterName=param_cost_centre_codes, Width: 365}
         btnUnselectAllCostCentres: {Label=Unselect All}
         chkCostCentreBreakdown: {ParameterName=param_cost_centre_breakdown, Help=group not by costcentre but by account}
         rgrDepth: {ParameterName=param_depth}

@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -256,6 +257,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerKey.Text = "Key:";
             this.lblPartnerKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblPartnerKey.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblPartnerKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // lblFamilyEmpty2
             //
@@ -283,6 +285,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerClass.Text = "Class:";
             this.lblPartnerClass.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblPartnerClass.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblPartnerClass.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 5;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 80));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -325,6 +328,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblFamilyTitle.Text = "Title/Na&me:";
             this.lblFamilyTitle.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblFamilyTitle.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblFamilyTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtFamilyFirstName
             //
@@ -361,6 +365,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblFamilyAddresseeTypeCode.Text = "&Addressee Type:";
             this.lblFamilyAddresseeTypeCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblFamilyAddresseeTypeCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblFamilyAddresseeTypeCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkFamilyNoSolicitations
             //
@@ -418,12 +423,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPersonTitle.Text = "Title/Na&me:";
             this.lblPersonTitle.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblPersonTitle.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblPersonTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtPersonFirstName
             //
             this.txtPersonFirstName.Name = "txtPersonFirstName";
             this.txtPersonFirstName.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtPersonFirstName.Size = new System.Drawing.Size(104, 28);
+            this.txtPersonFirstName.Size = new System.Drawing.Size(124, 28);
             //
             // txtPersonMiddleName
             //
@@ -466,6 +472,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPersonGender.Text = "&Gender:";
             this.lblPersonGender.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblPersonGender.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblPersonGender.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbPersonAddresseeTypeCode
             //
@@ -482,6 +489,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPersonAddresseeTypeCode.Text = "&Addressee Type:";
             this.lblPersonAddresseeTypeCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblPersonAddresseeTypeCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblPersonAddresseeTypeCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkPersonNoSolicitations
             //
@@ -495,7 +503,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel4.ColumnCount = 5;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 80));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 110));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 130));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.RowCount = 1;
@@ -550,6 +558,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblChurchName.Text = "Title/Na&me:";
             this.lblChurchName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblChurchName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblChurchName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel5.ColumnCount = 2;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -586,6 +595,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblOrganisationName.Text = "Title/Na&me:";
             this.lblOrganisationName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblOrganisationName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblOrganisationName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel6.ColumnCount = 2;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -622,6 +632,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblUnitName.Text = "Title/Na&me:";
             this.lblUnitName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblUnitName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblUnitName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel7.ColumnCount = 2;
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -658,6 +669,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblBankName.Text = "Title/Na&me:";
             this.lblBankName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblBankName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblBankName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel8.ColumnCount = 2;
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -694,6 +706,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblVenueName.Text = "Title/Na&me:";
             this.lblVenueName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblVenueName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblVenueName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel9.ColumnCount = 2;
             this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -739,6 +752,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblOtherAddresseeTypeCode.Text = "&Addressee Type:";
             this.lblOtherAddresseeTypeCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblOtherAddresseeTypeCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblOtherAddresseeTypeCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkOtherNoSolicitations
             //
@@ -791,6 +805,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLastGiftDetailsDate.Text = "Last Gift:";
             this.lblLastGiftDetailsDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblLastGiftDetailsDate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblLastGiftDetailsDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtLastGiftDetails
             //
@@ -908,6 +923,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerStatus.Text = "Partner &Status:";
             this.lblPartnerStatus.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblPartnerStatus.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblPartnerStatus.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtStatusUpdated
             //
@@ -927,6 +943,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblStatusUpdated.Text = "Status Updated:";
             this.lblStatusUpdated.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblStatusUpdated.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblStatusUpdated.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtLastContact
             //
@@ -946,6 +963,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLastContact.Text = "Last Contact:";
             this.lblLastContact.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblLastContact.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblLastContact.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel12.ColumnCount = 2;
             this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 110));
             this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -970,10 +988,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // TUC_PartnerEdit_TopPart
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
+
             this.Name = "TUC_PartnerEdit_TopPart";
             this.Text = "";
 
@@ -1009,9 +1030,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlLeft.ResumeLayout(false);
             this.grpCollapsible.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.GroupBox grpCollapsible;
         private System.Windows.Forms.Panel pnlLeft;

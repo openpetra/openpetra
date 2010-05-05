@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -684,15 +685,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // TPartnerEditDSWinForm
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(754, 623);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TPartnerEditDSWinForm";
             this.Text = "Partner Edit";
 
@@ -707,9 +711,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tbrMain.ResumeLayout(false);
             this.pnlLowerPart.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_CollapsiblePart ucoUpperPart;
         private System.Windows.Forms.Panel pnlLowerPart;

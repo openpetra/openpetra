@@ -436,7 +436,7 @@ namespace Ict.Petra.Client.App.PetraClient
             //
             // TUcoMainWindowContent
             //
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.Panel2);
             this.Name = "TUcoMainWindowContent";

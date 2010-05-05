@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -167,6 +168,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblLedger.Text = "Ledger:";
             this.lblLedger.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblLedger.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblLedger.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // rgrPeriod
             //
@@ -209,6 +211,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblStartPeriod.Text = "from:";
             this.lblStartPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblStartPeriod.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblStartPeriod.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtEndPeriod
             //
@@ -224,6 +227,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblEndPeriod.Text = "to:";
             this.lblEndPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblEndPeriod.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblEndPeriod.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbPeriodYear
             //
@@ -240,6 +244,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblPeriodYear.Text = "Year:";
             this.lblPeriodYear.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblPeriodYear.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblPeriodYear.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel3.ColumnCount = 6;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -284,6 +289,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblQuarter.Text = "Quarter:";
             this.lblQuarter.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblQuarter.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblQuarter.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbPeriodYearQuarter
             //
@@ -300,6 +306,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblPeriodYearQuarter.Text = "Year:";
             this.lblPeriodYearQuarter.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblPeriodYearQuarter.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblPeriodYearQuarter.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel4.ColumnCount = 4;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -348,6 +355,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblDepth.Text = "Depth:";
             this.lblDepth.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDepth.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDepth.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -630,15 +638,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             //
             // TFrmFDIncomeByFund
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.tabReportSettings);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmFDIncomeByFund";
             this.Text = "FD Income by Fund";
 
@@ -658,9 +669,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tpgReportSpecific.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgReportSpecific;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
