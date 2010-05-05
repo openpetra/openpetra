@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -172,6 +173,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblLedgerNumber.Text = "Ledger:";
             this.lblLedgerNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblLedgerNumber.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblLedgerNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -324,6 +326,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailBatchDescription.Text = "Batch Description:";
             this.lblDetailBatchDescription.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailBatchDescription.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailBatchDescription.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailBatchControlTotal
             //
@@ -339,6 +342,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailBatchControlTotal.Text = "Batch Hash Total:";
             this.lblDetailBatchControlTotal.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailBatchControlTotal.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailBatchControlTotal.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // dtpDetailDateEffective
             //
@@ -354,6 +358,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailDateEffective.Text = "Effective Date:";
             this.lblDetailDateEffective.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailDateEffective.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailDateEffective.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // lblValidDateRange
             //
@@ -436,12 +441,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             // TUC_GLBatches
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrTabPage);
             this.Controls.Add(this.mnuTabPage);
+
             this.Name = "TUC_GLBatches";
             this.Text = "";
 
@@ -460,9 +468,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlInfo.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.Panel pnlInfo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

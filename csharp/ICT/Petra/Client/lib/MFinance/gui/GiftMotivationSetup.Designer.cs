@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -199,6 +200,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMotivationGroupCode.Text = "Group:";
             this.lblDetailMotivationGroupCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailMotivationGroupCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailMotivationGroupCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailMotivationDetailCode
             //
@@ -214,6 +216,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMotivationDetailCode.Text = "Detail:";
             this.lblDetailMotivationDetailCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailMotivationDetailCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailMotivationDetailCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailMotivationDetailDesc
             //
@@ -229,6 +232,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMotivationDetailDesc.Text = "Description:";
             this.lblDetailMotivationDetailDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailMotivationDetailDesc.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailMotivationDetailDesc.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDetailAccountCode
             //
@@ -245,6 +249,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailAccountCode.Text = "Account:";
             this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailAccountCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailAccountCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDetailCostCentreCode
             //
@@ -261,6 +266,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailCostCentreCode.Text = "Cost Centre:";
             this.lblDetailCostCentreCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCostCentreCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCostCentreCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkDetailMotivationStatus
             //
@@ -478,15 +484,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             // TFrmGiftMotivationSetup
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(660, 700);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmGiftMotivationSetup";
             this.Text = "Gift Motivations";
 
@@ -505,9 +514,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.pnlButtons.ResumeLayout(false);
             this.pnlGrid.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.Panel pnlGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;

@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -147,6 +148,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblStartDate.Text = "Start Date:";
             this.lblStartDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblStartDate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblStartDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // dtpEndDate
             //
@@ -162,6 +164,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblEndDate.Text = "End Date:";
             this.lblEndDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblEndDate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblEndDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // dtpDateEffective
             //
@@ -177,6 +180,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDateEffective.Text = "Date Effective:";
             this.lblDateEffective.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDateEffective.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDateEffective.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtRecipientKey
             //
@@ -203,6 +207,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblRecipientKey.Text = "Recipient Key:";
             this.lblRecipientKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblRecipientKey.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblRecipientKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtOldFieldKey
             //
@@ -229,6 +234,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblOldFieldKey.Text = "Old Field Key:";
             this.lblOldFieldKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblOldFieldKey.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblOldFieldKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkNoReceipt
             //
@@ -365,15 +371,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             // TFrmGiftFieldAdjustment
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(754, 623);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmGiftFieldAdjustment";
             this.Text = "Field Change Adjustment";
 
@@ -390,9 +399,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.pnlParameters.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel pnlParameters;

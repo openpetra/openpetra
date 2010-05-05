@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -168,6 +169,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblFilename.Text = "Filename:";
             this.lblFilename.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblFilename.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblFilename.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // btnSelectFile
             //
@@ -234,6 +236,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblExplanation.Text = "Explanation:";
             this.lblExplanation.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblExplanation.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblExplanation.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // btnSkip
             //
@@ -490,15 +493,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // TFrmPartnerImport
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmPartnerImport";
             this.Text = "Import Partners";
 
@@ -519,9 +525,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlImportSettings.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel pnlImportSettings;

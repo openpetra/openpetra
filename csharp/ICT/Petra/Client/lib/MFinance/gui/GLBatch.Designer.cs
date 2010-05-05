@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -338,15 +339,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             // TFrmGLBatch
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(660, 700);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmGLBatch";
             this.Text = "GL Batches";
 
@@ -364,9 +368,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tpgBatches.ResumeLayout(false);
             this.tabGLBatch.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private Ict.Common.Controls.TTabVersatile tabGLBatch;
         private System.Windows.Forms.TabPage tpgBatches;

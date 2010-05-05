@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.App.PetraClient
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -283,15 +284,18 @@ namespace Ict.Petra.Client.App.PetraClient
             //
             // TFrmMainWindow
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(510, 476);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.ucoMainWindowContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmMainWindow";
             this.Text = "";
 
@@ -304,9 +308,11 @@ namespace Ict.Petra.Client.App.PetraClient
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private TUcoMainWindowContent ucoMainWindowContent;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbMenuSwitch;

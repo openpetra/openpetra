@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -182,6 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountCode.Text = "Account Code:";
             this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailAccountCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailAccountCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDetailAccountType
             //
@@ -198,6 +200,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountType.Text = "Account Type:";
             this.lblDetailAccountType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailAccountType.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailAccountType.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailEngAccountCodeLongDesc
             //
@@ -213,6 +216,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailEngAccountCodeLongDesc.Text = "Description Long English:";
             this.lblDetailEngAccountCodeLongDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailEngAccountCodeLongDesc.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailEngAccountCodeLongDesc.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailEngAccountCodeShortDesc
             //
@@ -228,6 +232,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailEngAccountCodeShortDesc.Text = "Description Short English:";
             this.lblDetailEngAccountCodeShortDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailEngAccountCodeShortDesc.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailEngAccountCodeShortDesc.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailAccountCodeLongDesc
             //
@@ -243,6 +248,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountCodeLongDesc.Text = "Description Long Local:";
             this.lblDetailAccountCodeLongDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailAccountCodeLongDesc.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailAccountCodeLongDesc.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailAccountCodeShortDesc
             //
@@ -258,6 +264,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailAccountCodeShortDesc.Text = "Description Short Local:";
             this.lblDetailAccountCodeShortDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailAccountCodeShortDesc.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailAccountCodeShortDesc.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDetailValidCcCombo
             //
@@ -274,6 +281,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailValidCcCombo.Text = "Valid Cost Centres:";
             this.lblDetailValidCcCombo.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailValidCcCombo.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailValidCcCombo.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkDetailAccountActiveFlag
             //
@@ -568,15 +576,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             // TFrmGLAccountHierarchy
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(660, 700);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmGLAccountHierarchy";
             this.Text = "GL Account Hierarchy";
 
@@ -595,9 +606,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.sptAccountSplitter.Panel1.ResumeLayout(false);
             this.sptAccountSplitter.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.SplitContainer sptAccountSplitter;
         private System.Windows.Forms.TreeView trvAccounts;

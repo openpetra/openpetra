@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -195,6 +196,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblCurrentSupplierName.Text = "Current Supplier:";
             this.lblCurrentSupplierName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblCurrentSupplierName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCurrentSupplierName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtCurrentSupplierCurrency
             //
@@ -212,6 +214,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblCurrentSupplierCurrency.Text = "Currency:";
             this.lblCurrentSupplierCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblCurrentSupplierCurrency.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCurrentSupplierCurrency.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -251,6 +254,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblType.Text = "&Type:";
             this.lblType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblType.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblType.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDate
             //
@@ -266,6 +270,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDate.Text = "&Date:";
             this.lblDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDateField
             //
@@ -281,6 +286,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDateField.Text = "Date &Field:";
             this.lblDateField.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDateField.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDateField.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel2.ColumnCount = 6;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -324,6 +330,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblStatus.Text = "&Status:";
             this.lblStatus.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblStatus.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblStatus.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkHideAgedTransactions
             //
@@ -400,6 +407,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblSumOfTagged.Text = "Sum of Tagged:";
             this.lblSumOfTagged.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblSumOfTagged.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblSumOfTagged.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel4.ColumnCount = 6;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -451,6 +459,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblDisplayedBalance.Text = "Displayed Balance:";
             this.lblDisplayedBalance.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDisplayedBalance.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDisplayedBalance.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel5.ColumnCount = 2;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -723,15 +732,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             // TFrmAPSupplierTransactions
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(754, 623);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmAPSupplierTransactions";
             this.Text = "Supplier Transactions";
 
@@ -755,9 +767,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlCurrentSupplierInfo.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.Panel pnlCurrentSupplierInfo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

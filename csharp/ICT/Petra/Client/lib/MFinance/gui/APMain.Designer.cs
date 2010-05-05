@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -193,6 +194,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblSupplierCode.Text = "S&earch Supplier:";
             this.lblSupplierCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblSupplierCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblSupplierCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // pnlSearchFilter
             //
@@ -361,6 +363,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblSupplierCurrency.Text = "C&urrency:";
             this.lblSupplierCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblSupplierCurrency.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblSupplierCurrency.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel6.ColumnCount = 4;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -458,6 +461,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.lblSumTagged.Text = "Sum of Tagged:";
             this.lblSumTagged.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblSumTagged.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblSumTagged.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel8.ColumnCount = 6;
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -789,15 +793,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             //
             // TFrmAPMain
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(754, 623);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmAPMain";
             this.Text = "Accounts Payable";
 
@@ -826,9 +833,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.pnlSearchFilter.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private Ict.Common.Controls.TCmbAutoComplete cmbSupplierCode;

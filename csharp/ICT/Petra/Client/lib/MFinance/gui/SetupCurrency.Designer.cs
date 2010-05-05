@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -207,6 +208,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailCurrencyCode.Text = "Currency Code:";
             this.lblDetailCurrencyCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCurrencyCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCurrencyCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailCurrencyName
             //
@@ -222,6 +224,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailCurrencyName.Text = "Currency Name:";
             this.lblDetailCurrencyName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCurrencyName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCurrencyName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailCurrencySymbol
             //
@@ -237,6 +240,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailCurrencySymbol.Text = "Currency Symbol:";
             this.lblDetailCurrencySymbol.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCurrencySymbol.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCurrencySymbol.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDetailCountryCode
             //
@@ -253,6 +257,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailCountryCode.Text = "Country Code:";
             this.lblDetailCountryCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCountryCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCountryCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailDisplayFormat
             //
@@ -268,6 +273,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailDisplayFormat.Text = "Number of Decimals:";
             this.lblDetailDisplayFormat.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailDisplayFormat.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailDisplayFormat.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -456,15 +462,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             // TFrmSetupCurrency
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(660, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmSetupCurrency";
             this.Text = "Currency List";
 
@@ -483,9 +492,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.pnlButtons.ResumeLayout(false);
             this.pnlGrid.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.Panel pnlGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;

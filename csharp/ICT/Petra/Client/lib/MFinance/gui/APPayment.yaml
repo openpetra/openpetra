@@ -32,8 +32,9 @@ RootNode:
                 Row3: [txtReference]
                 Row4: [chkPrintRemittance, chkPrintLabel]
                 Row5: [chkPrintCheque, txtChequeNumber]
-                # todo: electronic payment; 
-                # todo: pay by transfer (select another supplier; payment will create another invoice with the other supplier, at a given exchange rate, with the given invoice number)
+            Padding: 5,0,10,0
+            # todo: electronic payment; 
+            # todo: pay by transfer (select another supplier; payment will create another invoice with the other supplier, at a given exchange rate, with the given invoice number)
             Dock:Top
         chkPrintRemittance:
         chkPrintLabel:
@@ -64,6 +65,7 @@ RootNode:
             OptionalValues: [=Cash, Cheque]
             # TODO: Transfer, Electronic
             Label: Payment T&ype
+            Width: 130
         txtReference: {Label=&Reference, ColSpan=2, DataField=AApPayment.Reference}
         cmbBankAccount: {List=UserDefinedList, ColSpan=2}
         txtExchangeRate:

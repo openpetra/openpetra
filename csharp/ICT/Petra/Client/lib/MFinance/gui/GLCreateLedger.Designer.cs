@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -137,6 +138,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblLedgerNumber.Text = "Ledger Number:";
             this.lblLedgerNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblLedgerNumber.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblLedgerNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtLedgerName
             //
@@ -152,6 +154,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblLedgerName.Text = "Ledger Name:";
             this.lblLedgerName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblLedgerName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblLedgerName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbCountryCode
             //
@@ -168,6 +171,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblCountryCode.Text = "Country Code:";
             this.lblCountryCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblCountryCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCountryCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbBaseCurrency
             //
@@ -184,6 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblBaseCurrency.Text = "Base Currency:";
             this.lblBaseCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblBaseCurrency.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblBaseCurrency.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbIntlCurrency
             //
@@ -200,6 +205,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblIntlCurrency.Text = "Intl Currency:";
             this.lblIntlCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblIntlCurrency.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblIntlCurrency.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // dtpCalendarStartDate
             //
@@ -215,6 +221,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblCalendarStartDate.Text = "First Day of the Financial Year:";
             this.lblCalendarStartDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblCalendarStartDate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCalendarStartDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // nudNumberOfPeriods
             //
@@ -230,6 +237,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblNumberOfPeriods.Text = "Number Of Periods:";
             this.lblNumberOfPeriods.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblNumberOfPeriods.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblNumberOfPeriods.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // nudCurrentPeriod
             //
@@ -245,6 +253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblCurrentPeriod.Text = "Current Period:";
             this.lblCurrentPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblCurrentPeriod.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCurrentPeriod.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // nudNumberOfFwdPostingPeriods
             //
@@ -260,6 +269,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblNumberOfFwdPostingPeriods.Text = "Number Of Fwd Posting Periods:";
             this.lblNumberOfFwdPostingPeriods.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblNumberOfFwdPostingPeriods.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblNumberOfFwdPostingPeriods.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -391,15 +401,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             // TFrmGLCreateLedger
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(660, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmGLCreateLedger";
             this.Text = "Create Ledger";
 
@@ -414,9 +427,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tbrMain.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.NumericUpDown nudLedgerNumber;

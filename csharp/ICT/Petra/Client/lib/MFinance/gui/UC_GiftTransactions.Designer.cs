@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -151,6 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblLedgerNumber.Text = "Ledger:";
             this.lblLedgerNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblLedgerNumber.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblLedgerNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtBatchNumber
             //
@@ -168,6 +170,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblBatchNumber.Text = "Gift Batch:";
             this.lblBatchNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblBatchNumber.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblBatchNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -278,6 +281,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailDonorKey.Text = "Donor:";
             this.lblDetailDonorKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailDonorKey.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailDonorKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // dtpDateEntered
             //
@@ -293,6 +297,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDateEntered.Text = "Date Entered:";
             this.lblDateEntered.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDateEntered.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDateEntered.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailGiftTransactionAmount
             //
@@ -308,6 +313,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailGiftTransactionAmount.Text = "Amount:";
             this.lblDetailGiftTransactionAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailGiftTransactionAmount.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailGiftTransactionAmount.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtCurrencyCode
             //
@@ -342,6 +348,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailRecipientKey.Text = "Recipient:";
             this.lblDetailRecipientKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailRecipientKey.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailRecipientKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDetailMotivationGroupCode
             //
@@ -359,6 +366,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMotivationGroupCode.Text = "Motivation Group:";
             this.lblDetailMotivationGroupCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailMotivationGroupCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailMotivationGroupCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDetailMotivationDetailCode
             //
@@ -376,6 +384,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMotivationDetailCode.Text = "Motivation Detail:";
             this.lblDetailMotivationDetailCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailMotivationDetailCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailMotivationDetailCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailCostCentreCode
             //
@@ -393,6 +402,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailCostCentreCode.Text = "Cost Centre:";
             this.lblDetailCostCentreCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCostCentreCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCostCentreCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailAccountCode
             //
@@ -410,6 +420,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailAccountCode.Text = "Account:";
             this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailAccountCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailAccountCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel3.ColumnCount = 4;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -447,10 +458,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             // TUC_GiftTransactions
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
+
             this.Name = "TUC_GiftTransactions";
             this.Text = "";
 
@@ -463,9 +477,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlInfo.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.Panel pnlInfo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

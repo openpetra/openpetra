@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -839,14 +840,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // TPartnerFindScreen
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(740, 570);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TPartnerFindScreen";
             this.Text = "Partner Find OpenPetra.org";
 
@@ -864,9 +868,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tpgFindPartner.ResumeLayout(false);
             this.tabPartnerFindMethods.ResumeLayout(false);
             this.pnlMain.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlMain;
         private Ict.Common.Controls.TTabVersatile tabPartnerFindMethods;
         private System.Windows.Forms.TabPage tpgFindPartner;

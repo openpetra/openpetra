@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -189,6 +190,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblLedgerNumber.Text = "Ledger:";
             this.lblLedgerNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblLedgerNumber.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblLedgerNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -344,6 +346,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailBatchDescription.Text = "Batch Description:";
             this.lblDetailBatchDescription.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailBatchDescription.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailBatchDescription.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDetailBankCostCentre
             //
@@ -360,6 +363,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailBankCostCentre.Text = "Cost Centre:";
             this.lblDetailBankCostCentre.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailBankCostCentre.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailBankCostCentre.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDetailBankAccountCode
             //
@@ -376,6 +380,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailBankAccountCode.Text = "Bank Account:";
             this.lblDetailBankAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailBankAccountCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailBankAccountCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // dtpDetailGlEffectiveDate
             //
@@ -391,6 +396,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailGlEffectiveDate.Text = "GL Effective Date:";
             this.lblDetailGlEffectiveDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailGlEffectiveDate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailGlEffectiveDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // lblValidDateRange
             //
@@ -414,6 +420,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailBatchHashTotal.Text = "Hash Total:";
             this.lblDetailBatchHashTotal.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailBatchHashTotal.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailBatchHashTotal.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDetailCurrencyCode
             //
@@ -430,6 +437,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailCurrencyCode.Text = "Currency Code:";
             this.lblDetailCurrencyCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCurrencyCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCurrencyCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailExchangeRateToBase
             //
@@ -445,6 +453,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailExchangeRateToBase.Text = "Exchange Rate To Base:";
             this.lblDetailExchangeRateToBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailExchangeRateToBase.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailExchangeRateToBase.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbDetailMethodOfPayment
             //
@@ -460,6 +469,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMethodOfPayment.Text = "Method of Payment:";
             this.lblDetailMethodOfPayment.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailMethodOfPayment.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailMethodOfPayment.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // rgrDetailGiftType
             //
@@ -600,12 +610,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             // TUC_GiftBatches
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrTabPage);
             this.Controls.Add(this.mnuTabPage);
+
             this.Name = "TUC_GiftBatches";
             this.Text = "";
 
@@ -626,9 +639,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlInfo.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.Panel pnlInfo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
