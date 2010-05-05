@@ -68,7 +68,7 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 string testAction = TAppSettingsManager.GetValueStatic("TestAction");
 
-                if (testAction.Length > 0)
+                if (testAction != TAppSettingsManager.UNDEFINEDVALUE)
                 {
                     XmlDocument temp = new XmlDocument();
                     XmlNode testActionNode = temp.CreateElement("testAction");
@@ -145,7 +145,15 @@ namespace Ict.Petra.Client.App.PetraClient
             TAppSettingsManager opts = new TAppSettingsManager();
             TYml2Xml parser = new TYml2Xml(opts.GetValue("UINavigation.File"));
             XmlDocument UINavigation = parser.ParseYML2XML();
-            ALedgerTable AvailableLedgers = TRemote.MFinance.GL.WebConnectors.GetAvailableLedgers();
+
+            ALedgerTable AvailableLedgers = new ALedgerTable();
+
+            if ((UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1))
+                || (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE2))
+                || (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE3)))
+            {
+                AvailableLedgers = TRemote.MFinance.GL.WebConnectors.GetAvailableLedgers();
+            }
 
             XmlNode OpenPetraNode = UINavigation.FirstChild.NextSibling.FirstChild;
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
