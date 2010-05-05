@@ -70,10 +70,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmBriefAddressReport));
 
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
-            this.tpgReportSorting = new System.Windows.Forms.TabPage();
-            this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
             this.tpgGeneralSettings = new System.Windows.Forms.TabPage();
             this.ucoPartnerSelection = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection();
+            this.tpgReportSorting = new System.Windows.Forms.TabPage();
+            this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
+            this.tpgAdditionalSettings = new System.Windows.Forms.TabPage();
+            this.grpAddressDetails = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.rgrAddressDetails = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.rbtBestAddress = new System.Windows.Forms.RadioButton();
+            this.rbtAllAddresses = new System.Windows.Forms.RadioButton();
             this.tpgColumns = new System.Windows.Forms.TabPage();
             this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
@@ -110,13 +117,32 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
 
             this.tabReportSettings.SuspendLayout();
-            this.tpgReportSorting.SuspendLayout();
             this.tpgGeneralSettings.SuspendLayout();
+            this.tpgReportSorting.SuspendLayout();
+            this.tpgAdditionalSettings.SuspendLayout();
+            this.grpAddressDetails.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.rgrAddressDetails.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.tpgColumns.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
 
+            //
+            // tpgGeneralSettings
+            //
+            this.tpgGeneralSettings.Location = new System.Drawing.Point(2,2);
+            this.tpgGeneralSettings.Name = "tpgGeneralSettings";
+            this.tpgGeneralSettings.AutoSize = true;
+            this.tpgGeneralSettings.Controls.Add(this.ucoPartnerSelection);
+            //
+            // ucoPartnerSelection
+            //
+            this.ucoPartnerSelection.Name = "ucoPartnerSelection";
+            this.ucoPartnerSelection.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgGeneralSettings.Text = "General Settings";
+            this.tpgGeneralSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgReportSorting
             //
@@ -132,19 +158,69 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tpgReportSorting.Text = "Sorting";
             this.tpgReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
             //
-            // tpgGeneralSettings
+            // tpgAdditionalSettings
             //
-            this.tpgGeneralSettings.Location = new System.Drawing.Point(2,2);
-            this.tpgGeneralSettings.Name = "tpgGeneralSettings";
-            this.tpgGeneralSettings.AutoSize = true;
-            this.tpgGeneralSettings.Controls.Add(this.ucoPartnerSelection);
+            this.tpgAdditionalSettings.Location = new System.Drawing.Point(2,2);
+            this.tpgAdditionalSettings.Name = "tpgAdditionalSettings";
+            this.tpgAdditionalSettings.AutoSize = true;
+            this.tpgAdditionalSettings.Controls.Add(this.grpAddressDetails);
             //
-            // ucoPartnerSelection
+            // grpAddressDetails
             //
-            this.ucoPartnerSelection.Name = "ucoPartnerSelection";
-            this.ucoPartnerSelection.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tpgGeneralSettings.Text = "General Settings";
-            this.tpgGeneralSettings.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpAddressDetails.Name = "grpAddressDetails";
+            this.grpAddressDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpAddressDetails.AutoSize = true;
+            //
+            // tableLayoutPanel1
+            //
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
+            this.grpAddressDetails.Controls.Add(this.tableLayoutPanel1);
+            //
+            // rgrAddressDetails
+            //
+            this.rgrAddressDetails.Location = new System.Drawing.Point(2,2);
+            this.rgrAddressDetails.Name = "rgrAddressDetails";
+            this.rgrAddressDetails.AutoSize = true;
+            //
+            // tableLayoutPanel2
+            //
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
+            this.rgrAddressDetails.Controls.Add(this.tableLayoutPanel2);
+            //
+            // rbtBestAddress
+            //
+            this.rbtBestAddress.Location = new System.Drawing.Point(2,2);
+            this.rbtBestAddress.Name = "rbtBestAddress";
+            this.rbtBestAddress.AutoSize = true;
+            this.rbtBestAddress.Text = "Get best address for partner";
+            this.rbtBestAddress.Checked = true;
+            //
+            // rbtAllAddresses
+            //
+            this.rbtAllAddresses.Location = new System.Drawing.Point(2,2);
+            this.rbtAllAddresses.Name = "rbtAllAddresses";
+            this.rbtAllAddresses.AutoSize = true;
+            this.rbtAllAddresses.Text = "Get all addresses for partner";
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.rbtBestAddress, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.rbtAllAddresses, 0, 1);
+            this.rgrAddressDetails.Text = "Address Details";
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.rgrAddressDetails, 0, 0);
+            this.grpAddressDetails.Text = "Address Details";
+            this.tpgAdditionalSettings.Text = "Additional Settings";
+            this.tpgAdditionalSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgColumns
             //
@@ -164,8 +240,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabReportSettings.Controls.Add(this.tpgReportSorting);
             this.tabReportSettings.Controls.Add(this.tpgGeneralSettings);
+            this.tabReportSettings.Controls.Add(this.tpgReportSorting);
+            this.tabReportSettings.Controls.Add(this.tpgAdditionalSettings);
             this.tabReportSettings.Controls.Add(this.tpgColumns);
             this.tabReportSettings.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             //
@@ -447,17 +524,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
             this.tpgColumns.ResumeLayout(false);
-            this.tpgGeneralSettings.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.rgrAddressDetails.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.grpAddressDetails.ResumeLayout(false);
+            this.tpgAdditionalSettings.ResumeLayout(false);
             this.tpgReportSorting.ResumeLayout(false);
+            this.tpgGeneralSettings.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
-        private System.Windows.Forms.TabPage tpgReportSorting;
-        private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
         private System.Windows.Forms.TabPage tpgGeneralSettings;
         private Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection ucoPartnerSelection;
+        private System.Windows.Forms.TabPage tpgReportSorting;
+        private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
+        private System.Windows.Forms.TabPage tpgAdditionalSettings;
+        private System.Windows.Forms.GroupBox grpAddressDetails;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.GroupBox rgrAddressDetails;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.RadioButton rbtBestAddress;
+        private System.Windows.Forms.RadioButton rbtAllAddresses;
         private System.Windows.Forms.TabPage tpgColumns;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;
         private System.Windows.Forms.ToolStrip tbrMain;

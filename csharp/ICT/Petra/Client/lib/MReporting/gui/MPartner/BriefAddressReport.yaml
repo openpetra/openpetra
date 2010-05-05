@@ -4,9 +4,9 @@ RootNode:
     FormTitle: Brief Address Report
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     TemplateParameters:
-        XMLFILES: [Partner\\\\briefaddressreport.xml]
-        REPORTNAME: Address Report
-        CURRENTREPORT: Address Report
+        XMLFILES: [Partner\\\\partneraddressreport.xml]
+        REPORTNAME: Partner Addresses
+        CURRENTREPORT: Partner Addresses
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
@@ -20,31 +20,91 @@ RootNode:
         tpgGeneralSettings:
             Label: General Settings
             Controls: [ucoPartnerSelection]
+            Order: AlwaysFirst
+        tpgAdditionalSettings:
+            Label: Additional Settings
+            Controls: [grpAddressDetails]
+            Order: AlwaysLast
         ucoPartnerSelection:
             Type: Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection
             Dock: Fill
+        grpAddressDetails:
+            Label: Address Details
+            Controls: [rgrAddressDetails]
+            Dock: Fill
+        rgrAddressDetails: {ParameterName=param_addressdetail}
+            Controls: [rbtBestAddress, rbtAllAddresses]
+        rbtBestAddress:
+            Label: Get best address for partner
+        rbtAllAddresses: 
+            Label: Get all addresses for partner
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:
-            Name: City
-            Parameter: 4.0
-        Para2:
-            Name: Partner Shortname
-            Parameter: 3.0
-        Para3:
-            Name: Partner Key
-            Parameter: 2.0
-        Para4:
-            Name: PostCode
+            Name: Address Type
             Parameter: 2.5
+        Para2:
+            Name: Alternate Telephone
+            Parameter: 3.3
+        Para3:
+            Name: Address valid from
+            Parameter: 1.8
+        Para4:
+            Name: Address valid to
+            Parameter: 1.8
         Para5:
-            Name: Partner Class
-            Parameter: 2.0
+            Name: City
+            Parameter: 3.0
         Para6:
-            Name: Street
-            Parameter: 3.5
+            Name: Country
+            Parameter: 1.5
         Para7:
-            Name: First Address Line
-            Parameter: 3.5
+            Name: County
+            Parameter: 2.0
         Para8:
+            Name: E-Mail Address
+            Parameter: 4.0
+        Para9:
+            Name: Fax
+            Parameter: 3.0
+        Para10:
+            Name: Field
+            Parameter: 2.0
+        Para11:
+            Name: First Address Line
+            Parameter: 3.0
+        Para12:
+            Name: Location Key
+            Parameter: 2.0
+        Para13:
+            Name: Mobile
+            Parameter: 3.0
+        Para14:
+            Name: Partner Class
+            Parameter: 1.0
+        Para15:
+            Name: Partner Key
+            Parameter: 20
+        Para16:
+            Name: Partner Name
+            Parameter: 4.0
+        Para17:
+            Name: Post Code
+            Parameter: 2.0
+        Para18:
+            Name: Send Mail
+            Parameter: 2.0
+        Para19:
+            Name: SiteKey
+            Parameter: 2.0
+        Para20:
+            Name: Street Name
+            Parameter: 3.0
+        Para21:
+            Name: Telephone
+            Parameter: 3.3
+        Para22:
             Name: Third Address Line
-            Parameter: 3.5
+            Parameter: 3.0
+        Para23:
+            Name: URL
+            Parameter: 3.0

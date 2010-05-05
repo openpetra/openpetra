@@ -86,6 +86,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         	{
         		ACalculator.AddParameter("param_selection", "all staff");
         	}
+        	
+        	ACalculator.AddParameter("param_extract", txtExtract.Text);
+        	ACalculator.AddParameter("param_partnerkey", txtPartnerKey.Text);
         	ACalculator.AddParameter("param_currentstaffdate", dtpCurrentStaff.Date);
         }
 
@@ -99,6 +102,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         	rbtExtract.Checked = (AParameters.Get("param_selection").ToString() == "an extract");
         	rbtCurrentStaff.Checked = (AParameters.Get("param_selection").ToString() == "all current staff");
         	rbtAllStaff.Checked = (AParameters.Get("param_selection").ToString() == "all staff");
+        	
+        	txtPartnerKey.Text = AParameters.Get("param_partnerkey").ToString();
+        	txtExtract.Text = AParameters.Get("param_extract").ToString();
+        	dtpCurrentStaff.Date = AParameters.Get("param_currentstaffdate").ToDate();
         }
         
         /// <summary>

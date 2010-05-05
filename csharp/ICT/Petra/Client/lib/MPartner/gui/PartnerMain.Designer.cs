@@ -85,6 +85,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniExtracts = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReports = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportPartnerByCity = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportPartnerAddress = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mniNewPartner = new System.Windows.Forms.ToolStripMenuItem();
             this.mniNewPartnerAssistant = new System.Windows.Forms.ToolStripMenuItem();
@@ -219,12 +220,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniReportPartnerByCity.Click += new System.EventHandler(this.OpenScreenReportPartnerByCity);
             this.mniReportPartnerByCity.Text = "&Partner By City Report (experiment)";
             //
+            // mniReportPartnerAddress
+            //
+            this.mniReportPartnerAddress.Name = "mniReportPartnerAddress";
+            this.mniReportPartnerAddress.AutoSize = true;
+            this.mniReportPartnerAddress.Click += new System.EventHandler(this.OpenScreenReportPartnerAddress);
+            this.mniReportPartnerAddress.Text = "&Brief Address Report (experiment)";
+            //
             // mniReports
             //
             this.mniReports.Name = "mniReports";
             this.mniReports.AutoSize = true;
             this.mniReports.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           mniReportPartnerByCity});
+                           mniReportPartnerByCity,
+                        mniReportPartnerAddress});
             this.mniReports.Text = "&Reports...";
             //
             // mniSeparator3
@@ -584,6 +593,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.ToolStripMenuItem mniExtracts;
         private System.Windows.Forms.ToolStripMenuItem mniReports;
         private System.Windows.Forms.ToolStripMenuItem mniReportPartnerByCity;
+        private System.Windows.Forms.ToolStripMenuItem mniReportPartnerAddress;
         private System.Windows.Forms.ToolStripSeparator mniSeparator3;
         private System.Windows.Forms.ToolStripMenuItem mniNewPartner;
         private System.Windows.Forms.ToolStripMenuItem mniNewPartnerAssistant;
