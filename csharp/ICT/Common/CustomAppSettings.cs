@@ -287,7 +287,7 @@ namespace Ict.Common
         {
             string ReturnValue = GetValue(AKey, false);
 
-            if (ReturnValue == String.Empty)
+            if (ReturnValue == UNDEFINEDVALUE)
             {
                 ReturnValue = ADefaultValue;
             }
