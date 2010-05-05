@@ -162,11 +162,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-
             #region ColumnStyles and RowStyles
 
             writer.SetControlProperty(ctrlname, "ColumnCount", (FColumnCount - SkippedColumns.Count).ToString());
-            
+
             /*
              * Generate ColumnStyles which influence the width of the Columns. If custom widths are specified by the user,
              * ColumStyles with the appropriate Arguments are generated, otherwise standard ColumnStyles, which means that
@@ -213,10 +212,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-
             writer.SetControlProperty(ctrlname, "RowCount", FRowCount.ToString());
-            
-            
+
             /*
              * Generate RowStyles which influence the height of the Columns. If custom heights are specified by the user,
              * RowStyles with the appropriate Arguments are generated, otherwise standard RowStyles, which means that

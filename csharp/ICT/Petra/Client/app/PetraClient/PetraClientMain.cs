@@ -435,6 +435,7 @@ namespace Ict.Petra.Client.App.PetraClient
                     /*
                      * This code gets executed only after the Main Window of Petra has
                      * closed.
+                     * At the moment, we will never get here, since we call Environment.Exit in the MainWindow (both old and new navigation)
                      */
                     Shutdown.SaveUserDefaultsAndDisconnect();
                 }
