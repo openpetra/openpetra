@@ -1,0 +1,42 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Import Partners
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    FormType: edit
+    Actions:
+        actStartImport: {ActionClick=StartImport}
+        actCancelImport: {ActionClick=CancelImport}
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlImportSettings, pnlImportRecord]
+        pnlImportSettings:
+            Dock: Top
+            Controls:
+                Row0: [txtFilename, btnSelectFile]
+                # todo: other options, eg. skip partners that have already been imported, log file, etc.
+        txtFilename: {ReadOnly=true}
+        btnSelectFile: {ActionClick=OpenFile}
+        pnlImportRecord:
+            Controls:
+                Row0: [grdParsedValues, pnlActions]
+                Row1: [grdMatchingRecords]
+        grdParsedValues:
+            Width: 400
+            Height: 300
+            #Columns: [AttributeName, AttributeValue]
+        grdMatchingRecords:
+            ColSpan: 2
+            Width: 600
+            Height: 100
+            #Columns: [PartnerClass, PartnerName, City, PostCode, Addr1]
+        pnlActions:
+            Controls: [txtExplanation, btnSkip, btnCreateNewFamilyAndPerson, btnFindOtherFamily, chkReplaceAddress]
+        txtExplanation: {ReadOnly=true}
+        btnSkip:
+        btnCreateNewFamilyAndPerson:
+        btnFindOtherFamily:
+        chkReplaceAddress:
+    Toolbar:
+        tbbStartImport:
+        tbbCancelImport:

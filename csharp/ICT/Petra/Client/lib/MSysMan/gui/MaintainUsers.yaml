@@ -1,0 +1,40 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Users
+    Namespace: Ict.Petra.Client.MSysMan.Gui
+    DetailTable: SUser
+    DatasetType: Ict.Petra.Shared.MSysMan.Data.MaintainUsersTDS
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan.Data]
+    FormType: edit
+    Template: windowEdit
+    Actions:
+        actNewUser:
+        actRetire:
+        actSetPassword:
+    Controls:
+        pnlContent:
+            Controls: [pnlDetailGrid, pnlDetails]
+            Dock: Fill
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnNewUser, btnRetire, btnSetPassword]
+        btnNewUser:
+        btnRetire:
+        btnSetPassword:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailUserId, DetailFirstName, DetailLastName, DetailRetired, DetailLastLoginDate]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailUserId]
+                Row1: [txtDetailFirstName, txtDetailLastName]
+                Row2: [clbUserGroup]
+        txtDetailUserId:
+        txtDetailFirstName:
+        txtDetailLastName:
+        clbUserGroup:
