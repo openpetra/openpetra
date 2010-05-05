@@ -33,6 +33,7 @@ namespace {#NAMESPACE}
                     components.Dispose();
                 }
             }
+            
             base.Dispose(disposing);
         }
 
@@ -54,19 +55,24 @@ namespace {#NAMESPACE}
             //
             // {#CLASSNAME} 
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size({#FORMSIZE});
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size 
+
             {#ADDMAINCONTROLS}
+
             this.Name = "{#CLASSNAME}";
             this.Text = "{#FORMTITLE}";
 
 	    {#CLASSEVENTHANDLER}
 	    
             {#RESUMELAYOUT}
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+        
         {#CONTROLDECLARATION}
     }
 }

@@ -85,9 +85,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FRightAlign)
             {
                 writer.SetControlProperty(ctrl.controlName, "Dock", "System.Windows.Forms.DockStyle.Right");
+                writer.SetControlProperty(ctrl.controlName, "TextAlign", "System.Drawing.ContentAlignment.TopRight");
             }
         }
     }
+
     public class ButtonGenerator : TControlGenerator
     {
         public ButtonGenerator()
