@@ -68,7 +68,7 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 string testAction = TAppSettingsManager.GetValueStatic("TestAction");
 
-                if (testAction.Length > 0)
+                if ((testAction.Length > 0) && (testAction != TAppSettingsManager.UNDEFINEDVALUE))
                 {
                     XmlDocument temp = new XmlDocument();
                     XmlNode testActionNode = temp.CreateElement("testAction");
