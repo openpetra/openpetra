@@ -13,6 +13,7 @@
         READCONTROLSVERIFICATION: BLANK
         READCONTROLSLOCALVARS: BLANK
         SETCONTROLSLOCALVARS: BLANK
+        REPORTSETTINGSDIRECTORY: FinancialDevelopment
     Security:
         ModulePermissionRequired: [PTNRFINDEV]
     Controls:

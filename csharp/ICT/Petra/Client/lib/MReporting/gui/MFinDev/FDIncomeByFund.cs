@@ -86,6 +86,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
       this.tbbSaveSettings.Text = Catalog.GetString("&Save Settings");
       this.tbbSaveSettingsAs.Text = Catalog.GetString("Save Settings &As...");
+      this.tbbLoadSettingsDialog.Text = Catalog.GetString("&Open...");
       this.mniLoadSettingsDialog.Text = Catalog.GetString("&Open...");
       this.mniLoadSettings1.Text = Catalog.GetString("RecentSettings");
       this.mniLoadSettings2.Text = Catalog.GetString("RecentSettings");
@@ -96,6 +97,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       this.mniSaveSettings.Text = Catalog.GetString("&Save Settings");
       this.mniSaveSettingsAs.Text = Catalog.GetString("Save Settings &As...");
       this.mniMaintainSettings.Text = Catalog.GetString("&Maintain Settings...");
+      this.mniWrapColumn.Text = Catalog.GetString("&Wrap Columns");
       this.mniGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.mniGenerateReport.Text = Catalog.GetString("&Generate");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
@@ -119,17 +121,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       FPetraUtilsObject.FXMLFiles = "FinancialDevelopment/FDIncomeByFund.xml,common.xml";
       FPetraUtilsObject.FReportName = "FDIncomeByFund";
       FPetraUtilsObject.FCurrentReport = "FDIncomeByFund";
+	  FPetraUtilsObject.FSettingsDirectory = "FinancialDevelopment";
 
       // Hook up Event that is fired by ucoReportColumns
       // ucoReportColumns.FillColumnGridEventHandler += new TFillColumnGridEventHandler(FPetraUtilsObject.FillColumnGrid);
       FPetraUtilsObject.InitialiseData("");
       // FPetraUtilsObject.InitialiseSettingsGui(ucoReportColumns, mniLoadSettings, /*ConMnuLoadSettings*/null,
       //                                 mniSaveSettings, mniSaveSettingsAs, mniLoadSettingsDialog, mniMaintainSettings);
-      // this.SetAvailableFunctions();
-      // ucoReportColumns.InitialiseData(FPetraUtilsObject.FColumnParameters);
+      this.SetAvailableFunctions();
 
       rbtPeriodRangeCheckedChanged(null, null);
       rbtQuarterCheckedChanged(null, null);
+	
+	  FPetraUtilsObject.LoadDefaultSettings();
     }
 
     void rbtPeriodRangeCheckedChanged(object sender, System.EventArgs e)
@@ -173,10 +177,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
        Reads the selected values from the controls, and stores them into the parameter system of FCalculator
 
     */
-    public void ReadControls(TRptCalculator ACalc)
+    public void ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
     {
-      //ucoReportSorting.ReadControls(ACalc);
-      //ucoReportOutput.ReadControls(ACalc);
+      ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
       ACalc.AddParameter("param_start_period_i", this.txtStartPeriod.Text);
       ACalc.AddParameter("param_end_period_i", this.txtEndPeriod.Text);
@@ -210,8 +213,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     */
     public void SetControls(TParameterList AParameters)
     {
-      //ucoReportSorting.SetControls(AParameters);
-      //ucoReportOutput.SetControls(AParameters);
 
       txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
       txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
@@ -233,9 +234,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     public void SetAvailableFunctions()
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
+	
+	
 
-      //ucoReportColumns.SetAvailableFunctions(availableFunctions);
-      //ucoReportSorting.SetAvailableFunctions(availableFunctions);
     }
 #endregion
 
@@ -275,15 +276,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     /// <summary>
     /// initialisation
     /// </summary>
+	/// <param name="AReportParameter">Initialisation values needed for some reports</param>
     public void InitialiseData(String AReportParameter)
     {
         FPetraUtilsObject.InitialiseData(AReportParameter);
+    }
+	
+	/// <summary>
+    /// Checks / Unchecks the menu item "Wrap Columns"
+    /// </summary>
+	/// <param name="ACheck">True if menu item is to be checked. Otherwise false</param>
+	public void CheckWrapColumnMenuItem(bool ACheck)
+    {
+    	this.mniWrapColumn.Checked = ACheck;
     }
 #endregion
 
     /// <summary>
     /// allow to store and load settings
     /// </summary>
+	/// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
     public void EnableSettings(bool AEnabled)
     {
         foreach (ToolStripItem item in mniLoadSettings.DropDownItems)
@@ -302,6 +314,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     /// <summary>
     /// activate and deactivate toolbar buttons and menu items depending on ongoing report calculation
     /// </summary>
+	/// <param name="ABusy">True if a report is generated and the close button should be disabled.</param>
     public void EnableBusy(bool ABusy)
     {
         mniClose.Enabled = !ABusy;
@@ -324,6 +337,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     /// this is used for writing the captions of the menu items and toolbar buttons for recently used report settings
     /// </summary>
     /// <returns>false if an item with that index does not exist</returns>
+	/// <param name="AIndex"></param>
+	/// <param name="mniItem"></param>
+	/// <param name="tbbItem"></param>
     public bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem)
     {
         if (AIndex < 0 || AIndex >= mniLoadSettings.DropDownItems.Count - 2)
@@ -380,6 +396,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     protected void actMaintainSettings(object sender, EventArgs e)
     {
         FPetraUtilsObject.MI_MaintainSettings_Click(sender, e);
+    }
+
+    /// auto generated
+    protected void actWrapColumn(object sender, EventArgs e)
+    {
+        FPetraUtilsObject.MI_WrapColumn_Click(sender, e);
     }
 
 #endregion
