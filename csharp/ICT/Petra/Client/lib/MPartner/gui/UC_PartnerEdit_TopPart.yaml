@@ -21,26 +21,35 @@ RootNode:
             ControlsOrientation: horizontal
             Label: Key Partner Data
             Dock: Top  
+            Padding: 3,0,3,4
             
         pnlLeft:
             Controls: [pnlPartnerInfo, pnlFamily, pnlPerson, pnlChurch, pnlOrganisation, pnlUnit, pnlBank, pnlVenue, pnlOther, pnlAdditionalInfo]
             Dock: Fill
 
-
+            
 # Right-hand Panel (misc. information)            
         pnlRight:
             Controls: [pnlWorkerField, pnlSpacer, cmbPartnerStatus, txtStatusUpdated, txtLastContact]
+            ColWidths: [0=Fixed:110]
+            RowHeights: [2=Fixed:28, 3=Fixed:24, 4=Fixed:24]
             Dock: Right
             
         pnlWorkerField: {Visible=false}
             Controls: 
-                Row0: [btnWorkerField, txtWorkerField]        
+                Row0: [btnWorkerField, txtWorkerField] 
+            RowHeights: [0=Fixed:27]
+            Margin: 0,0,0,0
+            Padding: 0,0,5,0
+            Dock: Top
         btnWorkerField:
             Action: actMaintainWorkerField
+            Width: 100
+            Align: right
         txtWorkerField:
             ReadOnly: true
             NoLabel: true
-            Width: 100
+            Dock: Top
             BorderStyle: None
             
         pnlSpacer:
@@ -63,8 +72,11 @@ RootNode:
 # Header (Partner 'Head' Data)
         pnlPartnerInfo:
             Controls: 
-                Row0: [txtPartnerKey, lblFamilyEmpty2, txtPartnerClass]            
+                Row0: [txtPartnerKey, lblFamilyEmpty2, txtPartnerClass]      
+            ColWidths: [0=Fixed:80]  
+            RowHeights: [0=Fixed:25]            
             Dock: Top
+
         txtPartnerKey:
             ReadOnly: true
             Label: Key
@@ -82,7 +94,10 @@ RootNode:
 # Footer (Gift Information)
         pnlAdditionalInfo: {ControlsOrientation=horizontal}
             Controls: [txtLastGiftDetailsDate, txtLastGiftDetails]
+            ColWidths: [0=Fixed:80]
+            RowHeights: [0=Fixed:20]
             Dock: Bottom
+
         txtLastGiftDetailsDate:
             Label: Last Gift
             DataField: MiscellaneousData.LastGiftDate
@@ -94,6 +109,7 @@ RootNode:
             DataField: MiscellaneousData.LastGiftInfo
             ReadOnly: true
             Width: 328
+            Dock: Top
             BorderStyle: None
                             
  
@@ -109,7 +125,8 @@ RootNode:
             DataField: PFamily.Title
         txtFamilyFirstName:
             NoLabel: true
-            DataField: PFamily.FirstName
+            Dock: Top
+            DataField: PFamily.FirstName            
         txtFamilyFamilyName:
             NoLabel: true
             DataField: PFamily.FamilyName
@@ -127,31 +144,47 @@ RootNode:
         pnlPerson: {Visible=false}
             Controls: 
                 Row1: [txtPersonTitle, txtPersonFirstName, txtPersonMiddleName, txtPersonFamilyName]
-                Row2: [cmbPersonGender, cmbPersonAddresseeTypeCode, chkPersonNoSolicitations]
+                Row2: [pnlPerson2ndLine]
+            ColWidths: [0=Fixed:80]
+            RowHeights: [0=Fixed:25]
             Dock: Top
             Visible: False
+ 
         txtPersonTitle:
             Label: Title/Na&me
-            DataField: PPerson.Title
-            Width: 90
+            DataField: PPerson.Title            
+            Width: 88
         txtPersonFirstName:
             NoLabel: true
+            Dock: Top
             DataField: PPerson.FirstName
-            Width: 157
+            Width: 104
         txtPersonMiddleName:
             NoLabel: true
             DataField: PPerson.MiddleName1
             Width: 30
         txtPersonFamilyName:
             NoLabel: true
+            Dock: Top
             DataField: PPerson.FamilyName
+
+        pnlPerson2ndLine:        
+            Controls: [cmbPersonGender, cmbPersonAddresseeTypeCode, chkPersonNoSolicitations]
+            ControlsOrientation: horizontal
+            ColWidths: [0=Fixed:80, 2=Fixed:110]
+            RowHeights: [0=Fixed:28]
+            Margin: 0,0,0,0
+            ColSpan: 6
+            Dock: Fill
+
         cmbPersonGender: {Label=&Gender, DataField=PPerson.Gender, List=GenderList, Width=88}
-        cmbPersonAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105, ColSpan=2}
+        cmbPersonAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105, Dock: Right}
         chkPersonNoSolicitations:
             Label: No Solicitations
+            Align: right
             DataField: NoSolicitations
             OnChange: UpdateNoSolicitationsColouring
-
+            
             
 # Data Fields for Partner Class CHURCH            
         pnlChurch: {Visible=false}
@@ -210,4 +243,3 @@ RootNode:
             Label: No Solicitations
             DataField: NoSolicitations
             OnChange: UpdateNoSolicitationsColouring
-        

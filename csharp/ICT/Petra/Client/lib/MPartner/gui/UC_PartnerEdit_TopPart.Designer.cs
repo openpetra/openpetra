@@ -96,50 +96,52 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPersonFirstName = new System.Windows.Forms.TextBox();
             this.txtPersonMiddleName = new System.Windows.Forms.TextBox();
             this.txtPersonFamilyName = new System.Windows.Forms.TextBox();
+            this.pnlPerson2ndLine = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.cmbPersonGender = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblPersonGender = new System.Windows.Forms.Label();
             this.cmbPersonAddresseeTypeCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblPersonAddresseeTypeCode = new System.Windows.Forms.Label();
             this.chkPersonNoSolicitations = new System.Windows.Forms.CheckBox();
             this.pnlChurch = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.txtChurchName = new System.Windows.Forms.TextBox();
             this.lblChurchName = new System.Windows.Forms.Label();
             this.pnlOrganisation = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.txtOrganisationName = new System.Windows.Forms.TextBox();
             this.lblOrganisationName = new System.Windows.Forms.Label();
             this.pnlUnit = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
             this.txtUnitName = new System.Windows.Forms.TextBox();
             this.lblUnitName = new System.Windows.Forms.Label();
             this.pnlBank = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
             this.txtBankName = new System.Windows.Forms.TextBox();
             this.lblBankName = new System.Windows.Forms.Label();
             this.pnlVenue = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
             this.txtVenueName = new System.Windows.Forms.TextBox();
             this.lblVenueName = new System.Windows.Forms.Label();
             this.pnlOther = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
             this.lblOtherEmpty = new System.Windows.Forms.Label();
             this.cmbOtherAddresseeTypeCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblOtherAddresseeTypeCode = new System.Windows.Forms.Label();
             this.chkOtherNoSolicitations = new System.Windows.Forms.CheckBox();
             this.pnlAdditionalInfo = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
             this.txtLastGiftDetailsDate = new System.Windows.Forms.TextBox();
             this.lblLastGiftDetailsDate = new System.Windows.Forms.Label();
             this.txtLastGiftDetails = new System.Windows.Forms.TextBox();
             this.pnlRight = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
-            this.pnlWorkerField = new System.Windows.Forms.Panel();
             this.tableLayoutPanel12 = new System.Windows.Forms.TableLayoutPanel();
+            this.pnlWorkerField = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel13 = new System.Windows.Forms.TableLayoutPanel();
             this.btnWorkerField = new System.Windows.Forms.Button();
             this.txtWorkerField = new System.Windows.Forms.TextBox();
             this.pnlSpacer = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel13 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel14 = new System.Windows.Forms.TableLayoutPanel();
             this.lblEmptySpacer = new System.Windows.Forms.Label();
             this.cmbPartnerStatus = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblPartnerStatus = new System.Windows.Forms.Label();
@@ -157,26 +159,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.SuspendLayout();
             this.pnlPerson.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            this.pnlChurch.SuspendLayout();
+            this.pnlPerson2ndLine.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
-            this.pnlOrganisation.SuspendLayout();
+            this.pnlChurch.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
-            this.pnlUnit.SuspendLayout();
+            this.pnlOrganisation.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
-            this.pnlBank.SuspendLayout();
+            this.pnlUnit.SuspendLayout();
             this.tableLayoutPanel7.SuspendLayout();
-            this.pnlVenue.SuspendLayout();
+            this.pnlBank.SuspendLayout();
             this.tableLayoutPanel8.SuspendLayout();
-            this.pnlOther.SuspendLayout();
+            this.pnlVenue.SuspendLayout();
             this.tableLayoutPanel9.SuspendLayout();
-            this.pnlAdditionalInfo.SuspendLayout();
+            this.pnlOther.SuspendLayout();
             this.tableLayoutPanel10.SuspendLayout();
-            this.pnlRight.SuspendLayout();
+            this.pnlAdditionalInfo.SuspendLayout();
             this.tableLayoutPanel11.SuspendLayout();
-            this.pnlWorkerField.SuspendLayout();
+            this.pnlRight.SuspendLayout();
             this.tableLayoutPanel12.SuspendLayout();
-            this.pnlSpacer.SuspendLayout();
+            this.pnlWorkerField.SuspendLayout();
             this.tableLayoutPanel13.SuspendLayout();
+            this.pnlSpacer.SuspendLayout();
+            this.tableLayoutPanel14.SuspendLayout();
 
             //
             // pnlContent
@@ -190,6 +194,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.grpCollapsible.Name = "grpCollapsible";
             this.grpCollapsible.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpCollapsible.Padding = new System.Windows.Forms.Padding(3,0,3,4);
             this.grpCollapsible.AutoSize = true;
             this.grpCollapsible.Controls.Add(this.pnlLeft);
             this.grpCollapsible.Controls.Add(this.pnlRight);
@@ -279,13 +284,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPartnerClass.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblPartnerClass.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel1.ColumnCount = 5;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 80));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Absolute, 25));
             this.tableLayoutPanel1.Controls.Add(this.lblPartnerKey, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtPartnerKey, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblFamilyEmpty2, 2, 0);
@@ -323,9 +328,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // txtFamilyFirstName
             //
-            this.txtFamilyFirstName.Location = new System.Drawing.Point(2,2);
             this.txtFamilyFirstName.Name = "txtFamilyFirstName";
-            this.txtFamilyFirstName.Size = new System.Drawing.Size(150, 28);
+            this.txtFamilyFirstName.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtFamilyFirstName.AutoSize = true;
             //
             // txtFamilyFamilyName
             //
@@ -403,7 +408,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtPersonTitle.Location = new System.Drawing.Point(2,2);
             this.txtPersonTitle.Name = "txtPersonTitle";
-            this.txtPersonTitle.Size = new System.Drawing.Size(90, 28);
+            this.txtPersonTitle.Size = new System.Drawing.Size(88, 28);
             //
             // lblPersonTitle
             //
@@ -416,9 +421,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // txtPersonFirstName
             //
-            this.txtPersonFirstName.Location = new System.Drawing.Point(2,2);
             this.txtPersonFirstName.Name = "txtPersonFirstName";
-            this.txtPersonFirstName.Size = new System.Drawing.Size(157, 28);
+            this.txtPersonFirstName.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtPersonFirstName.Size = new System.Drawing.Size(104, 28);
             //
             // txtPersonMiddleName
             //
@@ -428,9 +433,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // txtPersonFamilyName
             //
-            this.txtPersonFamilyName.Location = new System.Drawing.Point(2,2);
             this.txtPersonFamilyName.Name = "txtPersonFamilyName";
-            this.txtPersonFamilyName.Size = new System.Drawing.Size(150, 28);
+            this.txtPersonFamilyName.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtPersonFamilyName.AutoSize = true;
+            //
+            // pnlPerson2ndLine
+            //
+            this.pnlPerson2ndLine.Name = "pnlPerson2ndLine";
+            this.pnlPerson2ndLine.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlPerson2ndLine.Margin = new System.Windows.Forms.Padding(0,0,0,0);
+            this.pnlPerson2ndLine.AutoSize = true;
+            //
+            // tableLayoutPanel4
+            //
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
+            this.pnlPerson2ndLine.Controls.Add(this.tableLayoutPanel4);
             //
             // cmbPersonGender
             //
@@ -450,9 +469,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // cmbPersonAddresseeTypeCode
             //
-            this.cmbPersonAddresseeTypeCode.Location = new System.Drawing.Point(2,2);
             this.cmbPersonAddresseeTypeCode.Name = "cmbPersonAddresseeTypeCode";
-            this.cmbPersonAddresseeTypeCode.Size = new System.Drawing.Size(105, 28);
+            this.cmbPersonAddresseeTypeCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.cmbPersonAddresseeTypeCode.Width = 105;
             this.cmbPersonAddresseeTypeCode.ListTable = TCmbAutoPopulated.TListTableEnum.AddresseeTypeList;
             //
             // lblPersonAddresseeTypeCode
@@ -468,32 +487,40 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.chkPersonNoSolicitations.Location = new System.Drawing.Point(2,2);
             this.chkPersonNoSolicitations.Name = "chkPersonNoSolicitations";
+            this.chkPersonNoSolicitations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkPersonNoSolicitations.AutoSize = true;
             this.chkPersonNoSolicitations.CheckedChanged += new System.EventHandler(this.UpdateNoSolicitationsColouring);
             this.chkPersonNoSolicitations.Text = "No Solicitations";
             this.chkPersonNoSolicitations.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.tableLayoutPanel3.ColumnCount = 6;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnCount = 5;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 80));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 110));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Absolute, 28));
+            this.tableLayoutPanel4.Controls.Add(this.lblPersonGender, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.cmbPersonGender, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblPersonAddresseeTypeCode, 2, 0);
+            this.tableLayoutPanel4.Controls.Add(this.cmbPersonAddresseeTypeCode, 3, 0);
+            this.tableLayoutPanel4.Controls.Add(this.chkPersonNoSolicitations, 4, 0);
+            this.tableLayoutPanel3.ColumnCount = 5;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 80));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.RowCount = 2;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Absolute, 25));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.Controls.Add(this.lblPersonTitle, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblPersonGender, 0, 1);
+            this.tableLayoutPanel3.SetColumnSpan(this.pnlPerson2ndLine, 5);
+            this.tableLayoutPanel3.Controls.Add(this.pnlPerson2ndLine, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.txtPersonTitle, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.cmbPersonGender, 1, 1);
-            this.tableLayoutPanel3.SetColumnSpan(this.txtPersonFirstName, 2);
             this.tableLayoutPanel3.Controls.Add(this.txtPersonFirstName, 2, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblPersonAddresseeTypeCode, 2, 1);
-            this.tableLayoutPanel3.SetColumnSpan(this.cmbPersonAddresseeTypeCode, 2);
-            this.tableLayoutPanel3.Controls.Add(this.cmbPersonAddresseeTypeCode, 3, 1);
-            this.tableLayoutPanel3.Controls.Add(this.txtPersonMiddleName, 4, 0);
-            this.tableLayoutPanel3.Controls.Add(this.chkPersonNoSolicitations, 4, 1);
-            this.tableLayoutPanel3.Controls.Add(this.txtPersonFamilyName, 5, 0);
+            this.tableLayoutPanel3.Controls.Add(this.txtPersonMiddleName, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.txtPersonFamilyName, 4, 0);
             //
             // pnlChurch
             //
@@ -502,12 +529,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlChurch.Visible = false;
             this.pnlChurch.AutoSize = true;
             //
-            // tableLayoutPanel4
+            // tableLayoutPanel5
             //
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.AutoSize = true;
-            this.pnlChurch.Controls.Add(this.tableLayoutPanel4);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.AutoSize = true;
+            this.pnlChurch.Controls.Add(this.tableLayoutPanel5);
             //
             // txtChurchName
             //
@@ -523,13 +550,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblChurchName.Text = "Title/Na&me:";
             this.lblChurchName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblChurchName.Dock = System.Windows.Forms.DockStyle.Right;
-            this.tableLayoutPanel4.ColumnCount = 2;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.RowCount = 1;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Controls.Add(this.lblChurchName, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.txtChurchName, 1, 0);
+            this.tableLayoutPanel5.ColumnCount = 2;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.RowCount = 1;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.Controls.Add(this.lblChurchName, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.txtChurchName, 1, 0);
             //
             // pnlOrganisation
             //
@@ -538,12 +565,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlOrganisation.Visible = false;
             this.pnlOrganisation.AutoSize = true;
             //
-            // tableLayoutPanel5
+            // tableLayoutPanel6
             //
-            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel5.AutoSize = true;
-            this.pnlOrganisation.Controls.Add(this.tableLayoutPanel5);
+            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
+            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel6.AutoSize = true;
+            this.pnlOrganisation.Controls.Add(this.tableLayoutPanel6);
             //
             // txtOrganisationName
             //
@@ -559,13 +586,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblOrganisationName.Text = "Title/Na&me:";
             this.lblOrganisationName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblOrganisationName.Dock = System.Windows.Forms.DockStyle.Right;
-            this.tableLayoutPanel5.ColumnCount = 2;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel5.RowCount = 1;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel5.Controls.Add(this.lblOrganisationName, 0, 0);
-            this.tableLayoutPanel5.Controls.Add(this.txtOrganisationName, 1, 0);
+            this.tableLayoutPanel6.ColumnCount = 2;
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel6.RowCount = 1;
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel6.Controls.Add(this.lblOrganisationName, 0, 0);
+            this.tableLayoutPanel6.Controls.Add(this.txtOrganisationName, 1, 0);
             //
             // pnlUnit
             //
@@ -574,12 +601,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlUnit.Visible = false;
             this.pnlUnit.AutoSize = true;
             //
-            // tableLayoutPanel6
+            // tableLayoutPanel7
             //
-            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
-            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel6.AutoSize = true;
-            this.pnlUnit.Controls.Add(this.tableLayoutPanel6);
+            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
+            this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel7.AutoSize = true;
+            this.pnlUnit.Controls.Add(this.tableLayoutPanel7);
             //
             // txtUnitName
             //
@@ -595,13 +622,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblUnitName.Text = "Title/Na&me:";
             this.lblUnitName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblUnitName.Dock = System.Windows.Forms.DockStyle.Right;
-            this.tableLayoutPanel6.ColumnCount = 2;
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel6.RowCount = 1;
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.Controls.Add(this.lblUnitName, 0, 0);
-            this.tableLayoutPanel6.Controls.Add(this.txtUnitName, 1, 0);
+            this.tableLayoutPanel7.ColumnCount = 2;
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel7.RowCount = 1;
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel7.Controls.Add(this.lblUnitName, 0, 0);
+            this.tableLayoutPanel7.Controls.Add(this.txtUnitName, 1, 0);
             //
             // pnlBank
             //
@@ -610,12 +637,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlBank.Visible = false;
             this.pnlBank.AutoSize = true;
             //
-            // tableLayoutPanel7
+            // tableLayoutPanel8
             //
-            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
-            this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel7.AutoSize = true;
-            this.pnlBank.Controls.Add(this.tableLayoutPanel7);
+            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
+            this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel8.AutoSize = true;
+            this.pnlBank.Controls.Add(this.tableLayoutPanel8);
             //
             // txtBankName
             //
@@ -631,13 +658,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblBankName.Text = "Title/Na&me:";
             this.lblBankName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblBankName.Dock = System.Windows.Forms.DockStyle.Right;
-            this.tableLayoutPanel7.ColumnCount = 2;
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel7.RowCount = 1;
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel7.Controls.Add(this.lblBankName, 0, 0);
-            this.tableLayoutPanel7.Controls.Add(this.txtBankName, 1, 0);
+            this.tableLayoutPanel8.ColumnCount = 2;
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel8.RowCount = 1;
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel8.Controls.Add(this.lblBankName, 0, 0);
+            this.tableLayoutPanel8.Controls.Add(this.txtBankName, 1, 0);
             //
             // pnlVenue
             //
@@ -646,12 +673,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlVenue.Visible = false;
             this.pnlVenue.AutoSize = true;
             //
-            // tableLayoutPanel8
+            // tableLayoutPanel9
             //
-            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
-            this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel8.AutoSize = true;
-            this.pnlVenue.Controls.Add(this.tableLayoutPanel8);
+            this.tableLayoutPanel9.Name = "tableLayoutPanel9";
+            this.tableLayoutPanel9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel9.AutoSize = true;
+            this.pnlVenue.Controls.Add(this.tableLayoutPanel9);
             //
             // txtVenueName
             //
@@ -667,13 +694,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblVenueName.Text = "Title/Na&me:";
             this.lblVenueName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblVenueName.Dock = System.Windows.Forms.DockStyle.Right;
-            this.tableLayoutPanel8.ColumnCount = 2;
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel8.RowCount = 1;
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel8.Controls.Add(this.lblVenueName, 0, 0);
-            this.tableLayoutPanel8.Controls.Add(this.txtVenueName, 1, 0);
+            this.tableLayoutPanel9.ColumnCount = 2;
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel9.RowCount = 1;
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.Controls.Add(this.lblVenueName, 0, 0);
+            this.tableLayoutPanel9.Controls.Add(this.txtVenueName, 1, 0);
             //
             // pnlOther
             //
@@ -682,12 +709,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlOther.Visible = false;
             this.pnlOther.AutoSize = true;
             //
-            // tableLayoutPanel9
+            // tableLayoutPanel10
             //
-            this.tableLayoutPanel9.Name = "tableLayoutPanel9";
-            this.tableLayoutPanel9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel9.AutoSize = true;
-            this.pnlOther.Controls.Add(this.tableLayoutPanel9);
+            this.tableLayoutPanel10.Name = "tableLayoutPanel10";
+            this.tableLayoutPanel10.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel10.AutoSize = true;
+            this.pnlOther.Controls.Add(this.tableLayoutPanel10);
             //
             // lblOtherEmpty
             //
@@ -721,17 +748,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.chkOtherNoSolicitations.CheckedChanged += new System.EventHandler(this.UpdateNoSolicitationsColouring);
             this.chkOtherNoSolicitations.Text = "No Solicitations";
             this.chkOtherNoSolicitations.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.tableLayoutPanel9.ColumnCount = 4;
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.RowCount = 1;
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel9.Controls.Add(this.lblOtherEmpty, 0, 0);
-            this.tableLayoutPanel9.Controls.Add(this.lblOtherAddresseeTypeCode, 1, 0);
-            this.tableLayoutPanel9.Controls.Add(this.cmbOtherAddresseeTypeCode, 2, 0);
-            this.tableLayoutPanel9.Controls.Add(this.chkOtherNoSolicitations, 3, 0);
+            this.tableLayoutPanel10.ColumnCount = 4;
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel10.RowCount = 1;
+            this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel10.Controls.Add(this.lblOtherEmpty, 0, 0);
+            this.tableLayoutPanel10.Controls.Add(this.lblOtherAddresseeTypeCode, 1, 0);
+            this.tableLayoutPanel10.Controls.Add(this.cmbOtherAddresseeTypeCode, 2, 0);
+            this.tableLayoutPanel10.Controls.Add(this.chkOtherNoSolicitations, 3, 0);
             //
             // pnlAdditionalInfo
             //
@@ -739,12 +766,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlAdditionalInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlAdditionalInfo.AutoSize = true;
             //
-            // tableLayoutPanel10
+            // tableLayoutPanel11
             //
-            this.tableLayoutPanel10.Name = "tableLayoutPanel10";
-            this.tableLayoutPanel10.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel10.AutoSize = true;
-            this.pnlAdditionalInfo.Controls.Add(this.tableLayoutPanel10);
+            this.tableLayoutPanel11.Name = "tableLayoutPanel11";
+            this.tableLayoutPanel11.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel11.AutoSize = true;
+            this.pnlAdditionalInfo.Controls.Add(this.tableLayoutPanel11);
             //
             // txtLastGiftDetailsDate
             //
@@ -767,22 +794,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // txtLastGiftDetails
             //
-            this.txtLastGiftDetails.Location = new System.Drawing.Point(2,2);
             this.txtLastGiftDetails.Name = "txtLastGiftDetails";
+            this.txtLastGiftDetails.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtLastGiftDetails.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtLastGiftDetails.Margin = new System.Windows.Forms.Padding(0, 7, 0, 0);
             this.txtLastGiftDetails.Size = new System.Drawing.Size(328, 28);
             this.txtLastGiftDetails.ReadOnly = true;
             this.txtLastGiftDetails.TabStop = false;
-            this.tableLayoutPanel10.ColumnCount = 3;
-            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel10.RowCount = 1;
-            this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel10.Controls.Add(this.lblLastGiftDetailsDate, 0, 0);
-            this.tableLayoutPanel10.Controls.Add(this.txtLastGiftDetailsDate, 1, 0);
-            this.tableLayoutPanel10.Controls.Add(this.txtLastGiftDetails, 2, 0);
+            this.tableLayoutPanel11.ColumnCount = 3;
+            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 80));
+            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel11.RowCount = 1;
+            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Absolute, 20));
+            this.tableLayoutPanel11.Controls.Add(this.lblLastGiftDetailsDate, 0, 0);
+            this.tableLayoutPanel11.Controls.Add(this.txtLastGiftDetailsDate, 1, 0);
+            this.tableLayoutPanel11.Controls.Add(this.txtLastGiftDetails, 2, 0);
             //
             // pnlRight
             //
@@ -790,52 +817,55 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlRight.Dock = System.Windows.Forms.DockStyle.Right;
             this.pnlRight.AutoSize = true;
             //
-            // tableLayoutPanel11
-            //
-            this.tableLayoutPanel11.Name = "tableLayoutPanel11";
-            this.tableLayoutPanel11.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel11.AutoSize = true;
-            this.pnlRight.Controls.Add(this.tableLayoutPanel11);
-            //
-            // pnlWorkerField
-            //
-            this.pnlWorkerField.Location = new System.Drawing.Point(2,2);
-            this.pnlWorkerField.Name = "pnlWorkerField";
-            this.pnlWorkerField.Visible = false;
-            this.pnlWorkerField.AutoSize = true;
-            //
             // tableLayoutPanel12
             //
             this.tableLayoutPanel12.Name = "tableLayoutPanel12";
             this.tableLayoutPanel12.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel12.AutoSize = true;
-            this.pnlWorkerField.Controls.Add(this.tableLayoutPanel12);
+            this.pnlRight.Controls.Add(this.tableLayoutPanel12);
+            //
+            // pnlWorkerField
+            //
+            this.pnlWorkerField.Name = "pnlWorkerField";
+            this.pnlWorkerField.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlWorkerField.Visible = false;
+            this.pnlWorkerField.Padding = new System.Windows.Forms.Padding(0,0,5,0);
+            this.pnlWorkerField.Margin = new System.Windows.Forms.Padding(0,0,0,0);
+            this.pnlWorkerField.AutoSize = true;
+            //
+            // tableLayoutPanel13
+            //
+            this.tableLayoutPanel13.Name = "tableLayoutPanel13";
+            this.tableLayoutPanel13.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel13.AutoSize = true;
+            this.pnlWorkerField.Controls.Add(this.tableLayoutPanel13);
             //
             // btnWorkerField
             //
             this.btnWorkerField.Location = new System.Drawing.Point(2,2);
             this.btnWorkerField.Name = "btnWorkerField";
-            this.btnWorkerField.AutoSize = true;
+            this.btnWorkerField.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnWorkerField.Size = new System.Drawing.Size(100, 28);
             this.btnWorkerField.Click += new System.EventHandler(this.MaintainWorkerField);
             this.btnWorkerField.Image = ((System.Drawing.Bitmap)resources.GetObject("btnWorkerField.Glyph"));
             this.btnWorkerField.Text = "&Worker Field...";
             //
             // txtWorkerField
             //
-            this.txtWorkerField.Location = new System.Drawing.Point(2,2);
             this.txtWorkerField.Name = "txtWorkerField";
+            this.txtWorkerField.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtWorkerField.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtWorkerField.Margin = new System.Windows.Forms.Padding(0, 7, 0, 0);
-            this.txtWorkerField.Size = new System.Drawing.Size(100, 28);
+            this.txtWorkerField.AutoSize = true;
             this.txtWorkerField.ReadOnly = true;
             this.txtWorkerField.TabStop = false;
-            this.tableLayoutPanel12.ColumnCount = 2;
-            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel12.RowCount = 1;
-            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel12.Controls.Add(this.btnWorkerField, 0, 0);
-            this.tableLayoutPanel12.Controls.Add(this.txtWorkerField, 1, 0);
+            this.tableLayoutPanel13.ColumnCount = 2;
+            this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel13.RowCount = 1;
+            this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Absolute, 27));
+            this.tableLayoutPanel13.Controls.Add(this.btnWorkerField, 0, 0);
+            this.tableLayoutPanel13.Controls.Add(this.txtWorkerField, 1, 0);
             //
             // pnlSpacer
             //
@@ -843,12 +873,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlSpacer.Name = "pnlSpacer";
             this.pnlSpacer.AutoSize = true;
             //
-            // tableLayoutPanel13
+            // tableLayoutPanel14
             //
-            this.tableLayoutPanel13.Name = "tableLayoutPanel13";
-            this.tableLayoutPanel13.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel13.AutoSize = true;
-            this.pnlSpacer.Controls.Add(this.tableLayoutPanel13);
+            this.tableLayoutPanel14.Name = "tableLayoutPanel14";
+            this.tableLayoutPanel14.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel14.AutoSize = true;
+            this.pnlSpacer.Controls.Add(this.tableLayoutPanel14);
             //
             // lblEmptySpacer
             //
@@ -857,11 +887,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblEmptySpacer.AutoSize = true;
             this.lblEmptySpacer.Text = "Empty Spacer:";
             this.lblEmptySpacer.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel13.ColumnCount = 1;
-            this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel13.RowCount = 1;
-            this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel13.Controls.Add(this.lblEmptySpacer, 0, 0);
+            this.tableLayoutPanel14.ColumnCount = 1;
+            this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel14.RowCount = 1;
+            this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel14.Controls.Add(this.lblEmptySpacer, 0, 0);
             //
             // cmbPartnerStatus
             //
@@ -916,25 +946,25 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLastContact.Text = "Last Contact:";
             this.lblLastContact.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblLastContact.Dock = System.Windows.Forms.DockStyle.Right;
-            this.tableLayoutPanel11.ColumnCount = 2;
-            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel11.RowCount = 5;
-            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel11.SetColumnSpan(this.pnlWorkerField, 2);
-            this.tableLayoutPanel11.Controls.Add(this.pnlWorkerField, 0, 0);
-            this.tableLayoutPanel11.SetColumnSpan(this.pnlSpacer, 2);
-            this.tableLayoutPanel11.Controls.Add(this.pnlSpacer, 0, 1);
-            this.tableLayoutPanel11.Controls.Add(this.lblPartnerStatus, 0, 2);
-            this.tableLayoutPanel11.Controls.Add(this.lblStatusUpdated, 0, 3);
-            this.tableLayoutPanel11.Controls.Add(this.lblLastContact, 0, 4);
-            this.tableLayoutPanel11.Controls.Add(this.cmbPartnerStatus, 1, 2);
-            this.tableLayoutPanel11.Controls.Add(this.txtStatusUpdated, 1, 3);
-            this.tableLayoutPanel11.Controls.Add(this.txtLastContact, 1, 4);
+            this.tableLayoutPanel12.ColumnCount = 2;
+            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 110));
+            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel12.RowCount = 5;
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Absolute, 28));
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Absolute, 24));
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Absolute, 24));
+            this.tableLayoutPanel12.SetColumnSpan(this.pnlWorkerField, 2);
+            this.tableLayoutPanel12.Controls.Add(this.pnlWorkerField, 0, 0);
+            this.tableLayoutPanel12.SetColumnSpan(this.pnlSpacer, 2);
+            this.tableLayoutPanel12.Controls.Add(this.pnlSpacer, 0, 1);
+            this.tableLayoutPanel12.Controls.Add(this.lblPartnerStatus, 0, 2);
+            this.tableLayoutPanel12.Controls.Add(this.lblStatusUpdated, 0, 3);
+            this.tableLayoutPanel12.Controls.Add(this.lblLastContact, 0, 4);
+            this.tableLayoutPanel12.Controls.Add(this.cmbPartnerStatus, 1, 2);
+            this.tableLayoutPanel12.Controls.Add(this.txtStatusUpdated, 1, 3);
+            this.tableLayoutPanel12.Controls.Add(this.txtLastContact, 1, 4);
             this.grpCollapsible.Text = "Key Partner Data";
 
             //
@@ -948,26 +978,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Text = "";
 
 	
-            this.tableLayoutPanel13.ResumeLayout(false);
+            this.tableLayoutPanel14.ResumeLayout(false);
             this.pnlSpacer.ResumeLayout(false);
-            this.tableLayoutPanel12.ResumeLayout(false);
+            this.tableLayoutPanel13.ResumeLayout(false);
             this.pnlWorkerField.ResumeLayout(false);
-            this.tableLayoutPanel11.ResumeLayout(false);
+            this.tableLayoutPanel12.ResumeLayout(false);
             this.pnlRight.ResumeLayout(false);
-            this.tableLayoutPanel10.ResumeLayout(false);
+            this.tableLayoutPanel11.ResumeLayout(false);
             this.pnlAdditionalInfo.ResumeLayout(false);
-            this.tableLayoutPanel9.ResumeLayout(false);
+            this.tableLayoutPanel10.ResumeLayout(false);
             this.pnlOther.ResumeLayout(false);
-            this.tableLayoutPanel8.ResumeLayout(false);
+            this.tableLayoutPanel9.ResumeLayout(false);
             this.pnlVenue.ResumeLayout(false);
-            this.tableLayoutPanel7.ResumeLayout(false);
+            this.tableLayoutPanel8.ResumeLayout(false);
             this.pnlBank.ResumeLayout(false);
-            this.tableLayoutPanel6.ResumeLayout(false);
+            this.tableLayoutPanel7.ResumeLayout(false);
             this.pnlUnit.ResumeLayout(false);
-            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel6.ResumeLayout(false);
             this.pnlOrganisation.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
             this.pnlChurch.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.pnlPerson2ndLine.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.pnlPerson.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
@@ -1007,50 +1039,52 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.TextBox txtPersonFirstName;
         private System.Windows.Forms.TextBox txtPersonMiddleName;
         private System.Windows.Forms.TextBox txtPersonFamilyName;
+        private System.Windows.Forms.Panel pnlPerson2ndLine;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbPersonGender;
         private System.Windows.Forms.Label lblPersonGender;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbPersonAddresseeTypeCode;
         private System.Windows.Forms.Label lblPersonAddresseeTypeCode;
         private System.Windows.Forms.CheckBox chkPersonNoSolicitations;
         private System.Windows.Forms.Panel pnlChurch;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.TextBox txtChurchName;
         private System.Windows.Forms.Label lblChurchName;
         private System.Windows.Forms.Panel pnlOrganisation;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.TextBox txtOrganisationName;
         private System.Windows.Forms.Label lblOrganisationName;
         private System.Windows.Forms.Panel pnlUnit;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
         private System.Windows.Forms.TextBox txtUnitName;
         private System.Windows.Forms.Label lblUnitName;
         private System.Windows.Forms.Panel pnlBank;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
         private System.Windows.Forms.TextBox txtBankName;
         private System.Windows.Forms.Label lblBankName;
         private System.Windows.Forms.Panel pnlVenue;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel9;
         private System.Windows.Forms.TextBox txtVenueName;
         private System.Windows.Forms.Label lblVenueName;
         private System.Windows.Forms.Panel pnlOther;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel9;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel10;
         private System.Windows.Forms.Label lblOtherEmpty;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbOtherAddresseeTypeCode;
         private System.Windows.Forms.Label lblOtherAddresseeTypeCode;
         private System.Windows.Forms.CheckBox chkOtherNoSolicitations;
         private System.Windows.Forms.Panel pnlAdditionalInfo;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel10;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel11;
         private System.Windows.Forms.TextBox txtLastGiftDetailsDate;
         private System.Windows.Forms.Label lblLastGiftDetailsDate;
         private System.Windows.Forms.TextBox txtLastGiftDetails;
         private System.Windows.Forms.Panel pnlRight;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel11;
-        private System.Windows.Forms.Panel pnlWorkerField;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel12;
+        private System.Windows.Forms.Panel pnlWorkerField;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel13;
         private System.Windows.Forms.Button btnWorkerField;
         private System.Windows.Forms.TextBox txtWorkerField;
         private System.Windows.Forms.Panel pnlSpacer;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel13;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel14;
         private System.Windows.Forms.Label lblEmptySpacer;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbPartnerStatus;
         private System.Windows.Forms.Label lblPartnerStatus;
