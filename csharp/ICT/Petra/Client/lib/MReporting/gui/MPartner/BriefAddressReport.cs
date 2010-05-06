@@ -74,7 +74,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       this.rbtBestAddress.Text = Catalog.GetString("Get best address for partner");
       this.rbtAllAddresses.Text = Catalog.GetString("Get all addresses for partner");
       this.rgrAddressDetails.Text = Catalog.GetString("Address Details");
-      this.grpAddressDetails.Text = Catalog.GetString("Address Details");
       this.tpgAdditionalSettings.Text = Catalog.GetString("Additional Settings");
       this.tpgColumns.Text = Catalog.GetString("Columns");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
