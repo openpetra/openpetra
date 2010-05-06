@@ -76,7 +76,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tpgReportSorting = new System.Windows.Forms.TabPage();
             this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
             this.tpgAdditionalSettings = new System.Windows.Forms.TabPage();
-            this.grpAddressDetails = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.rgrAddressDetails = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -121,7 +120,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tpgGeneralSettings.SuspendLayout();
             this.tpgReportSorting.SuspendLayout();
             this.tpgAdditionalSettings.SuspendLayout();
-            this.grpAddressDetails.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.rgrAddressDetails.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -164,20 +162,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tpgAdditionalSettings.Location = new System.Drawing.Point(2,2);
             this.tpgAdditionalSettings.Name = "tpgAdditionalSettings";
             this.tpgAdditionalSettings.AutoSize = true;
-            this.tpgAdditionalSettings.Controls.Add(this.grpAddressDetails);
-            //
-            // grpAddressDetails
-            //
-            this.grpAddressDetails.Name = "grpAddressDetails";
-            this.grpAddressDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpAddressDetails.AutoSize = true;
             //
             // tableLayoutPanel1
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.AutoSize = true;
-            this.grpAddressDetails.Controls.Add(this.tableLayoutPanel1);
+            this.tpgAdditionalSettings.Controls.Add(this.tableLayoutPanel1);
             //
             // rgrAddressDetails
             //
@@ -219,7 +210,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Controls.Add(this.rgrAddressDetails, 0, 0);
-            this.grpAddressDetails.Text = "Address Details";
             this.tpgAdditionalSettings.Text = "Additional Settings";
             this.tpgAdditionalSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -531,7 +521,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tableLayoutPanel2.ResumeLayout(false);
             this.rgrAddressDetails.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.grpAddressDetails.ResumeLayout(false);
             this.tpgAdditionalSettings.ResumeLayout(false);
             this.tpgReportSorting.ResumeLayout(false);
             this.tpgGeneralSettings.ResumeLayout(false);
@@ -547,7 +536,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private System.Windows.Forms.TabPage tpgReportSorting;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
         private System.Windows.Forms.TabPage tpgAdditionalSettings;
-        private System.Windows.Forms.GroupBox grpAddressDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox rgrAddressDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;

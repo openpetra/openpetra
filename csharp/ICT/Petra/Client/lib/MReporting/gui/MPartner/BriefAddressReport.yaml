@@ -23,16 +23,13 @@ RootNode:
             Order: AlwaysFirst
         tpgAdditionalSettings:
             Label: Additional Settings
-            Controls: [grpAddressDetails]
+            Controls: [rgrAddressDetails]
             Order: AlwaysLast
         ucoPartnerSelection:
             Type: Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection
             Dock: Fill
-        grpAddressDetails:
-            Label: Address Details
-            Controls: [rgrAddressDetails]
-            Dock: Fill
         rgrAddressDetails: {ParameterName=param_addressdetail}
+            Label: Address Details
             Controls: [rbtBestAddress, rbtAllAddresses]
         rbtBestAddress:
             Label: Get best address for partner

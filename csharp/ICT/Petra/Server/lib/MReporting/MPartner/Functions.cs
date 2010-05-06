@@ -94,6 +94,12 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return true;
             }
 
+            if (StringHelper.IsSame(f, "GetFieldOfPartner"))
+            {
+                value = new TVariant(GetFieldOfPartner(ops[1].ToInt64()));
+                return true;
+            }
+
             value = new TVariant();
             return false;
         }
@@ -436,6 +442,33 @@ namespace Ict.Petra.Server.MReporting.MPartner
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// Get the field name of one partner
+        /// </summary>
+        /// <param name="APartnerKey">partnerkey</param>
+        /// <returns>The field name if it was found. Otherwise empty string</returns>
+        private String GetFieldOfPartner(Int64 APartnerKey)
+        {
+            string FieldName = "";
+
+            DataSet DS = new DataSet();
+
+            PPartnerFieldOfServiceAccess.LoadViaPPartner(DS, APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            DataTable ResultTable = DS.Tables[PPartnerFieldOfServiceTable.GetTableName()];
+
+            foreach (DataRow Row in ResultTable.Rows)
+            {
+                if ((bool)Row[PPartnerFieldOfServiceTable.GetActiveDBName()])
+                {
+                    FieldName = GetPartnerShortName((Int64)Row[PPartnerFieldOfServiceTable.GetPartnerKeyDBName()]);
+                    break;
+                }
+            }
+
+            return FieldName;
         }
     }
 }

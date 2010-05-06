@@ -732,6 +732,7 @@ namespace Ict.Petra.Server.MReporting
             TVariant ReturnValue = null;
             TRptUserFunctions rptUserFunctions;
             String s;
+            String s2;
 
             System.Int32 start;
             System.Int32 length;
@@ -940,6 +941,40 @@ namespace Ict.Petra.Server.MReporting
                     ReturnValue = new TVariant("");
                     TLogging.Log("Text is not long enough or length is wrong: " + s + ' ' + start.ToString() + ' ' + length.ToString());
                 }
+            }
+            else if (f == "concatenate")
+            {
+                s = ops[1].ToString();
+
+                s = s + ops[2].ToString();
+
+                ReturnValue = new TVariant(s);
+            }
+            else if (f == "concatenateww")
+            {
+                s = ops[1].ToString();
+                length = ops[3].ToInt();
+
+                s = s.PadRight(s.Length + length);
+
+                s = s + ops[2].ToString();
+
+                ReturnValue = new TVariant(s);
+            }
+            else if (f == "concatenatewithcomma")
+            {
+                s = ops[1].ToString();
+                s2 = ops[2].ToString();
+
+                if ((s.Length > 0)
+                    && (s2.Length > 0))
+                {
+                    s = s + ", ";
+                }
+
+                s = s + s2;
+
+                ReturnValue = new TVariant(s);
             }
             else if (f == "format")
             {
