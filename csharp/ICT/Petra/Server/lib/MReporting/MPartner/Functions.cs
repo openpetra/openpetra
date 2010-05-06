@@ -453,19 +453,20 @@ namespace Ict.Petra.Server.MReporting.MPartner
         {
             string FieldName = "";
 
-            // TODO:
-//            Int64 FieldKey;
-//              string FieldName = "";
-//              TFieldOfServicePeriod Period;
-//
-//              try
-//              {
-//                      TOMerField.GetOMerField(APartnerKey, out FieldKey, out FieldName, out Period);
-//              }
-//              catch (ApplicationException)
-//              {
-//                      // Partner is not of class PERSON or FAMILY
-//              }
+            DataSet DS = new DataSet();
+
+            PPartnerFieldOfServiceAccess.LoadViaPPartner(DS, APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            DataTable ResultTable = DS.Tables[PPartnerFieldOfServiceTable.GetTableName()];
+
+            foreach (DataRow Row in ResultTable.Rows)
+            {
+                if ((bool)Row[PPartnerFieldOfServiceTable.GetActiveDBName()])
+                {
+                    FieldName = GetPartnerShortName((Int64)Row[PPartnerFieldOfServiceTable.GetPartnerKeyDBName()]);
+                    break;
+                }
+            }
 
             return FieldName;
         }
