@@ -75,8 +75,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       this.lblEndPeriod.Text = Catalog.GetString("to:");
       this.lblPeriodYear.Text = Catalog.GetString("Year:");
       this.rbtQuarter.Text = Catalog.GetString("Quarter");
-      this.lblQuarter.Text = Catalog.GetString("Quarter:");
-      this.lblPeriodYearQuarter.Text = Catalog.GetString("Year:");
       this.rgrPeriod.Text = Catalog.GetString("Period");
       this.chkYearToDate.Text = Catalog.GetString("YTD");
       this.cmbDepth.Text = Catalog.GetString("standard");
@@ -146,7 +144,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     void rbtQuarterCheckedChanged(object sender, System.EventArgs e)
     {
       txtQuarter.Enabled = rbtQuarter.Checked;
-      cmbPeriodYearQuarter.Enabled = rbtQuarter.Checked;
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -184,8 +181,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       ACalc.AddParameter("param_start_period_i", this.txtStartPeriod.Text);
       ACalc.AddParameter("param_end_period_i", this.txtEndPeriod.Text);
       ACalc.AddParameter("param_year_i", this.cmbPeriodYear.GetSelectedString());
-      ACalc.AddParameter("param_quarter", this.txtQuarter.Text);
-      ACalc.AddParameter("param_year_i", this.cmbPeriodYearQuarter.GetSelectedString());
       if (rbtPeriodRange.Checked)
       {
         ACalc.AddParameter("param_rgrPeriod", "PeriodRange");
@@ -217,8 +212,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
       txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
       cmbPeriodYear.SetSelectedString(AParameters.Get("param_year_i").ToString());
-      txtQuarter.Text = AParameters.Get("param_quarter").ToString();
-      cmbPeriodYearQuarter.SetSelectedString(AParameters.Get("param_year_i").ToString());
       rbtPeriodRange.Checked = AParameters.Get("param_rgrPeriod").ToString() == "PeriodRange";
       rbtQuarter.Checked = AParameters.Get("param_rgrPeriod").ToString() == "Quarter";
       chkYearToDate.Checked = AParameters.Get("param_ytd").ToBool();
