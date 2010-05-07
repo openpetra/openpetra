@@ -86,11 +86,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.cmbPeriodYear = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblPeriodYear = new System.Windows.Forms.Label();
             this.rbtQuarter = new System.Windows.Forms.RadioButton();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.txtQuarter = new System.Windows.Forms.TextBox();
-            this.lblQuarter = new System.Windows.Forms.Label();
-            this.cmbPeriodYearQuarter = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
-            this.lblPeriodYearQuarter = new System.Windows.Forms.Label();
             this.chkYearToDate = new System.Windows.Forms.CheckBox();
             this.cmbDepth = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblDepth = new System.Windows.Forms.Label();
@@ -133,7 +129,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.rgrPeriod.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -269,55 +264,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.rbtQuarter.AutoSize = true;
             this.rbtQuarter.Text = "Quarter";
             //
-            // tableLayoutPanel4
-            //
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.AutoSize = true;
-            //
             // txtQuarter
             //
             this.txtQuarter.Location = new System.Drawing.Point(2,2);
             this.txtQuarter.Name = "txtQuarter";
             this.txtQuarter.Size = new System.Drawing.Size(30, 28);
-            //
-            // lblQuarter
-            //
-            this.lblQuarter.Location = new System.Drawing.Point(2,2);
-            this.lblQuarter.Name = "lblQuarter";
-            this.lblQuarter.AutoSize = true;
-            this.lblQuarter.Text = "Quarter:";
-            this.lblQuarter.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblQuarter.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblQuarter.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // cmbPeriodYearQuarter
-            //
-            this.cmbPeriodYearQuarter.Location = new System.Drawing.Point(2,2);
-            this.cmbPeriodYearQuarter.Name = "cmbPeriodYearQuarter";
-            this.cmbPeriodYearQuarter.Size = new System.Drawing.Size(300, 28);
-            this.cmbPeriodYearQuarter.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
-            //
-            // lblPeriodYearQuarter
-            //
-            this.lblPeriodYearQuarter.Location = new System.Drawing.Point(2,2);
-            this.lblPeriodYearQuarter.Name = "lblPeriodYearQuarter";
-            this.lblPeriodYearQuarter.AutoSize = true;
-            this.lblPeriodYearQuarter.Text = "Year:";
-            this.lblPeriodYearQuarter.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblPeriodYearQuarter.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblPeriodYearQuarter.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel4.ColumnCount = 4;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.RowCount = 1;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Controls.Add(this.lblQuarter, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.txtQuarter, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.lblPeriodYearQuarter, 2, 0);
-            this.tableLayoutPanel4.Controls.Add(this.cmbPeriodYearQuarter, 3, 0);
             this.rbtQuarter.CheckedChanged += new System.EventHandler(this.rbtQuarterCheckedChanged);
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -328,7 +279,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.tableLayoutPanel2.Controls.Add(this.rbtPeriodRange, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.rbtQuarter, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtQuarter, 1, 1);
             this.rgrPeriod.Text = "Period";
             //
             // chkYearToDate
@@ -662,7 +613,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.rgrPeriod.ResumeLayout(false);
@@ -690,11 +640,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbPeriodYear;
         private System.Windows.Forms.Label lblPeriodYear;
         private System.Windows.Forms.RadioButton rbtQuarter;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.TextBox txtQuarter;
-        private System.Windows.Forms.Label lblQuarter;
-        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbPeriodYearQuarter;
-        private System.Windows.Forms.Label lblPeriodYearQuarter;
         private System.Windows.Forms.CheckBox chkYearToDate;
         private Ict.Common.Controls.TCmbAutoComplete cmbDepth;
         private System.Windows.Forms.Label lblDepth;

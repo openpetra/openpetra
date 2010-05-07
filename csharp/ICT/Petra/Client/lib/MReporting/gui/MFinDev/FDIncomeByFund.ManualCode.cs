@@ -24,8 +24,10 @@
  *
  ************************************************************************/
 using System;
+using System.Windows.Forms;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 {
@@ -42,8 +44,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             {
                 FLedgerNumber = value;
 
+                TRemote.MFinance.Reporting.UIConnectors.SelectLedger(FLedgerNumber);
                 TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
-                TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYearQuarter, FLedgerNumber);
+                //TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYearQuarter, FLedgerNumber);
 
                 txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
@@ -54,6 +57,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         private void ReadControlsManual(TRptCalculator ACalc)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
+            ACalc.AddParameter("param_currency", "base");
+            ACalc.AddParameter("param_explicit_motivation", "");
+            ACalc.AddParameter("param_exclude_motivation", "");
+            //ACalc.AddParameter("param_selectedAreasFunds", );
         }
     }
 }
