@@ -67,22 +67,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblPartnerKey.Text = Catalog.GetString("Key:");
-      this.lblFamilyEmpty2.Text = Catalog.GetString("Family Empty2:");
       this.lblPartnerClass.Text = Catalog.GetString("Class:");
       this.lblFamilyTitle.Text = Catalog.GetString("Title/Na&me:");
-      this.lblFamilyEmpty.Text = Catalog.GetString("Family Empty:");
       this.lblFamilyAddresseeTypeCode.Text = Catalog.GetString("&Addressee Type:");
       this.chkFamilyNoSolicitations.Text = Catalog.GetString("No Solicitations");
       this.lblPersonTitle.Text = Catalog.GetString("Title/Na&me:");
       this.lblPersonGender.Text = Catalog.GetString("&Gender:");
       this.lblPersonAddresseeTypeCode.Text = Catalog.GetString("&Addressee Type:");
       this.chkPersonNoSolicitations.Text = Catalog.GetString("No Solicitations");
-      this.lblChurchName.Text = Catalog.GetString("Title/Na&me:");
-      this.lblOrganisationName.Text = Catalog.GetString("Title/Na&me:");
-      this.lblUnitName.Text = Catalog.GetString("Title/Na&me:");
-      this.lblBankName.Text = Catalog.GetString("Title/Na&me:");
-      this.lblVenueName.Text = Catalog.GetString("Title/Na&me:");
-      this.lblOtherEmpty.Text = Catalog.GetString("Other Empty:");
+      this.lblChurchName.Text = Catalog.GetString("Na&me:");
+      this.lblOrganisationName.Text = Catalog.GetString("Na&me:");
+      this.lblUnitName.Text = Catalog.GetString("Na&me:");
+      this.lblBankName.Text = Catalog.GetString("Na&me:");
+      this.lblVenueName.Text = Catalog.GetString("Na&me:");
       this.lblOtherAddresseeTypeCode.Text = Catalog.GetString("&Addressee Type:");
       this.chkOtherNoSolicitations.Text = Catalog.GetString("No Solicitations");
       this.lblLastGiftDetailsDate.Text = Catalog.GetString("Last Gift:");
