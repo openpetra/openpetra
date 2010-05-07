@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reports SYSTEM "../reports.dtd" >
+<reports>
+
+  <report id="Foundation Report">
+	<description>
+		Report for Foundations
+	</description>
+	<reportparameters>
+		<reportparameter name="param_selection">
+			<option name="one partner"></option>
+			<option name="an extract"></option>
+			<option name="all current staff"></option>
+			<option name="all staff"></option>
+		</reportparameter>
+		<reportparameter condition="param_selection=an extract" name="param_extract"></reportparameter>
+		<reportparameter condition="param_selection=one partner" name="param_partnerkey"></reportparameter>
+		<reportparameter condition="param_selection=all current staff" name="param_currentstaffdate"></reportparameter>
+	</reportparameters>
+
+    <reportheader></reportheader>
+    <pageheader>
+      <field whichfield="title1"><value text="Brief Foundation Report"></value></field>
+      <field whichfield="title2"><value function="getSiteName()"></value></field>
+      <field whichfield="period2">
+        <fielddetail>
+          <value text="Selection: "></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},one partner)">
+          <value text="Partner "></value><value variable="param_partnerkey"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},an extract)">
+          <value text="Extract "></value><value variable="param_extract"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},all current staff)">
+          <value text="All current Staff at date "></value><value variable="param_currentstaffdate" format="formatteddate"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},all staff)">
+          <value text="All Staff"></value>
+        </fielddetail>
+      </field>
+    </pageheader>
+
+    <calculations>
+	<calculation id="Select Foundations" returns="PartnerKey, ShortName, PartnerClass, FoundationOwnerName1,
+		FoundationOwner2, Contact, EMailAddress, Phone, Review, Submit, Submission" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT DISTINCT 
+					PUB_p_partner.p_partner_key_n AS PartnerKey,
+					PUB_p_partner.p_partner_short_name_c AS ShortName,
+					PUB_p_partner.p_partner_class_c AS PartnerClass,
+					PUB_p_foundation.p_owner_2_key_n AS FoundationOwner2,
+					PUB_p_foundation.p_key_contact_name_c AS Contact,
+					PUB_p_foundation.p_key_contact_email_c AS EMailAddress,
+					PUB_p_foundation.p_key_contact_phone_c AS Phone,
+					PUB_p_foundation.p_review_frequency_c AS Review,
+					PUB_p_foundation.p_submit_frequency_c AS Submit,
+					PUB_p_foundation.p_proposal_submission_type_c AS Submission,
+					PUB_s_user.s_user_id_c AS FoundationOwnerName1
+				FROM   
+					PUB_p_partner, 
+			</value></queryDetail>
+
+			<queryDetail condition="eq({param_selection},one partner)"><value>
+					PUB_p_foundation
+				LEFT JOIN 
+					PUB_s_user
+				ON 
+					PUB_p_foundation.p_owner_1_key_n = PUB_s_user.p_partner_key_n
+				WHERE  
+					PUB_p_partner.p_partner_key_n = {{param_partnerkey}}
+			</value></queryDetail>
+
+			<queryDetail condition="eq({param_selection},an extract)"><value>
+					PUB_m_extract, PUB_m_extract_master, PUB_p_foundation
+				LEFT JOIN 
+					PUB_s_user
+				ON 
+					PUB_p_foundation.p_owner_1_key_n = PUB_s_user.p_partner_key_n
+				WHERE 
+					PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+					AND PUB_m_extract_master.m_extract_name_c = {param_extract}
+			</value></queryDetail>
+			
+			<queryDetail><value>
+					AND PUB_p_foundation.p_partner_key_n = PUB_p_partner.p_partner_key_n
+			</value></queryDetail>
+		</query>
+	</calculation> <!-- Select Foundations -->
+	  
+	<!-- Get the name of the second foundation owner -->
+	<calculation id="GetFoundationOwnerName2" returns="FoundationOwnerName2" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT DISTINCT 
+					PUB_s_user.s_user_id_c AS FoundationOwnerName2
+				FROM   
+					PUB_s_user
+				WHERE
+					PUB_s_user.p_partner_key_n = {{FoundationOwner2}}
+					AND PUB_s_user.p_partner_key_n != 0
+			</value></queryDetail>
+		</query>
+	</calculation>
+	  
+	<calculation id="GetBestAddressDetails" returns="City" returnsFormat="internal">
+		<query>
+			<queryDetail>
+				<value text="NO-SQL"/>
+				<value function="GetPartnerBestAddress({PartnerKey})"/>
+				<value function="assign(FoundationAddress, {Locality})"/>
+				<value function="assign(FoundationAddress, concatenateww({FoundationAddress},{StreetName}, 3))"/>
+				<value function="assign(FoundationAddress, concatenatewithcomma({FoundationAddress},{Address3}))"/>
+				<value function="assign(FoundationAddress, concatenatewithcomma({FoundationAddress},{PostalCode}))"/>
+				<value function="assign(FoundationAddress, concatenatewithcomma({FoundationAddress},{City}))"/>
+				<value function="assign(FoundationAddress, concatenatewithcomma({FoundationAddress},{County}))"/>
+				<value function="assign(FoundationAddress, concatenatewithcomma({FoundationAddress},{CountryCode}))"/>
+				<value function="assign(FoundationOwner, {FoundationOwnerName1})"/>
+				<value function="assign(FoundationOwner, concatenateww({FoundationOwner}, {FoundationOwnerName2}, 3))"/>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Foundation Name" returns="text" returnsFormat="text">
+		<caption><value text="Foundation Name"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="ShortName"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+
+	<calculation align="left" id="Foundation Key" returns="text" returnsFormat="partnerkey">
+		<caption><value text="Key"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="PartnerKey"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Foundation Owner" returns="text" returnsFormat="text">
+		<caption><value text="Owners"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="FoundationOwner"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Foundation Owner2" returns="text" returnsFormat="partnerkey">
+		<query>
+			<queryDetail>
+				<value variable="FoundationOwner2"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Foundation Address" returns="text" returnsFormat="text">
+		<caption><value text="Address"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="FoundationAddress"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	  
+	<calculation align="left" id="Contact" returns="text" returnsFormat="text">
+		<caption><value text="Contact"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Contact"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Submission" returns="text" returnsFormat="text">
+		<caption><value text="Submission"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Submission"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Submit" returns="text" returnsFormat="text">
+		<caption><value text="Submit"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Submit"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Last Submit" returns="text" returnsFormat="text">
+		<caption><value text="Last Submit"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="LastSubmit"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Next Submit" returns="text" returnsFormat="text">
+		<caption><value text="Next Submit"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="NextSubmit"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Review" returns="text" returnsFormat="text">
+		<caption><value text="Review"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Review"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="E-Mail Address" returns="text" returnsFormat="text">
+		<caption><value text="E-Mail Address"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="EMailAddress"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Phone" returns="text" returnsFormat="text">
+		<caption><value text="Phone"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Phone"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	
+	<calculation align="left" id="Street Name" returns="text" returnsFormat="text">
+		<caption><value text="Street Name"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="StreetName"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="First Address Line" returns="text" returnsFormat="text">
+		<caption><value text="First Address Line"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Locality"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Third Address Line" returns="text" returnsFormat="text">
+		<caption><value text="Third Address Line"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Address3"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Country" returns="text" returnsFormat="text">
+		<caption><value text="Country"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="CountryCode"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="County" returns="text" returnsFormat="text">
+		<caption><value text="County"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="County"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="City" returns="text" returnsFormat="text">
+		<caption><value text="City"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="City"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="PostCode" returns="text" returnsFormat="text">
+		<caption><value text="PostCode"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="PostalCode"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="FoundationOwnerName1" returnsFormat="text" returns="text" align="left">
+		<query>
+			<queryDetail>
+				<value variable="FoundationOwnerName1"/>
+			</queryDetail>                                          
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="FoundationOwnerName2" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="FoundationOwnerName2"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+    </calculations>
+    
+    <levels>    
+	<level name="main">
+		<detail>
+			<lowerLevelReport calculation="Select Foundations" level="intermediateLevel"></lowerLevelReport>	
+		</detail>
+	</level> <!-- main -->
+
+	<level name="intermediateLevel">
+		<detail>
+			<lowerLevelReport calculation="GetFoundationOwnerName2" level="Foundation Details" condition="gt({FoundationOwner2}, 0)"/>
+			<lowerLevelReport level="Foundation Details" condition="lt({FoundationOwner2}, 1)"/>
+		</detail>
+	</level>
+	
+      <level name="Foundation Details" identification="PartnerKey">
+		<header>
+		</header>
+		<detail>
+			<field whichfield="Columns" calculation="GetBestAddressDetails"></field>
+		</detail>
+       </level><!-- Foundation Details -->
+	
+    </levels>
+
+  </report>
+  
+</reports>

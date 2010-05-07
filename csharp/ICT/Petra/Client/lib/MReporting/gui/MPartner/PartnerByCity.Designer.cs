@@ -75,10 +75,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.txtCityName = new System.Windows.Forms.TextBox();
             this.lblCityName = new System.Windows.Forms.Label();
+            this.tpgReportSorting = new System.Windows.Forms.TabPage();
+            this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
+            this.tpgColumns = new System.Windows.Forms.TabPage();
+            this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbGenerateReport = new System.Windows.Forms.ToolStripButton();
             this.tbbSaveSettings = new System.Windows.Forms.ToolStripButton();
             this.tbbSaveSettingsAs = new System.Windows.Forms.ToolStripButton();
+            this.tbbLoadSettingsDialog = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniLoadSettings = new System.Windows.Forms.ToolStripMenuItem();
@@ -93,14 +98,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniSaveSettingsAs = new System.Windows.Forms.ToolStripMenuItem();
             this.mniMaintainSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniGenerateReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniWrapColumn = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniGenerateReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mniClose = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpPetraHelp = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
@@ -108,6 +115,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tabReportSettings.SuspendLayout();
             this.tpgReportSpecific.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.tpgReportSorting.SuspendLayout();
+            this.tpgColumns.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -151,11 +160,41 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tpgReportSpecific.Text = "Report parameters";
             this.tpgReportSpecific.Dock = System.Windows.Forms.DockStyle.Fill;
             //
+            // tpgReportSorting
+            //
+            this.tpgReportSorting.Location = new System.Drawing.Point(2,2);
+            this.tpgReportSorting.Name = "tpgReportSorting";
+            this.tpgReportSorting.AutoSize = true;
+            this.tpgReportSorting.Controls.Add(this.ucoReportSorting);
+            //
+            // ucoReportSorting
+            //
+            this.ucoReportSorting.Name = "ucoReportSorting";
+            this.ucoReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgReportSorting.Text = "Sorting";
+            this.tpgReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
+            //
+            // tpgColumns
+            //
+            this.tpgColumns.Location = new System.Drawing.Point(2,2);
+            this.tpgColumns.Name = "tpgColumns";
+            this.tpgColumns.AutoSize = true;
+            this.tpgColumns.Controls.Add(this.ucoReportColumns);
+            //
+            // ucoReportColumns
+            //
+            this.ucoReportColumns.Name = "ucoReportColumns";
+            this.ucoReportColumns.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgColumns.Text = "Columns";
+            this.tpgColumns.Dock = System.Windows.Forms.DockStyle.Fill;
+            //
             // tabReportSettings
             //
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabReportSettings.Controls.Add(this.tpgReportSpecific);
+            this.tabReportSettings.Controls.Add(this.tpgReportSorting);
+            this.tabReportSettings.Controls.Add(this.tpgColumns);
             this.tabReportSettings.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             //
             // tbbGenerateReport
@@ -183,6 +222,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tbbSaveSettingsAs.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbSaveSettingsAs.Glyph"));
             this.tbbSaveSettingsAs.Text = "Save Settings &As...";
             //
+            // tbbLoadSettingsDialog
+            //
+            this.tbbLoadSettingsDialog.Name = "tbbLoadSettingsDialog";
+            this.tbbLoadSettingsDialog.AutoSize = true;
+            this.tbbLoadSettingsDialog.Click += new System.EventHandler(this.actLoadSettingsDialog);
+            this.tbbLoadSettingsDialog.Text = "&Open...";
+            //
             // tbrMain
             //
             this.tbrMain.Name = "tbrMain";
@@ -191,7 +237,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbGenerateReport,
                         tbbSaveSettings,
-                        tbbSaveSettingsAs});
+                        tbbSaveSettingsAs,
+                        tbbLoadSettingsDialog});
             //
             // mniLoadSettingsDialog
             //
@@ -285,6 +332,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniSeparator1.AutoSize = true;
             this.mniSeparator1.Text = "-";
             //
+            // mniWrapColumn
+            //
+            this.mniWrapColumn.Name = "mniWrapColumn";
+            this.mniWrapColumn.AutoSize = true;
+            this.mniWrapColumn.Click += new System.EventHandler(this.actWrapColumn);
+            this.mniWrapColumn.Text = "&Wrap Columns";
+            //
+            // mniSeparator2
+            //
+            this.mniSeparator2.Name = "mniSeparator2";
+            this.mniSeparator2.AutoSize = true;
+            this.mniSeparator2.Text = "-";
+            //
             // mniGenerateReport
             //
             this.mniGenerateReport.Name = "mniGenerateReport";
@@ -294,11 +354,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniGenerateReport.ToolTipText = "Generate the report";
             this.mniGenerateReport.Text = "&Generate";
             //
-            // mniSeparator2
+            // mniSeparator3
             //
-            this.mniSeparator2.Name = "mniSeparator2";
-            this.mniSeparator2.AutoSize = true;
-            this.mniSeparator2.Text = "-";
+            this.mniSeparator3.Name = "mniSeparator3";
+            this.mniSeparator3.AutoSize = true;
+            this.mniSeparator3.Text = "-";
             //
             // mniClose
             //
@@ -319,8 +379,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                         mniSaveSettingsAs,
                         mniMaintainSettings,
                         mniSeparator1,
-                        mniGenerateReport,
+                        mniWrapColumn,
                         mniSeparator2,
+                        mniGenerateReport,
+                        mniSeparator3,
                         mniClose});
             this.mniFile.Text = "&File";
             //
@@ -330,11 +392,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniHelpPetraHelp.AutoSize = true;
             this.mniHelpPetraHelp.Text = "&Petra Help";
             //
-            // mniSeparator3
+            // mniSeparator4
             //
-            this.mniSeparator3.Name = "mniSeparator3";
-            this.mniSeparator3.AutoSize = true;
-            this.mniSeparator3.Text = "-";
+            this.mniSeparator4.Name = "mniSeparator4";
+            this.mniSeparator4.AutoSize = true;
+            this.mniSeparator4.Text = "-";
             //
             // mniHelpBugReport
             //
@@ -342,11 +404,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniHelpBugReport.AutoSize = true;
             this.mniHelpBugReport.Text = "Bug &Report";
             //
-            // mniSeparator4
+            // mniSeparator5
             //
-            this.mniSeparator4.Name = "mniSeparator4";
-            this.mniSeparator4.AutoSize = true;
-            this.mniSeparator4.Text = "-";
+            this.mniSeparator5.Name = "mniSeparator5";
+            this.mniSeparator5.AutoSize = true;
+            this.mniSeparator5.Text = "-";
             //
             // mniHelpAboutPetra
             //
@@ -366,9 +428,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mniHelp.AutoSize = true;
             this.mniHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniHelpPetraHelp,
-                        mniSeparator3,
-                        mniHelpBugReport,
                         mniSeparator4,
+                        mniHelpBugReport,
+                        mniSeparator5,
                         mniHelpAboutPetra,
                         mniHelpDevelopmentTeam});
             this.mniHelp.Text = "&Help";
@@ -415,6 +477,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
+            this.tpgColumns.ResumeLayout(false);
+            this.tpgReportSorting.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tpgReportSpecific.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
@@ -428,10 +492,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TextBox txtCityName;
         private System.Windows.Forms.Label lblCityName;
+        private System.Windows.Forms.TabPage tpgReportSorting;
+        private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
+        private System.Windows.Forms.TabPage tpgColumns;
+        private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbGenerateReport;
         private System.Windows.Forms.ToolStripButton tbbSaveSettings;
         private System.Windows.Forms.ToolStripButton tbbSaveSettingsAs;
+        private System.Windows.Forms.ToolStripButton tbbLoadSettingsDialog;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniLoadSettings;
@@ -446,14 +515,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private System.Windows.Forms.ToolStripMenuItem mniSaveSettingsAs;
         private System.Windows.Forms.ToolStripMenuItem mniMaintainSettings;
         private System.Windows.Forms.ToolStripSeparator mniSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem mniGenerateReport;
+        private System.Windows.Forms.ToolStripMenuItem mniWrapColumn;
         private System.Windows.Forms.ToolStripSeparator mniSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem mniGenerateReport;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator3;
         private System.Windows.Forms.ToolStripMenuItem mniClose;
         private System.Windows.Forms.ToolStripMenuItem mniHelp;
         private System.Windows.Forms.ToolStripMenuItem mniHelpPetraHelp;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator3;
-        private System.Windows.Forms.ToolStripMenuItem mniHelpBugReport;
         private System.Windows.Forms.ToolStripSeparator mniSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem mniHelpBugReport;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator5;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;

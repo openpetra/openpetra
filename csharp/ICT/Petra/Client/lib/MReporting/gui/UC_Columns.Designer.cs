@@ -1,9 +1,15 @@
+/* auto generated with nant generateWinforms from UC_Columns.yaml
+ *
+ * DO NOT edit manually, DO NOT edit with the designer
+ * use a user control if you need to modify the screen content
+ *
+ */
 /*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * @Authors:
- *       timop
+ *       auto generated
  *
  * Copyright 2004-2009 by OM International
  *
@@ -24,11 +30,14 @@
  *
  ************************************************************************/
 using System;
+using System.Windows.Forms;
+using Mono.Unix;
 using Ict.Common.Controls;
+using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
-    partial class UC_Columns
+    partial class TFrmUC_Columns
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -36,7 +45,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
-        /// Disposes resources used by the control.
+        /// Disposes resources used by the form.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
@@ -59,175 +68,228 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_Columns));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmUC_Columns));
 
-            this.grdColumns = new Ict.Common.Controls.TSgrdDataGrid();
-            this.Btn_MoveColumn2Right = new System.Windows.Forms.Button();
-            this.ImL_MoveRight = new System.Windows.Forms.ImageList(this.components);
-            this.Btn_MoveColumn2Left = new System.Windows.Forms.Button();
-            this.ImL_MoveLeft = new System.Windows.Forms.ImageList(this.components);
-            this.GBx_ChooseColCont = new System.Windows.Forms.GroupBox();
-            this.Btn_Cancel = new System.Windows.Forms.Button();
-            this.BtnApply = new System.Windows.Forms.Button();
-            this.Btn_RemoveColumn = new System.Windows.Forms.Button();
-            this.Btn_AddColumn = new System.Windows.Forms.Button();
+            this.pnlContent = new System.Windows.Forms.Panel();
+            this.pnlTop = new System.Windows.Forms.Panel();
+            this.pnlColumns = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.pnlGrid = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.grdColumns = new Ict.Common.Controls.TSgrdDataGridPaged();
+            this.btnDummy = new System.Windows.Forms.Button();
+            this.pnlMoveColumn = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnMoveColumn2Left = new System.Windows.Forms.Button();
+            this.btnMoveColumn2Right = new System.Windows.Forms.Button();
+            this.pnlAddRemButtons = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnAddColumn = new System.Windows.Forms.Button();
+            this.btnRemoveColumn = new System.Windows.Forms.Button();
+            this.pnlBottom = new System.Windows.Forms.Panel();
 
+            this.pnlContent.SuspendLayout();
+            this.pnlTop.SuspendLayout();
+            this.pnlColumns.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.pnlGrid.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.pnlMoveColumn.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
+            this.pnlAddRemButtons.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
+            this.pnlBottom.SuspendLayout();
+
+            //
+            // pnlContent
+            //
+            this.pnlContent.Name = "pnlContent";
+            this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.AutoSize = true;
+            this.pnlContent.Controls.Add(this.pnlBottom);
+            this.pnlContent.Controls.Add(this.pnlTop);
+            //
+            // pnlTop
+            //
+            this.pnlTop.Name = "pnlTop";
+            this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlTop.AutoSize = true;
+            this.pnlTop.Controls.Add(this.pnlColumns);
+            this.pnlTop.Controls.Add(this.pnlAddRemButtons);
+            //
+            // pnlColumns
+            //
+            this.pnlColumns.Name = "pnlColumns";
+            this.pnlColumns.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlColumns.AutoSize = true;
+            //
+            // tableLayoutPanel1
+            //
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
+            this.pnlColumns.Controls.Add(this.tableLayoutPanel1);
+            //
+            // pnlGrid
+            //
+            this.pnlGrid.Name = "pnlGrid";
+            this.pnlGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlGrid.AutoSize = true;
+            //
+            // tableLayoutPanel2
+            //
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
+            this.pnlGrid.Controls.Add(this.tableLayoutPanel2);
             //
             // grdColumns
             //
-            this.grdColumns.AlternatingBackgroundColour = System.Drawing.SystemColors.InactiveBorder;
-            this.grdColumns.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
-                                                      System.Windows.Forms.AnchorStyles.Right)));
-            this.grdColumns.AutoFindColumn = ((short)(-1));
-            this.grdColumns.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.NoAutoFind;
-            this.grdColumns.AutoStretchColumnsToFitWidth = true;
-            this.grdColumns.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.grdColumns.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.grdColumns.DeleteQuestionMessage = "You have chosen to delete this record.\'#13#10#13#10\'Do you really want to delete " +
-                                                    "it?";
-            this.grdColumns.FixedRows = 1;
-            this.grdColumns.KeepRowSelectedAfterSort = true;
-            this.grdColumns.Location = new System.Drawing.Point(10, 8);
-            this.grdColumns.MinimumHeight = 19;
             this.grdColumns.Name = "grdColumns";
-            this.grdColumns.Size = new System.Drawing.Size(60, 120);
-            this.grdColumns.SortableHeaders = true;
-            this.grdColumns.SpecialKeys =
-                ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows | SourceGrid.GridSpecialKeys.PageDownUp) |
-                                                  SourceGrid.GridSpecialKeys.Enter) |
-                                                 SourceGrid.GridSpecialKeys.Escape) |
-                                                SourceGrid.GridSpecialKeys.Control) |
-                                               SourceGrid.GridSpecialKeys.Shift)));
-            this.grdColumns.TabIndex = 27;
-            this.grdColumns.TabStop = true;
-            this.grdColumns.ToolTipTextDelegate = null;
+            this.grdColumns.Dock = System.Windows.Forms.DockStyle.Fill;
+            //
+            // btnDummy
+            //
+            this.btnDummy.Location = new System.Drawing.Point(2,2);
+            this.btnDummy.Name = "btnDummy";
+            this.btnDummy.Visible = false;
+            this.btnDummy.AutoSize = true;
+            this.btnDummy.Text = "DummyButton";
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.grdColumns, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnDummy, 0, 1);
+            //
+            // pnlMoveColumn
+            //
+            this.pnlMoveColumn.Location = new System.Drawing.Point(2,2);
+            this.pnlMoveColumn.Name = "pnlMoveColumn";
+            this.pnlMoveColumn.AutoSize = true;
+            //
+            // tableLayoutPanel3
+            //
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
+            this.pnlMoveColumn.Controls.Add(this.tableLayoutPanel3);
+            //
+            // btnMoveColumn2Left
+            //
+            this.btnMoveColumn2Left.Location = new System.Drawing.Point(2,2);
+            this.btnMoveColumn2Left.Name = "btnMoveColumn2Left";
+            this.btnMoveColumn2Left.AutoSize = true;
+            this.btnMoveColumn2Left.Text = "Left:";
+            //
+            // btnMoveColumn2Right
+            //
+            this.btnMoveColumn2Right.Location = new System.Drawing.Point(2,2);
+            this.btnMoveColumn2Right.Name = "btnMoveColumn2Right";
+            this.btnMoveColumn2Right.AutoSize = true;
+            this.btnMoveColumn2Right.Text = "Right";
+            this.tableLayoutPanel3.ColumnCount = 1;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.btnMoveColumn2Left, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.btnMoveColumn2Right, 0, 1);
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.pnlGrid, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.pnlMoveColumn, 1, 0);
+            //
+            // pnlAddRemButtons
+            //
+            this.pnlAddRemButtons.Name = "pnlAddRemButtons";
+            this.pnlAddRemButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlAddRemButtons.AutoSize = true;
+            //
+            // tableLayoutPanel4
+            //
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
+            this.pnlAddRemButtons.Controls.Add(this.tableLayoutPanel4);
+            //
+            // btnAddColumn
+            //
+            this.btnAddColumn.Location = new System.Drawing.Point(2,2);
+            this.btnAddColumn.Name = "btnAddColumn";
+            this.btnAddColumn.AutoSize = true;
+            this.btnAddColumn.Text = "Add";
+            //
+            // btnRemoveColumn
+            //
+            this.btnRemoveColumn.Location = new System.Drawing.Point(2,2);
+            this.btnRemoveColumn.Name = "btnRemoveColumn";
+            this.btnRemoveColumn.AutoSize = true;
+            this.btnRemoveColumn.Text = "Remove";
+            this.tableLayoutPanel4.ColumnCount = 2;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.Controls.Add(this.btnAddColumn, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.btnRemoveColumn, 1, 0);
+            //
+            // pnlBottom
+            //
+            this.pnlBottom.Name = "pnlBottom";
+            this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlBottom.AutoSize = true;
 
             //
-            // Btn_MoveColumn2Right
+            // TFrmUC_Columns
             //
-            this.Btn_MoveColumn2Right.AccessibleDescription = "";
-            this.Btn_MoveColumn2Right.Anchor =
-                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.Btn_MoveColumn2Right.Enabled = false;
-            this.Btn_MoveColumn2Right.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.Btn_MoveColumn2Right.ImageIndex = 0;
-            this.Btn_MoveColumn2Right.ImageList = this.ImL_MoveRight;
-            this.Btn_MoveColumn2Right.Location = new System.Drawing.Point(192, 43);
-            this.Btn_MoveColumn2Right.Name = "Btn_MoveColumn2Right";
-            this.Btn_MoveColumn2Right.Size = new System.Drawing.Size(29, 26);
-            this.Btn_MoveColumn2Right.TabIndex = 26;
-            this.Btn_MoveColumn2Right.Click += new System.EventHandler(this.Btn_MoveColumn2Right_Click);
-
-            //
-            // ImL_MoveRight
-            //
-            this.ImL_MoveRight.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ImL_MoveRight.ImageStream")));
-            this.ImL_MoveRight.TransparentColor = System.Drawing.Color.Transparent;
-            this.ImL_MoveRight.Images.SetKeyName(0, "");
-            this.ImL_MoveRight.Images.SetKeyName(1, "");
-
-            //
-            // Btn_MoveColumn2Left
-            //
-            this.Btn_MoveColumn2Left.AccessibleDescription = "";
-            this.Btn_MoveColumn2Left.Anchor =
-                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.Btn_MoveColumn2Left.Enabled = false;
-            this.Btn_MoveColumn2Left.ImageIndex = 0;
-            this.Btn_MoveColumn2Left.ImageList = this.ImL_MoveLeft;
-            this.Btn_MoveColumn2Left.Location = new System.Drawing.Point(192, 9);
-            this.Btn_MoveColumn2Left.Name = "Btn_MoveColumn2Left";
-            this.Btn_MoveColumn2Left.Size = new System.Drawing.Size(29, 25);
-            this.Btn_MoveColumn2Left.TabIndex = 25;
-            this.Btn_MoveColumn2Left.Click += new System.EventHandler(this.Btn_MoveColumn2Left_Click);
-
-            //
-            // ImL_MoveLeft
-            //
-            this.ImL_MoveLeft.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ImL_MoveLeft.ImageStream")));
-            this.ImL_MoveLeft.TransparentColor = System.Drawing.Color.Transparent;
-            this.ImL_MoveLeft.Images.SetKeyName(0, "");
-            this.ImL_MoveLeft.Images.SetKeyName(1, "");
-
-            //
-            // GBx_ChooseColCont
-            //
-            this.GBx_ChooseColCont.Controls.Add(this.Btn_Cancel);
-            this.GBx_ChooseColCont.Controls.Add(this.BtnApply);
-            this.GBx_ChooseColCont.Location = new System.Drawing.Point(10, 181);
-            this.GBx_ChooseColCont.Name = "GBx_ChooseColCont";
-            this.GBx_ChooseColCont.Size = new System.Drawing.Size(624, 189);
-            this.GBx_ChooseColCont.TabIndex = 22;
-            this.GBx_ChooseColCont.TabStop = false;
-            this.GBx_ChooseColCont.Text = "Define Column";
-
-            //
-            // Btn_Cancel
-            //
-            this.Btn_Cancel.Location = new System.Drawing.Point(288, 155);
-            this.Btn_Cancel.Name = "Btn_Cancel";
-            this.Btn_Cancel.Size = new System.Drawing.Size(90, 25);
-            this.Btn_Cancel.TabIndex = 10;
-            this.Btn_Cancel.Text = "Cancel";
-            this.Btn_Cancel.Click += new System.EventHandler(this.Btn_Cancel_Click);
-
-            //
-            // BtnApply
-            //
-            this.BtnApply.Location = new System.Drawing.Point(394, 155);
-            this.BtnApply.Name = "BtnApply";
-            this.BtnApply.Size = new System.Drawing.Size(90, 25);
-            this.BtnApply.TabIndex = 9;
-            this.BtnApply.Text = "Apply";
-            this.BtnApply.Click += new System.EventHandler(this.BtnApply_Click);
-
-            //
-            // Btn_RemoveColumn
-            //
-            this.Btn_RemoveColumn.Enabled = false;
-            this.Btn_RemoveColumn.Location = new System.Drawing.Point(115, 146);
-            this.Btn_RemoveColumn.Name = "Btn_RemoveColumn";
-            this.Btn_RemoveColumn.Size = new System.Drawing.Size(77, 26);
-            this.Btn_RemoveColumn.TabIndex = 20;
-            this.Btn_RemoveColumn.Text = "&Remove";
-            this.Btn_RemoveColumn.Click += new System.EventHandler(this.Btn_RemoveColumn_Click);
-
-            //
-            // Btn_AddColumn
-            //
-            this.Btn_AddColumn.Location = new System.Drawing.Point(10, 146);
-            this.Btn_AddColumn.Name = "Btn_AddColumn";
-            this.Btn_AddColumn.Size = new System.Drawing.Size(76, 26);
-            this.Btn_AddColumn.TabIndex = 18;
-            this.Btn_AddColumn.Text = "&Add";
-            this.Btn_AddColumn.Click += new System.EventHandler(this.Btn_AddColumn_Click);
-
-            //
-            // UC_Columns
-            //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Name = "UC_Columns";
-            this.Controls.Add(this.grdColumns);
-            this.Controls.Add(this.Btn_MoveColumn2Right);
-            this.Controls.Add(this.Btn_MoveColumn2Left);
-            this.Controls.Add(this.GBx_ChooseColCont);
-            this.Controls.Add(this.Btn_RemoveColumn);
-            this.Controls.Add(this.Btn_AddColumn);
-            this.Size = new System.Drawing.Size(650, 386);
+
+            this.ClientSize = new System.Drawing.Size(700, 500);
+
+            this.Controls.Add(this.pnlContent);
+
+            this.Name = "TFrmUC_Columns";
+            this.Text = "";
+
+	
+            this.pnlBottom.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.pnlAddRemButtons.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.pnlMoveColumn.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.pnlGrid.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.pnlColumns.ResumeLayout(false);
+            this.pnlTop.ResumeLayout(false);
+            this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
+            this.PerformLayout();
         }
 
-        private TSgrdDataGrid grdColumns;
-        private System.Windows.Forms.Button Btn_Cancel;
-        private System.Windows.Forms.GroupBox GBx_ChooseColCont;
-        private System.Windows.Forms.Button BtnApply;
-        private System.Windows.Forms.Button Btn_RemoveColumn;
-        private System.Windows.Forms.Button Btn_AddColumn;
-        private System.Windows.Forms.ImageList ImL_MoveRight;
-        private System.Windows.Forms.ImageList ImL_MoveLeft;
-        private System.Windows.Forms.Button Btn_MoveColumn2Right;
-        private System.Windows.Forms.Button Btn_MoveColumn2Left;
+        private System.Windows.Forms.Panel pnlContent;
+        private System.Windows.Forms.Panel pnlTop;
+        private System.Windows.Forms.Panel pnlColumns;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Panel pnlGrid;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private Ict.Common.Controls.TSgrdDataGridPaged grdColumns;
+        private System.Windows.Forms.Button btnDummy;
+        private System.Windows.Forms.Panel pnlMoveColumn;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.Button btnMoveColumn2Left;
+        private System.Windows.Forms.Button btnMoveColumn2Right;
+        private System.Windows.Forms.Panel pnlAddRemButtons;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.Button btnAddColumn;
+        private System.Windows.Forms.Button btnRemoveColumn;
+        private System.Windows.Forms.Panel pnlBottom;
     }
 }

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reports SYSTEM "../reports.dtd" >
+<reports>
+
+  <report id="Valid Bank Account Report">
+	<description>
+		Report to check the validity of bank accounts
+	</description>
+	<reportparameters>
+		<reportparameter name="param_selection">
+			<option name="one partner"></option>
+			<option name="an extract"></option>
+			<option name="all current staff"></option>
+			<option name="all staff"></option>
+		</reportparameter>
+		<reportparameter condition="param_selection=an extract" name="param_extract"></reportparameter>
+		<reportparameter condition="param_selection=one partner" name="param_partnerkey"></reportparameter>
+		<reportparameter condition="param_selection=all current staff" name="param_currentstaffdate"></reportparameter>
+	</reportparameters>
+
+    <reportheader></reportheader>
+    <pageheader>
+      <field whichfield="title1"><value text="Valid Bank Account Report"></value></field>
+      <field whichfield="title2"><value function="getSiteName()"></value></field>
+      <field whichfield="descr1">
+        <value text="Sorted by: "></value>
+        <value variable="param_sortby_readable"></value>
+      </field>
+      <field whichfield="period2">
+        <fielddetail>
+          <value text="Selection: "></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},one partner)">
+          <value text="Partner "></value><value variable="param_partnerkey"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},an extract)">
+          <value text="Extract "></value><value variable="param_extract"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},all current staff)">
+          <value text="All current Staff at date "></value><value variable="param_currentstaffdate" format="formatteddate"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},all staff)">
+          <value text="All Staff"></value>
+        </fielddetail>
+      </field>
+    </pageheader>
+
+    <calculations>
+	
+	<calculation id="Get Banking Details" returns="ShortName, PartnerClassLong, PartnerKey, BankingDetailsKey,
+					 BankPartnerKey, AccountNo, SortCode" returnsFormat="row">
+		<query>
+			<queryDetail>
+				<value>
+					SELECT DISTINCT 
+						PUB_p_partner.p_partner_short_name_c AS ShortName,
+						PUB_p_partner.p_partner_class_c AS PartnerClassLong,
+						PUB_p_partner_banking_details.p_partner_key_n AS PartnerKey,
+						PUB_p_partner_banking_details.p_banking_details_key_i AS BankingDetailsKey,
+						PUB_p_banking_details.p_bank_key_n AS BankPartnerKey,
+						PUB_p_banking_details.p_bank_account_number_c AS AccountNo,
+						PUB_p_bank.p_branch_code_c AS SortCode
+					FROM   
+						PUB_p_banking_type, PUB_p_partner, PUB_p_partner_banking_details, PUB_p_banking_details, PUB_p_bank
+				</value>
+			</queryDetail>
+			<queryDetail condition="eq({param_selection},one partner)">
+				<value>
+					WHERE  
+						PUB_p_partner_banking_details.p_partner_key_n = {{param_partnerkey}}
+				</value>
+			</queryDetail>
+			<queryDetail condition="eq({param_selection},an extract)">
+				<value>
+						, PUB_m_extract, PUB_m_extract_master
+					WHERE 
+						PUB_p_partner_banking_details.p_partner_key_n = PUB_m_extract.p_partner_key_n
+						AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+						AND PUB_m_extract_master.m_extract_name_c = {param_extract}
+				</value>
+			</queryDetail>
+			<queryDetail condition="or(eq({param_selection},all current staff),eq({param_selection},all staff))">
+				<value>
+						, PUB_pm_staff_data
+					WHERE 
+						PUB_p_partner_banking_details.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
+				</value>
+			</queryDetail>
+			<queryDetail condition="eq({param_selection},all current staff)">
+				<value>
+						AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
+						AND (PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
+						OR PUB_pm_staff_data.pm_end_of_commitment_d IS NULL) 
+				</value>
+			</queryDetail>
+			<queryDetail>
+				<value>
+						AND PUB_p_partner.p_partner_key_n = PUB_p_partner_banking_details.p_partner_key_n
+						AND PUB_p_banking_details.p_banking_details_key_i = PUB_p_partner_banking_details.p_banking_details_key_i
+						AND PUB_p_banking_details.p_bank_key_n = PUB_p_bank.p_partner_key_n
+						AND PUB_p_banking_type.p_type_c = "BANK ACCOUNT"
+						AND PUB_p_banking_details.p_banking_type_i = PUB_p_banking_type.p_id_i
+				</value>
+			</queryDetail>
+		</query>
+	</calculation> <!-- Get Banking Details -->
+	
+	<calculation id="CleanUp" returns="PartnerClassShort, AccountNoCheck" returnsFormat="internal">
+		<query>
+			<queryDetail>
+				<value text="NO-SQL"/>
+				<value function="assign(PartnerClassShort, substring({PartnerClassLong}, 0,  1))"/>
+				<value function="assign(AccountNoCheck, CheckAccountNumber({AccountNo}, ,{BankPartnerKey}))"/>
+				<value function="ConditionRow(1)"/>
+			</queryDetail>
+			<queryDetail condition="eq({AccountNoCheck}, -1)">
+				<value text="NO-SQL"/>
+				<value function="assign(Reason, Length check failed)"/>
+			</queryDetail>
+			<queryDetail condition="eq({AccountNoCheck}, 0)">
+				<value text="NO-SQL"/>
+				<value function="assign(Reason, Invalid account number)"/>
+			</queryDetail>
+			<queryDetail condition="eq({AccountNoCheck}, 1)">
+				<value text="NO-SQL"/>
+				<value function="assign(Reason, Account number is valid)"/>
+				<!-- Hide this row from output -->
+				<value function="ConditionRow(0)"/>
+			</queryDetail>
+			<queryDetail condition="eq({AccountNoCheck}, 2)">
+				<value text="NO-SQL"/>
+				<value function="assign(Reason, Probably valid - account number cannot be validated by country-specific check)"/>
+			</queryDetail>
+			<queryDetail condition="eq({AccountNoCheck}, 3)">
+				<value text="NO-SQL"/>
+				<value function="assign(Reason, Account number could not be validated - no country-specific check implemented)"/>
+			</queryDetail>
+			<queryDetail condition="eq({AccountNoCheck}, 4)">
+				<value text="NO-SQL"/>
+				<value function="assign(Reason, Bank partner could not be found)"/>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+		<caption><value text="Partner Name"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="ShortName"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Partner Class Long" returns="text" returnsFormat="text">
+		<caption><value text="Partner Class Long"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="PartnerClassLong"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Partner Class" returns="text" returnsFormat="text">
+		<caption><value text="Class"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="PartnerClassShort"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+
+	<calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
+		<caption><value text="Partner Key"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="PartnerKey"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Bank Partner Key" returns="text" returnsFormat="partnerkey">
+		<caption><value text="Bank Partner Key"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="BankPartnerKey"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Sort Code" returns="text" returnsFormat="text">
+		<caption><value text="Sort-Code"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="SortCode"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Account No" returns="text" returnsFormat="text">
+		<caption><value text="Account No"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="AccountNo"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Account No Check" returns="text" returnsFormat="text">
+		<caption><value text="Account No Check"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="AccountNoCheck"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Reason" returns="text" returnsFormat="text">
+		<caption><value text="Reason"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Reason"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+    </calculations>
+
+    <levels>    
+	<level name="main">
+		<detail>
+			<lowerLevelReport calculation="Get Banking Details" level="AccountLevel"></lowerLevelReport>
+		</detail>
+	</level>
+	
+	<!-- TODO:
+		Add "Number of records walked through"
+		Add "Records that could not be checked"
+		Add "Total wrong bank account numbers found"
+	-->
+	
+	<level name="AccountLevel" identification="PartnerKey">
+		<detail>
+			<field calculation="CleanUp"  whichfield="Columns"></field>
+		</detail>
+	</level>
+    </levels>
+
+  </report>
+  
+</reports>

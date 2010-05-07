@@ -1,13 +1,12 @@
 ﻿RootNode:
-    BaseYaml: ../ReportingForm.yaml
+    BaseYaml: PartnerReportingForm.yaml
     FormType: report
     FormTitle: Partner by City
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     TemplateParameters:
-        XMLFILES: [partnerbycity.xml]
+        XMLFILES: [Partner\\\\partnerbycity.xml]
         REPORTNAME: Partner by City
         CURRENTREPORT: Partner by City
-        SETAVAILABLEFUNCTIONS: BLANK
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
@@ -17,7 +16,33 @@
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
+        tpgReportSorting:
+            Label: Sorting
+            Controls: [ucoReportSorting]
         tpgReportSpecific:
             Label: Report parameters
             Controls: [txtCityName]
+            Order: AlwaysFirst
         txtCityName: {Label=Name of City, ParameterName=param_city}
+        ucoReportSorting:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
+            Dock: Fill
+    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
+        Para1:
+            Name: City
+            Parameter: 4.0
+        Para2:
+            Name: Partner Shortname
+            Parameter: 3.0
+        Para3:
+            Name: Partner Key
+            Parameter: 2.0
+        Para4:
+            Name: PostCode
+            Parameter: 2.5
+        Para5:
+            Name: Partner Class
+            Parameter: 2.0
+        Para6:
+            Name: Street
+            Parameter: 3.5

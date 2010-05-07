@@ -1,12 +1,12 @@
 ﻿RootNode:
-    BaseYaml: ../ReportingForm.yaml
+    BaseYaml: FinanceReportingForm.yaml
     FormType: report
     FormTitle: Balance Sheet
     WindowWidth: 650
     WindowHeight: 600
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
-        XMLFILES: [balancesheet.xml,finance.xml,common.xml]
+        XMLFILES: [Finance\\\\balancesheet.xml,Finance\\\\finance.xml,common.xml]
         REPORTNAME: Balance Sheet
         CURRENTREPORT: Balance Sheet
         SETAVAILABLEFUNCTIONS: BLANK

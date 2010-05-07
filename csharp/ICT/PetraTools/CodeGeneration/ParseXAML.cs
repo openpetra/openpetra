@@ -225,6 +225,7 @@ namespace Ict.Tools.CodeGeneration
 
             LoadActions((XmlNode)nodes["Actions"]);
             LoadEvents((XmlNode)nodes["Events"]);
+            LoadReportParameters((XmlNode)nodes["ReportParameters"]);
         }
 
         Int32 FMenuSeparatorCount = 0;
@@ -362,6 +363,19 @@ namespace Ict.Tools.CodeGeneration
                 foreach (XmlNode childNode in children)
                 {
                     TEventHandler TempEvent = FCodeStorage.AddEvent(childNode);
+                }
+            }
+        }
+
+        protected void LoadReportParameters(XmlNode curNode)
+        {
+            if (curNode != null)
+            {
+                List <XmlNode>children = TYml2Xml.GetChildren(curNode, true);
+
+                foreach (XmlNode childNode in children)
+                {
+                    TReportParameter TempParmeter = FCodeStorage.AddReportParameter(childNode, curNode.Attributes["ColumnFunction"].Value);
                 }
             }
         }

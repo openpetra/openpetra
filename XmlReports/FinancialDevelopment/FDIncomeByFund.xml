@@ -13,6 +13,9 @@
     <reportparameter name="param_ytd"/>
     <reportparameter name="param_currency"/>
     <reportparameter name="param_depth"/>
+    <reportparameter name="param_explicit_motivation"/>
+    <reportparameter name="param_exclude_motivation"/>
+    <reportparameter name="param_selectedAreasFunds"/>
   </reportparameters>
   <reportheader/>
   <pageheader>
@@ -302,11 +305,6 @@
     <level name="main">
       <detail>
         <lowerLevelReport level="AllAreas" calculation="Select Unit Root"/>
-        <lowerLevelReport level="AllAreas" calculation="Select Unit Root" condition="eq({param_depth},detail)">
-          <parameter name="param_depth">
-            <value text="summary"/>
-          </parameter>
-        </lowerLevelReport>
       </detail>
     </level>
     

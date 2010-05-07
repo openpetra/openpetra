@@ -26,6 +26,7 @@ RootNode:
            mniReports: 
                Label: &Reports...
                mniReportPartnerByCity: {Label=&Partner By City Report (experiment), ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPartnerByCity)
+               mniReportPartnerAddress: {Label=&Brief Address Report (experiment), ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBriefAddressReport)
            mniSeparator: {Label=-}
            mniNewPartner: {Label=New &Partner...}
            mniNewPartnerAssistant: 

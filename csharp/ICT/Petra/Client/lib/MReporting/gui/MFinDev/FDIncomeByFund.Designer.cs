@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -85,11 +86,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.cmbPeriodYear = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblPeriodYear = new System.Windows.Forms.Label();
             this.rbtQuarter = new System.Windows.Forms.RadioButton();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.txtQuarter = new System.Windows.Forms.TextBox();
-            this.lblQuarter = new System.Windows.Forms.Label();
-            this.cmbPeriodYearQuarter = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
-            this.lblPeriodYearQuarter = new System.Windows.Forms.Label();
             this.chkYearToDate = new System.Windows.Forms.CheckBox();
             this.cmbDepth = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblDepth = new System.Windows.Forms.Label();
@@ -97,6 +94,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.tbbGenerateReport = new System.Windows.Forms.ToolStripButton();
             this.tbbSaveSettings = new System.Windows.Forms.ToolStripButton();
             this.tbbSaveSettingsAs = new System.Windows.Forms.ToolStripButton();
+            this.tbbLoadSettingsDialog = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniLoadSettings = new System.Windows.Forms.ToolStripMenuItem();
@@ -111,14 +109,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.mniSaveSettingsAs = new System.Windows.Forms.ToolStripMenuItem();
             this.mniMaintainSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniGenerateReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniWrapColumn = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniGenerateReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mniClose = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpPetraHelp = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
@@ -129,7 +129,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.rgrPeriod.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -164,6 +163,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblLedger.Text = "Ledger:";
             this.lblLedger.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblLedger.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblLedger.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // rgrPeriod
             //
@@ -206,6 +206,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblStartPeriod.Text = "from:";
             this.lblStartPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblStartPeriod.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblStartPeriod.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtEndPeriod
             //
@@ -221,6 +222,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblEndPeriod.Text = "to:";
             this.lblEndPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblEndPeriod.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblEndPeriod.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbPeriodYear
             //
@@ -237,6 +239,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblPeriodYear.Text = "Year:";
             this.lblPeriodYear.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblPeriodYear.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblPeriodYear.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel3.ColumnCount = 6;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -261,53 +264,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.rbtQuarter.AutoSize = true;
             this.rbtQuarter.Text = "Quarter";
             //
-            // tableLayoutPanel4
-            //
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.AutoSize = true;
-            //
             // txtQuarter
             //
             this.txtQuarter.Location = new System.Drawing.Point(2,2);
             this.txtQuarter.Name = "txtQuarter";
             this.txtQuarter.Size = new System.Drawing.Size(30, 28);
-            //
-            // lblQuarter
-            //
-            this.lblQuarter.Location = new System.Drawing.Point(2,2);
-            this.lblQuarter.Name = "lblQuarter";
-            this.lblQuarter.AutoSize = true;
-            this.lblQuarter.Text = "Quarter:";
-            this.lblQuarter.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblQuarter.Dock = System.Windows.Forms.DockStyle.Right;
-            //
-            // cmbPeriodYearQuarter
-            //
-            this.cmbPeriodYearQuarter.Location = new System.Drawing.Point(2,2);
-            this.cmbPeriodYearQuarter.Name = "cmbPeriodYearQuarter";
-            this.cmbPeriodYearQuarter.Size = new System.Drawing.Size(300, 28);
-            this.cmbPeriodYearQuarter.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
-            //
-            // lblPeriodYearQuarter
-            //
-            this.lblPeriodYearQuarter.Location = new System.Drawing.Point(2,2);
-            this.lblPeriodYearQuarter.Name = "lblPeriodYearQuarter";
-            this.lblPeriodYearQuarter.AutoSize = true;
-            this.lblPeriodYearQuarter.Text = "Year:";
-            this.lblPeriodYearQuarter.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblPeriodYearQuarter.Dock = System.Windows.Forms.DockStyle.Right;
-            this.tableLayoutPanel4.ColumnCount = 4;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.RowCount = 1;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Controls.Add(this.lblQuarter, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.txtQuarter, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.lblPeriodYearQuarter, 2, 0);
-            this.tableLayoutPanel4.Controls.Add(this.cmbPeriodYearQuarter, 3, 0);
             this.rbtQuarter.CheckedChanged += new System.EventHandler(this.rbtQuarterCheckedChanged);
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -318,7 +279,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.tableLayoutPanel2.Controls.Add(this.rbtPeriodRange, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.rbtQuarter, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtQuarter, 1, 1);
             this.rgrPeriod.Text = "Period";
             //
             // chkYearToDate
@@ -345,6 +306,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblDepth.Text = "Depth:";
             this.lblDepth.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDepth.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDepth.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -396,6 +358,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.tbbSaveSettingsAs.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbSaveSettingsAs.Glyph"));
             this.tbbSaveSettingsAs.Text = "Save Settings &As...";
             //
+            // tbbLoadSettingsDialog
+            //
+            this.tbbLoadSettingsDialog.Name = "tbbLoadSettingsDialog";
+            this.tbbLoadSettingsDialog.AutoSize = true;
+            this.tbbLoadSettingsDialog.Click += new System.EventHandler(this.actLoadSettingsDialog);
+            this.tbbLoadSettingsDialog.Text = "&Open...";
+            //
             // tbrMain
             //
             this.tbrMain.Name = "tbrMain";
@@ -404,7 +373,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbGenerateReport,
                         tbbSaveSettings,
-                        tbbSaveSettingsAs});
+                        tbbSaveSettingsAs,
+                        tbbLoadSettingsDialog});
             //
             // mniLoadSettingsDialog
             //
@@ -498,6 +468,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.mniSeparator1.AutoSize = true;
             this.mniSeparator1.Text = "-";
             //
+            // mniWrapColumn
+            //
+            this.mniWrapColumn.Name = "mniWrapColumn";
+            this.mniWrapColumn.AutoSize = true;
+            this.mniWrapColumn.Click += new System.EventHandler(this.actWrapColumn);
+            this.mniWrapColumn.Text = "&Wrap Columns";
+            //
+            // mniSeparator2
+            //
+            this.mniSeparator2.Name = "mniSeparator2";
+            this.mniSeparator2.AutoSize = true;
+            this.mniSeparator2.Text = "-";
+            //
             // mniGenerateReport
             //
             this.mniGenerateReport.Name = "mniGenerateReport";
@@ -507,11 +490,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.mniGenerateReport.ToolTipText = "Generate the report";
             this.mniGenerateReport.Text = "&Generate";
             //
-            // mniSeparator2
+            // mniSeparator3
             //
-            this.mniSeparator2.Name = "mniSeparator2";
-            this.mniSeparator2.AutoSize = true;
-            this.mniSeparator2.Text = "-";
+            this.mniSeparator3.Name = "mniSeparator3";
+            this.mniSeparator3.AutoSize = true;
+            this.mniSeparator3.Text = "-";
             //
             // mniClose
             //
@@ -532,8 +515,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                         mniSaveSettingsAs,
                         mniMaintainSettings,
                         mniSeparator1,
-                        mniGenerateReport,
+                        mniWrapColumn,
                         mniSeparator2,
+                        mniGenerateReport,
+                        mniSeparator3,
                         mniClose});
             this.mniFile.Text = "&File";
             //
@@ -543,11 +528,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.mniHelpPetraHelp.AutoSize = true;
             this.mniHelpPetraHelp.Text = "&Petra Help";
             //
-            // mniSeparator3
+            // mniSeparator4
             //
-            this.mniSeparator3.Name = "mniSeparator3";
-            this.mniSeparator3.AutoSize = true;
-            this.mniSeparator3.Text = "-";
+            this.mniSeparator4.Name = "mniSeparator4";
+            this.mniSeparator4.AutoSize = true;
+            this.mniSeparator4.Text = "-";
             //
             // mniHelpBugReport
             //
@@ -555,11 +540,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.mniHelpBugReport.AutoSize = true;
             this.mniHelpBugReport.Text = "Bug &Report";
             //
-            // mniSeparator4
+            // mniSeparator5
             //
-            this.mniSeparator4.Name = "mniSeparator4";
-            this.mniSeparator4.AutoSize = true;
-            this.mniSeparator4.Text = "-";
+            this.mniSeparator5.Name = "mniSeparator5";
+            this.mniSeparator5.AutoSize = true;
+            this.mniSeparator5.Text = "-";
             //
             // mniHelpAboutPetra
             //
@@ -579,9 +564,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.mniHelp.AutoSize = true;
             this.mniHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniHelpPetraHelp,
-                        mniSeparator3,
-                        mniHelpBugReport,
                         mniSeparator4,
+                        mniHelpBugReport,
+                        mniSeparator5,
                         mniHelpAboutPetra,
                         mniHelpDevelopmentTeam});
             this.mniHelp.Text = "&Help";
@@ -604,15 +589,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             //
             // TFrmFDIncomeByFund
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.tabReportSettings);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmFDIncomeByFund";
             this.Text = "FD Income by Fund";
 
@@ -625,16 +613,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.rgrPeriod.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tpgReportSpecific.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgReportSpecific;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
@@ -651,11 +640,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbPeriodYear;
         private System.Windows.Forms.Label lblPeriodYear;
         private System.Windows.Forms.RadioButton rbtQuarter;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.TextBox txtQuarter;
-        private System.Windows.Forms.Label lblQuarter;
-        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbPeriodYearQuarter;
-        private System.Windows.Forms.Label lblPeriodYearQuarter;
         private System.Windows.Forms.CheckBox chkYearToDate;
         private Ict.Common.Controls.TCmbAutoComplete cmbDepth;
         private System.Windows.Forms.Label lblDepth;
@@ -663,6 +648,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         private System.Windows.Forms.ToolStripButton tbbGenerateReport;
         private System.Windows.Forms.ToolStripButton tbbSaveSettings;
         private System.Windows.Forms.ToolStripButton tbbSaveSettingsAs;
+        private System.Windows.Forms.ToolStripButton tbbLoadSettingsDialog;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniLoadSettings;
@@ -677,14 +663,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         private System.Windows.Forms.ToolStripMenuItem mniSaveSettingsAs;
         private System.Windows.Forms.ToolStripMenuItem mniMaintainSettings;
         private System.Windows.Forms.ToolStripSeparator mniSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem mniGenerateReport;
+        private System.Windows.Forms.ToolStripMenuItem mniWrapColumn;
         private System.Windows.Forms.ToolStripSeparator mniSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem mniGenerateReport;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator3;
         private System.Windows.Forms.ToolStripMenuItem mniClose;
         private System.Windows.Forms.ToolStripMenuItem mniHelp;
         private System.Windows.Forms.ToolStripMenuItem mniHelpPetraHelp;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator3;
-        private System.Windows.Forms.ToolStripMenuItem mniHelpBugReport;
         private System.Windows.Forms.ToolStripSeparator mniSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem mniHelpBugReport;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator5;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;

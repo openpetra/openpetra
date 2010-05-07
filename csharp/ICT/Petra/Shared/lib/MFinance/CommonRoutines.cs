@@ -165,5 +165,170 @@ namespace Ict.Petra.Shared.MFinance
                 return false;
             }
         }
+
+        /// <summary>
+        /// Checks the validity of a bank account number.
+        /// This function checks the validity of a bank account number by performing a
+        /// country-specific check on the submitted account number, if a check rountine for
+        /// that country exists.
+        /// </summary>
+        /// <param name="AAccountNumber">Account number</param>
+        /// <param name="ABankCountryCode">Country code of the bank</param>
+        /// <returns> -1 = length check failed.
+        ///            0 = invalid account number
+        ///            1 = valid account number
+        ///            2 = probably valid - account number cannot be validated by country-specific check
+        ///            3 = account number could not be validated - no country-specific check implemented
+        ///            4 = Bank partner could not be found
+        /// </returns>
+        public int CheckAccountNumber(String AAccountNumber, String ABankCountryCode)
+        {
+            // perform bank account number validation depending on the bank's country
+            if (ABankCountryCode == "NL")
+            {
+                return CheckAccountNumber_NL(AAccountNumber);
+            }
+            else
+            {
+                return 3;
+            }
+        }
+
+        /// <summary>
+        /// Checks a Dutch (NL) account number ("Rekeningnummer") for validity.
+        /// Explanation:  (1) Excludes "Postbank" account numbers (Postgiro-accounts) since
+        ///                there is no way to verify them.
+        ///            (2) Checks the length of the account number.
+        ///            (3) Runs a checksum algorithm to check the Dutch bank account numbers
+        ///                (modulo 11 proof).
+        ///                Example with bank account number "123456789":
+        ///                  1st digit bank-account-number = 1 9 * 1 =  9
+        ///                  2nd digit bank-account-number = 2 8 * 2 = 16
+        ///                  3rd digit bank-account-number = 3 7 * 3 = 21
+        ///                  4th digit bank-account-number = 4 6 * 4 = 24
+        ///                  5th digit bank-account-number = 5 5 * 5 = 25
+        ///                  6th digit bank-account-number = 6 4 * 6 = 24
+        ///                  7th digit bank-account-number = 7 3 * 7 = 21
+        ///                  8th digit bank-account-number = 8 2 * 8 = 16
+        ///                  9th digit bank-account-number = 9 1 * 9 =  9
+        ///                                                 added up: 165
+        ///
+        ///                  Because 165 is devidable by 11, chances are big
+        ///                  that the bank account number "123456789" is correct
+        ///                  (165/11=15 rest 0).
+        ///
+        ///            NOTE: "Postbank" account numbers (Postgiro-accounts) cannot be validated!
+        ///                  In this case the return value is "2".
+        ///
+        /// </summary>
+        /// <param name="AAcountNumber">Account number</param>
+        /// <returns> -1 = length check failed.
+        ///            0 = invalid account number
+        ///            1 = valid account number
+        ///            2 = probably valid - account number cannot be validated
+        ///                (is a "Postbank" account number [a Postgiro-account])
+        /// </returns>
+        private int CheckAccountNumber_NL(String AAcountNumber)
+        {
+            AAcountNumber = PruneAccountNumber(AAcountNumber);
+
+            if (AAcountNumber.StartsWith("P"))
+            {
+                // All such numbers must be 7 characters or less
+                if (AAcountNumber.Length <= 8)
+                {
+                    // no way to verify Dutch "Postbank"
+                    return 2;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+            else if (AAcountNumber.StartsWith("000"))
+            {
+                if (AAcountNumber.Length == 10)
+                {
+                    return 2;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+            //All Dutch bank account numbers that are not "Postbank" numbers must be either 9 digits,
+            // or 10 digits where the first digit needs to be 0 (this zero is a fill character)
+            else if ((AAcountNumber.Length != 9)
+                     && (AAcountNumber.Length != 10))
+            {
+                return -1;         // wrong lenght
+            }
+
+            if ((AAcountNumber.Length == 10)
+                && (!AAcountNumber.StartsWith("0")))
+            {
+                return 0;
+            }
+
+            int CheckSum = ComputeChecksum(AAcountNumber);
+
+            // compute the check sum
+            if ((CheckSum % 11) == 0)
+            {
+                return 1;
+            }
+
+            return 0;
+        }
+
+        private int ComputeChecksum(String AAcountNumber)
+        {
+            int CheckSum = 0;
+            int Multiplier = 1;
+
+            for (int Counter = AAcountNumber.Length - 1; Counter >= 0; --Counter)
+            {
+                int tmp = AAcountNumber[Counter];
+
+                if ((tmp < 0X30)
+                    || (tmp > 0X39))
+                {
+                    CheckSum = -1;
+                    break;
+                }
+
+                CheckSum += (tmp - 0X30) * Multiplier++;
+            }
+
+            return CheckSum;
+        }
+
+        /// <summary>
+        /// Removes all characters that are not 0...9 and A...Z from the submitted account number.
+        /// This function is used to be able to compare account numbers that are entered in
+        /// a "fancy" style, eg. "1234-567.89" against ones that are entered in a "plain" style,
+        /// eg. "123456789". This function always returns the plain stlye, no matter if the
+        /// submitted account number is "fancy" style or not.
+        /// </summary>
+        /// <param name="AAcountNumber"></param>
+        /// <returns>AccountNumber in plain style</returns>
+        private String PruneAccountNumber(String AAcountNumber)
+        {
+            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+
+            for (int Counter = 0; Counter < AAcountNumber.Length; ++Counter)
+            {
+                Char CurrentChar = AAcountNumber[Counter];
+
+                if (((CurrentChar >= 'a') && (CurrentChar <= 'z'))
+                    || ((CurrentChar >= 'A') && (CurrentChar <= 'Z'))
+                    || ((CurrentChar >= '0') && (CurrentChar <= '9')))
+                {
+                    SB.Append(CurrentChar);
+                }
+            }
+
+            return SB.ToString();
+        }
     }
 }

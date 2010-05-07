@@ -73,6 +73,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.mniLastPartners.Text = Catalog.GetString("&Recent Partners...");
       this.mniExtracts.Text = Catalog.GetString("&Extracts...");
       this.mniReportPartnerByCity.Text = Catalog.GetString("&Partner By City Report (experiment)");
+      this.mniReportPartnerAddress.Text = Catalog.GetString("&Brief Address Report (experiment)");
       this.mniReports.Text = Catalog.GetString("&Reports...");
       this.mniNewPartner.Text = Catalog.GetString("New &Partner...");
       this.mniNewPerson.Text = Catalog.GetString("Add &Person");
@@ -260,6 +261,13 @@ namespace Ict.Petra.Client.MPartner.Gui
     protected void OpenScreenReportPartnerByCity(object sender, EventArgs e)
     {
         Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPartnerByCity frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPartnerByCity(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenReportPartnerAddress(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBriefAddressReport frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBriefAddressReport(this.Handle);
         frm.Show();
     }
 

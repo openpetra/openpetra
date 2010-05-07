@@ -84,11 +84,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new TClbVersatileReportGenerator());
                 AvailableControlGenerators.Add(new DateTimePickerReportGenerator());
                 AvailableControlGenerators.Add(new TextBoxReportGenerator());
+                AvailableControlGenerators.Add(new TTxtAutoPopulatedButtonLabelGenerator());
                 AvailableControlGenerators.Add(new ComboBoxReportGenerator());
                 AvailableControlGenerators.Add(new TcmbAutoPopulatedReportGenerator());
                 AvailableControlGenerators.Add(new RadioGroupComplexReportGenerator());
                 AvailableControlGenerators.Add(new RadioGroupSimpleReportGenerator());
                 AvailableControlGenerators.Add(new RadioButtonReportGenerator());
+                AvailableControlGenerators.Add(new UserControlReportGenerator());
             }
             else
             {
@@ -319,6 +321,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 "{" + Environment.NewLine +
                 "    " + AEventImplementation + Environment.NewLine +
                 "}" + Environment.NewLine + Environment.NewLine;
+        }
+
+        public void AddReportParameterImplementaion(TReportParameter AReportParameter)
+        {
+            FCodeStorage.FReportParametersImplementation +=
+                "FPetraUtilsObject.AddAvailableFunction(new " +
+                AReportParameter.columnFunctionClassName + "(\"" +
+                AReportParameter.functionDescription + "\", " +
+                AReportParameter.functionParameters + "));" +
+                Environment.NewLine;
         }
 
         public void AddActionHandlerImplementation(TActionHandler AAction)
@@ -911,6 +923,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 SetEventHandlerForForm(handler);
             }
 
+            foreach (TReportParameter ReportPara in FCodeStorage.FReportParameterList.Values)
+            {
+                AddReportParameterImplementaion(ReportPara);
+            }
+
             XmlNode rootNode = (XmlNode)FCodeStorage.FXmlNodes[TParseXAML.ROOTNODEYML];
 
             if (TYml2Xml.HasAttribute(rootNode, "UIConnectorType") && TYml2Xml.HasAttribute(rootNode, "UIConnectorCreate"))
@@ -1027,6 +1044,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             FTemplate.ReplacePlaceHolder("EVENTHANDLERSIMPLEMENTATION", FCodeStorage.FEventHandlersImplementation);
             FTemplate.ReplacePlaceHolder("ACTIONHANDLERS", FCodeStorage.FActionHandlers);
+            FTemplate.ReplacePlaceHolder("ADDAVAILABLEFUNCTIONS", FCodeStorage.FReportParametersImplementation);
 
             FTemplate.ReplacePlaceHolder("HOOKUPINTERFACEIMPLEMENTATION", FInterfaceControlHookup);
             FTemplate.ReplacePlaceHolder("RUNONCEINTERFACEIMPLEMENTATION", FInterfaceRunOnce);

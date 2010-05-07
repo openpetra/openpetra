@@ -53,6 +53,7 @@ namespace Ict.Tools.CodeGeneration
         public SortedList <int, TControlDef>FSortedControlList = new SortedList <int, TControlDef>();
         public Dictionary <string, TEventHandler>FEventList = new Dictionary <string, TEventHandler>();
         public Dictionary <string, TActionHandler>FActionList = new Dictionary <string, TActionHandler>();
+        public Dictionary <string, TReportParameter>FReportParameterList = new Dictionary <string, TReportParameter>();
 
         //public ArrayList FActionList = new ArrayList();
         public string FBaseClass = "";
@@ -66,6 +67,7 @@ namespace Ict.Tools.CodeGeneration
         public string FEventHandler = "";
         public string FEventHandlersImplementation = "";
         public string FActionHandlers = "";
+        public string FReportParametersImplementation = "";
 
         /// can be net-2.0 for Windows .net, or mono-2.0 for Mono; mainly to resolve issues with TableLayoutPanel and AutoSize etc
         public string FTargetWinforms = "net-2.0";
@@ -532,6 +534,34 @@ namespace Ict.Tools.CodeGeneration
             return result;
         }
 
+        public TReportParameter AddReportParameter(XmlNode AParsedNode, string AColumnFunctionClassName)
+        {
+            if (AParsedNode.Name == "base")
+            {
+                throw new Exception("should not parse the 'base' node this way");
+            }
+
+            string ReportDescription = "";
+            string ReportParameter = "";
+
+            foreach (XmlAttribute attrib in AParsedNode.Attributes)
+            {
+                if (attrib.Name == "Name")
+                {
+                    ReportDescription = attrib.Value;
+                }
+                else if (attrib.Name == "Parameter")
+                {
+                    ReportParameter = attrib.Value;
+                }
+            }
+
+            TReportParameter result = new TReportParameter(AColumnFunctionClassName, ReportDescription, ReportParameter);
+            FReportParameterList.Add(AParsedNode.Name, result);
+
+            return result;
+        }
+
         public void UpdateLanguageFile()
         {
             // todo: update the .po file with any text from yaml and the source code (edited by designer)
@@ -543,6 +573,19 @@ namespace Ict.Tools.CodeGeneration
     }
 
     #region Helper Classes
+    public class TReportParameter
+    {
+        public string columnFunctionClassName;
+        public string functionDescription;
+        public string functionParameters;
+        public TReportParameter(string AColumnFunctionClassName, string AFunctionDescription, string AFunctionParameters)
+        {
+            this.columnFunctionClassName = AColumnFunctionClassName;
+            this.functionDescription = AFunctionDescription;
+            this.functionParameters = AFunctionParameters;
+        }
+    }
+
     public class TEventHandler
     {
         public string eventName, eventType, eventHandler;

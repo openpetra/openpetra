@@ -1,0 +1,32 @@
+RootNode:
+    BaseYaml: PartnerReportingForm.yaml
+    FormType: report
+    FormTitle: Publication Statistical Report
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+    DetailTable: PSubscription
+    TemplateParameters:
+        XMLFILES: [Partner\\\\publicationstatisticalreport.xml]
+        REPORTNAME: Pub. Statistics
+        CURRENTREPORT: Pub. Statistics
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK 
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Controls:
+        tpgAdditionalSettings:
+            Label: Subscriptions
+            Controls: [grpGenerateReportFor]
+        grpGenerateReportFor:
+            Label: Generate Report for
+            Controls: [chkAllSubscriptions]
+        chkAllSubscriptions:
+            Label: All Subscriptions
+    #        Controls: [grdSubscriptions]
+        # TODO: use a checked list box
+    #    grdSubscriptions:
+    #        Columns: [PPartner.PPartnerKey]
+    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
+        

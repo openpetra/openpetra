@@ -12,15 +12,16 @@ RootNode:
         actLoadSettingsDialog: {Label=&Open..., ActionClick=FPetraUtilsObject.MI_LoadSettingsDialog_Click}
         actLoadSettings: {Label=RecentSettings, ActionClick=FPetraUtilsObject.MI_LoadSettings_Click}
         actMaintainSettings: {Label=&Maintain Settings..., ActionClick=FPetraUtilsObject.MI_MaintainSettings_Click}
+        actWrapColumn: {Label=&Wrap Columns, ActionClick=FPetraUtilsObject.MI_WrapColumn_Click}
     Controls:
         tabReportSettings:
             Dock: Fill
             # it is necessary to set the RootControl because tabReportSettings is not automatically the first control
             RootControl: true
             # add tpgSorting and tpgOutputDestinations and tpgColumns later
-            Controls: [tpgReportSpecific]
-        tpgReportSpecific:
-            Order: AlwaysFirst
+            #~ Controls: [tpgReportSpecific]
+        #~ tpgReportSpecific:
+            #~ Order: AlwaysFirst
 #        tpgColumns:
 #            Controls: [ucoReportColumns]
 #            Order: AlwaysLast
@@ -36,9 +37,9 @@ RootNode:
 #        ucoReportSorting:
 #            Type: Ict.Petra.Client.MReporting.Gui.UC_Sorting
 #            Dock: Fill
-        ucoReportColumns:
-            Type: Ict.Petra.Client.MReporting.Gui.UC_Columns
-            Dock: Fill
+        #~ ucoReportColumns:
+            #~ Type: Ict.Petra.Client.MReporting.Gui.UC_Columns
+            #~ Dock: Fill
     Menu:
         mniFile:
             mniLoadSettings: {Label=&Load Settings, Order=AlwaysFirst}
@@ -53,9 +54,14 @@ RootNode:
             mniSaveSettingsAs:
             mniMaintainSettings:
             mniSeparator: {Label=-}
+            mniWrapColumn:
+            mniSeparator: {Label=-}
             mniGenerateReport:
             mniSeparator: {Label=-}
     Toolbar:
         tbbGenerateReport:
         tbbSaveSettings:
         tbbSaveSettingsAs:
+# do we show the last few settings?
+        tbbLoadSettingsDialog:
+  # todo:  Add contextmenu for the last 5 used items

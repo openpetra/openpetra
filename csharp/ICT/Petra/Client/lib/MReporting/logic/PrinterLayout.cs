@@ -61,14 +61,21 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <summary>default value for position; they can be overwritten by the report definition</summary>
         public const float COLUMNLEFT2_POS = 2.5f;
 
+        /// <summary>True: Wrap the text in a column if it is to long. Otherwise cut it </summary>
+        private bool FWrapColumn;
+
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="AResult"></param>
         /// <param name="AParameters"></param>
         /// <param name="APrinter"></param>
-        public TReportPrinterLayout(TResultList AResult, TParameterList AParameters, TPrinter APrinter) : base(AResult, AParameters, APrinter)
+        /// <param name="AWrapColumn">True: Wrap text in the column if it is to long. Otherwise cut it</param>
+        public TReportPrinterLayout(TResultList AResult, TParameterList AParameters, TPrinter APrinter, bool AWrapColumn) : base(AResult, AParameters,
+                                                                                                                                APrinter)
         {
+            FWrapColumn = AWrapColumn;
+
             if (AParameters.Get("ReportWidth").ToDouble() > 20)
             {
                 APrinter.Init(eOrientation.eLandscape, this, eMarginType.eDefaultMargins);
@@ -346,7 +353,14 @@ namespace Ict.Petra.Client.MReporting.Logic
                     FPrinter.DrawLine(position, position + width, eLinePosition.eAbove, eFont.eDefaultFont);
                 }
 
-                FPrinter.PrintString(s, eFont.eDefaultFont, position, width, GetAlignment(columnNr, level, eAlignment.eRight));
+                if (FWrapColumn)
+                {
+                    FPrinter.PrintStringWrap(s, eFont.eDefaultFont, position, width, GetAlignment(columnNr, level, eAlignment.eRight));
+                }
+                else
+                {
+                    FPrinter.PrintString(s, eFont.eDefaultFont, position, width, GetAlignment(columnNr, level, eAlignment.eRight));
+                }
 
                 if (FParameters.Get("LineBelow", columnNr, level, eParameterFit.eAllColumnFit).ToBool() == true)
                 {
