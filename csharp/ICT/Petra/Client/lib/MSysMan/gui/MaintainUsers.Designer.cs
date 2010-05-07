@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -213,6 +214,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             this.lblDetailUserId.Text = "User Id:";
             this.lblDetailUserId.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailUserId.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailUserId.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailFirstName
             //
@@ -228,6 +230,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             this.lblDetailFirstName.Text = "First Name:";
             this.lblDetailFirstName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailFirstName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailFirstName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtDetailLastName
             //
@@ -243,6 +246,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             this.lblDetailLastName.Text = "Last Name:";
             this.lblDetailLastName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailLastName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailLastName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // clbUserGroup
             //
@@ -259,6 +263,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             this.lblUserGroup.Text = "User Group:";
             this.lblUserGroup.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblUserGroup.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblUserGroup.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -445,15 +450,18 @@ namespace Ict.Petra.Client.MSysMan.Gui
             //
             // TFrmMaintainUsers
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(700, 500);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmMaintainUsers";
             this.Text = "Maintain Users";
 
@@ -472,9 +480,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
             this.pnlDetailButtons.ResumeLayout(false);
             this.pnlDetailGrid.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.Panel pnlDetailGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;

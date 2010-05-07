@@ -93,6 +93,10 @@ namespace Ict.Petra.Client.MSysMan.Gui
       this.Text = Catalog.GetString("Maintain Users");
       #endregion
 
+      this.txtDetailUserId.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailFirstName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailLastName.Font = TAppSettingsManager.GetDefaultBoldFont();
+
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       FPetraUtilsObject.SetStatusBarText(txtDetailUserId, Catalog.GetString("Enter the User ID"));
       FPetraUtilsObject.SetStatusBarText(txtDetailFirstName, Catalog.GetString("Enter the Personal Name"));
@@ -341,6 +345,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 // Submit changes to the PETRAServer
                 try
                 {
+                    // SubmissionResult = WEBCONNECTORMASTER.SaveSUser(ref SubmitDS, out VerificationResult);
                     SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
