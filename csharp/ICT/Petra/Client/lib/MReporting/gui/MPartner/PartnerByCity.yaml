@@ -1,5 +1,5 @@
 ﻿RootNode:
-    BaseYaml: ../PartnerReportingForm.yaml
+    BaseYaml: PartnerReportingForm.yaml
     FormType: report
     FormTitle: Partner by City
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
@@ -16,12 +16,17 @@
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
+        tpgReportSorting:
+            Label: Sorting
+            Controls: [ucoReportSorting]
         tpgReportSpecific:
             Label: Report parameters
             Controls: [txtCityName]
             Order: AlwaysFirst
         txtCityName: {Label=Name of City, ParameterName=param_city}
-
+        ucoReportSorting:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
+            Dock: Fill
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:
             Name: City

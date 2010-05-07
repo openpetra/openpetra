@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reports SYSTEM "../reports.dtd" >
+<reports>
+
+  <report id="Publication Statistical Report">
+	<description>
+		Report to create statistic for Publications
+	</description>
+	<reportparameters>
+		
+	</reportparameters>
+
+    <reportheader></reportheader>
+    <pageheader>
+      <field whichfield="title1"><value text="Publication Statistical Report"></value></field>
+      <field whichfield="title2"><value function="getSiteName()"></value></field>
+      <field whichfield="descr2">
+	<fielddetail>
+		<value text=""/>
+	</fielddetail>
+      </field>
+    </pageheader>
+
+    
+     <calculations>
+	  
+	<calculation id="GetCountry" returns="CountryCode" returnsFormat="row">
+		<query>
+			<queryDetail>
+				<value>
+					SELECT DISTINCT
+						PUB_s_system_parameter.p_country_code_c AS CountryCode
+					FROM
+						PUB_s_system_parameter
+				</value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="GetAllCounties" returns="County" returnsFormat="row">
+		<query>
+			<queryDetail>
+				<value>
+					SELECT DISTINCT
+						PUB_p_location.p_county_c AS County
+					FROM
+						PUB_p_location
+					WHERE
+						PUB_p_location.p_country_code_c={CountryCode}
+						AND PUB_p_location.p_county_c != ''
+						AND PUB_p_location.p_county_c != '?'
+				</value>
+			</queryDetail>
+		</query>
+	</calculation>
+
+	<calculation id="GetPartnerType" returns="PartnerType" returnsFormat="row">
+		<query>
+			<queryDetail>
+				<value>
+					SELECT DISTINCT
+						PUB_p_partner_type.p_type_code_c AS PartnerType
+					FROM
+						PUB_p_partner_type
+					WHERE
+						PUB_p_partner_type.p_partner_key_n = PartnerKey
+				</value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="GetPartnerGifts" returns="PartnerGifts" returnsFormat="row">
+		<query>
+			<queryDetail>
+				<value>
+					SELECT  DISTINCT
+						PUB_a_gift.p_donor_key_n AS PartnerGifts
+					FROM
+						PUB_a_gift
+					WHERE
+						PUB_a_gift.p_donor_key_n = PartnerKey
+				</value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="CountActivePartners" returns="PartnerCount" returnsFormat="internal">
+		<query>
+			<queryDetail>
+				<value>
+					SELECT  COUNT(*) AS PartnerCount
+					FROM
+						PUB_p_partner
+					WHERE
+						PUB_p_partner.p_status_code_c = 'ACTIVE'
+				</value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="GetCountyPublicationStatistic" returns="County" returnsFormat="internal">
+		<query>
+			<queryDetail>
+				<value function="GetCountyPublicationStatistic({CountryCode}, {County})"/>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<!-- Get Publication Statistic where Partner has no entry in county -->
+	<calculation id="GetNonePublicationStatistic" returns="County" returnsFormat="internal">
+		<query>
+			<queryDetail>
+				<value function="GetCountyPublicationStatistic({CountryCode}, *NONE* )"/>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="GetForeignPublicationStatistic" returns="County" returnsFormat="internal">
+		<query>
+			<queryDetail>
+				<value function="GetCountyPublicationStatistic({CountryCode}, *FOREIGN* )"/>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="CalculatePublicationStatisticPercentage" returns="functionresult" returnsFormat="percentage2decimals">
+		<query>
+			<queryDetail>
+				<value function="CalculatePublicationStatisticPercentage()"/>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="CalculatePublicationStatisticTotals" returns="County" returnsFormat="internal">
+		<query>
+			<queryDetail>
+				<value function="GetCountyPublicationStatistic({CountryCode}, Totals: )"/>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="GetNumberOfAllPublications" returns="County" returnsFormat="internal">
+		<query>
+			<queryDetail>
+				<value function="GetNumberOfAllPublications()"/>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="MakeFooterText" returns="FooterText" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value text="NO-SQL"/>
+				<value function="assign(FooterText, {PartnerCount})"/>
+				<value function="assign(FooterText, concatenateww({FooterText}, Partner records with ACTIVE status processed, 2))"/>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
+		<caption><value text="Partner Key"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="PartnerKey"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="PartnerClass" returns="text" returnsFormat="text">
+		<caption><value text="Partner Class"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="PartnerClass"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="PartnerCount" returns="text" returnsFormat="text">
+		<caption><value text="Partner Count"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="PartnerCount"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="PartnerType" returns="text" returnsFormat="text">
+		<caption><value text="Partner Type"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="PartnerType"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="PartnerGifts" returns="text" returnsFormat="text">
+		<caption><value text="Partner Gifts"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="PartnerGifts"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Donors" returns="text" returnsFormat="text">
+		<caption><value text="Donors"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Donors"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	  
+	<calculation align="left" id="ExParticipants" returns="text" returnsFormat="text">
+		<caption><value text="ExParticipants"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="ExParticipants"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="SupportingOrganisations" returns="text" returnsFormat="text">
+		<caption><value text="Churches"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="SupportingOrganisations"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Applicants" returns="text" returnsFormat="text">
+		<caption><value text="Applicants"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Applicants"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Country" returns="text" returnsFormat="text">
+		<caption><value text="Country"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="CountryCode"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="County" returns="text" returnsFormat="text">
+		<caption><value text="County"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="County"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Publication" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="Publication"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="FooterText" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="FooterText"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+      
+    </calculations>
+    
+    <levels>    
+	<level name="main">
+		<detail>
+			<lowerLevelReport calculation="GetCountry" level="LevelActivePartners"></lowerLevelReport>
+		</detail>
+	</level> <!-- main -->
+	
+	<level name="LevelActivePartners">
+		<detail>
+			<lowerLevelReport level="LevelCounts"></lowerLevelReport>
+		</detail>
+		<footer space="above">
+			<field whichfield="left 1" calculation="CountActivePartners"/>
+			<field whichfield="left 0" calculation="MakeFooterText" pos="0cm" width="10cm">
+				<value variable="FooterText"/>
+			</field>
+		</footer>
+	</level>
+	
+	<level name="LevelCounts">
+		<detail>
+			<lowerLevelReport level="LevelPercent"></lowerLevelReport>
+		</detail>
+		<footer space="above">
+			<field whichfield="Columns"  calculation="GetNumberOfAllPublications"/>
+		</footer>
+	</level>
+	
+	<level name="LevelPercent">
+		<detail>
+			<lowerLevelReport level="LevelTotals"></lowerLevelReport>
+		</detail>
+		<footer>
+			<field whichfield="Columns" calculation="CalculatePublicationStatisticPercentage"/>
+		</footer>
+	</level>
+	
+	<level name="LevelTotals">
+		<detail>
+			<lowerLevelReport level="LevelForeignPublication"></lowerLevelReport>
+		</detail>
+		<footer space="above">
+			<field whichfield="Columns" calculation="CalculatePublicationStatisticTotals"/>
+		</footer>
+	</level>
+	
+	<level name="LevelForeignPublication">
+		<detail>
+			<lowerLevelReport level="LevelNonePublication"></lowerLevelReport>
+		</detail>
+		<footer line="below">
+			<field whichfield="Columns" calculation="GetForeignPublicationStatistic"/>
+		</footer>
+	</level>
+	
+	<level name="LevelNonePublication">
+		<header>
+			<field whichfield="header 0">
+				<value text=""/>
+			</field>
+		</header>
+		<detail>
+			<lowerLevelReport calculation="GetAllCounties" level="LevelCountyPublication"></lowerLevelReport>
+		</detail>
+		<footer>
+			<field whichfield="Columns" calculation="GetNonePublicationStatistic"/>
+		</footer>
+	</level>
+	
+	<level name="LevelCountyPublication" identification="Country,County">
+		<detail>
+			<field calculation="GetCountyPublicationStatistic" whichfield="Columns"></field>
+		</detail>
+	</level> 
+	
+    </levels>
+
+  </report>
+  
+</reports>

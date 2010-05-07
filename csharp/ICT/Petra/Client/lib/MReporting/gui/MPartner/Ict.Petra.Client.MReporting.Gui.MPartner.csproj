@@ -95,9 +95,24 @@
     <Compile Include="BriefAddressReport.Designer.cs">
       <DependentUpon>BriefAddressReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="BriefFoundationReport.cs" />
+    <Compile Include="BriefFoundationReport.Designer.cs">
+      <DependentUpon>BriefFoundationReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BriefFoundationReport.ManualCode.cs">
+      <DependentUpon>BriefFoundationReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartnerByCity.cs" />
     <Compile Include="PartnerByCity.Designer.cs">
       <DependentUpon>PartnerByCity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PublicationStatisticalReport.cs" />
+    <Compile Include="PublicationStatisticalReport.Designer.cs">
+      <DependentUpon>PublicationStatisticalReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SupportingChurchesReport.cs" />
+    <Compile Include="SupportingChurchesReport.Designer.cs">
+      <DependentUpon>SupportingChurchesReport.cs</DependentUpon>
     </Compile>
     <Compile Include="UC_PartnerSelection.cs" />
     <Compile Include="UC_PartnerSelection.Designer.cs">
@@ -106,14 +121,30 @@
     <Compile Include="UC_PartnerSelection.ManualCode.cs">
       <DependentUpon>UC_PartnerSelection.cs</DependentUpon>
     </Compile>
+    <Compile Include="ValidBankAccountReport.cs" />
+    <Compile Include="ValidBankAccountReport.Designer.cs">
+      <DependentUpon>ValidBankAccountReport.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="BriefAddressReport.resx">
       <DependentUpon>BriefAddressReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BriefFoundationReport.resx">
+      <DependentUpon>BriefFoundationReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PartnerByCity.resx">
       <DependentUpon>PartnerByCity.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PublicationStatisticalReport.resx">
+      <DependentUpon>PublicationStatisticalReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SupportingChurchesReport.resx">
+      <DependentUpon>SupportingChurchesReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UC_PartnerSelection.resx">
       <DependentUpon>UC_PartnerSelection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ValidBankAccountReport.resx">
+      <DependentUpon>ValidBankAccountReport.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

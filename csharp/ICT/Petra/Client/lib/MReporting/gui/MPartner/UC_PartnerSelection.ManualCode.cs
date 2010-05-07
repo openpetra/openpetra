@@ -129,5 +129,24 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                 dtpCurrentStaff.Enabled = RBtn.Checked;
             }
         }
+
+        /// <summary>
+        /// Hide / Show the radio button "All Staff"
+        /// </summary>
+        /// <param name="AValue">true = show</param>
+        public void ShowAllStaffOption(bool AValue)
+        {
+            rbtAllStaff.Visible = AValue;
+        }
+
+        /// <summary>
+        /// Hide / Show the radio button and date time picker "All current staff"
+        /// </summary>
+        /// <param name="AValue">true = show</param>
+        public void ShowCurrentStaffOption(bool AValue)
+        {
+            rbtCurrentStaff.Visible = AValue;
+            dtpCurrentStaff.Visible = AValue;
+        }
     }
 }

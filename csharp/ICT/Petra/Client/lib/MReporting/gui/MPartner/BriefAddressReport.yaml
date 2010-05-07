@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../PartnerReportingForm.yaml
+    BaseYaml: PartnerReportingForm.yaml
     FormType: report
     FormTitle: Brief Address Report
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
@@ -17,6 +17,9 @@ RootNode:
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
+        tpgReportSorting:
+            Label: Sorting
+            Controls: [ucoReportSorting]
         tpgGeneralSettings:
             Label: General Settings
             Controls: [ucoPartnerSelection]
@@ -27,6 +30,9 @@ RootNode:
             Order: AlwaysLast
         ucoPartnerSelection:
             Type: Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection
+            Dock: Fill
+        ucoReportSorting:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
         rgrAddressDetails: {ParameterName=param_addressdetail}
             Label: Address Details

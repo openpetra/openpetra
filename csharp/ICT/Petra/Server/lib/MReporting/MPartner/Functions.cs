@@ -100,6 +100,12 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return true;
             }
 
+            if (StringHelper.IsSame(f, "CheckAccountNumber"))
+            {
+                value = new TVariant(CheckAccountNumber(ops[1].ToString(), ops[2].ToString(), ops[3].ToString()));
+                return true;
+            }
+
             value = new TVariant();
             return false;
         }
@@ -453,22 +459,131 @@ namespace Ict.Petra.Server.MReporting.MPartner
         {
             string FieldName = "";
 
-            DataSet DS = new DataSet();
+            PPartnerFieldOfServiceTable ResultTable = PPartnerFieldOfServiceAccess.LoadViaPPartner(APartnerKey,
+                situation.GetDatabaseConnection().Transaction);
 
-            PPartnerFieldOfServiceAccess.LoadViaPPartner(DS, APartnerKey, situation.GetDatabaseConnection().Transaction);
-
-            DataTable ResultTable = DS.Tables[PPartnerFieldOfServiceTable.GetTableName()];
-
-            foreach (DataRow Row in ResultTable.Rows)
+            foreach (PPartnerFieldOfServiceRow Row in ResultTable.Rows)
             {
-                if ((bool)Row[PPartnerFieldOfServiceTable.GetActiveDBName()])
+                if (Row.Active)
                 {
-                    FieldName = GetPartnerShortName((Int64)Row[PPartnerFieldOfServiceTable.GetPartnerKeyDBName()]);
+                    FieldName = GetPartnerShortName(Row.FieldKey);
                     break;
                 }
             }
 
             return FieldName;
+        }
+
+        /// <summary>
+        /// Checks the validity of a bank account number.
+        /// This function checks the validity of a bank account number by performing a
+        /// country-specific check on the submitted account number.
+        /// If a bank partner key is submitted, this function is looking
+        /// up the bank's location country - this is convenient since the calling procedure
+        /// does not need to know the bank's country in this case.
+        /// </summary>
+        /// <param name="AAccountNumber">Account number</param>
+        /// <param name="ABankCountryCode">Country code of the bank
+        /// (optional - needs only to be specified if bank_partner_key_n is not submitted)</param>
+        /// <param name="ABankPartnerKey">Parner key of the bank
+        /// (optional - needs only to be specified if bank_country_code_c is not submitted)</param>
+        /// <returns> -1 = length check failed.
+        ///            0 = invalid account number
+        ///            1 = valid account number
+        ///            2 = probably valid - account number cannot be validated by country-specific check
+        ///            3 = account number could not be validated - no country-specific check implemented
+        ///            4 = Bank partner could not be found
+        /// </returns>
+        private int CheckAccountNumber(String AAccountNumber, String ABankCountryCode, String ABankPartnerKey)
+        {
+            int ReturnValue;
+            long PartnerKey = -1;
+
+            ReturnValue = 1;
+
+            PLocationTable LocationTable;
+            PPartnerLocationRow PartnerLocationRow;
+
+            if (ABankPartnerKey.Length > 0)
+            {
+                try
+                {
+                    PartnerKey = Convert.ToInt64(ABankPartnerKey);
+                }
+                catch (Exception)
+                {
+                    ReturnValue = 4;
+                    return ReturnValue;
+                }
+            }
+
+            if ((ABankCountryCode.Length == 0)
+                || (ABankCountryCode == "?"))
+            {
+                if (GetPartnerBestAddressRow(PartnerKey, out PartnerLocationRow))
+                {
+                    LocationTable = PLocationAccess.LoadByPrimaryKey(PartnerLocationRow.SiteKey,
+                        PartnerLocationRow.LocationKey,
+                        situation.GetDatabaseConnection().Transaction);
+
+                    if (LocationTable.Rows.Count > 0)
+                    {
+                        ABankCountryCode = ((PLocationRow)LocationTable.Rows[0]).CountryCode;
+                    }
+                    else
+                    {
+                        ReturnValue = 4;
+                        return ReturnValue;
+                    }
+                }
+                else
+                {
+                    ReturnValue = 4;
+                    return ReturnValue;
+                }
+            }
+
+            Ict.Petra.Shared.MFinance.CommonRoutines FinanceRoutines = new Ict.Petra.Shared.MFinance.CommonRoutines();
+            return FinanceRoutines.CheckAccountNumber(AAccountNumber, ABankCountryCode);
+        }
+
+        /// <summary>
+        /// Find the best address of a partner
+        /// </summary>
+        /// <param name="APartnerKey">Partner key</param>
+        /// <param name="AAddressRow">best address</param>
+        /// <returns>true if a best address was found, otherwise false</returns>
+        private bool GetPartnerBestAddressRow(long APartnerKey, out PPartnerLocationRow AAddressRow)
+        {
+            bool FoundBestAddress = false;
+
+            AAddressRow = null;
+            PPartnerLocationTable PartnerLocationTable;
+
+            PartnerLocationTable = new PPartnerLocationTable();
+
+            // add special column BestAddress and Icon
+            PartnerLocationTable.Columns.Add(new System.Data.DataColumn("BestAddress", typeof(Boolean)));
+            PartnerLocationTable.Columns.Add(new System.Data.DataColumn("Icon", typeof(Int32)));
+
+            // find all locations of the partner, put it into a dataset
+            PartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            // uses Ict.Petra.Shared.MPartner.Calculations.pas, DetermineBestAddress
+            Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationTable, DateTime.Today);
+            Calculations.DetermineBestAddress(PartnerLocationTable);
+
+            foreach (PPartnerLocationRow row in PartnerLocationTable.Rows)
+            {
+                // find the row with BestAddress = 1
+                if (Convert.ToInt32(row["BestAddress"]) == 1)
+                {
+                    AAddressRow = row;
+                    FoundBestAddress = true;
+                }
+            }
+
+            return FoundBestAddress;
         }
     }
 }
