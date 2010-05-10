@@ -544,10 +544,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             }
 
             Ict.Petra.Shared.MFinance.CommonRoutines FinanceRoutines = new Ict.Petra.Shared.MFinance.CommonRoutines();
-            return -1;
-
-// TODO: need to fix the commit. compiler is missing FinanceRoutines.CheckAccountNumber
-//            return FinanceRoutines.CheckAccountNumber(AAccountNumber, ABankCountryCode);
+            return FinanceRoutines.CheckAccountNumber(AAccountNumber, ABankCountryCode);
         }
 
         /// <summary>
