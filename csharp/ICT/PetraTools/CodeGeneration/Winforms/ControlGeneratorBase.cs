@@ -258,15 +258,192 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.SetControlProperty(ctrl.controlName, "Name", "\"" + ctrl.controlName + "\"");
 
-            if (ctrl.HasAttribute("Align"))
+
+            #region Aligning and stretching
+
+            if (ctrl.HasAttribute("Align")
+                && !(ctrl.HasAttribute("Stretch")))
             {
-                if (ctrl.GetAttribute("Align").ToLower() == "right")
+                if ((ctrl.GetAttribute("Align").ToLower() == "right")
+                    || (ctrl.GetAttribute("Align").ToLower() == "top-right"))
                 {
                     writer.SetControlProperty(ctrl.controlName,
                         "Anchor",
                         "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)))");
                 }
+                else if (ctrl.GetAttribute("Align").ToLower() == "middle-right")
+                {
+                    writer.SetControlProperty(ctrl.controlName,
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Right))");
+                }
+                else if (ctrl.GetAttribute("Align").ToLower() == "bottom-right")
+                {
+                    writer.SetControlProperty(ctrl.controlName,
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)))");
+                }
+                else if ((ctrl.GetAttribute("Align").ToLower() == "center")
+                         || (ctrl.GetAttribute("Align").ToLower() == "top-center"))
+                {
+                    writer.SetControlProperty(ctrl.controlName,
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top))");
+                }
+                else if (ctrl.GetAttribute("Align").ToLower() == "middle-center")
+                {
+                    writer.SetControlProperty(ctrl.controlName,
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.None))");
+                }
+                else if (ctrl.GetAttribute("Align").ToLower() == "bottom-center")
+                {
+                    writer.SetControlProperty(ctrl.controlName,
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom))");
+                }
+                else if ((ctrl.GetAttribute("Align").ToLower() == "bottom")
+                         || (ctrl.GetAttribute("Align").ToLower() == "bottom-left"))
+                {
+                    writer.SetControlProperty(ctrl.controlName,
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Bottom)))");
+                }
+                else if ((ctrl.GetAttribute("Align").ToLower() == "middle")
+                         || (ctrl.GetAttribute("Align").ToLower() == "middle-left"))
+                {
+                    writer.SetControlProperty(ctrl.controlName,
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Left))");
+                }
+                else if ((ctrl.GetAttribute("Align").ToLower() == "left")
+                         || (ctrl.GetAttribute("Align").ToLower() == "top")
+                         || (ctrl.GetAttribute("Align").ToLower() == "top-left"))
+                {
+                    // do nothing (here just to avoid throwing the following Exception)
+                    Console.WriteLine(
+                        "HINT: Attribute 'Align' with value 'left', 'top' or 'top-left' does not affect the layout since these create the default alignment. Control: '"
+                        +
+                        ctrl.controlName + "'.");
+                }
+                else
+                {
+                    throw new Exception("Invalid value for Attribute 'Align' of Control '" + ctrl.controlName + "': '" + ctrl.GetAttribute(
+                            "Align") +
+                        "'. Supported values are: Simple: left, right, center; top, middle, bottom; Combined: top-left, middle-left, bottom-left, top-center, middle-center, bottom-center, top-right, middle-right, bottom-right.");
+                }
             }
+
+            if (ctrl.HasAttribute("Stretch"))
+            {
+                if (ctrl.GetAttribute("Stretch").ToLower() == "horizontally")
+                {
+                    if ((!ctrl.HasAttribute("Align"))
+                        || (ctrl.HasAttribute("Align") && (ctrl.GetAttribute("Align").ToLower() == "top")))
+                    {
+                        // Horizontally stretched, top aligned (=default)
+                        writer.SetControlProperty(
+                            ctrl.controlName,
+                            "Anchor",
+                            "((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)))");
+                    }
+                    else
+                    {
+                        if (ctrl.GetAttribute("Align").ToLower() == "bottom")
+                        {
+                            // Horizontally stretched, bottom aligned
+                            writer.SetControlProperty(
+                                ctrl.controlName,
+                                "Anchor",
+                                "((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)))");
+                        }
+                        else if (ctrl.GetAttribute("Align").ToLower() == "middle")
+                        {
+                            // Horizontally stretched, vertically centered
+                            writer.SetControlProperty(
+                                ctrl.controlName,
+                                "Anchor",
+                                "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)))");
+                        }
+                        else
+                        {
+                            throw new Exception("Invalid value '" + ctrl.GetAttribute(
+                                    "Align") + "' for Attribute 'Align' of Control '" + ctrl.controlName +
+                                "' whose Attribute 'Stretch' is set to '" +
+                                ctrl.GetAttribute("Stretch") +
+                                "'. Supported values are: top, middle, bottom.");
+                        }
+                    }
+                }
+                else if (ctrl.GetAttribute("Stretch").ToLower() == "vertically")
+                {
+                    if ((!ctrl.HasAttribute("Align"))
+                        || (ctrl.HasAttribute("Align") && (ctrl.GetAttribute("Align").ToLower() == "left")))
+                    {
+                        // Vertically stretched, left aligned (=default)
+                        writer.SetControlProperty(
+                            ctrl.controlName,
+                            "Anchor",
+                            "((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Bottom)))");
+                    }
+                    else
+                    {
+                        if (ctrl.GetAttribute("Align").ToLower() == "right")
+                        {
+                            // Vertically stretched, right aligned
+                            writer.SetControlProperty(
+                                ctrl.controlName,
+                                "Anchor",
+                                "((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right) | System.Windows.Forms.AnchorStyles.Bottom)))");
+                        }
+                        else if (ctrl.GetAttribute("Align").ToLower() == "center")
+                        {
+                            // Vertically stretched, horizontally centered
+                            writer.SetControlProperty(
+                                ctrl.controlName,
+                                "Anchor",
+                                "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)))");
+                        }
+                        else
+                        {
+                            throw new Exception("Invalid value '" + ctrl.GetAttribute(
+                                    "Align") + "' for Attribute 'Align' of Control '" + ctrl.controlName +
+                                "' whose Attribute 'Stretch' is set to  '" +
+                                ctrl.GetAttribute("Stretch") +
+                                "'. Supported values are: left, center, right.");
+                        }
+                    }
+                }
+                else if (ctrl.GetAttribute("Stretch").ToLower() == "fully")
+                {
+                    // Fully stretched
+                    writer.SetControlProperty(
+                        ctrl.controlName,
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)(((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right) | System.Windows.Forms.AnchorStyles.Bottom))))");
+
+                    if (ctrl.HasAttribute("Align"))
+                    {
+                        Console.WriteLine(
+                            "WARNING for Control '" + ctrl.controlName +
+                            "': Attribute 'Align' gets ignored when Attribute 'Stretch' with value 'fully' is used.");
+                    }
+                }
+                else if (ctrl.GetAttribute("Stretch").ToLower() == "none")
+                {
+                    // do nothing (here just to avoid throwing the following Exception)
+                    Console.WriteLine(
+                        "HINT: Attribute 'Stretch' with value 'none' does not affect the layout since this is the default. Control: '" +
+                        ctrl.controlName + "'.");
+                }
+                else
+                {
+                    throw new Exception("Invalid value for Attribute 'Stretch' of Control '" + ctrl.controlName + "': '" +
+                        ctrl.GetAttribute("Stretch") + "'. Supported values are: horizontally, vertically, fully, none.");
+                }
+            }
+
+            #endregion
 
             if (ctrl.HasAttribute("Dock"))
             {
