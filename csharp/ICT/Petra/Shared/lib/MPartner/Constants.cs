@@ -80,11 +80,50 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Partner class</summary>
         public const String PARTNERCLASS_ORGANISATION = "ORGANISATION";
 
+        /// <summary>Partner class</summary>
+        public const String PARTNERCLASS_CHURCH = "CHURCH";
+
         /// <summary>Partner status</summary>
         public const String PARTNERSTATUS_ACTIVE = "ACTIVE";
 
         /// <summary>Partner status</summary>
         public const String PARTNERSTATUS_INACTIVE = "INACTIVE";
+
+        /// <summary>Gender</summary>
+        public const String GENDER_FEMALE = "Female";
+
+        /// <summary>Gender</summary>
+        public const String GENDER_MALE = "Male";
+
+        /// <summary>Gender</summary>
+        public const String GENDER_UNKNOWN = "Unknown";
+
+        /// <summary>Addresseetype</summary>
+        public const String ADDRESSEETYPE_MALE = "1-MALE";
+
+        /// <summary>Addresseetype</summary>
+        public const String ADDRESSEETYPE_FEMALE = "1-FEMALE";
+
+        /// <summary>Addresseetype</summary>
+        public const String ADDRESSEETYPE_DEFAULT = "DEFAULT";
+
+        /// <summary>Marital Status</summary>
+        public const String MARITALSTATUS_UNDEFINED = "U";
+
+        /// <summary>Marital Status</summary>
+        public const String MARITALSTATUS_SINGLE = "N";
+
+        /// <summary>Marital Status</summary>
+        public const String MARITALSTATUS_ENGAGED = "E";
+
+        /// <summary>Marital Status</summary>
+        public const String MARITALSTATUS_MARRIED = "M";
+
+        /// <summary>Marital Status</summary>
+        public const String MARITALSTATUS_DIVORCED = "D";
+
+        /// <summary>Location Type</summary>
+        public const String LOCATIONTYPE_HOME = "HOME";
 
         /// Default values
         /// <summary>used eg. for PPerson.OccupationCode</summary>

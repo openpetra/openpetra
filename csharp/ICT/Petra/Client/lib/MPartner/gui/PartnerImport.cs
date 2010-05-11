@@ -96,6 +96,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.txtExplanation.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
+      InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
@@ -165,6 +166,14 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
+        if (e.ActionName == "actSkip")
+        {
+            btnSkip.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actCreateNewFamilyAndPerson")
+        {
+            btnCreateNewFamilyAndPerson.Enabled = e.Enabled;
+        }
         if (e.ActionName == "actSave")
         {
             tbbSave.Enabled = e.Enabled;

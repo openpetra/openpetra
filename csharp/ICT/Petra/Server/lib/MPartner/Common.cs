@@ -33,6 +33,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.App.ClientDomain;
 
 namespace Ict.Petra.Server.MPartner.Common
 {
@@ -64,17 +65,22 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <summary>
         /// this returns the default next available (highest) partner key of the given field
         /// </summary>
+        /// <param name="AFieldPartnerKey">if this is -1, then the sitekey defined in System Parameters is used</param>
         /// <returns>void</returns>
         public static System.Int64 GetNewPartnerKey(System.Int64 AFieldPartnerKey)
         {
-            TDBTransaction ReadTransaction;
             Boolean NewTransaction;
-            PPartnerLedgerTable PartnerLedgerTable;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            PartnerLedgerTable = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadTransaction);
+
+            if (AFieldPartnerKey == -1)
+            {
+                AFieldPartnerKey = DomainManager.GSystemDefaultsCache.GetInt64Default(SharedConstants.SYSDEFAULT_SITEKEY);
+            }
+
+            PPartnerLedgerTable PartnerLedgerTable = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadTransaction);
 
             if (NewTransaction)
             {

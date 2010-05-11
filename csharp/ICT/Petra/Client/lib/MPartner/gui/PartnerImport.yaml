@@ -6,6 +6,8 @@ RootNode:
     Actions:
         actStartImport: {ActionClick=StartImport}
         actCancelImport: {ActionClick=CancelImport}
+        actCreateNewFamilyAndPerson: {ActionClick=CreateNewFamilyAndPerson}
+        actSkip: {ActionClick=SkipRecord}
     Controls:
         pnlContent:
             Dock: Fill

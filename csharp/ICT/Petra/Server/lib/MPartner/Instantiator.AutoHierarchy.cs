@@ -2570,6 +2570,28 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
 
 
         /// generated method from connector
+        public Int64 NewPartnerKey(Int64 AFieldPartnerKey)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector.NewPartnerKey(AFieldPartnerKey);
+        }
+
+        /// generated method from connector
+        public PartnerEditTDS GetPartnerDetails(Int64 APartnerKey,
+                                                bool AWithAddressDetails,
+                                                bool AWithSubscriptions,
+                                                bool AWithRelationships)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector.GetPartnerDetails(APartnerKey, AWithAddressDetails, AWithSubscriptions, AWithRelationships);
+        }
+
+        /// generated method from connector
+        public bool SavePartner(PartnerEditTDS AMainDS,
+                                out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector.SavePartner(AMainDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
         public PartnerFindTDS FindPartners(string AFirstName,
                                            string AFamilyNameOrOrganisation,
                                            string ACity,
