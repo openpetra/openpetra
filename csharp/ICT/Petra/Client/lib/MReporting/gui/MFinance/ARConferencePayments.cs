@@ -120,6 +120,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       this.SetAvailableFunctions();
 
 	
+	  FPetraUtilsObject.SetStatusBarText(txtMotivationCodes, Catalog.GetString("eg. \"TEN,01\",\"TEN,02\""));
+	
 	  FPetraUtilsObject.LoadDefaultSettings();
     }
 

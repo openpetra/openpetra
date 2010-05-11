@@ -131,6 +131,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       rbtPeriodRangeCheckedChanged(null, null);
       rbtQuarterCheckedChanged(null, null);
 	
+	
 	  FPetraUtilsObject.LoadDefaultSettings();
     }
 
@@ -198,7 +199,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       {
         ACalc.AddParameter("param_depth", "");
       }
-      ReadControlsManual(ACalc);
+      ReadControlsManual(ACalc, AReportAction);
 
     }
 

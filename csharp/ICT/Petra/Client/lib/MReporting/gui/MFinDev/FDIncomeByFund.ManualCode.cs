@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             }
         }
 
-        private void ReadControlsManual(TRptCalculator ACalc)
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_currency", "base");

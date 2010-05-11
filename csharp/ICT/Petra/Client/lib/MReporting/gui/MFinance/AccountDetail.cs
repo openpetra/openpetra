@@ -164,6 +164,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       rbtCostCentreRangeCheckedChanged(null, null);
       rbtCostCentreListCheckedChanged(null, null);
 	
+	
 	  FPetraUtilsObject.LoadDefaultSettings();
     }
 
@@ -312,7 +313,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       {
         ACalc.AddParameter("param_rgrCostCentres", "CostCentreList");
       }
-      ReadControlsManual(ACalc);
+      ReadControlsManual(ACalc, AReportAction);
 
     }
 

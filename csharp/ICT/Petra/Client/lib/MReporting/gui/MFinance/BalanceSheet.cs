@@ -140,6 +140,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
       rbtSelectedCostCentresCheckedChanged(null, null);
 	
+	
 	  FPetraUtilsObject.LoadDefaultSettings();
     }
 
@@ -223,7 +224,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       {
         ACalc.AddParameter("param_depth", "Summary");
       }
-      ReadControlsManual(ACalc);
+      ReadControlsManual(ACalc, AReportAction);
 
     }
 
