@@ -1017,7 +1017,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FCodeStorage.ManualFileExistsAndContains("void ReadControlsManual"))
             {
-                FTemplate.AddToCodelet("READCONTROLS", "ReadControlsManual(ACalc);" + Environment.NewLine);
+                FTemplate.AddToCodelet("READCONTROLS", "ReadControlsManual(ACalc, AReportAction);" + Environment.NewLine);
             }
 
             InsertCodeIntoTemplate(AXAMLFilename);

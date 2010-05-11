@@ -66,6 +66,8 @@ namespace {#NAMESPACE}
       
       {#INITIALISESCREEN}
 	  
+	  {#INITUSERCONTROLS}
+	  
 	  FPetraUtilsObject.LoadDefaultSettings();
     }
 
