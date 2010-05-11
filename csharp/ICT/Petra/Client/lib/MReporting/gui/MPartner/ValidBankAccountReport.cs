@@ -119,6 +119,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       ucoReportSorting.InitialiseData(FPetraUtilsObject);
       ucoReportColumns.InitialiseData(FPetraUtilsObject);
 	
+	  ucoPartnerSelection.PetraUtilsObject = FPetraUtilsObject;
+	  ucoPartnerSelection.InitUserControl();
+	  ucoReportSorting.PetraUtilsObject = FPetraUtilsObject;
+	  ucoReportSorting.InitUserControl();
+	  ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
+	  ucoReportColumns.InitUserControl();
+	
 	  FPetraUtilsObject.LoadDefaultSettings();
     }
 
