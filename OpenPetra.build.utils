@@ -309,6 +309,7 @@
             ReplaceInFile(filename, "_bin\\Debug", "_bin\\Release");
             ReplaceInFile(filename, "Server_Client\\Debug", "Server_Client\\Release");
             ReplaceInFile(filename, "Server_ServerAdmin\\Debug", "Server_ServerAdmin\\Release");
+            ReplaceInFile(filename, "RegEx:<DocumentationFile>.*</DocumentationFile>", "");
         }
         else
         {
