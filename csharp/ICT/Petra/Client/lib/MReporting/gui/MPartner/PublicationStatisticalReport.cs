@@ -69,9 +69,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.chkAllSubscriptions.Text = Catalog.GetString("All Subscriptions");
-      this.grpGenerateReportFor.Text = Catalog.GetString("Generate Report for");
-      this.tpgAdditionalSettings.Text = Catalog.GetString("Subscriptions");
+      this.lblSelectCountry.Text = Catalog.GetString("Select the country for which the statistical report should be generated:");
+      this.lblCountryCode.Text = Catalog.GetString("Country Code:");
+      this.tpgAdditionalSettings.Text = Catalog.GetString("Country");
       this.tpgColumns.Text = Catalog.GetString("Columns");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
@@ -106,7 +106,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
       FPetraUtilsObject.FXMLFiles = "Partner\\\\publicationstatisticalreport.xml";
       FPetraUtilsObject.FReportName = "Pub. Statistics";
-      FPetraUtilsObject.FCurrentReport = "Pub. Statistics";
+      FPetraUtilsObject.FCurrentReport = "Publication Statistical Report";
 	  FPetraUtilsObject.FSettingsDirectory = "Partner";
 
       // Hook up Event that is fired by ucoReportColumns
@@ -118,17 +118,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
       ucoReportColumns.InitialiseData(FPetraUtilsObject);
 	
+	  cmbCountryCode.InitialiseUserControl();
+	  ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
+	  ucoReportColumns.InitUserControl();
+	
 	  FPetraUtilsObject.LoadDefaultSettings();
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
     {
         FPetraUtilsObject.TFrmPetra_Activated(sender, e);
-    }
-
-    private void TFrmPetra_Load(object sender, EventArgs e)
-    {
-        FPetraUtilsObject.TFrmPetra_Load(sender, e);
     }
 
     private void TFrmPetra_Closing(object sender, CancelEventArgs e)
@@ -153,8 +152,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     {
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
-      ACalc.AddParameter("param_chkAllSubscriptions", this.chkAllSubscriptions.Checked);
+      ACalc.AddParameter("param_cmbCountryCode", this.cmbCountryCode.GetSelectedString());
       ucoReportColumns.ReadControls(ACalc, AReportAction);
+      ReadControlsManual(ACalc, AReportAction);
 
     }
 
@@ -165,7 +165,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     public void SetControls(TParameterList AParameters)
     {
 
-      chkAllSubscriptions.Checked = AParameters.Get("param_chkAllSubscriptions").ToBool();
+      cmbCountryCode.SetSelectedString(AParameters.Get("param_cmbCountryCode").ToString());
       ucoReportColumns.SetControls(AParameters);
     }
 #endregion

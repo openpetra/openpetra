@@ -7,26 +7,23 @@ RootNode:
     TemplateParameters:
         XMLFILES: [Partner\\\\publicationstatisticalreport.xml]
         REPORTNAME: Pub. Statistics
-        CURRENTREPORT: Pub. Statistics
+        CURRENTREPORT: Publication Statistical Report
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
-        READCONTROLSLOCALVARS: BLANK 
+        READCONTROLSLOCALVARS: BLANK
         SETCONTROLSLOCALVARS: BLANK
+    Events:
+        Load: {class=System.EventHandler, method=TFrmPublicationStatisticalReport_Load}
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
         tpgAdditionalSettings:
-            Label: Subscriptions
-            Controls: [grpGenerateReportFor]
-        grpGenerateReportFor:
-            Label: Generate Report for
-            Controls: [chkAllSubscriptions]
-        chkAllSubscriptions:
-            Label: All Subscriptions
-    #        Controls: [grdSubscriptions]
-        # TODO: use a checked list box
-    #    grdSubscriptions:
-    #        Columns: [PPartner.PPartnerKey]
+            Label: Country
+            Controls: 
+                Row1: [lblSelectCountry]
+                Row2: [cmbCountryCode]
+        lblSelectCountry: {Label=Select the country for which the statistical report should be generated}
+        cmbCountryCode: {Label=Country Code, List=CountryList}
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         

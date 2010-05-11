@@ -24,20 +24,24 @@
  *
  ************************************************************************/
 using System;
-using Ict.Petra.Server.MReporting;
-using Ict.Petra.Shared.MReporting;
+
+
 using Ict.Common;
 using Ict.Common.DB;
-using System.Diagnostics;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Server.MReporting;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MReporting;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data.Odbc;
 using System.Data;
+using System.Diagnostics;
 
 namespace Ict.Petra.Server.MReporting.MPartner
 {
@@ -46,6 +50,30 @@ namespace Ict.Petra.Server.MReporting.MPartner
     /// </summary>
     public class TRptUserFunctionsPartner : TRptUserFunctions
     {
+        #region members for publication statistical report
+
+        /// <summary> Holds the results of the calculation of publication statistical report </summary>
+        private static DataTable FStatisticalReportDataTable;
+
+        /// <summary> Holds the result for the row "Percent:" of the publication statistical report </summary>
+        private static Dictionary <String, String>FStatisticalReportPercentage;
+
+        /// <summary> Holds the number of active partner. This is needed for calculation of the
+        /// publication statistical report. </summary>
+        private static int FNumberOfAcitvePartner;
+
+        /// <summary> These constants define special rows for the publication statistical report </summary>
+        private const String ROW_FOREIGN = "*FOREIGN*";
+        private const String ROW_NONE = "*NONE*";
+        private const String ROW_PERCENT = "Percent:";
+        private const String ROW_TOTAL = "Totals:";
+        private const String ROW_COUNT = "Counts:";
+        private const String COLUMN_CHURCH = "Churches";
+        private const String COLUMN_DONOR = "Donors";
+        private const String COLUMN_APPLICANTS = "Applicants";
+        private const String COLUMN_EXPARTICIPANTS = "ExParticipants";
+        #endregion
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -103,6 +131,24 @@ namespace Ict.Petra.Server.MReporting.MPartner
             if (StringHelper.IsSame(f, "CheckAccountNumber"))
             {
                 value = new TVariant(CheckAccountNumber(ops[1].ToString(), ops[2].ToString(), ops[3].ToString()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetCountyPublicationStatistic"))
+            {
+                value = new TVariant(GetCountyPublicationStatistic(ops[1].ToString(), ops[2].ToString()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "CalculatePublicationStatisticPercentage"))
+            {
+                value = new TVariant(FillStatisticalReportResultTable());
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetNumberOfAllPublications"))
+            {
+                value = new TVariant(GetNumberOfAllPublications());
                 return true;
             }
 
@@ -585,5 +631,618 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
             return FoundBestAddress;
         }
+
+        #region calculation for publication statistical report
+
+        /// <summary>
+        /// Calculates one row of the current county for the publication statistical report.
+        /// If ACounty is empty then it calculates the row where partner addresses
+        /// have no county specified
+        /// </summary>
+        /// <param name="ACountryCode">Country Code</param>
+        /// <param name="ACounty">County</param>
+        /// <returns></returns>
+        private bool GetCountyPublicationStatistic(String ACountryCode, String ACounty)
+        {
+            // if this is the first call...
+            if (FStatisticalReportDataTable == null)
+            {
+                CalculatePublicationStatisticalReport(ACountryCode);
+            }
+
+            FillStatisticalReportResultTable(ACounty);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Check it the partner is an Ex-Omer or an Applicant.
+        /// If yes, the corresponding number is increased.
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key</param>
+        /// <param name="ANumberApplicants">Number of Applicants</param>
+        /// <param name="ANumberExParticipants">Number of Ex Omer</param>
+        private void CheckPartnerType(long APartnerKey, ref int ANumberApplicants, ref int ANumberExParticipants)
+        {
+            DataTable PartnerTypeTable;
+
+            if (!GetDataTableFromXmlSqlStatement("GetPartnerType", out PartnerTypeTable, "PartnerKey", APartnerKey.ToString()))
+            {
+                return;
+            }
+
+            foreach (DataRow row in PartnerTypeTable.Rows)
+            {
+                String PartnerType = row[0].ToString();
+
+                if (PartnerType.StartsWith("EX-OMER"))
+                {
+                    ++ANumberExParticipants;
+                }
+                else if (PartnerType.StartsWith("APPLIED"))
+                {
+                    ++ANumberApplicants;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Check if the partner is a donor.
+        /// If yes, ANumberDonors number is increased.
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key</param>
+        private bool CheckPartnerGift(long APartnerKey)
+        {
+            DataTable GiftTable;
+
+            if (!GetDataTableFromXmlSqlStatement("GetPartnerGifts", out GiftTable, "PartnerKey", APartnerKey.ToString()))
+            {
+                return false;
+            }
+
+            if (GiftTable.Rows.Count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Calculates the line "Counts" in the publication statistical report.
+        /// It includes the number of copies sent to each partner plus the bulk publications.
+        ///
+        /// </summary>
+        /// <returns></returns>
+        private bool GetNumberOfAllPublications()
+        {
+            FillStatisticalReportResultTable(ROW_COUNT);
+
+            FStatisticalReportDataTable.Clear();
+            FStatisticalReportDataTable = null;
+            FStatisticalReportPercentage.Clear();
+            FStatisticalReportPercentage = null;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Returns a data table that is the result of a sql statement from the xml file.
+        /// If ReplaceString and Replacement are not null then the ReplaceString that is in
+        /// the sql command is replaced by replacement.
+        /// </summary>
+        /// <param name="ASqlID">the identifier of the sql statement</param>
+        /// <param name="ADataTable">Result</param>
+        /// <param name="ReplaceString">String in the sql command that should be replaced</param>
+        /// <param name="Replacement">the replacement</param>
+        /// <returns>true if successful, otherwise false</returns>
+        private bool GetDataTableFromXmlSqlStatement(String ASqlID, out DataTable ADataTable, String ReplaceString, String Replacement)
+        {
+            ADataTable = null;
+            TRptCalculation ReportCalculation;
+            TRptDataCalcCalculation ReportDataCalcCalculation;
+            TVariant ReportCalcResult;
+
+            ReportCalculation = situation.GetReportStore().GetCalculation(situation.GetCurrentReport(), ASqlID);
+
+            ReportDataCalcCalculation = new TRptDataCalcCalculation(situation);
+            ReportCalcResult = ReportDataCalcCalculation.EvaluateCalculationAll(ReportCalculation,
+                null, ReportCalculation.rptGrpTemplate, ReportCalculation.rptGrpQuery);
+
+            if (ReportCalcResult.IsZeroOrNull())
+            {
+                return false;
+            }
+
+            String SqlStatement = ReportCalcResult.ToString();
+
+            if ((ReplaceString != null)
+                && (Replacement != null))
+            {
+                SqlStatement = SqlStatement.Replace(ReplaceString, Replacement);
+            }
+
+            ADataTable = situation.GetDatabaseConnection().SelectDT(SqlStatement, "", situation.GetDatabaseConnection().Transaction);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Initializes the SubscriptionCounter. Adds for each found subscription a
+        /// key pair value where the key is the supscription code and the value is 0.
+        /// </summary>
+        /// <param name="SubscriptionCounter">The SubscriptionCounter to initialize</param>
+        private void InitSubscriptionCounter(ref Dictionary <String, int>SubscriptionCounter)
+        {
+            PPublicationTable PublicationTable = new PPublicationTable();
+
+            PublicationTable = PPublicationAccess.LoadAll(situation.GetDatabaseConnection().Transaction);
+
+            foreach (PPublicationRow row in PublicationTable.Rows)
+            {
+                SubscriptionCounter.Add(row.PublicationCode, 0);
+            }
+        }
+
+        /// <summary>
+        /// Initialises the Table that holds the result for calculating the
+        /// publication statistical report.
+        /// Set up the rows and columns for the table.
+        /// </summary>
+        /// <returns>Dictionary that holds for each publication the row index in the table</returns>
+        private Dictionary <String, int>InitStatisticalReportTable()
+        {
+            Dictionary <String, int>SubscriptionCounter = new Dictionary <String, int>();
+            InitSubscriptionCounter(ref SubscriptionCounter);
+
+            FStatisticalReportDataTable = new DataTable();
+            FStatisticalReportPercentage = new Dictionary <String, String>();
+
+            DataColumn Column = new DataColumn();
+            Column.DataType = Type.GetType("System.String");
+            Column.ColumnName = "County";
+            Column.DefaultValue = "";
+            FStatisticalReportDataTable.Columns.Add(Column);
+
+            Column = new DataColumn();
+            Column.DataType = Type.GetType("System.Int32");
+            Column.ColumnName = COLUMN_DONOR;
+            Column.DefaultValue = 0;
+            FStatisticalReportDataTable.Columns.Add(Column);
+
+            Column = new DataColumn();
+            Column.DataType = Type.GetType("System.Int32");
+            Column.ColumnName = COLUMN_EXPARTICIPANTS;
+            Column.DefaultValue = 0;
+            FStatisticalReportDataTable.Columns.Add(Column);
+
+            Column = new DataColumn();
+            Column.DataType = Type.GetType("System.Int32");
+            Column.ColumnName = COLUMN_CHURCH;
+            Column.DefaultValue = 0;
+            FStatisticalReportDataTable.Columns.Add(Column);
+
+            Column = new DataColumn();
+            Column.DataType = Type.GetType("System.Int32");
+            Column.ColumnName = COLUMN_APPLICANTS;
+            Column.DefaultValue = 0;
+            FStatisticalReportDataTable.Columns.Add(Column);
+
+            foreach (KeyValuePair <String, int>ValuePair in SubscriptionCounter)
+            {
+                Column = new DataColumn();
+                Column.DataType = Type.GetType("System.Int32");
+                Column.ColumnName = ValuePair.Key;
+                Column.DefaultValue = 0;
+                FStatisticalReportDataTable.Columns.Add(Column);
+            }
+
+            // Add the rows to the table
+            int CurrentRowCounter = 0;
+            Dictionary <String, int>CountyRowList = new Dictionary <String, int>();
+
+            DataRow TmpRow = FStatisticalReportDataTable.NewRow();
+            TmpRow[0] = ROW_FOREIGN;
+            FStatisticalReportDataTable.Rows.Add(TmpRow);
+            CountyRowList.Add(ROW_FOREIGN, CurrentRowCounter++);
+
+            TmpRow = FStatisticalReportDataTable.NewRow();
+            TmpRow[0] = ROW_NONE;
+            FStatisticalReportDataTable.Rows.Add(TmpRow);
+            CountyRowList.Add(ROW_NONE, CurrentRowCounter++);
+
+            // Get all counties from country
+            DataTable AllCountiesDT;
+            GetDataTableFromXmlSqlStatement("GetAllCounties", out AllCountiesDT, null, null);
+
+            foreach (DataRow Row in AllCountiesDT.Rows)
+            {
+                TmpRow = FStatisticalReportDataTable.NewRow();
+                TmpRow[0] = (String)Row[0];
+                FStatisticalReportDataTable.Rows.Add(TmpRow);
+                CountyRowList.Add(((String)Row[0]).ToLower(), CurrentRowCounter++);
+            }
+
+            TmpRow = FStatisticalReportDataTable.NewRow();
+            TmpRow[0] = ROW_PERCENT;
+            FStatisticalReportDataTable.Rows.Add(TmpRow);
+            CountyRowList.Add(ROW_PERCENT, CurrentRowCounter++);
+
+            TmpRow = FStatisticalReportDataTable.NewRow();
+            TmpRow[0] = ROW_TOTAL;
+            FStatisticalReportDataTable.Rows.Add(TmpRow);
+            CountyRowList.Add(ROW_TOTAL, CurrentRowCounter++);
+
+            TmpRow = FStatisticalReportDataTable.NewRow();
+            TmpRow[0] = ROW_COUNT;
+            FStatisticalReportDataTable.Rows.Add(TmpRow);
+            CountyRowList.Add(ROW_COUNT, CurrentRowCounter++);
+
+            return CountyRowList;
+        }
+
+        /// <summary>
+        /// Main calculation of the publication statistical report.
+        /// </summary>
+        /// <param name="ACountryCode"></param>
+        private void CalculatePublicationStatisticalReport(String ACountryCode)
+        {
+            PPartnerTable PartnerTable;
+            PLocationTable LocationTable;
+            PLocationRow LocationRow;
+
+            PartnerTable = PPartnerAccess.LoadAll(situation.GetDatabaseConnection().Transaction);
+            PPartnerLocationRow PartnerLocationRow;
+
+            PSubscriptionTable SubscriptionTable;
+            SubscriptionTable = PSubscriptionAccess.LoadAll(situation.GetDatabaseConnection().Transaction);
+
+            Dictionary <String, int>SubscriptionCounter = new Dictionary <String, int>();
+            InitSubscriptionCounter(ref SubscriptionCounter);
+
+            Dictionary <String, int>CountyRowList = InitStatisticalReportTable();
+            FNumberOfAcitvePartner = 0;
+
+            String SubscriptionCodeDBName = PSubscriptionTable.GetPublicationCodeDBName();
+            String SubscriptionCopiesDBName = PSubscriptionTable.GetPublicationCopiesDBName();
+            String PartnerKeyDBName = PPartnerTable.GetPartnerKeyDBName() + " = ";
+
+            foreach (PPartnerRow PartnerRow in PartnerTable.Rows)
+            {
+                if (PartnerRow.StatusCode != "ACTIVE")
+                {
+                    continue;
+                }
+
+                FNumberOfAcitvePartner++;
+
+                if (GetPartnerBestAddressRow(PartnerRow.PartnerKey, out PartnerLocationRow))
+                {
+                    if (PartnerLocationRow == null)
+                    {
+                        continue;
+                    }
+
+                    if ((!PartnerLocationRow.IsDateGoodUntilNull())
+                        && (PartnerLocationRow.DateGoodUntil < System.DateTime.Today))
+                    {
+                        // Best address is no longer valid - don't use it
+                        continue;
+                    }
+
+                    LocationTable = PLocationAccess.LoadByPrimaryKey(PartnerLocationRow.SiteKey,
+                        PartnerLocationRow.LocationKey, situation.GetDatabaseConnection().Transaction);
+
+                    if (LocationTable.Rows.Count < 1)
+                    {
+                        continue;
+                    }
+
+                    LocationRow = LocationTable[0];
+
+                    // TODO what do we do with partners that have 0 as Location key?
+                    if (LocationRow.LocationKey == 0)
+                    {
+                        continue;
+                    }
+
+                    String RowName = ROW_FOREIGN;
+
+                    if ((!LocationRow.IsCountryCodeNull())
+                        && (LocationRow.CountryCode == ACountryCode))
+                    {
+                        // partner is OK
+                        if (LocationRow.County.Length > 0)
+                        {
+                            // County
+                            RowName = LocationRow.County.ToLower();
+                        }
+                        else
+                        {
+                            // *NONE*
+                            RowName = ROW_NONE;
+                        }
+                    }
+
+                    // for each subscription
+                    // check if partner receives this subscription
+                    DataRow[] Subscriptions = SubscriptionTable.Select(PartnerKeyDBName + PartnerRow.PartnerKey);
+
+                    foreach (DataRow Row in Subscriptions)
+                    {
+                        PSubscriptionRow SubscriptionRow = (PSubscriptionRow)Row;
+
+                        if (!SubscriptionRow.IsDateCancelledNull())
+                        {
+                            // if there is a cancelled date, then don't use this subscription in the report
+                            continue;
+                        }
+
+                        // Add Value to Table
+                        AddToStatisticalReportTable(CountyRowList[RowName], SubscriptionRow.PublicationCode, 1);
+
+                        if (SubscriptionRow.PublicationCopies > 1)
+                        {
+                            AddToStatisticalReportTable(CountyRowList[ROW_COUNT], SubscriptionRow.PublicationCode, SubscriptionRow.PublicationCopies);
+                        }
+                    }
+
+                    if (CheckPartnerGift(PartnerRow.PartnerKey))
+                    {
+                        AddToStatisticalReportTable(CountyRowList[RowName], COLUMN_DONOR, 1);
+                    }
+
+                    if (PartnerRow.PartnerClass == "CHURCH")
+                    {
+                        AddToStatisticalReportTable(CountyRowList[RowName], COLUMN_CHURCH, 1);
+                    }
+
+                    int NumApplicants = 0;
+                    int NumExParticipants = 0;
+                    CheckPartnerType(PartnerRow.PartnerKey, ref NumApplicants, ref NumExParticipants);
+
+                    if (NumApplicants > 0)
+                    {
+                        AddToStatisticalReportTable(CountyRowList[RowName], COLUMN_APPLICANTS, 1);
+                    }
+
+                    if (NumExParticipants > 0)
+                    {
+                        AddToStatisticalReportTable(CountyRowList[RowName], COLUMN_EXPARTICIPANTS, 1);
+                    }
+                }
+            }             // end for each
+
+            CalculateTotals();
+        }
+
+        /// <summary>
+        /// Fills the values of one line in the publication statistical report.
+        /// The first column contains the county name which is the identifier.
+        /// </summary>
+        /// <param name="ARow">County</param>
+        private bool FillStatisticalReportResultTable(String ARow)
+        {
+            // Delete old label values, so that they are not copied over from previous county
+            for (int col = 0; col <= situation.GetParameters().Get("MaxDisplayColumns").ToInt() - 1; col += 1)
+            {
+                if ("Publication" == situation.GetParameters().Get("param_label", col, -1, eParameterFit.eExact).ToString())
+                {
+                    situation.GetParameters().RemoveVariable("Publication", col, situation.GetDepth(), eParameterFit.eBestFit);
+                }
+            }
+
+            int RowIndex = -1;
+
+            for (int Counter = 0; Counter < FStatisticalReportDataTable.Rows.Count; ++Counter)
+            {
+                String CountyName = (String)FStatisticalReportDataTable.Rows[Counter]["County"];
+
+                if (CountyName == ARow)
+                {
+                    RowIndex = Counter;
+                    break;
+                }
+            }
+
+            if (RowIndex == -1)
+            {
+                // County not found
+                return false;
+            }
+
+            DataRow Row = FStatisticalReportDataTable.Rows[RowIndex];
+
+            for (int col = 0; col <= situation.GetParameters().Get("MaxDisplayColumns").ToInt() - 1; col += 1)
+            {
+                if (situation.GetParameters().Exists("param_label", col, -1, eParameterFit.eExact))
+                {
+                    String ParameterLabel = situation.GetParameters().Get("param_label", col, -1, eParameterFit.eExact).ToString();
+
+                    if (ParameterLabel == "Publication")
+                    {
+                        String PublicationName = situation.GetParameters().Get("ColumnCaption", col, -1, eParameterFit.eExact).ToString();
+
+                        for (int ColumnCounter = 5; ColumnCounter < FStatisticalReportDataTable.Columns.Count; ++ColumnCounter)
+                        {
+                            if (FStatisticalReportDataTable.Columns[ColumnCounter].ColumnName == PublicationName)
+                            {
+                                situation.GetParameters().Add("Publication",
+                                    new TVariant(Row.ItemArray[ColumnCounter]),
+                                    col, -1,
+                                    null, null, ReportingConsts.CALCULATIONPARAMETERS);
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (ARow != ROW_COUNT)
+                        {
+                            FillFirstColumns(ParameterLabel, col,
+                                (String)Row.ItemArray[0],
+                                new TVariant((int)Row.ItemArray[1]),
+                                new TVariant((int)Row.ItemArray[2]),
+                                new TVariant((int)Row.ItemArray[3]),
+                                new TVariant((int)Row.ItemArray[4]));
+                        }
+                        else
+                        {
+                            FillFirstColumns(ParameterLabel, col, (String)Row.ItemArray[0], new TVariant(""), new TVariant(""), new TVariant(
+                                    ""), new TVariant(""));
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Fill one of the first five columns of one row of the publication statistical report
+        /// 1. column is County name
+        /// 2. column is number of donors
+        /// 3. column is number of ex omers
+        /// 4. column is number of churches
+        /// 5. column is number of applicants
+        /// </summary>
+        /// <param name="AParameterLabel">defines which of the first five columns should be filled</param>
+        /// <param name="AColumn">Column index in the result</param>
+        /// <param name="ACountyName"></param>
+        /// <param name="ADonors"></param>
+        /// <param name="AExParticipants"></param>
+        /// <param name="AChurches"></param>
+        /// <param name="AApplicants"></param>
+        private void FillFirstColumns(String AParameterLabel, int AColumn, String ACountyName,
+            TVariant ADonors, TVariant AExParticipants,
+            TVariant AChurches, TVariant AApplicants)
+        {
+            TVariant ValueToUse = null;
+
+            if (AParameterLabel == "County")
+            {
+                ValueToUse = new TVariant(ACountyName);
+            }
+            else if (AParameterLabel == "Donors")
+            {
+                ValueToUse = ADonors;
+            }
+            else if (AParameterLabel == "ExParticipants")
+            {
+                ValueToUse = AExParticipants;
+            }
+            else if (AParameterLabel == "Churches")
+            {
+                ValueToUse = AChurches;
+            }
+            else if (AParameterLabel == "Applicants")
+            {
+                ValueToUse = AApplicants;
+            }
+
+            if (ValueToUse != null)
+            {
+                situation.GetParameters().Add(AParameterLabel,
+                    ValueToUse,
+                    AColumn, -1,
+                    null, null, ReportingConsts.CALCULATIONPARAMETERS);
+            }
+        }
+
+        /// <summary>
+        /// Fills the values of one line in the publication statistical report.
+        /// The first column contains the county name which is the identifier.
+        /// </summary>
+        private bool FillStatisticalReportResultTable()
+        {
+            // Delete old label values, so that they are not copied over from previous partners
+            for (int col = 0; col <= situation.GetParameters().Get("MaxDisplayColumns").ToInt() - 1; col += 1)
+            {
+                if ("Publication" == situation.GetParameters().Get("param_label", col, -1, eParameterFit.eExact).ToString())
+                {
+                    situation.GetParameters().RemoveVariable("Publication", col, situation.GetDepth(), eParameterFit.eBestFit);
+                }
+            }
+
+            for (int col = 0; col <= situation.GetParameters().Get("MaxDisplayColumns").ToInt() - 1; col += 1)
+            {
+                if (situation.GetParameters().Exists("param_label", col, -1, eParameterFit.eExact))
+                {
+                    String ParameterLabel = situation.GetParameters().Get("param_label", col, -1, eParameterFit.eExact).ToString();
+
+                    if (ParameterLabel == "Publication")
+                    {
+                        String PublicationName = situation.GetParameters().Get("ColumnCaption", col, -1, eParameterFit.eExact).ToString();
+
+                        situation.GetParameters().Add("Publication",
+                            FStatisticalReportPercentage[PublicationName],
+                            col, -1,
+                            null, null, ReportingConsts.CALCULATIONPARAMETERS);
+                    }
+                    else
+                    {
+                        FillFirstColumns(ParameterLabel, col, ROW_PERCENT,
+                            new TVariant(FStatisticalReportPercentage[COLUMN_DONOR]),
+                            new TVariant(FStatisticalReportPercentage[COLUMN_EXPARTICIPANTS]),
+                            new TVariant(FStatisticalReportPercentage[COLUMN_CHURCH]),
+                            new TVariant(FStatisticalReportPercentage[COLUMN_APPLICANTS]));
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Add a value to the existing value in the publication statistical report table
+        /// </summary>
+        /// <param name="RowIndex">row</param>
+        /// <param name="ColumnName">column</param>
+        /// <param name="AddedValue">value to add to the existing value</param>
+        private void AddToStatisticalReportTable(int RowIndex, String ColumnName, int AddedValue)
+        {
+            if (ColumnName.Length > 0)
+            {
+                int OldValue = (int)FStatisticalReportDataTable.Rows[RowIndex][ColumnName];
+                FStatisticalReportDataTable.Rows[RowIndex][ColumnName] = OldValue + AddedValue;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the Row "Percent", "Totals" and "Counts" for the publication statistical report
+        /// </summary>
+        private void CalculateTotals()
+        {
+            int NumColumns = FStatisticalReportDataTable.Columns.Count;
+            int NumRows = FStatisticalReportDataTable.Rows.Count;
+
+            for (int ColumnIndex = 1; ColumnIndex < NumColumns; ++ColumnIndex)
+            {
+                int Totals = 0;
+                int RowIndex = 0;
+
+                for (RowIndex = 0; RowIndex < NumRows - 3; ++RowIndex)
+                {
+                    Totals += (int)FStatisticalReportDataTable.Rows[RowIndex][ColumnIndex];
+                }
+
+                // Totals:
+                FStatisticalReportDataTable.Rows[RowIndex + 1][ColumnIndex] = Totals;
+
+                // Percent:
+                double CalcPercent = Totals * 100.0 / FNumberOfAcitvePartner;
+
+                FStatisticalReportDataTable.Rows[RowIndex][ColumnIndex] = CalcPercent;                 //.ToString("F");
+                FStatisticalReportPercentage.Add(FStatisticalReportDataTable.Columns[ColumnIndex].ColumnName,
+                    CalcPercent.ToString("F"));
+
+                // Counts:
+                FStatisticalReportDataTable.Rows[RowIndex + 2][ColumnIndex] = (int)
+                                                                              ((int)FStatisticalReportDataTable.Rows[RowIndex +
+                                                                                                                     2][ColumnIndex] + Totals);
+            }
+        }
+
+        #endregion calculation for publication statistical report
     }
 }

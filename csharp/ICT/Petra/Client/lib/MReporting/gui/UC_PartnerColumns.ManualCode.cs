@@ -569,7 +569,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         ///
         /// </summary>
         /// <returns>void</returns>
-        protected void FillColumnGrid()
+        public void FillColumnGrid()
         {
             DataTable columnTab;
             DataRow rowContent;
@@ -630,6 +630,24 @@ namespace Ict.Petra.Client.MReporting.Gui
         protected TColumnFunction GetFunction(String calculation)
         {
             return TUC_ColumnHelper.GetFunction(ref FAvailableFunctions, calculation);
+        }
+
+        public List <KeyValuePair <String, Double>>GetColumnHeadings()
+        {
+            List <KeyValuePair <String, Double>>ReturnValue = new List <KeyValuePair <String, Double>>();
+
+            System.Int32 MaxDisplayColumns;
+
+            MaxDisplayColumns = FColumnParameters.Get("MaxDisplayColumns").ToInt();
+
+            for (int Counter = 0; Counter < MaxDisplayColumns; Counter += 1)
+            {
+                ReturnValue.Add(new KeyValuePair <String, Double>
+                        (FColumnParameters.Get("param_calculation", Counter).ToString(),
+                        FColumnParameters.Get("ColumnWidth", Counter).ToDouble()));
+            }
+
+            return ReturnValue;
         }
     }
 }

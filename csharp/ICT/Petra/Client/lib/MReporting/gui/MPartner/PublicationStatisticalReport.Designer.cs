@@ -73,9 +73,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgAdditionalSettings = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.grpGenerateReportFor = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.chkAllSubscriptions = new System.Windows.Forms.CheckBox();
+            this.lblSelectCountry = new System.Windows.Forms.Label();
+            this.cmbCountryCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.lblCountryCode = new System.Windows.Forms.Label();
             this.tpgColumns = new System.Windows.Forms.TabPage();
             this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
@@ -114,8 +114,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tabReportSettings.SuspendLayout();
             this.tpgAdditionalSettings.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.grpGenerateReportFor.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
             this.tpgColumns.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
@@ -135,38 +133,41 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tableLayoutPanel1.AutoSize = true;
             this.tpgAdditionalSettings.Controls.Add(this.tableLayoutPanel1);
             //
-            // grpGenerateReportFor
+            // lblSelectCountry
             //
-            this.grpGenerateReportFor.Location = new System.Drawing.Point(2,2);
-            this.grpGenerateReportFor.Name = "grpGenerateReportFor";
-            this.grpGenerateReportFor.AutoSize = true;
+            this.lblSelectCountry.Location = new System.Drawing.Point(2,2);
+            this.lblSelectCountry.Name = "lblSelectCountry";
+            this.lblSelectCountry.AutoSize = true;
+            this.lblSelectCountry.Text = "Select the country for which the statistical report should be generated:";
+            this.lblSelectCountry.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
-            // tableLayoutPanel2
+            // cmbCountryCode
             //
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.AutoSize = true;
-            this.grpGenerateReportFor.Controls.Add(this.tableLayoutPanel2);
+            this.cmbCountryCode.Location = new System.Drawing.Point(2,2);
+            this.cmbCountryCode.Name = "cmbCountryCode";
+            this.cmbCountryCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbCountryCode.ListTable = TCmbAutoPopulated.TListTableEnum.CountryList;
             //
-            // chkAllSubscriptions
+            // lblCountryCode
             //
-            this.chkAllSubscriptions.Location = new System.Drawing.Point(2,2);
-            this.chkAllSubscriptions.Name = "chkAllSubscriptions";
-            this.chkAllSubscriptions.AutoSize = true;
-            this.chkAllSubscriptions.Text = "All Subscriptions";
-            this.chkAllSubscriptions.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.tableLayoutPanel2.ColumnCount = 1;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.chkAllSubscriptions, 0, 0);
-            this.grpGenerateReportFor.Text = "Generate Report for";
-            this.tableLayoutPanel1.ColumnCount = 1;
+            this.lblCountryCode.Location = new System.Drawing.Point(2,2);
+            this.lblCountryCode.Name = "lblCountryCode";
+            this.lblCountryCode.AutoSize = true;
+            this.lblCountryCode.Text = "Country Code:";
+            this.lblCountryCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCountryCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCountryCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.grpGenerateReportFor, 0, 0);
-            this.tpgAdditionalSettings.Text = "Subscriptions";
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.SetColumnSpan(this.lblSelectCountry, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lblSelectCountry, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lblCountryCode, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.cmbCountryCode, 1, 1);
+            this.tpgAdditionalSettings.Text = "Country";
             this.tpgAdditionalSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgColumns
@@ -463,17 +464,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.Text = "Publication Statistical Report";
 
 	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
-	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
 	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
 	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
 	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
+	        this.Load += new System.EventHandler(this.TFrmPublicationStatisticalReport_Load);
 	
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
             this.tpgColumns.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.grpGenerateReportFor.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tpgAdditionalSettings.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
@@ -485,9 +484,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgAdditionalSettings;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.GroupBox grpGenerateReportFor;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.CheckBox chkAllSubscriptions;
+        private System.Windows.Forms.Label lblSelectCountry;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbCountryCode;
+        private System.Windows.Forms.Label lblCountryCode;
         private System.Windows.Forms.TabPage tpgColumns;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;
         private System.Windows.Forms.ToolStrip tbrMain;

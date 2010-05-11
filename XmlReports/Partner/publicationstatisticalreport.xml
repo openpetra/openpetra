@@ -14,28 +14,16 @@
     <pageheader>
       <field whichfield="title1"><value text="Publication Statistical Report"></value></field>
       <field whichfield="title2"><value function="getSiteName()"></value></field>
-      <field whichfield="descr2">
+      <field whichfield="descr1">
 	<fielddetail>
-		<value text=""/>
+		<value text="Selected Country: "/>
+		<value variable="param_cmbCountryCode" />
 	</fielddetail>
       </field>
     </pageheader>
 
     
      <calculations>
-	  
-	<calculation id="GetCountry" returns="CountryCode" returnsFormat="row">
-		<query>
-			<queryDetail>
-				<value>
-					SELECT DISTINCT
-						PUB_s_system_parameter.p_country_code_c AS CountryCode
-					FROM
-						PUB_s_system_parameter
-				</value>
-			</queryDetail>
-		</query>
-	</calculation>
 	
 	<calculation id="GetAllCounties" returns="County" returnsFormat="row">
 		<query>
@@ -46,7 +34,7 @@
 					FROM
 						PUB_p_location
 					WHERE
-						PUB_p_location.p_country_code_c={CountryCode}
+						PUB_p_location.p_country_code_c= {param_cmbCountryCode}
 						AND PUB_p_location.p_county_c != ''
 						AND PUB_p_location.p_county_c != '?'
 				</value>
@@ -101,7 +89,7 @@
 	<calculation id="GetCountyPublicationStatistic" returns="County" returnsFormat="internal">
 		<query>
 			<queryDetail>
-				<value function="GetCountyPublicationStatistic({CountryCode}, {County})"/>
+				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, {County})"/>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -110,7 +98,7 @@
 	<calculation id="GetNonePublicationStatistic" returns="County" returnsFormat="internal">
 		<query>
 			<queryDetail>
-				<value function="GetCountyPublicationStatistic({CountryCode}, *NONE* )"/>
+				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, *NONE* )"/>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -118,7 +106,7 @@
 	<calculation id="GetForeignPublicationStatistic" returns="County" returnsFormat="internal">
 		<query>
 			<queryDetail>
-				<value function="GetCountyPublicationStatistic({CountryCode}, *FOREIGN* )"/>
+				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, *FOREIGN* )"/>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -134,7 +122,7 @@
 	<calculation id="CalculatePublicationStatisticTotals" returns="County" returnsFormat="internal">
 		<query>
 			<queryDetail>
-				<value function="GetCountyPublicationStatistic({CountryCode}, Totals: )"/>
+				<value function="GetCountyPublicationStatistic({param_cmbCountryCode}, Totals: )"/>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -220,11 +208,11 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="SupportingOrganisations" returns="text" returnsFormat="text">
+	<calculation align="left" id="Churches" returns="text" returnsFormat="text">
 		<caption><value text="Churches"></value></caption>
 		<query>
 			<queryDetail>
-				<value variable="SupportingOrganisations"></value>
+				<value variable="Churches"></value>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -242,7 +230,7 @@
 		<caption><value text="Country"></value></caption>
 		<query>
 			<queryDetail>
-				<value variable="CountryCode"></value>
+				<value variable="param_cmbCountryCode"></value>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -277,7 +265,7 @@
     <levels>    
 	<level name="main">
 		<detail>
-			<lowerLevelReport calculation="GetCountry" level="LevelActivePartners"></lowerLevelReport>
+			<lowerLevelReport level="LevelActivePartners"></lowerLevelReport>
 		</detail>
 	</level> <!-- main -->
 	
