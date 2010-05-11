@@ -77,6 +77,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 //			AvailableControlGenerators.Add(new StatusBarTextGenerator());
                 AvailableControlGenerators.Add(new ToolBarGenerator());
                 AvailableControlGenerators.Add(new GroupBoxGenerator());
+                AvailableControlGenerators.Add(new LabelGenerator());
                 AvailableControlGenerators.Add(new ButtonGenerator());
                 AvailableControlGenerators.Add(new RangeGenerator());
                 AvailableControlGenerators.Add(new PanelGenerator());
@@ -1018,6 +1019,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("void ReadControlsManual"))
             {
                 FTemplate.AddToCodelet("READCONTROLS", "ReadControlsManual(ACalc, AReportAction);" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("void SetControlsManual"))
+            {
+                FTemplate.AddToCodelet("SETCONTROLS", "SetControlsManual(AParameters);" + Environment.NewLine);
             }
 
             InsertCodeIntoTemplate(AXAMLFilename);
