@@ -87,6 +87,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniReports = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportPartnerByCity = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportPartnerAddress = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportBriefFoundation = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportSupportingChurches = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportValidBankAccount = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportPublicationStatisticalReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mniNewPartner = new System.Windows.Forms.ToolStripMenuItem();
             this.mniNewPartnerAssistant = new System.Windows.Forms.ToolStripMenuItem();
@@ -226,7 +230,35 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniReportPartnerAddress.Name = "mniReportPartnerAddress";
             this.mniReportPartnerAddress.AutoSize = true;
             this.mniReportPartnerAddress.Click += new System.EventHandler(this.OpenScreenReportPartnerAddress);
-            this.mniReportPartnerAddress.Text = "&Brief Address Report (experiment)";
+            this.mniReportPartnerAddress.Text = "Brief &Address Report";
+            //
+            // mniReportBriefFoundation
+            //
+            this.mniReportBriefFoundation.Name = "mniReportBriefFoundation";
+            this.mniReportBriefFoundation.AutoSize = true;
+            this.mniReportBriefFoundation.Click += new System.EventHandler(this.OpenScreenReportBriefFoundation);
+            this.mniReportBriefFoundation.Text = "Brief &Foundation Report";
+            //
+            // mniReportSupportingChurches
+            //
+            this.mniReportSupportingChurches.Name = "mniReportSupportingChurches";
+            this.mniReportSupportingChurches.AutoSize = true;
+            this.mniReportSupportingChurches.Click += new System.EventHandler(this.OpenScreenReportSupportingChurches);
+            this.mniReportSupportingChurches.Text = "Supporting &Churches Report";
+            //
+            // mniReportValidBankAccount
+            //
+            this.mniReportValidBankAccount.Name = "mniReportValidBankAccount";
+            this.mniReportValidBankAccount.AutoSize = true;
+            this.mniReportValidBankAccount.Click += new System.EventHandler(this.OpenScreenReportValidBankAccount);
+            this.mniReportValidBankAccount.Text = "&Valid Bank Account Report";
+            //
+            // mniReportPublicationStatisticalReport
+            //
+            this.mniReportPublicationStatisticalReport.Name = "mniReportPublicationStatisticalReport";
+            this.mniReportPublicationStatisticalReport.AutoSize = true;
+            this.mniReportPublicationStatisticalReport.Click += new System.EventHandler(this.OpenScreenReportPublicationStatisticalReport);
+            this.mniReportPublicationStatisticalReport.Text = "Publication &Statistical Report";
             //
             // mniReports
             //
@@ -234,7 +266,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniReports.AutoSize = true;
             this.mniReports.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniReportPartnerByCity,
-                        mniReportPartnerAddress});
+                        mniReportPartnerAddress,
+                        mniReportBriefFoundation,
+                        mniReportSupportingChurches,
+                        mniReportValidBankAccount,
+                        mniReportPublicationStatisticalReport});
             this.mniReports.Text = "&Reports...";
             //
             // mniSeparator3
@@ -600,6 +636,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.ToolStripMenuItem mniReports;
         private System.Windows.Forms.ToolStripMenuItem mniReportPartnerByCity;
         private System.Windows.Forms.ToolStripMenuItem mniReportPartnerAddress;
+        private System.Windows.Forms.ToolStripMenuItem mniReportBriefFoundation;
+        private System.Windows.Forms.ToolStripMenuItem mniReportSupportingChurches;
+        private System.Windows.Forms.ToolStripMenuItem mniReportValidBankAccount;
+        private System.Windows.Forms.ToolStripMenuItem mniReportPublicationStatisticalReport;
         private System.Windows.Forms.ToolStripSeparator mniSeparator3;
         private System.Windows.Forms.ToolStripMenuItem mniNewPartner;
         private System.Windows.Forms.ToolStripMenuItem mniNewPartnerAssistant;

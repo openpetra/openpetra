@@ -26,7 +26,12 @@ RootNode:
            mniReports: 
                Label: &Reports...
                mniReportPartnerByCity: {Label=&Partner By City Report (experiment), ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPartnerByCity)
-               mniReportPartnerAddress: {Label=&Brief Address Report (experiment), ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBriefAddressReport)
+               mniReportPartnerAddress: {Label=Brief &Address Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBriefAddressReport)
+               mniReportBriefFoundation: {Label=Brief &Foundation Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBriefFoundationReport)
+               mniReportSupportingChurches: {Label=Supporting &Churches Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmSupportingChurchesReport)
+               mniReportValidBankAccount: {Label=&Valid Bank Account Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmValidBankAccountReport)
+               mniReportPublicationStatisticalReport: {Label=Publication &Statistical Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPublicationStatisticalReport)
+               
            mniSeparator: {Label=-}
            mniNewPartner: {Label=New &Partner...}
            mniNewPartnerAssistant: 

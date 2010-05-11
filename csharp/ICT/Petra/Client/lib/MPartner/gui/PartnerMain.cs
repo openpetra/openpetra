@@ -73,7 +73,11 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.mniLastPartners.Text = Catalog.GetString("&Recent Partners...");
       this.mniExtracts.Text = Catalog.GetString("&Extracts...");
       this.mniReportPartnerByCity.Text = Catalog.GetString("&Partner By City Report (experiment)");
-      this.mniReportPartnerAddress.Text = Catalog.GetString("&Brief Address Report (experiment)");
+      this.mniReportPartnerAddress.Text = Catalog.GetString("Brief &Address Report");
+      this.mniReportBriefFoundation.Text = Catalog.GetString("Brief &Foundation Report");
+      this.mniReportSupportingChurches.Text = Catalog.GetString("Supporting &Churches Report");
+      this.mniReportValidBankAccount.Text = Catalog.GetString("&Valid Bank Account Report");
+      this.mniReportPublicationStatisticalReport.Text = Catalog.GetString("Publication &Statistical Report");
       this.mniReports.Text = Catalog.GetString("&Reports...");
       this.mniNewPartner.Text = Catalog.GetString("New &Partner...");
       this.mniNewPerson.Text = Catalog.GetString("Add &Person");
@@ -268,6 +272,34 @@ namespace Ict.Petra.Client.MPartner.Gui
     protected void OpenScreenReportPartnerAddress(object sender, EventArgs e)
     {
         Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBriefAddressReport frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBriefAddressReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenReportBriefFoundation(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBriefFoundationReport frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBriefFoundationReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenReportSupportingChurches(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPartner.TFrmSupportingChurchesReport frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmSupportingChurchesReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenReportValidBankAccount(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPartner.TFrmValidBankAccountReport frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmValidBankAccountReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenReportPublicationStatisticalReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPublicationStatisticalReport frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPublicationStatisticalReport(this.Handle);
         frm.Show();
     }
 
