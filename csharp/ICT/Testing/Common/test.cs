@@ -1,28 +1,26 @@
-/*************************************************************************
- *
- * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
- * @Authors:
- *       timop
- *
- * Copyright 2004-2009 by OM International
- *
- * This file is part of OpenPetra.org.
- *
- * OpenPetra.org is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OpenPetra.org is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
- *
- ************************************************************************/
+//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       timop
+//
+// Copyright 2004-2010 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
 using System;
 using System.Data;
 using NUnit.Framework;
@@ -197,7 +195,7 @@ namespace Ict.Common.Testing
         public void TestStringHelperCSVList()
         {
             const String EMPTY = "";
-            const String UMLAUT = "Bäcker";
+            const String UMLAUT = "Bï¿½cker";
             const String QUOTEKOMMA = "test\",";
             const String QUOTE = "test\"";
             const String SIMPLE = "test";
@@ -220,7 +218,7 @@ namespace Ict.Common.Testing
             Assert.AreEqual("shortdesc=\"Equipment, General\"", StringHelper.GetNextCSV(ref s), "get string with quotes that are not at the start");
             Assert.AreEqual("longdesc=Equipment", StringHelper.GetNextCSV(ref s), "after string with quotes that are not at the start");
 
-            /* ,Bäcker,"test"",","test""",test,"test, hallo","test""tst","24/03/1999","0400" */
+            /* ,Bï¿½cker,"test"",","test""",test,"test, hallo","test""tst","24/03/1999","0400" */
             myTest = new String[] {
                 EMPTY, UMLAUT, QUOTEKOMMA, QUOTE, SIMPLE, KOMMA, QUOTES, DATE, ACCOUNTCODE
             };
@@ -310,7 +308,7 @@ namespace Ict.Common.Testing
             Assert.AreEqual(new TVariant("#20040731#").ToString(), new TVariant(new DateTime(2004, 07, 31)).ToString(), "Problem C date DE");
 
             /* To make this work, we should use short month names from local array, similar to GetLongMonthName; see the comment in Ict.Common.StringHelper, DateToLocalizedString */
-            /* Assert.AreEqual('29MÄR2004', DateToLocalizedString(TVariant.Create(DateTime.Create(2004,03,29)).ToDate()),'Problem D date DE'); */
+            /* Assert.AreEqual('29Mï¿½R2004', DateToLocalizedString(TVariant.Create(DateTime.Create(2004,03,29)).ToDate()),'Problem D date DE'); */
             Assert.AreEqual("29-MRZ-2004", StringHelper.DateToLocalizedString(new TVariant(new DateTime(2004, 03, 29)).ToDate()), "Problem D date DE");
             Assert.AreEqual("eDateTime:31/07/2004", new TVariant("#20040731#").EncodeToString(), "EncodeToString DE");
             Assert.AreEqual("29-MRZ-2004", StringHelper.DateToLocalizedString(new TVariant("2004-03-29 00:00:00").ToDate()), "sqlite date value");
@@ -631,16 +629,16 @@ namespace Ict.Common.Testing
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE", false);
 
             Assert.AreEqual("Einhundertdreiundzwanzig Euro", NumberToWords.AmountToWords(123, "Euro", "Cent"));
-            Assert.AreEqual("Eintausendzweihundertdreißig Euro", NumberToWords.AmountToWords(1230, "Euro", "Cent"));
+            Assert.AreEqual("Eintausendzweihundertdreiï¿½ig Euro", NumberToWords.AmountToWords(1230, "Euro", "Cent"));
             Assert.AreEqual("Dreihundertachtzig Euro", NumberToWords.AmountToWords(380, "Euro", "Cent"));
-            Assert.AreEqual("Zwölftausenddreihundert Euro", NumberToWords.AmountToWords(12300, "Euro", "Cent"));
+            Assert.AreEqual("Zwï¿½lftausenddreihundert Euro", NumberToWords.AmountToWords(12300, "Euro", "Cent"));
             Assert.AreEqual("Einhundertdreiundzwanzigtausend Euro", NumberToWords.AmountToWords(123000, "Euro", "Cent"));
             Assert.AreEqual("Einhundertdreiundzwanzigtausendeins Euro", NumberToWords.AmountToWords(123001, "Euro", "Cent"));
             Assert.AreEqual("Einhundertdreiundzwanzigtausendeinhunderteins Euro", NumberToWords.AmountToWords(123101, "Euro", "Cent"));
-            Assert.AreEqual("Einhundertdreiundzwanzigtausendeinhunderteinunddreißig Euro", NumberToWords.AmountToWords(123131, "Euro", "Cent"));
+            Assert.AreEqual("Einhundertdreiundzwanzigtausendeinhunderteinunddreiï¿½ig Euro", NumberToWords.AmountToWords(123131, "Euro", "Cent"));
             Assert.AreEqual("Einhundertdreiundzwanzigtausendzweihundertdreizehn Euro", NumberToWords.AmountToWords(123213, "Euro", "Cent"));
             Assert.AreEqual("Drei Euro Dreiundzwanzig Cent", NumberToWords.AmountToWords(3.23, "Euro", "Cent"));
-            Assert.AreEqual("Drei Euro Fünfundsiebzig Cent", NumberToWords.AmountToWords(3.75, "Euro", "Cent"));
+            Assert.AreEqual("Drei Euro Fï¿½nfundsiebzig Cent", NumberToWords.AmountToWords(3.75, "Euro", "Cent"));
             Assert.AreEqual("Null Euro Ein Cent", NumberToWords.AmountToWords(0.01, "Euro", "Cent"));
 
             Thread.CurrentThread.CurrentCulture = oldCulture;
