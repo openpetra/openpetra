@@ -1,6 +1,6 @@
-/* Auto generated with nant generateORMTables
- * Do not modify this file manually!
- *///
+// Auto generated with nant generateORMTables
+// Do not modify this file manually!
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:

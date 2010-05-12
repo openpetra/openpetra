@@ -1,31 +1,29 @@
-/* Auto generated with nant generateORM
- * Do not modify this file manually!
- */
-/*************************************************************************
- *
- * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
- * @Authors:
- *       auto generated
- *
- * Copyright 2004-2009 by OM International
- *
- * This file is part of OpenPetra.org.
- *
- * OpenPetra.org is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OpenPetra.org is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
- *
- ************************************************************************/
+// auto generated with nant generateORM
+// Do not modify this file manually!
+//
+//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       auto generated
+//
+// Copyright 2004-2010 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 using System;
 using System.Collections;
@@ -15265,7 +15263,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(0, "LedgerNumber", "a_ledger_number_i", "a_ledger_number_i", OdbcType.Int, -1, true),
                     new TTypedColumnInfo(1, "AccountCode", "a_account_code_c", "Account Code", OdbcType.VarChar, 16, true),
                     new TTypedColumnInfo(2, "PropertyCode", "a_property_code_c", "a_property_code_c", OdbcType.VarChar, 40, true),
-                    new TTypedColumnInfo(3, "PropertyValue", "a_property_value_c", "a_property_value_c", OdbcType.VarChar, 200, false),
+                    new TTypedColumnInfo(3, "PropertyValue", "a_property_value_c", "a_property_value_c", OdbcType.VarChar, 200, true),
                     new TTypedColumnInfo(4, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
                     new TTypedColumnInfo(5, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(6, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
@@ -15302,7 +15300,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         public DataColumn ColumnAccountCode;
         /// Code for the property
         public DataColumn ColumnPropertyCode;
-        /// Description of this property
+        /// value of this property
         public DataColumn ColumnPropertyValue;
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
@@ -15602,7 +15600,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             }
         }
 
-        /// Description of this property
+        /// value of this property
         public String PropertyValue
         {
             get

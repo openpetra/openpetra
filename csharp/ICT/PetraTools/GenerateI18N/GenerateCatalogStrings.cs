@@ -65,7 +65,7 @@ public class TGenerateCatalogStrings
         {
             line = readerMainFile.ReadLine();
 
-            if (line == "/* Auto generated with nant generateORM")
+            if (line == "// Auto generated with nant generateORM")
             {
                 // those files don't contain any translatable strings
                 // and they are too big to parse
