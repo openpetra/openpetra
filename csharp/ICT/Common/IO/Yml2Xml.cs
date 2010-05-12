@@ -1052,10 +1052,6 @@ namespace Ict.Common.IO
 
                 return result;
             }
-            else
-            {
-                System.Console.WriteLine("Yml2Xml.GetElements: could not find elements");
-            }
 
             return new StringCollection();
         }
