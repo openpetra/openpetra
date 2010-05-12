@@ -53,7 +53,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AFieldPartnerKey">can be -1, then the default site key is used</param>
         public static Int64 NewPartnerKey(Int64 AFieldPartnerKey)
         {
-            return TNewPartnerKey.GetNewPartnerKey(AFieldPartnerKey);
+            Int64 NewPartnerKey = TNewPartnerKey.GetNewPartnerKey(AFieldPartnerKey);
+
+            TNewPartnerKey.SubmitNewPartnerKey(NewPartnerKey - NewPartnerKey % 1000000, NewPartnerKey, ref NewPartnerKey);
+            return NewPartnerKey;
         }
 
         /// <summary>
@@ -119,7 +122,22 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <returns></returns>
         public static bool SavePartner(PartnerEditTDS AMainDS, out TVerificationResultCollection AVerificationResult)
         {
-            Console.WriteLine("save partner " + AMainDS.PPartner.Rows.Count.ToString());
+            if (!PAcquisitionAccess.Exists(MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT, null))
+            {
+                PAcquisitionTable AcqTable = new PAcquisitionTable();
+                PAcquisitionRow row = AcqTable.NewRowTyped();
+                row.AcquisitionCode = MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT;
+                row.AcquisitionDescription = Catalog.GetString("Imported Data");
+                AcqTable.Rows.Add(row);
+
+                TVerificationResultCollection VerificationResult;
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                PAcquisitionAccess.SubmitChanges(AcqTable, Transaction, out VerificationResult);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+
             return PartnerEditTDSAccess.SubmitChanges(AMainDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
         }
     }

@@ -40,21 +40,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TFrmPartnerImport
     {
-        private const string PARTNERIMPORT_FAMILYNAME = "FamilyName";
-        private const string PARTNERIMPORT_CITY = "City";
-        private const string PARTNERIMPORT_AQUISITION = "Aquisition";
-        private const string PARTNERIMPORT_GENDER = "Gender";
-        private const string PARTNERIMPORT_ADDRESSEE_TYPE = "AddresseeType";
-        private const string PARTNERIMPORT_LANGUAGE = "Language";
-        private const string PARTNERIMPORT_FIRSTNAME = "FirstName";
-        private const string PARTNERIMPORT_EMAIL = "Email";
-        private const string PARTNERIMPORT_PHONE = "Phone";
-        private const string PARTNERIMPORT_MOBILEPHONE = "MobilePhone";
-        private const string PARTNERIMPORT_TITLE = "Title";
-        private const string PARTNERIMPORT_MARITALSTATUS = "MaritalStatus";
-
-        private const string PARTNERIMPORT_AQUISITION_DEFAULT = "IMPORT";
-
         /// <summary>
         /// todoComment
         /// </summary>
@@ -153,8 +138,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // get all partners with same surname in that city
             PartnerFindTDS result = TRemote.MPartner.Partner.WebConnectors.FindPartners("",
-                TXMLParser.GetAttribute(FCurrentPartnerNode, PARTNERIMPORT_FAMILYNAME),
-                TXMLParser.GetAttribute(FCurrentPartnerNode, PARTNERIMPORT_CITY),
+                TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_FAMILYNAME),
+                TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_CITY),
                 new StringCollection());
 
             grdMatchingRecords.Columns.Clear();
@@ -197,7 +182,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns></returns>
         private string GetGenderCode()
         {
-            string gender = TXMLParser.GetAttribute(FCurrentPartnerNode, PARTNERIMPORT_GENDER);
+            string gender = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_GENDER);
 
             if ((gender.ToLower() == Catalog.GetString("Female").ToLower()) || (gender.ToLower() == "female"))
             {
@@ -213,9 +198,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private string GetTitle()
         {
-            if (TXMLParser.HasAttribute(FCurrentPartnerNode, PARTNERIMPORT_TITLE))
+            if (TXMLParser.HasAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_TITLE))
             {
-                return TXMLParser.GetAttribute(FCurrentPartnerNode, PARTNERIMPORT_TITLE);
+                return TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_TITLE);
             }
 
             string genderCode = GetGenderCode();
@@ -235,9 +220,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private string GetMaritalStatusCode()
         {
-            if (TXMLParser.HasAttribute(FCurrentPartnerNode, PARTNERIMPORT_MARITALSTATUS))
+            if (TXMLParser.HasAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS))
             {
-                string maritalStatus = TXMLParser.GetAttribute(FCurrentPartnerNode, PARTNERIMPORT_MARITALSTATUS);
+                string maritalStatus = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS);
 
                 if (maritalStatus.ToLower() == Catalog.GetString("married").ToLower())
                 {
@@ -276,20 +261,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
             newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
 
-            if (TXMLParser.HasAttribute(FCurrentPartnerNode, PARTNERIMPORT_AQUISITION))
+            if (TXMLParser.HasAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_AQUISITION))
             {
-                newPartner.AcquisitionCode = TXMLParser.GetAttribute(FCurrentPartnerNode, PARTNERIMPORT_AQUISITION);
+                newPartner.AcquisitionCode = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_AQUISITION);
             }
             else
             {
-                newPartner.AcquisitionCode = PARTNERIMPORT_AQUISITION_DEFAULT;
+                newPartner.AcquisitionCode = MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT;
             }
 
             newPartner.AddresseeTypeCode = MPartnerConstants.ADDRESSEETYPE_DEFAULT;
 
-            if (TXMLParser.HasAttribute(FCurrentPartnerNode, PARTNERIMPORT_ADDRESSEE_TYPE))
+            if (TXMLParser.HasAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE))
             {
-                newPartner.AddresseeTypeCode = TXMLParser.GetAttribute(FCurrentPartnerNode, PARTNERIMPORT_ADDRESSEE_TYPE);
+                newPartner.AddresseeTypeCode = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE);
             }
             else
             {
@@ -305,21 +290,23 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if (TXMLParser.HasAttribute(FCurrentPartnerNode, PARTNERIMPORT_LANGUAGE))
+            if (TXMLParser.HasAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_LANGUAGE))
             {
-                newPartner.LanguageCode = TXMLParser.GetAttribute(FCurrentPartnerNode, PARTNERIMPORT_LANGUAGE);
+                newPartner.LanguageCode = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
             }
-            else
+            else if (TUserDefaults.HasDefault(TUserDefaults.PARTNER_LANGUAGECODE))
             {
-                newPartner.LanguageCode = TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_LANGUAGECODE, "");
+                newPartner.LanguageCode = TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_LANGUAGECODE);
             }
 
             PFamilyRow newFamily = MainDS.PFamily.NewRowTyped();
             MainDS.PFamily.Rows.Add(newFamily);
 
             newFamily.PartnerKey = newPartner.PartnerKey;
-            newFamily.FirstName = TXMLParser.GetAttribute(FCurrentPartnerNode, PARTNERIMPORT_FIRSTNAME);
-            newFamily.FamilyName = TXMLParser.GetAttribute(FCurrentPartnerNode, PARTNERIMPORT_FAMILYNAME);
+            newFamily.FirstName = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_FIRSTNAME);
+            newFamily.FamilyName = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_FAMILYNAME);
+            newFamily.Title = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_TITLE);
+            newPartner.PartnerShortName = Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
 
             string[] giftReceiptingDefaults = TSystemDefaults.GetSystemDefault("GiftReceiptingDefaults", ",no").Split(new char[] { ',' });
             newPartner.ReceiptLetterFrequency = giftReceiptingDefaults[0];
@@ -334,9 +321,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             partnerlocation.DateEffective = DateTime.Now;
             partnerlocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
             partnerlocation.SendMail = false;
-            partnerlocation.EmailAddress = TXMLParser.GetAttribute(FCurrentPartnerNode, PARTNERIMPORT_EMAIL);
-            partnerlocation.TelephoneNumber = TXMLParser.GetAttribute(FCurrentPartnerNode, PARTNERIMPORT_PHONE);
-            partnerlocation.MobileNumber = TXMLParser.GetAttribute(FCurrentPartnerNode, PARTNERIMPORT_MOBILEPHONE);
+            partnerlocation.EmailAddress = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_EMAIL);
+            partnerlocation.TelephoneNumber = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_PHONE);
+            partnerlocation.MobileNumber = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
             MainDS.PPartnerLocation.Rows.Add(partnerlocation);
 
             TVerificationResultCollection VerificationResult;

@@ -123,6 +123,44 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Location Type</summary>
         public const String LOCATIONTYPE_HOME = "HOME";
 
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_FAMILYNAME = "FamilyName";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_CITY = "City";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_AQUISITION = "Aquisition";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_GENDER = "Gender";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_ADDRESSEE_TYPE = "AddresseeType";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_LANGUAGE = "Language";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_FIRSTNAME = "FirstName";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_EMAIL = "Email";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_PHONE = "Phone";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_MOBILEPHONE = "MobilePhone";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_TITLE = "Title";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_MARITALSTATUS = "MaritalStatus";
+
+        public const String PARTNERIMPORT_AQUISITION_DEFAULT = "IMPORT";
+
         /// Default values
         /// <summary>used eg. for PPerson.OccupationCode</summary>
         public const String DEFAULT_CODE_UNKNOWN = "UNKNOWN";
