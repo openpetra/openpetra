@@ -1,6 +1,6 @@
-/* Auto generated with nant generateORM
- * Do not modify this file manually!
- */
+// auto generated with nant generateORM
+// Do not modify this file manually!
+//
 {#GPLFILEHEADER}
 
 using Ict.Common;

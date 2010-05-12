@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -623,12 +623,20 @@ public class CreateInterfaces : AutoGenerationWriter
         Console.WriteLine("working on file " + OutputFile);
 
         OpenFile(OutputFile);
-        WriteLine("/* Auto generated with nant generateGlue, based on " +
+        WriteLine("// Auto generated with nant generateGlue, based on " +
             Path.GetFullPath(AXmlFileName).Substring(Path.GetFullPath(AXmlFileName).IndexOf("csharp")));
-        WriteLine(" * and the Server c# files (eg. UIConnector implementations)");
-        WriteLine(" * Do not change this file manually.");
-        WriteLine(" */");
-        WriteLine();
+        WriteLine("// and the Server c# files (eg. UIConnector implementations)");
+        WriteLine("// Do not change this file manually.");
+        WriteLine("//");
+
+        // load default header with license and copyright
+        string templateDir = TAppSettingsManager.GetValueStatic("TemplateDir");
+        StreamReader sr = new StreamReader(templateDir + Path.DirectorySeparatorChar + "EmptyFileComment.txt");
+        string fileheader = sr.ReadToEnd();
+        sr.Close();
+        fileheader = fileheader.Replace(">>>> Put your full name or just a shortname here <<<<", "auto generated");
+        WriteLine(fileheader);
+
         WriteLine("using System;");
         WriteLine("using System.Collections;");
         WriteLine("using System.Collections.Generic;");
