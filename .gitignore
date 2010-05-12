@@ -10,6 +10,13 @@ db/basedb_progress
 OpenPetra.build.config
 *.exe.config
 *.CollectedGettext.cs
+*.bak
+_bin
+app.config
+*.yaml.xml
+*.FileListAbsolute.txt
+*.pdb
+*.pidb
 webserver/qooxdoo-sdk
 webserver/OpenPetraOrg/cache
 webserver/bin

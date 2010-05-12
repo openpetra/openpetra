@@ -1,6 +1,29 @@
-/* Auto generated with nant generateGlue
- * based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.xml
- */
+// Auto generated with nant generateGlue
+// based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.xml
+//
+//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       auto generated
+//
+// Copyright 2004-2009 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
 //
 // Contains a remotable class that instantiates an Object which gives access to
 // the MPartner Namespace (from the Client's perspective).
@@ -2568,6 +2591,28 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
             return null; // make sure that the TPartnerWebConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
+
+        /// generated method from connector
+        public Int64 NewPartnerKey(Int64 AFieldPartnerKey)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector.NewPartnerKey(AFieldPartnerKey);
+        }
+
+        /// generated method from connector
+        public PartnerEditTDS GetPartnerDetails(Int64 APartnerKey,
+                                                bool AWithAddressDetails,
+                                                bool AWithSubscriptions,
+                                                bool AWithRelationships)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector.GetPartnerDetails(APartnerKey, AWithAddressDetails, AWithSubscriptions, AWithRelationships);
+        }
+
+        /// generated method from connector
+        public bool SavePartner(PartnerEditTDS AMainDS,
+                                out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector.SavePartner(AMainDS, out AVerificationResult);
+        }
 
         /// generated method from connector
         public PartnerFindTDS FindPartners(string AFirstName,

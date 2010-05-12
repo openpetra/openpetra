@@ -243,6 +243,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnSkip.Location = new System.Drawing.Point(2,2);
             this.btnSkip.Name = "btnSkip";
             this.btnSkip.AutoSize = true;
+            this.btnSkip.Click += new System.EventHandler(this.SkipRecord);
             this.btnSkip.Text = "Skip";
             //
             // btnCreateNewFamilyAndPerson
@@ -250,6 +251,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnCreateNewFamilyAndPerson.Location = new System.Drawing.Point(2,2);
             this.btnCreateNewFamilyAndPerson.Name = "btnCreateNewFamilyAndPerson";
             this.btnCreateNewFamilyAndPerson.AutoSize = true;
+            this.btnCreateNewFamilyAndPerson.Click += new System.EventHandler(this.CreateNewFamilyAndPerson);
             this.btnCreateNewFamilyAndPerson.Text = "Create New Family And Person";
             //
             // btnFindOtherFamily

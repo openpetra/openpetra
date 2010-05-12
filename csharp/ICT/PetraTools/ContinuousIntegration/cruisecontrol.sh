@@ -21,8 +21,8 @@ CruiseControlPath=/home/timop/CruiseControl.NET
 start() {
     log_daemon_msg "Starting CruiseControl"
 
-    su -u timop -c "cd $CruiseControlPath/Server; mono ccnet.exe" &
-    su -u timop -c "cd $CruiseControlPath/WebDashboard; xsp --address 192.168.1.1 --nonstop" &
+    su timop -c "cd $CruiseControlPath/Server; mono ccnet.exe" &
+    su timop -c "cd $CruiseControlPath/WebDashboard; xsp --address 192.168.1.1 --nonstop" &
     status=0
     log_end_msg $status
 }

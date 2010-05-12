@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ImportExport.cs" />
+    <Compile Include="SimplePartnerEdit.cs" />
     <Compile Include="SimplePartnerFind.cs" />
     <Compile Include="WebConnectors.AssemblyInfo.cs" />
   </ItemGroup>

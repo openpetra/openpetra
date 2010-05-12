@@ -1,4 +1,4 @@
-﻿/*************************************************************************
+/*************************************************************************
  *
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -591,9 +591,18 @@ class CreateInstantiators : AutoGenerationWriter
         Console.WriteLine("working on " + OutputFile);
 
         OpenFile(OutputFile);
-        WriteLine("/* Auto generated with nant generateGlue");
-        WriteLine(" * based on " + Path.GetFullPath(AXmlFileName).Substring(Path.GetFullPath(AXmlFileName).IndexOf("csharp")));
-        WriteLine(" */");
+        WriteLine("// Auto generated with nant generateGlue");
+        WriteLine("// based on " + Path.GetFullPath(AXmlFileName).Substring(Path.GetFullPath(AXmlFileName).IndexOf("csharp")));
+        WriteLine("//");
+
+        // load default header with license and copyright
+        string templateDir = TAppSettingsManager.GetValueStatic("TemplateDir");
+        StreamReader sr = new StreamReader(templateDir + Path.DirectorySeparatorChar + "EmptyFileComment.txt");
+        string fileheader = sr.ReadToEnd();
+        sr.Close();
+        fileheader = fileheader.Replace(">>>> Put your full name or just a shortname here <<<<", "auto generated");
+        WriteLine(fileheader);
+
         WriteLine("//");
         WriteLine("// Contains a remotable class that instantiates an Object which gives access to");
         WriteLine("// the MPartner Namespace (from the Client's perspective).");
