@@ -1,9 +1,7 @@
-/* auto generated with nant generateWinforms from {#XAMLSRCFILE} 
- *
- * DO NOT edit manually, DO NOT edit with the designer
- * use a user control if you need to modify the screen content
- *
- */
+// auto generated with nant generateWinforms from {#XAMLSRCFILE}
+//
+// DO NOT edit manually, DO NOT edit with the designer
+//
 {#GPLFILEHEADER}
 using System;
 using System.Windows.Forms;

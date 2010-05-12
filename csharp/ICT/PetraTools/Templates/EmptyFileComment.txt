@@ -4,7 +4,7 @@
 // @Authors:
 //       >>>> Put your full name or just a shortname here <<<<
 //
-// Copyright 2004-2009 by OM International
+// Copyright 2004-2010 by OM International
 //
 // This file is part of OpenPetra.org.
 //

@@ -1,9 +1,7 @@
-/* auto generated with nant generateWinforms from {#XAMLSRCFILE} and template windowTDS
- *
- * DO NOT edit manually, DO NOT edit with the designer
- * use a user control if you need to modify the screen content
- *
- */
+// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template windowTDS
+//
+// DO NOT edit manually, DO NOT edit with the designer
+//
 {#GPLFILEHEADER}
 using System;
 using System.Drawing;

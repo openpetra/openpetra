@@ -1,8 +1,7 @@
-/* auto generated with nant generateWinforms from {#XAMLSRCFILE} and template controlMaintainTable
- *
- * DO NOT edit manually, DO NOT edit with the designer
- *
- */
+// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template controlMaintainTable
+//
+// DO NOT edit manually, DO NOT edit with the designer
+//
 {#GPLFILEHEADER}
 using System;
 using System.Drawing;

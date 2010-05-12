@@ -297,6 +297,61 @@
         return true;
     }
 
+    [Function("ReplaceFileHeader")]
+    public static bool ReplaceHeader(string filename)
+    {
+      Console.WriteLine(filename);
+      String line = "start";
+      StreamReader sr = new StreamReader(filename);
+      StreamWriter sw = new StreamWriter(filename + ".new");
+      bool firstLine = true;
+      while (line != null)
+      {
+        line = sr.ReadLine();
+        if (line != null)
+        {
+            if (line == "/*************************************************************************")
+            {
+                line = sr.ReadLine();
+
+                while (!line.EndsWith("************************************************************************/"))
+                {
+                    
+                    if (line.StartsWith(" *"))
+                    {
+                        line = "//" + line.Substring(2);
+                    }
+                    
+                    line = line.Replace("2004-2009 by OM International", "2004-2010 by OM International");
+                    
+                    sw.WriteLine(line);
+                    
+                    line = sr.ReadLine();
+                }
+                
+                line = sr.ReadLine();
+            }
+
+            if (!firstLine)
+            {
+                // for uncrustify we have no linebreak on the last line
+                sw.WriteLine();
+            }
+            firstLine = false;
+            
+            line = line.Replace("(c) OM International 2004-2009", "(c) OM International 2004-2010");
+
+            sw.Write(line);
+        }
+      }
+      sr.Close();
+      sw.Close();
+      File.Delete(filename);
+      File.Move(filename + ".new", filename);
+      return true;
+    }
+    
+    
     [Function("ChangeProjectFileRelease")]
     public static bool ChangeProjectFileRelease(string filename, bool makerelease)
     {
@@ -309,7 +364,6 @@
             ReplaceInFile(filename, "_bin\\Debug", "_bin\\Release");
             ReplaceInFile(filename, "Server_Client\\Debug", "Server_Client\\Release");
             ReplaceInFile(filename, "Server_ServerAdmin\\Debug", "Server_ServerAdmin\\Release");
-            ReplaceInFile(filename, "RegEx:<DocumentationFile>.*</DocumentationFile>", "");
         }
         else
         {

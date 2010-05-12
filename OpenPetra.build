@@ -576,7 +576,7 @@
     </target>
     
     <target name="generateGlue" depends="compilePetraTools" description="Generate the glue between client and server, ie. interfaces and instantiators">
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateSharedCode.exe" commandline="-xmlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.xml -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateSharedCode.exe" commandline="-xmlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.xml -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/"/>
     </target>
 
     <target name="generateGTK" depends="compilePetraTools" description="Generate GTK User Interface">
@@ -835,6 +835,19 @@
             </properties>
         </nant>
         <call target="switchToDebug"/>
+    </target>
+
+    <target name="replaceFileHeader">
+                <foreach item="File" property="filename">
+                    <in>
+                        <items>
+                            <include name="${OpenPetraRoot.dir}/csharp/ICT/**.cs" />
+                        </items>
+                    </in>
+                    <do>
+                        <if test='${script::ReplaceFileHeader(filename)}'/>
+                    </do>
+                </foreach>
     </target>
     
     <target name="setupTemplate">
