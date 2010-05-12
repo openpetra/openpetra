@@ -621,7 +621,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// get the function System.Object of the given calculation string
+        /// get the function object of the given calculation string
         /// </summary>
         /// <returns>nil if the function cannot be found
         /// </returns>
@@ -630,6 +630,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             return TUC_ColumnHelper.GetFunction(ref FAvailableFunctions, calculation);
         }
 
+        /// get the content and the width for the columns
         public List <KeyValuePair <String, Double>>GetColumnHeadings()
         {
             List <KeyValuePair <String, Double>>ReturnValue = new List <KeyValuePair <String, Double>>();

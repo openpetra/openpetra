@@ -138,7 +138,6 @@ namespace Ict.Common.Controls
         /// <summary>
         /// execute action from the navigation tree
         /// </summary>
-        /// <param name="node"></param>
         /// <returns>the error or status message</returns>
         public static string ExecuteAction(XmlNode node, IntPtr AParentWindowHandle)
         {
