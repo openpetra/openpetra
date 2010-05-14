@@ -213,7 +213,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Location Key", 2.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Mobile", 3.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Class", 1.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Key", 20));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Key", 2.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Name", 4.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Post Code", 2.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Send Mail", 2.0));
