@@ -22,7 +22,9 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MReporting;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Common;
 using System.Data.Odbc;
@@ -90,18 +92,35 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// <returns>void</returns>
         private String GetSiteName()
         {
-            String ReturnValue;
+            String ReturnValue = "";
             string strSql;
             DataTable tab;
+            long SiteKey = -1;
+            PPartnerTable PartnerTable;
 
-            ReturnValue = "";
-            strSql = "SELECT p_partner_short_name_c " + "FROM PUB_s_system_defaults, PUB_p_partner " +
-                     "WHERE PUB_p_partner.p_partner_key_n = PUB_s_system_defaults.s_default_value_c AND PUB_s_system_defaults.s_default_code_c = 'SiteKey'";
+            strSql = "SELECT PUB_s_system_defaults.s_default_value_c " + "FROM PUB_s_system_defaults " +
+                     "WHERE PUB_s_system_defaults.s_default_code_c = 'SiteKey'";
+           
             tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
-
+			
             if (tab.Rows.Count > 0)
             {
-                ReturnValue = Convert.ToString(tab.Rows[0]["p_partner_short_name_c"]);
+				String SiteKeyString = Convert.ToString(tab.Rows[0]["s_default_value_c"]);
+				try
+				{
+					SiteKey = Convert.ToInt64(SiteKeyString);
+				}
+				catch (Exception e)
+				{
+					SiteKey = -1;
+				}
+            }
+            
+            PartnerTable = PPartnerAccess.LoadByPrimaryKey(SiteKey, situation.GetDatabaseConnection().Transaction);
+            
+            if (PartnerTable.Rows.Count > 0)
+            {
+            	ReturnValue = (String)PartnerTable.Rows[0][PPartnerTable.GetPartnerShortNameDBName()];
             }
 
             return ReturnValue;
