@@ -159,6 +159,7 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Partner Import Column Name</summary>
         public const String PARTNERIMPORT_MARITALSTATUS = "MaritalStatus";
 
+        /// <summary>Default Aquisition Code to use for Partner Import</summary>
         public const String PARTNERIMPORT_AQUISITION_DEFAULT = "IMPORT";
 
         /// Default values

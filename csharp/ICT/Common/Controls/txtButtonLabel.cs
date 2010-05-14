@@ -650,7 +650,10 @@ namespace Ict.Common.Controls
             }
         }
 
-        public System.Windows.Forms.BorderStyle BorderStyle
+        /// <summary>
+        /// Sets the BorderStyle of the underlying TextBox.
+        /// </summary>
+        public new System.Windows.Forms.BorderStyle BorderStyle
         {
             get
             {

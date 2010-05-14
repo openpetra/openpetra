@@ -482,7 +482,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// Sets the BorderStyle of the underlying TextBox.
         /// </summary>
-        public System.Windows.Forms.BorderStyle BorderStyle
+        public new System.Windows.Forms.BorderStyle BorderStyle
         {
             get
             {

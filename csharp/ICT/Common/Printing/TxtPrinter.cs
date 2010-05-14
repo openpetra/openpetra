@@ -362,9 +362,13 @@ namespace Ict.Common.Printing
 
         #region Print String
 
+        /// <summary>
+        /// Calculate the x position for a text, considering the width of the space and the width of the text, and the alignment
+        /// </summary>
         protected float CalculateXPos(float AXPos, float AWidth, String ATxt, eAlignment AAlign)
         {
-            float XPos = Convert.ToInt32(AXPos);             /// eDefault
+            // eDefault
+            float XPos = Convert.ToInt32(AXPos);
 
             switch (AAlign)
             {

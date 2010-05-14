@@ -98,6 +98,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Public Methods
 
+        /// arrange the panels and controls according to the partner class
         public void InitialiseUserControl()
         {
             FPartnerClass = FMainDS.PPartner[0].PartnerClass.ToString();
