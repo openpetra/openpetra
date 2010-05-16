@@ -52,6 +52,11 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(GiftBatchTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -192,6 +197,11 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(BankImportTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -418,6 +428,11 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(NewDonorTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 

@@ -51,6 +51,11 @@ namespace Ict.Petra.Server.MCommon.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(OfficeSpecificDataLabelsTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -233,6 +238,11 @@ namespace Ict.Petra.Server.MCommon.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(FieldOfServiceTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 

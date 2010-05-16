@@ -597,7 +597,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             }
             else
             {
-                FMainDS.AEpMatch.Rows.Remove(CurrentlySelectedMatch);
+                CurrentlySelectedMatch.Delete();
                 CurrentlySelectedMatch = null;
 
                 // select the last gift detail
@@ -609,7 +609,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         {
             GetValuesFromScreen();
 
-            if (TRemote.MFinance.ImportExport.WebConnectors.CommitMatches(FMainDS))
+            if (TRemote.MFinance.ImportExport.WebConnectors.CommitMatches(FMainDS.GetChangesTyped(true)))
             {
                 FMainDS.AcceptChanges();
             }
