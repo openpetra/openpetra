@@ -277,7 +277,11 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     Int32 rowIndex = 0;
                     foreach (PBankingDetailsRow origRow in AInspectDS.PBankingDetails.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.BankingDetailsKey, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.BankingDetailsKey, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.PBankingDetails, SubmitChangesTransaction,
@@ -291,7 +295,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     {
                         foreach (AEpStatementRow otherRow in AInspectDS.AEpStatement.Rows)
                         {
-                            if (!otherRow.IsBankAccountKeyNull() && otherRow.BankAccountKey < 0)
+                            if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsBankAccountKeyNull() && otherRow.BankAccountKey < 0)
                             {
                                 otherRow.BankAccountKey = AInspectDS.PBankingDetails[OldSequenceValuesRow[otherRow.BankAccountKey]].BankingDetailsKey;
                             }
@@ -304,7 +308,11 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     Int32 rowIndex = 0;
                     foreach (AEpStatementRow origRow in AInspectDS.AEpStatement.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.StatementKey, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.StatementKey, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.AEpStatement, SubmitChangesTransaction,
@@ -318,7 +326,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     {
                         foreach (AEpTransactionRow otherRow in AInspectDS.AEpTransaction.Rows)
                         {
-                            if (otherRow.StatementKey < 0)
+                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.StatementKey < 0)
                             {
                                 otherRow.StatementKey = AInspectDS.AEpStatement[OldSequenceValuesRow[otherRow.StatementKey]].StatementKey;
                             }
@@ -339,7 +347,11 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     Int32 rowIndex = 0;
                     foreach (AEpMatchRow origRow in AInspectDS.AEpMatch.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.EpMatchKey, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.EpMatchKey, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.AEpMatch, SubmitChangesTransaction,
@@ -353,7 +365,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     {
                         foreach (AEpTransactionRow otherRow in AInspectDS.AEpTransaction.Rows)
                         {
-                            if (!otherRow.IsEpMatchKeyNull() && otherRow.EpMatchKey < 0)
+                            if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsEpMatchKeyNull() && otherRow.EpMatchKey < 0)
                             {
                                 otherRow.EpMatchKey = AInspectDS.AEpMatch[OldSequenceValuesRow[otherRow.EpMatchKey]].EpMatchKey;
                             }

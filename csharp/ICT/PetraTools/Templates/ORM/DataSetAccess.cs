@@ -84,7 +84,11 @@ if (SubmissionResult == TSubmitChangesResult.scrOK)
     Int32 rowIndex = 0;
     foreach ({#TABLEROWTYPE} origRow in AInspectDS.{#TABLEVARIABLENAME}.Rows)
     {
-        OldSequenceValuesRow.Add(origRow.{#SEQUENCEDCOLUMNNAME}, rowIndex);
+        if (origRow.RowState != DataRowState.Deleted)
+        {
+            OldSequenceValuesRow.Add(origRow.{#SEQUENCEDCOLUMNNAME}, rowIndex);
+        }
+
         rowIndex++;
     }
     if (!TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
@@ -104,7 +108,7 @@ if (SubmissionResult == TSubmitChangesResult.scrOK)
 {##UPDATESEQUENCEINOTHERTABLES}
 foreach ({#REFERENCINGTABLEROWTYPE} otherRow in AInspectDS.{#REFERENCINGTABLENAME}.Rows)
 {
-    if ({#TESTFORNULL}otherRow.{#REFCOLUMNNAME} < 0)
+    if ((otherRow.RowState != DataRowState.Deleted) && {#TESTFORNULL}otherRow.{#REFCOLUMNNAME} < 0)
     {
         otherRow.{#REFCOLUMNNAME} = AInspectDS.{#TABLEVARIABLENAME}[OldSequenceValuesRow[otherRow.{#REFCOLUMNNAME}]].{#SEQUENCEDCOLUMNNAME};
     }

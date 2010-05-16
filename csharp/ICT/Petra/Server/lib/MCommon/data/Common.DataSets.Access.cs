@@ -119,7 +119,11 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                     Int32 rowIndex = 0;
                     foreach (PDataLabelRow origRow in AInspectDS.DataLabelList.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.Key, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.Key, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.DataLabelList, SubmitChangesTransaction,
@@ -133,21 +137,21 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                     {
                         foreach (PDataLabelUseRow otherRow in AInspectDS.DataLabelUseList.Rows)
                         {
-                            if (otherRow.DataLabelKey < 0)
+                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.DataLabelKey < 0)
                             {
                                 otherRow.DataLabelKey = AInspectDS.DataLabelList[OldSequenceValuesRow[otherRow.DataLabelKey]].Key;
                             }
                         }
                         foreach (PDataLabelValueApplicationRow otherRow in AInspectDS.PDataLabelValueApplication.Rows)
                         {
-                            if (otherRow.DataLabelKey < 0)
+                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.DataLabelKey < 0)
                             {
                                 otherRow.DataLabelKey = AInspectDS.DataLabelList[OldSequenceValuesRow[otherRow.DataLabelKey]].Key;
                             }
                         }
                         foreach (PDataLabelValuePartnerRow otherRow in AInspectDS.PDataLabelValuePartner.Rows)
                         {
-                            if (otherRow.DataLabelKey < 0)
+                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.DataLabelKey < 0)
                             {
                                 otherRow.DataLabelKey = AInspectDS.DataLabelList[OldSequenceValuesRow[otherRow.DataLabelKey]].Key;
                             }
@@ -320,7 +324,11 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                     Int32 rowIndex = 0;
                     foreach (PmStaffDataRow origRow in AInspectDS.PmStaffData.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.Key, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.Key, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.PmStaffData, SubmitChangesTransaction,
@@ -334,7 +342,7 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                     {
                         foreach (PPartnerFieldOfServiceRow otherRow in AInspectDS.PPartnerFieldOfService.Rows)
                         {
-                            if (!otherRow.IsCommitmentKeyNull() && otherRow.CommitmentKey < 0)
+                            if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsCommitmentKeyNull() && otherRow.CommitmentKey < 0)
                             {
                                 otherRow.CommitmentKey = AInspectDS.PmStaffData[OldSequenceValuesRow[otherRow.CommitmentKey]].Key;
                             }

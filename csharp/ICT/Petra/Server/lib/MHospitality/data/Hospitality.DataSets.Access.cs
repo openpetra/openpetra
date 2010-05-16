@@ -136,7 +136,11 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     Int32 rowIndex = 0;
                     foreach (PcRoomAllocRow origRow in AInspectDS.PcRoomAlloc.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.Key, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.Key, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.PcRoomAlloc, SubmitChangesTransaction,
@@ -150,7 +154,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     {
                         foreach (PhRoomBookingRow otherRow in AInspectDS.PhRoomBooking.Rows)
                         {
-                            if (otherRow.RoomAllocKey < 0)
+                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.RoomAllocKey < 0)
                             {
                                 otherRow.RoomAllocKey = AInspectDS.PcRoomAlloc[OldSequenceValuesRow[otherRow.RoomAllocKey]].Key;
                             }
@@ -171,7 +175,11 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     Int32 rowIndex = 0;
                     foreach (PhBookingRow origRow in AInspectDS.PhBooking.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.Key, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.Key, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.PhBooking, SubmitChangesTransaction,
@@ -185,7 +193,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     {
                         foreach (PhRoomBookingRow otherRow in AInspectDS.PhRoomBooking.Rows)
                         {
-                            if (otherRow.BookingKey < 0)
+                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.BookingKey < 0)
                             {
                                 otherRow.BookingKey = AInspectDS.PhBooking[OldSequenceValuesRow[otherRow.BookingKey]].Key;
                             }

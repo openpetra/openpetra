@@ -206,7 +206,11 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     Int32 rowIndex = 0;
                     foreach (AGeneralLedgerMasterRow origRow in AInspectDS.AGeneralLedgerMaster.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.GlmSequence, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.GlmSequence, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.AGeneralLedgerMaster, SubmitChangesTransaction,
@@ -220,7 +224,7 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     {
                         foreach (AGeneralLedgerMasterPeriodRow otherRow in AInspectDS.AGeneralLedgerMasterPeriod.Rows)
                         {
-                            if (otherRow.GlmSequence < 0)
+                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.GlmSequence < 0)
                             {
                                 otherRow.GlmSequence = AInspectDS.AGeneralLedgerMaster[OldSequenceValuesRow[otherRow.GlmSequence]].GlmSequence;
                             }
@@ -721,7 +725,11 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     Int32 rowIndex = 0;
                     foreach (ABudgetRow origRow in AInspectDS.ABudget.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.BudgetSequence, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.BudgetSequence, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.ABudget, SubmitChangesTransaction,
@@ -735,7 +743,7 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     {
                         foreach (ABudgetPeriodRow otherRow in AInspectDS.ABudgetPeriod.Rows)
                         {
-                            if (otherRow.BudgetSequence < 0)
+                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.BudgetSequence < 0)
                             {
                                 otherRow.BudgetSequence = AInspectDS.ABudget[OldSequenceValuesRow[otherRow.BudgetSequence]].BudgetSequence;
                             }
@@ -788,7 +796,11 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     Int32 rowIndex = 0;
                     foreach (AGeneralLedgerMasterRow origRow in AInspectDS.AGeneralLedgerMaster.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.GlmSequence, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.GlmSequence, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.AGeneralLedgerMaster, SubmitChangesTransaction,
@@ -802,7 +814,7 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     {
                         foreach (AGeneralLedgerMasterPeriodRow otherRow in AInspectDS.AGeneralLedgerMasterPeriod.Rows)
                         {
-                            if (otherRow.GlmSequence < 0)
+                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.GlmSequence < 0)
                             {
                                 otherRow.GlmSequence = AInspectDS.AGeneralLedgerMaster[OldSequenceValuesRow[otherRow.GlmSequence]].GlmSequence;
                             }
@@ -863,7 +875,11 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     Int32 rowIndex = 0;
                     foreach (PLocationRow origRow in AInspectDS.PLocation.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.LocationKey, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.LocationKey, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.PLocation, SubmitChangesTransaction,
@@ -877,7 +893,7 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     {
                         foreach (PPartnerLocationRow otherRow in AInspectDS.PPartnerLocation.Rows)
                         {
-                            if (otherRow.LocationKey < 0)
+                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.LocationKey < 0)
                             {
                                 otherRow.LocationKey = AInspectDS.PLocation[OldSequenceValuesRow[otherRow.LocationKey]].LocationKey;
                             }

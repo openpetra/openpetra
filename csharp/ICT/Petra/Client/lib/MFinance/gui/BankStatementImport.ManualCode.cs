@@ -79,6 +79,13 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             if (cmbSelectStatement.GetSelectedInt32() == -1)
             {
+                // no statement selected, therefore show no transactions. happens when deleting a statement
+                if (FTransactionView != null)
+                {
+                    FTransactionView.RowFilter = "false";
+                    pnlDetails.Visible = false;
+                }
+
                 return;
             }
 
@@ -282,6 +289,20 @@ namespace Ict.Petra.Client.MFinance.Gui
         private bool rbtGLWasChecked = false;
         private bool rbtGiftWasChecked = false;
         private bool rbtUnmatchedWasChecked = false;
+
+        private void DeleteStatement(System.Object Sender, EventArgs e)
+        {
+            if (CurrentStatement != null)
+            {
+                if (TRemote.MFinance.ImportExport.WebConnectors.DropBankStatement(CurrentStatement.StatementKey))
+                {
+                    FMainDS.AEpStatement.Rows.Remove(CurrentStatement);
+                    CurrentStatement = null;
+                    PopulateStatementCombobox();
+                    SelectBankStatement(null, null);
+                }
+            }
+        }
 
         /// store current selections in the a_ep_match table
         private void GetValuesFromScreen()
