@@ -52,6 +52,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(PartnerEditTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
             if (AInspectDS == null)
             {
                 return TSubmitChangesResult.scrOK;
@@ -59,8 +61,6 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
 
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {
@@ -612,6 +612,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(PartnerAddressAggregateTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
             if (AInspectDS == null)
             {
                 return TSubmitChangesResult.scrOK;
@@ -619,8 +621,6 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
 
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {
@@ -672,6 +672,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(PartnerInfoTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
             if (AInspectDS == null)
             {
                 return TSubmitChangesResult.scrOK;
@@ -679,8 +681,6 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
 
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {

@@ -32,6 +32,8 @@ public class {#DATASETNAME}Access
 /// auto generated
 static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS, out TVerificationResultCollection AVerificationResult)
 {
+    AVerificationResult = new TVerificationResultCollection();
+
     if (AInspectDS == null)
     {
         return TSubmitChangesResult.scrOK;
@@ -39,8 +41,6 @@ static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS, out 
 
     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
     TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-    AVerificationResult = new TVerificationResultCollection();
 
     try
     {

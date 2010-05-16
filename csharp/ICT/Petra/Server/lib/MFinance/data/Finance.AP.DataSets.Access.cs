@@ -49,6 +49,8 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(AccountsPayableTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
             if (AInspectDS == null)
             {
                 return TSubmitChangesResult.scrOK;
@@ -56,8 +58,6 @@ namespace Ict.Petra.Server.MFinance.AP.Data.Access
 
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {

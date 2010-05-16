@@ -52,6 +52,8 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(HospitalityTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
             if (AInspectDS == null)
             {
                 return TSubmitChangesResult.scrOK;
@@ -59,8 +61,6 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
 
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {
