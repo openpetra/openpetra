@@ -229,7 +229,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            if (Batch.BatchCreditTotal != Batch.BatchDebitTotal)
+            if (Convert.ToDecimal(Batch.BatchCreditTotal) != Convert.ToDecimal(Batch.BatchDebitTotal))
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
@@ -244,7 +244,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         Catalog.GetString("It has no monetary value. Please cancel it or add meaningful transactions."),
                         TResultSeverity.Resv_Critical));
             }
-            else if ((Batch.BatchControlTotal != 0) && (Batch.BatchControlTotal != Batch.BatchCreditTotal))
+            else if ((Batch.BatchControlTotal != 0) && (Convert.ToDecimal(Batch.BatchControlTotal) != Convert.ToDecimal(Batch.BatchCreditTotal)))
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
@@ -304,7 +304,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
                 }
 
-                if (journal.JournalCreditTotal != journal.JournalDebitTotal)
+                if (Convert.ToDecimal(journal.JournalCreditTotal) != Convert.ToDecimal(journal.JournalDebitTotal))
                 {
                     AVerifications.Add(new TVerificationResult(
                             String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),

@@ -281,6 +281,19 @@ namespace Ict.Petra.Client.MFinance.Gui
             {
                 DisplayGLDetails();
             }
+
+            if (rbtUnmatched.Checked && (FMatchView != null))
+            {
+                foreach (DataRowView rv in FMatchView)
+                {
+                    ((AEpMatchRow)rv.Row).Action = MFinanceConstants.BANK_STMT_STATUS_NO_MATCHING;
+
+                    if (CurrentlySelectedTransaction.EpMatchKey != ((AEpMatchRow)rv.Row).EpMatchKey)
+                    {
+                        ((AEpMatchRow)rv.Row).Delete();
+                    }
+                }
+            }
         }
 
         private AEpStatementRow CurrentStatement = null;
