@@ -127,7 +127,25 @@ namespace Ict.Petra.Shared.MPartner
         public const String PARTNERIMPORT_FAMILYNAME = "FamilyName";
 
         /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_LOCALITY = "Locality";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_STREETNAME = "StreetName";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_ADDRESS = "Address";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_POSTALCODE = "PostalCode";
+
+        /// <summary>Partner Import Column Name</summary>
         public const String PARTNERIMPORT_CITY = "City";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_COUNTY = "County";
+
+        /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_COUNTRYCODE = "CountryCode";
 
         /// <summary>Partner Import Column Name</summary>
         public const String PARTNERIMPORT_AQUISITION = "Aquisition";

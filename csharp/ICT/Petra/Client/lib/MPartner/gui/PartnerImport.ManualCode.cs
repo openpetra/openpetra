@@ -88,6 +88,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FCurrentPartnerNode == null)
             {
+                OpenFile(null, null);
+            }
+
+            if (FCurrentPartnerNode == null)
+            {
                 MessageBox.Show(Catalog.GetString("Please select a text file containing the partners first"),
                     Catalog.GetString("Need a file to import"),
                     MessageBoxButtons.OK,
@@ -314,8 +319,20 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             newFamily.MaritalStatus = GetMaritalStatusCode();
 
-            // TODO location
+            // TODO check for existing location
+            PLocationRow newLocation = MainDS.PLocation.NewRowTyped(true);
+            MainDS.PLocation.Rows.Add(newLocation);
+            newLocation.LocationKey = -1;
+            newLocation.Locality = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_LOCALITY);
+            newLocation.StreetName = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_STREETNAME);
+            newLocation.Address3 = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_ADDRESS);
+            newLocation.PostalCode = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_POSTALCODE);
+            newLocation.City = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_CITY);
+            newLocation.County = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_COUNTY);
+            newLocation.CountryCode = TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
+
             PPartnerLocationRow partnerlocation = MainDS.PPartnerLocation.NewRowTyped(true);
+            partnerlocation.LocationKey = -1;
             partnerlocation.SiteKey = 0;
             partnerlocation.PartnerKey = newPartner.PartnerKey;
             partnerlocation.DateEffective = DateTime.Now;
