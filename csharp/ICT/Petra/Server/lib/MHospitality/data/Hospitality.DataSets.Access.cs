@@ -135,7 +135,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PcRoomAlloc != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
@@ -174,7 +174,7 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PhBooking != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;

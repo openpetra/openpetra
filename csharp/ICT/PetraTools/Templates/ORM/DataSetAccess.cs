@@ -83,7 +83,7 @@ if (SubmissionResult == TSubmitChangesResult.scrOK
 }
 {#ENDIFN UPDATESEQUENCEINOTHERTABLES}
 {#IFDEF UPDATESEQUENCEINOTHERTABLES}
-if (SubmissionResult == TSubmitChangesResult.scrOK)
+if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.{#TABLEVARIABLENAME} != null)
 {
     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
     Int32 rowIndex = 0;

@@ -118,7 +118,7 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.DataLabelList != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
@@ -328,7 +328,7 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PmStaffData != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;

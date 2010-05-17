@@ -281,7 +281,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PBankingDetails != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
@@ -312,7 +312,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                         }
                     }
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.AEpStatement != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
@@ -351,7 +351,7 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.AEpMatch != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;

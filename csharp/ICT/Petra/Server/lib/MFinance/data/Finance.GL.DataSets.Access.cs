@@ -205,7 +205,7 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.AGeneralLedgerMaster != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
@@ -729,7 +729,7 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.ABudget != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
@@ -800,7 +800,7 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.AGeneralLedgerMaster != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
@@ -879,7 +879,7 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PLocation != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;

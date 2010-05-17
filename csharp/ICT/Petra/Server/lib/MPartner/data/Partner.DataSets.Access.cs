@@ -314,7 +314,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PLocation != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
@@ -401,7 +401,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PBankingDetails != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
@@ -464,7 +464,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PFoundationProposal != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
@@ -535,7 +535,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PPartnerContact != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
@@ -721,7 +721,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PLocation != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
