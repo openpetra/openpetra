@@ -303,11 +303,14 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     }
                     else
                     {
-                        foreach (AEpStatementRow otherRow in AInspectDS.AEpStatement.Rows)
+                        if (AInspectDS.AEpStatement != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsBankAccountKeyNull() && otherRow.BankAccountKey < 0)
+                            foreach (AEpStatementRow otherRow in AInspectDS.AEpStatement.Rows)
                             {
-                                otherRow.BankAccountKey = AInspectDS.PBankingDetails[OldSequenceValuesRow[otherRow.BankAccountKey]].BankingDetailsKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsBankAccountKeyNull() && otherRow.BankAccountKey < 0)
+                                {
+                                    otherRow.BankAccountKey = AInspectDS.PBankingDetails[OldSequenceValuesRow[otherRow.BankAccountKey]].BankingDetailsKey;
+                                }
                             }
                         }
                     }
@@ -334,11 +337,14 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     }
                     else
                     {
-                        foreach (AEpTransactionRow otherRow in AInspectDS.AEpTransaction.Rows)
+                        if (AInspectDS.AEpTransaction != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.StatementKey < 0)
+                            foreach (AEpTransactionRow otherRow in AInspectDS.AEpTransaction.Rows)
                             {
-                                otherRow.StatementKey = AInspectDS.AEpStatement[OldSequenceValuesRow[otherRow.StatementKey]].StatementKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.StatementKey < 0)
+                                {
+                                    otherRow.StatementKey = AInspectDS.AEpStatement[OldSequenceValuesRow[otherRow.StatementKey]].StatementKey;
+                                }
                             }
                         }
                     }
@@ -373,11 +379,14 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     }
                     else
                     {
-                        foreach (AEpTransactionRow otherRow in AInspectDS.AEpTransaction.Rows)
+                        if (AInspectDS.AEpTransaction != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsEpMatchKeyNull() && otherRow.EpMatchKey < 0)
+                            foreach (AEpTransactionRow otherRow in AInspectDS.AEpTransaction.Rows)
                             {
-                                otherRow.EpMatchKey = AInspectDS.AEpMatch[OldSequenceValuesRow[otherRow.EpMatchKey]].EpMatchKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsEpMatchKeyNull() && otherRow.EpMatchKey < 0)
+                                {
+                                    otherRow.EpMatchKey = AInspectDS.AEpMatch[OldSequenceValuesRow[otherRow.EpMatchKey]].EpMatchKey;
+                                }
                             }
                         }
                     }

@@ -140,25 +140,34 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                     }
                     else
                     {
-                        foreach (PDataLabelUseRow otherRow in AInspectDS.DataLabelUseList.Rows)
+                        if (AInspectDS.DataLabelUseList != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.DataLabelKey < 0)
+                            foreach (PDataLabelUseRow otherRow in AInspectDS.DataLabelUseList.Rows)
                             {
-                                otherRow.DataLabelKey = AInspectDS.DataLabelList[OldSequenceValuesRow[otherRow.DataLabelKey]].Key;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.DataLabelKey < 0)
+                                {
+                                    otherRow.DataLabelKey = AInspectDS.DataLabelList[OldSequenceValuesRow[otherRow.DataLabelKey]].Key;
+                                }
                             }
                         }
-                        foreach (PDataLabelValueApplicationRow otherRow in AInspectDS.PDataLabelValueApplication.Rows)
+                        if (AInspectDS.PDataLabelValueApplication != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.DataLabelKey < 0)
+                            foreach (PDataLabelValueApplicationRow otherRow in AInspectDS.PDataLabelValueApplication.Rows)
                             {
-                                otherRow.DataLabelKey = AInspectDS.DataLabelList[OldSequenceValuesRow[otherRow.DataLabelKey]].Key;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.DataLabelKey < 0)
+                                {
+                                    otherRow.DataLabelKey = AInspectDS.DataLabelList[OldSequenceValuesRow[otherRow.DataLabelKey]].Key;
+                                }
                             }
                         }
-                        foreach (PDataLabelValuePartnerRow otherRow in AInspectDS.PDataLabelValuePartner.Rows)
+                        if (AInspectDS.PDataLabelValuePartner != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.DataLabelKey < 0)
+                            foreach (PDataLabelValuePartnerRow otherRow in AInspectDS.PDataLabelValuePartner.Rows)
                             {
-                                otherRow.DataLabelKey = AInspectDS.DataLabelList[OldSequenceValuesRow[otherRow.DataLabelKey]].Key;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.DataLabelKey < 0)
+                                {
+                                    otherRow.DataLabelKey = AInspectDS.DataLabelList[OldSequenceValuesRow[otherRow.DataLabelKey]].Key;
+                                }
                             }
                         }
                     }
@@ -350,11 +359,14 @@ namespace Ict.Petra.Server.MCommon.Data.Access
                     }
                     else
                     {
-                        foreach (PPartnerFieldOfServiceRow otherRow in AInspectDS.PPartnerFieldOfService.Rows)
+                        if (AInspectDS.PPartnerFieldOfService != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsCommitmentKeyNull() && otherRow.CommitmentKey < 0)
+                            foreach (PPartnerFieldOfServiceRow otherRow in AInspectDS.PPartnerFieldOfService.Rows)
                             {
-                                otherRow.CommitmentKey = AInspectDS.PmStaffData[OldSequenceValuesRow[otherRow.CommitmentKey]].Key;
+                                if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsCommitmentKeyNull() && otherRow.CommitmentKey < 0)
+                                {
+                                    otherRow.CommitmentKey = AInspectDS.PmStaffData[OldSequenceValuesRow[otherRow.CommitmentKey]].Key;
+                                }
                             }
                         }
                     }

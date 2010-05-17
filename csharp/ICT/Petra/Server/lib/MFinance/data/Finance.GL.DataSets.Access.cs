@@ -227,11 +227,14 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     }
                     else
                     {
-                        foreach (AGeneralLedgerMasterPeriodRow otherRow in AInspectDS.AGeneralLedgerMasterPeriod.Rows)
+                        if (AInspectDS.AGeneralLedgerMasterPeriod != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.GlmSequence < 0)
+                            foreach (AGeneralLedgerMasterPeriodRow otherRow in AInspectDS.AGeneralLedgerMasterPeriod.Rows)
                             {
-                                otherRow.GlmSequence = AInspectDS.AGeneralLedgerMaster[OldSequenceValuesRow[otherRow.GlmSequence]].GlmSequence;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.GlmSequence < 0)
+                                {
+                                    otherRow.GlmSequence = AInspectDS.AGeneralLedgerMaster[OldSequenceValuesRow[otherRow.GlmSequence]].GlmSequence;
+                                }
                             }
                         }
                     }
@@ -751,11 +754,14 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     }
                     else
                     {
-                        foreach (ABudgetPeriodRow otherRow in AInspectDS.ABudgetPeriod.Rows)
+                        if (AInspectDS.ABudgetPeriod != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.BudgetSequence < 0)
+                            foreach (ABudgetPeriodRow otherRow in AInspectDS.ABudgetPeriod.Rows)
                             {
-                                otherRow.BudgetSequence = AInspectDS.ABudget[OldSequenceValuesRow[otherRow.BudgetSequence]].BudgetSequence;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.BudgetSequence < 0)
+                                {
+                                    otherRow.BudgetSequence = AInspectDS.ABudget[OldSequenceValuesRow[otherRow.BudgetSequence]].BudgetSequence;
+                                }
                             }
                         }
                     }
@@ -822,11 +828,14 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     }
                     else
                     {
-                        foreach (AGeneralLedgerMasterPeriodRow otherRow in AInspectDS.AGeneralLedgerMasterPeriod.Rows)
+                        if (AInspectDS.AGeneralLedgerMasterPeriod != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.GlmSequence < 0)
+                            foreach (AGeneralLedgerMasterPeriodRow otherRow in AInspectDS.AGeneralLedgerMasterPeriod.Rows)
                             {
-                                otherRow.GlmSequence = AInspectDS.AGeneralLedgerMaster[OldSequenceValuesRow[otherRow.GlmSequence]].GlmSequence;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.GlmSequence < 0)
+                                {
+                                    otherRow.GlmSequence = AInspectDS.AGeneralLedgerMaster[OldSequenceValuesRow[otherRow.GlmSequence]].GlmSequence;
+                                }
                             }
                         }
                     }
@@ -901,11 +910,14 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     }
                     else
                     {
-                        foreach (PPartnerLocationRow otherRow in AInspectDS.PPartnerLocation.Rows)
+                        if (AInspectDS.PPartnerLocation != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.LocationKey < 0)
+                            foreach (PPartnerLocationRow otherRow in AInspectDS.PPartnerLocation.Rows)
                             {
-                                otherRow.LocationKey = AInspectDS.PLocation[OldSequenceValuesRow[otherRow.LocationKey]].LocationKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.LocationKey < 0)
+                                {
+                                    otherRow.LocationKey = AInspectDS.PLocation[OldSequenceValuesRow[otherRow.LocationKey]].LocationKey;
+                                }
                             }
                         }
                     }

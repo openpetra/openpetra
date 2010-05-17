@@ -157,11 +157,14 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     }
                     else
                     {
-                        foreach (PhRoomBookingRow otherRow in AInspectDS.PhRoomBooking.Rows)
+                        if (AInspectDS.PhRoomBooking != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.RoomAllocKey < 0)
+                            foreach (PhRoomBookingRow otherRow in AInspectDS.PhRoomBooking.Rows)
                             {
-                                otherRow.RoomAllocKey = AInspectDS.PcRoomAlloc[OldSequenceValuesRow[otherRow.RoomAllocKey]].Key;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.RoomAllocKey < 0)
+                                {
+                                    otherRow.RoomAllocKey = AInspectDS.PcRoomAlloc[OldSequenceValuesRow[otherRow.RoomAllocKey]].Key;
+                                }
                             }
                         }
                     }
@@ -196,11 +199,14 @@ namespace Ict.Petra.Server.MHospitality.Data.Access
                     }
                     else
                     {
-                        foreach (PhRoomBookingRow otherRow in AInspectDS.PhRoomBooking.Rows)
+                        if (AInspectDS.PhRoomBooking != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.BookingKey < 0)
+                            foreach (PhRoomBookingRow otherRow in AInspectDS.PhRoomBooking.Rows)
                             {
-                                otherRow.BookingKey = AInspectDS.PhBooking[OldSequenceValuesRow[otherRow.BookingKey]].Key;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.BookingKey < 0)
+                                {
+                                    otherRow.BookingKey = AInspectDS.PhBooking[OldSequenceValuesRow[otherRow.BookingKey]].Key;
+                                }
                             }
                         }
                     }

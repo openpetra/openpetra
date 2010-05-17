@@ -336,11 +336,14 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     }
                     else
                     {
-                        foreach (PPartnerLocationRow otherRow in AInspectDS.PPartnerLocation.Rows)
+                        if (AInspectDS.PPartnerLocation != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.LocationKey < 0)
+                            foreach (PPartnerLocationRow otherRow in AInspectDS.PPartnerLocation.Rows)
                             {
-                                otherRow.LocationKey = AInspectDS.PLocation[OldSequenceValuesRow[otherRow.LocationKey]].LocationKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.LocationKey < 0)
+                                {
+                                    otherRow.LocationKey = AInspectDS.PLocation[OldSequenceValuesRow[otherRow.LocationKey]].LocationKey;
+                                }
                             }
                         }
                     }
@@ -423,11 +426,14 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     }
                     else
                     {
-                        foreach (PPartnerBankingDetailsRow otherRow in AInspectDS.PPartnerBankingDetails.Rows)
+                        if (AInspectDS.PPartnerBankingDetails != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.BankingDetailsKey < 0)
+                            foreach (PPartnerBankingDetailsRow otherRow in AInspectDS.PPartnerBankingDetails.Rows)
                             {
-                                otherRow.BankingDetailsKey = AInspectDS.PBankingDetails[OldSequenceValuesRow[otherRow.BankingDetailsKey]].BankingDetailsKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.BankingDetailsKey < 0)
+                                {
+                                    otherRow.BankingDetailsKey = AInspectDS.PBankingDetails[OldSequenceValuesRow[otherRow.BankingDetailsKey]].BankingDetailsKey;
+                                }
                             }
                         }
                     }
@@ -486,11 +492,14 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     }
                     else
                     {
-                        foreach (PFoundationProposalDetailRow otherRow in AInspectDS.PFoundationProposalDetail.Rows)
+                        if (AInspectDS.PFoundationProposalDetail != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.FoundationProposalKey < 0)
+                            foreach (PFoundationProposalDetailRow otherRow in AInspectDS.PFoundationProposalDetail.Rows)
                             {
-                                otherRow.FoundationProposalKey = AInspectDS.PFoundationProposal[OldSequenceValuesRow[otherRow.FoundationProposalKey]].FoundationProposalKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.FoundationProposalKey < 0)
+                                {
+                                    otherRow.FoundationProposalKey = AInspectDS.PFoundationProposal[OldSequenceValuesRow[otherRow.FoundationProposalKey]].FoundationProposalKey;
+                                }
                             }
                         }
                     }
@@ -557,11 +566,14 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     }
                     else
                     {
-                        foreach (PPartnerReminderRow otherRow in AInspectDS.PPartnerReminder.Rows)
+                        if (AInspectDS.PPartnerReminder != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsContactIdNull() && otherRow.ContactId < 0)
+                            foreach (PPartnerReminderRow otherRow in AInspectDS.PPartnerReminder.Rows)
                             {
-                                otherRow.ContactId = AInspectDS.PPartnerContact[OldSequenceValuesRow[otherRow.ContactId]].ContactId;
+                                if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsContactIdNull() && otherRow.ContactId < 0)
+                                {
+                                    otherRow.ContactId = AInspectDS.PPartnerContact[OldSequenceValuesRow[otherRow.ContactId]].ContactId;
+                                }
                             }
                         }
                     }
@@ -743,11 +755,14 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     }
                     else
                     {
-                        foreach (PPartnerLocationRow otherRow in AInspectDS.PPartnerLocation.Rows)
+                        if (AInspectDS.PPartnerLocation != null)
                         {
-                            if ((otherRow.RowState != DataRowState.Deleted) && otherRow.LocationKey < 0)
+                            foreach (PPartnerLocationRow otherRow in AInspectDS.PPartnerLocation.Rows)
                             {
-                                otherRow.LocationKey = AInspectDS.PLocation[OldSequenceValuesRow[otherRow.LocationKey]].LocationKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.LocationKey < 0)
+                                {
+                                    otherRow.LocationKey = AInspectDS.PLocation[OldSequenceValuesRow[otherRow.LocationKey]].LocationKey;
+                                }
                             }
                         }
                     }
