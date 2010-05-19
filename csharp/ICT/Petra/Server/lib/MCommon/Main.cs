@@ -237,10 +237,10 @@ namespace Ict.Petra.Server.MCommon
         System.Int16 FLastRetrievedPage;
 
         /// <summary>Property value.</summary>
-        System.Int32 FTotalRecords;
+        System.Int32 FTotalRecords = -1;
 
         /// <summary>Property value.</summary>
-        System.Int16 FTotalPages;
+        System.Int16 FTotalPages = -1;
 
         /// <summary>Pass in an instance of TAsyncFindParameters to set the parameters for the query execution</summary>
         public TAsyncFindParameters FindParameters
@@ -496,6 +496,12 @@ namespace Ict.Petra.Server.MCommon
                 Console.WriteLine(this.GetType().FullName + ".GetData(" + APage.ToString() + ") called.");
             }
 #endif
+
+            // wait until the query has been run in the other thread
+            while (FTotalRecords == -1)
+            {
+                System.Threading.Thread.Sleep(500);
+            }
 
             if (((APage != FLastRetrievedPage) || (APage == 0)) && (APage >= 0))
             {
