@@ -240,7 +240,7 @@ namespace Ict.Common.DB
 
         /// <summary>For logging purposes.</summary>
         /// <remarks>See <see cref="DebugLevel" /> for details.</remarks>
-        private Int16 FDebugLevel;
+        private static Int16 FDebugLevel;
 
         /// <summary>Tracks the last DB action; is updated with every creation of a Command.</summary>
         private DateTime FLastDBAction;
@@ -2216,7 +2216,7 @@ namespace Ict.Common.DB
         /// <param name="ASqlStatement">SQL Statement that should be logged.</param>
         /// <param name="AParametersArray">Parameters for the SQL Statement. Can be null.</param>
         /// <returns>void</returns>
-        private void LogSqlStatement(String AContext, String ASqlStatement, DbParameter[] AParametersArray)
+        public static void LogSqlStatement(String AContext, String ASqlStatement, DbParameter[] AParametersArray)
         {
             String PrintContext = "";
 

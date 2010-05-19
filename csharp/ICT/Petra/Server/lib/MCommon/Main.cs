@@ -389,7 +389,7 @@ namespace Ict.Petra.Server.MCommon
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
-                Console.WriteLine(this.GetType().FullName + ".GetData SQL:" + FSelectSQL);
+                TDataBase.LogSqlStatement(this.GetType().FullName + ".GetData", FSelectSQL, FFindParameters.FParametersArray);
             }
 #endif
 
