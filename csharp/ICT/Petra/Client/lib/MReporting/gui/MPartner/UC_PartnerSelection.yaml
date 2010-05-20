@@ -17,7 +17,7 @@ RootNode:
         rbtPartner: {Label=Partner, OnChange=rbtSelectionChange}
         txtPartnerKey: {NoLabel=true, Type=PartnerKey}
         rbtExtract: {Label=Extract, OnChange=rbtSelectionChange}
-        txtExtract: {NoLabel=true, Type=PartnerKey}
+        txtExtract: {NoLabel=true, Type=Extract}
         rbtCurrentStaff:{Label=Current Staff at, OnChange=rbtSelectionChange}
         dtpCurrentStaff: {NoLabel=true}
         rbtAllStaff:{Label=All Staff, OnChange=rbtSelectionChange}
