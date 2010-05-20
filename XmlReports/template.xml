@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "reports.dtd">
+<reports>
+	<report id="todo">
+		<description>
+			todo
+		</description>
+		<reportparameters>
+			<reportparameter name="param_todo"/>
+		</reportparameters>
+		
+		<reportheader/>
+		<pageheader>
+			<field whichfield="title1"><value text ="todo" /></field>
+			<field whichfield="title2"><value text = "todo"/></field>
+			<field whichfield="descr1"><value text = "todo"/></field>
+			<field whichfield="period1"><value text = "todo"/></field>
+			<field whichfield="period2"><value text = "todo"/></field>
+			<field whichfield="descr2"><value text = "todo"/></field>
+			<field whichfield="type"><value text = "todo"/></field>
+			<field whichfield="left1"><value text = "todo"/></field>
+			<field whichfield="left2"><value text = "todo"/></field>
+		</pageheader>
+
+		<calculations>
+		
+			<!-- template calculation for a row -->
+			<calculation id="todo"
+					returns="todo"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					SELECT todo
+					FROM todo
+					WHERE todo
+					</value></queryDetail>
+				</query>
+			</calculation>
+			
+			<!-- template calculation for a column -->
+			<calculation id="todo" 
+					returnsFormat="currency" returns="amount">
+				<caption><value text="todo"/></caption>
+				<query>
+					<queryDetail><value function="todo({{param1}}, ...)"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+
+		</calculations>
+
+		<levels>		
+		
+			<!-- required: the main report level -->
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="todo">
+					</lowerLevelReport>
+				</detail>
+			</level> <!-- main -->
+
+			<!-- a level for grouping rows -->
+			<level name="todo" identification="some variable">
+				<header>
+					<field whichfield="header 0" pos="0 cm" width="10cm">
+							<value text="something "/>
+							<value variable="somevariable"/>
+					</field>
+				</header>
+				<detail>
+					<lowerLevelReport level="todo2">
+						<parameter name="param_something"/>
+					</lowerLevelReport>
+				</detail>
+				<footer>
+					<field whichfield="left 0" pos="0cm" width="5 cm">
+						<value text="todo"/></field>
+					<field whichfield="left 1" pos="0cm" width="5 cm">
+						<value text = "todo"/></field>
+					<field whichfield="columns" pos="indented" line="above_below">
+						<value function="getIncMinusExp({{lineId}}, {{column}})"/>
+					</field>
+				</footer>
+			</level><!-- todo -->
+		
+			<!-- a level with detailed data -->
+			<level name="todo2" identification="line_something" condition="HasColumns">
+				<detail>
+					<field whichfield="left 0" pos="1 cm" width="1.5 cm"><value variable="line_something"/></field>
+					<field whichfield="left 1" pos="2.5 cm" width="5 cm"><value variable="some text"/></field>
+					<field calculation="calcualateSomething" whichfield="columns"></field>
+				</detail>
+			</level><!-- todo2 -->
+
+		</levels>
+	</report><!-- todo -->
+	
+</reports>
