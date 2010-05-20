@@ -144,10 +144,10 @@ namespace Ict.Petra.Client.MCommon
         private Int32 FNewRecordFromRecordKey;
 
         /// <summary>Value of DateEffective DataColumn before the user edits the current record</summary>
-        private DateTime FValidFromBeforeEditing;
+        private DateTime? FValidFromBeforeEditing;
 
         /// <summary>Value of DateGoodUntil DataColumn before the user edits the current record</summary>
-        private DateTime FValidUntilBeforeEditing;
+        private DateTime? FValidUntilBeforeEditing;
 
         /// <summary>Value of SendMail DataColumn before the user edits the current record</summary>
         private Boolean FSendMailBeforeEditing;
@@ -712,8 +712,8 @@ namespace Ict.Petra.Client.MCommon
             // MessageBox.Show('FLocationRow: Proposed? ' + FLocationRow.HasVersion(DataRowVersion.Proposed).ToString +
             // 'PPartnerLocationRow: Proposed? ' + PPartnerLocationRow.HasVersion(DataRowVersion.Proposed).ToString);
             // Store values of some DataColumns before the user can edit them (used later for comparisons)
-            FValidFromBeforeEditing = PPartnerLocationRow.DateEffective.Value;
-            FValidUntilBeforeEditing = PPartnerLocationRow.DateGoodUntil.Value;
+            FValidFromBeforeEditing = PPartnerLocationRow.DateEffective;
+            FValidUntilBeforeEditing = PPartnerLocationRow.DateGoodUntil;
             FSendMailBeforeEditing = PPartnerLocationRow.SendMail;
         }
 
@@ -926,8 +926,8 @@ namespace Ict.Petra.Client.MCommon
                 || (APartnerLocationRow.DateGoodUntil != FValidUntilBeforeEditing) || (APartnerLocationRow.SendMail != FSendMailBeforeEditing))
             {
                 // MessageBox.Show('PartnerLocation Date(s) or Mailing Address CheckBox have changed!');
-                FValidFromBeforeEditing = APartnerLocationRow.DateEffective.Value;
-                FValidUntilBeforeEditing = APartnerLocationRow.DateGoodUntil.Value;
+                FValidFromBeforeEditing = APartnerLocationRow.DateEffective;
+                FValidUntilBeforeEditing = APartnerLocationRow.DateGoodUntil;
 
                 // Determination of the Grid icons and the 'Best Address' (these calls change certain columns in some rows!)
                 Calculations.DeterminePartnerLocationsDateStatus((DataSet)FMainDS);

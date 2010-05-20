@@ -150,7 +150,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdMatchingRecords.Columns.Clear();
             grdMatchingRecords.AddTextColumn(Catalog.GetString("Class"), result.SearchResult.ColumnPartnerClass, 50);
             grdMatchingRecords.AddTextColumn(Catalog.GetString("Name"), result.SearchResult.ColumnPartnerShortName, 200);
-            grdMatchingRecords.AddTextColumn(Catalog.GetString("Address"), result.SearchResult.ColumnAddress3, 200);
+            grdMatchingRecords.AddTextColumn(Catalog.GetString("Address"), result.SearchResult.ColumnStreetName, 200);
             grdMatchingRecords.AddTextColumn(Catalog.GetString("City"), result.SearchResult.ColumnCity, 150);
             result.SearchResult.DefaultView.AllowNew = false;
             grdMatchingRecords.DataSource = new DevAge.ComponentModel.BoundDataView(result.SearchResult.DefaultView);
@@ -257,6 +257,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
+            if (TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_PARTNERKEY).Length > 0)
+            {
+                // it would not make any sense to create a partner if there is already a partner key
+                return;
+            }
+
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             PPartnerRow newPartner = MainDS.PPartner.NewRowTyped();
@@ -265,6 +271,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             newPartner.PartnerKey = TRemote.MPartner.Partner.WebConnectors.NewPartnerKey(-1);
             newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
             newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+
+            FCurrentPartnerNode.Attributes[MPartnerConstants.PARTNERIMPORT_PARTNERKEY].Value = newPartner.PartnerKey.ToString();
 
             if (TXMLParser.HasAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_AQUISITION))
             {
@@ -351,6 +359,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+
+            // Reload the partner find with the new data, and also the grid with the partner key etc
+            DisplayCurrentRecord();
         }
     }
 }
